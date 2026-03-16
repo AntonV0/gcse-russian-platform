@@ -28,7 +28,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
         {module.lessons.map((lesson, index) => (
           <Link
             key={lesson.slug}
-            href={`/courses/${course.slug}/lessons/${lesson.slug}`}
+            href={`/courses/${course.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
             className="block"
           >
             <div className="transition hover:-translate-y-0.5">

@@ -54,7 +54,7 @@ export default function LessonPageTemplate({
         previousLesson={
           previousLesson
             ? {
-                href: `/courses/${course.slug}/lessons/${previousLesson.slug}`,
+                href: `/courses/${course.slug}/modules/${moduleSlug}/lessons/${previousLesson.slug}`,
                 label: previousLesson.title,
               }
             : undefined
@@ -62,7 +62,7 @@ export default function LessonPageTemplate({
         nextLesson={
           nextLesson
             ? {
-                href: `/courses/${course.slug}/lessons/${nextLesson.slug}`,
+                href: `/courses/${course.slug}/modules/${moduleSlug}/lessons/${nextLesson.slug}`,
                 label: nextLesson.title,
               }
             : undefined
