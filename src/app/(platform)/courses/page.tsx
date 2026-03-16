@@ -1,8 +1,11 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
+import { getCourses } from "@/lib/course-helpers";
 
 export default function CoursesPage() {
+  const courses = getCourses();
+
   return (
     <main>
       <PageHeader
@@ -11,17 +14,15 @@ export default function CoursesPage() {
       />
 
       <section className="grid gap-4 md:grid-cols-2">
-        <Link href="/courses/gcse-russian" className="block">
-          <div className="transition hover:-translate-y-0.5">
-            <DashboardCard title="GCSE Russian">
-              The main live course for this platform MVP.
-            </DashboardCard>
-          </div>
-        </Link>
-
-        <DashboardCard title="A-Level Russian">
-          Planned for later using the same platform structure.
-        </DashboardCard>
+        {courses.map((course) => (
+          <Link key={course.slug} href={`/courses/${course.slug}`} className="block">
+            <div className="transition hover:-translate-y-0.5">
+              <DashboardCard title={course.title}>
+                {course.description}
+              </DashboardCard>
+            </div>
+          </Link>
+        ))}
       </section>
     </main>
   );

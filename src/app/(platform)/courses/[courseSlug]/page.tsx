@@ -3,8 +3,16 @@ import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { getCourseBySlug } from "@/lib/course-helpers";
 
-export default function GcseRussianCoursePage() {
-  const course = getCourseBySlug("gcse-russian");
+type CoursePageProps = {
+  params: Promise<{
+    courseSlug: string;
+  }>;
+};
+
+export default async function CoursePage({ params }: CoursePageProps) {
+  const { courseSlug } = await params;
+
+  const course = getCourseBySlug(courseSlug);
 
   if (!course) {
     return <main>Course not found.</main>;
