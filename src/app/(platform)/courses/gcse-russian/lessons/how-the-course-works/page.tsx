@@ -1,4 +1,5 @@
-import PageHeader from "@/components/layout/page-header";
+import LessonHeader from "@/components/layout/lesson-header";
+import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
 import type { LessonBlock } from "@/types/lesson";
 
@@ -47,12 +48,23 @@ const lessonBlocks: LessonBlock[] = [
 export default function HowTheCourseWorksLessonPage() {
   return (
     <main>
-      <PageHeader
-        title="How the course works"
-        description="This lesson now uses reusable lesson blocks."
+      <LessonHeader
+        backHref="/courses/gcse-russian/modules/introduction-to-the-course"
+        backLabel="Back to module"
+        moduleTitle="Introduction to the course"
+        lessonTitle="How the course works"
+        lessonDescription="This lesson shows the first version of the reusable lesson system."
       />
 
       <LessonRenderer blocks={lessonBlocks} />
+
+      <LessonFooterNav
+        moduleHref="/courses/gcse-russian/modules/introduction-to-the-course"
+        nextLesson={{
+          href: "/courses/gcse-russian/lessons/getting-started",
+          label: "Getting started",
+        }}
+      />
     </main>
   );
 }
