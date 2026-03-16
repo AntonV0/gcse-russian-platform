@@ -6,11 +6,10 @@ export function getLessonBlocks(
   moduleSlug: string,
   lessonSlug: string
 ): LessonBlock[] | null {
-  if (
-    courseSlug === "gcse-russian" &&
-    moduleSlug === "introduction-to-the-course"
-  ) {
-    return introductionToTheCourseLessonContent[lessonSlug] ?? null;
+  if (courseSlug === "gcse-russian") {
+    if (moduleSlug === "introduction-to-the-course") {
+      return introductionToTheCourseLessonContent[lessonSlug] ?? null;
+    }
   }
 
   return null;

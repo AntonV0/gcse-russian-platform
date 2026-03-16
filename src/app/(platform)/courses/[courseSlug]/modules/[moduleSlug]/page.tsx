@@ -5,15 +5,16 @@ import { getCourseBySlug, getModuleBySlug } from "@/lib/course-helpers";
 
 type ModulePageProps = {
   params: Promise<{
+    courseSlug: string;
     moduleSlug: string;
   }>;
 };
 
 export default async function ModulePage({ params }: ModulePageProps) {
-  const { moduleSlug } = await params;
+  const { courseSlug, moduleSlug } = await params;
 
-  const course = getCourseBySlug("gcse-russian");
-  const module = getModuleBySlug("gcse-russian", moduleSlug);
+  const course = getCourseBySlug(courseSlug);
+  const module = getModuleBySlug(courseSlug, moduleSlug);
 
   if (!course || !module) {
     return <main>Module not found.</main>;
