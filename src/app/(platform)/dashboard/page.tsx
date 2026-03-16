@@ -1,12 +1,21 @@
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
+import { getCurrentCourseAccess, getCurrentProfile, getCurrentUser } from "@/lib/auth";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
+  const profile = await getCurrentProfile();
+  const courseAccess = await getCurrentCourseAccess("gcse-russian");
+
   return (
     <main>
       <PageHeader
         title="Dashboard"
-        description="This will become the student dashboard for progress, lessons, and revision."
+        description={
+          user
+            ? `Welcome back${profile?.full_name ? `, ${profile.full_name}` : ""}.`
+            : "This will become the student dashboard for progress, lessons, and revision."
+        }
       />
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -14,12 +23,12 @@ export default function DashboardPage() {
           GCSE Russian
         </DashboardCard>
 
-        <DashboardCard title="Progress">
-          No lessons completed yet.
+        <DashboardCard title="Access type">
+          {courseAccess?.access_type ?? "No access found"}
         </DashboardCard>
 
-        <DashboardCard title="Next step">
-          Build the first course and lesson structure.
+        <DashboardCard title="Account">
+          {user?.email ?? "Not logged in"}
         </DashboardCard>
       </section>
     </main>
