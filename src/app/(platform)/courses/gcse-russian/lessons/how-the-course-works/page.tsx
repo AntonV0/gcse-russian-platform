@@ -1,53 +1,11 @@
 import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
-import type { LessonBlock } from "@/types/lesson";
 import { getAdjacentLessons, getLessonBySlug } from "@/lib/course-helpers";
+import { howTheCourseWorksLessonBlocks } from "@/lib/lesson-content/gcse-russian/introduction-to-the-course/how-the-course-works";
 
 const moduleSlug = "introduction-to-the-course";
 const lessonSlug = "how-the-course-works";
-
-const lessonBlocks: LessonBlock[] = [
-  {
-    type: "text",
-    content:
-      "Welcome to the GCSE Russian Course Platform. Each lesson will eventually be built from reusable content blocks such as explanations, vocabulary, audio, and question sets.",
-  },
-  {
-    type: "note",
-    title: "Study tip",
-    content:
-      "Work through each lesson in order. Focus on understanding the vocabulary and structure before moving on to practice questions.",
-  },
-  {
-    type: "vocabulary",
-    title: "Starter vocabulary",
-    items: [
-      { russian: "урок", english: "lesson" },
-      { russian: "слово", english: "word" },
-      { russian: "задание", english: "task" },
-    ],
-  },
-  {
-    type: "multiple-choice",
-    question: 'What does "урок" mean?',
-    options: [
-      { id: "a", text: "Word" },
-      { id: "b", text: "Lesson" },
-      { id: "c", text: "Task" },
-    ],
-    correctOptionId: "b",
-    explanation:
-      '"Урок" means "lesson". This is a simple example of how question blocks will work inside lessons.',
-  },
-  {
-    type: "short-answer",
-    question: 'Type the English meaning of "слово".',
-    acceptedAnswers: ["word"],
-    placeholder: "Enter the English meaning",
-    explanation: '"Слово" means "word".',
-  },
-];
 
 export default function HowTheCourseWorksLessonPage() {
   const lesson = getLessonBySlug(moduleSlug, lessonSlug);
@@ -70,7 +28,7 @@ export default function HowTheCourseWorksLessonPage() {
         lessonDescription={lesson.description}
       />
 
-      <LessonRenderer blocks={lessonBlocks} />
+      <LessonRenderer blocks={howTheCourseWorksLessonBlocks} />
 
       <LessonFooterNav
         moduleHref="/courses/gcse-russian/modules/introduction-to-the-course"
