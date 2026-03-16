@@ -22,9 +22,16 @@ export default function IntroductionModulePage() {
           </div>
         </Link>
 
-        <DashboardCard title="Lesson 2: Getting started">
-          Placeholder for the next lesson in this module.
-        </DashboardCard>
+        <Link
+          href="/courses/gcse-russian/lessons/getting-started"
+          className="block"
+        >
+          <div className="transition hover:-translate-y-0.5">
+            <DashboardCard title="Lesson 2: Getting started">
+              A placeholder second lesson for navigation flow.
+            </DashboardCard>
+          </div>
+        </Link>
       </section>
     </main>
   );
