@@ -29,8 +29,17 @@ export type MultipleChoiceLessonBlock = {
   explanation?: string;
 };
 
+export type ShortAnswerLessonBlock = {
+  type: "short-answer";
+  question: string;
+  acceptedAnswers: string[];
+  explanation?: string;
+  placeholder?: string;
+};
+
 export type LessonBlock =
   | TextLessonBlock
   | NoteLessonBlock
   | VocabularyLessonBlock
-  | MultipleChoiceLessonBlock;
+  | MultipleChoiceLessonBlock
+  | ShortAnswerLessonBlock;
