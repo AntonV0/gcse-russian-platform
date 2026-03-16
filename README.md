@@ -1,8 +1,8 @@
 # GCSE Russian Course Platform
 
-Private repository for the GCSE Russian online course platform.
+Private repository for the GCSE Russian online learning platform.
 
-## Planned stack
+## Tech stack
 
 - Next.js
 - React
@@ -11,12 +11,20 @@ Private repository for the GCSE Russian online course platform.
 - Supabase
 - Stripe
 
-## Product
+## Product vision
 
-A structured GCSE Russian learning platform with:
+A structured GCSE Russian learning platform featuring:
 
 - block-based lessons
 - reusable question engine
-- vocabulary systems
+- vocabulary system
 - progress tracking
-- trial / self-study / Volna student access modes
+- trial / self-study / Volna student modes
+
+## Development
+
+Run the development server:
+
+npm run dev
+
+Open http://localhost:3000
