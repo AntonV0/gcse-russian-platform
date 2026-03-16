@@ -3,9 +3,17 @@ import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { getCourseBySlug, getModuleBySlug } from "@/lib/course-helpers";
 
-export default function IntroductionModulePage() {
+type ModulePageProps = {
+  params: Promise<{
+    moduleSlug: string;
+  }>;
+};
+
+export default async function ModulePage({ params }: ModulePageProps) {
+  const { moduleSlug } = await params;
+
   const course = getCourseBySlug("gcse-russian");
-  const module = getModuleBySlug("gcse-russian", "introduction-to-the-course");
+  const module = getModuleBySlug("gcse-russian", moduleSlug);
 
   if (!course || !module) {
     return <main>Module not found.</main>;
