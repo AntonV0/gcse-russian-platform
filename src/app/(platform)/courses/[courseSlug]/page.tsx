@@ -2,6 +2,7 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { getCourseBySlug } from "@/lib/course-helpers";
+import { getModulePath } from "@/lib/routes";
 
 type CoursePageProps = {
   params: Promise<{
@@ -40,7 +41,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
           {course.modules.map((module) => (
             <Link
               key={module.slug}
-              href={`/courses/${course.slug}/modules/${module.slug}`}
+              href={getModulePath(course.slug, module.slug)}
               className="rounded-xl border bg-white p-5 shadow-sm transition hover:border-black"
             >
               <h3 className="mb-2 font-semibold">{module.title}</h3>
