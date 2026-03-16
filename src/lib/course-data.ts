@@ -1,4 +1,6 @@
-export const courses = [
+import type { Course } from "@/types/course";
+
+export const courses: Course[] = [
   {
     slug: "gcse-russian",
     title: "GCSE Russian",
