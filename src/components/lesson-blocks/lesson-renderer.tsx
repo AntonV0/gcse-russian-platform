@@ -2,6 +2,7 @@ import TextBlock from "@/components/lesson-blocks/text-block";
 import NoteBlock from "@/components/lesson-blocks/note-block";
 import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
 import MultipleChoiceBlock from "@/components/lesson-blocks/multiple-choice-block";
+import ShortAnswerBlock from "@/components/lesson-blocks/short-answer-block";
 import type { LessonBlock } from "@/types/lesson";
 
 type LessonRendererProps = {
@@ -42,6 +43,17 @@ export default function LessonRenderer({ blocks }: LessonRendererProps) {
                 options={block.options}
                 correctOptionId={block.correctOptionId}
                 explanation={block.explanation}
+              />
+            );
+
+          case "short-answer":
+            return (
+              <ShortAnswerBlock
+                key={index}
+                question={block.question}
+                acceptedAnswers={block.acceptedAnswers}
+                explanation={block.explanation}
+                placeholder={block.placeholder}
               />
             );
 

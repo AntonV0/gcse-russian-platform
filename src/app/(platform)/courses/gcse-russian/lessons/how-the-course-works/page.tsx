@@ -35,6 +35,13 @@ const lessonBlocks: LessonBlock[] = [
     explanation:
       '"Урок" means "lesson". This is a simple example of how question blocks will work inside lessons.',
   },
+  {
+    type: "short-answer",
+    question: 'Type the English meaning of "слово".',
+    acceptedAnswers: ["word"],
+    placeholder: "Enter the English meaning",
+    explanation: '"Слово" means "word".',
+  },
 ];
 
 export default function HowTheCourseWorksLessonPage() {
