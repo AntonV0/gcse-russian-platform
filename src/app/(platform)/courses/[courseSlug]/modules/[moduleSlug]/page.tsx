@@ -2,6 +2,7 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { getCourseBySlug, getModuleBySlug } from "@/lib/course-helpers";
+import { getLessonPath } from "@/lib/routes";
 
 type ModulePageProps = {
   params: Promise<{
@@ -28,7 +29,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
         {module.lessons.map((lesson, index) => (
           <Link
             key={lesson.slug}
-            href={`/courses/${course.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
+            href={getLessonPath(course.slug, module.slug, lesson.slug)}
             className="block"
           >
             <div className="transition hover:-translate-y-0.5">

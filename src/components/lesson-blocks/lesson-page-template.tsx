@@ -9,6 +9,8 @@ import {
   getModuleBySlug,
 } from "@/lib/course-helpers";
 
+import { getLessonPath, getModulePath } from "@/lib/routes";
+
 type LessonPageTemplateProps = {
   courseSlug: string;
   moduleSlug: string;
@@ -35,7 +37,7 @@ export default function LessonPageTemplate({
     return <main>Lesson not found.</main>;
   }
 
-  const moduleHref = `/courses/${course.slug}/modules/${moduleSlug}`;
+  const moduleHref = getModulePath(course.slug, moduleSlug);
 
   return (
     <main>
@@ -54,7 +56,7 @@ export default function LessonPageTemplate({
         previousLesson={
           previousLesson
             ? {
-                href: `/courses/${course.slug}/modules/${moduleSlug}/lessons/${previousLesson.slug}`,
+                href: getLessonPath(course.slug, moduleSlug, previousLesson.slug),
                 label: previousLesson.title,
               }
             : undefined
@@ -62,7 +64,7 @@ export default function LessonPageTemplate({
         nextLesson={
           nextLesson
             ? {
-                href: `/courses/${course.slug}/modules/${moduleSlug}/lessons/${nextLesson.slug}`,
+                href: getLessonPath(course.slug, moduleSlug, nextLesson.slug),
                 label: nextLesson.title,
               }
             : undefined

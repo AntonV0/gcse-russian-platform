@@ -2,6 +2,12 @@ import "./globals.css";
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import {
+  getAccountPath,
+  getCoursesPath,
+  getDashboardPath,
+} from "@/lib/routes";
+
 export const metadata: Metadata = {
   title: "GCSE Russian Course Platform",
   description: "Online GCSE Russian learning platform",
@@ -25,8 +31,14 @@ export default function RootLayout({
               <Link href="/" className="text-gray-600 hover:text-black">
                 Home
               </Link>
-              <Link href="/dashboard" className="text-gray-600 hover:text-black">
+              <Link href={getDashboardPath()} className="text-gray-600 hover:text-black">
                 Dashboard
+              </Link>
+              <Link href={getCoursesPath()} className="text-gray-600 hover:text-black">
+                Courses
+              </Link>
+              <Link href={getAccountPath()} className="text-gray-600 hover:text-black">
+                Account
               </Link>
             </nav>
           </div>
