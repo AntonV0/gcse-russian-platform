@@ -23,6 +23,18 @@ const lessonBlocks: LessonBlock[] = [
       { russian: "задание", english: "task" },
     ],
   },
+  {
+    type: "multiple-choice",
+    question: 'What does "урок" mean?',
+    options: [
+      { id: "a", text: "Word" },
+      { id: "b", text: "Lesson" },
+      { id: "c", text: "Task" },
+    ],
+    correctOptionId: "b",
+    explanation:
+      '"Урок" means "lesson". This is a simple example of how question blocks will work inside lessons.',
+  },
 ];
 
 export default function HowTheCourseWorksLessonPage() {
