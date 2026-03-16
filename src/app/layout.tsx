@@ -1,23 +1,26 @@
 import "./globals.css";
 import Link from "next/link";
 import type { Metadata } from "next";
-
 import {
   getAccountPath,
   getCoursesPath,
   getDashboardPath,
 } from "@/lib/routes";
+import { getCurrentUser } from "@/lib/auth";
+import LogoutButton from "@/components/layout/logout-button";
 
 export const metadata: Metadata = {
   title: "GCSE Russian Course Platform",
   description: "Online GCSE Russian learning platform",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-50 text-gray-900">
@@ -40,12 +43,22 @@ export default function RootLayout({
               <Link href={getAccountPath()} className="text-gray-600 hover:text-black">
                 Account
               </Link>
-              <Link href="/login" className="text-gray-600 hover:text-black">
-                Log in
-              </Link>
-              <Link href="/signup" className="text-gray-600 hover:text-black">
-                Sign up
-              </Link>
+
+              {user ? (
+                <>
+                  <span className="text-gray-500">{user.email}</span>
+                  <LogoutButton />
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="text-gray-600 hover:text-black">
+                    Log in
+                  </Link>
+                  <Link href="/signup" className="text-gray-600 hover:text-black">
+                    Sign up
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
         </header>
