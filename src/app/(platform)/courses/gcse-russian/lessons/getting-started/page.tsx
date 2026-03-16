@@ -4,6 +4,7 @@ import { gettingStartedLessonBlocks } from "@/lib/lesson-content/gcse-russian/in
 export default function GettingStartedLessonPage() {
   return (
     <LessonPageTemplate
+      courseSlug="gcse-russian"
       moduleSlug="introduction-to-the-course"
       lessonSlug="getting-started"
       blocks={gettingStartedLessonBlocks}

@@ -1,31 +1,51 @@
-import { gcseRussianCourse } from "@/lib/course-data";
+import { courses } from "@/lib/course-data";
 
-export function getCourse() {
-  return gcseRussianCourse;
+export function getCourses() {
+  return courses;
 }
 
-export function getModuleBySlug(moduleSlug: string) {
-  return gcseRussianCourse.modules.find((module) => module.slug === moduleSlug);
+export function getCourseBySlug(courseSlug: string) {
+  return courses.find((course) => course.slug === courseSlug) ?? null;
 }
 
-export function getLessonBySlug(moduleSlug: string, lessonSlug: string) {
-  const module = getModuleBySlug(moduleSlug);
+export function getModuleBySlug(courseSlug: string, moduleSlug: string) {
+  const course = getCourseBySlug(courseSlug);
+
+  if (!course) return null;
+
+  return course.modules.find((module) => module.slug === moduleSlug) ?? null;
+}
+
+export function getLessonBySlug(
+  courseSlug: string,
+  moduleSlug: string,
+  lessonSlug: string
+) {
+  const module = getModuleBySlug(courseSlug, moduleSlug);
 
   if (!module) return null;
 
   return module.lessons.find((lesson) => lesson.slug === lessonSlug) ?? null;
 }
 
-export function getLessonIndex(moduleSlug: string, lessonSlug: string) {
-  const module = getModuleBySlug(moduleSlug);
+export function getLessonIndex(
+  courseSlug: string,
+  moduleSlug: string,
+  lessonSlug: string
+) {
+  const module = getModuleBySlug(courseSlug, moduleSlug);
 
   if (!module) return -1;
 
   return module.lessons.findIndex((lesson) => lesson.slug === lessonSlug);
 }
 
-export function getAdjacentLessons(moduleSlug: string, lessonSlug: string) {
-  const module = getModuleBySlug(moduleSlug);
+export function getAdjacentLessons(
+  courseSlug: string,
+  moduleSlug: string,
+  lessonSlug: string
+) {
+  const module = getModuleBySlug(courseSlug, moduleSlug);
 
   if (!module) {
     return {
@@ -34,7 +54,7 @@ export function getAdjacentLessons(moduleSlug: string, lessonSlug: string) {
     };
   }
 
-  const currentIndex = getLessonIndex(moduleSlug, lessonSlug);
+  const currentIndex = getLessonIndex(courseSlug, moduleSlug, lessonSlug);
 
   if (currentIndex === -1) {
     return {

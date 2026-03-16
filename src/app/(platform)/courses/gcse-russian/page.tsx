@@ -1,10 +1,14 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { getCourse } from "@/lib/course-helpers";
+import { getCourseBySlug } from "@/lib/course-helpers";
 
 export default function GcseRussianCoursePage() {
-  const course = getCourse();
+  const course = getCourseBySlug("gcse-russian");
+
+  if (!course) {
+    return <main>Course not found.</main>;
+  }
 
   return (
     <main>

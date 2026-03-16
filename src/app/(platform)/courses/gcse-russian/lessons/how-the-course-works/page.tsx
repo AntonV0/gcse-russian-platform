@@ -4,6 +4,7 @@ import { howTheCourseWorksLessonBlocks } from "@/lib/lesson-content/gcse-russian
 export default function HowTheCourseWorksLessonPage() {
   return (
     <LessonPageTemplate
+      courseSlug="gcse-russian"
       moduleSlug="introduction-to-the-course"
       lessonSlug="how-the-course-works"
       blocks={howTheCourseWorksLessonBlocks}
