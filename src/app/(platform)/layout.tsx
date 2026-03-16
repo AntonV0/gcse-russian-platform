@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoutButton from "@/components/layout/logout-button";
 
 import {
   getAccountPath,
@@ -25,6 +26,9 @@ export default function PlatformLayout({
             Account
           </Link>
         </nav>
+        <div className="mt-6">
+          <LogoutButton />
+        </div>
       </aside>
 
       <section>{children}</section>

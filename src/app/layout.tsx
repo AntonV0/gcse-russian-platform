@@ -40,6 +40,12 @@ export default function RootLayout({
               <Link href={getAccountPath()} className="text-gray-600 hover:text-black">
                 Account
               </Link>
+              <Link href="/login" className="text-gray-600 hover:text-black">
+                Log in
+              </Link>
+              <Link href="/signup" className="text-gray-600 hover:text-black">
+                Sign up
+              </Link>
             </nav>
           </div>
         </header>
