@@ -2,31 +2,40 @@ import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
 import type { LessonBlock } from "@/types/lesson";
-import { getAdjacentLessons, getLessonBySlug, getModuleBySlug } from "@/lib/course-helpers";
+import {
+  getAdjacentLessons,
+  getCourseBySlug,
+  getLessonBySlug,
+  getModuleBySlug,
+} from "@/lib/course-helpers";
 
 type LessonPageTemplateProps = {
+  courseSlug: string;
   moduleSlug: string;
   lessonSlug: string;
   blocks: LessonBlock[];
 };
 
 export default function LessonPageTemplate({
+  courseSlug,
   moduleSlug,
   lessonSlug,
   blocks,
 }: LessonPageTemplateProps) {
-  const module = getModuleBySlug(moduleSlug);
-  const lesson = getLessonBySlug(moduleSlug, lessonSlug);
+  const course = getCourseBySlug(courseSlug);
+  const module = getModuleBySlug(courseSlug, moduleSlug);
+  const lesson = getLessonBySlug(courseSlug, moduleSlug, lessonSlug);
   const { previousLesson, nextLesson } = getAdjacentLessons(
+    courseSlug,
     moduleSlug,
     lessonSlug
   );
 
-  if (!module || !lesson) {
+  if (!course || !module || !lesson) {
     return <main>Lesson not found.</main>;
   }
 
-  const moduleHref = `/courses/gcse-russian/modules/${moduleSlug}`;
+  const moduleHref = `/courses/${course.slug}/modules/${moduleSlug}`;
 
   return (
     <main>
@@ -45,7 +54,7 @@ export default function LessonPageTemplate({
         previousLesson={
           previousLesson
             ? {
-                href: `/courses/gcse-russian/lessons/${previousLesson.slug}`,
+                href: `/courses/${course.slug}/lessons/${previousLesson.slug}`,
                 label: previousLesson.title,
               }
             : undefined
@@ -53,7 +62,7 @@ export default function LessonPageTemplate({
         nextLesson={
           nextLesson
             ? {
-                href: `/courses/gcse-russian/lessons/${nextLesson.slug}`,
+                href: `/courses/${course.slug}/lessons/${nextLesson.slug}`,
                 label: nextLesson.title,
               }
             : undefined
