@@ -18,7 +18,19 @@ export type VocabularyLessonBlock = {
   }[];
 };
 
+export type MultipleChoiceLessonBlock = {
+  type: "multiple-choice";
+  question: string;
+  options: {
+    id: string;
+    text: string;
+  }[];
+  correctOptionId: string;
+  explanation?: string;
+};
+
 export type LessonBlock =
   | TextLessonBlock
   | NoteLessonBlock
-  | VocabularyLessonBlock;
+  | VocabularyLessonBlock
+  | MultipleChoiceLessonBlock;

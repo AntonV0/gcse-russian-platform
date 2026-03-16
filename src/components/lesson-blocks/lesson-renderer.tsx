@@ -1,6 +1,7 @@
 import TextBlock from "@/components/lesson-blocks/text-block";
 import NoteBlock from "@/components/lesson-blocks/note-block";
 import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
+import MultipleChoiceBlock from "@/components/lesson-blocks/multiple-choice-block";
 import type { LessonBlock } from "@/types/lesson";
 
 type LessonRendererProps = {
@@ -30,6 +31,17 @@ export default function LessonRenderer({ blocks }: LessonRendererProps) {
                 key={index}
                 title={block.title}
                 items={block.items}
+              />
+            );
+
+          case "multiple-choice":
+            return (
+              <MultipleChoiceBlock
+                key={index}
+                question={block.question}
+                options={block.options}
+                correctOptionId={block.correctOptionId}
+                explanation={block.explanation}
               />
             );
 
