@@ -1,37 +1,34 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
+import { getCourse, getModuleBySlug } from "@/lib/course-helpers";
 
 export default function IntroductionModulePage() {
+  const course = getCourse();
+  const module = getModuleBySlug("introduction-to-the-course");
+
+  if (!module) {
+    return <main>Module not found.</main>;
+  }
+
   return (
     <main>
-      <PageHeader
-        title="Introduction to the course"
-        description="A sample module showing how modules and lessons will be structured."
-      />
+      <PageHeader title={module.title} description={module.description} />
 
       <section className="grid gap-4 md:grid-cols-2">
-        <Link
-          href="/courses/gcse-russian/lessons/how-the-course-works"
-          className="block"
-        >
-          <div className="transition hover:-translate-y-0.5">
-            <DashboardCard title="Lesson 1: How the course works">
-              Overview of navigation, lesson flow, and study structure.
-            </DashboardCard>
-          </div>
-        </Link>
-
-        <Link
-          href="/courses/gcse-russian/lessons/getting-started"
-          className="block"
-        >
-          <div className="transition hover:-translate-y-0.5">
-            <DashboardCard title="Lesson 2: Getting started">
-              A placeholder second lesson for navigation flow.
-            </DashboardCard>
-          </div>
-        </Link>
+        {module.lessons.map((lesson, index) => (
+          <Link
+            key={lesson.slug}
+            href={`/courses/${course.slug}/lessons/${lesson.slug}`}
+            className="block"
+          >
+            <div className="transition hover:-translate-y-0.5">
+              <DashboardCard title={`Lesson ${index + 1}: ${lesson.title}`}>
+                {lesson.description}
+              </DashboardCard>
+            </div>
+          </Link>
+        ))}
       </section>
     </main>
   );

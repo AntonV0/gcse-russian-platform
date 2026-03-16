@@ -2,6 +2,10 @@ import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
 import type { LessonBlock } from "@/types/lesson";
+import { getAdjacentLessons, getLessonBySlug } from "@/lib/course-helpers";
+
+const moduleSlug = "introduction-to-the-course";
+const lessonSlug = "how-the-course-works";
 
 const lessonBlocks: LessonBlock[] = [
   {
@@ -46,24 +50,46 @@ const lessonBlocks: LessonBlock[] = [
 ];
 
 export default function HowTheCourseWorksLessonPage() {
+  const lesson = getLessonBySlug(moduleSlug, lessonSlug);
+  const { previousLesson, nextLesson } = getAdjacentLessons(
+    moduleSlug,
+    lessonSlug
+  );
+
+  if (!lesson) {
+    return <main>Lesson not found.</main>;
+  }
+
   return (
     <main>
       <LessonHeader
         backHref="/courses/gcse-russian/modules/introduction-to-the-course"
         backLabel="Back to module"
         moduleTitle="Introduction to the course"
-        lessonTitle="How the course works"
-        lessonDescription="This lesson shows the first version of the reusable lesson system."
+        lessonTitle={lesson.title}
+        lessonDescription={lesson.description}
       />
 
       <LessonRenderer blocks={lessonBlocks} />
 
       <LessonFooterNav
         moduleHref="/courses/gcse-russian/modules/introduction-to-the-course"
-        nextLesson={{
-          href: "/courses/gcse-russian/lessons/getting-started",
-          label: "Getting started",
-        }}
+        previousLesson={
+          previousLesson
+            ? {
+                href: `/courses/gcse-russian/lessons/${previousLesson.slug}`,
+                label: previousLesson.title,
+              }
+            : undefined
+        }
+        nextLesson={
+          nextLesson
+            ? {
+                href: `/courses/gcse-russian/lessons/${nextLesson.slug}`,
+                label: nextLesson.title,
+              }
+            : undefined
+        }
       />
     </main>
   );
