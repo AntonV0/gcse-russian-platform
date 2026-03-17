@@ -4,7 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import { getCourseBySlug, getModuleBySlug } from "@/lib/course-helpers";
 import { getLessonPath } from "@/lib/routes";
 import { getModuleProgress } from "@/lib/progress-module";
-import { getCurrentCourseAccess } from "@/lib/auth";
+import { getLessonAccessState } from "@/lib/access";
 
 type ModulePageProps = {
   params: Promise<{
@@ -24,7 +24,6 @@ export default async function ModulePage({ params }: ModulePageProps) {
   }
 
   const progress = await getModuleProgress(courseSlug, moduleSlug);
-  const courseAccess = await getCurrentCourseAccess(courseSlug);
 
   const completedMap = new Map(
     progress.map((p) => [p.lesson_slug, p.completed])
@@ -32,6 +31,20 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   const completedCount = progress.filter((p) => p.completed).length;
   const totalLessons = module.lessons.length;
+
+  const lessonAccessEntries = await Promise.all(
+    module.lessons.map(async (lesson) => {
+      const accessState = await getLessonAccessState(
+        courseSlug,
+        moduleSlug,
+        lesson.slug
+      );
+
+      return [lesson.slug, accessState] as const;
+    })
+  );
+
+  const lessonAccessMap = new Map(lessonAccessEntries);
 
   return (
     <main>
@@ -44,11 +57,8 @@ export default async function ModulePage({ params }: ModulePageProps) {
       <section className="grid gap-4 md:grid-cols-2">
         {module.lessons.map((lesson, index) => {
           const isCompleted = completedMap.get(lesson.slug);
-
-          const canAccessLesson =
-            lesson.access === "free" ||
-            courseAccess?.access_type === "full" ||
-            courseAccess?.access_type === "volna";
+          const accessState = lessonAccessMap.get(lesson.slug);
+          const canAccessLesson = accessState === "accessible";
 
           const card = (
             <div className="transition hover:-translate-y-0.5">
