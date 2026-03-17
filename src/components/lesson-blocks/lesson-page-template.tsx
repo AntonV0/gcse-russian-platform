@@ -1,6 +1,7 @@
 import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
+import LessonCompletionForm from "@/components/lesson-blocks/lesson-completion-form";
 import type { LessonBlock } from "@/types/lesson";
 import {
   getAdjacentLessons,
@@ -8,7 +9,7 @@ import {
   getLessonBySlug,
   getModuleBySlug,
 } from "@/lib/course-helpers";
-
+import { getLessonProgress } from "@/lib/progress";
 import { getLessonPath, getModulePath } from "@/lib/routes";
 
 type LessonPageTemplateProps = {
@@ -18,7 +19,7 @@ type LessonPageTemplateProps = {
   blocks: LessonBlock[];
 };
 
-export default function LessonPageTemplate({
+export default async function LessonPageTemplate({
   courseSlug,
   moduleSlug,
   lessonSlug,
@@ -32,6 +33,7 @@ export default function LessonPageTemplate({
     moduleSlug,
     lessonSlug
   );
+  const progress = await getLessonProgress(courseSlug, moduleSlug, lessonSlug);
 
   if (!course || !module || !lesson) {
     return <main>Lesson not found.</main>;
@@ -50,6 +52,13 @@ export default function LessonPageTemplate({
       />
 
       <LessonRenderer blocks={blocks} />
+
+      <LessonCompletionForm
+        courseSlug={courseSlug}
+        moduleSlug={moduleSlug}
+        lessonSlug={lessonSlug}
+        completed={!!progress?.completed}
+      />
 
       <LessonFooterNav
         moduleHref={moduleHref}
