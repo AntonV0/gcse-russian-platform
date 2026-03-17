@@ -18,11 +18,13 @@ export const courses: Course[] = [
             title: "How the course works",
             description:
               "This lesson shows the first version of the reusable lesson system.",
+            access: "free",
           },
           {
             slug: "getting-started",
             title: "Getting started",
             description: "A placeholder second lesson for navigation flow.",
+            access: "paid",
           },
         ],
       },
@@ -35,11 +37,13 @@ export const courses: Course[] = [
             slug: "talking-about-family",
             title: "Talking about family",
             description: "Placeholder lesson card.",
+            access: "paid",
           },
           {
             slug: "describing-relationships",
             title: "Describing relationships",
             description: "Placeholder lesson card.",
+            access: "paid",
           },
         ],
       },

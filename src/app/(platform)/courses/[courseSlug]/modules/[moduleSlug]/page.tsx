@@ -4,6 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import { getCourseBySlug, getModuleBySlug } from "@/lib/course-helpers";
 import { getLessonPath } from "@/lib/routes";
 import { getModuleProgress } from "@/lib/progress-module";
+import { getCurrentCourseAccess } from "@/lib/auth";
 
 type ModulePageProps = {
   params: Promise<{
@@ -23,13 +24,12 @@ export default async function ModulePage({ params }: ModulePageProps) {
   }
 
   const progress = await getModuleProgress(courseSlug, moduleSlug);
+  const courseAccess = await getCurrentCourseAccess(courseSlug);
 
-  // Convert to lookup map
   const completedMap = new Map(
     progress.map((p) => [p.lesson_slug, p.completed])
   );
 
-  // Progress summary
   const completedCount = progress.filter((p) => p.completed).length;
   const totalLessons = module.lessons.length;
 
@@ -37,7 +37,6 @@ export default async function ModulePage({ params }: ModulePageProps) {
     <main>
       <PageHeader title={module.title} description={module.description} />
 
-      {/* Progress summary */}
       <div className="mb-4 text-sm text-gray-600">
         Progress: {completedCount} / {totalLessons} lessons completed
       </div>
@@ -46,35 +45,45 @@ export default async function ModulePage({ params }: ModulePageProps) {
         {module.lessons.map((lesson, index) => {
           const isCompleted = completedMap.get(lesson.slug);
 
-          return (
+          const canAccessLesson =
+            lesson.access === "free" ||
+            courseAccess?.access_type === "full" ||
+            courseAccess?.access_type === "volna";
+
+          const card = (
+            <div className="transition hover:-translate-y-0.5">
+              <DashboardCard title={`Lesson ${index + 1}: ${lesson.title}`}>
+                <div className="flex items-center justify-between gap-4">
+                  <span>{lesson.description}</span>
+
+                  <span className="text-sm">
+                    {isCompleted ? (
+                      <span className="font-medium text-green-600">
+                        ✓ Completed
+                      </span>
+                    ) : canAccessLesson ? (
+                      <span className="text-gray-400">Not started</span>
+                    ) : (
+                      <span className="text-gray-400">🔒 Locked</span>
+                    )}
+                  </span>
+                </div>
+              </DashboardCard>
+            </div>
+          );
+
+          return canAccessLesson ? (
             <Link
               key={lesson.slug}
               href={getLessonPath(course.slug, module.slug, lesson.slug)}
               className="block"
             >
-              <div className="transition hover:-translate-y-0.5">
-                <DashboardCard
-                  title={`Lesson ${index + 1}: ${lesson.title}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{lesson.description}</span>
-
-                    {/* Completion status */}
-                    <span className="text-sm">
-                      {isCompleted ? (
-                        <span className="font-medium text-green-600">
-                          ✓ Completed
-                        </span>
-                      ) : (
-                        <span className="text-gray-400">
-                          Not started
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                </DashboardCard>
-              </div>
+              {card}
             </Link>
+          ) : (
+            <div key={lesson.slug} className="cursor-not-allowed opacity-70">
+              {card}
+            </div>
           );
         })}
       </section>
