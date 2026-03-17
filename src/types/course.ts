@@ -1,7 +1,10 @@
+export type LessonAccess = "free" | "paid";
+
 export type Lesson = {
   slug: string;
   title: string;
   description: string;
+  access: LessonAccess;
 };
 
 export type Module = {

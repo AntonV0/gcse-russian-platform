@@ -1,6 +1,12 @@
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
-import { getCourseBySlug, getLessonBySlug, getModuleBySlug } from "@/lib/course-helpers";
+import {
+  getCourseBySlug,
+  getLessonBySlug,
+  getModuleBySlug,
+} from "@/lib/course-helpers";
 import { getLessonBlocks } from "@/lib/lesson-content";
+import { canUserAccessLesson } from "@/lib/access";
+import Link from "next/link";
 
 type LessonPageProps = {
   params: Promise<{
@@ -19,6 +25,29 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   if (!course || !module || !lesson) {
     return <main>Lesson not found.</main>;
+  }
+
+  const canAccess = await canUserAccessLesson(
+    courseSlug,
+    moduleSlug,
+    lessonSlug
+  );
+
+  if (!canAccess) {
+    return (
+      <main className="max-w-xl">
+        <h1 className="mb-4 text-2xl font-bold">Locked lesson</h1>
+        <p className="mb-4 text-gray-600">
+          This lesson is part of the full course.
+        </p>
+        <Link
+          href="/"
+          className="inline-block rounded-lg bg-black px-4 py-2 text-white"
+        >
+          View course options
+        </Link>
+      </main>
+    );
   }
 
   const blocks = getLessonBlocks(courseSlug, moduleSlug, lessonSlug);
