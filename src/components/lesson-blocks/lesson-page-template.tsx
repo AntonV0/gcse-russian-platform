@@ -36,7 +36,12 @@ export default async function LessonPageTemplate({
     moduleSlug,
     lessonSlug
   );
-  const progress = await getLessonProgress(courseSlug, moduleSlug, lessonSlug);
+  const progress = await getLessonProgress(
+  courseSlug,
+  variantSlug,
+  moduleSlug,
+  lessonSlug
+);
 
   if (!course || !module || !lesson) {
     return <main>Lesson not found.</main>;

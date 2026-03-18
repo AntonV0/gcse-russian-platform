@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 
 export async function getLessonProgress(
   courseSlug: string,
+  variantSlug: string,
   moduleSlug: string,
   lessonSlug: string
 ) {
@@ -17,6 +18,7 @@ export async function getLessonProgress(
     .select("*")
     .eq("user_id", user.id)
     .eq("course_slug", courseSlug)
+    .eq("variant_slug", variantSlug)
     .eq("module_slug", moduleSlug)
     .eq("lesson_slug", lessonSlug)
     .single();
@@ -26,7 +28,10 @@ export async function getLessonProgress(
   return data;
 }
 
-export async function getCourseProgressSummary(courseSlug: string) {
+export async function getCourseProgressSummary(
+  courseSlug: string,
+  variantSlug: string = "foundation"
+) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -42,6 +47,7 @@ export async function getCourseProgressSummary(courseSlug: string) {
     .select("id")
     .eq("user_id", user.id)
     .eq("course_slug", courseSlug)
+    .eq("variant_slug", variantSlug)
     .eq("completed", true);
 
   if (error || !data) {

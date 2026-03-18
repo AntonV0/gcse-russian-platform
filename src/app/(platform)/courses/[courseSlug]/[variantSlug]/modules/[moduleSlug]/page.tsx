@@ -24,7 +24,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
     return <main>Module not found.</main>;
   }
 
-  const progress = await getModuleProgress(courseSlug, moduleSlug);
+  const progress = await getModuleProgress(courseSlug, variantSlug, moduleSlug);
 
   const completedMap = new Map(
     progress.map((p) => [p.lesson_slug, p.completed])
