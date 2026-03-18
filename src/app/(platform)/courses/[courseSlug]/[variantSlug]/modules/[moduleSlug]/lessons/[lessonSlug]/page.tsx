@@ -11,17 +11,18 @@ import Link from "next/link";
 type LessonPageProps = {
   params: Promise<{
     courseSlug: string;
+    variantSlug: string;
     moduleSlug: string;
     lessonSlug: string;
   }>;
 };
 
 export default async function LessonPage({ params }: LessonPageProps) {
-  const { courseSlug, moduleSlug, lessonSlug } = await params;
+  const { courseSlug, variantSlug, moduleSlug, lessonSlug } = await params;
 
   const course = getCourseBySlug(courseSlug);
-  const module = getModuleBySlug(courseSlug, moduleSlug);
-  const lesson = getLessonBySlug(courseSlug, moduleSlug, lessonSlug);
+  const module = getModuleBySlug(courseSlug, variantSlug, moduleSlug);
+  const lesson = getLessonBySlug(courseSlug, variantSlug, moduleSlug, lessonSlug);
 
   if (!course || !module || !lesson) {
     return <main>Lesson not found.</main>;
@@ -29,6 +30,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   const canAccess = await canUserAccessLesson(
     courseSlug,
+    variantSlug,
     moduleSlug,
     lessonSlug
   );
@@ -50,7 +52,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     );
   }
 
-  const blocks = getLessonBlocks(courseSlug, moduleSlug, lessonSlug);
+  const blocks = getLessonBlocks(courseSlug, variantSlug, moduleSlug, lessonSlug);
 
   if (!blocks) {
     return <main>Lesson content not found.</main>;
@@ -59,6 +61,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
   return (
     <LessonPageTemplate
       courseSlug={courseSlug}
+      variantSlug={variantSlug}
       moduleSlug={moduleSlug}
       lessonSlug={lessonSlug}
       blocks={blocks}

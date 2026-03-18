@@ -6,6 +6,7 @@ import { getLessonPath } from "@/lib/routes";
 
 export async function markLessonComplete(formData: FormData): Promise<void> {
   const courseSlug = String(formData.get("courseSlug") || "");
+  const variantSlug = String(formData.get("variantSlug") || "foundation");
   const moduleSlug = String(formData.get("moduleSlug") || "");
   const lessonSlug = String(formData.get("lessonSlug") || "");
 
@@ -38,11 +39,12 @@ export async function markLessonComplete(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/dashboard");
-  revalidatePath(getLessonPath(courseSlug, moduleSlug, lessonSlug));
+  revalidatePath(getLessonPath(courseSlug, variantSlug, moduleSlug, lessonSlug));
 }
 
 export async function markLessonIncomplete(formData: FormData): Promise<void> {
   const courseSlug = String(formData.get("courseSlug") || "");
+  const variantSlug = String(formData.get("variantSlug") || "foundation");
   const moduleSlug = String(formData.get("moduleSlug") || "");
   const lessonSlug = String(formData.get("lessonSlug") || "");
 
@@ -75,5 +77,5 @@ export async function markLessonIncomplete(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/dashboard");
-  revalidatePath(getLessonPath(courseSlug, moduleSlug, lessonSlug));
+  revalidatePath(getLessonPath(courseSlug, variantSlug, moduleSlug, lessonSlug));
 }

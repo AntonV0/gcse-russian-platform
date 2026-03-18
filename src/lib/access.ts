@@ -5,10 +5,16 @@ export type LessonAccessState = "accessible" | "locked";
 
 export async function getLessonAccessState(
   courseSlug: string,
+  variantSlug: string,
   moduleSlug: string,
   lessonSlug: string
 ): Promise<LessonAccessState> {
-  const lesson = getLessonBySlug(courseSlug, moduleSlug, lessonSlug);
+  const lesson = getLessonBySlug(
+    courseSlug,
+    variantSlug,
+    moduleSlug,
+    lessonSlug
+  );
 
   if (!lesson) {
     return "locked";
@@ -18,17 +24,17 @@ export async function getLessonAccessState(
     return "accessible";
   }
 
-  const access = await getCurrentCourseAccess(courseSlug);
+  const access = await getCurrentCourseAccess(courseSlug, variantSlug);
 
   if (!access) {
     return "locked";
   }
 
-  if (access.access_type === "full") {
+  if (access.access_mode === "full") {
     return "accessible";
   }
 
-  if (access.access_type === "volna") {
+  if (access.access_mode === "volna") {
     return "accessible";
   }
 
@@ -37,11 +43,13 @@ export async function getLessonAccessState(
 
 export async function canUserAccessLesson(
   courseSlug: string,
+  variantSlug: string,
   moduleSlug: string,
   lessonSlug: string
 ): Promise<boolean> {
   const accessState = await getLessonAccessState(
     courseSlug,
+    variantSlug,
     moduleSlug,
     lessonSlug
   );

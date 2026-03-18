@@ -2,6 +2,7 @@ import { markLessonComplete, markLessonIncomplete } from "@/app/actions/progress
 
 type LessonCompletionFormProps = {
   courseSlug: string;
+  variantSlug: string;
   moduleSlug: string;
   lessonSlug: string;
   completed: boolean;
@@ -9,6 +10,7 @@ type LessonCompletionFormProps = {
 
 export default function LessonCompletionForm({
   courseSlug,
+  variantSlug,
   moduleSlug,
   lessonSlug,
   completed,
@@ -19,13 +21,16 @@ export default function LessonCompletionForm({
         <div>
           <h2 className="font-semibold">Lesson progress</h2>
           <p className="text-sm text-gray-600">
-            {completed ? "This lesson is marked as complete." : "Mark this lesson as complete when finished."}
+            {completed
+              ? "This lesson is marked as complete."
+              : "Mark this lesson as complete when finished."}
           </p>
         </div>
 
         {completed ? (
           <form action={markLessonIncomplete}>
             <input type="hidden" name="courseSlug" value={courseSlug} />
+            <input type="hidden" name="variantSlug" value={variantSlug} />
             <input type="hidden" name="moduleSlug" value={moduleSlug} />
             <input type="hidden" name="lessonSlug" value={lessonSlug} />
             <button
@@ -38,6 +43,7 @@ export default function LessonCompletionForm({
         ) : (
           <form action={markLessonComplete}>
             <input type="hidden" name="courseSlug" value={courseSlug} />
+            <input type="hidden" name="variantSlug" value={variantSlug} />
             <input type="hidden" name="moduleSlug" value={moduleSlug} />
             <input type="hidden" name="lessonSlug" value={lessonSlug} />
             <button

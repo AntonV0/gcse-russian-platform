@@ -2,16 +2,25 @@ export function getCoursePath(courseSlug: string) {
   return `/courses/${courseSlug}`;
 }
 
-export function getModulePath(courseSlug: string, moduleSlug: string) {
-  return `/courses/${courseSlug}/modules/${moduleSlug}`;
+export function getVariantPath(courseSlug: string, variantSlug: string) {
+  return `/courses/${courseSlug}/${variantSlug}`;
+}
+
+export function getModulePath(
+  courseSlug: string,
+  variantSlug: string,
+  moduleSlug: string
+) {
+  return `/courses/${courseSlug}/${variantSlug}/modules/${moduleSlug}`;
 }
 
 export function getLessonPath(
   courseSlug: string,
+  variantSlug: string,
   moduleSlug: string,
   lessonSlug: string
 ) {
-  return `/courses/${courseSlug}/modules/${moduleSlug}/lessons/${lessonSlug}`;
+  return `/courses/${courseSlug}/${variantSlug}/modules/${moduleSlug}/lessons/${lessonSlug}`;
 }
 
 export function getDashboardPath() {

@@ -36,14 +36,15 @@ export async function signUp(formData: FormData): Promise<void> {
   const { error: accessError } = await supabase
     .from("user_course_access")
     .upsert(
-      {
-        user_id: data.user.id,
-        course_slug: "gcse-russian",
-        access_type: "trial",
-      },
-      {
-        onConflict: "user_id,course_slug",
-      }
+        {
+          user_id: data.user.id,
+          course_slug: "gcse-russian",
+          course_variant: "foundation",
+          access_mode: "trial",
+        },
+        {
+          onConflict: "user_id,course_slug,course_variant",
+        }
     );
 
   if (accessError) {
@@ -76,3 +77,4 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut();
   redirect("/");
 }
+
