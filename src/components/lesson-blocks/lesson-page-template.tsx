@@ -14,6 +14,7 @@ import { getLessonPath, getModulePath } from "@/lib/routes";
 
 type LessonPageTemplateProps = {
   courseSlug: string;
+  variantSlug: string;
   moduleSlug: string;
   lessonSlug: string;
   blocks: LessonBlock[];
@@ -21,15 +22,17 @@ type LessonPageTemplateProps = {
 
 export default async function LessonPageTemplate({
   courseSlug,
+  variantSlug,
   moduleSlug,
   lessonSlug,
   blocks,
 }: LessonPageTemplateProps) {
   const course = getCourseBySlug(courseSlug);
-  const module = getModuleBySlug(courseSlug, moduleSlug);
-  const lesson = getLessonBySlug(courseSlug, moduleSlug, lessonSlug);
+  const module = getModuleBySlug(courseSlug, variantSlug, moduleSlug);
+  const lesson = getLessonBySlug(courseSlug, variantSlug, moduleSlug, lessonSlug);
   const { previousLesson, nextLesson } = getAdjacentLessons(
     courseSlug,
+    variantSlug,
     moduleSlug,
     lessonSlug
   );
@@ -39,7 +42,7 @@ export default async function LessonPageTemplate({
     return <main>Lesson not found.</main>;
   }
 
-  const moduleHref = getModulePath(course.slug, moduleSlug);
+  const moduleHref = getModulePath(course.slug, variantSlug, moduleSlug);
 
   return (
     <main>
@@ -55,6 +58,7 @@ export default async function LessonPageTemplate({
 
       <LessonCompletionForm
         courseSlug={courseSlug}
+        variantSlug={variantSlug}
         moduleSlug={moduleSlug}
         lessonSlug={lessonSlug}
         completed={!!progress?.completed}
@@ -65,7 +69,12 @@ export default async function LessonPageTemplate({
         previousLesson={
           previousLesson
             ? {
-                href: getLessonPath(course.slug, moduleSlug, previousLesson.slug),
+                href: getLessonPath(
+                  course.slug,
+                  variantSlug,
+                  moduleSlug,
+                  previousLesson.slug
+                ),
                 label: previousLesson.title,
               }
             : undefined
@@ -73,7 +82,12 @@ export default async function LessonPageTemplate({
         nextLesson={
           nextLesson
             ? {
-                href: getLessonPath(course.slug, moduleSlug, nextLesson.slug),
+                href: getLessonPath(
+                  course.slug,
+                  variantSlug,
+                  moduleSlug,
+                  nextLesson.slug
+                ),
                 label: nextLesson.title,
               }
             : undefined

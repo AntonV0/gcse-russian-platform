@@ -30,7 +30,10 @@ export async function getCurrentProfile() {
   return profile;
 }
 
-export async function getCurrentCourseAccess(courseSlug: string) {
+export async function getCurrentCourseAccess(
+  courseSlug: string,
+  variant: string = "foundation"
+) {
   const supabase = await createClient();
 
   const {
@@ -44,6 +47,7 @@ export async function getCurrentCourseAccess(courseSlug: string) {
     .select("*")
     .eq("user_id", user.id)
     .eq("course_slug", courseSlug)
+    .eq("course_variant", variant)
     .single();
 
   if (error) return null;

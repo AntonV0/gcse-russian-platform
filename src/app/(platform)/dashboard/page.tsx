@@ -28,7 +28,10 @@ export default async function DashboardPage() {
         <DashboardCard title="Current course">GCSE Russian</DashboardCard>
 
         <DashboardCard title="Access type">
-          {courseAccess?.access_type ?? "No access found"}
+          {courseAccess
+            ? courseAccess.access_mode.charAt(0).toUpperCase() +
+              courseAccess.access_mode.slice(1)
+            : "No access found"}
         </DashboardCard>
 
         <DashboardCard title="Account">

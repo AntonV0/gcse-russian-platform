@@ -14,9 +14,16 @@ export type Module = {
   lessons: Lesson[];
 };
 
-export type Course = {
+export type CourseVariant = {
   slug: string;
   title: string;
   description: string;
   modules: Module[];
+};
+
+export type Course = {
+  slug: string;
+  title: string;
+  description: string;
+  variants: CourseVariant[];
 };

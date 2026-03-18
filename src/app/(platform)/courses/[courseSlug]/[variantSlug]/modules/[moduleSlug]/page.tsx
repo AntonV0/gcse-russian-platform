@@ -9,15 +9,16 @@ import { getLessonAccessState } from "@/lib/access";
 type ModulePageProps = {
   params: Promise<{
     courseSlug: string;
+    variantSlug: string;
     moduleSlug: string;
   }>;
 };
 
 export default async function ModulePage({ params }: ModulePageProps) {
-  const { courseSlug, moduleSlug } = await params;
+  const { courseSlug, variantSlug, moduleSlug } = await params;
 
   const course = getCourseBySlug(courseSlug);
-  const module = getModuleBySlug(courseSlug, moduleSlug);
+  const module = getModuleBySlug(courseSlug, variantSlug, moduleSlug);
 
   if (!course || !module) {
     return <main>Module not found.</main>;
@@ -36,6 +37,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
     module.lessons.map(async (lesson) => {
       const accessState = await getLessonAccessState(
         courseSlug,
+        variantSlug,
         moduleSlug,
         lesson.slug
       );
@@ -85,7 +87,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
           return canAccessLesson ? (
             <Link
               key={lesson.slug}
-              href={getLessonPath(course.slug, module.slug, lesson.slug)}
+              href={getLessonPath(course.slug, variantSlug, module.slug, lesson.slug)}
               className="block"
             >
               {card}
