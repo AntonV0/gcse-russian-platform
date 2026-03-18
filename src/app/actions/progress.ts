@@ -30,7 +30,7 @@ export async function markLessonComplete(formData: FormData): Promise<void> {
       completed_at: new Date().toISOString(),
     },
     {
-      onConflict: "user_id,course_slug,module_slug,lesson_slug",
+      onConflict: "user_id,course_slug,variant_slug,module_slug,lesson_slug",
     }
   );
 
@@ -68,7 +68,7 @@ export async function markLessonIncomplete(formData: FormData): Promise<void> {
       completed_at: null,
     },
     {
-      onConflict: "user_id,course_slug,module_slug,lesson_slug",
+      onConflict: "user_id,course_slug,variant_slug,module_slug,lesson_slug"
     }
   );
 

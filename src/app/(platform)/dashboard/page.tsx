@@ -10,8 +10,8 @@ import { getCourseProgressSummary } from "@/lib/progress";
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
-  const courseAccess = await getCurrentCourseAccess("gcse-russian");
-  const progressSummary = await getCourseProgressSummary("gcse-russian");
+  const courseAccess = await getCurrentCourseAccess("gcse-russian", "foundation");
+const progressSummary = await getCourseProgressSummary("gcse-russian", "foundation");
 
   return (
     <main>
