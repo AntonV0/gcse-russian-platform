@@ -158,3 +158,19 @@ export async function getVariantsByCourseDb(courseSlug: string) {
 
   return data ?? [];
 }
+
+export async function getCoursesDb() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("courses")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching courses:", error);
+    return [];
+  }
+
+  return data ?? [];
+}
