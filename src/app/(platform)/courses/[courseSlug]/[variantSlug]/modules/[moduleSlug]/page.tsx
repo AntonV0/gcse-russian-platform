@@ -1,7 +1,11 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { getCourseBySlug, getModuleBySlug } from "@/lib/course-helpers";
+import {
+  getCourseBySlugDb,
+  getModuleBySlugDb,
+  getLessonsByModuleDb,
+} from "@/lib/course-helpers-db";
 import { getLessonPath } from "@/lib/routes";
 import { getModuleProgress } from "@/lib/progress-module";
 import { getLessonAccessState } from "@/lib/access";
@@ -17,8 +21,9 @@ type ModulePageProps = {
 export default async function ModulePage({ params }: ModulePageProps) {
   const { courseSlug, variantSlug, moduleSlug } = await params;
 
-  const course = getCourseBySlug(courseSlug);
-  const module = getModuleBySlug(courseSlug, variantSlug, moduleSlug);
+  const course = await getCourseBySlugDb(courseSlug);
+  const module = await getModuleBySlugDb(courseSlug, variantSlug, moduleSlug);
+  const lessons = await getLessonsByModuleDb(courseSlug, variantSlug, moduleSlug);
 
   if (!course || !module) {
     return <main>Module not found.</main>;
@@ -31,10 +36,10 @@ export default async function ModulePage({ params }: ModulePageProps) {
   );
 
   const completedCount = progress.filter((p) => p.completed).length;
-  const totalLessons = module.lessons.length;
+  const totalLessons = lessons.length;
 
   const lessonAccessEntries = await Promise.all(
-    module.lessons.map(async (lesson) => {
+    lessons.map(async (lesson) => {
       const accessState = await getLessonAccessState(
         courseSlug,
         variantSlug,
@@ -57,7 +62,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
       </div>
 
       <section className="grid gap-4 md:grid-cols-2">
-        {module.lessons.map((lesson, index) => {
+        {lessons.map((lesson, index) => {
           const isCompleted = completedMap.get(lesson.slug);
           const accessState = lessonAccessMap.get(lesson.slug);
           const canAccessLesson = accessState === "accessible";
@@ -66,7 +71,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
             <div className="transition hover:-translate-y-0.5">
               <DashboardCard title={`Lesson ${index + 1}: ${lesson.title}`}>
                 <div className="flex items-center justify-between gap-4">
-                  <span>{lesson.description}</span>
+                  <span>{lesson.summary ?? ""}</span>
 
                   <span className="text-sm">
                     {isCompleted ? (
