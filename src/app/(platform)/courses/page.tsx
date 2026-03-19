@@ -1,11 +1,11 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { getCourses } from "@/lib/course-helpers";
+import { getCoursesDb } from "@/lib/course-helpers-db";
 import { getCoursePath } from "@/lib/routes";
 
-export default function CoursesPage() {
-  const courses = getCourses();
+export default async function CoursesPage() {
+  const courses = await getCoursesDb();
 
   return (
     <main>
