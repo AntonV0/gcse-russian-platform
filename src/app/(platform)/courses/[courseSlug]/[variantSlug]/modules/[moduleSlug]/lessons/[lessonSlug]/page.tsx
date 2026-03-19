@@ -1,9 +1,9 @@
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
 import {
-  getCourseBySlug,
-  getLessonBySlug,
-  getModuleBySlug,
-} from "@/lib/course-helpers";
+  getCourseBySlugDb,
+  getLessonBySlugDb,
+  getModuleBySlugDb,
+} from "@/lib/course-helpers-db";
 import { getLessonBlocks } from "@/lib/lesson-content";
 import { canUserAccessLesson } from "@/lib/access";
 import Link from "next/link";
@@ -20,9 +20,27 @@ type LessonPageProps = {
 export default async function LessonPage({ params }: LessonPageProps) {
   const { courseSlug, variantSlug, moduleSlug, lessonSlug } = await params;
 
-  const course = getCourseBySlug(courseSlug);
-  const module = getModuleBySlug(courseSlug, variantSlug, moduleSlug);
-  const lesson = getLessonBySlug(courseSlug, variantSlug, moduleSlug, lessonSlug);
+  const course = await getCourseBySlugDb(courseSlug);
+  const module = await getModuleBySlugDb(courseSlug, variantSlug, moduleSlug);
+  const lesson = await getLessonBySlugDb(
+    courseSlug,
+    variantSlug,
+    moduleSlug,
+    lessonSlug
+  );
+
+  console.log("lesson page params", {
+    courseSlug,
+    variantSlug,
+    moduleSlug,
+    lessonSlug,
+  });
+
+  console.log("lesson page db results", {
+    course,
+    module,
+    lesson,
+  });
 
   if (!course || !module || !lesson) {
     return <main>Lesson not found.</main>;
