@@ -1,7 +1,11 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { getCourseBySlug, getVariantBySlug } from "@/lib/course-helpers";
+import {
+  getCourseBySlugDb,
+  getVariantBySlugDb,
+  getModulesByVariantDb,
+} from "@/lib/course-helpers-db";
 import { getModulePath } from "@/lib/routes";
 
 type VariantPageProps = {
@@ -14,8 +18,9 @@ type VariantPageProps = {
 export default async function VariantPage({ params }: VariantPageProps) {
   const { courseSlug, variantSlug } = await params;
 
-  const course = getCourseBySlug(courseSlug);
-  const variant = getVariantBySlug(courseSlug, variantSlug);
+  const course = await getCourseBySlugDb(courseSlug);
+  const variant = await getVariantBySlugDb(courseSlug, variantSlug);
+  const modules = await getModulesByVariantDb(courseSlug, variantSlug);
 
   if (!course || !variant) {
     return <main>Variant not found.</main>;
@@ -26,7 +31,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
       <PageHeader title={variant.title} description={variant.description} />
 
       <section className="grid gap-4 md:grid-cols-2">
-        {variant.modules.map((module) => (
+        {modules.map((module) => (
           <Link
             key={module.slug}
             href={getModulePath(course.slug, variant.slug, module.slug)}
