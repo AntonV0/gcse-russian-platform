@@ -5,7 +5,7 @@ import { getCurrentCourseAccess, getCurrentProfile, getCurrentUser } from "@/lib
 export default async function AccountPage() {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
-  const courseAccess = await getCurrentCourseAccess("gcse-russian");
+  const courseAccess = await getCurrentCourseAccess("gcse-russian", "foundation");
 
   return (
     <main>
@@ -28,7 +28,7 @@ export default async function AccountPage() {
         </DashboardCard>
 
         <DashboardCard title="Access mode">
-          {courseAccess?.access_type ?? "No access found"}
+          {courseAccess?.access_mode ?? "No access found"}
         </DashboardCard>
       </section>
     </main>
