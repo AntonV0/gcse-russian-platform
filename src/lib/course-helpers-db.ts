@@ -138,3 +138,23 @@ export async function getModulesByVariantDb(
 
   return data ?? [];
 }
+
+export async function getVariantsByCourseDb(courseSlug: string) {
+  const supabase = await createClient();
+
+  const course = await getCourseBySlugDb(courseSlug);
+  if (!course) return [];
+
+  const { data, error } = await supabase
+    .from("course_variants")
+    .select("*")
+    .eq("course_id", course.id)
+    .order("position", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching variants by course:", error);
+    return [];
+  }
+
+  return data ?? [];
+}
