@@ -1,11 +1,14 @@
+import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import TeacherSubmissionReviewForm from "@/components/assignments/teacher-submission-review-form";
+import DeleteAssignmentButton from "@/components/assignments/delete-assignment-button";
 import {
   getAssignmentByIdDb,
+  getAssignmentItemsWithDetailsDb,
   getAssignmentSubmissionsForTeacherDb,
 } from "@/lib/assignment-helpers-db";
-import DeleteAssignmentButton from "@/components/assignments/delete-assignment-button";
+import { getLessonPath } from "@/lib/routes";
 
 type TeacherAssignmentReviewPageProps = {
   params: Promise<{
@@ -18,8 +21,9 @@ export default async function TeacherAssignmentReviewPage({
 }: TeacherAssignmentReviewPageProps) {
   const { assignmentId } = await params;
 
-  const [assignment, submissions] = await Promise.all([
+  const [assignment, items, submissions] = await Promise.all([
     getAssignmentByIdDb(assignmentId),
+    getAssignmentItemsWithDetailsDb(assignmentId),
     getAssignmentSubmissionsForTeacherDb(assignmentId),
   ]);
 
@@ -29,11 +33,81 @@ export default async function TeacherAssignmentReviewPage({
 
   return (
     <main>
-      <PageHeader
-        title={`Review: ${assignment.title}`}
-        description={assignment.instructions ?? undefined}
-      />
-      <DeleteAssignmentButton assignmentId={assignment.id} />
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="space-y-3">
+          <Link
+            href="/teacher/assignments"
+            className="inline-block text-sm text-blue-600 hover:underline"
+          >
+            Back to assignments
+          </Link>
+
+          <PageHeader
+            title={`Review: ${assignment.title}`}
+            description={assignment.instructions ?? undefined}
+          />
+        </div>
+
+        <DeleteAssignmentButton assignmentId={assignment.id} />
+      </div>
+
+      <section className="mb-6 rounded-lg border p-4">
+        <h2 className="mb-3 text-lg font-semibold">Assignment items</h2>
+
+        {items.length === 0 ? (
+          <p className="text-sm text-gray-600">No items attached to this assignment.</p>
+        ) : (
+          <ul className="space-y-3 text-sm">
+            {items.map((item) => {
+              if (item.item_type === "lesson" && item.lesson) {
+                return (
+                  <li key={item.id} className="rounded border p-3">
+                    <p className="font-medium">Lesson</p>
+                    <Link
+                      href={getLessonPath(
+                        item.lesson.course_slug,
+                        item.lesson.variant_slug,
+                        item.lesson.module_slug,
+                        item.lesson.slug
+                      )}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {item.lesson.title}
+                    </Link>
+                    <p className="text-gray-600">{item.lesson.module_title}</p>
+                  </li>
+                );
+              }
+
+              if (item.item_type === "custom_task") {
+                return (
+                  <li key={item.id} className="rounded border p-3">
+                    <p className="font-medium">Custom task</p>
+                    <p className="text-gray-700">
+                      {item.custom_prompt ?? "No task text provided."}
+                    </p>
+                  </li>
+                );
+              }
+
+              if (item.item_type === "question_set") {
+                return (
+                  <li key={item.id} className="rounded border p-3">
+                    <p className="font-medium">Question set</p>
+                    <p className="text-gray-700">Question set task</p>
+                  </li>
+                );
+              }
+
+              return (
+                <li key={item.id} className="rounded border p-3">
+                  <p className="font-medium">Assignment item</p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
 
       {submissions.length === 0 ? (
         <div className="rounded-lg border p-6 text-sm text-gray-600">

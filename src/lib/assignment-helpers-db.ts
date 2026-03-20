@@ -134,7 +134,7 @@ export async function getCurrentUserAssignmentSubmissionDb(assignmentId: string)
   return (data as DbAssignmentSubmission | null) ?? null;
 }
 
-async function getLessonMetaByIdDb(lessonId: string) {
+export async function getLessonMetaByIdDb(lessonId: string) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -146,6 +146,7 @@ async function getLessonMetaByIdDb(lessonId: string) {
       title,
       modules!inner (
         slug,
+        title,
         course_variants!inner (
           slug,
           courses!inner (
@@ -170,9 +171,33 @@ async function getLessonMetaByIdDb(lessonId: string) {
     slug: row.slug as string,
     title: row.title as string,
     module_slug: row.modules.slug as string,
+    module_title: row.modules.title as string,
     variant_slug: row.modules.course_variants.slug as string,
     course_slug: row.modules.course_variants.courses.slug as string,
   };
+}
+
+export async function getAssignmentItemsWithDetailsDb(assignmentId: string) {
+  const items = await getAssignmentItemsDb(assignmentId);
+
+  const detailedItems = await Promise.all(
+    items.map(async (item) => {
+      if (item.item_type === "lesson" && item.lesson_id) {
+        const lesson = await getLessonMetaByIdDb(item.lesson_id);
+        return {
+          ...item,
+          lesson,
+        };
+      }
+
+      return {
+        ...item,
+        lesson: null,
+      };
+    })
+  );
+
+  return detailedItems;
 }
 
 export async function getStudentAssignmentsWithDetailsDb(): Promise<
