@@ -187,12 +187,23 @@ export async function getAssignmentItemsWithDetailsDb(assignmentId: string) {
         return {
           ...item,
           lesson,
+          questionSet: null,
+        };
+      }
+
+      if (item.item_type === "question_set" && item.question_set_id) {
+        const questionSet = await getQuestionSetMetaByIdDb(item.question_set_id);
+        return {
+          ...item,
+          lesson: null,
+          questionSet,
         };
       }
 
       return {
         ...item,
         lesson: null,
+        questionSet: null,
       };
     })
   );
@@ -542,4 +553,34 @@ export async function getQuestionSetOptionsDb(): Promise<QuestionSetOption[]> {
   }
 
   return data ?? [];
+}
+
+export async function getQuestionSetMetaByIdDb(questionSetId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("question_sets")
+    .select("id, slug, title, description")
+    .eq("id", questionSetId)
+    .maybeSingle();
+
+  if (error || !data) {
+    console.error("Error fetching question set meta by id:", {
+      questionSetId,
+      error,
+    });
+    return null;
+  }
+
+  return data as {
+    id: string;
+    slug: string | null;
+    title: string;
+    description: string | null;
+  };
+}
+
+export async function getStudentAssignmentByIdDb(assignmentId: string) {
+  const assignments = await getCurrentUserAssignmentsDb();
+  return assignments.find((assignment) => assignment.id === assignmentId) ?? null;
 }
