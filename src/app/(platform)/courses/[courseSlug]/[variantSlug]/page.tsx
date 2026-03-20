@@ -1,11 +1,7 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import {
-  getCourseBySlugDb,
-  getVariantBySlugDb,
-  getModulesByVariantDb,
-} from "@/lib/course-helpers-db";
+import { loadVariantPageData } from "@/lib/course-helpers-db";
 import { getModulePath } from "@/lib/routes";
 
 type VariantPageProps = {
@@ -18,9 +14,10 @@ type VariantPageProps = {
 export default async function VariantPage({ params }: VariantPageProps) {
   const { courseSlug, variantSlug } = await params;
 
-  const course = await getCourseBySlugDb(courseSlug);
-  const variant = await getVariantBySlugDb(courseSlug, variantSlug);
-  const modules = await getModulesByVariantDb(courseSlug, variantSlug);
+  const { course, variant, modules } = await loadVariantPageData(
+    courseSlug,
+    variantSlug
+  );
 
   if (!course || !variant) {
     return <main>Variant not found.</main>;
@@ -28,7 +25,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
 
   return (
     <main>
-      <PageHeader title={variant.title} description={variant.description} />
+      <PageHeader title={variant.title} description={variant.description ?? undefined} />
 
       <section className="grid gap-4 md:grid-cols-2">
         {modules.map((module) => (
@@ -39,7 +36,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
           >
             <div className="transition hover:-translate-y-0.5">
               <DashboardCard title={module.title}>
-                {module.description}
+                {module.description ?? undefined}
               </DashboardCard>
             </div>
           </Link>

@@ -1,10 +1,6 @@
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
-import {
-  getCourseBySlugDb,
-  getLessonBySlugDb,
-  getModuleBySlugDb,
-} from "@/lib/course-helpers-db";
 import { getLessonBlocks } from "@/lib/lesson-content";
+import { loadLessonPageData } from "@/lib/course-helpers-db";
 import { canUserAccessLesson } from "@/lib/access";
 import Link from "next/link";
 
@@ -20,9 +16,7 @@ type LessonPageProps = {
 export default async function LessonPage({ params }: LessonPageProps) {
   const { courseSlug, variantSlug, moduleSlug, lessonSlug } = await params;
 
-  const course = await getCourseBySlugDb(courseSlug);
-  const module = await getModuleBySlugDb(courseSlug, variantSlug, moduleSlug);
-  const lesson = await getLessonBySlugDb(
+  const { course, module, lesson } = await loadLessonPageData(
     courseSlug,
     variantSlug,
     moduleSlug,

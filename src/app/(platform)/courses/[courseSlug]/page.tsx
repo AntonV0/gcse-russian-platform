@@ -1,10 +1,7 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import {
-  getCourseBySlugDb,
-  getVariantsByCourseDb,
-} from "@/lib/course-helpers-db";
+import { loadCoursePageData } from "@/lib/course-helpers-db";
 import { getVariantPath } from "@/lib/routes";
 
 type CoursePageProps = {
@@ -16,8 +13,7 @@ type CoursePageProps = {
 export default async function CoursePage({ params }: CoursePageProps) {
   const { courseSlug } = await params;
 
-  const course = await getCourseBySlugDb(courseSlug);
-  const variants = await getVariantsByCourseDb(courseSlug);
+  const { course, variants } = await loadCoursePageData(courseSlug);
 
   if (!course) {
     return <main>Course not found.</main>;
@@ -25,7 +21,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
   return (
     <main>
-      <PageHeader title={course.title} description={course.description} />
+      <PageHeader title={course.title} description={course.description ?? undefined} />
 
       <section className="grid gap-4 md:grid-cols-2">
         {variants.map((variant) => (
@@ -36,7 +32,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
           >
             <div className="transition hover:-translate-y-0.5">
               <DashboardCard title={variant.title}>
-                {variant.description}
+                {variant.description ?? undefined}
               </DashboardCard>
             </div>
           </Link>
