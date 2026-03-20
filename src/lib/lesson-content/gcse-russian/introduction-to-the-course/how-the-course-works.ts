@@ -13,13 +13,9 @@ export const howTheCourseWorksLessonBlocks: LessonBlock[] = [
       "Work through each lesson in order. Focus on understanding the vocabulary and structure before moving on to practice questions.",
   },
   {
-    type: "vocabulary",
-    title: "Starter vocabulary",
-    items: [
-      { russian: "урок", english: "lesson" },
-      { russian: "слово", english: "word" },
-      { russian: "задание", english: "task" },
-    ],
+  type: "vocabulary-set",
+  title: "Starter vocabulary",
+  vocabularySetSlug: "foundation-intro-starter-vocabulary",
   },
   {
     type: "question-set",

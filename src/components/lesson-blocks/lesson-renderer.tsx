@@ -1,6 +1,7 @@
 import TextBlock from "@/components/lesson-blocks/text-block";
 import NoteBlock from "@/components/lesson-blocks/note-block";
 import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
+import VocabularySetBlock from "@/components/lesson-blocks/vocabulary-set-block";
 import MultipleChoiceBlock from "@/components/lesson-blocks/multiple-choice-block";
 import ShortAnswerBlock from "@/components/lesson-blocks/short-answer-block";
 import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
@@ -33,6 +34,15 @@ export default function LessonRenderer({ blocks }: LessonRendererProps) {
                 key={index}
                 title={block.title}
                 items={block.items}
+              />
+            );
+
+          case "vocabulary-set":
+            return (
+              <VocabularySetBlock
+                key={index}
+                title={block.title}
+                vocabularySetSlug={block.vocabularySetSlug}
               />
             );
 
