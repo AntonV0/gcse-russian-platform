@@ -21,6 +21,7 @@ export default function TeacherCreateAssignmentForm({
   const [title, setTitle] = useState("");
   const [instructions, setInstructions] = useState("");
   const [dueAt, setDueAt] = useState("");
+  const [customTask, setCustomTask] = useState("");
   const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,34 +45,35 @@ export default function TeacherCreateAssignmentForm({
   }
 
   async function handleSubmit() {
-  setError(null);
-  setIsSubmitting(true);
+    setError(null);
+    setIsSubmitting(true);
 
-  const result = await createTeacherAssignmentAction({
-    groupId,
-    title,
-    instructions,
-    dueAt: dueAt ? new Date(dueAt).toISOString() : null,
-    lessonIds: selectedLessonIds,
-  });
+    const result = await createTeacherAssignmentAction({
+      groupId,
+      title,
+      instructions,
+      dueAt: dueAt ? new Date(dueAt).toISOString() : null,
+      lessonIds: selectedLessonIds,
+      customTask,
+    });
 
-  if (result && !result.success) {
-    switch (result.error) {
-      case "missing_title":
-        setError("Please enter an assignment title.");
-        break;
-      case "missing_group":
-        setError("Please choose a group.");
-        break;
-      case "missing_lessons":
-        setError("Please select at least one lesson.");
-        break;
-      default:
-        setError("Something went wrong while creating the assignment.");
+    if (result && !result.success) {
+      switch (result.error) {
+        case "missing_title":
+          setError("Please enter an assignment title.");
+          break;
+        case "missing_group":
+          setError("Please choose a group.");
+          break;
+        case "missing_items":
+          setError("Please select at least one lesson or add a custom task.");
+          break;
+        default:
+          setError("Something went wrong while creating the assignment.");
+      }
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   }
-}
 
   return (
     <div className="space-y-6 rounded-lg border p-6">
@@ -162,6 +164,17 @@ export default function TeacherCreateAssignmentForm({
             ))}
           </div>
         )}
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Custom task</label>
+        <textarea
+          value={customTask}
+          onChange={(e) => setCustomTask(e.target.value)}
+          rows={4}
+          className="w-full rounded border px-3 py-2"
+          placeholder="Optional: add a written task or teacher instruction..."
+        />
       </div>
 
       {error ? (
