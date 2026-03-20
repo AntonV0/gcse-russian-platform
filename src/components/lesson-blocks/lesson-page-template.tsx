@@ -4,11 +4,11 @@ import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
 import LessonCompletionForm from "@/components/lesson-blocks/lesson-completion-form";
 import type { LessonBlock } from "@/types/lesson";
 import {
-  getAdjacentLessons,
-  getCourseBySlug,
-  getLessonBySlug,
-  getModuleBySlug,
-} from "@/lib/course-helpers";
+  getAdjacentLessonsDb,
+  getCourseBySlugDb,
+  getLessonBySlugDb,
+  getModuleBySlugDb,
+} from "@/lib/course-helpers-db";
 import { getLessonProgress } from "@/lib/progress";
 import { getLessonPath, getModulePath } from "@/lib/routes";
 
@@ -27,21 +27,26 @@ export default async function LessonPageTemplate({
   lessonSlug,
   blocks,
 }: LessonPageTemplateProps) {
-  const course = getCourseBySlug(courseSlug);
-  const module = getModuleBySlug(courseSlug, variantSlug, moduleSlug);
-  const lesson = getLessonBySlug(courseSlug, variantSlug, moduleSlug, lessonSlug);
-  const { previousLesson, nextLesson } = getAdjacentLessons(
+  const course = await getCourseBySlugDb(courseSlug);
+  const module = await getModuleBySlugDb(courseSlug, variantSlug, moduleSlug);
+  const lesson = await getLessonBySlugDb(
+    courseSlug,
+    variantSlug,
+    moduleSlug,
+    lessonSlug
+  );
+  const { previousLesson, nextLesson } = await getAdjacentLessonsDb(
     courseSlug,
     variantSlug,
     moduleSlug,
     lessonSlug
   );
   const progress = await getLessonProgress(
-  courseSlug,
-  variantSlug,
-  moduleSlug,
-  lessonSlug
-);
+    courseSlug,
+    variantSlug,
+    moduleSlug,
+    lessonSlug
+  );
 
   if (!course || !module || !lesson) {
     return <main>Lesson not found.</main>;
@@ -56,7 +61,7 @@ export default async function LessonPageTemplate({
         backLabel="Back to module"
         moduleTitle={module.title}
         lessonTitle={lesson.title}
-        lessonDescription={lesson.description}
+        lessonDescription={lesson.summary ?? ""}
       />
 
       <LessonRenderer blocks={blocks} />

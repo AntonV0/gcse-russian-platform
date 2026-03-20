@@ -29,19 +29,6 @@ export default async function LessonPage({ params }: LessonPageProps) {
     lessonSlug
   );
 
-  console.log("lesson page params", {
-    courseSlug,
-    variantSlug,
-    moduleSlug,
-    lessonSlug,
-  });
-
-  console.log("lesson page db results", {
-    course,
-    module,
-    lesson,
-  });
-
   if (!course || !module || !lesson) {
     return <main>Lesson not found.</main>;
   }
