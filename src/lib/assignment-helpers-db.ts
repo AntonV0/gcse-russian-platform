@@ -35,6 +35,25 @@ export type DbAssignmentSubmission = {
   reviewed_at: string | null;
 };
 
+export type StudentAssignmentCard = {
+  assignment: DbAssignment;
+  items: Array<
+    DbAssignmentItem & {
+      lesson:
+        | {
+            id: string;
+            slug: string;
+            title: string;
+            module_slug: string;
+            variant_slug: string;
+            course_slug: string;
+          }
+        | null;
+    }
+  >;
+  submission: DbAssignmentSubmission | null;
+};
+
 export async function getCurrentUserAssignmentsDb() {
   const supabase = await createClient();
 
@@ -113,4 +132,85 @@ export async function getCurrentUserAssignmentSubmissionDb(assignmentId: string)
   }
 
   return (data as DbAssignmentSubmission | null) ?? null;
+}
+
+async function getLessonMetaByIdDb(lessonId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .select(
+      `
+      id,
+      slug,
+      title,
+      modules!inner (
+        slug,
+        course_variants!inner (
+          slug,
+          courses!inner (
+            slug
+          )
+        )
+      )
+    `
+    )
+    .eq("id", lessonId)
+    .maybeSingle();
+
+  if (error || !data) {
+    console.error("Error fetching lesson meta by id:", { lessonId, error });
+    return null;
+  }
+
+  const row = data as any;
+
+  return {
+    id: row.id as string,
+    slug: row.slug as string,
+    title: row.title as string,
+    module_slug: row.modules.slug as string,
+    variant_slug: row.modules.course_variants.slug as string,
+    course_slug: row.modules.course_variants.courses.slug as string,
+  };
+}
+
+export async function getStudentAssignmentsWithDetailsDb(): Promise<
+  StudentAssignmentCard[]
+> {
+  const assignments = await getCurrentUserAssignmentsDb();
+
+  const detailed = await Promise.all(
+    assignments.map(async (assignment) => {
+      const [items, submission] = await Promise.all([
+        getAssignmentItemsDb(assignment.id),
+        getCurrentUserAssignmentSubmissionDb(assignment.id),
+      ]);
+
+      const detailedItems = await Promise.all(
+        items.map(async (item) => {
+          if (item.item_type === "lesson" && item.lesson_id) {
+            const lesson = await getLessonMetaByIdDb(item.lesson_id);
+            return {
+              ...item,
+              lesson,
+            };
+          }
+
+          return {
+            ...item,
+            lesson: null,
+          };
+        })
+      );
+
+      return {
+        assignment,
+        items: detailedItems,
+        submission,
+      };
+    })
+  );
+
+  return detailed;
 }
