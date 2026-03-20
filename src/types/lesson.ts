@@ -37,10 +37,17 @@ export type ShortAnswerLessonBlock = {
   placeholder?: string;
 };
 
+export type QuestionSetLessonBlock = {
+  type: "question-set";
+  title?: string;
+  questionSetSlug: string;
+};
+
 export type LessonBlock =
   | TextLessonBlock
   | NoteLessonBlock
   | VocabularyLessonBlock
+  | QuestionSetLessonBlock
   | MultipleChoiceLessonBlock
   | ShortAnswerLessonBlock;
 
