@@ -285,3 +285,74 @@ export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string)
 
   return detailed as TeacherSubmissionReviewCard[];
 }
+
+export type TeacherAssignmentListItem = {
+  assignment: DbAssignment;
+  group: {
+    id: string;
+    name: string;
+  } | null;
+  submissionCount: number;
+};
+
+export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListItem[]> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) return [];
+
+  const { data: memberships, error: membershipError } = await supabase
+    .from("teaching_group_members")
+    .select("group_id, member_role")
+    .eq("user_id", user.id);
+
+  if (membershipError || !memberships) {
+    console.error("Error fetching teacher memberships:", membershipError);
+    return [];
+  }
+
+  const teacherGroupIds = memberships
+    .filter((m) => m.member_role === "teacher" || m.member_role === "assistant")
+    .map((m) => m.group_id);
+
+  if (teacherGroupIds.length === 0) return [];
+
+  const { data: assignments, error: assignmentError } = await supabase
+    .from("assignments")
+    .select("*")
+    .in("group_id", teacherGroupIds)
+    .order("due_at", { ascending: true });
+
+  if (assignmentError || !assignments) {
+    console.error("Error fetching teacher assignments:", assignmentError);
+    return [];
+  }
+
+  const results = await Promise.all(
+    assignments.map(async (assignment) => {
+      const [{ data: group }, { count }] = await Promise.all([
+        supabase
+          .from("teaching_groups")
+          .select("id, name")
+          .eq("id", assignment.group_id)
+          .maybeSingle(),
+        supabase
+          .from("assignment_submissions")
+          .select("*", { count: "exact", head: true })
+          .eq("assignment_id", assignment.id),
+      ]);
+
+      return {
+        assignment: assignment as DbAssignment,
+        group: group ?? null,
+        submissionCount: count ?? 0,
+      };
+    })
+  );
+
+  return results;
+}
