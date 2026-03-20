@@ -1,9 +1,12 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 import { createTeacherAssignmentAction } from "@/app/actions/teacher-create-assignment-actions";
-import type { LessonOption, TeacherGroupOption } from "@/lib/assignment-helpers-db";
+import type {
+  LessonOption,
+  TeacherGroupOption,
+} from "@/lib/assignment-helpers-db";
 
 type TeacherCreateAssignmentFormProps = {
   groups: TeacherGroupOption[];
@@ -14,14 +17,13 @@ export default function TeacherCreateAssignmentForm({
   groups,
   lessonsByGroup,
 }: TeacherCreateAssignmentFormProps) {
-  const router = useRouter();
   const [groupId, setGroupId] = useState(groups[0]?.id ?? "");
   const [title, setTitle] = useState("");
   const [instructions, setInstructions] = useState("");
   const [dueAt, setDueAt] = useState("");
   const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const availableLessons = useMemo(
     () => lessonsByGroup[groupId] ?? [],
@@ -41,42 +43,48 @@ export default function TeacherCreateAssignmentForm({
     setSelectedLessonIds([]);
   }
 
-  function handleSubmit() {
-    setError(null);
+  async function handleSubmit() {
+  setError(null);
+  setIsSubmitting(true);
 
-    startTransition(async () => {
-      const result = await createTeacherAssignmentAction({
-        groupId,
-        title,
-        instructions,
-        dueAt: dueAt ? new Date(dueAt).toISOString() : null,
-        lessonIds: selectedLessonIds,
-      });
+  const result = await createTeacherAssignmentAction({
+    groupId,
+    title,
+    instructions,
+    dueAt: dueAt ? new Date(dueAt).toISOString() : null,
+    lessonIds: selectedLessonIds,
+  });
 
-      if (!result.success) {
-        switch (result.error) {
-          case "missing_title":
-            setError("Please enter an assignment title.");
-            break;
-          case "missing_group":
-            setError("Please choose a group.");
-            break;
-          case "missing_lessons":
-            setError("Please select at least one lesson.");
-            break;
-          default:
-            setError("Something went wrong while creating the assignment.");
-        }
-        return;
-      }
-
-      router.push("/teacher/assignments");
-      router.refresh();
-    });
+  if (result && !result.success) {
+    switch (result.error) {
+      case "missing_title":
+        setError("Please enter an assignment title.");
+        break;
+      case "missing_group":
+        setError("Please choose a group.");
+        break;
+      case "missing_lessons":
+        setError("Please select at least one lesson.");
+        break;
+      default:
+        setError("Something went wrong while creating the assignment.");
+    }
+    setIsSubmitting(false);
   }
+}
 
   return (
     <div className="space-y-6 rounded-lg border p-6">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-lg font-semibold">New assignment</h2>
+        <Link
+          href="/teacher/assignments"
+          className="text-sm text-blue-600 hover:underline"
+        >
+          Back to assignments
+        </Link>
+      </div>
+
       <div className="space-y-2">
         <label className="block text-sm font-medium">Group</label>
         <select
@@ -162,14 +170,23 @@ export default function TeacherCreateAssignmentForm({
         </div>
       ) : null}
 
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={isPending}
-        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-      >
-        {isPending ? "Creating..." : "Create assignment"}
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+        >
+          {isSubmitting ? "Creating..." : "Create assignment"}
+        </button>
+
+        <Link
+          href="/teacher/assignments"
+          className="text-sm text-gray-600 hover:underline"
+        >
+          Cancel
+        </Link>
+      </div>
     </div>
   );
 }

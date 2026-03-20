@@ -17,10 +17,18 @@ export default async function TeacherAssignmentsPage() {
 
   return (
     <main>
-      <PageHeader
-        title="Teacher Assignments"
-        description="Review homework and submissions for your Volna groups."
-      />
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <PageHeader
+          title="Teacher Assignments"
+          description="Review homework and submissions for your Volna groups."
+        />
+        <Link
+          href="/teacher/assignments/new"
+          className="rounded bg-black px-4 py-2 text-white"
+        >
+          New assignment
+        </Link>
+      </div>
 
       {assignments.length === 0 ? (
         <div className="rounded-lg border p-6 text-sm text-gray-600">

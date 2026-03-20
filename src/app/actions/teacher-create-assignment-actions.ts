@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 type CreateTeacherAssignmentInput = {
@@ -74,5 +75,5 @@ export async function createTeacherAssignmentAction({
     return { success: false, error: "assignment_items_create_failed" as const };
   }
 
-  return { success: true, assignmentId: assignment.id };
+  redirect("/teacher/assignments");
 }
