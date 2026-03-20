@@ -18,6 +18,13 @@ export type VocabularyLessonBlock = {
   }[];
 };
 
+export type VocabularySetLessonBlock = {
+  type: "vocabulary-set";
+  title?: string;
+  vocabularySetSlug: string;
+};
+
+
 export type MultipleChoiceLessonBlock = {
   type: "multiple-choice";
   question: string;
@@ -47,6 +54,7 @@ export type LessonBlock =
   | TextLessonBlock
   | NoteLessonBlock
   | VocabularyLessonBlock
+  | VocabularySetLessonBlock
   | QuestionSetLessonBlock
   | MultipleChoiceLessonBlock
   | ShortAnswerLessonBlock;
