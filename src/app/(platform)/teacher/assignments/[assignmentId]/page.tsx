@@ -5,6 +5,7 @@ import {
   getAssignmentByIdDb,
   getAssignmentSubmissionsForTeacherDb,
 } from "@/lib/assignment-helpers-db";
+import DeleteAssignmentButton from "@/components/assignments/delete-assignment-button";
 
 type TeacherAssignmentReviewPageProps = {
   params: Promise<{
@@ -32,6 +33,7 @@ export default async function TeacherAssignmentReviewPage({
         title={`Review: ${assignment.title}`}
         description={assignment.instructions ?? undefined}
       />
+      <DeleteAssignmentButton assignmentId={assignment.id} />
 
       {submissions.length === 0 ? (
         <div className="rounded-lg border p-6 text-sm text-gray-600">
