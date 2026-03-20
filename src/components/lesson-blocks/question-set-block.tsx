@@ -1,6 +1,6 @@
 import { loadQuestionSetBySlugDb } from "@/lib/question-helpers-db";
-import MultipleChoiceBlock from "@/components/lesson-blocks/multiple-choice-block";
-import ShortAnswerBlock from "@/components/lesson-blocks/short-answer-block";
+import TrackedMultipleChoiceBlock from "@/components/lesson-blocks/tracked-multiple-choice-block";
+import TrackedShortAnswerBlock from "@/components/lesson-blocks/tracked-short-answer-block";
 
 type QuestionSetBlockProps = {
   title?: string;
@@ -42,8 +42,9 @@ export default async function QuestionSetBlock({
         switch (question.question_type) {
           case "multiple_choice":
             return (
-              <MultipleChoiceBlock
+              <TrackedMultipleChoiceBlock
                 key={question.id}
+                questionId={question.id}
                 question={question.prompt}
                 options={questionOptions.map((option) => ({
                   id: option.id,
@@ -59,8 +60,9 @@ export default async function QuestionSetBlock({
           case "short_answer":
           case "translation":
             return (
-              <ShortAnswerBlock
+              <TrackedShortAnswerBlock
                 key={question.id}
+                questionId={question.id}
                 question={question.prompt}
                 acceptedAnswers={questionAcceptedAnswers}
                 explanation={question.explanation ?? undefined}
