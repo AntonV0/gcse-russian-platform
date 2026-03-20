@@ -5,17 +5,20 @@ import { useMemo, useState } from "react";
 import { createTeacherAssignmentAction } from "@/app/actions/teacher-create-assignment-actions";
 import type {
   LessonOption,
+  QuestionSetOption,
   TeacherGroupOption,
 } from "@/lib/assignment-helpers-db";
 
 type TeacherCreateAssignmentFormProps = {
   groups: TeacherGroupOption[];
   lessonsByGroup: Record<string, LessonOption[]>;
+  questionSets: QuestionSetOption[];
 };
 
 export default function TeacherCreateAssignmentForm({
   groups,
   lessonsByGroup,
+  questionSets,
 }: TeacherCreateAssignmentFormProps) {
   const [groupId, setGroupId] = useState(groups[0]?.id ?? "");
   const [title, setTitle] = useState("");
@@ -23,6 +26,9 @@ export default function TeacherCreateAssignmentForm({
   const [dueAt, setDueAt] = useState("");
   const [customTask, setCustomTask] = useState("");
   const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
+  const [selectedQuestionSetIds, setSelectedQuestionSetIds] = useState<string[]>(
+    []
+  );
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,6 +42,14 @@ export default function TeacherCreateAssignmentForm({
       prev.includes(lessonId)
         ? prev.filter((id) => id !== lessonId)
         : [...prev, lessonId]
+    );
+  }
+
+  function toggleQuestionSet(questionSetId: string) {
+    setSelectedQuestionSetIds((prev) =>
+      prev.includes(questionSetId)
+        ? prev.filter((id) => id !== questionSetId)
+        : [...prev, questionSetId]
     );
   }
 
@@ -54,6 +68,7 @@ export default function TeacherCreateAssignmentForm({
       instructions,
       dueAt: dueAt ? new Date(dueAt).toISOString() : null,
       lessonIds: selectedLessonIds,
+      questionSetIds: selectedQuestionSetIds,
       customTask,
     });
 
@@ -66,7 +81,9 @@ export default function TeacherCreateAssignmentForm({
           setError("Please choose a group.");
           break;
         case "missing_items":
-          setError("Please select at least one lesson or add a custom task.");
+          setError(
+            "Please select at least one lesson or question set, or add a custom task."
+          );
           break;
         default:
           setError("Something went wrong while creating the assignment.");
@@ -159,6 +176,40 @@ export default function TeacherCreateAssignmentForm({
                   <div className="text-sm text-gray-600">
                     {lesson.module_title}
                   </div>
+                </div>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium">Attach question sets</p>
+
+        {questionSets.length === 0 ? (
+          <div className="rounded border p-4 text-sm text-gray-600">
+            No question sets available yet.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {questionSets.map((questionSet) => (
+              <label
+                key={questionSet.id}
+                className="flex cursor-pointer items-start gap-3 rounded border p-3"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedQuestionSetIds.includes(questionSet.id)}
+                  onChange={() => toggleQuestionSet(questionSet.id)}
+                  className="mt-1"
+                />
+                <div>
+                  <div className="font-medium">{questionSet.title}</div>
+                  {questionSet.description ? (
+                    <div className="text-sm text-gray-600">
+                      {questionSet.description}
+                    </div>
+                  ) : null}
                 </div>
               </label>
             ))}

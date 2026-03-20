@@ -520,3 +520,26 @@ export async function getLessonOptionsForGroupDb(
     };
   });
 }
+
+export type QuestionSetOption = {
+  id: string;
+  slug: string | null;
+  title: string;
+  description: string | null;
+};
+
+export async function getQuestionSetOptionsDb(): Promise<QuestionSetOption[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("question_sets")
+    .select("id, slug, title, description")
+    .order("title", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching question set options:", error);
+    return [];
+  }
+
+  return data ?? [];
+}
