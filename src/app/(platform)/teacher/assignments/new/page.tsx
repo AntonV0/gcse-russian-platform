@@ -2,11 +2,15 @@ import PageHeader from "@/components/layout/page-header";
 import TeacherCreateAssignmentForm from "@/components/assignments/teacher-create-assignment-form";
 import {
   getLessonOptionsForGroupDb,
+  getQuestionSetOptionsDb,
   getTeacherGroupsDb,
 } from "@/lib/assignment-helpers-db";
 
 export default async function NewTeacherAssignmentPage() {
-  const groups = await getTeacherGroupsDb();
+  const [groups, questionSets] = await Promise.all([
+    getTeacherGroupsDb(),
+    getQuestionSetOptionsDb(),
+  ]);
 
   const lessonEntries = await Promise.all(
     groups.map(async (group) => {
@@ -32,6 +36,7 @@ export default async function NewTeacherAssignmentPage() {
         <TeacherCreateAssignmentForm
           groups={groups}
           lessonsByGroup={lessonsByGroup}
+          questionSets={questionSets}
         />
       )}
     </main>

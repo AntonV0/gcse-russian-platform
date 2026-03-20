@@ -9,6 +9,7 @@ type CreateTeacherAssignmentInput = {
   instructions?: string | null;
   dueAt?: string | null;
   lessonIds: string[];
+  questionSetIds?: string[];
   customTask?: string | null;
 };
 
@@ -18,6 +19,7 @@ export async function createTeacherAssignmentAction({
   instructions = null,
   dueAt = null,
   lessonIds,
+  questionSetIds = [],
   customTask = null,
 }: CreateTeacherAssignmentInput) {
   const supabase = await createClient();
@@ -41,7 +43,11 @@ export async function createTeacherAssignmentAction({
 
   const trimmedCustomTask = customTask?.trim() || null;
 
-  if (lessonIds.length === 0 && !trimmedCustomTask) {
+  if (
+    lessonIds.length === 0 &&
+    questionSetIds.length === 0 &&
+    !trimmedCustomTask
+  ) {
     return { success: false, error: "missing_items" as const };
   }
 
@@ -63,27 +69,41 @@ export async function createTeacherAssignmentAction({
     return { success: false, error: "assignment_create_failed" as const };
   }
 
+  const lessonItems = lessonIds.map((lessonId, index) => ({
+    assignment_id: assignment.id,
+    item_type: "lesson",
+    lesson_id: lessonId,
+    question_set_id: null,
+    custom_prompt: null,
+    position: index + 1,
+  }));
+
+  const questionSetItems = questionSetIds.map((questionSetId, index) => ({
+    assignment_id: assignment.id,
+    item_type: "question_set",
+    lesson_id: null,
+    question_set_id: questionSetId,
+    custom_prompt: null,
+    position: lessonItems.length + index + 1,
+  }));
+
+  const customTaskItems = trimmedCustomTask
+    ? [
+        {
+          assignment_id: assignment.id,
+          item_type: "custom_task",
+          lesson_id: null,
+          question_set_id: null,
+          custom_prompt: trimmedCustomTask,
+          position: lessonItems.length + questionSetItems.length + 1,
+        },
+      ]
+    : [];
+
   const assignmentItems = [
-    ...lessonIds.map((lessonId, index) => ({
-      assignment_id: assignment.id,
-      item_type: "lesson",
-      lesson_id: lessonId,
-      question_set_id: null,
-      custom_prompt: null,
-      position: index + 1,
-    })),
-    ...(trimmedCustomTask
-      ? [
-          {
-            assignment_id: assignment.id,
-            item_type: "custom_task",
-            lesson_id: null,
-            question_set_id: null,
-            custom_prompt: trimmedCustomTask,
-            position: lessonIds.length + 1,
-          },
-        ]
-      : []),
+    ...lessonItems,
+    ...questionSetItems,
+    ...customTaskItems,
   ];
 
   const { error: itemsError } = await supabase
