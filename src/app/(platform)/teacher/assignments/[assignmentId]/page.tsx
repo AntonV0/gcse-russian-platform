@@ -22,25 +22,18 @@ export default async function TeacherAssignmentReviewPage({
     getAssignmentSubmissionsForTeacherDb(assignmentId),
   ]);
 
+  if (!assignment) {
+    return <main>Assignment not found.</main>;
+  }
+
   return (
-    <main className="space-y-6">
+    <main>
       <PageHeader
-        title={assignment ? `Review: ${assignment.title}` : "Assignment not found"}
-        description={assignment?.instructions ?? undefined}
+        title={`Review: ${assignment.title}`}
+        description={assignment.instructions ?? undefined}
       />
 
-      <section>
-        <h2 className="mb-2 text-lg font-semibold">Debug</h2>
-        <pre className="overflow-auto rounded border p-4 text-sm">
-          {JSON.stringify({ assignment, submissions }, null, 2)}
-        </pre>
-      </section>
-
-      {!assignment ? (
-        <div className="rounded-lg border p-6 text-sm text-gray-600">
-          Assignment not found.
-        </div>
-      ) : submissions.length === 0 ? (
+      {submissions.length === 0 ? (
         <div className="rounded-lg border p-6 text-sm text-gray-600">
           No submissions yet.
         </div>

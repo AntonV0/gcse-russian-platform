@@ -46,7 +46,9 @@ export default async function AssignmentsPage() {
             <DashboardCard key={assignment.id} title={assignment.title}>
               <div className="space-y-3">
                 {assignment.instructions ? (
-                  <p className="text-sm text-gray-700">{assignment.instructions}</p>
+                  <p className="text-sm text-gray-700">
+                    {assignment.instructions}
+                  </p>
                 ) : null}
 
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600">
@@ -79,11 +81,7 @@ export default async function AssignmentsPage() {
                         }
 
                         if (item.item_type === "question_set") {
-                          return (
-                            <li key={item.id}>
-                              Question set task
-                            </li>
-                          );
+                          return <li key={item.id}>Question set task</li>;
                         }
 
                         if (item.item_type === "custom_task") {
@@ -113,13 +111,6 @@ export default async function AssignmentsPage() {
                     <p>{submission.feedback}</p>
                   </div>
                 ) : null}
-
-                <Link
-                  href="/debug-assignments"
-                  className="inline-block text-sm text-blue-600 hover:underline"
-                >
-                  Open submission view
-                </Link>
               </div>
             </DashboardCard>
           ))}
