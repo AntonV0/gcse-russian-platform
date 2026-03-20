@@ -22,22 +22,8 @@ export const howTheCourseWorksLessonBlocks: LessonBlock[] = [
     ],
   },
   {
-    type: "multiple-choice",
-    question: 'What does "урок" mean?',
-    options: [
-      { id: "a", text: "Word" },
-      { id: "b", text: "Lesson" },
-      { id: "c", text: "Task" },
-    ],
-    correctOptionId: "b",
-    explanation:
-      '"Урок" means "lesson". This is a simple example of how question blocks will work inside lessons.',
-  },
-  {
-    type: "short-answer",
-    question: 'Type the English meaning of "слово".',
-    acceptedAnswers: ["word"],
-    placeholder: "Enter the English meaning",
-    explanation: '"Слово" means "word".',
+    type: "question-set",
+    title: "Starter practice",
+    questionSetSlug: "foundation-intro-how-the-course-works",
   },
 ];

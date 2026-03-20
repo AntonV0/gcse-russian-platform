@@ -3,6 +3,7 @@ import NoteBlock from "@/components/lesson-blocks/note-block";
 import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
 import MultipleChoiceBlock from "@/components/lesson-blocks/multiple-choice-block";
 import ShortAnswerBlock from "@/components/lesson-blocks/short-answer-block";
+import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
 import type { LessonBlock } from "@/types/lesson";
 
 type LessonRendererProps = {
@@ -54,6 +55,15 @@ export default function LessonRenderer({ blocks }: LessonRendererProps) {
                 acceptedAnswers={block.acceptedAnswers}
                 explanation={block.explanation}
                 placeholder={block.placeholder}
+              />
+            );
+
+          case "question-set":
+            return (
+              <QuestionSetBlock
+                key={index}
+                title={block.title}
+                questionSetSlug={block.questionSetSlug}
               />
             );
 
