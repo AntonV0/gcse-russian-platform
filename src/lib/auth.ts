@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentCourseVariantAccessGrantDb } from "@/lib/access-helpers-db";
 
 export async function getCurrentUser() {
   const supabase = await createClient();
@@ -42,6 +43,24 @@ export async function getCurrentCourseAccess(
 
   if (!user) return null;
 
+  // 1. Prefer the new access grant model
+  const grant = await getCurrentCourseVariantAccessGrantDb(courseSlug, variant);
+
+  if (grant) {
+    return {
+      user_id: grant.user_id,
+      course_slug: courseSlug,
+      course_variant: variant,
+      access_mode: grant.access_mode,
+      source: "user_access_grants",
+      product_id: grant.product_id,
+      starts_at: grant.starts_at,
+      ends_at: grant.ends_at,
+      is_active: grant.is_active,
+    };
+  }
+
+  // 2. Fallback to the old table during migration
   const { data: access, error } = await supabase
     .from("user_course_access")
     .select("*")
