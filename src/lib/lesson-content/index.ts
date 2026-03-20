@@ -12,6 +12,9 @@ const lessonContentMap: Record<
     higher: {
       "introduction-to-the-course": introductionToTheCourseLessonContent,
     },
+    volna: {
+      "introduction-to-the-course": introductionToTheCourseLessonContent,
+    },
   },
 };
 
