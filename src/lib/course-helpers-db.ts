@@ -174,3 +174,34 @@ export async function getCoursesDb() {
 
   return data ?? [];
 }
+
+export async function getAdjacentLessonsDb(
+  courseSlug: string,
+  variantSlug: string,
+  moduleSlug: string,
+  lessonSlug: string
+): Promise<{
+  previousLesson: { slug: string; title: string } | null;
+  nextLesson: { slug: string; title: string } | null;
+}> {
+  const lessons = await getLessonsByModuleDb(
+    courseSlug,
+    variantSlug,
+    moduleSlug
+  );
+
+  const currentIndex = lessons.findIndex((lesson) => lesson.slug === lessonSlug);
+
+  if (currentIndex === -1) {
+    return {
+      previousLesson: null,
+      nextLesson: null,
+    };
+  }
+
+  return {
+    previousLesson: currentIndex > 0 ? lessons[currentIndex - 1] : null,
+    nextLesson:
+      currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null,
+  };
+}
