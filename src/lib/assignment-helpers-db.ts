@@ -214,3 +214,74 @@ export async function getStudentAssignmentsWithDetailsDb(): Promise<
 
   return detailed;
 }
+
+export type TeacherSubmissionReviewCard = {
+  submission: DbAssignmentSubmission;
+  student: {
+    id: string;
+    full_name: string | null;
+    display_name: string | null;
+    email: string | null;
+  } | null;
+};
+
+export async function getAssignmentByIdDb(assignmentId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("assignments")
+    .select("*")
+    .eq("id", assignmentId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching assignment by id:", { assignmentId, error });
+    return null;
+  }
+
+  return (data as DbAssignment | null) ?? null;
+}
+
+export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("assignment_submissions")
+    .select("*")
+    .eq("assignment_id", assignmentId)
+    .order("submitted_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching assignment submissions for teacher:", {
+      assignmentId,
+      error,
+    });
+    return [];
+  }
+
+  const submissions = (data ?? []) as DbAssignmentSubmission[];
+
+  const detailed = await Promise.all(
+    submissions.map(async (submission) => {
+      const { data: student, error: studentError } = await supabase
+        .from("profiles")
+        .select("id, full_name, display_name, email")
+        .eq("id", submission.student_user_id)
+        .maybeSingle();
+
+      if (studentError) {
+        console.error("Error fetching student profile for submission:", {
+          submissionId: submission.id,
+          error: studentError,
+        });
+      }
+
+      return {
+        submission,
+        student: student ?? null,
+      };
+    })
+  );
+
+  return detailed as TeacherSubmissionReviewCard[];
+}
