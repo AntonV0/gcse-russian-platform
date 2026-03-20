@@ -1,11 +1,7 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import {
-  getCourseBySlugDb,
-  getModuleBySlugDb,
-  getLessonsByModuleDb,
-} from "@/lib/course-helpers-db";
+import { loadModulePageData } from "@/lib/course-helpers-db";
 import { getLessonPath } from "@/lib/routes";
 import { getModuleProgress } from "@/lib/progress-module";
 import { getLessonAccessState } from "@/lib/access";
@@ -21,9 +17,11 @@ type ModulePageProps = {
 export default async function ModulePage({ params }: ModulePageProps) {
   const { courseSlug, variantSlug, moduleSlug } = await params;
 
-  const course = await getCourseBySlugDb(courseSlug);
-  const module = await getModuleBySlugDb(courseSlug, variantSlug, moduleSlug);
-  const lessons = await getLessonsByModuleDb(courseSlug, variantSlug, moduleSlug);
+  const { course, module, lessons } = await loadModulePageData(
+    courseSlug,
+    variantSlug,
+    moduleSlug
+  );
 
   if (!course || !module) {
     return <main>Module not found.</main>;
@@ -31,10 +29,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   const progress = await getModuleProgress(courseSlug, variantSlug, moduleSlug);
 
-  const completedMap = new Map(
-    progress.map((p) => [p.lesson_slug, p.completed])
-  );
-
+  const completedMap = new Map(progress.map((p) => [p.lesson_slug, p.completed]));
   const completedCount = progress.filter((p) => p.completed).length;
   const totalLessons = lessons.length;
 
@@ -55,7 +50,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   return (
     <main>
-      <PageHeader title={module.title} description={module.description} />
+      <PageHeader title={module.title} description={module.description ?? undefined} />
 
       <div className="mb-4 text-sm text-gray-600">
         Progress: {completedCount} / {totalLessons} lessons completed

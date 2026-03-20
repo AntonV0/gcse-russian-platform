@@ -1,5 +1,5 @@
 import { getCurrentCourseAccess } from "@/lib/auth";
-import { getLessonBySlug } from "@/lib/course-helpers";
+import { getLessonAccessMetaDb } from "@/lib/course-helpers-db";
 
 export type LessonAccessState = "accessible" | "locked";
 
@@ -9,7 +9,7 @@ export async function getLessonAccessState(
   moduleSlug: string,
   lessonSlug: string
 ): Promise<LessonAccessState> {
-  const lesson = getLessonBySlug(
+  const lesson = await getLessonAccessMetaDb(
     courseSlug,
     variantSlug,
     moduleSlug,
@@ -20,7 +20,7 @@ export async function getLessonAccessState(
     return "locked";
   }
 
-  if (lesson.access === "free") {
+  if (lesson.is_trial_visible) {
     return "accessible";
   }
 
@@ -34,7 +34,7 @@ export async function getLessonAccessState(
     return "accessible";
   }
 
-  if (access.access_mode === "volna") {
+  if (access.access_mode === "volna" && lesson.available_in_volna) {
     return "accessible";
   }
 
