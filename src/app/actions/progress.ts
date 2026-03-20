@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getLessonPath } from "@/lib/routes";
+import { getLessonPath, getModulePath } from "@/lib/routes";
 
 export async function markLessonComplete(formData: FormData): Promise<void> {
   const courseSlug = String(formData.get("courseSlug") || "");
@@ -24,6 +24,7 @@ export async function markLessonComplete(formData: FormData): Promise<void> {
     {
       user_id: user.id,
       course_slug: courseSlug,
+      variant_slug: variantSlug,
       module_slug: moduleSlug,
       lesson_slug: lessonSlug,
       completed: true,
@@ -39,6 +40,7 @@ export async function markLessonComplete(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath(getModulePath(courseSlug, variantSlug, moduleSlug));
   revalidatePath(getLessonPath(courseSlug, variantSlug, moduleSlug, lessonSlug));
 }
 
@@ -62,13 +64,14 @@ export async function markLessonIncomplete(formData: FormData): Promise<void> {
     {
       user_id: user.id,
       course_slug: courseSlug,
+      variant_slug: variantSlug,
       module_slug: moduleSlug,
       lesson_slug: lessonSlug,
       completed: false,
       completed_at: null,
     },
     {
-      onConflict: "user_id,course_slug,variant_slug,module_slug,lesson_slug"
+      onConflict: "user_id,course_slug,variant_slug,module_slug,lesson_slug",
     }
   );
 
@@ -77,5 +80,6 @@ export async function markLessonIncomplete(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath(getModulePath(courseSlug, variantSlug, moduleSlug));
   revalidatePath(getLessonPath(courseSlug, variantSlug, moduleSlug, lessonSlug));
 }
