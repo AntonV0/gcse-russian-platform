@@ -1,12 +1,20 @@
 import PageHeader from "@/components/layout/page-header";
 import TeacherCreateAssignmentForm from "@/components/assignments/teacher-create-assignment-form";
+import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
 import {
   getLessonOptionsForGroupDb,
   getQuestionSetOptionsDb,
   getTeacherGroupsDb,
 } from "@/lib/assignment-helpers-db";
+import { isCurrentUserTeacherForAnyGroup } from "@/lib/teacher-auth";
 
 export default async function NewTeacherAssignmentPage() {
+  const isTeacher = await isCurrentUserTeacherForAnyGroup();
+
+  if (!isTeacher) {
+    return <TeacherAccessDenied />;
+  }
+
   const [groups, questionSets] = await Promise.all([
     getTeacherGroupsDb(),
     getQuestionSetOptionsDb(),
