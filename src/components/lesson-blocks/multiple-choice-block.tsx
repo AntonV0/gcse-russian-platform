@@ -19,6 +19,9 @@ type MultipleChoiceBlockProps = {
   isSubmitting?: boolean;
   onSelectOption?: (optionId: string) => void;
   onSubmit?: () => void;
+  feedbackStatusLabel?: string;
+  feedbackCorrectAnswerText?: string | null;
+  feedbackAcceptedAnswerTexts?: string[];
 };
 
 export default function MultipleChoiceBlock({
@@ -31,6 +34,9 @@ export default function MultipleChoiceBlock({
   isSubmitting = false,
   onSelectOption,
   onSubmit,
+  feedbackStatusLabel,
+  feedbackCorrectAnswerText,
+  feedbackAcceptedAnswerTexts = [],
 }: MultipleChoiceBlockProps) {
   const [internalSelectedOptionId, setInternalSelectedOptionId] = useState<
     string | null
@@ -74,7 +80,13 @@ export default function MultipleChoiceBlock({
       prompt={question}
       feedback={
         resolvedHasSubmitted ? (
-          <QuestionFeedback isCorrect={isCorrect} explanation={explanation} />
+          <QuestionFeedback
+            isCorrect={isCorrect}
+            explanation={explanation}
+            statusLabel={feedbackStatusLabel}
+            correctAnswerText={feedbackCorrectAnswerText}
+            acceptedAnswerTexts={feedbackAcceptedAnswerTexts}
+          />
         ) : null
       }
     >

@@ -21,6 +21,9 @@ type TranslationBlockProps = {
   sourceLanguageLabel?: string;
   targetLanguageLabel?: string;
   instruction?: string;
+  feedbackStatusLabel?: string;
+  feedbackCorrectAnswerText?: string | null;
+  feedbackAcceptedAnswerTexts?: string[];
 };
 
 function normalizeAnswer(value: string) {
@@ -68,6 +71,9 @@ export default function TranslationBlock({
   sourceLanguageLabel,
   targetLanguageLabel,
   instruction,
+  feedbackStatusLabel,
+  feedbackCorrectAnswerText,
+  feedbackAcceptedAnswerTexts = [],
 }: TranslationBlockProps) {
   const [internalAnswer, setInternalAnswer] = useState("");
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
@@ -126,6 +132,9 @@ export default function TranslationBlock({
           <QuestionFeedback
             isCorrect={resolvedIsCorrect}
             explanation={explanation}
+            statusLabel={feedbackStatusLabel}
+            correctAnswerText={feedbackCorrectAnswerText}
+            acceptedAnswerTexts={feedbackAcceptedAnswerTexts}
           />
         ) : null
       }

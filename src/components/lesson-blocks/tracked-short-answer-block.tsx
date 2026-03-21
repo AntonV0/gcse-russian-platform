@@ -83,6 +83,9 @@ export default function TrackedShortAnswerBlock({
           answer: value,
           normalizedAnswer: result.normalizedSubmittedText,
           matchedAnswerId: result.matchedAnswer?.id ?? null,
+          correctAnswerText: result.correctAnswerText,
+          acceptedAnswerTexts: result.acceptedAnswerTexts,
+          statusLabel: result.statusLabel,
           questionType,
         },
         isCorrect: result.isCorrect,
@@ -109,6 +112,9 @@ export default function TrackedShortAnswerBlock({
         sourceLanguageLabel={translationUi?.sourceLanguageLabel}
         targetLanguageLabel={translationUi?.targetLanguageLabel}
         instruction={translationUi?.instruction}
+        feedbackStatusLabel={result.statusLabel}
+        feedbackCorrectAnswerText={result.correctAnswerText}
+        feedbackAcceptedAnswerTexts={result.acceptedAnswerTexts}
       />
     );
   }
@@ -125,6 +131,9 @@ export default function TrackedShortAnswerBlock({
       isSubmitting={isPending}
       onValueChange={setValue}
       onSubmit={handleSubmit}
+      feedbackStatusLabel={result.statusLabel}
+      feedbackCorrectAnswerText={result.correctAnswerText}
+      feedbackAcceptedAnswerTexts={result.acceptedAnswerTexts}
     />
   );
 }

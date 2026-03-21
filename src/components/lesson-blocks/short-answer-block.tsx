@@ -15,6 +15,9 @@ type ShortAnswerBlockProps = {
   isSubmitting?: boolean;
   onValueChange?: (value: string) => void;
   onSubmit?: () => void;
+  feedbackStatusLabel?: string;
+  feedbackCorrectAnswerText?: string | null;
+  feedbackAcceptedAnswerTexts?: string[];
 };
 
 function normalizeAnswer(value: string) {
@@ -32,6 +35,9 @@ export default function ShortAnswerBlock({
   isSubmitting = false,
   onValueChange,
   onSubmit,
+  feedbackStatusLabel,
+  feedbackCorrectAnswerText,
+  feedbackAcceptedAnswerTexts = [],
 }: ShortAnswerBlockProps) {
   const [internalAnswer, setInternalAnswer] = useState("");
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
@@ -80,6 +86,9 @@ export default function ShortAnswerBlock({
           <QuestionFeedback
             isCorrect={resolvedIsCorrect}
             explanation={explanation}
+            statusLabel={feedbackStatusLabel}
+            correctAnswerText={feedbackCorrectAnswerText}
+            acceptedAnswerTexts={feedbackAcceptedAnswerTexts}
           />
         ) : null
       }

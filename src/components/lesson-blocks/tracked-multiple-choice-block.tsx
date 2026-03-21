@@ -69,7 +69,15 @@ export default function TrackedMultipleChoiceBlock({
         questionId,
         lessonId,
         submittedText: null,
-        submittedPayload: { selectedOptionId },
+        submittedPayload: {
+          selectedOptionId,
+          selectedOptionText: result.selectedOptionText,
+          correctOptionId: result.correctOptionId,
+          correctAnswerText: result.correctAnswerText,
+          acceptedAnswerTexts: result.acceptedAnswerTexts,
+          statusLabel: result.statusLabel,
+          questionType: "multiple_choice",
+        },
         isCorrect: result.isCorrect,
         awardedMarks: result.isCorrect ? runtimeQuestion.marks : 0,
         feedback: result.feedback,
@@ -88,6 +96,9 @@ export default function TrackedMultipleChoiceBlock({
       isSubmitting={isPending}
       onSelectOption={setSelectedOptionId}
       onSubmit={handleSubmit}
+      feedbackStatusLabel={result.statusLabel}
+      feedbackCorrectAnswerText={result.correctAnswerText}
+      feedbackAcceptedAnswerTexts={result.acceptedAnswerTexts}
     />
   );
 }

@@ -64,20 +64,24 @@ export type RuntimeQuestionSet = {
   questions: RuntimeQuestion[];
 };
 
-export type MultipleChoiceValidationResult = {
+export type QuestionFeedbackResult = {
   isCorrect: boolean;
-  selectedOptionId: string | null;
-  correctOptionId: string | null;
   feedback: string | null;
+  statusLabel: string;
+  correctAnswerText: string | null;
+  acceptedAnswerTexts: string[];
 };
 
-export type TextValidationResult = {
-  isCorrect: boolean;
+export type MultipleChoiceValidationResult = QuestionFeedbackResult & {
+  selectedOptionId: string | null;
+  selectedOptionText: string | null;
+  correctOptionId: string | null;
+};
+
+export type TextValidationResult = QuestionFeedbackResult & {
   submittedText: string;
   normalizedSubmittedText: string;
   matchedAnswer: RuntimeAcceptedAnswer | null;
-  acceptedAnswers: RuntimeAcceptedAnswer[];
-  feedback: string | null;
 };
 
 function collapseWhitespace(value: string) {
@@ -86,6 +90,24 @@ function collapseWhitespace(value: string) {
 
 export function normalizeFreeTextAnswer(value: string) {
   return collapseWhitespace(value).toLowerCase();
+}
+
+function dedupeTexts(values: string[]) {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    const normalized = normalizeFreeTextAnswer(value);
+
+    if (normalized.length === 0 || seen.has(normalized)) {
+      continue;
+    }
+
+    seen.add(normalized);
+    result.push(value);
+  }
+
+  return result;
 }
 
 export function mapSupportedQuestionType(
@@ -197,12 +219,24 @@ export function validateMultipleChoiceAnswer(params: {
 }): MultipleChoiceValidationResult {
   const { question, selectedOptionId } = params;
 
+  const selectedOption =
+    question.options.find((option) => option.id === selectedOptionId) ?? null;
+
+  const correctOption =
+    question.options.find((option) => option.id === question.correctOptionId) ?? null;
+
+  const isCorrect =
+    Boolean(selectedOptionId) && selectedOptionId === question.correctOptionId;
+
   return {
-    isCorrect:
-      Boolean(selectedOptionId) && selectedOptionId === question.correctOptionId,
+    isCorrect,
     selectedOptionId,
+    selectedOptionText: selectedOption?.text ?? null,
     correctOptionId: question.correctOptionId,
     feedback: question.explanation,
+    statusLabel: isCorrect ? "Correct." : "Not quite.",
+    correctAnswerText: isCorrect ? null : (correctOption?.text ?? null),
+    acceptedAnswerTexts: correctOption?.text ? [correctOption.text] : [],
   };
 }
 
@@ -222,12 +256,25 @@ export function validateTextAnswer(params: {
       return normalizedSubmittedText === answer.normalizedText;
     }) ?? null;
 
+  const acceptedAnswerTexts = dedupeTexts(
+    params.question.acceptedAnswers.map((answer) => answer.text)
+  );
+
+  const primaryAnswer =
+    params.question.acceptedAnswers.find((answer) => answer.isPrimary) ??
+    params.question.acceptedAnswers[0] ??
+    null;
+
+  const isCorrect = matchedAnswer !== null;
+
   return {
-    isCorrect: matchedAnswer !== null,
+    isCorrect,
     submittedText,
     normalizedSubmittedText,
     matchedAnswer,
-    acceptedAnswers: params.question.acceptedAnswers,
     feedback: params.question.explanation,
+    statusLabel: isCorrect ? "Correct." : "Not quite.",
+    correctAnswerText: isCorrect ? null : (primaryAnswer?.text ?? null),
+    acceptedAnswerTexts: isCorrect ? [] : acceptedAnswerTexts,
   };
 }
