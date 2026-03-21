@@ -1,5 +1,5 @@
-import TrackedMultipleChoiceBlock from "@/components/lesson-blocks/tracked-multiple-choice-block";
-import TrackedShortAnswerBlock from "@/components/lesson-blocks/tracked-short-answer-block";
+import TrackedMultipleChoiceBlock from "@/components/questions/tracked-multiple-choice-block";
+import TrackedShortAnswerBlock from "@/components/questions/tracked-short-answer-block";
 import type { RuntimeQuestion } from "@/lib/question-engine";
 
 type QuestionRendererProps = {

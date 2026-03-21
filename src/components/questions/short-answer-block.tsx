@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import QuestionCard from "@/components/lesson-blocks/question-card";
-import QuestionFeedback from "@/components/lesson-blocks/question-feedback";
+import QuestionCard from "@/components/questions/question-card";
+import QuestionFeedback from "@/components/questions/question-feedback";
 
 type ShortAnswerBlockProps = {
   question: string;

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import ShortAnswerBlock from "@/components/lesson-blocks/short-answer-block";
-import TranslationBlock from "@/components/lesson-blocks/translation-block";
+import ShortAnswerBlock from "@/components/questions/short-answer-block";
+import TranslationBlock from "@/components/questions/translation-block";
 import {
   type RuntimeAcceptedAnswer,
   type RuntimeTextQuestion,
