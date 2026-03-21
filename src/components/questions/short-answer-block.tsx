@@ -19,6 +19,8 @@ type ShortAnswerBlockProps = {
   feedbackCorrectAnswerText?: string | null;
   feedbackAcceptedAnswerTexts?: string[];
   audioUrl?: string | null;
+  audioMaxPlays?: number;
+  audioListeningMode?: boolean;
 };
 
 function normalizeAnswer(value: string) {
@@ -40,6 +42,8 @@ export default function ShortAnswerBlock({
   feedbackCorrectAnswerText,
   feedbackAcceptedAnswerTexts = [],
   audioUrl = null,
+  audioMaxPlays,
+  audioListeningMode = false,
 }: ShortAnswerBlockProps) {
   const [internalAnswer, setInternalAnswer] = useState("");
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
@@ -84,6 +88,8 @@ export default function ShortAnswerBlock({
     <QuestionCard
       prompt={question}
       audioUrl={audioUrl}
+      audioMaxPlays={audioMaxPlays}
+      audioListeningMode={audioListeningMode}
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback

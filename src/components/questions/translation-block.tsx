@@ -25,6 +25,8 @@ type TranslationBlockProps = {
   feedbackCorrectAnswerText?: string | null;
   feedbackAcceptedAnswerTexts?: string[];
   audioUrl?: string | null;
+  audioMaxPlays?: number;
+  audioListeningMode?: boolean;
 };
 
 function normalizeAnswer(value: string) {
@@ -76,6 +78,8 @@ export default function TranslationBlock({
   feedbackCorrectAnswerText,
   feedbackAcceptedAnswerTexts = [],
   audioUrl = null,
+  audioMaxPlays,
+  audioListeningMode = false,
 }: TranslationBlockProps) {
   const [internalAnswer, setInternalAnswer] = useState("");
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
@@ -130,6 +134,8 @@ export default function TranslationBlock({
       instruction={resolvedInstruction}
       prompt={question}
       audioUrl={audioUrl}
+      audioMaxPlays={audioMaxPlays}
+      audioListeningMode={audioListeningMode}
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback
