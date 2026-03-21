@@ -8,6 +8,7 @@ import {
   getStudentAssignmentByIdDb,
 } from "@/lib/assignment-helpers-db";
 import { getLessonPath } from "@/lib/routes";
+import { getPublicStorageUrl } from "@/lib/storage-helpers";
 
 type AssignmentDetailPageProps = {
   params: Promise<{
@@ -52,6 +53,11 @@ export default async function AssignmentDetailPage({
     return <main>Assignment not found.</main>;
   }
 
+  const submittedFileUrl = await getPublicStorageUrl(
+    "assignment-submissions",
+    submission?.submitted_file_path ?? null
+  );
+
   return (
     <main>
       <div className="mb-6">
@@ -71,6 +77,7 @@ export default async function AssignmentDetailPage({
       <div className="mb-6 flex flex-wrap gap-4 text-sm text-gray-600">
         <span>Due: {formatDueDate(assignment.due_at)}</span>
         <span>Status: {getSubmissionLabel(submission?.status)}</span>
+        {assignment.allow_file_upload ? <span>File upload allowed</span> : null}
       </div>
 
       <section className="mb-6">
@@ -141,11 +148,32 @@ export default async function AssignmentDetailPage({
         </DashboardCard>
       </section>
 
+      {submission?.submitted_file_name && submittedFileUrl ? (
+        <section className="mb-6">
+          <DashboardCard title="Uploaded file">
+            <div className="space-y-2 text-sm">
+              <p>{submission.submitted_file_name}</p>
+              <Link
+                href={submittedFileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Open uploaded file
+              </Link>
+            </div>
+          </DashboardCard>
+        </section>
+      ) : null}
+
       <section className="mb-6">
         <DashboardCard title="Submit homework">
           <AssignmentSubmissionForm
             assignmentId={assignment.id}
             initialValue={submission?.submitted_text ?? ""}
+            initialFilePath={submission?.submitted_file_path ?? null}
+            initialFileName={submission?.submitted_file_name ?? null}
+            allowFileUpload={assignment.allow_file_upload}
           />
         </DashboardCard>
       </section>

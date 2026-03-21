@@ -1,12 +1,22 @@
-function getEnvVariable(name: "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY"): string {
-  const value = process.env[name];
+function getPublicSupabaseUrl(): string {
+  const value = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   if (!value) {
-    throw new Error(`Missing ${name}`);
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
   }
 
   return value;
 }
 
-export const supabaseUrl = getEnvVariable("NEXT_PUBLIC_SUPABASE_URL");
-export const supabaseAnonKey = getEnvVariable("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+function getPublicSupabaseAnonKey(): string {
+  const value = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!value) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  }
+
+  return value;
+}
+
+export const supabaseUrl = getPublicSupabaseUrl();
+export const supabaseAnonKey = getPublicSupabaseAnonKey();
