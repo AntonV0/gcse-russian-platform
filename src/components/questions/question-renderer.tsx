@@ -1,6 +1,7 @@
 import TrackedMultipleChoiceBlock from "@/components/questions/tracked-multiple-choice-block";
 import TrackedShortAnswerBlock from "@/components/questions/tracked-short-answer-block";
 import type { RuntimeQuestion } from "@/lib/question-engine";
+import { getPublicAudioUrl } from "@/lib/media";
 
 type QuestionRendererProps = {
   question: RuntimeQuestion;
@@ -27,10 +28,12 @@ function getTranslationDirection(
   return undefined;
 }
 
-export default function QuestionRenderer({
+export default async function QuestionRenderer({
   question,
   lessonId = null,
 }: QuestionRendererProps) {
+  const audioUrl = await getPublicAudioUrl(question.audioPath);
+
   switch (question.type) {
     case "multiple_choice":
       return (
@@ -44,6 +47,7 @@ export default function QuestionRenderer({
           }))}
           correctOptionId={question.correctOptionId ?? ""}
           explanation={question.explanation ?? undefined}
+          audioUrl={audioUrl}
         />
       );
 
@@ -60,6 +64,7 @@ export default function QuestionRenderer({
             getStringMetadata(question.metadata, "placeholder") ??
             "Type your answer"
           }
+          audioUrl={audioUrl}
         />
       );
 
@@ -76,6 +81,7 @@ export default function QuestionRenderer({
             getStringMetadata(question.metadata, "placeholder") ??
             "Type your translation"
           }
+          audioUrl={audioUrl}
           translationUi={{
             direction: getTranslationDirection(question.metadata),
             sourceLanguageLabel: getStringMetadata(

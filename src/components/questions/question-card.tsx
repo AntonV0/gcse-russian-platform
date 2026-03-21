@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
+import AudioPlayer from "@/components/questions/audio-player";
 
 type QuestionCardProps = {
   heading?: string;
   instruction?: string;
   prompt: string;
+  audioUrl?: string | null;
   children: ReactNode;
   feedback?: ReactNode;
 };
@@ -12,6 +14,7 @@ export default function QuestionCard({
   heading = "Question",
   instruction,
   prompt,
+  audioUrl,
   children,
   feedback,
 }: QuestionCardProps) {
@@ -24,6 +27,8 @@ export default function QuestionCard({
           {instruction ? (
             <p className="text-sm font-medium text-gray-600">{instruction}</p>
           ) : null}
+
+          {audioUrl ? <AudioPlayer src={audioUrl} /> : null}
 
           <p className="text-gray-800">{prompt}</p>
         </div>

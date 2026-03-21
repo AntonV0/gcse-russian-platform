@@ -15,6 +15,7 @@ type TrackedMultipleChoiceBlockProps = {
   options: { id: string; text: string }[];
   correctOptionId: string;
   explanation?: string;
+  audioUrl?: string | null;
 };
 
 export default function TrackedMultipleChoiceBlock({
@@ -24,6 +25,7 @@ export default function TrackedMultipleChoiceBlock({
   options,
   correctOptionId,
   explanation,
+  audioUrl = null,
 }: TrackedMultipleChoiceBlockProps) {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -91,6 +93,7 @@ export default function TrackedMultipleChoiceBlock({
       options={options}
       correctOptionId={correctOptionId}
       explanation={explanation}
+      audioUrl={audioUrl}
       selectedOptionId={selectedOptionId}
       hasSubmitted={submitted}
       isSubmitting={isPending}
