@@ -9,9 +9,13 @@ import type { LessonBlock } from "@/types/lesson";
 
 type LessonRendererProps = {
   blocks: LessonBlock[];
+  lessonId?: string | null;
 };
 
-export default function LessonRenderer({ blocks }: LessonRendererProps) {
+export default function LessonRenderer({
+  blocks,
+  lessonId = null,
+}: LessonRendererProps) {
   return (
     <div className="space-y-4">
       {blocks.map((block, index) => {
@@ -74,6 +78,7 @@ export default function LessonRenderer({ blocks }: LessonRendererProps) {
                 key={index}
                 title={block.title}
                 questionSetSlug={block.questionSetSlug}
+                lessonId={lessonId}
               />
             );
 

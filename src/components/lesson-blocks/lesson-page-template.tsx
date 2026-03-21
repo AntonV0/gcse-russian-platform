@@ -58,7 +58,7 @@ export default async function LessonPageTemplate({
         lessonDescription={lesson.summary ?? ""}
       />
 
-      <LessonRenderer blocks={blocks} />
+      <LessonRenderer blocks={blocks} lessonId={lesson.id} />
 
       <LessonCompletionForm
         courseSlug={courseSlug}
