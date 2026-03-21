@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import QuestionCard from "@/components/lesson-blocks/question-card";
 import QuestionFeedback from "@/components/lesson-blocks/question-feedback";
 
-type ShortAnswerBlockProps = {
+type TranslationDirection = "to_russian" | "to_english";
+
+type TranslationBlockProps = {
   question: string;
   acceptedAnswers: string[];
   explanation?: string;
@@ -15,24 +17,58 @@ type ShortAnswerBlockProps = {
   isSubmitting?: boolean;
   onValueChange?: (value: string) => void;
   onSubmit?: () => void;
+  direction?: TranslationDirection;
+  sourceLanguageLabel?: string;
+  targetLanguageLabel?: string;
+  instruction?: string;
 };
 
 function normalizeAnswer(value: string) {
   return value.trim().toLowerCase();
 }
 
-export default function ShortAnswerBlock({
+function getDefaultInstruction(params: {
+  direction?: TranslationDirection;
+  sourceLanguageLabel?: string;
+  targetLanguageLabel?: string;
+}) {
+  const { direction, sourceLanguageLabel, targetLanguageLabel } = params;
+
+  if (targetLanguageLabel) {
+    return `Translate into ${targetLanguageLabel}`;
+  }
+
+  if (direction === "to_russian") {
+    return "Translate into Russian";
+  }
+
+  if (direction === "to_english") {
+    return "Translate into English";
+  }
+
+  if (sourceLanguageLabel && targetLanguageLabel) {
+    return `Translate from ${sourceLanguageLabel} into ${targetLanguageLabel}`;
+  }
+
+  return "Translate";
+}
+
+export default function TranslationBlock({
   question,
   acceptedAnswers,
   explanation,
-  placeholder = "Type your answer",
+  placeholder = "Type your translation",
   value,
   hasSubmitted,
   isCorrect,
   isSubmitting = false,
   onValueChange,
   onSubmit,
-}: ShortAnswerBlockProps) {
+  direction,
+  sourceLanguageLabel,
+  targetLanguageLabel,
+  instruction,
+}: TranslationBlockProps) {
   const [internalAnswer, setInternalAnswer] = useState("");
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
 
@@ -49,6 +85,14 @@ export default function ShortAnswerBlock({
     isCorrect !== undefined
       ? isCorrect
       : normalizedAcceptedAnswers.includes(normalizeAnswer(resolvedAnswer));
+
+  const resolvedInstruction =
+    instruction ??
+    getDefaultInstruction({
+      direction,
+      sourceLanguageLabel,
+      targetLanguageLabel,
+    });
 
   function handleChange(nextValue: string) {
     if (resolvedHasSubmitted || isSubmitting) return;
@@ -74,6 +118,8 @@ export default function ShortAnswerBlock({
 
   return (
     <QuestionCard
+      heading="Translation"
+      instruction={resolvedInstruction}
       prompt={question}
       feedback={
         resolvedHasSubmitted ? (
@@ -84,6 +130,22 @@ export default function ShortAnswerBlock({
         ) : null
       }
     >
+      {(sourceLanguageLabel || targetLanguageLabel) && (
+        <div className="flex flex-wrap gap-2 text-xs font-medium text-gray-600">
+          {sourceLanguageLabel ? (
+            <span className="rounded-full bg-gray-100 px-3 py-1">
+              Source: {sourceLanguageLabel}
+            </span>
+          ) : null}
+
+          {targetLanguageLabel ? (
+            <span className="rounded-full bg-gray-100 px-3 py-1">
+              Target: {targetLanguageLabel}
+            </span>
+          ) : null}
+        </div>
+      )}
+
       <div className="space-y-4">
         <input
           type="text"

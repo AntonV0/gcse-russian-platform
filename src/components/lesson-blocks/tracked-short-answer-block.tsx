@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import ShortAnswerBlock from "@/components/lesson-blocks/short-answer-block";
+import TranslationBlock from "@/components/lesson-blocks/translation-block";
 import {
   type RuntimeAcceptedAnswer,
   type RuntimeTextQuestion,
@@ -8,22 +10,36 @@ import {
 } from "@/lib/question-engine";
 import { submitQuestionAttemptAction } from "@/app/actions/question-actions";
 
+type TranslationDirection = "to_russian" | "to_english";
+
+type TranslationUiConfig = {
+  direction?: TranslationDirection;
+  sourceLanguageLabel?: string;
+  targetLanguageLabel?: string;
+  instruction?: string;
+  placeholder?: string;
+};
+
 type TrackedShortAnswerBlockProps = {
   questionId: string;
   lessonId?: string | null;
   question: string;
+  questionType?: "short_answer" | "translation";
   acceptedAnswers: RuntimeAcceptedAnswer[];
   explanation?: string;
   placeholder?: string;
+  translationUi?: TranslationUiConfig;
 };
 
 export default function TrackedShortAnswerBlock({
   questionId,
   lessonId = null,
   question,
+  questionType = "short_answer",
   acceptedAnswers,
   explanation,
   placeholder = "Type your answer",
+  translationUi,
 }: TrackedShortAnswerBlockProps) {
   const [value, setValue] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -32,7 +48,7 @@ export default function TrackedShortAnswerBlock({
   const runtimeQuestion: RuntimeTextQuestion = {
     id: questionId,
     questionSetId: "",
-    type: "short_answer",
+    type: questionType,
     prompt: question,
     promptRich: null,
     explanation: explanation ?? null,
@@ -67,6 +83,7 @@ export default function TrackedShortAnswerBlock({
           answer: value,
           normalizedAnswer: result.normalizedSubmittedText,
           matchedAnswerId: result.matchedAnswer?.id ?? null,
+          questionType,
         },
         isCorrect: result.isCorrect,
         awardedMarks: result.isCorrect ? runtimeQuestion.marks : 0,
@@ -75,41 +92,39 @@ export default function TrackedShortAnswerBlock({
     });
   }
 
-  return (
-    <div className="space-y-3 rounded-lg border p-4">
-      <p className="font-medium">{question}</p>
-
-      <input
-        type="text"
+  if (questionType === "translation") {
+    return (
+      <TranslationBlock
+        question={question}
+        acceptedAnswers={acceptedAnswers.map((answer) => answer.text)}
+        explanation={explanation}
+        placeholder={translationUi?.placeholder ?? placeholder}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
-        disabled={submitted || isPending}
-        placeholder={placeholder}
-        className="w-full rounded border px-3 py-2"
+        hasSubmitted={submitted}
+        isCorrect={result.isCorrect}
+        isSubmitting={isPending}
+        onValueChange={setValue}
+        onSubmit={handleSubmit}
+        direction={translationUi?.direction}
+        sourceLanguageLabel={translationUi?.sourceLanguageLabel}
+        targetLanguageLabel={translationUi?.targetLanguageLabel}
+        instruction={translationUi?.instruction}
       />
+    );
+  }
 
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={!value.trim() || submitted || isPending}
-        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-      >
-        {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
-      </button>
-
-      {submitted ? (
-        <div className="text-sm">
-          {result.isCorrect ? (
-            <p className="font-medium text-green-600">✓ Correct</p>
-          ) : (
-            <p className="font-medium text-red-600">✗ Incorrect</p>
-          )}
-
-          {explanation ? (
-            <p className="mt-2 text-gray-700">{explanation}</p>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
+  return (
+    <ShortAnswerBlock
+      question={question}
+      acceptedAnswers={acceptedAnswers.map((answer) => answer.text)}
+      explanation={explanation}
+      placeholder={placeholder}
+      value={value}
+      hasSubmitted={submitted}
+      isCorrect={result.isCorrect}
+      isSubmitting={isPending}
+      onValueChange={setValue}
+      onSubmit={handleSubmit}
+    />
   );
 }
