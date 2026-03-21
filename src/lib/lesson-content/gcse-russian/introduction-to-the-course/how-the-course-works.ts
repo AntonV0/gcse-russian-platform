@@ -22,4 +22,14 @@ export const howTheCourseWorksLessonBlocks: LessonBlock[] = [
     title: "Starter practice",
     questionSetSlug: "foundation-intro-how-the-course-works",
   },
+  {
+  type: "question-set",
+  title: "Starter practice with audio",
+  questionSetSlug: "foundation-intro-how-the-course-works-audio",
+  },
+  {
+  type: "question-set",
+  title: "Russian output strategy test",
+  questionSetSlug: "foundation-intro-russian-output-test",
+  },
 ];

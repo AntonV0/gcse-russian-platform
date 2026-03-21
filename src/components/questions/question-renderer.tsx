@@ -28,11 +28,30 @@ function getTranslationDirection(
   return undefined;
 }
 
+function getAnswerStrategy(
+  metadata: Record<string, unknown>
+): "text_input" | "selection_based" | "sentence_builder" | "upload_required" {
+  const value = metadata.answerStrategy;
+
+  if (
+    value === "text_input" ||
+    value === "selection_based" ||
+    value === "sentence_builder" ||
+    value === "upload_required"
+  ) {
+    return value;
+  }
+
+  return "text_input";
+}
+
 export default async function QuestionRenderer({
   question,
   lessonId = null,
 }: QuestionRendererProps) {
   const audioUrl = await getPublicAudioUrl(question.audioPath);
+
+  const answerStrategy = getAnswerStrategy(question.metadata);
 
   switch (question.type) {
     case "multiple_choice":
@@ -65,6 +84,7 @@ export default async function QuestionRenderer({
             "Type your answer"
           }
           audioUrl={audioUrl}
+          answerStrategy={answerStrategy}
         />
       );
 
@@ -82,6 +102,7 @@ export default async function QuestionRenderer({
             "Type your translation"
           }
           audioUrl={audioUrl}
+          answerStrategy={answerStrategy}
           translationUi={{
             direction: getTranslationDirection(question.metadata),
             sourceLanguageLabel: getStringMetadata(
