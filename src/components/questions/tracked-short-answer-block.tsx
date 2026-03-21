@@ -10,6 +10,7 @@ import SelectionBasedBlock, {
 import {
   type RuntimeAcceptedAnswer,
   type RuntimeTextQuestion,
+  type TextValidationOptions,
   tokenizeSentenceBuilderText,
   validateSentenceBuilderAnswer,
   validateTextAnswer,
@@ -38,6 +39,15 @@ type SentenceBuilderUiConfig = {
 
 type SelectionBasedUiConfig = {
   groups?: SelectionGroup[];
+  displayMode?: "grouped" | "inline_gaps";
+};
+
+type ListeningUiConfig = {
+  maxPlays?: number;
+  listeningMode?: boolean;
+  autoPlay?: boolean;
+  hideNativeControls?: boolean;
+  requireAudioCompletionBeforeSubmit?: boolean;
 };
 
 type TrackedShortAnswerBlockProps = {
@@ -51,9 +61,9 @@ type TrackedShortAnswerBlockProps = {
   translationUi?: TranslationUiConfig;
   sentenceBuilderUi?: SentenceBuilderUiConfig;
   selectionBasedUi?: SelectionBasedUiConfig;
+  validationOptions?: TextValidationOptions;
   audioUrl?: string | null;
-  audioMaxPlays?: number;
-  audioListeningMode?: boolean;
+  listeningUi?: ListeningUiConfig;
   answerStrategy?: AnswerStrategy;
 };
 
@@ -96,9 +106,9 @@ export default function TrackedShortAnswerBlock({
   translationUi,
   sentenceBuilderUi,
   selectionBasedUi,
+  validationOptions,
   audioUrl = null,
-  audioMaxPlays,
-  audioListeningMode = false,
+  listeningUi,
   answerStrategy = "text_input",
 }: TrackedShortAnswerBlockProps) {
   const initialSentenceBuilderTokens = useMemo(
@@ -118,6 +128,7 @@ export default function TrackedShortAnswerBlock({
     initialSentenceBuilderTokens
   );
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  const [audioCompleted, setAudioCompleted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -143,11 +154,13 @@ export default function TrackedShortAnswerBlock({
   const textResult = validateTextAnswer({
     question: runtimeQuestion,
     submittedText: value,
+    options: validationOptions,
   });
 
   const sentenceBuilderResult = validateSentenceBuilderAnswer({
     question: runtimeQuestion,
     submittedTokens: selectedTokens,
+    options: validationOptions,
   });
 
   const selectionBasedSubmittedText = buildSelectionBasedSubmittedText({
@@ -158,6 +171,7 @@ export default function TrackedShortAnswerBlock({
   const selectionBasedResult = validateTextAnswer({
     question: runtimeQuestion,
     submittedText: selectionBasedSubmittedText,
+    options: validationOptions,
   });
 
   const sentenceBuilderInstruction = useMemo(() => {
@@ -184,8 +198,11 @@ export default function TrackedShortAnswerBlock({
     return "Select the correct Russian forms";
   }, [translationUi]);
 
+  const audioGatePassed =
+    !listeningUi?.requireAudioCompletionBeforeSubmit || audioCompleted;
+
   async function handleSubmitText() {
-    if (!value.trim() || submitted) return;
+    if (!value.trim() || submitted || !audioGatePassed) return;
 
     setSubmitted(true);
 
@@ -203,6 +220,7 @@ export default function TrackedShortAnswerBlock({
           statusLabel: textResult.statusLabel,
           questionType,
           answerStrategy,
+          validationOptions,
         },
         isCorrect: textResult.isCorrect,
         awardedMarks: textResult.isCorrect ? runtimeQuestion.marks : 0,
@@ -212,7 +230,7 @@ export default function TrackedShortAnswerBlock({
   }
 
   async function handleSubmitSentenceBuilder() {
-    if (selectedTokens.length === 0 || submitted) return;
+    if (selectedTokens.length === 0 || submitted || !audioGatePassed) return;
 
     setSubmitted(true);
 
@@ -231,6 +249,7 @@ export default function TrackedShortAnswerBlock({
           statusLabel: sentenceBuilderResult.statusLabel,
           questionType,
           answerStrategy,
+          validationOptions,
         },
         isCorrect: sentenceBuilderResult.isCorrect,
         awardedMarks: sentenceBuilderResult.isCorrect ? runtimeQuestion.marks : 0,
@@ -240,7 +259,9 @@ export default function TrackedShortAnswerBlock({
   }
 
   async function handleSubmitSelectionBased() {
-    if (selectionBasedSubmittedText.length === 0 || submitted) return;
+    if (selectionBasedSubmittedText.length === 0 || submitted || !audioGatePassed) {
+      return;
+    }
 
     setSubmitted(true);
 
@@ -258,6 +279,7 @@ export default function TrackedShortAnswerBlock({
           statusLabel: selectionBasedResult.statusLabel,
           questionType,
           answerStrategy,
+          validationOptions,
         },
         isCorrect: selectionBasedResult.isCorrect,
         awardedMarks: selectionBasedResult.isCorrect ? runtimeQuestion.marks : 0,
@@ -319,8 +341,11 @@ export default function TrackedShortAnswerBlock({
         question={question}
         instruction={sentenceBuilderInstruction}
         audioUrl={audioUrl}
-        audioMaxPlays={audioMaxPlays}
-        audioListeningMode={audioListeningMode}
+        audioMaxPlays={listeningUi?.maxPlays}
+        audioListeningMode={listeningUi?.listeningMode}
+        audioAutoPlay={listeningUi?.autoPlay}
+        audioHideNativeControls={listeningUi?.hideNativeControls}
+        onAudioPlaybackCompleted={() => setAudioCompleted(true)}
         availableTokens={availableTokens}
         selectedTokens={selectedTokens}
         explanation={explanation}
@@ -346,8 +371,11 @@ export default function TrackedShortAnswerBlock({
         question={question}
         instruction={selectionBasedInstruction}
         audioUrl={audioUrl}
-        audioMaxPlays={audioMaxPlays}
-        audioListeningMode={audioListeningMode}
+        audioMaxPlays={listeningUi?.maxPlays}
+        audioListeningMode={listeningUi?.listeningMode}
+        audioAutoPlay={listeningUi?.autoPlay}
+        audioHideNativeControls={listeningUi?.hideNativeControls}
+        onAudioPlaybackCompleted={() => setAudioCompleted(true)}
         groups={selectionGroups}
         selectedOptions={selectedOptions}
         explanation={explanation}
@@ -362,6 +390,7 @@ export default function TrackedShortAnswerBlock({
         feedbackAcceptedAnswerTexts={selectionBasedResult.acceptedAnswerTexts}
         sourceLanguageLabel={translationUi?.sourceLanguageLabel}
         targetLanguageLabel={translationUi?.targetLanguageLabel}
+        displayMode={selectionBasedUi?.displayMode}
       />
     );
   }
@@ -396,8 +425,12 @@ export default function TrackedShortAnswerBlock({
         feedbackCorrectAnswerText={textResult.correctAnswerText}
         feedbackAcceptedAnswerTexts={textResult.acceptedAnswerTexts}
         audioUrl={audioUrl}
-        audioMaxPlays={audioMaxPlays}
-        audioListeningMode={audioListeningMode}
+        audioMaxPlays={listeningUi?.maxPlays}
+        audioListeningMode={listeningUi?.listeningMode}
+        audioAutoPlay={listeningUi?.autoPlay}
+        audioHideNativeControls={listeningUi?.hideNativeControls}
+        onAudioPlaybackCompleted={() => setAudioCompleted(true)}
+        submitLocked={!audioGatePassed}
       />
     );
   }
@@ -418,8 +451,12 @@ export default function TrackedShortAnswerBlock({
       feedbackCorrectAnswerText={textResult.correctAnswerText}
       feedbackAcceptedAnswerTexts={textResult.acceptedAnswerTexts}
       audioUrl={audioUrl}
-      audioMaxPlays={audioMaxPlays}
-      audioListeningMode={audioListeningMode}
+      audioMaxPlays={listeningUi?.maxPlays}
+      audioListeningMode={listeningUi?.listeningMode}
+      audioAutoPlay={listeningUi?.autoPlay}
+      audioHideNativeControls={listeningUi?.hideNativeControls}
+      onAudioPlaybackCompleted={() => setAudioCompleted(true)}
+      submitLocked={!audioGatePassed}
     />
   );
 }

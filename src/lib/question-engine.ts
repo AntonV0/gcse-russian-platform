@@ -78,6 +78,12 @@ export type MultipleChoiceValidationResult = QuestionFeedbackResult & {
   correctOptionId: string | null;
 };
 
+export type TextValidationOptions = {
+  ignorePunctuation?: boolean;
+  ignoreArticles?: boolean;
+  collapseWhitespace?: boolean;
+};
+
 export type TextValidationResult = QuestionFeedbackResult & {
   submittedText: string;
   normalizedSubmittedText: string;
@@ -96,8 +102,35 @@ function collapseWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
 }
 
-export function normalizeFreeTextAnswer(value: string) {
-  return collapseWhitespace(value).toLowerCase();
+function stripPunctuation(value: string) {
+  return value.replace(/[.,/#!$%^&*;:{}=\-_`~()?"'«»“”[\]\\|<>…]/g, " ");
+}
+
+function stripEnglishArticles(value: string) {
+  return value.replace(/\b(a|an|the)\b/gi, " ");
+}
+
+export function normalizeFreeTextAnswer(
+  value: string,
+  options?: TextValidationOptions
+) {
+  let result = value.toLowerCase();
+
+  if (options?.ignorePunctuation) {
+    result = stripPunctuation(result);
+  }
+
+  if (options?.ignoreArticles) {
+    result = stripEnglishArticles(result);
+  }
+
+  if (options?.collapseWhitespace !== false) {
+    result = collapseWhitespace(result);
+  } else {
+    result = result.trim();
+  }
+
+  return result;
 }
 
 function dedupeTexts(values: string[]) {
@@ -258,9 +291,13 @@ export function validateMultipleChoiceAnswer(params: {
 export function validateTextAnswer(params: {
   question: RuntimeTextQuestion;
   submittedText: string;
+  options?: TextValidationOptions;
 }): TextValidationResult {
   const submittedText = params.submittedText;
-  const normalizedSubmittedText = normalizeFreeTextAnswer(submittedText);
+  const normalizedSubmittedText = normalizeFreeTextAnswer(
+    submittedText,
+    params.options
+  );
 
   const matchedAnswer =
     params.question.acceptedAnswers.find((answer) => {
@@ -268,7 +305,12 @@ export function validateTextAnswer(params: {
         return collapseWhitespace(submittedText) === collapseWhitespace(answer.text);
       }
 
-      return normalizedSubmittedText === answer.normalizedText;
+      const normalizedAnswer = normalizeFreeTextAnswer(
+        answer.text,
+        params.options
+      );
+
+      return normalizedSubmittedText === normalizedAnswer;
     }) ?? null;
 
   const acceptedAnswerTexts = dedupeTexts(
@@ -297,14 +339,22 @@ export function validateTextAnswer(params: {
 export function validateSentenceBuilderAnswer(params: {
   question: RuntimeTextQuestion;
   submittedTokens: string[];
+  options?: TextValidationOptions;
 }): SentenceBuilderValidationResult {
   const submittedText = params.submittedTokens.join(" ");
-  const normalizedSubmittedText = normalizeFreeTextAnswer(submittedText);
+  const normalizedSubmittedText = normalizeFreeTextAnswer(
+    submittedText,
+    params.options
+  );
 
   const matchedAnswer =
-    params.question.acceptedAnswers.find(
-      (answer) => normalizedSubmittedText === answer.normalizedText
-    ) ?? null;
+    params.question.acceptedAnswers.find((answer) => {
+      const normalizedAnswer = normalizeFreeTextAnswer(
+        answer.text,
+        params.options
+      );
+      return normalizedSubmittedText === normalizedAnswer;
+    }) ?? null;
 
   const primaryAnswer =
     params.question.acceptedAnswers.find((answer) => answer.isPrimary) ??
