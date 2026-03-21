@@ -29,6 +29,10 @@ type TranslationUiConfig = {
   placeholder?: string;
 };
 
+type SentenceBuilderUiConfig = {
+  wordBank?: string[];
+};
+
 type TrackedShortAnswerBlockProps = {
   questionId: string;
   lessonId?: string | null;
@@ -38,13 +42,21 @@ type TrackedShortAnswerBlockProps = {
   explanation?: string;
   placeholder?: string;
   translationUi?: TranslationUiConfig;
+  sentenceBuilderUi?: SentenceBuilderUiConfig;
   audioUrl?: string | null;
   answerStrategy?: AnswerStrategy;
 };
 
-function buildSentenceBuilderTokenPool(answers: RuntimeAcceptedAnswer[]) {
+function buildSentenceBuilderTokenPool(params: {
+  answers: RuntimeAcceptedAnswer[];
+  customWordBank?: string[];
+}) {
+  if (params.customWordBank && params.customWordBank.length > 0) {
+    return [...params.customWordBank];
+  }
+
   const primaryAnswer =
-    answers.find((answer) => answer.isPrimary) ?? answers[0] ?? null;
+    params.answers.find((answer) => answer.isPrimary) ?? params.answers[0] ?? null;
 
   if (!primaryAnswer) {
     return [];
@@ -62,13 +74,23 @@ export default function TrackedShortAnswerBlock({
   explanation,
   placeholder = "Type your answer",
   translationUi,
+  sentenceBuilderUi,
   audioUrl = null,
   answerStrategy = "text_input",
 }: TrackedShortAnswerBlockProps) {
+  const initialSentenceBuilderTokens = useMemo(
+    () =>
+      buildSentenceBuilderTokenPool({
+        answers: acceptedAnswers,
+        customWordBank: sentenceBuilderUi?.wordBank,
+      }),
+    [acceptedAnswers, sentenceBuilderUi?.wordBank]
+  );
+
   const [value, setValue] = useState("");
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [availableTokens, setAvailableTokens] = useState<string[]>(
-    buildSentenceBuilderTokenPool(acceptedAnswers)
+    initialSentenceBuilderTokens
   );
   const [submitted, setSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -193,7 +215,12 @@ export default function TrackedShortAnswerBlock({
     if (submitted || isPending) return;
 
     setSelectedTokens([]);
-    setAvailableTokens(buildSentenceBuilderTokenPool(acceptedAnswers));
+    setAvailableTokens(
+      buildSentenceBuilderTokenPool({
+        answers: acceptedAnswers,
+        customWordBank: sentenceBuilderUi?.wordBank,
+      })
+    );
   }
 
   if (questionType === "translation" && answerStrategy === "sentence_builder") {

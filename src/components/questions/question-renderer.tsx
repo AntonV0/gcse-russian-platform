@@ -45,6 +45,23 @@ function getAnswerStrategy(
   return "text_input";
 }
 
+function getStringArrayMetadata(
+  metadata: Record<string, unknown>,
+  key: string
+): string[] | undefined {
+  const value = metadata[key];
+
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const stringValues = value.filter(
+    (item): item is string => typeof item === "string" && item.trim().length > 0
+  );
+
+  return stringValues.length > 0 ? stringValues : undefined;
+}
+
 export default async function QuestionRenderer({
   question,
   lessonId = null,
@@ -115,6 +132,9 @@ export default async function QuestionRenderer({
             ),
             instruction: getStringMetadata(question.metadata, "instruction"),
             placeholder: getStringMetadata(question.metadata, "placeholder"),
+          }}
+          sentenceBuilderUi={{
+            wordBank: getStringArrayMetadata(question.metadata, "wordBank"),
           }}
         />
       );
