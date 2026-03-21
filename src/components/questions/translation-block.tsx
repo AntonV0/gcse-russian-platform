@@ -24,6 +24,7 @@ type TranslationBlockProps = {
   feedbackStatusLabel?: string;
   feedbackCorrectAnswerText?: string | null;
   feedbackAcceptedAnswerTexts?: string[];
+  audioUrl?: string | null;
 };
 
 function normalizeAnswer(value: string) {
@@ -74,6 +75,7 @@ export default function TranslationBlock({
   feedbackStatusLabel,
   feedbackCorrectAnswerText,
   feedbackAcceptedAnswerTexts = [],
+  audioUrl = null,
 }: TranslationBlockProps) {
   const [internalAnswer, setInternalAnswer] = useState("");
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
@@ -127,6 +129,7 @@ export default function TranslationBlock({
       heading="Translation"
       instruction={resolvedInstruction}
       prompt={question}
+      audioUrl={audioUrl}
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback

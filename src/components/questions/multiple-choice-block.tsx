@@ -14,6 +14,7 @@ type MultipleChoiceBlockProps = {
   options: MultipleChoiceOption[];
   correctOptionId: string;
   explanation?: string;
+  audioUrl?: string | null;
   selectedOptionId?: string | null;
   hasSubmitted?: boolean;
   isSubmitting?: boolean;
@@ -29,6 +30,7 @@ export default function MultipleChoiceBlock({
   options,
   correctOptionId,
   explanation,
+  audioUrl = null,
   selectedOptionId,
   hasSubmitted,
   isSubmitting = false,
@@ -78,6 +80,7 @@ export default function MultipleChoiceBlock({
   return (
     <QuestionCard
       prompt={question}
+      audioUrl={audioUrl}
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback

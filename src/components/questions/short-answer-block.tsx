@@ -18,6 +18,7 @@ type ShortAnswerBlockProps = {
   feedbackStatusLabel?: string;
   feedbackCorrectAnswerText?: string | null;
   feedbackAcceptedAnswerTexts?: string[];
+  audioUrl?: string | null;
 };
 
 function normalizeAnswer(value: string) {
@@ -38,6 +39,7 @@ export default function ShortAnswerBlock({
   feedbackStatusLabel,
   feedbackCorrectAnswerText,
   feedbackAcceptedAnswerTexts = [],
+  audioUrl = null,
 }: ShortAnswerBlockProps) {
   const [internalAnswer, setInternalAnswer] = useState("");
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
@@ -81,6 +83,7 @@ export default function ShortAnswerBlock({
   return (
     <QuestionCard
       prompt={question}
+      audioUrl={audioUrl}
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback

@@ -29,6 +29,7 @@ type TrackedShortAnswerBlockProps = {
   explanation?: string;
   placeholder?: string;
   translationUi?: TranslationUiConfig;
+  audioUrl?: string | null;
 };
 
 export default function TrackedShortAnswerBlock({
@@ -40,6 +41,7 @@ export default function TrackedShortAnswerBlock({
   explanation,
   placeholder = "Type your answer",
   translationUi,
+  audioUrl = null,
 }: TrackedShortAnswerBlockProps) {
   const [value, setValue] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -115,6 +117,7 @@ export default function TrackedShortAnswerBlock({
         feedbackStatusLabel={result.statusLabel}
         feedbackCorrectAnswerText={result.correctAnswerText}
         feedbackAcceptedAnswerTexts={result.acceptedAnswerTexts}
+        audioUrl={audioUrl}
       />
     );
   }
@@ -134,6 +137,7 @@ export default function TrackedShortAnswerBlock({
       feedbackStatusLabel={result.statusLabel}
       feedbackCorrectAnswerText={result.correctAnswerText}
       feedbackAcceptedAnswerTexts={result.acceptedAnswerTexts}
+      audioUrl={audioUrl}
     />
   );
 }
