@@ -32,4 +32,9 @@ export const howTheCourseWorksLessonBlocks: LessonBlock[] = [
   title: "Russian output strategy test",
   questionSetSlug: "foundation-intro-russian-output-test",
   },
+  {
+  type: "question-set",
+  title: "Advanced question engine test",
+  questionSetSlug: "foundation-advanced-question-engine-test",
+  },
 ];
