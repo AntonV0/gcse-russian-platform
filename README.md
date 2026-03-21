@@ -1,72 +1,208 @@
 # GCSE Russian Course Platform
 
-An online learning platform for GCSE Russian students, designed to deliver structured courses, interactive lessons, and exam preparation.
+An advanced online learning platform for GCSE Russian students, powering structured courses, interactive lessons, and teacher-led assignments.
 
 ---
 
 ## 🚀 Overview
 
-This project powers the course platform behind **gcserussian.com**, with a focus on:
+This platform powers **gcserussian.com** and integrates with **Volna Online Russian School**.
 
-* Structured course delivery (modules → lessons)
-* Reusable lesson content system
-* User authentication and access control
-* Progress tracking
-* Scalable architecture for future products
+The system supports:
+
+* Structured course delivery (Foundation, Higher, Volna)
+* Block-based lesson system
+* Database-driven question engine
+* Assignment system (teacher → student workflow)
+* Role-based access (admin, teacher, student)
+* Progress tracking (variant-aware)
+* Scalable architecture for future expansion
 
 ---
 
-## 🧠 Core Concepts
+## 🧠 Core Architecture
 
-### Course Structure
+### Course Hierarchy
 
-The platform is built around a hierarchical model:
+The platform uses a database-driven structure:
 
 * **Course**
-* **Variant** (e.g. Foundation, Higher)
+* **Variant (Learning Track)**  
+  - `foundation`
+  - `higher`
+  - `volna`
 * **Module**
 * **Lesson**
 
-### Example URL structure
+---
 
-```
+### URL Structure
 /courses/[courseSlug]
 /courses/[courseSlug]/[variantSlug]
 /courses/[courseSlug]/[variantSlug]/modules/[moduleSlug]
 /courses/[courseSlug]/[variantSlug]/modules/[moduleSlug]/lessons/[lessonSlug]
-```
+
+/assignments
+/assignments/[assignmentId]
+
+/teacher/assignments
+/teacher/assignments/new
+/teacher/assignments/[assignmentId]
+
+/question-sets/[questionSetSlug]
 
 ---
 
-## 🔐 Access Model
+## 🔐 Access System
 
-User access is controlled via the `user_course_access` table.
+### Tables
 
-Each user has:
+* `products`
+* `prices`
+* `user_access_grants`
 
-* `course_slug`
-* `course_variant`
-* `access_mode`
+### Access Modes
 
-### Access modes
+* `trial`
+* `full`
+* `volna`
 
-* `trial` → access to free lessons only
-* `full` → full course access
-* `volna` → future teacher/student mode
+### Key Logic
 
-Lesson-level access is defined in course data:
+* Access is determined via `user_access_grants`
+* Each grant links to a `product`
+* Products define:
+  - course
+  - variant
+  - access type
 
-```ts
-access: "free" | "paid"
-```
+### Lesson-level flags
+
+* `is_trial_visible`
+* `available_in_volna`
+
+---
+
+## 👥 Roles
+
+Defined dynamically:
+
+| Role | Source |
+|------|--------|
+| Admin | `profiles.is_admin = true` |
+| Teacher | `teaching_group_members.member_role = teacher` |
+| Student | default |
+
+---
+
+## 🎓 Volna System
+
+### Tables
+
+* `teaching_groups`
+* `teaching_group_members`
+
+### Features
+
+* Teacher → student group management
+* Volna-specific course variant
+* Assignment distribution
+* Homework review workflow
+
+---
+
+## 📝 Assignment System
+
+### Tables
+
+* `assignments`
+* `assignment_items`
+* `assignment_submissions`
+
+### Assignment items
+
+Each assignment can include:
+
+* lesson
+* question set
+* custom task
+
+---
+
+### Teacher Flow
+
+* Create assignment
+* Attach multiple lessons
+* Attach question sets
+* Add custom tasks
+* Review submissions
+* Mark + give feedback
+
+---
+
+### Student Flow
+
+* View assignments
+* Open assignment detail page
+* Access:
+  - lessons
+  - question sets
+  - tasks
+* Submit homework
+* View feedback
+
+---
+
+## 🧩 Lesson System
+
+Block-based architecture.
+
+### Supported blocks
+
+* text
+* note
+* vocabulary
+* multiple choice
+* short answer
+* question set
+
+### Location
+
+src/components/lesson-blocks/
+
+### Content stored in:
+
+src/lib/lesson-content/
+
+---
+
+## ❓ Question System
+
+Database-driven.
+
+### Tables
+
+* `question_sets`
+* `questions`
+* `question_options`
+* `accepted_answers`
+* `question_attempts`
+
+### Supported types
+
+* multiple_choice
+* short_answer
+* translation
 
 ---
 
 ## 📊 Progress Tracking
 
-Lesson progress is stored in `lesson_progress`.
+### Table
 
-Tracked fields:
+* `lesson_progress`
+
+### Fields
 
 * `course_slug`
 * `variant_slug`
@@ -74,164 +210,102 @@ Tracked fields:
 * `lesson_slug`
 * `completed`
 
-Progress is:
+### Key Features
 
-* shown in modules
-* summarised on dashboard
-* updated via server actions
+* Variant-aware (important fix)
+* Used in:
+  - lesson page
+  - module page
+  - dashboard
+
+---
+
+## 🧭 Dashboard System
+
+Role-aware dashboard:
+
+### Admin
+* Role display only
+
+### Teacher
+* Role = teacher
+* Volna context
+
+### Student
+* Learning track (foundation / higher / volna)
+* Access type (trial / full / volna)
+* Completed lessons
 
 ---
 
 ## 🧱 Tech Stack
 
-* **Framework:** Next.js (App Router)
-* **Language:** TypeScript
-* **Styling:** Tailwind CSS
-* **Backend / DB:** Supabase (Postgres + Auth)
-* **Deployment:** Vercel
+* **Next.js (App Router)**
+* **TypeScript**
+* **Tailwind CSS**
+* **Supabase (Postgres + Auth + RLS)**
+* **Vercel**
 
 ---
 
 ## 🗂️ Project Structure
-
-```
 src/
-  app/
-    (public)/
-    (platform)/
-      dashboard/
-      courses/
-        [courseSlug]/
-          [variantSlug]/
-            modules/
-              [moduleSlug]/
-                lessons/
-                  [lessonSlug]/
 
-  components/
-    layout/
-    ui/
-    lesson-blocks/
+app/
+(platform)/
+dashboard/
+courses/
+assignments/
+teacher/
+question-sets/
 
-  lib/
-    course-data.ts
-    course-helpers.ts
-    lesson-content/
-    routes.ts
-    access.ts
-    progress.ts
-    progress-module.ts
-    auth.ts
-    supabase/
+components/
+layout/
+ui/
+lesson-blocks/
+assignments/
 
-  types/
-    course.ts
-    lesson.ts
-```
+lib/
+auth.ts
+dashboard-helpers.ts
+access.ts
+access-helpers-db.ts
+assignment-helpers-db.ts
+course-helpers-db.ts
+progress.ts
+progress-module.ts
+question-helpers-db.ts
+vocabulary-helpers-db.ts
+teacher-auth.ts
+volna-helpers-db.ts
+routes.ts
+supabase/
 
----
-
-## 🧩 Lesson System
-
-Lessons are built using a **block-based architecture**.
-
-Each lesson consists of reusable blocks such as:
-
-* text
-* vocabulary
-* notes
-* questions
-* audio (future)
-
-Lesson content is stored separately from UI using:
-
-```
-lib/lesson-content/
-```
-
-This allows fast content creation without changing components.
+types/
 
 ---
 
-## 🔁 Routing System
+## 🔐 Security
 
-All navigation is handled through helper functions in:
-
-```
-src/lib/routes.ts
-```
-
-Examples:
-
-```ts
-getLessonPath(courseSlug, variantSlug, moduleSlug, lessonSlug)
-getModulePath(courseSlug, variantSlug, moduleSlug)
-getVariantPath(courseSlug, variantSlug)
-```
-
----
-
-## 🧪 Development Workflow
-
-### Branching
-
-* `main` → production (public)
-* `dev` → development (used with Vercel preview deployments)
-
-### Workflow
-
-1. Work on `dev`
-2. Push changes → preview deployment
-3. Test in preview
-4. Merge to `main` when ready
-
----
-
-## 🔧 Environment Variables
-
-Create a `.env.local` file:
-
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-```
-
-Do **not** commit real values.
-
----
-
-## ☁️ Deployment
-
-The app is deployed using **Vercel**.
-
-* Production → from `main`
-* Preview → from `dev` branch
+* Supabase RLS enforced
+* Server-side access control
+* Teacher route guards implemented
+* Assignment access scoped by group membership
 
 ---
 
 ## 🛣️ Future Plans
 
-* Multiple course variants (Foundation, Higher)
-* Volna School integration (teacher mode)
-* Speaking exam preparation
-* Mock exam system
-* AI-assisted learning features
-* Audio / listening exercises
-
----
-
-## ⚠️ Notes
-
-* Supabase uses Row Level Security (RLS)
-* All access control is enforced server-side
-* Progress tracking is variant-aware
+* Question analytics
+* Speaking exam system
+* AI tutor
+* Audio/listening blocks
+* Admin panel
+* Payment integration
 
 ---
 
 ## 🧑‍💻 Author
 
-Anton Vlasenko - Director of Volna Online Russian School.
-
-Built as part of the Volna School ecosystem.
-
----
+Anton Vlasenko  
+Director — Volna Online Russian School
