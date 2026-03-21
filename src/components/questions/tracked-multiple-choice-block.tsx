@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import MultipleChoiceBlock from "@/components/lesson-blocks/multiple-choice-block";
+import MultipleChoiceBlock from "@/components/questions/multiple-choice-block";
 import {
   type RuntimeMultipleChoiceQuestion,
   validateMultipleChoiceAnswer,
