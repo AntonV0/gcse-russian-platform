@@ -8,6 +8,7 @@ export type DbAssignment = {
   due_at: string | null;
   status: string;
   created_by: string;
+  allow_file_upload: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -28,6 +29,8 @@ export type DbAssignmentSubmission = {
   student_user_id: string;
   status: string;
   submitted_text: string | null;
+  submitted_file_path: string | null;
+  submitted_file_name: string | null;
   submitted_at: string | null;
   mark: number | null;
   feedback: string | null;
@@ -392,7 +395,6 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
 
   return results;
 }
-
 
 export type TeacherGroupOption = {
   id: string;

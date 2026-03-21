@@ -25,6 +25,7 @@ export default function TeacherCreateAssignmentForm({
   const [instructions, setInstructions] = useState("");
   const [dueAt, setDueAt] = useState("");
   const [customTask, setCustomTask] = useState("");
+  const [allowFileUpload, setAllowFileUpload] = useState(false);
   const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
   const [selectedQuestionSetIds, setSelectedQuestionSetIds] = useState<string[]>(
     []
@@ -70,6 +71,7 @@ export default function TeacherCreateAssignmentForm({
       lessonIds: selectedLessonIds,
       questionSetIds: selectedQuestionSetIds,
       customTask,
+      allowFileUpload,
     });
 
     if (result && !result.success) {
@@ -150,6 +152,21 @@ export default function TeacherCreateAssignmentForm({
           className="w-full rounded border px-3 py-2"
         />
       </div>
+
+      <label className="flex items-start gap-3 rounded border p-4">
+        <input
+          type="checkbox"
+          checked={allowFileUpload}
+          onChange={(e) => setAllowFileUpload(e.target.checked)}
+          className="mt-1"
+        />
+        <div>
+          <div className="font-medium">Allow file upload</div>
+          <div className="text-sm text-gray-600">
+            Students can upload an image, PDF, or file with their written work.
+          </div>
+        </div>
+      </label>
 
       <div className="space-y-3">
         <p className="text-sm font-medium">Attach lessons</p>

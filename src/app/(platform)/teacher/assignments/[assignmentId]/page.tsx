@@ -11,6 +11,7 @@ import {
 } from "@/lib/assignment-helpers-db";
 import { getLessonPath } from "@/lib/routes";
 import { canCurrentUserReviewAssignment } from "@/lib/teacher-auth";
+import { getPublicStorageUrl } from "@/lib/storage-helpers";
 
 type TeacherAssignmentReviewPageProps = {
   params: Promise<{
@@ -38,6 +39,21 @@ export default async function TeacherAssignmentReviewPage({
   if (!assignment) {
     return <main>Assignment not found.</main>;
   }
+
+  const submissionsWithFiles = await Promise.all(
+    submissions.map(async ({ submission, student }) => {
+      const fileUrl = await getPublicStorageUrl(
+        "assignment-submissions",
+        submission.submitted_file_path ?? null
+      );
+
+      return {
+        submission,
+        student,
+        fileUrl,
+      };
+    })
+  );
 
   return (
     <main>
@@ -125,13 +141,13 @@ export default async function TeacherAssignmentReviewPage({
         )}
       </section>
 
-      {submissions.length === 0 ? (
+      {submissionsWithFiles.length === 0 ? (
         <div className="rounded-lg border p-6 text-sm text-gray-600">
           No submissions yet.
         </div>
       ) : (
         <section className="grid gap-4">
-          {submissions.map(({ submission, student }) => (
+          {submissionsWithFiles.map(({ submission, student, fileUrl }) => (
             <DashboardCard
               key={submission.id}
               title={
@@ -159,6 +175,21 @@ export default async function TeacherAssignmentReviewPage({
                   <p className="mb-1 font-medium">Submission</p>
                   <p>{submission.submitted_text ?? "No submission text."}</p>
                 </div>
+
+                {submission.submitted_file_name && fileUrl ? (
+                  <div className="rounded border bg-gray-50 p-3 text-sm">
+                    <p className="mb-1 font-medium">Uploaded file</p>
+                    <p>{submission.submitted_file_name}</p>
+                    <Link
+                      href={fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      Open uploaded file
+                    </Link>
+                  </div>
+                ) : null}
 
                 <TeacherSubmissionReviewForm
                   submissionId={submission.id}

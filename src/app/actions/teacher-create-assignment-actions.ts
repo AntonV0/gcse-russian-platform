@@ -11,6 +11,7 @@ type CreateTeacherAssignmentInput = {
   lessonIds: string[];
   questionSetIds?: string[];
   customTask?: string | null;
+  allowFileUpload?: boolean;
 };
 
 export async function createTeacherAssignmentAction({
@@ -21,6 +22,7 @@ export async function createTeacherAssignmentAction({
   lessonIds,
   questionSetIds = [],
   customTask = null,
+  allowFileUpload = false,
 }: CreateTeacherAssignmentInput) {
   const supabase = await createClient();
 
@@ -60,6 +62,7 @@ export async function createTeacherAssignmentAction({
       due_at: dueAt || null,
       status: "published",
       created_by: user.id,
+      allow_file_upload: allowFileUpload,
     })
     .select("id")
     .single();

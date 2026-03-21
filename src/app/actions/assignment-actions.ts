@@ -5,11 +5,15 @@ import { createClient } from "@/lib/supabase/server";
 type SubmitAssignmentInput = {
   assignmentId: string;
   submittedText: string;
+  submittedFilePath?: string | null;
+  submittedFileName?: string | null;
 };
 
 export async function submitAssignmentAction({
   assignmentId,
   submittedText,
+  submittedFilePath = null,
+  submittedFileName = null,
 }: SubmitAssignmentInput) {
   const supabase = await createClient();
 
@@ -43,7 +47,9 @@ export async function submitAssignmentAction({
         assignment_id: assignmentId,
         student_user_id: user.id,
         status: "submitted",
-        submitted_text: submittedText,
+        submitted_text: submittedText.trim() || null,
+        submitted_file_path: submittedFilePath,
+        submitted_file_name: submittedFileName,
         submitted_at: now,
       });
 
@@ -56,7 +62,9 @@ export async function submitAssignmentAction({
       .from("assignment_submissions")
       .update({
         status: "submitted",
-        submitted_text: submittedText,
+        submitted_text: submittedText.trim() || null,
+        submitted_file_path: submittedFilePath,
+        submitted_file_name: submittedFileName,
         submitted_at: now,
       })
       .eq("id", existing.id);
