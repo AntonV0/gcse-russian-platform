@@ -4,6 +4,9 @@ import { useMemo, useState, useTransition } from "react";
 import ShortAnswerBlock from "@/components/questions/short-answer-block";
 import TranslationBlock from "@/components/questions/translation-block";
 import SentenceBuilderBlock from "@/components/questions/sentence-builder-block";
+import SelectionBasedBlock, {
+  type SelectionGroup,
+} from "@/components/questions/selection-based-block";
 import {
   type RuntimeAcceptedAnswer,
   type RuntimeTextQuestion,
@@ -33,6 +36,10 @@ type SentenceBuilderUiConfig = {
   wordBank?: string[];
 };
 
+type SelectionBasedUiConfig = {
+  groups?: SelectionGroup[];
+};
+
 type TrackedShortAnswerBlockProps = {
   questionId: string;
   lessonId?: string | null;
@@ -43,6 +50,7 @@ type TrackedShortAnswerBlockProps = {
   placeholder?: string;
   translationUi?: TranslationUiConfig;
   sentenceBuilderUi?: SentenceBuilderUiConfig;
+  selectionBasedUi?: SelectionBasedUiConfig;
   audioUrl?: string | null;
   answerStrategy?: AnswerStrategy;
 };
@@ -65,6 +73,16 @@ function buildSentenceBuilderTokenPool(params: {
   return tokenizeSentenceBuilderText(primaryAnswer.text);
 }
 
+function buildSelectionBasedSubmittedText(params: {
+  groups: SelectionGroup[];
+  selectedOptions: Record<string, string>;
+}) {
+  return params.groups
+    .map((group) => params.selectedOptions[group.id])
+    .filter((value): value is string => typeof value === "string" && value.length > 0)
+    .join(" ");
+}
+
 export default function TrackedShortAnswerBlock({
   questionId,
   lessonId = null,
@@ -75,6 +93,7 @@ export default function TrackedShortAnswerBlock({
   placeholder = "Type your answer",
   translationUi,
   sentenceBuilderUi,
+  selectionBasedUi,
   audioUrl = null,
   answerStrategy = "text_input",
 }: TrackedShortAnswerBlockProps) {
@@ -87,11 +106,14 @@ export default function TrackedShortAnswerBlock({
     [acceptedAnswers, sentenceBuilderUi?.wordBank]
   );
 
+  const selectionGroups = selectionBasedUi?.groups ?? [];
+
   const [value, setValue] = useState("");
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [availableTokens, setAvailableTokens] = useState<string[]>(
     initialSentenceBuilderTokens
   );
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -124,6 +146,16 @@ export default function TrackedShortAnswerBlock({
     submittedTokens: selectedTokens,
   });
 
+  const selectionBasedSubmittedText = buildSelectionBasedSubmittedText({
+    groups: selectionGroups,
+    selectedOptions,
+  });
+
+  const selectionBasedResult = validateTextAnswer({
+    question: runtimeQuestion,
+    submittedText: selectionBasedSubmittedText,
+  });
+
   const sentenceBuilderInstruction = useMemo(() => {
     if (translationUi?.instruction) {
       return translationUi.instruction;
@@ -134,6 +166,18 @@ export default function TrackedShortAnswerBlock({
     }
 
     return "Build the sentence in Russian";
+  }, [translationUi]);
+
+  const selectionBasedInstruction = useMemo(() => {
+    if (translationUi?.instruction) {
+      return translationUi.instruction;
+    }
+
+    if (translationUi?.targetLanguageLabel) {
+      return `Select the correct forms in ${translationUi.targetLanguageLabel}`;
+    }
+
+    return "Select the correct Russian forms";
   }, [translationUi]);
 
   async function handleSubmitText() {
@@ -191,6 +235,33 @@ export default function TrackedShortAnswerBlock({
     });
   }
 
+  async function handleSubmitSelectionBased() {
+    if (selectionBasedSubmittedText.length === 0 || submitted) return;
+
+    setSubmitted(true);
+
+    startTransition(async () => {
+      await submitQuestionAttemptAction({
+        questionId,
+        lessonId,
+        submittedText: selectionBasedSubmittedText,
+        submittedPayload: {
+          selectedOptions,
+          normalizedAnswer: selectionBasedResult.normalizedSubmittedText,
+          matchedAnswerId: selectionBasedResult.matchedAnswer?.id ?? null,
+          correctAnswerText: selectionBasedResult.correctAnswerText,
+          acceptedAnswerTexts: selectionBasedResult.acceptedAnswerTexts,
+          statusLabel: selectionBasedResult.statusLabel,
+          questionType,
+          answerStrategy,
+        },
+        isCorrect: selectionBasedResult.isCorrect,
+        awardedMarks: selectionBasedResult.isCorrect ? runtimeQuestion.marks : 0,
+        feedback: selectionBasedResult.feedback,
+      });
+    });
+  }
+
   function handleAddToken(index: number) {
     if (submitted || isPending) return;
 
@@ -223,6 +294,21 @@ export default function TrackedShortAnswerBlock({
     );
   }
 
+  function handleSelectOption(groupId: string, option: string) {
+    if (submitted || isPending) return;
+
+    setSelectedOptions((current) => ({
+      ...current,
+      [groupId]: option,
+    }));
+  }
+
+  function handleResetSelectionBased() {
+    if (submitted || isPending) return;
+
+    setSelectedOptions({});
+  }
+
   if (questionType === "translation" && answerStrategy === "sentence_builder") {
     return (
       <SentenceBuilderBlock
@@ -242,6 +328,30 @@ export default function TrackedShortAnswerBlock({
         feedbackStatusLabel={sentenceBuilderResult.statusLabel}
         feedbackCorrectAnswerText={sentenceBuilderResult.correctAnswerText}
         feedbackAcceptedAnswerTexts={sentenceBuilderResult.acceptedAnswerTexts}
+        sourceLanguageLabel={translationUi?.sourceLanguageLabel}
+        targetLanguageLabel={translationUi?.targetLanguageLabel}
+      />
+    );
+  }
+
+  if (questionType === "translation" && answerStrategy === "selection_based") {
+    return (
+      <SelectionBasedBlock
+        question={question}
+        instruction={selectionBasedInstruction}
+        audioUrl={audioUrl}
+        groups={selectionGroups}
+        selectedOptions={selectedOptions}
+        explanation={explanation}
+        hasSubmitted={submitted}
+        isCorrect={selectionBasedResult.isCorrect}
+        isSubmitting={isPending}
+        onSelectOption={handleSelectOption}
+        onReset={handleResetSelectionBased}
+        onSubmit={handleSubmitSelectionBased}
+        feedbackStatusLabel={selectionBasedResult.statusLabel}
+        feedbackCorrectAnswerText={selectionBasedResult.correctAnswerText}
+        feedbackAcceptedAnswerTexts={selectionBasedResult.acceptedAnswerTexts}
         sourceLanguageLabel={translationUi?.sourceLanguageLabel}
         targetLanguageLabel={translationUi?.targetLanguageLabel}
       />

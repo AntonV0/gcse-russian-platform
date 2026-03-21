@@ -8,6 +8,12 @@ type QuestionRendererProps = {
   lessonId?: string | null;
 };
 
+type SelectionGroupMetadata = {
+  id: string;
+  label?: string;
+  options: string[];
+};
+
 function getStringMetadata(
   metadata: Record<string, unknown>,
   key: string
@@ -60,6 +66,58 @@ function getStringArrayMetadata(
   );
 
   return stringValues.length > 0 ? stringValues : undefined;
+}
+
+function getSelectionGroupsMetadata(
+  metadata: Record<string, unknown>
+): SelectionGroupMetadata[] | undefined {
+  const value = metadata.selectionGroups;
+
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const groups: SelectionGroupMetadata[] = [];
+
+  value.forEach((item, index) => {
+    if (!item || typeof item !== "object") {
+      return;
+    }
+
+    const group = item as Record<string, unknown>;
+    const optionsValue = group.options;
+
+    if (!Array.isArray(optionsValue)) {
+      return;
+    }
+
+    const options = optionsValue.filter(
+      (option): option is string =>
+        typeof option === "string" && option.trim().length > 0
+    );
+
+    if (options.length === 0) {
+      return;
+    }
+
+    const resolvedId =
+      typeof group.id === "string" && group.id.trim().length > 0
+        ? group.id
+        : `group-${index + 1}`;
+
+    const resolvedLabel =
+      typeof group.label === "string" && group.label.trim().length > 0
+        ? group.label
+        : undefined;
+
+    groups.push({
+      id: resolvedId,
+      label: resolvedLabel,
+      options,
+    });
+  });
+
+  return groups.length > 0 ? groups : undefined;
 }
 
 export default async function QuestionRenderer({
@@ -135,6 +193,9 @@ export default async function QuestionRenderer({
           }}
           sentenceBuilderUi={{
             wordBank: getStringArrayMetadata(question.metadata, "wordBank"),
+          }}
+          selectionBasedUi={{
+            groups: getSelectionGroupsMetadata(question.metadata),
           }}
         />
       );
