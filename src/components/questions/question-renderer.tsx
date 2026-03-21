@@ -136,6 +136,16 @@ function getSelectionGroupsMetadata(
   return groups.length > 0 ? groups : undefined;
 }
 
+function getValidationOptions(metadata: Record<string, unknown>) {
+  return {
+    ignorePunctuation:
+      getBooleanMetadata(metadata, "ignorePunctuation") ?? false,
+    ignoreArticles: getBooleanMetadata(metadata, "ignoreArticles") ?? false,
+    collapseWhitespace:
+      getBooleanMetadata(metadata, "collapseWhitespace") ?? true,
+  };
+}
+
 export default async function QuestionRenderer({
   question,
   lessonId = null,
@@ -143,9 +153,18 @@ export default async function QuestionRenderer({
   const audioUrl = await getPublicAudioUrl(question.audioPath);
 
   const answerStrategy = getAnswerStrategy(question.metadata);
-  const audioMaxPlays = getNumberMetadata(question.metadata, "maxPlays");
-  const audioListeningMode =
-    getBooleanMetadata(question.metadata, "listeningMode") ?? false;
+  const validationOptions = getValidationOptions(question.metadata);
+
+  const listeningUi = {
+    maxPlays: getNumberMetadata(question.metadata, "maxPlays"),
+    listeningMode: getBooleanMetadata(question.metadata, "listeningMode") ?? false,
+    autoPlay: getBooleanMetadata(question.metadata, "autoPlay") ?? false,
+    hideNativeControls:
+      getBooleanMetadata(question.metadata, "hideNativeControls") ?? false,
+    requireAudioCompletionBeforeSubmit:
+      getBooleanMetadata(question.metadata, "requireAudioCompletionBeforeSubmit") ??
+      false,
+  };
 
   switch (question.type) {
     case "multiple_choice":
@@ -161,8 +180,10 @@ export default async function QuestionRenderer({
           correctOptionId={question.correctOptionId ?? ""}
           explanation={question.explanation ?? undefined}
           audioUrl={audioUrl}
-          audioMaxPlays={audioMaxPlays}
-          audioListeningMode={audioListeningMode}
+          audioMaxPlays={listeningUi.maxPlays}
+          audioListeningMode={listeningUi.listeningMode}
+          audioAutoPlay={listeningUi.autoPlay}
+          audioHideNativeControls={listeningUi.hideNativeControls}
         />
       );
 
@@ -180,9 +201,9 @@ export default async function QuestionRenderer({
             "Type your answer"
           }
           audioUrl={audioUrl}
-          audioMaxPlays={audioMaxPlays}
-          audioListeningMode={audioListeningMode}
+          listeningUi={listeningUi}
           answerStrategy={answerStrategy}
+          validationOptions={validationOptions}
         />
       );
 
@@ -200,9 +221,9 @@ export default async function QuestionRenderer({
             "Type your translation"
           }
           audioUrl={audioUrl}
-          audioMaxPlays={audioMaxPlays}
-          audioListeningMode={audioListeningMode}
+          listeningUi={listeningUi}
           answerStrategy={answerStrategy}
+          validationOptions={validationOptions}
           translationUi={{
             direction: getTranslationDirection(question.metadata),
             sourceLanguageLabel: getStringMetadata(
@@ -221,6 +242,11 @@ export default async function QuestionRenderer({
           }}
           selectionBasedUi={{
             groups: getSelectionGroupsMetadata(question.metadata),
+            displayMode:
+              getStringMetadata(question.metadata, "selectionDisplayMode") ===
+              "inline_gaps"
+                ? "inline_gaps"
+                : "grouped",
           }}
         />
       );
