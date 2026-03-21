@@ -84,6 +84,14 @@ export type TextValidationResult = QuestionFeedbackResult & {
   matchedAnswer: RuntimeAcceptedAnswer | null;
 };
 
+export type SentenceBuilderValidationResult = QuestionFeedbackResult & {
+  submittedText: string;
+  normalizedSubmittedText: string;
+  submittedTokens: string[];
+  expectedTokens: string[];
+  matchedAnswer: RuntimeAcceptedAnswer | null;
+};
+
 function collapseWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
 }
@@ -108,6 +116,13 @@ function dedupeTexts(values: string[]) {
   }
 
   return result;
+}
+
+export function tokenizeSentenceBuilderText(value: string) {
+  return collapseWhitespace(value)
+    .split(" ")
+    .map((token) => token.trim())
+    .filter(Boolean);
 }
 
 export function mapSupportedQuestionType(
@@ -271,6 +286,47 @@ export function validateTextAnswer(params: {
     isCorrect,
     submittedText,
     normalizedSubmittedText,
+    matchedAnswer,
+    feedback: params.question.explanation,
+    statusLabel: isCorrect ? "Correct." : "Not quite.",
+    correctAnswerText: isCorrect ? null : (primaryAnswer?.text ?? null),
+    acceptedAnswerTexts: isCorrect ? [] : acceptedAnswerTexts,
+  };
+}
+
+export function validateSentenceBuilderAnswer(params: {
+  question: RuntimeTextQuestion;
+  submittedTokens: string[];
+}): SentenceBuilderValidationResult {
+  const submittedText = params.submittedTokens.join(" ");
+  const normalizedSubmittedText = normalizeFreeTextAnswer(submittedText);
+
+  const matchedAnswer =
+    params.question.acceptedAnswers.find(
+      (answer) => normalizedSubmittedText === answer.normalizedText
+    ) ?? null;
+
+  const primaryAnswer =
+    params.question.acceptedAnswers.find((answer) => answer.isPrimary) ??
+    params.question.acceptedAnswers[0] ??
+    null;
+
+  const acceptedAnswerTexts = dedupeTexts(
+    params.question.acceptedAnswers.map((answer) => answer.text)
+  );
+
+  const expectedTokens = primaryAnswer
+    ? tokenizeSentenceBuilderText(primaryAnswer.text)
+    : [];
+
+  const isCorrect = matchedAnswer !== null;
+
+  return {
+    isCorrect,
+    submittedText,
+    normalizedSubmittedText,
+    submittedTokens: params.submittedTokens,
+    expectedTokens,
     matchedAnswer,
     feedback: params.question.explanation,
     statusLabel: isCorrect ? "Correct." : "Not quite.",
