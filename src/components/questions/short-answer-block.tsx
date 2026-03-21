@@ -21,6 +21,10 @@ type ShortAnswerBlockProps = {
   audioUrl?: string | null;
   audioMaxPlays?: number;
   audioListeningMode?: boolean;
+  audioAutoPlay?: boolean;
+  audioHideNativeControls?: boolean;
+  onAudioPlaybackCompleted?: () => void;
+  submitLocked?: boolean;
 };
 
 function normalizeAnswer(value: string) {
@@ -44,6 +48,10 @@ export default function ShortAnswerBlock({
   audioUrl = null,
   audioMaxPlays,
   audioListeningMode = false,
+  audioAutoPlay = false,
+  audioHideNativeControls = false,
+  onAudioPlaybackCompleted,
+  submitLocked = false,
 }: ShortAnswerBlockProps) {
   const [internalAnswer, setInternalAnswer] = useState("");
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
@@ -74,7 +82,14 @@ export default function ShortAnswerBlock({
   }
 
   function handleSubmit() {
-    if (!resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting) return;
+    if (
+      !resolvedAnswer.trim() ||
+      resolvedHasSubmitted ||
+      isSubmitting ||
+      submitLocked
+    ) {
+      return;
+    }
 
     if (onSubmit) {
       onSubmit();
@@ -90,6 +105,9 @@ export default function ShortAnswerBlock({
       audioUrl={audioUrl}
       audioMaxPlays={audioMaxPlays}
       audioListeningMode={audioListeningMode}
+      audioAutoPlay={audioAutoPlay}
+      audioHideNativeControls={audioHideNativeControls}
+      onAudioPlaybackCompleted={onAudioPlaybackCompleted}
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback
@@ -112,10 +130,18 @@ export default function ShortAnswerBlock({
           className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
         />
 
+        {submitLocked ? (
+          <p className="text-sm text-amber-700">
+            Listen to the audio fully before submitting your answer.
+          </p>
+        ) : null}
+
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={!resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting}
+          disabled={
+            !resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked
+          }
           className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {resolvedHasSubmitted

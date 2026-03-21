@@ -17,6 +17,8 @@ type MultipleChoiceBlockProps = {
   audioUrl?: string | null;
   audioMaxPlays?: number;
   audioListeningMode?: boolean;
+  audioAutoPlay?: boolean;
+  audioHideNativeControls?: boolean;
   selectedOptionId?: string | null;
   hasSubmitted?: boolean;
   isSubmitting?: boolean;
@@ -35,6 +37,8 @@ export default function MultipleChoiceBlock({
   audioUrl = null,
   audioMaxPlays,
   audioListeningMode = false,
+  audioAutoPlay = false,
+  audioHideNativeControls = false,
   selectedOptionId,
   hasSubmitted,
   isSubmitting = false,
@@ -87,6 +91,8 @@ export default function MultipleChoiceBlock({
       audioUrl={audioUrl}
       audioMaxPlays={audioMaxPlays}
       audioListeningMode={audioListeningMode}
+      audioAutoPlay={audioAutoPlay}
+      audioHideNativeControls={audioHideNativeControls}
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback

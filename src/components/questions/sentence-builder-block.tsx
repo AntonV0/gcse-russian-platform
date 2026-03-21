@@ -9,6 +9,9 @@ type SentenceBuilderBlockProps = {
   audioUrl?: string | null;
   audioMaxPlays?: number;
   audioListeningMode?: boolean;
+  audioAutoPlay?: boolean;
+  audioHideNativeControls?: boolean;
+  onAudioPlaybackCompleted?: () => void;
   availableTokens: string[];
   selectedTokens: string[];
   explanation?: string;
@@ -32,6 +35,9 @@ export default function SentenceBuilderBlock({
   audioUrl = null,
   audioMaxPlays,
   audioListeningMode = false,
+  audioAutoPlay = false,
+  audioHideNativeControls = false,
+  onAudioPlaybackCompleted,
   availableTokens,
   selectedTokens,
   explanation,
@@ -59,6 +65,9 @@ export default function SentenceBuilderBlock({
       audioUrl={audioUrl}
       audioMaxPlays={audioMaxPlays}
       audioListeningMode={audioListeningMode}
+      audioAutoPlay={audioAutoPlay}
+      audioHideNativeControls={audioHideNativeControls}
+      onAudioPlaybackCompleted={onAudioPlaybackCompleted}
       feedback={
         hasSubmitted ? (
           <QuestionFeedback
