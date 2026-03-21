@@ -3,12 +3,14 @@ import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import TeacherSubmissionReviewForm from "@/components/assignments/teacher-submission-review-form";
 import DeleteAssignmentButton from "@/components/assignments/delete-assignment-button";
+import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
 import {
   getAssignmentByIdDb,
   getAssignmentItemsWithDetailsDb,
   getAssignmentSubmissionsForTeacherDb,
 } from "@/lib/assignment-helpers-db";
 import { getLessonPath } from "@/lib/routes";
+import { canCurrentUserReviewAssignment } from "@/lib/teacher-auth";
 
 type TeacherAssignmentReviewPageProps = {
   params: Promise<{
@@ -20,6 +22,12 @@ export default async function TeacherAssignmentReviewPage({
   params,
 }: TeacherAssignmentReviewPageProps) {
   const { assignmentId } = await params;
+
+  const canReview = await canCurrentUserReviewAssignment(assignmentId);
+
+  if (!canReview) {
+    return <TeacherAccessDenied />;
+  }
 
   const [assignment, items, submissions] = await Promise.all([
     getAssignmentByIdDb(assignmentId),
@@ -90,11 +98,19 @@ export default async function TeacherAssignmentReviewPage({
                 );
               }
 
-              if (item.item_type === "question_set") {
+              if (item.item_type === "question_set" && item.questionSet?.slug) {
                 return (
                   <li key={item.id} className="rounded border p-3">
                     <p className="font-medium">Question set</p>
-                    <p className="text-gray-700">Question set task</p>
+                    <Link
+                      href={`/question-sets/${item.questionSet.slug}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {item.questionSet.title}
+                    </Link>
+                    {item.questionSet.description ? (
+                      <p className="text-gray-700">{item.questionSet.description}</p>
+                    ) : null}
                   </li>
                 );
               }

@@ -31,7 +31,10 @@ export default function AssignmentSubmissionForm({
     <div className="space-y-3 rounded-lg border p-4">
       <textarea
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          setValue(e.target.value);
+          setSaved(false);
+        }}
         rows={6}
         className="w-full rounded border px-3 py-2"
         placeholder="Write your homework response here..."
@@ -43,11 +46,13 @@ export default function AssignmentSubmissionForm({
         disabled={isPending || !value.trim()}
         className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
       >
-        {isPending ? "Submitting..." : "Submit homework"}
+        {isPending ? "Submitting..." : initialValue ? "Update submission" : "Submit homework"}
       </button>
 
       {saved ? (
-        <p className="text-sm font-medium text-green-600">Submitted successfully.</p>
+        <p className="text-sm font-medium text-green-600">
+          Submission saved successfully.
+        </p>
       ) : null}
     </div>
   );

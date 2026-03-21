@@ -1,7 +1,9 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
+import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
 import { getTeacherAssignmentsDb } from "@/lib/assignment-helpers-db";
+import { isCurrentUserTeacherForAnyGroup } from "@/lib/teacher-auth";
 
 function formatDueDate(value: string | null) {
   if (!value) return "No due date";
@@ -13,6 +15,12 @@ function formatDueDate(value: string | null) {
 }
 
 export default async function TeacherAssignmentsPage() {
+  const isTeacher = await isCurrentUserTeacherForAnyGroup();
+
+  if (!isTeacher) {
+    return <TeacherAccessDenied />;
+  }
+
   const assignments = await getTeacherAssignmentsDb();
 
   return (
