@@ -1,20 +1,21 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
+import {
+  type RuntimeAcceptedAnswer,
+  type RuntimeTextQuestion,
+  validateTextAnswer,
+} from "@/lib/question-engine";
 import { submitQuestionAttemptAction } from "@/app/actions/question-actions";
 
 type TrackedShortAnswerBlockProps = {
   questionId: string;
   lessonId?: string | null;
   question: string;
-  acceptedAnswers: string[];
+  acceptedAnswers: RuntimeAcceptedAnswer[];
   explanation?: string;
   placeholder?: string;
 };
-
-function normalizeAnswer(value: string) {
-  return value.trim().toLowerCase();
-}
 
 export default function TrackedShortAnswerBlock({
   questionId,
@@ -28,12 +29,29 @@ export default function TrackedShortAnswerBlock({
   const [submitted, setSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const normalizedAcceptedAnswers = useMemo(
-    () => acceptedAnswers.map(normalizeAnswer),
-    [acceptedAnswers]
-  );
+  const runtimeQuestion: RuntimeTextQuestion = {
+    id: questionId,
+    questionSetId: "",
+    type: "short_answer",
+    prompt: question,
+    promptRich: null,
+    explanation: explanation ?? null,
+    difficulty: null,
+    marks: 1,
+    audioPath: null,
+    imagePath: null,
+    metadata: {},
+    position: 0,
+    isActive: true,
+    createdAt: "",
+    updatedAt: "",
+    acceptedAnswers,
+  };
 
-  const isCorrect = normalizedAcceptedAnswers.includes(normalizeAnswer(value));
+  const result = validateTextAnswer({
+    question: runtimeQuestion,
+    submittedText: value,
+  });
 
   async function handleSubmit() {
     if (!value.trim() || submitted) return;
@@ -45,10 +63,14 @@ export default function TrackedShortAnswerBlock({
         questionId,
         lessonId,
         submittedText: value,
-        submittedPayload: { answer: value },
-        isCorrect,
-        awardedMarks: isCorrect ? 1 : 0,
-        feedback: explanation ?? null,
+        submittedPayload: {
+          answer: value,
+          normalizedAnswer: result.normalizedSubmittedText,
+          matchedAnswerId: result.matchedAnswer?.id ?? null,
+        },
+        isCorrect: result.isCorrect,
+        awardedMarks: result.isCorrect ? runtimeQuestion.marks : 0,
+        feedback: result.feedback,
       });
     });
   }
@@ -77,13 +99,15 @@ export default function TrackedShortAnswerBlock({
 
       {submitted ? (
         <div className="text-sm">
-          {isCorrect ? (
+          {result.isCorrect ? (
             <p className="font-medium text-green-600">✓ Correct</p>
           ) : (
             <p className="font-medium text-red-600">✗ Incorrect</p>
           )}
 
-          {explanation ? <p className="mt-2 text-gray-700">{explanation}</p> : null}
+          {explanation ? (
+            <p className="mt-2 text-gray-700">{explanation}</p>
+          ) : null}
         </div>
       ) : null}
     </div>
