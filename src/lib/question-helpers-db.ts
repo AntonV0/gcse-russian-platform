@@ -1,4 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import {
+  buildRuntimeQuestionSet,
+  type RuntimeQuestion,
+  type RuntimeQuestionSet,
+} from "@/lib/question-engine";
 
 export type DbQuestionSet = {
   id: string;
@@ -132,9 +137,9 @@ export async function loadQuestionSetBySlugDb(questionSetSlug: string) {
   if (!questionSet) {
     return {
       questionSet: null,
-      questions: [],
-      options: [],
-      acceptedAnswers: [],
+      questions: [] as DbQuestion[],
+      options: [] as DbQuestionOption[],
+      acceptedAnswers: [] as DbQuestionAcceptedAnswer[],
     };
   }
 
@@ -149,4 +154,30 @@ export async function loadQuestionSetBySlugDb(questionSetSlug: string) {
     options,
     acceptedAnswers,
   };
+}
+
+export async function loadRuntimeQuestionSetBySlugDb(
+  questionSetSlug: string
+): Promise<{
+  questionSet: RuntimeQuestionSet["questionSet"] | null;
+  questions: RuntimeQuestion[];
+}> {
+  const { questionSet, questions, options, acceptedAnswers } =
+    await loadQuestionSetBySlugDb(questionSetSlug);
+
+  if (!questionSet) {
+    return {
+      questionSet: null,
+      questions: [],
+    };
+  }
+
+  const runtimeQuestionSet = buildRuntimeQuestionSet({
+    questionSet,
+    questions,
+    options,
+    acceptedAnswers,
+  });
+
+  return runtimeQuestionSet;
 }

@@ -1,4 +1,4 @@
-import { loadQuestionSetBySlugDb } from "@/lib/question-helpers-db";
+import { loadRuntimeQuestionSetBySlugDb } from "@/lib/question-helpers-db";
 import TrackedMultipleChoiceBlock from "@/components/lesson-blocks/tracked-multiple-choice-block";
 import TrackedShortAnswerBlock from "@/components/lesson-blocks/tracked-short-answer-block";
 
@@ -11,8 +11,8 @@ export default async function QuestionSetBlock({
   title,
   questionSetSlug,
 }: QuestionSetBlockProps) {
-  const { questionSet, questions, options, acceptedAnswers } =
-    await loadQuestionSetBySlugDb(questionSetSlug);
+  const { questionSet, questions } =
+    await loadRuntimeQuestionSetBySlugDb(questionSetSlug);
 
   if (!questionSet) {
     return (
@@ -31,28 +31,18 @@ export default async function QuestionSetBlock({
       ) : null}
 
       {questions.map((question) => {
-        const questionOptions = options.filter(
-          (option) => option.question_id === question.id
-        );
-
-        const questionAcceptedAnswers = acceptedAnswers
-          .filter((answer) => answer.question_id === question.id)
-          .map((answer) => answer.answer_text);
-
-        switch (question.question_type) {
+        switch (question.type) {
           case "multiple_choice":
             return (
               <TrackedMultipleChoiceBlock
                 key={question.id}
                 questionId={question.id}
                 question={question.prompt}
-                options={questionOptions.map((option) => ({
+                options={question.options.map((option) => ({
                   id: option.id,
-                  text: option.option_text ?? "",
+                  text: option.text,
                 }))}
-                correctOptionId={
-                  questionOptions.find((option) => option.is_correct)?.id ?? ""
-                }
+                correctOptionId={question.correctOptionId ?? ""}
                 explanation={question.explanation ?? undefined}
               />
             );
@@ -64,20 +54,10 @@ export default async function QuestionSetBlock({
                 key={question.id}
                 questionId={question.id}
                 question={question.prompt}
-                acceptedAnswers={questionAcceptedAnswers}
+                acceptedAnswers={question.acceptedAnswers}
                 explanation={question.explanation ?? undefined}
                 placeholder="Type your answer"
               />
-            );
-
-          default:
-            return (
-              <div
-                key={question.id}
-                className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-700"
-              >
-                Unsupported question type: {question.question_type}
-              </div>
             );
         }
       })}

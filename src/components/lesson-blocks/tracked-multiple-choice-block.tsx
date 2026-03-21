@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import MultipleChoiceBlock from "@/components/lesson-blocks/multiple-choice-block";
+import {
+  type RuntimeMultipleChoiceQuestion,
+  validateMultipleChoiceAnswer,
+} from "@/lib/question-engine";
 import { submitQuestionAttemptAction } from "@/app/actions/question-actions";
 
 type TrackedMultipleChoiceBlockProps = {
@@ -25,7 +28,35 @@ export default function TrackedMultipleChoiceBlock({
   const [submitted, setSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const isCorrect = selectedOptionId === correctOptionId;
+  const runtimeQuestion: RuntimeMultipleChoiceQuestion = {
+    id: questionId,
+    questionSetId: "",
+    type: "multiple_choice",
+    prompt: question,
+    promptRich: null,
+    explanation: explanation ?? null,
+    difficulty: null,
+    marks: 1,
+    audioPath: null,
+    imagePath: null,
+    metadata: {},
+    position: 0,
+    isActive: true,
+    createdAt: "",
+    updatedAt: "",
+    options: options.map((option, index) => ({
+      id: option.id,
+      text: option.text,
+      isCorrect: option.id === correctOptionId,
+      position: index,
+    })),
+    correctOptionId: correctOptionId || null,
+  };
+
+  const result = validateMultipleChoiceAnswer({
+    question: runtimeQuestion,
+    selectedOptionId,
+  });
 
   async function handleSubmit() {
     if (!selectedOptionId || submitted) return;
@@ -38,9 +69,9 @@ export default function TrackedMultipleChoiceBlock({
         lessonId,
         submittedText: null,
         submittedPayload: { selectedOptionId },
-        isCorrect,
-        awardedMarks: isCorrect ? 1 : 0,
-        feedback: explanation ?? null,
+        isCorrect: result.isCorrect,
+        awardedMarks: result.isCorrect ? runtimeQuestion.marks : 0,
+        feedback: result.feedback,
       });
     });
   }
@@ -79,13 +110,15 @@ export default function TrackedMultipleChoiceBlock({
 
       {submitted ? (
         <div className="text-sm">
-          {isCorrect ? (
+          {result.isCorrect ? (
             <p className="font-medium text-green-600">✓ Correct</p>
           ) : (
             <p className="font-medium text-red-600">✗ Incorrect</p>
           )}
 
-          {explanation ? <p className="mt-2 text-gray-700">{explanation}</p> : null}
+          {explanation ? (
+            <p className="mt-2 text-gray-700">{explanation}</p>
+          ) : null}
         </div>
       ) : null}
     </div>
