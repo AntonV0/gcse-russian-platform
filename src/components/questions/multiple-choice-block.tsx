@@ -15,6 +15,8 @@ type MultipleChoiceBlockProps = {
   correctOptionId: string;
   explanation?: string;
   audioUrl?: string | null;
+  audioMaxPlays?: number;
+  audioListeningMode?: boolean;
   selectedOptionId?: string | null;
   hasSubmitted?: boolean;
   isSubmitting?: boolean;
@@ -31,6 +33,8 @@ export default function MultipleChoiceBlock({
   correctOptionId,
   explanation,
   audioUrl = null,
+  audioMaxPlays,
+  audioListeningMode = false,
   selectedOptionId,
   hasSubmitted,
   isSubmitting = false,
@@ -81,6 +85,8 @@ export default function MultipleChoiceBlock({
     <QuestionCard
       prompt={question}
       audioUrl={audioUrl}
+      audioMaxPlays={audioMaxPlays}
+      audioListeningMode={audioListeningMode}
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback

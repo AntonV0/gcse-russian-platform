@@ -6,6 +6,8 @@ type QuestionCardProps = {
   instruction?: string;
   prompt: string;
   audioUrl?: string | null;
+  audioMaxPlays?: number;
+  audioListeningMode?: boolean;
   children: ReactNode;
   feedback?: ReactNode;
 };
@@ -15,6 +17,8 @@ export default function QuestionCard({
   instruction,
   prompt,
   audioUrl,
+  audioMaxPlays,
+  audioListeningMode = false,
   children,
   feedback,
 }: QuestionCardProps) {
@@ -28,7 +32,13 @@ export default function QuestionCard({
             <p className="text-sm font-medium text-gray-600">{instruction}</p>
           ) : null}
 
-          {audioUrl ? <AudioPlayer src={audioUrl} /> : null}
+          {audioUrl ? (
+            <AudioPlayer
+              src={audioUrl}
+              maxPlays={audioMaxPlays}
+              listeningMode={audioListeningMode}
+            />
+          ) : null}
 
           <p className="text-gray-800">{prompt}</p>
         </div>

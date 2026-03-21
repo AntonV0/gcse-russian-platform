@@ -13,6 +13,8 @@ type SelectionBasedBlockProps = {
   question: string;
   instruction?: string;
   audioUrl?: string | null;
+  audioMaxPlays?: number;
+  audioListeningMode?: boolean;
   groups: SelectionGroup[];
   selectedOptions: Record<string, string>;
   explanation?: string;
@@ -33,6 +35,8 @@ export default function SelectionBasedBlock({
   question,
   instruction = "Select the correct Russian forms",
   audioUrl = null,
+  audioMaxPlays,
+  audioListeningMode = false,
   groups,
   selectedOptions,
   explanation,
@@ -66,6 +70,8 @@ export default function SelectionBasedBlock({
       instruction={instruction}
       prompt={question}
       audioUrl={audioUrl}
+      audioMaxPlays={audioMaxPlays}
+      audioListeningMode={audioListeningMode}
       feedback={
         hasSubmitted ? (
           <QuestionFeedback

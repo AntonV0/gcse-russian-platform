@@ -7,6 +7,8 @@ type SentenceBuilderBlockProps = {
   question: string;
   instruction?: string;
   audioUrl?: string | null;
+  audioMaxPlays?: number;
+  audioListeningMode?: boolean;
   availableTokens: string[];
   selectedTokens: string[];
   explanation?: string;
@@ -28,6 +30,8 @@ export default function SentenceBuilderBlock({
   question,
   instruction = "Build the Russian sentence",
   audioUrl = null,
+  audioMaxPlays,
+  audioListeningMode = false,
   availableTokens,
   selectedTokens,
   explanation,
@@ -53,6 +57,8 @@ export default function SentenceBuilderBlock({
       instruction={instruction}
       prompt={question}
       audioUrl={audioUrl}
+      audioMaxPlays={audioMaxPlays}
+      audioListeningMode={audioListeningMode}
       feedback={
         hasSubmitted ? (
           <QuestionFeedback

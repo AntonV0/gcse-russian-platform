@@ -22,6 +22,22 @@ function getStringMetadata(
   return typeof value === "string" ? value : undefined;
 }
 
+function getNumberMetadata(
+  metadata: Record<string, unknown>,
+  key: string
+): number | undefined {
+  const value = metadata[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function getBooleanMetadata(
+  metadata: Record<string, unknown>,
+  key: string
+): boolean | undefined {
+  const value = metadata[key];
+  return typeof value === "boolean" ? value : undefined;
+}
+
 function getTranslationDirection(
   metadata: Record<string, unknown>
 ): "to_russian" | "to_english" | undefined {
@@ -127,6 +143,9 @@ export default async function QuestionRenderer({
   const audioUrl = await getPublicAudioUrl(question.audioPath);
 
   const answerStrategy = getAnswerStrategy(question.metadata);
+  const audioMaxPlays = getNumberMetadata(question.metadata, "maxPlays");
+  const audioListeningMode =
+    getBooleanMetadata(question.metadata, "listeningMode") ?? false;
 
   switch (question.type) {
     case "multiple_choice":
@@ -142,6 +161,8 @@ export default async function QuestionRenderer({
           correctOptionId={question.correctOptionId ?? ""}
           explanation={question.explanation ?? undefined}
           audioUrl={audioUrl}
+          audioMaxPlays={audioMaxPlays}
+          audioListeningMode={audioListeningMode}
         />
       );
 
@@ -159,6 +180,8 @@ export default async function QuestionRenderer({
             "Type your answer"
           }
           audioUrl={audioUrl}
+          audioMaxPlays={audioMaxPlays}
+          audioListeningMode={audioListeningMode}
           answerStrategy={answerStrategy}
         />
       );
@@ -177,6 +200,8 @@ export default async function QuestionRenderer({
             "Type your translation"
           }
           audioUrl={audioUrl}
+          audioMaxPlays={audioMaxPlays}
+          audioListeningMode={audioListeningMode}
           answerStrategy={answerStrategy}
           translationUi={{
             direction: getTranslationDirection(question.metadata),

@@ -52,6 +52,8 @@ type TrackedShortAnswerBlockProps = {
   sentenceBuilderUi?: SentenceBuilderUiConfig;
   selectionBasedUi?: SelectionBasedUiConfig;
   audioUrl?: string | null;
+  audioMaxPlays?: number;
+  audioListeningMode?: boolean;
   answerStrategy?: AnswerStrategy;
 };
 
@@ -95,6 +97,8 @@ export default function TrackedShortAnswerBlock({
   sentenceBuilderUi,
   selectionBasedUi,
   audioUrl = null,
+  audioMaxPlays,
+  audioListeningMode = false,
   answerStrategy = "text_input",
 }: TrackedShortAnswerBlockProps) {
   const initialSentenceBuilderTokens = useMemo(
@@ -315,6 +319,8 @@ export default function TrackedShortAnswerBlock({
         question={question}
         instruction={sentenceBuilderInstruction}
         audioUrl={audioUrl}
+        audioMaxPlays={audioMaxPlays}
+        audioListeningMode={audioListeningMode}
         availableTokens={availableTokens}
         selectedTokens={selectedTokens}
         explanation={explanation}
@@ -340,6 +346,8 @@ export default function TrackedShortAnswerBlock({
         question={question}
         instruction={selectionBasedInstruction}
         audioUrl={audioUrl}
+        audioMaxPlays={audioMaxPlays}
+        audioListeningMode={audioListeningMode}
         groups={selectionGroups}
         selectedOptions={selectedOptions}
         explanation={explanation}
@@ -388,6 +396,8 @@ export default function TrackedShortAnswerBlock({
         feedbackCorrectAnswerText={textResult.correctAnswerText}
         feedbackAcceptedAnswerTexts={textResult.acceptedAnswerTexts}
         audioUrl={audioUrl}
+        audioMaxPlays={audioMaxPlays}
+        audioListeningMode={audioListeningMode}
       />
     );
   }
@@ -408,6 +418,8 @@ export default function TrackedShortAnswerBlock({
       feedbackCorrectAnswerText={textResult.correctAnswerText}
       feedbackAcceptedAnswerTexts={textResult.acceptedAnswerTexts}
       audioUrl={audioUrl}
+      audioMaxPlays={audioMaxPlays}
+      audioListeningMode={audioListeningMode}
     />
   );
 }
