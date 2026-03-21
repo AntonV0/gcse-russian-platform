@@ -11,7 +11,7 @@ import {
 } from "@/lib/assignment-helpers-db";
 import { getLessonPath } from "@/lib/routes";
 import { canCurrentUserReviewAssignment } from "@/lib/teacher-auth";
-import { getPublicStorageUrl } from "@/lib/storage-helpers";
+import { getSignedStorageUrl } from "@/lib/storage-helpers";
 
 type TeacherAssignmentReviewPageProps = {
   params: Promise<{
@@ -42,7 +42,7 @@ export default async function TeacherAssignmentReviewPage({
 
   const submissionsWithFiles = await Promise.all(
     submissions.map(async ({ submission, student }) => {
-      const fileUrl = await getPublicStorageUrl(
+      const fileUrl = await getSignedStorageUrl(
         "assignment-submissions",
         submission.submitted_file_path ?? null
       );
