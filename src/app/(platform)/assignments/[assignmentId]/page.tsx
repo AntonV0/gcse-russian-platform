@@ -8,7 +8,7 @@ import {
   getStudentAssignmentByIdDb,
 } from "@/lib/assignment-helpers-db";
 import { getLessonPath } from "@/lib/routes";
-import { getPublicStorageUrl } from "@/lib/storage-helpers";
+import { getSignedStorageUrl } from "@/lib/storage-helpers";
 
 type AssignmentDetailPageProps = {
   params: Promise<{
@@ -53,7 +53,7 @@ export default async function AssignmentDetailPage({
     return <main>Assignment not found.</main>;
   }
 
-  const submittedFileUrl = await getPublicStorageUrl(
+  const submittedFileUrl = await getSignedStorageUrl(
     "assignment-submissions",
     submission?.submitted_file_path ?? null
   );
