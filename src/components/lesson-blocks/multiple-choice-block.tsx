@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import QuestionCard from "@/components/lesson-blocks/question-card";
+import QuestionFeedback from "@/components/lesson-blocks/question-feedback";
 
 type MultipleChoiceOption = {
   id: string;
@@ -12,6 +14,11 @@ type MultipleChoiceBlockProps = {
   options: MultipleChoiceOption[];
   correctOptionId: string;
   explanation?: string;
+  selectedOptionId?: string | null;
+  hasSubmitted?: boolean;
+  isSubmitting?: boolean;
+  onSelectOption?: (optionId: string) => void;
+  onSubmit?: () => void;
 };
 
 export default function MultipleChoiceBlock({
@@ -19,39 +26,77 @@ export default function MultipleChoiceBlock({
   options,
   correctOptionId,
   explanation,
+  selectedOptionId,
+  hasSubmitted,
+  isSubmitting = false,
+  onSelectOption,
+  onSubmit,
 }: MultipleChoiceBlockProps) {
-  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [internalSelectedOptionId, setInternalSelectedOptionId] = useState<
+    string | null
+  >(null);
+  const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
 
-  const isCorrect = selectedOptionId === correctOptionId;
+  const resolvedSelectedOptionId =
+    selectedOptionId !== undefined ? selectedOptionId : internalSelectedOptionId;
+
+  const resolvedHasSubmitted =
+    hasSubmitted !== undefined ? hasSubmitted : internalHasSubmitted;
+
+  const isCorrect = useMemo(() => {
+    return resolvedSelectedOptionId === correctOptionId;
+  }, [resolvedSelectedOptionId, correctOptionId]);
+
+  function handleSelect(optionId: string) {
+    if (resolvedHasSubmitted || isSubmitting) return;
+
+    if (onSelectOption) {
+      onSelectOption(optionId);
+      return;
+    }
+
+    setInternalSelectedOptionId(optionId);
+  }
 
   function handleSubmit() {
-    if (!selectedOptionId) return;
-    setHasSubmitted(true);
+    if (!resolvedSelectedOptionId || resolvedHasSubmitted || isSubmitting) return;
+
+    if (onSubmit) {
+      onSubmit();
+      return;
+    }
+
+    setInternalHasSubmitted(true);
   }
 
   return (
-    <section className="rounded-xl border bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-xl font-semibold">Question</h2>
-      <p className="mb-4 text-gray-800">{question}</p>
-
+    <QuestionCard
+      prompt={question}
+      feedback={
+        resolvedHasSubmitted ? (
+          <QuestionFeedback isCorrect={isCorrect} explanation={explanation} />
+        ) : null
+      }
+    >
       <div className="space-y-3">
         {options.map((option) => {
-          const isSelected = selectedOptionId === option.id;
+          const isSelected = resolvedSelectedOptionId === option.id;
 
           return (
             <button
               key={option.id}
               type="button"
-              onClick={() => {
-                if (hasSubmitted) return;
-                setSelectedOptionId(option.id);
-              }}
+              onClick={() => handleSelect(option.id)}
+              disabled={resolvedHasSubmitted || isSubmitting}
               className={`w-full rounded-lg border px-4 py-3 text-left transition ${
                 isSelected
                   ? "border-black bg-gray-100"
                   : "border-gray-200 bg-white hover:bg-gray-50"
-              } ${hasSubmitted ? "cursor-default" : "cursor-pointer"}`}
+              } ${
+                resolvedHasSubmitted || isSubmitting
+                  ? "cursor-default"
+                  : "cursor-pointer"
+              }`}
             >
               {option.text}
             </button>
@@ -59,32 +104,20 @@ export default function MultipleChoiceBlock({
         })}
       </div>
 
-      <div className="mt-4">
+      <div>
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={!selectedOptionId || hasSubmitted}
+          disabled={!resolvedSelectedOptionId || resolvedHasSubmitted || isSubmitting}
           className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Check answer
+          {resolvedHasSubmitted
+            ? "Submitted"
+            : isSubmitting
+              ? "Saving..."
+              : "Check answer"}
         </button>
       </div>
-
-      {hasSubmitted ? (
-        <div
-          className={`mt-4 rounded-lg p-4 ${
-            isCorrect ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
-          }`}
-        >
-          <p className="font-medium">
-            {isCorrect ? "Correct." : "Not quite."}
-          </p>
-
-          {explanation ? (
-            <p className="mt-2 text-sm">{explanation}</p>
-          ) : null}
-        </div>
-      ) : null}
-    </section>
+    </QuestionCard>
   );
 }

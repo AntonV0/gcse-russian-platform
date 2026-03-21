@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import MultipleChoiceBlock from "@/components/lesson-blocks/multiple-choice-block";
 import {
   type RuntimeMultipleChoiceQuestion,
   validateMultipleChoiceAnswer,
@@ -77,50 +78,16 @@ export default function TrackedMultipleChoiceBlock({
   }
 
   return (
-    <div className="space-y-3 rounded-lg border p-4">
-      <p className="font-medium">{question}</p>
-
-      <div className="space-y-2">
-        {options.map((option) => (
-          <label
-            key={option.id}
-            className="flex cursor-pointer items-center gap-2 rounded border p-2"
-          >
-            <input
-              type="radio"
-              name={questionId}
-              value={option.id}
-              checked={selectedOptionId === option.id}
-              onChange={() => setSelectedOptionId(option.id)}
-              disabled={submitted || isPending}
-            />
-            <span>{option.text}</span>
-          </label>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={!selectedOptionId || submitted || isPending}
-        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-      >
-        {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
-      </button>
-
-      {submitted ? (
-        <div className="text-sm">
-          {result.isCorrect ? (
-            <p className="font-medium text-green-600">✓ Correct</p>
-          ) : (
-            <p className="font-medium text-red-600">✗ Incorrect</p>
-          )}
-
-          {explanation ? (
-            <p className="mt-2 text-gray-700">{explanation}</p>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
+    <MultipleChoiceBlock
+      question={question}
+      options={options}
+      correctOptionId={correctOptionId}
+      explanation={explanation}
+      selectedOptionId={selectedOptionId}
+      hasSubmitted={submitted}
+      isSubmitting={isPending}
+      onSelectOption={setSelectedOptionId}
+      onSubmit={handleSubmit}
+    />
   );
 }

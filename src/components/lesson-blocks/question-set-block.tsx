@@ -48,15 +48,59 @@ export default async function QuestionSetBlock({
             );
 
           case "short_answer":
+            return (
+              <TrackedShortAnswerBlock
+                key={question.id}
+                questionId={question.id}
+                question={question.prompt}
+                questionType="short_answer"
+                acceptedAnswers={question.acceptedAnswers}
+                explanation={question.explanation ?? undefined}
+                placeholder={
+                  typeof question.metadata.placeholder === "string"
+                    ? question.metadata.placeholder
+                    : "Type your answer"
+                }
+              />
+            );
+
           case "translation":
             return (
               <TrackedShortAnswerBlock
                 key={question.id}
                 questionId={question.id}
                 question={question.prompt}
+                questionType="translation"
                 acceptedAnswers={question.acceptedAnswers}
                 explanation={question.explanation ?? undefined}
-                placeholder="Type your answer"
+                placeholder={
+                  typeof question.metadata.placeholder === "string"
+                    ? question.metadata.placeholder
+                    : "Type your translation"
+                }
+                translationUi={{
+                  direction:
+                    question.metadata.direction === "to_russian" ||
+                    question.metadata.direction === "to_english"
+                      ? question.metadata.direction
+                      : undefined,
+                  sourceLanguageLabel:
+                    typeof question.metadata.sourceLanguageLabel === "string"
+                      ? question.metadata.sourceLanguageLabel
+                      : undefined,
+                  targetLanguageLabel:
+                    typeof question.metadata.targetLanguageLabel === "string"
+                      ? question.metadata.targetLanguageLabel
+                      : undefined,
+                  instruction:
+                    typeof question.metadata.instruction === "string"
+                      ? question.metadata.instruction
+                      : undefined,
+                  placeholder:
+                    typeof question.metadata.placeholder === "string"
+                      ? question.metadata.placeholder
+                      : undefined,
+                }}
               />
             );
         }
