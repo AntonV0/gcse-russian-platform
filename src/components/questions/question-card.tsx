@@ -8,6 +8,9 @@ type QuestionCardProps = {
   audioUrl?: string | null;
   audioMaxPlays?: number;
   audioListeningMode?: boolean;
+  audioAutoPlay?: boolean;
+  audioHideNativeControls?: boolean;
+  onAudioPlaybackCompleted?: () => void;
   children: ReactNode;
   feedback?: ReactNode;
 };
@@ -19,6 +22,9 @@ export default function QuestionCard({
   audioUrl,
   audioMaxPlays,
   audioListeningMode = false,
+  audioAutoPlay = false,
+  audioHideNativeControls = false,
+  onAudioPlaybackCompleted,
   children,
   feedback,
 }: QuestionCardProps) {
@@ -37,6 +43,9 @@ export default function QuestionCard({
               src={audioUrl}
               maxPlays={audioMaxPlays}
               listeningMode={audioListeningMode}
+              autoPlay={audioAutoPlay}
+              hideNativeControls={audioHideNativeControls}
+              onPlaybackCompleted={onAudioPlaybackCompleted}
             />
           ) : null}
 

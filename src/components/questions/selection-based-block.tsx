@@ -15,6 +15,9 @@ type SelectionBasedBlockProps = {
   audioUrl?: string | null;
   audioMaxPlays?: number;
   audioListeningMode?: boolean;
+  audioAutoPlay?: boolean;
+  audioHideNativeControls?: boolean;
+  onAudioPlaybackCompleted?: () => void;
   groups: SelectionGroup[];
   selectedOptions: Record<string, string>;
   explanation?: string;
@@ -29,6 +32,7 @@ type SelectionBasedBlockProps = {
   feedbackAcceptedAnswerTexts?: string[];
   sourceLanguageLabel?: string;
   targetLanguageLabel?: string;
+  displayMode?: "grouped" | "inline_gaps";
 };
 
 export default function SelectionBasedBlock({
@@ -37,6 +41,9 @@ export default function SelectionBasedBlock({
   audioUrl = null,
   audioMaxPlays,
   audioListeningMode = false,
+  audioAutoPlay = false,
+  audioHideNativeControls = false,
+  onAudioPlaybackCompleted,
   groups,
   selectedOptions,
   explanation,
@@ -51,6 +58,7 @@ export default function SelectionBasedBlock({
   feedbackAcceptedAnswerTexts = [],
   sourceLanguageLabel,
   targetLanguageLabel,
+  displayMode = "grouped",
 }: SelectionBasedBlockProps) {
   const completedGroupCount = groups.filter(
     (group) => typeof selectedOptions[group.id] === "string"
@@ -72,6 +80,9 @@ export default function SelectionBasedBlock({
       audioUrl={audioUrl}
       audioMaxPlays={audioMaxPlays}
       audioListeningMode={audioListeningMode}
+      audioAutoPlay={audioAutoPlay}
+      audioHideNativeControls={audioHideNativeControls}
+      onAudioPlaybackCompleted={onAudioPlaybackCompleted}
       feedback={
         hasSubmitted ? (
           <QuestionFeedback
@@ -122,56 +133,92 @@ export default function SelectionBasedBlock({
         </div>
       </div>
 
-      <div className="space-y-4">
-        {groups.map((group, index) => (
-          <div key={group.id} className="rounded-lg border border-gray-200 p-4">
-            <p className="mb-3 text-sm font-medium text-gray-700">
-              {group.label ?? `Choose option ${index + 1}`}
-            </p>
+      {displayMode === "inline_gaps" ? (
+        <div className="rounded-lg border border-gray-200 p-4">
+          <p className="mb-3 text-sm font-medium text-gray-700">Choose each gap</p>
+          <div className="flex flex-wrap gap-4">
+            {groups.map((group, index) => (
+              <div key={group.id} className="space-y-2">
+                <p className="text-xs font-medium text-gray-600">
+                  {group.label ?? `Gap ${index + 1}`}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {group.options.map((option) => {
+                    const isSelected = selectedOptions[group.id] === option;
 
-            <div className="flex flex-wrap gap-2">
-              {group.options.map((option) => {
-                const isSelected = selectedOptions[group.id] === option;
-
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => onSelectOption(group.id, option)}
-                    disabled={hasSubmitted || isSubmitting}
-                    className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                      isSelected
-                        ? "border-black bg-black text-white"
-                        : "border-gray-300 bg-white hover:bg-gray-50"
-                    } disabled:opacity-60`}
-                  >
-                    {option}
-                  </button>
-                );
-              })}
-            </div>
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => onSelectOption(group.id, option)}
+                        disabled={hasSubmitted || isSubmitting}
+                        className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                          isSelected
+                            ? "border-black bg-black text-white"
+                            : "border-gray-300 bg-white hover:bg-gray-50"
+                        } disabled:opacity-60`}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={onSubmit}
-            disabled={!canSubmit}
-            className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {hasSubmitted ? "Submitted" : isSubmitting ? "Saving..." : "Check answer"}
-          </button>
-
-          <button
-            type="button"
-            onClick={onReset}
-            disabled={!canReset}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Reset
-          </button>
         </div>
+      ) : (
+        <div className="space-y-4">
+          {groups.map((group, index) => (
+            <div key={group.id} className="rounded-lg border border-gray-200 p-4">
+              <p className="mb-3 text-sm font-medium text-gray-700">
+                {group.label ?? `Choose option ${index + 1}`}
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                {group.options.map((option) => {
+                  const isSelected = selectedOptions[group.id] === option;
+
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => onSelectOption(group.id, option)}
+                      disabled={hasSubmitted || isSubmitting}
+                      className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                        isSelected
+                          ? "border-black bg-black text-white"
+                          : "border-gray-300 bg-white hover:bg-gray-50"
+                      } disabled:opacity-60`}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={!canSubmit}
+          className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {hasSubmitted ? "Submitted" : isSubmitting ? "Saving..." : "Check answer"}
+        </button>
+
+        <button
+          type="button"
+          onClick={onReset}
+          disabled={!canReset}
+          className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Reset
+        </button>
       </div>
     </QuestionCard>
   );
