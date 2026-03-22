@@ -1,11 +1,13 @@
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { getCurrentCourseAccess, getCurrentProfile, getCurrentUser } from "@/lib/auth";
+import { getDashboardInfo } from "@/lib/dashboard-helpers";
 
 export default async function AccountPage() {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
   const courseAccess = await getCurrentCourseAccess("gcse-russian", "foundation");
+  const dashboard = await getDashboardInfo();
 
   return (
     <main>
@@ -24,7 +26,7 @@ export default async function AccountPage() {
         </DashboardCard>
 
         <DashboardCard title="Role">
-          {profile?.role ?? "No role found"}
+          {dashboard?.role ?? "No role found"}
         </DashboardCard>
 
         <DashboardCard title="Access mode">
