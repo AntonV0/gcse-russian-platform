@@ -3,6 +3,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
 import { getCourseProgressSummary } from "@/lib/progress";
 import { getDashboardInfo } from "@/lib/dashboard-helpers";
+import Link from "next/link";
 
 function formatLabel(value: string | null) {
   if (!value) return "—";
