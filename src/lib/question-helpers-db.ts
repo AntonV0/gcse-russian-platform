@@ -132,6 +132,22 @@ export async function getAcceptedAnswersByQuestionIdsDb(questionIds: string[]) {
   return (data ?? []) as DbQuestionAcceptedAnswer[];
 }
 
+export async function getQuestionSetsDb() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("question_sets")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching question sets:", error);
+    return [];
+  }
+
+  return (data ?? []) as DbQuestionSet[];
+}
+
 export async function loadQuestionSetBySlugDb(questionSetSlug: string) {
   const questionSet = await getQuestionSetBySlugDb(questionSetSlug);
   if (!questionSet) {
