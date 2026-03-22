@@ -197,3 +197,45 @@ export async function loadRuntimeQuestionSetBySlugDb(
 
   return runtimeQuestionSet;
 }
+
+export async function getQuestionSetByIdDb(questionSetId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("question_sets")
+    .select("*")
+    .eq("id", questionSetId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching question set by id:", {
+      questionSetId,
+      error,
+    });
+    return null;
+  }
+
+  return (data as DbQuestionSet | null) ?? null;
+}
+
+export async function getQuestionsByQuestionSetIdIncludingInactiveDb(
+  questionSetId: string
+) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("question_set_id", questionSetId)
+    .order("position", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching questions by question set id:", {
+      questionSetId,
+      error,
+    });
+    return [];
+  }
+
+  return (data ?? []) as DbQuestion[];
+}
