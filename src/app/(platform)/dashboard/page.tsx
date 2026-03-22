@@ -45,6 +45,15 @@ export default async function DashboardPage() {
           {formatLabel(dashboard.role)}
         </DashboardCard>
 
+        {/* Admin-only cards */}
+        {dashboard.role === "admin" && (
+          <DashboardCard title="Admin Panel">
+            <Link href="/admin" className="text-blue-600 hover:underline">
+              Open admin tools →
+            </Link>
+          </DashboardCard>
+        )}
+
         {/* Student-only cards */}
         {dashboard.role === "student" && (
           <>
