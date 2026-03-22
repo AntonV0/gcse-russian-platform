@@ -1,9 +1,9 @@
+import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
 import { getCourseProgressSummary } from "@/lib/progress";
 import { getDashboardInfo } from "@/lib/dashboard-helpers";
-import Link from "next/link";
 
 function formatLabel(value: string | null) {
   if (!value) return "—";
@@ -32,7 +32,6 @@ export default async function DashboardPage() {
       />
 
       <section className="grid gap-4 md:grid-cols-3">
-        {/* Always show */}
         <DashboardCard title="Current course">
           GCSE Russian
         </DashboardCard>
@@ -41,12 +40,10 @@ export default async function DashboardPage() {
           {user?.email ?? "Not logged in"}
         </DashboardCard>
 
-        {/* Role */}
         <DashboardCard title="Role">
           {formatLabel(dashboard.role)}
         </DashboardCard>
 
-        {/* Admin-only cards */}
         {dashboard.role === "admin" && (
           <DashboardCard title="Admin Panel">
             <Link href="/admin" className="text-blue-600 hover:underline">
@@ -55,7 +52,6 @@ export default async function DashboardPage() {
           </DashboardCard>
         )}
 
-        {/* Student-only cards */}
         {dashboard.role === "student" && (
           <>
             <DashboardCard title="Learning track">
