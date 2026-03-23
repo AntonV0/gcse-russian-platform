@@ -15,6 +15,7 @@ import {
   duplicateQuestionSetAction,
   moveQuestionAction,
   normalizeQuestionPositionsAction,
+  toggleQuestionActiveAction,
   updateQuestionSetAction,
 } from "@/app/actions/admin-question-actions";
 
@@ -272,6 +273,22 @@ export default async function AdminQuestionSetDetailPage({
                     disabled={question.position === questions.length}
                   >
                     Move down
+                  </button>
+                </form>
+
+                <form action={toggleQuestionActiveAction}>
+                  <input type="hidden" name="questionId" value={question.id} />
+                  <input type="hidden" name="questionSetId" value={questionSet.id} />
+                  <input
+                    type="hidden"
+                    name="nextState"
+                    value={question.is_active ? "inactive" : "active"}
+                  />
+                  <button
+                    type="submit"
+                    className="rounded border px-3 py-1 text-sm"
+                  >
+                    {question.is_active ? "Deactivate" : "Activate"}
                   </button>
                 </form>
 
