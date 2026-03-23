@@ -12,6 +12,7 @@ import {
   deleteQuestionAction,
   deleteQuestionSetAction,
   duplicateQuestionAction,
+  duplicateQuestionSetAction,
   moveQuestionAction,
   normalizeQuestionPositionsAction,
   updateQuestionSetAction,
@@ -125,13 +126,25 @@ export default async function AdminQuestionSetDetailPage({
               />
             </div>
 
-            <button
-              type="submit"
-              className="rounded-lg bg-black px-4 py-2 text-white"
-            >
-              Save question set
-            </button>
-          </form>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="submit"
+                className="rounded-lg bg-black px-4 py-2 text-white"
+              >
+                Save question set
+              </button>
+            </div>
+            </form>
+
+            <form action={duplicateQuestionSetAction} className="mt-4">
+              <input type="hidden" name="questionSetId" value={questionSet.id} />
+              <button
+                type="submit"
+                className="rounded-lg border px-4 py-2 text-sm"
+              >
+                Duplicate question set
+              </button>
+            </form>
         </DashboardCard>
 
         <DashboardCard title="Danger Zone">
