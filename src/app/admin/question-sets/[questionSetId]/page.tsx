@@ -10,6 +10,7 @@ import AdminQuestionForm from "@/components/admin/admin-question-form";
 import {
   createQuestionAction,
   deleteQuestionSetAction,
+  moveQuestionAction,
   updateQuestionSetAction,
 } from "@/app/actions/admin-question-actions";
 
@@ -154,53 +155,72 @@ export default async function AdminQuestionSetDetailPage({
           description="Questions currently attached to this set."
         />
 
-        {questions.length === 0 ? (
-          <div className="rounded-lg border p-6 text-sm text-gray-600">
-            No questions yet.
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {questions.map((question) => (
-              <Link
-                key={question.id}
-                href={`/admin/questions/${question.id}`}
-                className="block"
-              >
-                <div className="transition hover:-translate-y-0.5">
-                  <DashboardCard title={`Q${question.position}`}>
-                    <div className="space-y-2">
-                      <p>
-                        <span className="font-medium">Type:</span>{" "}
-                        {formatQuestionType(question.question_type)}
-                      </p>
-                      <p>
-                        <span className="font-medium">Prompt:</span> {question.prompt}
-                      </p>
-                      <p>
-                        <span className="font-medium">Marks:</span> {question.marks}
-                      </p>
-                      <p>
-                        <span className="font-medium">Active:</span>{" "}
-                        {question.is_active ? "Yes" : "No"}
-                      </p>
-                      {question.audio_path ? (
-                        <p>
-                          <span className="font-medium">Audio path:</span>{" "}
-                          {question.audio_path}
-                        </p>
-                      ) : null}
-                      {question.metadata ? (
-                        <pre className="overflow-x-auto rounded border bg-gray-50 p-3 text-xs text-gray-700">
-                          {JSON.stringify(question.metadata, null, 2)}
-                        </pre>
-                      ) : null}
-                    </div>
-                  </DashboardCard>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        {questions.map((question) => (
+          <DashboardCard key={question.id} title={`Q${question.position}`}>
+            <div className="space-y-2">
+              <p>
+                <span className="font-medium">Type:</span>{" "}
+                {formatQuestionType(question.question_type)}
+              </p>
+              <p>
+                <span className="font-medium">Prompt:</span> {question.prompt}
+              </p>
+              <p>
+                <span className="font-medium">Marks:</span> {question.marks}
+              </p>
+              <p>
+                <span className="font-medium">Active:</span>{" "}
+                {question.is_active ? "Yes" : "No"}
+              </p>
+              {question.audio_path ? (
+                <p>
+                  <span className="font-medium">Audio path:</span>{" "}
+                  {question.audio_path}
+                </p>
+              ) : null}
+              {question.metadata ? (
+                <pre className="overflow-x-auto rounded border bg-gray-50 p-3 text-xs text-gray-700">
+                  {JSON.stringify(question.metadata, null, 2)}
+                </pre>
+              ) : null}
+
+              <div className="flex flex-wrap gap-2 pt-2">
+                <Link
+                  href={`/admin/questions/${question.id}`}
+                  className="rounded border px-3 py-1 text-sm"
+                >
+                  Edit question
+                </Link>
+
+                <form action={moveQuestionAction}>
+                  <input type="hidden" name="questionId" value={question.id} />
+                  <input type="hidden" name="questionSetId" value={questionSet.id} />
+                  <input type="hidden" name="direction" value="up" />
+                  <button
+                    type="submit"
+                    className="rounded border px-3 py-1 text-sm"
+                    disabled={question.position === 1}
+                  >
+                    Move up
+                  </button>
+                </form>
+
+                <form action={moveQuestionAction}>
+                  <input type="hidden" name="questionId" value={question.id} />
+                  <input type="hidden" name="questionSetId" value={questionSet.id} />
+                  <input type="hidden" name="direction" value="down" />
+                  <button
+                    type="submit"
+                    className="rounded border px-3 py-1 text-sm"
+                    disabled={question.position === questions.length}
+                  >
+                    Move down
+                  </button>
+                </form>
+              </div>
+            </div>
+          </DashboardCard>
+        ))}
       </section>
 
       <section className="max-w-4xl">
