@@ -78,6 +78,25 @@ export default async function AdminQuestionSetDetailPage({
               <span className="font-medium">Questions:</span> {questions.length}
             </p>
           </div>
+          <div className="flex flex-wrap gap-3 pt-3">
+            <Link
+              href="/admin/question-sets"
+              className="rounded border px-4 py-2 text-sm"
+            >
+              Back to all question sets
+            </Link>
+
+            {questionSet.slug ? (
+              <Link
+                href={`/question-sets/${questionSet.slug}`}
+                className="rounded border px-4 py-2 text-sm"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open public view
+              </Link>
+            ) : null}
+          </div>
         </DashboardCard>
       </section>
 
