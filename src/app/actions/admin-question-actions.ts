@@ -783,3 +783,54 @@ export async function moveQuestionAction(formData: FormData) {
 
   redirect(`/admin/question-sets/${questionSetId}`);
 }
+
+export async function normalizeQuestionPositionsAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const questionSetId = getTrimmedString(formData, "questionSetId");
+
+  if (!questionSetId) {
+    throw new Error("Missing question set id");
+  }
+
+  const supabase = await createClient();
+
+  const { data: questions, error: loadError } = await supabase
+    .from("questions")
+    .select("id, position")
+    .eq("question_set_id", questionSetId)
+    .order("position", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (loadError) {
+    console.error("Error loading questions for normalization:", loadError);
+    throw new Error("Failed to load questions");
+  }
+
+  const rows = questions ?? [];
+
+  for (let index = 0; index < rows.length; index += 1) {
+    const question = rows[index];
+    const nextPosition = index + 1;
+
+    if (question.position === nextPosition) {
+      continue;
+    }
+
+    const { error: updateError } = await supabase
+      .from("questions")
+      .update({ position: nextPosition })
+      .eq("id", question.id);
+
+    if (updateError) {
+      console.error("Error normalizing question position:", updateError);
+      throw new Error("Failed to normalize question positions");
+    }
+  }
+
+  redirect(`/admin/question-sets/${questionSetId}`);
+}
