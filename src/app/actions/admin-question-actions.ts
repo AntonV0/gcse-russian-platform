@@ -834,3 +834,130 @@ export async function normalizeQuestionPositionsAction(formData: FormData) {
 
   redirect(`/admin/question-sets/${questionSetId}`);
 }
+
+export async function duplicateQuestionAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const questionId = getTrimmedString(formData, "questionId");
+  const questionSetId = getTrimmedString(formData, "questionSetId");
+
+  if (!questionId || !questionSetId) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { data: sourceQuestion, error: sourceQuestionError } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("id", questionId)
+    .eq("question_set_id", questionSetId)
+    .maybeSingle();
+
+  if (sourceQuestionError || !sourceQuestion) {
+    console.error("Error loading source question:", sourceQuestionError);
+    throw new Error("Failed to load source question");
+  }
+
+  const { data: existingQuestions, error: existingQuestionsError } = await supabase
+    .from("questions")
+    .select("id")
+    .eq("question_set_id", questionSetId);
+
+  if (existingQuestionsError) {
+    console.error("Error loading question count for duplication:", existingQuestionsError);
+    throw new Error("Failed to load question set questions");
+  }
+
+  const nextPosition = (existingQuestions?.length ?? 0) + 1;
+
+  const { data: duplicatedQuestion, error: duplicatedQuestionError } = await supabase
+    .from("questions")
+    .insert({
+      question_set_id: sourceQuestion.question_set_id,
+      question_type: sourceQuestion.question_type,
+      prompt: `${sourceQuestion.prompt} (Copy)`,
+      explanation: sourceQuestion.explanation,
+      marks: sourceQuestion.marks,
+      position: nextPosition,
+      audio_path: sourceQuestion.audio_path,
+      image_path: sourceQuestion.image_path,
+      metadata: sourceQuestion.metadata ?? {},
+      is_active: sourceQuestion.is_active,
+    })
+    .select("id, question_type")
+    .single();
+
+  if (duplicatedQuestionError || !duplicatedQuestion) {
+    console.error("Error duplicating question:", duplicatedQuestionError);
+    throw new Error("Failed to duplicate question");
+  }
+
+  if (duplicatedQuestion.question_type === "multiple_choice") {
+    const { data: sourceOptions, error: sourceOptionsError } = await supabase
+      .from("question_options")
+      .select("*")
+      .eq("question_id", sourceQuestion.id)
+      .order("position", { ascending: true });
+
+    if (sourceOptionsError) {
+      console.error("Error loading source options:", sourceOptionsError);
+      throw new Error("Failed to load source options");
+    }
+
+    const optionRows = (sourceOptions ?? []).map((option) => ({
+      question_id: duplicatedQuestion.id,
+      option_text: option.option_text,
+      is_correct: option.is_correct,
+      position: option.position,
+    }));
+
+    if (optionRows.length > 0) {
+      const { error: insertOptionsError } = await supabase
+        .from("question_options")
+        .insert(optionRows);
+
+      if (insertOptionsError) {
+        console.error("Error duplicating question options:", insertOptionsError);
+        throw new Error("Failed to duplicate question options");
+      }
+    }
+  } else {
+    const { data: sourceAnswers, error: sourceAnswersError } = await supabase
+      .from("question_accepted_answers")
+      .select("*")
+      .eq("question_id", sourceQuestion.id)
+      .order("is_primary", { ascending: false });
+
+    if (sourceAnswersError) {
+      console.error("Error loading source accepted answers:", sourceAnswersError);
+      throw new Error("Failed to load source accepted answers");
+    }
+
+    const answerRows = (sourceAnswers ?? []).map((answer) => ({
+      question_id: duplicatedQuestion.id,
+      answer_text: answer.answer_text,
+      normalized_answer: answer.normalized_answer,
+      is_primary: answer.is_primary,
+      case_sensitive: answer.case_sensitive,
+      notes: answer.notes,
+    }));
+
+    if (answerRows.length > 0) {
+      const { error: insertAnswersError } = await supabase
+        .from("question_accepted_answers")
+        .insert(answerRows);
+
+      if (insertAnswersError) {
+        console.error("Error duplicating accepted answers:", insertAnswersError);
+        throw new Error("Failed to duplicate accepted answers");
+      }
+    }
+  }
+
+  redirect(`/admin/question-sets/${questionSetId}`);
+}
