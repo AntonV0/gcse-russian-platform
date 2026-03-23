@@ -178,6 +178,94 @@ function getQuestionTypeMetadataDefaults(questionType: string) {
   return {};
 }
 
+function stripCopySuffix(value: string) {
+  return value
+    .trim()
+    .replace(/\s*\(copy(?:\s+\d+)?\)$/i, "")
+    .replace(/-copy(?:-\d+)?$/i, "")
+    .trim();
+}
+
+async function generateUniqueQuestionSetTitle(params: {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  baseTitle: string;
+}) {
+  const normalizedBaseTitle = stripCopySuffix(params.baseTitle) || "Question Set";
+
+  const { data, error } = await params.supabase
+    .from("question_sets")
+    .select("title")
+    .ilike("title", `${normalizedBaseTitle} (Copy%`);
+
+  if (error) {
+    console.error("Error checking existing titles:", error);
+    throw new Error("Failed to generate unique title");
+  }
+
+  const existingTitles = new Set(
+    (data ?? []).map((row) => row.title).filter(Boolean)
+  );
+
+  const firstCopyTitle = `${normalizedBaseTitle} (Copy)`;
+
+  if (!existingTitles.has(firstCopyTitle)) {
+    return firstCopyTitle;
+  }
+
+  let counter = 2;
+
+  while (existingTitles.has(`${normalizedBaseTitle} (Copy ${counter})`)) {
+    counter += 1;
+  }
+
+  return `${normalizedBaseTitle} (Copy ${counter})`;
+}
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
+}
+
+async function generateUniqueQuestionSetSlug(params: {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  baseSlug: string;
+}) {
+  const cleanedBaseSlug = stripCopySuffix(params.baseSlug);
+  const normalizedBaseSlug = slugify(cleanedBaseSlug) || "question-set";
+  const copyBaseSlug = `${normalizedBaseSlug}-copy`;
+
+  const { data, error } = await params.supabase
+    .from("question_sets")
+    .select("slug")
+    .ilike("slug", `${copyBaseSlug}%`);
+
+  if (error) {
+    console.error("Error checking existing slugs:", error);
+    throw new Error("Failed to generate unique slug");
+  }
+
+  const existingSlugs = new Set(
+    (data ?? []).map((row) => row.slug).filter(Boolean)
+  );
+
+  if (!existingSlugs.has(copyBaseSlug)) {
+    return copyBaseSlug;
+  }
+
+  let counter = 2;
+
+  while (existingSlugs.has(`${copyBaseSlug}-${counter}`)) {
+    counter += 1;
+  }
+
+  return `${copyBaseSlug}-${counter}`;
+}
+
 export async function createQuestionSetAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
 
@@ -988,13 +1076,21 @@ export async function duplicateQuestionSetAction(formData: FormData) {
     throw new Error("Failed to load source question set");
   }
 
-  const duplicatedSlug = `${sourceSet.slug}-copy`;
+  const duplicatedTitle = await generateUniqueQuestionSetTitle({
+    supabase,
+    baseTitle: sourceSet.title,
+  });
+
+  const duplicatedSlug = await generateUniqueQuestionSetSlug({
+    supabase,
+    baseSlug: sourceSet.slug ?? sourceSet.title,
+  });
 
   const { data: duplicatedSet, error: duplicatedSetError } = await supabase
     .from("question_sets")
     .insert({
       slug: duplicatedSlug,
-      title: `${sourceSet.title} (Copy)`,
+      title: duplicatedTitle,
       description: sourceSet.description,
       instructions: sourceSet.instructions,
       source_type: sourceSet.source_type,
