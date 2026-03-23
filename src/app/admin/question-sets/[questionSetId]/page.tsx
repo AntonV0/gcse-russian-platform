@@ -18,6 +18,7 @@ import {
   toggleQuestionActiveAction,
   updateQuestionSetAction,
 } from "@/app/actions/admin-question-actions";
+import { getAssignmentsUsingQuestionSetDb } from "@/lib/assignment-helpers-db";
 
 type AdminQuestionSetDetailPageProps = {
   params: Promise<{
@@ -40,9 +41,10 @@ export default async function AdminQuestionSetDetailPage({
 
   const { questionSetId } = await params;
 
-  const [questionSet, questions] = await Promise.all([
+  const [questionSet, questions, usage] = await Promise.all([
     getQuestionSetByIdDb(questionSetId),
     getQuestionsByQuestionSetIdIncludingInactiveDb(questionSetId),
+    getAssignmentsUsingQuestionSetDb(questionSetId),
   ]);
 
   if (!questionSet) {
@@ -98,6 +100,38 @@ export default async function AdminQuestionSetDetailPage({
               </Link>
             ) : null}
           </div>
+        </DashboardCard>
+      </section>
+
+      <section className="mb-8">
+        <DashboardCard title="Usage">
+          {usage.length === 0 ? (
+            <p className="text-sm text-gray-600">
+              This question set is not used in any assignments.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600">
+                Used in {usage.length} assignment{usage.length > 1 ? "s" : ""}.
+              </p>
+
+              <ul className="space-y-2">
+                {usage.map((assignment) => (
+                  <li key={assignment.id}>
+                    <Link
+                      href={`/teacher/assignments/${assignment.id}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {assignment.title}
+                    </Link>
+                    <span className="ml-2 text-sm text-gray-500">
+                      ({assignment.status})
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </DashboardCard>
       </section>
 
@@ -175,6 +209,13 @@ export default async function AdminQuestionSetDetailPage({
               Delete this question set and all of its questions, options, and accepted answers.
             </p>
 
+            {usage.length > 0 ? (
+              <p className="text-sm text-red-600">
+                Warning: This question set is used in {usage.length} assignment
+                {usage.length > 1 ? "s" : ""}.
+              </p>
+            ) : null}
+
             <button
               type="submit"
               className="rounded-lg border border-red-300 px-4 py-2 text-red-700"
@@ -202,9 +243,15 @@ export default async function AdminQuestionSetDetailPage({
             </button>
           </form>
         </div>
-        {questions.map((question) => (
-          <DashboardCard key={question.id} title={`Q${question.position}`}>
-            <div className="space-y-2">
+        {questions.length === 0 ? (
+          <div className="rounded-lg border p-6 text-sm text-gray-600">
+            No questions yet.
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {questions.map((question) => (
+              <DashboardCard key={question.id} title={`Q${question.position}`}>
+                    <div className="space-y-2">
               <p>
                 <span className="font-medium">Type:</span>{" "}
                 {formatQuestionType(question.question_type)}
@@ -305,7 +352,9 @@ export default async function AdminQuestionSetDetailPage({
               </div>
             </div>
           </DashboardCard>
-        ))}
+              ))}
+            </div>
+          )}
       </section>
 
       <section className="max-w-4xl">
