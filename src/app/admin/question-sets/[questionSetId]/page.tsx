@@ -6,6 +6,7 @@ import {
   getQuestionsByQuestionSetIdIncludingInactiveDb,
 } from "@/lib/question-helpers-db";
 import { createQuestionAction } from "@/app/actions/admin-question-actions";
+import Link from "next/link";
 
 type AdminQuestionSetDetailPageProps = {
   params: Promise<{
@@ -80,35 +81,43 @@ export default async function AdminQuestionSetDetailPage({
         ) : (
           <div className="grid gap-4">
             {questions.map((question) => (
-              <DashboardCard key={question.id} title={`Q${question.position}`}>
-                <div className="space-y-2">
-                  <p>
-                    <span className="font-medium">Type:</span>{" "}
-                    {formatQuestionType(question.question_type)}
-                  </p>
-                  <p>
-                    <span className="font-medium">Prompt:</span> {question.prompt}
-                  </p>
-                  <p>
-                    <span className="font-medium">Marks:</span> {question.marks}
-                  </p>
-                  <p>
-                    <span className="font-medium">Active:</span>{" "}
-                    {question.is_active ? "Yes" : "No"}
-                  </p>
-                  {question.audio_path ? (
-                    <p>
-                      <span className="font-medium">Audio path:</span>{" "}
-                      {question.audio_path}
-                    </p>
-                  ) : null}
-                  {question.metadata ? (
-                    <pre className="overflow-x-auto rounded border bg-gray-50 p-3 text-xs text-gray-700">
-                      {JSON.stringify(question.metadata, null, 2)}
-                    </pre>
-                  ) : null}
+              <Link
+                key={question.id}
+                href={`/admin/questions/${question.id}`}
+                className="block"
+              >
+                <div className="transition hover:-translate-y-0.5">
+                  <DashboardCard title={`Q${question.position}`}>
+                    <div className="space-y-2">
+                      <p>
+                        <span className="font-medium">Type:</span>{" "}
+                        {formatQuestionType(question.question_type)}
+                      </p>
+                      <p>
+                        <span className="font-medium">Prompt:</span> {question.prompt}
+                      </p>
+                      <p>
+                        <span className="font-medium">Marks:</span> {question.marks}
+                      </p>
+                      <p>
+                        <span className="font-medium">Active:</span>{" "}
+                        {question.is_active ? "Yes" : "No"}
+                      </p>
+                      {question.audio_path ? (
+                        <p>
+                          <span className="font-medium">Audio path:</span>{" "}
+                          {question.audio_path}
+                        </p>
+                      ) : null}
+                      {question.metadata ? (
+                        <pre className="overflow-x-auto rounded border bg-gray-50 p-3 text-xs text-gray-700">
+                          {JSON.stringify(question.metadata, null, 2)}
+                        </pre>
+                      ) : null}
+                    </div>
+                  </DashboardCard>
                 </div>
-              </DashboardCard>
+              </Link>
             ))}
           </div>
         )}
