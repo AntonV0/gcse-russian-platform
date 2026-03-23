@@ -82,11 +82,19 @@ export default async function AdminQuestionSetDetailPage({
             </p>
           </div>
           <div className="flex flex-wrap gap-3 pt-3">
+            
             <Link
               href="/admin/question-sets"
               className="rounded border px-4 py-2 text-sm"
             >
               Back to all question sets
+            </Link>
+
+            <Link
+              href="/admin/question-sets/templates"
+              className="rounded border px-4 py-2 text-sm"
+            >
+              Open templates
             </Link>
 
             {questionSet.slug ? (
@@ -178,6 +186,30 @@ export default async function AdminQuestionSetDetailPage({
                 className="w-full rounded border px-3 py-2"
                 rows={3}
               />
+            </div>
+
+            <div className="rounded-xl border bg-white p-5 shadow-sm">
+              <h2 className="mb-2 font-semibold">Template Settings</h2>
+
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  name="isTemplate"
+                  value="true"
+                  defaultChecked={Boolean(questionSet.is_template)}
+                />
+                This question set is a template
+              </label>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium">Template type</label>
+                <input
+                  name="templateType"
+                  defaultValue={questionSet.template_type ?? ""}
+                  className="w-full rounded border px-3 py-2"
+                  placeholder="translation_selection_based"
+                />
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-3">

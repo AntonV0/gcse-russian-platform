@@ -51,6 +51,24 @@ export default async function CreateQuestionSetPage() {
           />
         </div>
 
+        <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <h2 className="mb-2 font-semibold">Template Settings</h2>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="isTemplate" value="true" />
+            Save as template
+          </label>
+
+          <div className="mt-4">
+            <label className="block text-sm font-medium">Template type</label>
+            <input
+              name="templateType"
+              className="w-full rounded border px-3 py-2"
+              placeholder="translation_selection_based"
+            />
+          </div>
+        </div>
+
         <button
           type="submit"
           className="rounded-lg bg-black px-4 py-2 text-white"

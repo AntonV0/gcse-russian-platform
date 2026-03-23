@@ -5,13 +5,15 @@ import {
   type RuntimeQuestionSet,
 } from "@/lib/question-engine";
 
-export type DbQuestionSet = {
+type DbQuestionSet = {
   id: string;
   slug: string | null;
   title: string;
   description: string | null;
   instructions: string | null;
   source_type: string;
+  is_template: boolean;
+  template_type: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -299,4 +301,22 @@ export async function getAcceptedAnswersByQuestionIdDb(questionId: string) {
   }
 
   return (data ?? []) as DbQuestionAcceptedAnswer[];
+}
+
+export async function getQuestionSetTemplatesDb() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("question_sets")
+    .select("*")
+    .eq("is_template", true)
+    .order("template_type", { ascending: true })
+    .order("title", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching question set templates:", error);
+    return [];
+  }
+
+  return (data ?? []) as DbQuestionSet[];
 }
