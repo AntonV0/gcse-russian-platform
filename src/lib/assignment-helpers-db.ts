@@ -586,3 +586,46 @@ export async function getStudentAssignmentByIdDb(assignmentId: string) {
   const assignments = await getCurrentUserAssignmentsDb();
   return assignments.find((assignment) => assignment.id === assignmentId) ?? null;
 }
+
+export async function getAssignmentsUsingQuestionSetDb(questionSetId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("assignment_items")
+    .select(`
+      assignment:assignments (
+        id,
+        title,
+        status,
+        due_at
+      )
+    `)
+    .eq("item_type", "question_set")
+    .eq("question_set_id", questionSetId);
+
+  if (error) {
+    console.error("Error loading question set usage:", error);
+    throw new Error("Failed to load question set usage");
+  }
+
+  const flattened = (data ?? []).flatMap((row) => {
+    const assignment = row.assignment;
+
+    if (!assignment) {
+      return [];
+    }
+
+    return Array.isArray(assignment) ? assignment : [assignment];
+  }) as {
+    id: string;
+    title: string;
+    status: string;
+    due_at?: string | null;
+  }[];
+
+  const uniqueAssignments = Array.from(
+    new Map(flattened.map((assignment) => [assignment.id, assignment])).values()
+  );
+
+  return uniqueAssignments;
+}
