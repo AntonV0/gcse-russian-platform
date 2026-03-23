@@ -239,3 +239,64 @@ export async function getQuestionsByQuestionSetIdIncludingInactiveDb(
 
   return (data ?? []) as DbQuestion[];
 }
+
+export async function getQuestionByIdDb(questionId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("id", questionId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching question by id:", {
+      questionId,
+      error,
+    });
+    return null;
+  }
+
+  return (data as DbQuestion | null) ?? null;
+}
+
+export async function getQuestionOptionsByQuestionIdDb(questionId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("question_options")
+    .select("*")
+    .eq("question_id", questionId)
+    .order("position", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching question options:", {
+      questionId,
+      error,
+    });
+    return [];
+  }
+
+  return (data ?? []) as DbQuestionOption[];
+}
+
+export async function getAcceptedAnswersByQuestionIdDb(questionId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("question_accepted_answers")
+    .select("*")
+    .eq("question_id", questionId)
+    .order("is_primary", { ascending: false })
+    .order("answer_text", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching accepted answers:", {
+      questionId,
+      error,
+    });
+    return [];
+  }
+
+  return (data ?? []) as DbQuestionAcceptedAnswer[];
+}
