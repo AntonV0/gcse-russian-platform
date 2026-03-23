@@ -10,6 +10,7 @@ import {
 } from "@/lib/question-helpers-db";
 import {
   deleteQuestionAction,
+  duplicateQuestionAction,
   updateQuestionAction,
 } from "@/app/actions/admin-question-actions";
 import AdminQuestionForm from "@/components/admin/admin-question-form";
@@ -165,6 +166,25 @@ export default async function AdminQuestionEditPage({
         }}
         submitLabel="Save question"
       />
+
+      <section className="mt-8">
+        <DashboardCard title="Quick Actions">
+          <form action={duplicateQuestionAction}>
+            <input type="hidden" name="questionId" value={question.id} />
+            <input
+              type="hidden"
+              name="questionSetId"
+              value={question.question_set_id}
+            />
+            <button
+              type="submit"
+              className="rounded-lg border px-4 py-2 text-sm"
+            >
+              Duplicate question
+            </button>
+          </form>
+        </DashboardCard>
+      </section>
 
       <section className="mt-8">
         <DashboardCard title="Danger Zone">

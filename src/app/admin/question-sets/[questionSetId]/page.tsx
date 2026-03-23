@@ -10,7 +10,9 @@ import AdminQuestionForm from "@/components/admin/admin-question-form";
 import {
   createQuestionAction,
   deleteQuestionSetAction,
+  duplicateQuestionAction,
   moveQuestionAction,
+  normalizeQuestionPositionsAction,
   updateQuestionSetAction,
 } from "@/app/actions/admin-question-actions";
 
@@ -150,11 +152,22 @@ export default async function AdminQuestionSetDetailPage({
       </section>
 
       <section className="mb-8">
-        <PageHeader
-          title="Questions"
-          description="Questions currently attached to this set."
-        />
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <PageHeader
+            title="Questions"
+            description="Questions currently attached to this set."
+          />
 
+          <form action={normalizeQuestionPositionsAction}>
+            <input type="hidden" name="questionSetId" value={questionSet.id} />
+            <button
+              type="submit"
+              className="rounded border px-3 py-2 text-sm"
+            >
+              Normalize positions
+            </button>
+          </form>
+        </div>
         {questions.map((question) => (
           <DashboardCard key={question.id} title={`Q${question.position}`}>
             <div className="space-y-2">
@@ -191,6 +204,17 @@ export default async function AdminQuestionSetDetailPage({
                 >
                   Edit question
                 </Link>
+
+                <form action={duplicateQuestionAction}>
+                  <input type="hidden" name="questionId" value={question.id} />
+                  <input type="hidden" name="questionSetId" value={questionSet.id} />
+                  <button
+                    type="submit"
+                    className="rounded border px-3 py-1 text-sm"
+                  >
+                    Duplicate
+                  </button>
+                </form>
 
                 <form action={moveQuestionAction}>
                   <input type="hidden" name="questionId" value={question.id} />
