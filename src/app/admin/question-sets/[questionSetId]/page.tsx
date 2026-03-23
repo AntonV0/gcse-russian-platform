@@ -5,9 +5,13 @@ import {
   getQuestionSetByIdDb,
   getQuestionsByQuestionSetIdIncludingInactiveDb,
 } from "@/lib/question-helpers-db";
-import { createQuestionAction } from "@/app/actions/admin-question-actions";
 import Link from "next/link";
 import AdminQuestionForm from "@/components/admin/admin-question-form";
+import {
+  createQuestionAction,
+  deleteQuestionSetAction,
+  updateQuestionSetAction,
+} from "@/app/actions/admin-question-actions";
 
 type AdminQuestionSetDetailPageProps = {
   params: Promise<{
@@ -65,7 +69,82 @@ export default async function AdminQuestionSetDetailPage({
                 {questionSet.instructions}
               </p>
             ) : null}
+            <p>
+              <span className="font-medium">Questions:</span> {questions.length}
+            </p>
           </div>
+        </DashboardCard>
+      </section>
+
+      <section className="mb-8 grid gap-4 lg:grid-cols-[2fr_1fr]">
+        <DashboardCard title="Edit Question Set">
+          <form action={updateQuestionSetAction} className="space-y-4">
+            <input type="hidden" name="questionSetId" value={questionSet.id} />
+
+            <div>
+              <label className="block text-sm font-medium">Title</label>
+              <input
+                name="title"
+                required
+                defaultValue={questionSet.title}
+                className="w-full rounded border px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Slug</label>
+              <input
+                name="slug"
+                required
+                defaultValue={questionSet.slug ?? ""}
+                className="w-full rounded border px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Description</label>
+              <textarea
+                name="description"
+                defaultValue={questionSet.description ?? ""}
+                className="w-full rounded border px-3 py-2"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Instructions</label>
+              <textarea
+                name="instructions"
+                defaultValue={questionSet.instructions ?? ""}
+                className="w-full rounded border px-3 py-2"
+                rows={3}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="rounded-lg bg-black px-4 py-2 text-white"
+            >
+              Save question set
+            </button>
+          </form>
+        </DashboardCard>
+
+        <DashboardCard title="Danger Zone">
+          <form action={deleteQuestionSetAction} className="space-y-4">
+            <input type="hidden" name="questionSetId" value={questionSet.id} />
+
+            <p className="text-sm text-gray-600">
+              Delete this question set and all of its questions, options, and accepted answers.
+            </p>
+
+            <button
+              type="submit"
+              className="rounded-lg border border-red-300 px-4 py-2 text-red-700"
+            >
+              Delete question set
+            </button>
+          </form>
         </DashboardCard>
       </section>
 
