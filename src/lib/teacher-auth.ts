@@ -1,5 +1,31 @@
 import { createClient } from "@/lib/supabase/server";
 
+async function isCurrentUserAdmin() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return false;
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Error checking admin status:", profileError);
+    return false;
+  }
+
+  return Boolean(profile?.is_admin);
+}
+
 export async function isCurrentUserTeacherForAnyGroup() {
   const supabase = await createClient();
 
@@ -10,6 +36,12 @@ export async function isCurrentUserTeacherForAnyGroup() {
 
   if (userError || !user) {
     return false;
+  }
+
+  const isAdmin = await isCurrentUserAdmin();
+
+  if (isAdmin) {
+    return true;
   }
 
   const { data, error } = await supabase
@@ -39,6 +71,12 @@ export async function canCurrentUserReviewAssignment(assignmentId: string) {
     return false;
   }
 
+  const isAdmin = await isCurrentUserAdmin();
+
+  if (isAdmin) {
+    return true;
+  }
+
   const { data, error } = await supabase
     .from("assignments")
     .select(`
@@ -65,5 +103,5 @@ export async function canCurrentUserReviewAssignment(assignmentId: string) {
     return false;
   }
 
-  return !!data;
+  return Boolean(data);
 }
