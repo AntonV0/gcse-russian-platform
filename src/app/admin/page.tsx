@@ -25,6 +25,20 @@ export default async function AdminPage() {
             </DashboardCard>
           </div>
         </Link>
+        <Link href="/admin/question-sets/templates" className="block">
+          <div className="transition hover:-translate-y-0.5">
+            <DashboardCard title="Question Set Templates">
+              Create and reuse structured content templates.
+            </DashboardCard>
+          </div>
+        </Link>
+        <Link href="/admin/question-sets/templates" className="block">
+          <div className="transition hover:-translate-y-0.5">
+            <DashboardCard title="Question Set Templates">
+              Create and reuse structured content templates.
+            </DashboardCard>
+          </div>
+        </Link>
       </section>
     </main>
   );
