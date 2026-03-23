@@ -98,23 +98,33 @@ export default async function AdminQuestionEditPage({
 
   return (
     <main>
-      <div className="mb-6">
+      <PageHeader
+        title={`Edit Question ${question.position}`}
+        description={question.prompt}
+      />
+      <div className="mb-6 flex flex-wrap gap-3">
         <Link
           href={
             questionSet
               ? `/admin/question-sets/${questionSet.id}`
               : "/admin/question-sets"
           }
-          className="inline-block text-sm text-blue-600 hover:underline"
+          className="rounded border px-4 py-2 text-sm"
         >
           Back to question set
         </Link>
-      </div>
 
-      <PageHeader
-        title={`Edit Question ${question.position}`}
-        description={question.prompt}
-      />
+        {questionSet?.slug ? (
+          <Link
+            href={`/question-sets/${questionSet.slug}`}
+            className="rounded border px-4 py-2 text-sm"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open public question set
+          </Link>
+        ) : null}
+      </div>
 
       <AdminQuestionForm
         mode="edit"
