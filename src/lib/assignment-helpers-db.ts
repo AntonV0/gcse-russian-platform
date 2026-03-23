@@ -67,6 +67,22 @@ export async function getCurrentUserAssignmentsDb() {
 
   if (userError || !user) return [];
 
+  const isAdmin = await isCurrentUserAdminDb();
+
+  if (isAdmin) {
+    const { data, error } = await supabase
+      .from("assignments")
+      .select("*")
+      .order("due_at", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching assignments for admin:", error);
+      return [];
+    }
+
+    return (data ?? []) as DbAssignment[];
+  }
+
   const { data: memberships, error: membershipError } = await supabase
     .from("teaching_group_members")
     .select("group_id")
@@ -90,6 +106,30 @@ export async function getCurrentUserAssignmentsDb() {
   }
 
   return (data ?? []) as DbAssignment[];
+}
+
+async function isCurrentUserAdminDb() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) return false;
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Error checking admin status in assignment helpers:", profileError);
+    return false;
+  }
+
+  return Boolean(profile?.is_admin);
 }
 
 export async function getAssignmentItemsDb(assignmentId: string) {
@@ -344,31 +384,51 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
 
   if (userError || !user) return [];
 
-  const { data: memberships, error: membershipError } = await supabase
-    .from("teaching_group_members")
-    .select("group_id, member_role")
-    .eq("user_id", user.id);
+  const isAdmin = await isCurrentUserAdminDb();
 
-  if (membershipError || !memberships) {
-    console.error("Error fetching teacher memberships:", membershipError);
-    return [];
-  }
+  let assignments: DbAssignment[] = [];
 
-  const teacherGroupIds = memberships
-    .filter((m) => m.member_role === "teacher" || m.member_role === "assistant")
-    .map((m) => m.group_id);
+  if (isAdmin) {
+    const { data, error } = await supabase
+      .from("assignments")
+      .select("*")
+      .order("due_at", { ascending: true });
 
-  if (teacherGroupIds.length === 0) return [];
+    if (error || !data) {
+      console.error("Error fetching assignments for admin teacher view:", error);
+      return [];
+    }
 
-  const { data: assignments, error: assignmentError } = await supabase
-    .from("assignments")
-    .select("*")
-    .in("group_id", teacherGroupIds)
-    .order("due_at", { ascending: true });
+    assignments = data as DbAssignment[];
+  } else {
+    const { data: memberships, error: membershipError } = await supabase
+      .from("teaching_group_members")
+      .select("group_id, member_role")
+      .eq("user_id", user.id);
 
-  if (assignmentError || !assignments) {
-    console.error("Error fetching teacher assignments:", assignmentError);
-    return [];
+    if (membershipError || !memberships) {
+      console.error("Error fetching teacher memberships:", membershipError);
+      return [];
+    }
+
+    const teacherGroupIds = memberships
+      .filter((m) => m.member_role === "teacher" || m.member_role === "assistant")
+      .map((m) => m.group_id);
+
+    if (teacherGroupIds.length === 0) return [];
+
+    const { data, error: assignmentError } = await supabase
+      .from("assignments")
+      .select("*")
+      .in("group_id", teacherGroupIds)
+      .order("due_at", { ascending: true });
+
+    if (assignmentError || !data) {
+      console.error("Error fetching teacher assignments:", assignmentError);
+      return [];
+    }
+
+    assignments = data as DbAssignment[];
   }
 
   const results = await Promise.all(
@@ -386,7 +446,7 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
       ]);
 
       return {
-        assignment: assignment as DbAssignment,
+        assignment,
         group: group ?? null,
         submissionCount: count ?? 0,
       };
