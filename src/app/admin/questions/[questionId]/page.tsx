@@ -12,6 +12,7 @@ import {
   deleteQuestionAction,
   updateQuestionAction,
 } from "@/app/actions/admin-question-actions";
+import AdminQuestionForm from "@/components/admin/admin-question-form";
 
 type AdminQuestionEditPageProps = {
   params: Promise<{
@@ -114,360 +115,56 @@ export default async function AdminQuestionEditPage({
         description={question.prompt}
       />
 
-      <form action={updateQuestionAction} className="space-y-6">
-        <input type="hidden" name="questionId" value={question.id} />
-        <input type="hidden" name="questionSetId" value={question.question_set_id} />
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium">Question type</label>
-            <select
-              name="questionType"
-              required
-              className="w-full rounded border px-3 py-2"
-              defaultValue={question.question_type}
-            >
-              <option value="multiple_choice">Multiple choice</option>
-              <option value="short_answer">Short answer</option>
-              <option value="translation">Translation</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Answer strategy</label>
-            <select
-              name="answerStrategy"
-              className="w-full rounded border px-3 py-2"
-              defaultValue={asString(metadata.answerStrategy) || "text_input"}
-            >
-              <option value="text_input">Text input</option>
-              <option value="selection_based">Selection based</option>
-              <option value="sentence_builder">Sentence builder</option>
-              <option value="upload_required">Upload required</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Prompt</label>
-          <textarea
-            name="prompt"
-            required
-            className="w-full rounded border px-3 py-2"
-            rows={3}
-            defaultValue={question.prompt}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Explanation</label>
-          <textarea
-            name="explanation"
-            className="w-full rounded border px-3 py-2"
-            rows={3}
-            defaultValue={question.explanation ?? ""}
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <label className="block text-sm font-medium">Marks</label>
-            <input
-              name="marks"
-              type="number"
-              min="1"
-              defaultValue={String(question.marks)}
-              className="w-full rounded border px-3 py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Position</label>
-            <input
-              name="position"
-              type="number"
-              min="1"
-              defaultValue={String(question.position)}
-              className="w-full rounded border px-3 py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Audio path</label>
-            <input
-              name="audioPath"
-              className="w-full rounded border px-3 py-2"
-              defaultValue={question.audio_path ?? ""}
-            />
-          </div>
-        </div>
-
-        <DashboardCard title="Question State">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="isActive"
-              value="true"
-              defaultChecked={question.is_active}
-            />
-            Active
-          </label>
-        </DashboardCard>
-
-        <DashboardCard title="Translation / Text Settings">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium">
-                Translation direction
-              </label>
-              <select
-                name="translationDirection"
-                className="w-full rounded border px-3 py-2"
-                defaultValue={asString(metadata.direction)}
-              >
-                <option value="">None</option>
-                <option value="to_russian">To Russian</option>
-                <option value="to_english">To English</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Placeholder</label>
-              <input
-                name="placeholder"
-                className="w-full rounded border px-3 py-2"
-                defaultValue={asString(metadata.placeholder)}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">
-                Source language label
-              </label>
-              <input
-                name="sourceLanguageLabel"
-                className="w-full rounded border px-3 py-2"
-                defaultValue={asString(metadata.sourceLanguageLabel)}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">
-                Target language label
-              </label>
-              <input
-                name="targetLanguageLabel"
-                className="w-full rounded border px-3 py-2"
-                defaultValue={asString(metadata.targetLanguageLabel)}
-              />
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <label className="block text-sm font-medium">Instruction</label>
-            <input
-              name="instruction"
-              className="w-full rounded border px-3 py-2"
-              defaultValue={asString(metadata.instruction)}
-            />
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Selection-Based Settings">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium">
-                Selection display mode
-              </label>
-              <select
-                name="selectionDisplayMode"
-                className="w-full rounded border px-3 py-2"
-                defaultValue={asString(metadata.selectionDisplayMode) || "grouped"}
-              >
-                <option value="grouped">Grouped</option>
-                <option value="inline_gaps">Inline gaps</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <label className="block text-sm font-medium">Selection groups</label>
-            <textarea
-              name="selectionGroupsText"
-              className="w-full rounded border px-3 py-2 font-mono text-sm"
-              rows={8}
-              defaultValue={stringifySelectionGroups(metadata.selectionGroups)}
-            />
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Sentence Builder Settings">
-          <div>
-            <label className="block text-sm font-medium">Word bank</label>
-            <textarea
-              name="wordBankText"
-              className="w-full rounded border px-3 py-2"
-              rows={5}
-              defaultValue={asStringArray(metadata.wordBank).join("\n")}
-            />
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Validation Options">
-          <div className="grid gap-3 md:grid-cols-3">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="ignorePunctuation"
-                value="true"
-                defaultChecked={asBoolean(metadata.ignorePunctuation)}
-              />
-              Ignore punctuation
-            </label>
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="ignoreArticles"
-                value="true"
-                defaultChecked={asBoolean(metadata.ignoreArticles)}
-              />
-              Ignore articles
-            </label>
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="collapseWhitespace"
-                value="true"
-                defaultChecked={asBoolean(metadata.collapseWhitespace, true)}
-              />
-              Collapse whitespace
-            </label>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Listening Mode Settings">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium">Max plays</label>
-              <input
-                name="maxPlays"
-                type="number"
-                min="1"
-                className="w-full rounded border px-3 py-2"
-                defaultValue={asNumber(metadata.maxPlays)}
-              />
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="listeningMode"
-                value="true"
-                defaultChecked={asBoolean(metadata.listeningMode)}
-              />
-              Listening mode
-            </label>
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="autoPlay"
-                value="true"
-                defaultChecked={asBoolean(metadata.autoPlay)}
-              />
-              Auto play
-            </label>
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="hideNativeControls"
-                value="true"
-                defaultChecked={asBoolean(metadata.hideNativeControls)}
-              />
-              Hide native controls
-            </label>
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="requireAudioCompletionBeforeSubmit"
-                value="true"
-                defaultChecked={asBoolean(metadata.requireAudioCompletionBeforeSubmit)}
-              />
-              Require audio completion before submit
-            </label>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Answer Content">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium">
-                Multiple choice options
-              </label>
-              <textarea
-                name="optionsText"
-                className="w-full rounded border px-3 py-2"
-                rows={5}
-                defaultValue={optionsText}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">
-                Correct option index
-              </label>
-              <input
-                name="correctOptionIndex"
-                type="number"
-                min="1"
-                className="w-full rounded border px-3 py-2"
-                defaultValue={correctOptionIndex}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">
-                Accepted answers
-              </label>
-              <textarea
-                name="acceptedAnswersText"
-                className="w-full rounded border px-3 py-2"
-                rows={6}
-                defaultValue={acceptedAnswersText}
-              />
-            </div>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Advanced Metadata Override">
-          <div>
-            <label className="block text-sm font-medium">
-              Extra metadata JSON
-            </label>
-            <textarea
-              name="metadata"
-              className="w-full rounded border px-3 py-2 font-mono text-sm"
-              rows={8}
-              defaultValue={"{}"}
-            />
-          </div>
-        </DashboardCard>
-
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="submit"
-            className="rounded-lg bg-black px-4 py-2 text-white"
-          >
-            Save question
-          </button>
-        </div>
-      </form>
+      <AdminQuestionForm
+        mode="edit"
+        action={updateQuestionAction}
+        questionSetId={question.question_set_id}
+        questionId={question.id}
+        defaultValues={{
+          questionType: question.question_type as
+            | "multiple_choice"
+            | "short_answer"
+            | "translation",
+          answerStrategy:
+            (asString(metadata.answerStrategy) as
+              | "text_input"
+              | "selection_based"
+              | "sentence_builder"
+              | "upload_required") || "text_input",
+          prompt: question.prompt,
+          explanation: question.explanation ?? "",
+          marks: String(question.marks),
+          position: String(question.position),
+          audioPath: question.audio_path ?? "",
+          isActive: question.is_active,
+          translationDirection:
+            (asString(metadata.direction) as "" | "to_russian" | "to_english") || "",
+          placeholder: asString(metadata.placeholder),
+          sourceLanguageLabel: asString(metadata.sourceLanguageLabel),
+          targetLanguageLabel: asString(metadata.targetLanguageLabel),
+          instruction: asString(metadata.instruction),
+          selectionDisplayMode:
+            (asString(metadata.selectionDisplayMode) as "grouped" | "inline_gaps") ||
+            "grouped",
+          selectionGroupsText: stringifySelectionGroups(metadata.selectionGroups),
+          wordBankText: asStringArray(metadata.wordBank).join("\n"),
+          ignorePunctuation: asBoolean(metadata.ignorePunctuation),
+          ignoreArticles: asBoolean(metadata.ignoreArticles),
+          collapseWhitespace: asBoolean(metadata.collapseWhitespace, true),
+          maxPlays: asNumber(metadata.maxPlays),
+          listeningMode: asBoolean(metadata.listeningMode),
+          autoPlay: asBoolean(metadata.autoPlay),
+          hideNativeControls: asBoolean(metadata.hideNativeControls),
+          requireAudioCompletionBeforeSubmit: asBoolean(
+            metadata.requireAudioCompletionBeforeSubmit
+          ),
+          optionsText,
+          correctOptionIndex,
+          acceptedAnswersText,
+          metadata: "{}",
+        }}
+        submitLabel="Save question"
+      />
 
       <section className="mt-8">
         <DashboardCard title="Danger Zone">
