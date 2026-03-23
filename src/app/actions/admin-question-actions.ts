@@ -1214,3 +1214,42 @@ export async function duplicateQuestionSetAction(formData: FormData) {
 
   redirect(`/admin/question-sets/${duplicatedSet.id}`);
 }
+
+export async function toggleQuestionActiveAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const questionId = getTrimmedString(formData, "questionId");
+  const questionSetId = getTrimmedString(formData, "questionSetId");
+  const nextStateRaw = getTrimmedString(formData, "nextState");
+
+  if (!questionId || !questionSetId) {
+    throw new Error("Missing required fields");
+  }
+
+  if (nextStateRaw !== "active" && nextStateRaw !== "inactive") {
+    throw new Error("Invalid question state");
+  }
+
+  const isActive = nextStateRaw === "active";
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("questions")
+    .update({
+      is_active: isActive,
+    })
+    .eq("id", questionId)
+    .eq("question_set_id", questionSetId);
+
+  if (error) {
+    console.error("Error toggling question active state:", error);
+    throw new Error(`Failed to toggle question state: ${error.message}`);
+  }
+
+  redirect(`/admin/question-sets/${questionSetId}`);
+}
