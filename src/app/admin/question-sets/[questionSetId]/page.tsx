@@ -9,6 +9,7 @@ import Link from "next/link";
 import AdminQuestionForm from "@/components/admin/admin-question-form";
 import {
   createQuestionAction,
+  deleteQuestionAction,
   deleteQuestionSetAction,
   duplicateQuestionAction,
   moveQuestionAction,
@@ -239,6 +240,17 @@ export default async function AdminQuestionSetDetailPage({
                     disabled={question.position === questions.length}
                   >
                     Move down
+                  </button>
+                </form>
+
+                <form action={deleteQuestionAction}>
+                  <input type="hidden" name="questionId" value={question.id} />
+                  <input type="hidden" name="questionSetId" value={questionSet.id} />
+                  <button
+                    type="submit"
+                    className="rounded border border-red-300 px-3 py-1 text-sm text-red-700"
+                  >
+                    Delete
                   </button>
                 </form>
               </div>
