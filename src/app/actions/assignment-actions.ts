@@ -30,7 +30,7 @@ export async function submitAssignmentAction({
 
   const { data: existing, error: existingError } = await supabase
     .from("assignment_submissions")
-    .select("id")
+    .select("id, status")
     .eq("assignment_id", assignmentId)
     .eq("student_user_id", user.id)
     .maybeSingle();
@@ -38,6 +38,10 @@ export async function submitAssignmentAction({
   if (existingError) {
     console.error("Error checking existing assignment submission:", existingError);
     return { success: false, error: "submission_lookup_failed" as const };
+  }
+
+  if (existing?.status === "reviewed") {
+    return { success: false, error: "already_reviewed" as const };
   }
 
   if (!existing) {
