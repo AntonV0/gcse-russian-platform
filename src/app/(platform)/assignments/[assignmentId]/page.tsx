@@ -11,6 +11,10 @@ import { getLessonPath } from "@/lib/routes";
 import { getSignedStorageUrl } from "@/lib/storage-helpers";
 import StatusBadge from "@/components/ui/status-badge";
 import { getDueDateClass, getDueDateStatus } from "@/lib/assignment-status";
+import {
+  getLessonCompletionMap,
+  getQuestionSetStartedMap,
+} from "@/lib/assignment-progress";
 
 type AssignmentDetailPageProps = {
   params: Promise<{
@@ -71,6 +75,19 @@ export default async function AssignmentDetailPage({
     submission?.submitted_file_path ?? null
   );
 
+  const lessonItems = items
+    .filter((item) => item.item_type === "lesson" && item.lesson)
+    .map((item) => item.lesson!);
+
+  const questionSetIds = items
+    .filter((item) => item.item_type === "question_set" && item.questionSet?.id)
+    .map((item) => item.questionSet!.id);
+
+  const [lessonProgressMap, questionSetMap] = await Promise.all([
+    getLessonCompletionMap(lessonItems),
+    getQuestionSetStartedMap(questionSetIds),
+  ]);
+
   return (
     <main>
       <div className="mb-6">
@@ -124,80 +141,22 @@ export default async function AssignmentDetailPage({
           ) : (
             <ol className="space-y-3 text-sm">
               {items.map((item, index) => {
+                let progressLabel: string | null = null;
+                let progressColor = "text-gray-500";
+
                 if (item.item_type === "lesson" && item.lesson) {
-                  return (
-                    <li key={item.id} className="rounded border p-4">
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Step {index + 1}
-                        </span>
-                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                          Lesson
-                        </span>
-                      </div>
+                  const key = `${item.lesson.course_slug}|${item.lesson.variant_slug}|${item.lesson.module_slug}|${item.lesson.slug}`;
+                  const completed = lessonProgressMap.get(key);
 
-                      <Link
-                        href={getLessonPath(
-                          item.lesson.course_slug,
-                          item.lesson.variant_slug,
-                          item.lesson.module_slug,
-                          item.lesson.slug
-                        )}
-                        className="text-base font-medium text-blue-600 hover:underline"
-                      >
-                        {item.lesson.title}
-                      </Link>
-
-                      <p className="mt-1 text-gray-600">{item.lesson.module_title}</p>
-                    </li>
-                  );
+                  progressLabel = completed ? "Completed" : "Not completed";
+                  progressColor = completed ? "text-green-600" : "text-gray-500";
                 }
 
-                if (item.item_type === "question_set" && item.questionSet?.slug) {
-                  return (
-                    <li key={item.id} className="rounded border p-4">
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Step {index + 1}
-                        </span>
-                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                          Question set
-                        </span>
-                      </div>
+                if (item.item_type === "question_set" && item.questionSet) {
+                  const started = questionSetMap.get(item.questionSet.id);
 
-                      <Link
-                        href={`/question-sets/${item.questionSet.slug}`}
-                        className="text-base font-medium text-blue-600 hover:underline"
-                      >
-                        {item.questionSet.title}
-                      </Link>
-
-                      {item.questionSet.description ? (
-                        <p className="mt-1 text-gray-700">
-                          {item.questionSet.description}
-                        </p>
-                      ) : null}
-                    </li>
-                  );
-                }
-
-                if (item.item_type === "custom_task") {
-                  return (
-                    <li key={item.id} className="rounded border p-4">
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Step {index + 1}
-                        </span>
-                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                          Custom task
-                        </span>
-                      </div>
-
-                      <p className="text-gray-700">
-                        {item.custom_prompt ?? "No task text provided."}
-                      </p>
-                    </li>
-                  );
+                  progressLabel = started ? "Started" : "Not started";
+                  progressColor = started ? "text-blue-600" : "text-gray-500";
                 }
 
                 return (
@@ -206,12 +165,66 @@ export default async function AssignmentDetailPage({
                       <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
                         Step {index + 1}
                       </span>
-                      <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                        Item
-                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                          {item.item_type.replace("_", " ")}
+                        </span>
+
+                        {progressLabel ? (
+                          <span className={`text-xs font-medium ${progressColor}`}>
+                            {progressLabel}
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
 
-                    <p className="text-gray-700">Assignment item</p>
+                    {item.item_type === "lesson" && item.lesson ? (
+                      <>
+                        <Link
+                          href={getLessonPath(
+                            item.lesson.course_slug,
+                            item.lesson.variant_slug,
+                            item.lesson.module_slug,
+                            item.lesson.slug
+                          )}
+                          className="text-base font-medium text-blue-600 hover:underline"
+                        >
+                          {item.lesson.title}
+                        </Link>
+
+                        <p className="mt-1 text-gray-600">{item.lesson.module_title}</p>
+                      </>
+                    ) : null}
+
+                    {item.item_type === "question_set" && item.questionSet?.slug ? (
+                      <>
+                        <Link
+                          href={`/question-sets/${item.questionSet.slug}`}
+                          className="text-base font-medium text-blue-600 hover:underline"
+                        >
+                          {item.questionSet.title}
+                        </Link>
+
+                        {item.questionSet.description ? (
+                          <p className="mt-1 text-gray-700">
+                            {item.questionSet.description}
+                          </p>
+                        ) : null}
+                      </>
+                    ) : null}
+
+                    {item.item_type === "custom_task" ? (
+                      <p className="text-gray-700">
+                        {item.custom_prompt ?? "No task text provided."}
+                      </p>
+                    ) : null}
+
+                    {!["lesson", "question_set", "custom_task"].includes(
+                      item.item_type
+                    ) ? (
+                      <p className="text-gray-700">Assignment item</p>
+                    ) : null}
                   </li>
                 );
               })}
