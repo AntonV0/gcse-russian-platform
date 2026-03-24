@@ -305,3 +305,80 @@ The platform needs a reliable structure before adding expensive or complex featu
 ### Tradeoff
 
 Some user-facing features arrive later, but on a better foundation.
+
+---
+
+## 13. Why derive teacher assignment state from submissions?
+
+### Decision
+
+Teacher-facing assignment state is derived from submission and review data instead of relying only on the assignment record itself.
+
+### Why
+
+An assignment can be published while still being in different review states operationally:
+
+- no submissions yet
+- submissions received but not reviewed
+- all submissions reviewed
+
+The teacher interface needs to reflect review workload, not just publication state.
+
+### Benefits
+
+- more accurate teacher dashboard
+- better prioritisation
+- avoids misleading "Not started" labels for published assignments
+
+### Tradeoff
+
+This introduces extra helper logic and aggregate queries when loading teacher assignment lists.
+
+---
+
+## 14. Why separate submission status badges from due date urgency?
+
+### Decision
+
+The platform treats submission state and deadline urgency as separate UI signals.
+
+### Why
+
+These answer different questions:
+
+- status badge → where is this in the workflow?
+- due date styling → how urgent is this?
+
+Combining them into one signal would be confusing.
+
+### Benefits
+
+- clearer UX
+- easier scanning for students and teachers
+- reusable visual rules across assignment pages
+
+### Tradeoff
+
+It adds a little more UI logic, but results in much clearer behaviour.
+
+---
+
+## 15. Why avoid restructuring `lib/` during active feature work?
+
+### Decision
+
+The current helper-based `lib/` structure was kept stable instead of being reorganised mid-build.
+
+### Why
+
+The project is still actively evolving, and a premature restructure would create churn without adding immediate product value.
+
+### Benefits
+
+- lower risk during active development
+- fewer broken imports
+- faster iteration on real features
+
+### Tradeoff
+
+The structure may be refactored later into domain folders once the current systems stabilise.

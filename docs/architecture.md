@@ -47,7 +47,12 @@ flowchart TD
   QSE --> AU[Audio System]
 
   A1 --> SUB[Submission System]
-  SUB --> FB[Feedback]
+  SUB --> FB[Feedback + Mark]
+  SUB --> STAT[Status Badge UI]
+  SUB --> DUE[Due Date Urgency UI]
+
+  TA --> REV[Derived Review Status]
+  TA --> HILITE[Pending Review Highlight]
 
   SUB --> ST[(Supabase Storage)]
   QSE --> DB[(Supabase DB)]
@@ -116,6 +121,29 @@ Lessons are composed of reusable blocks:
 - Standardises question creation
 - Speeds up content production
 - Reduces duplication errors
+
+---
+
+### Derived assignment review state
+
+Teacher assignment state is derived from submission data rather than relying only on assignment-level status.
+
+This supports:
+
+- pending review detection
+- fully reviewed detection
+- better prioritisation in teacher dashboards
+
+---
+
+### UX separation: status vs urgency
+
+Submission state and due date urgency are treated as separate UI signals:
+
+- status badges communicate workflow state
+- due date styling communicates urgency
+
+This avoids mixing submission progress with deadline logic.
 
 ---
 
