@@ -3,14 +3,17 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+type CreateTeacherAssignmentItemInput =
+  | { type: "lesson"; lessonId: string }
+  | { type: "question_set"; questionSetId: string }
+  | { type: "custom_task"; customPrompt: string };
+
 type CreateTeacherAssignmentInput = {
   groupId: string;
   title: string;
   instructions?: string | null;
   dueAt?: string | null;
-  lessonIds: string[];
-  questionSetIds?: string[];
-  customTask?: string | null;
+  items: CreateTeacherAssignmentItemInput[];
   allowFileUpload?: boolean;
 };
 
@@ -19,9 +22,7 @@ export async function createTeacherAssignmentAction({
   title,
   instructions = null,
   dueAt = null,
-  lessonIds,
-  questionSetIds = [],
-  customTask = null,
+  items,
   allowFileUpload = false,
 }: CreateTeacherAssignmentInput) {
   const supabase = await createClient();
@@ -43,9 +44,19 @@ export async function createTeacherAssignmentAction({
     return { success: false, error: "missing_group" as const };
   }
 
-  const trimmedCustomTask = customTask?.trim() || null;
+  const cleanedItems = items.filter((item) => {
+    if (item.type === "lesson") {
+      return Boolean(item.lessonId);
+    }
 
-  if (lessonIds.length === 0 && questionSetIds.length === 0 && !trimmedCustomTask) {
+    if (item.type === "question_set") {
+      return Boolean(item.questionSetId);
+    }
+
+    return Boolean(item.customPrompt.trim());
+  });
+
+  if (cleanedItems.length === 0) {
     return { success: false, error: "missing_items" as const };
   }
 
@@ -68,38 +79,38 @@ export async function createTeacherAssignmentAction({
     return { success: false, error: "assignment_create_failed" as const };
   }
 
-  const lessonItems = lessonIds.map((lessonId, index) => ({
-    assignment_id: assignment.id,
-    item_type: "lesson",
-    lesson_id: lessonId,
-    question_set_id: null,
-    custom_prompt: null,
-    position: index + 1,
-  }));
+  const assignmentItems = cleanedItems.map((item, index) => {
+    if (item.type === "lesson") {
+      return {
+        assignment_id: assignment.id,
+        item_type: "lesson",
+        lesson_id: item.lessonId,
+        question_set_id: null,
+        custom_prompt: null,
+        position: index + 1,
+      };
+    }
 
-  const questionSetItems = questionSetIds.map((questionSetId, index) => ({
-    assignment_id: assignment.id,
-    item_type: "question_set",
-    lesson_id: null,
-    question_set_id: questionSetId,
-    custom_prompt: null,
-    position: lessonItems.length + index + 1,
-  }));
+    if (item.type === "question_set") {
+      return {
+        assignment_id: assignment.id,
+        item_type: "question_set",
+        lesson_id: null,
+        question_set_id: item.questionSetId,
+        custom_prompt: null,
+        position: index + 1,
+      };
+    }
 
-  const customTaskItems = trimmedCustomTask
-    ? [
-        {
-          assignment_id: assignment.id,
-          item_type: "custom_task",
-          lesson_id: null,
-          question_set_id: null,
-          custom_prompt: trimmedCustomTask,
-          position: lessonItems.length + questionSetItems.length + 1,
-        },
-      ]
-    : [];
-
-  const assignmentItems = [...lessonItems, ...questionSetItems, ...customTaskItems];
+    return {
+      assignment_id: assignment.id,
+      item_type: "custom_task",
+      lesson_id: null,
+      question_set_id: null,
+      custom_prompt: item.customPrompt.trim(),
+      position: index + 1,
+    };
+  });
 
   const { error: itemsError } = await supabase
     .from("assignment_items")

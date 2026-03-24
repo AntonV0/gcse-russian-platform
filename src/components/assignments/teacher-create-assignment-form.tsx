@@ -21,6 +21,11 @@ type TeacherAssignmentFormInitialData = {
   allowFileUpload: boolean;
 };
 
+type AssignmentItem =
+  | { type: "lesson"; lessonId: string }
+  | { type: "question_set"; questionSetId: string }
+  | { type: "custom_task"; customPrompt: string };
+
 type TeacherCreateAssignmentFormProps = {
   groups: TeacherGroupOption[];
   lessonsByGroup: Record<string, LessonOption[]>;
@@ -45,6 +50,33 @@ function toDateTimeLocalValue(value: string | null | undefined) {
   return localDate.toISOString().slice(0, 16);
 }
 
+function buildInitialItems(
+  initialData?: TeacherAssignmentFormInitialData
+): AssignmentItem[] {
+  if (!initialData) return [];
+
+  const lessonItems: AssignmentItem[] = initialData.lessonIds.map((id) => ({
+    type: "lesson",
+    lessonId: id,
+  }));
+
+  const questionSetItems: AssignmentItem[] = initialData.questionSetIds.map((id) => ({
+    type: "question_set",
+    questionSetId: id,
+  }));
+
+  const customTaskItems: AssignmentItem[] = initialData.customTask?.trim()
+    ? [
+        {
+          type: "custom_task",
+          customPrompt: initialData.customTask,
+        },
+      ]
+    : [];
+
+  return [...lessonItems, ...questionSetItems, ...customTaskItems];
+}
+
 export default function TeacherCreateAssignmentForm({
   groups,
   lessonsByGroup,
@@ -59,15 +91,11 @@ export default function TeacherCreateAssignmentForm({
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [instructions, setInstructions] = useState(initialData?.instructions ?? "");
   const [dueAt, setDueAt] = useState(toDateTimeLocalValue(initialData?.dueAt));
-  const [customTask, setCustomTask] = useState(initialData?.customTask ?? "");
   const [allowFileUpload, setAllowFileUpload] = useState(
     initialData?.allowFileUpload ?? false
   );
-  const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>(
-    initialData?.lessonIds ?? []
-  );
-  const [selectedQuestionSetIds, setSelectedQuestionSetIds] = useState<string[]>(
-    initialData?.questionSetIds ?? []
+  const [items, setItems] = useState<AssignmentItem[]>(() =>
+    buildInitialItems(initialData)
   );
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,23 +105,121 @@ export default function TeacherCreateAssignmentForm({
     [lessonsByGroup, groupId]
   );
 
+  const selectedLessonIds = useMemo(
+    () => items.filter((item) => item.type === "lesson").map((item) => item.lessonId),
+    [items]
+  );
+
+  const selectedQuestionSetIds = useMemo(
+    () =>
+      items
+        .filter((item) => item.type === "question_set")
+        .map((item) => item.questionSetId),
+    [items]
+  );
+
+  const customTaskValue = useMemo(() => {
+    const customTask = items.find((item) => item.type === "custom_task");
+    return customTask?.customPrompt ?? "";
+  }, [items]);
+
   function toggleLesson(lessonId: string) {
-    setSelectedLessonIds((prev) =>
-      prev.includes(lessonId) ? prev.filter((id) => id !== lessonId) : [...prev, lessonId]
-    );
+    setItems((prev) => {
+      const exists = prev.some(
+        (item) => item.type === "lesson" && item.lessonId === lessonId
+      );
+
+      if (exists) {
+        return prev.filter(
+          (item) => !(item.type === "lesson" && item.lessonId === lessonId)
+        );
+      }
+
+      return [...prev, { type: "lesson", lessonId }];
+    });
   }
 
   function toggleQuestionSet(questionSetId: string) {
-    setSelectedQuestionSetIds((prev) =>
-      prev.includes(questionSetId)
-        ? prev.filter((id) => id !== questionSetId)
-        : [...prev, questionSetId]
-    );
+    setItems((prev) => {
+      const exists = prev.some(
+        (item) => item.type === "question_set" && item.questionSetId === questionSetId
+      );
+
+      if (exists) {
+        return prev.filter(
+          (item) =>
+            !(item.type === "question_set" && item.questionSetId === questionSetId)
+        );
+      }
+
+      return [...prev, { type: "question_set", questionSetId }];
+    });
+  }
+
+  function setCustomTaskValue(value: string) {
+    setItems((prev) => {
+      const withoutCustomTask = prev.filter((item) => item.type !== "custom_task");
+
+      if (!value.trim()) {
+        return withoutCustomTask;
+      }
+
+      return [
+        ...withoutCustomTask,
+        {
+          type: "custom_task",
+          customPrompt: value,
+        },
+      ];
+    });
   }
 
   function handleGroupChange(nextGroupId: string) {
     setGroupId(nextGroupId);
-    setSelectedLessonIds([]);
+    setItems((prev) => prev.filter((item) => item.type !== "lesson"));
+  }
+
+  function moveItem(index: number, direction: "up" | "down") {
+    setItems((prev) => {
+      const newItems = [...prev];
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+      if (targetIndex < 0 || targetIndex >= newItems.length) {
+        return prev;
+      }
+
+      [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
+      return newItems;
+    });
+  }
+
+  function removeItem(index: number) {
+    setItems((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
+  }
+
+  function getItemLabel(item: AssignmentItem) {
+    if (item.type === "lesson") {
+      const lesson = availableLessons.find((entry) => entry.id === item.lessonId);
+
+      return {
+        title: lesson?.title ?? "Lesson",
+        subtitle: lesson?.module_title ?? "",
+      };
+    }
+
+    if (item.type === "question_set") {
+      const questionSet = questionSets.find((entry) => entry.id === item.questionSetId);
+
+      return {
+        title: questionSet?.title ?? "Question set",
+        subtitle: questionSet?.description ?? "",
+      };
+    }
+
+    return {
+      title: "Custom task",
+      subtitle: item.customPrompt,
+    };
   }
 
   async function handleSubmit() {
@@ -105,9 +231,7 @@ export default function TeacherCreateAssignmentForm({
       title,
       instructions,
       dueAt: dueAt ? new Date(dueAt).toISOString() : null,
-      lessonIds: selectedLessonIds,
-      questionSetIds: selectedQuestionSetIds,
-      customTask,
+      items,
       allowFileUpload,
     };
 
@@ -131,9 +255,7 @@ export default function TeacherCreateAssignmentForm({
           setError("Please choose a group.");
           break;
         case "missing_items":
-          setError(
-            "Please select at least one lesson or question set, or add a custom task."
-          );
+          setError("Please add at least one assignment item.");
           break;
         case "assignment_update_failed":
           setError("Something went wrong while updating the assignment.");
@@ -291,12 +413,68 @@ export default function TeacherCreateAssignmentForm({
       <div className="space-y-2">
         <label className="block text-sm font-medium">Custom task</label>
         <textarea
-          value={customTask}
-          onChange={(e) => setCustomTask(e.target.value)}
+          value={customTaskValue}
+          onChange={(e) => setCustomTaskValue(e.target.value)}
           rows={4}
           className="w-full rounded border px-3 py-2"
           placeholder="Optional: add a written task or teacher instruction..."
         />
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium">Assignment items (order)</p>
+
+        {items.length === 0 ? (
+          <div className="rounded border p-4 text-sm text-gray-600">
+            No items added yet.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {items.map((item, index) => {
+              const label = getItemLabel(item);
+
+              return (
+                <div
+                  key={`${item.type}-${index}`}
+                  className="flex items-start justify-between gap-4 rounded border p-3 text-sm"
+                >
+                  <div>
+                    <p className="font-medium">
+                      {index + 1}. {label.title}
+                    </p>
+                    {label.subtitle ? (
+                      <p className="text-gray-600">{label.subtitle}</p>
+                    ) : null}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => moveItem(index, "up")}
+                      className="rounded border px-2 py-1 text-xs"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveItem(index, "down")}
+                      className="rounded border px-2 py-1 text-xs"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      className="rounded border px-2 py-1 text-xs text-red-600"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {error ? (

@@ -3,15 +3,18 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+type UpdateTeacherAssignmentItemInput =
+  | { type: "lesson"; lessonId: string }
+  | { type: "question_set"; questionSetId: string }
+  | { type: "custom_task"; customPrompt: string };
+
 type UpdateTeacherAssignmentInput = {
   assignmentId: string;
   groupId: string;
   title: string;
   instructions?: string | null;
   dueAt?: string | null;
-  lessonIds: string[];
-  questionSetIds?: string[];
-  customTask?: string | null;
+  items: UpdateTeacherAssignmentItemInput[];
   allowFileUpload?: boolean;
 };
 
@@ -21,9 +24,7 @@ export async function updateTeacherAssignmentAction({
   title,
   instructions = null,
   dueAt = null,
-  lessonIds,
-  questionSetIds = [],
-  customTask = null,
+  items,
   allowFileUpload = false,
 }: UpdateTeacherAssignmentInput) {
   const supabase = await createClient();
@@ -49,13 +50,22 @@ export async function updateTeacherAssignmentAction({
     return { success: false, error: "missing_group" as const };
   }
 
-  const trimmedCustomTask = customTask?.trim() || null;
+  const cleanedItems = items.filter((item) => {
+    if (item.type === "lesson") {
+      return Boolean(item.lessonId);
+    }
 
-  if (lessonIds.length === 0 && questionSetIds.length === 0 && !trimmedCustomTask) {
+    if (item.type === "question_set") {
+      return Boolean(item.questionSetId);
+    }
+
+    return Boolean(item.customPrompt.trim());
+  });
+
+  if (cleanedItems.length === 0) {
     return { success: false, error: "missing_items" as const };
   }
 
-  // 🔹 1. Update assignment
   const { error: updateError } = await supabase
     .from("assignments")
     .update({
@@ -72,7 +82,6 @@ export async function updateTeacherAssignmentAction({
     return { success: false, error: "assignment_update_failed" as const };
   }
 
-  // 🔹 2. Delete existing items
   const { error: deleteItemsError } = await supabase
     .from("assignment_items")
     .delete()
@@ -83,39 +92,38 @@ export async function updateTeacherAssignmentAction({
     return { success: false, error: "assignment_items_delete_failed" as const };
   }
 
-  // 🔹 3. Recreate items (same logic as create)
-  const lessonItems = lessonIds.map((lessonId, index) => ({
-    assignment_id: assignmentId,
-    item_type: "lesson",
-    lesson_id: lessonId,
-    question_set_id: null,
-    custom_prompt: null,
-    position: index + 1,
-  }));
+  const assignmentItems = cleanedItems.map((item, index) => {
+    if (item.type === "lesson") {
+      return {
+        assignment_id: assignmentId,
+        item_type: "lesson",
+        lesson_id: item.lessonId,
+        question_set_id: null,
+        custom_prompt: null,
+        position: index + 1,
+      };
+    }
 
-  const questionSetItems = questionSetIds.map((questionSetId, index) => ({
-    assignment_id: assignmentId,
-    item_type: "question_set",
-    lesson_id: null,
-    question_set_id: questionSetId,
-    custom_prompt: null,
-    position: lessonItems.length + index + 1,
-  }));
+    if (item.type === "question_set") {
+      return {
+        assignment_id: assignmentId,
+        item_type: "question_set",
+        lesson_id: null,
+        question_set_id: item.questionSetId,
+        custom_prompt: null,
+        position: index + 1,
+      };
+    }
 
-  const customTaskItems = trimmedCustomTask
-    ? [
-        {
-          assignment_id: assignmentId,
-          item_type: "custom_task",
-          lesson_id: null,
-          question_set_id: null,
-          custom_prompt: trimmedCustomTask,
-          position: lessonItems.length + questionSetItems.length + 1,
-        },
-      ]
-    : [];
-
-  const assignmentItems = [...lessonItems, ...questionSetItems, ...customTaskItems];
+    return {
+      assignment_id: assignmentId,
+      item_type: "custom_task",
+      lesson_id: null,
+      question_set_id: null,
+      custom_prompt: item.customPrompt.trim(),
+      position: index + 1,
+    };
+  });
 
   const { error: itemsError } = await supabase
     .from("assignment_items")
