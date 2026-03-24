@@ -13,12 +13,14 @@ import {
 import { getLessonPath } from "@/lib/routes";
 import { canCurrentUserReviewAssignment } from "@/lib/teacher-auth";
 import { getSignedStorageUrl } from "@/lib/storage-helpers";
+import { getDueDateClass, getDueDateStatus } from "@/lib/assignment-status";
 
 type Props = {
   params: Promise<{ assignmentId: string }>;
+  searchParams: Promise<{ filter?: string }>;
 };
 
-function formatDate(value: string | null) {
+function formatDateTime(value: string | null) {
   if (!value) return "Not submitted";
 
   return new Intl.DateTimeFormat("en-GB", {
@@ -27,11 +29,27 @@ function formatDate(value: string | null) {
   }).format(new Date(value));
 }
 
-export default async function TeacherAssignmentReviewPage({ params }: Props) {
+function formatDueDate(value: string | null) {
+  if (!value) return "No due date";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
+export default async function TeacherAssignmentReviewPage({
+  params,
+  searchParams,
+}: Props) {
   const { assignmentId } = await params;
+  const { filter = "all" } = await searchParams;
 
   const canReview = await canCurrentUserReviewAssignment(assignmentId);
-  if (!canReview) return <TeacherAccessDenied />;
+
+  if (!canReview) {
+    return <TeacherAccessDenied />;
+  }
 
   const [assignment, items, submissions] = await Promise.all([
     getAssignmentByIdDb(assignmentId),
@@ -39,31 +57,52 @@ export default async function TeacherAssignmentReviewPage({ params }: Props) {
     getAssignmentSubmissionsForTeacherDb(assignmentId),
   ]);
 
-  if (!assignment) return <main>Assignment not found.</main>;
+  if (!assignment) {
+    return <main>Assignment not found.</main>;
+  }
+
+  const dueStatus = getDueDateStatus(assignment.due_at);
 
   const submissionsWithFiles = await Promise.all(
-    submissions.map(async ({ submission, student }) => ({
-      submission,
-      student,
-      fileUrl: await getSignedStorageUrl(
+    submissions.map(async ({ submission, student }) => {
+      const fileUrl = await getSignedStorageUrl(
         "assignment-submissions",
         submission.submitted_file_path ?? null
-      ),
-    }))
+      );
+
+      return {
+        submission,
+        student,
+        fileUrl,
+      };
+    })
   );
 
   const pendingCount = submissionsWithFiles.filter(
-    (s) => s.submission.status !== "reviewed"
+    ({ submission }) => submission.status !== "reviewed"
   ).length;
+
+  const reviewedCount = submissionsWithFiles.length - pendingCount;
+
+  const filteredSubmissions = submissionsWithFiles.filter(({ submission }) => {
+    if (filter === "pending") {
+      return submission.status !== "reviewed";
+    }
+
+    if (filter === "reviewed") {
+      return submission.status === "reviewed";
+    }
+
+    return true;
+  });
 
   return (
     <main>
-      {/* HEADER */}
       <div className="mb-6 flex items-start justify-between gap-4">
         <div className="space-y-3">
           <Link
             href="/teacher/assignments"
-            className="text-sm text-blue-600 hover:underline"
+            className="inline-block text-sm text-blue-600 hover:underline"
           >
             Back to assignments
           </Link>
@@ -86,145 +125,245 @@ export default async function TeacherAssignmentReviewPage({ params }: Props) {
         </div>
       </div>
 
-      {/* SUMMARY */}
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
+      <div className="mb-6 grid gap-4 md:grid-cols-4">
         <div className="rounded-lg border p-4">
-          <p className="text-sm font-medium">Total submissions</p>
-          <p className="text-2xl font-semibold">{submissionsWithFiles.length}</p>
+          <p className="mb-1 text-sm font-medium text-gray-900">Due date</p>
+          <p className={`text-sm ${getDueDateClass(dueStatus)}`}>
+            {formatDueDate(assignment.due_at)}
+            {dueStatus === "overdue" ? " (Overdue)" : ""}
+            {dueStatus === "soon" ? " (Due soon)" : ""}
+          </p>
         </div>
 
         <div className="rounded-lg border p-4">
-          <p className="text-sm font-medium">Pending review</p>
+          <p className="mb-1 text-sm font-medium text-gray-900">Assignment items</p>
+          <p className="text-2xl font-semibold text-gray-900">{items.length}</p>
+        </div>
+
+        <div className="rounded-lg border p-4">
+          <p className="mb-1 text-sm font-medium text-gray-900">Pending review</p>
           <p className="text-2xl font-semibold text-yellow-600">{pendingCount}</p>
         </div>
 
         <div className="rounded-lg border p-4">
-          <p className="text-sm font-medium">Reviewed</p>
-          <p className="text-2xl font-semibold text-green-600">
-            {submissionsWithFiles.length - pendingCount}
-          </p>
+          <p className="mb-1 text-sm font-medium text-gray-900">Reviewed</p>
+          <p className="text-2xl font-semibold text-green-600">{reviewedCount}</p>
         </div>
       </div>
 
-      {/* ITEMS */}
-      <section className="mb-6 rounded-lg border p-4">
-        <h2 className="mb-3 text-lg font-semibold">Assignment items</h2>
+      <section className="mb-6">
+        <DashboardCard title="Assignment items">
+          {items.length === 0 ? (
+            <p className="text-sm text-gray-600">No items attached to this assignment.</p>
+          ) : (
+            <ol className="space-y-3 text-sm">
+              {items.map((item, index) => {
+                if (item.item_type === "lesson" && item.lesson) {
+                  return (
+                    <li key={item.id} className="rounded border p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                          Step {index + 1}
+                        </span>
+                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                          Lesson
+                        </span>
+                      </div>
 
-        <ol className="space-y-3 text-sm">
-          {items.map((item, index) => (
-            <li key={item.id} className="rounded border p-3">
-              <p className="text-xs text-gray-500">Step {index + 1}</p>
+                      <Link
+                        href={getLessonPath(
+                          item.lesson.course_slug,
+                          item.lesson.variant_slug,
+                          item.lesson.module_slug,
+                          item.lesson.slug
+                        )}
+                        className="text-base font-medium text-blue-600 hover:underline"
+                      >
+                        {item.lesson.title}
+                      </Link>
 
-              {item.item_type === "lesson" && item.lesson && (
-                <>
-                  <p className="font-medium">Lesson</p>
-                  <Link
-                    href={getLessonPath(
-                      item.lesson.course_slug,
-                      item.lesson.variant_slug,
-                      item.lesson.module_slug,
-                      item.lesson.slug
-                    )}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {item.lesson.title}
-                  </Link>
-                </>
-              )}
+                      <p className="mt-1 text-gray-600">{item.lesson.module_title}</p>
+                    </li>
+                  );
+                }
 
-              {item.item_type === "question_set" && item.questionSet && (
-                <>
-                  <p className="font-medium">Question set</p>
-                  <Link
-                    href={`/question-sets/${item.questionSet.slug}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {item.questionSet.title}
-                  </Link>
-                </>
-              )}
+                if (item.item_type === "question_set" && item.questionSet?.slug) {
+                  return (
+                    <li key={item.id} className="rounded border p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                          Step {index + 1}
+                        </span>
+                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                          Question set
+                        </span>
+                      </div>
 
-              {item.item_type === "custom_task" && (
-                <>
-                  <p className="font-medium">Custom task</p>
-                  <p>{item.custom_prompt}</p>
-                </>
-              )}
-            </li>
-          ))}
-        </ol>
+                      <Link
+                        href={`/question-sets/${item.questionSet.slug}`}
+                        className="text-base font-medium text-blue-600 hover:underline"
+                      >
+                        {item.questionSet.title}
+                      </Link>
+
+                      {item.questionSet.description ? (
+                        <p className="mt-1 text-gray-700">
+                          {item.questionSet.description}
+                        </p>
+                      ) : null}
+                    </li>
+                  );
+                }
+
+                if (item.item_type === "custom_task") {
+                  return (
+                    <li key={item.id} className="rounded border p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                          Step {index + 1}
+                        </span>
+                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                          Custom task
+                        </span>
+                      </div>
+
+                      <p className="text-gray-700">
+                        {item.custom_prompt ?? "No task text provided."}
+                      </p>
+                    </li>
+                  );
+                }
+
+                return (
+                  <li key={item.id} className="rounded border p-4">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Step {index + 1}
+                      </span>
+                      <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                        Item
+                      </span>
+                    </div>
+
+                    <p className="text-gray-700">Assignment item</p>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </DashboardCard>
       </section>
 
-      {/* SUBMISSIONS */}
-      {submissionsWithFiles.length === 0 ? (
-        <div className="rounded-lg border p-6 text-sm text-gray-600">
-          No submissions yet.
+      <section>
+        <div className="mb-4 flex gap-2">
+          <Link
+            href={`/teacher/assignments/${assignment.id}?filter=all`}
+            className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+              filter === "all" ? "bg-gray-100 font-medium" : ""
+            }`}
+          >
+            All ({submissionsWithFiles.length})
+          </Link>
+
+          <Link
+            href={`/teacher/assignments/${assignment.id}?filter=pending`}
+            className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+              filter === "pending" ? "bg-gray-100 font-medium" : ""
+            }`}
+          >
+            Pending ({pendingCount})
+          </Link>
+
+          <Link
+            href={`/teacher/assignments/${assignment.id}?filter=reviewed`}
+            className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+              filter === "reviewed" ? "bg-gray-100 font-medium" : ""
+            }`}
+          >
+            Reviewed ({reviewedCount})
+          </Link>
         </div>
-      ) : (
-        <section className="grid gap-4">
-          {submissionsWithFiles.map(({ submission, student, fileUrl }) => {
-            const isPending = submission.status !== "reviewed";
 
-            return (
-              <div
-                key={submission.id}
-                className={`transition ${
-                  isPending ? "border-l-4 border-yellow-400" : ""
-                }`}
-              >
-                <DashboardCard
-                  title={
-                    student?.display_name ||
-                    student?.full_name ||
-                    student?.email ||
-                    "Student submission"
-                  }
+        {filteredSubmissions.length === 0 ? (
+          <div className="rounded-lg border p-6 text-sm text-gray-600">
+            No submissions in this view.
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {filteredSubmissions.map(({ submission, student, fileUrl }) => {
+              const isPending = submission.status !== "reviewed";
+
+              return (
+                <div
+                  key={submission.id}
+                  className={`transition ${isPending ? "border-l-4 border-yellow-400" : ""}`}
                 >
-                  <div className="space-y-4">
-                    {/* STATUS */}
-                    <div className="flex items-center justify-between">
-                      <StatusBadge status={submission.status} />
-                      <p className="text-sm text-gray-600">
-                        {formatDate(submission.submitted_at)}
-                      </p>
-                    </div>
+                  <DashboardCard
+                    title={
+                      student?.display_name ||
+                      student?.full_name ||
+                      student?.email ||
+                      "Student submission"
+                    }
+                  >
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <StatusBadge status={submission.status} />
+                          {submission.mark != null ? (
+                            <span className="text-sm font-medium text-gray-700">
+                              Mark: {submission.mark}
+                            </span>
+                          ) : null}
+                        </div>
 
-                    {/* SUBMISSION TEXT */}
-                    <div className="rounded border bg-gray-50 p-3 text-sm">
-                      <p className="mb-1 font-medium">Submission</p>
-                      <p>{submission.submitted_text ?? "No text provided."}</p>
-                    </div>
-
-                    {/* FILE */}
-                    {submission.submitted_file_name && fileUrl && (
-                      <div className="rounded border bg-gray-50 p-3 text-sm">
-                        <p className="mb-1 font-medium">Uploaded file</p>
-                        <p>{submission.submitted_file_name}</p>
-                        <Link
-                          href={fileUrl}
-                          target="_blank"
-                          className="text-blue-600 hover:underline"
-                        >
-                          Open file
-                        </Link>
+                        <p className="text-sm text-gray-600">
+                          Submitted: {formatDateTime(submission.submitted_at)}
+                        </p>
                       </div>
-                    )}
 
-                    {/* REVIEW */}
-                    <div className="border-t pt-3">
-                      <TeacherSubmissionReviewForm
-                        submissionId={submission.id}
-                        initialMark={submission.mark}
-                        initialFeedback={submission.feedback}
-                      />
+                      <div className="rounded border bg-gray-50 p-3 text-sm">
+                        <p className="mb-1 font-medium">Submission</p>
+                        <p>{submission.submitted_text ?? "No text provided."}</p>
+                      </div>
+
+                      {submission.submitted_file_name && fileUrl ? (
+                        <div className="rounded border bg-gray-50 p-3 text-sm">
+                          <p className="mb-1 font-medium">Uploaded file</p>
+                          <p>{submission.submitted_file_name}</p>
+                          <Link
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            Open file
+                          </Link>
+                        </div>
+                      ) : null}
+
+                      {submission.feedback ? (
+                        <div className="rounded border bg-gray-50 p-3 text-sm">
+                          <p className="mb-1 font-medium">Current feedback</p>
+                          <p className="text-gray-700">{submission.feedback}</p>
+                        </div>
+                      ) : null}
+
+                      <div className="border-t pt-3">
+                        <TeacherSubmissionReviewForm
+                          submissionId={submission.id}
+                          initialMark={submission.mark}
+                          initialFeedback={submission.feedback}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </DashboardCard>
-              </div>
-            );
-          })}
-        </section>
-      )}
+                  </DashboardCard>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </main>
   );
 }
