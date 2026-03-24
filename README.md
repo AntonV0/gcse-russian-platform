@@ -1,28 +1,94 @@
 # GCSE Russian Course Platform
 
-An advanced online learning platform for GCSE Russian students, powering structured courses, interactive lessons, and teacher-led assignments.
+A full-stack online learning platform for GCSE Russian students, combining structured courses, interactive lessons, and a teacher-led assignment system.
+
+Built as a real-world product powering **gcserussian.com** and supporting **Volna Online Russian School**.
 
 ---
 
 ## 🚀 Overview
 
-This platform powers **gcserussian.com** and integrates with **Volna Online Russian School**.
+This platform delivers a complete online learning experience, including:
 
-The system supports:
-
-- Structured course delivery (Foundation, Higher, Volna)
+- Structured course delivery (Foundation, Higher, Volna tracks)
 - Block-based lesson system
-- Database-driven question engine
-- Advanced question interaction system (listening, selection, sentence builder)
-- Assignment system (teacher → student workflow)
-- File upload system (student submissions)
+- Advanced database-driven question engine
+- Teacher → student assignment workflow
+- File uploads and feedback system
 - Role-based access (admin, teacher, student)
 - Progress tracking (variant-aware)
+- Template-driven content system (question sets)
 - Scalable architecture for future expansion
 
 ---
 
-## 🧠 Core Architecture
+## 🧠 Key Technical Features
+
+### 🔹 Metadata-Driven Question Engine
+- Questions are dynamically rendered using structured metadata
+- Supports multiple answer strategies without hardcoding UI
+- Easily extensible for new question types
+
+### 🔹 Reusable Block-Based Lesson System
+- Lessons are composed of modular blocks:
+  - text
+  - note
+  - vocabulary
+  - audio
+  - question sets
+- Enables fast content creation and consistency
+
+### 🔹 Admin CMS (Custom Built)
+- Full CRUD system for:
+  - question sets
+  - questions
+  - options
+  - accepted answers
+- Advanced tools:
+  - duplication
+  - reordering
+  - normalization
+  - activation toggles
+  - inline editing
+  - template system
+  - usage visibility
+
+### 🔹 Question Set Templates
+- Mark question sets as reusable templates
+- Template type classification
+- Guided “create from template” workflow
+- Standardises content creation patterns
+
+### 🔹 Usage Tracking System
+- Tracks which assignments use each question set
+- Helps prevent accidental deletion of in-use content
+- Links directly to relevant assignment pages
+
+### 🔹 Assignment System
+- Teachers can:
+  - create assignments
+  - attach lessons and question sets
+  - review submissions
+  - give marks and feedback
+- Students can:
+  - complete tasks
+  - upload files
+  - receive feedback
+
+### 🔹 Role-Based Architecture
+- Admin → full system access
+- Teacher → group + assignment management
+- Student → course + homework access
+
+### 🔹 Supabase Integration
+- PostgreSQL database
+- Row Level Security (RLS)
+- Auth system
+- File storage with signed URLs
+
+---
+
+## 🏗️ Architecture Overview
 
 ### Course Hierarchy
 
@@ -51,8 +117,15 @@ The system supports:
 - /teacher/assignments/[assignmentId]
 
 - /question-sets/[questionSetSlug]
+- /admin
+- /admin/question-sets
+- /admin/question-sets/templates
+- /admin/questions/[questionId]
 
-## 🏗️ Architecture Diagram
+---
+
+## 🧩 System Architecture
+
 ```mermaid
 flowchart TD
 
@@ -69,6 +142,11 @@ flowchart TD
   TD --> TG[Teaching Groups]
   TD --> TA[Teacher Assignments]
   TD --> TR[Submission Review]
+
+  AD --> AC[Admin Content Tools]
+  AC --> AQS[Question Set Management]
+  AC --> AQ[Question Management]
+  AC --> AT[Template System]
 
   C --> CV[Course Variant]
   CV --> M[Modules]
@@ -93,16 +171,18 @@ flowchart TD
   AS --> UP[Text + File Upload]
   TR --> FB[Teacher Feedback + Mark]
 
+  AQS --> DUP[Duplicate / Normalize / Toggle / Preview]
+  AQS --> USE[Usage Visibility]
+  AQS --> TMP[Create from Template]
+
   UP --> ST[(Supabase Storage)]
   C --> DB[(Supabase DB)]
   A1 --> DB
   TD --> DB
+  AD --> DB
   QSE --> DB
   QA --> DB
 ```
-
----
-
 
 ---
 
@@ -241,7 +321,7 @@ Database-driven.
 
 ### Advanced Features
 
-#### Audio / Listening Mode
+#### 🎧 Audio / Listening Mode
 
 - Audio playback per question
 - Max play limits
@@ -249,7 +329,7 @@ Database-driven.
 - Listening exam mode (restricted UI)
 - Submission lock until audio completes
 
-#### Validation Engine
+#### ✅ Validation Engine
 
 - Case-insensitive matching
 - Whitespace normalization
@@ -257,14 +337,14 @@ Database-driven.
   - ignore punctuation
   - ignore articles
 
-#### Answer Strategies (metadata-driven)
+#### 🧠 Answer Strategies (metadata-driven)
 
 - text_input
 - selection_based
 - sentence_builder
 - upload_required (planned)
 
-#### Selection-based questions
+#### 🔘 Selection-based questions
 
 - Grouped mode
 - Inline gap mode
@@ -292,12 +372,16 @@ Role-aware dashboard:
 
 ### Admin
 
-- Role display
+- Full system visibility
+- Content + assignment control
+- Template management
+- Usage visibility
 
 ### Teacher
 
 - Group-based context
 - Assignment management
+- Submission review
 
 ### Student
 
@@ -309,42 +393,43 @@ Role-aware dashboard:
 
 ## 🗂️ Project Structure
 
-- src/
+```text
+src/
 
-### app/
+  app/
+    (platform)/
+      dashboard/
+      courses/
+      assignments/
+      teacher/
+      question-sets/
+    admin/
 
-- (platform)/
-  - dashboard/
-  - courses/
-  - assignments/
-  - teacher/
-  - question-sets/
+  components/
+    admin/
+    layout/
+    ui/
+    lesson-blocks/
+    questions/
+    assignments/
 
-### components/
+  lib/
+    auth.ts
+    teacher-auth.ts
+    access.ts
+    dashboard-helpers.ts
+    assignment-helpers-db.ts
+    question-helpers-db.ts
+    course-helpers-db.ts
+    access-helpers-db.ts
+    question-engine.ts
+    progress.ts
+    routes.ts
+    media.ts
+    supabase/
 
-- layout/
-- ui/
-- lesson-blocks/
-- questions/
-- assignments/
-
-### lib/
-
-- auth.ts
-- dashboard-helpers.ts
-- access.ts
-- access-helpers-db.ts
-- assignment-helpers-db.ts
-- course-helpers-db.ts
-- progress.ts
-- question-engine.ts
-- question-helpers-db.ts
-- teacher-auth.ts
-- routes.ts
-- media.ts
-- supabase/
-
-### types/
+  types/
+```
 
 ---
 
@@ -381,9 +466,15 @@ Role-aware dashboard:
 - teaching_groups
 - teaching_group_members
 
+### Access
+
+- products
+- user_access_grants
+
 ---
 
 ## 🗄️ Database Relationship Overview
+
 ```mermaid
 erDiagram
 
@@ -447,6 +538,8 @@ erDiagram
     uuid id
     text slug
     text title
+    boolean is_template
+    text template_type
   }
 
   QUESTIONS {
@@ -553,13 +646,14 @@ erDiagram
     text email
     boolean is_admin
   }
-
 ```
+
 ---
 
 ## 🔐 Storage & Security
 
 - Supabase RLS enforced
+- Admin override logic for restricted teacher/assignment views
 - Private storage buckets
 - Signed URLs for secure file access
 - Assignment uploads scoped per user
@@ -567,13 +661,26 @@ erDiagram
 
 ---
 
+## ⚙️ Tech Stack
+
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- Supabase (DB, Auth, Storage)
+- Server Actions
+
+---
+
 ## ⚙️ Environment Variables
 
 Required in `.env.local`:
+
+```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-
+```
 
 ---
 
@@ -581,36 +688,37 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 ### 1. Install dependencies
 
-
+```bash
 npm install
-
+```
 
 ### 2. Run dev server
 
-
+```bash
 npm run dev
-
+```
 
 ### 3. Open app
 
-
+```text
 http://localhost:3000
-
+```
 
 ---
 
-## 🛣️ Future Plans
+## 🛣️ Future Improvements
 
-- Admin content panel (question builder)
-- AI marking system
+- AI-assisted marking system
 - Speaking exam system
 - Audio recording tasks
 - Payment integration
 - Analytics dashboard
+- Bulk admin actions (multi-select, batch operations)
+- Advanced filtering/search in admin
 
 ---
 
-## 🧑‍💻 Author
+## 👤 Author
 
-Anton Vlasenko  
+**Anton Vlasenko**  
 Director — Volna Online Russian School
