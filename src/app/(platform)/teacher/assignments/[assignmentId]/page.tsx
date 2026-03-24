@@ -17,7 +17,7 @@ import { getDueDateClass, getDueDateStatus } from "@/lib/assignment-status";
 
 type Props = {
   params: Promise<{ assignmentId: string }>;
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; sort?: string }>;
 };
 
 function formatDateTime(value: string | null) {
@@ -38,12 +38,19 @@ function formatDueDate(value: string | null) {
   }).format(new Date(value));
 }
 
+function getSubmittedAtTime(value: string | null) {
+  if (!value) return 0;
+
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
 export default async function TeacherAssignmentReviewPage({
   params,
   searchParams,
 }: Props) {
   const { assignmentId } = await params;
-  const { filter = "all" } = await searchParams;
+  const { filter = "all", sort = "pending_first" } = await searchParams;
 
   const canReview = await canCurrentUserReviewAssignment(assignmentId);
 
@@ -94,6 +101,48 @@ export default async function TeacherAssignmentReviewPage({
     }
 
     return true;
+  });
+
+  const visibleSubmissions = [...filteredSubmissions].sort((a, b) => {
+    if (sort === "newest") {
+      return (
+        getSubmittedAtTime(b.submission.submitted_at) -
+        getSubmittedAtTime(a.submission.submitted_at)
+      );
+    }
+
+    if (sort === "oldest") {
+      return (
+        getSubmittedAtTime(a.submission.submitted_at) -
+        getSubmittedAtTime(b.submission.submitted_at)
+      );
+    }
+
+    if (sort === "reviewed_first") {
+      const aReviewed = a.submission.status === "reviewed" ? 0 : 1;
+      const bReviewed = b.submission.status === "reviewed" ? 0 : 1;
+
+      if (aReviewed !== bReviewed) {
+        return aReviewed - bReviewed;
+      }
+
+      return (
+        getSubmittedAtTime(b.submission.submitted_at) -
+        getSubmittedAtTime(a.submission.submitted_at)
+      );
+    }
+
+    const aPending = a.submission.status === "reviewed" ? 1 : 0;
+    const bPending = b.submission.status === "reviewed" ? 1 : 0;
+
+    if (aPending !== bPending) {
+      return aPending - bPending;
+    }
+
+    return (
+      getSubmittedAtTime(b.submission.submitted_at) -
+      getSubmittedAtTime(a.submission.submitted_at)
+    );
   });
 
   return (
@@ -255,42 +304,82 @@ export default async function TeacherAssignmentReviewPage({
       </section>
 
       <section>
-        <div className="mb-4 flex gap-2">
-          <Link
-            href={`/teacher/assignments/${assignment.id}?filter=all`}
-            className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-              filter === "all" ? "bg-gray-100 font-medium" : ""
-            }`}
-          >
-            All ({submissionsWithFiles.length})
-          </Link>
+        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex gap-2">
+            <Link
+              href={`/teacher/assignments/${assignment.id}?filter=all&sort=${sort}`}
+              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+                filter === "all" ? "bg-gray-100 font-medium" : ""
+              }`}
+            >
+              All ({submissionsWithFiles.length})
+            </Link>
 
-          <Link
-            href={`/teacher/assignments/${assignment.id}?filter=pending`}
-            className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-              filter === "pending" ? "bg-gray-100 font-medium" : ""
-            }`}
-          >
-            Pending ({pendingCount})
-          </Link>
+            <Link
+              href={`/teacher/assignments/${assignment.id}?filter=pending&sort=${sort}`}
+              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+                filter === "pending" ? "bg-gray-100 font-medium" : ""
+              }`}
+            >
+              Pending ({pendingCount})
+            </Link>
 
-          <Link
-            href={`/teacher/assignments/${assignment.id}?filter=reviewed`}
-            className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-              filter === "reviewed" ? "bg-gray-100 font-medium" : ""
-            }`}
-          >
-            Reviewed ({reviewedCount})
-          </Link>
+            <Link
+              href={`/teacher/assignments/${assignment.id}?filter=reviewed&sort=${sort}`}
+              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+                filter === "reviewed" ? "bg-gray-100 font-medium" : ""
+              }`}
+            >
+              Reviewed ({reviewedCount})
+            </Link>
+          </div>
+
+          <div className="flex gap-2">
+            <Link
+              href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=pending_first`}
+              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+                sort === "pending_first" ? "bg-gray-100 font-medium" : ""
+              }`}
+            >
+              Pending first
+            </Link>
+
+            <Link
+              href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=reviewed_first`}
+              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+                sort === "reviewed_first" ? "bg-gray-100 font-medium" : ""
+              }`}
+            >
+              Reviewed first
+            </Link>
+
+            <Link
+              href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=newest`}
+              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+                sort === "newest" ? "bg-gray-100 font-medium" : ""
+              }`}
+            >
+              Newest
+            </Link>
+
+            <Link
+              href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=oldest`}
+              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
+                sort === "oldest" ? "bg-gray-100 font-medium" : ""
+              }`}
+            >
+              Oldest
+            </Link>
+          </div>
         </div>
 
-        {filteredSubmissions.length === 0 ? (
+        {visibleSubmissions.length === 0 ? (
           <div className="rounded-lg border p-6 text-sm text-gray-600">
             No submissions in this view.
           </div>
         ) : (
           <div className="grid gap-4">
-            {filteredSubmissions.map(({ submission, student, fileUrl }) => {
+            {visibleSubmissions.map(({ submission, student, fileUrl }) => {
               const isPending = submission.status !== "reviewed";
 
               return (
