@@ -73,13 +73,23 @@ This platform delivers a complete online learning experience, including:
 
 - Teachers can:
   - create assignments
-  - attach lessons and question sets
+  - attach lessons, question sets, and custom tasks
   - review submissions
   - give marks and feedback
 - Students can:
   - complete tasks
   - upload files
   - receive feedback
+
+### 🔹 Assignment UX Layer
+
+- Reusable status badge system
+- Derived teacher review state based on submission data
+- Due date urgency states:
+  - overdue
+  - due soon
+  - normal
+- Teacher list highlighting for assignments that still need review
 
 ### 🔹 Role-Based Architecture
 
@@ -179,6 +189,8 @@ flowchart TD
   AS --> UP[Text + File Upload]
   TR --> FB[Teacher Feedback + Mark]
 
+  TA --> TSTAT[Derived Review Status]
+  TA --> DUE[Due Date Urgency UI]
   AQS --> DUP[Duplicate / Normalize / Toggle / Preview]
   AQS --> USE[Usage Visibility]
   AQS --> TMP[Create from Template]
@@ -272,6 +284,8 @@ flowchart TD
 - Add custom tasks
 - Review submissions
 - Mark + give feedback
+- See derived review state in assignment lists
+- Prioritise assignments with pending reviews
 
 ---
 
@@ -281,6 +295,8 @@ flowchart TD
 - Access lesson + question sets
 - Submit homework (text + file upload)
 - View teacher feedback
+- See clear submission status
+- See overdue / due-soon visual warnings
 
 ---
 
@@ -390,12 +406,14 @@ Role-aware dashboard:
 - Group-based context
 - Assignment management
 - Submission review
+- Pending review visibility
 
 ### Student
 
 - Learning track (foundation / higher / volna)
 - Access type (trial / full / volna)
 - Completed lessons
+- Assignment status visibility
 
 ---
 
@@ -415,11 +433,11 @@ src/
 
   components/
     admin/
+    assignments/
     layout/
     ui/
     lesson-blocks/
     questions/
-    assignments/
 
   lib/
     auth.ts
@@ -434,6 +452,7 @@ src/
     progress.ts
     routes.ts
     media.ts
+    storage-helpers.ts
     supabase/
 
   types/
@@ -578,6 +597,7 @@ erDiagram
     uuid group_id
     text title
     boolean allow_file_upload
+    text status
   }
 
   ASSIGNMENT_ITEMS {
@@ -592,11 +612,14 @@ erDiagram
     uuid id
     uuid assignment_id
     uuid student_user_id
+    text status
     text submitted_text
     text submitted_file_path
     text submitted_file_name
     numeric mark
     text feedback
+    uuid reviewed_by
+    timestamptz reviewed_at
   }
 
   TEACHING_GROUPS {
@@ -723,6 +746,7 @@ http://localhost:3000
 - Analytics dashboard
 - Bulk admin actions (multi-select, batch operations)
 - Advanced filtering/search in admin
+- Assignment editing and resubmission rules
 
 ---
 
