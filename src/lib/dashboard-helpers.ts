@@ -53,12 +53,14 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
   // --- get access grants ---
   const { data: grants } = await supabase
     .from("user_access_grants")
-    .select(`
+    .select(
+      `
       access_mode,
       products (
         code
       )
-    `)
+    `
+    )
     .eq("user_id", user.id)
     .eq("is_active", true);
 

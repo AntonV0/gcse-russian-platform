@@ -96,14 +96,11 @@ export default function AudioPlayer({
 
           {effectiveMaxPlays !== undefined ? (
             <span>
-              Plays used: {Math.min(playCount, effectiveMaxPlays)} /{" "}
-              {effectiveMaxPlays}
+              Plays used: {Math.min(playCount, effectiveMaxPlays)} / {effectiveMaxPlays}
             </span>
           ) : null}
 
-          {remainingPlays !== null ? (
-            <span>Remaining: {remainingPlays}</span>
-          ) : null}
+          {remainingPlays !== null ? <span>Remaining: {remainingPlays}</span> : null}
         </div>
       ) : null}
 

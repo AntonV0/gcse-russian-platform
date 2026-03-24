@@ -141,9 +141,7 @@ export default function AssignmentSubmissionForm({
           />
 
           {selectedFile ? (
-            <p className="text-sm text-gray-700">
-              Selected file: {selectedFile.name}
-            </p>
+            <p className="text-sm text-gray-700">Selected file: {selectedFile.name}</p>
           ) : null}
 
           {!selectedFile && uploadedFileName ? (
@@ -152,9 +150,7 @@ export default function AssignmentSubmissionForm({
             </p>
           ) : null}
 
-          <p className="text-xs text-gray-500">
-            Accepted formats: JPG, PNG, WEBP, PDF
-          </p>
+          <p className="text-xs text-gray-500">Accepted formats: JPG, PNG, WEBP, PDF</p>
         </div>
       ) : null}
 
@@ -168,7 +164,11 @@ export default function AssignmentSubmissionForm({
         disabled={isPending || !canSubmit}
         className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
       >
-        {isPending ? "Submitting..." : initialValue || initialFilePath ? "Update submission" : "Submit homework"}
+        {isPending
+          ? "Submitting..."
+          : initialValue || initialFilePath
+            ? "Update submission"
+            : "Submit homework"}
       </button>
 
       {saved ? (

@@ -5,10 +5,7 @@ import type {
   DbQuestionSet,
 } from "@/lib/question-helpers-db";
 
-export type SupportedQuestionType =
-  | "multiple_choice"
-  | "short_answer"
-  | "translation";
+export type SupportedQuestionType = "multiple_choice" | "short_answer" | "translation";
 
 export type RuntimeQuestionOption = {
   id: string;
@@ -55,9 +52,7 @@ export type RuntimeTextQuestion = RuntimeQuestionBase & {
   acceptedAnswers: RuntimeAcceptedAnswer[];
 };
 
-export type RuntimeQuestion =
-  | RuntimeMultipleChoiceQuestion
-  | RuntimeTextQuestion;
+export type RuntimeQuestion = RuntimeMultipleChoiceQuestion | RuntimeTextQuestion;
 
 export type RuntimeQuestionSet = {
   questionSet: DbQuestionSet;
@@ -110,10 +105,7 @@ function stripEnglishArticles(value: string) {
   return value.replace(/\b(a|an|the)\b/gi, " ");
 }
 
-export function normalizeFreeTextAnswer(
-  value: string,
-  options?: TextValidationOptions
-) {
+export function normalizeFreeTextAnswer(value: string, options?: TextValidationOptions) {
   let result = value.toLowerCase();
 
   if (options?.ignorePunctuation) {
@@ -201,26 +193,23 @@ export function buildRuntimeQuestion(question: {
   };
 
   if (supportedType === "multiple_choice") {
-    const runtimeOptions: RuntimeQuestionOption[] = question.options.map(
-      (option) => ({
-        id: option.id,
-        text: option.option_text ?? "",
-        isCorrect: Boolean(option.is_correct),
-        position: option.position,
-      })
-    );
+    const runtimeOptions: RuntimeQuestionOption[] = question.options.map((option) => ({
+      id: option.id,
+      text: option.option_text ?? "",
+      isCorrect: Boolean(option.is_correct),
+      position: option.position,
+    }));
 
     return {
       ...base,
       type: "multiple_choice",
       options: runtimeOptions,
-      correctOptionId:
-        runtimeOptions.find((option) => option.isCorrect)?.id ?? null,
+      correctOptionId: runtimeOptions.find((option) => option.isCorrect)?.id ?? null,
     };
   }
 
-  const runtimeAcceptedAnswers: RuntimeAcceptedAnswer[] =
-    question.acceptedAnswers.map((answer) => ({
+  const runtimeAcceptedAnswers: RuntimeAcceptedAnswer[] = question.acceptedAnswers.map(
+    (answer) => ({
       id: answer.id,
       text: answer.answer_text,
       normalizedText:
@@ -228,7 +217,8 @@ export function buildRuntimeQuestion(question: {
       isPrimary: answer.is_primary,
       caseSensitive: answer.case_sensitive,
       notes: answer.notes,
-    }));
+    })
+  );
 
   return {
     ...base,
@@ -294,10 +284,7 @@ export function validateTextAnswer(params: {
   options?: TextValidationOptions;
 }): TextValidationResult {
   const submittedText = params.submittedText;
-  const normalizedSubmittedText = normalizeFreeTextAnswer(
-    submittedText,
-    params.options
-  );
+  const normalizedSubmittedText = normalizeFreeTextAnswer(submittedText, params.options);
 
   const matchedAnswer =
     params.question.acceptedAnswers.find((answer) => {
@@ -305,10 +292,7 @@ export function validateTextAnswer(params: {
         return collapseWhitespace(submittedText) === collapseWhitespace(answer.text);
       }
 
-      const normalizedAnswer = normalizeFreeTextAnswer(
-        answer.text,
-        params.options
-      );
+      const normalizedAnswer = normalizeFreeTextAnswer(answer.text, params.options);
 
       return normalizedSubmittedText === normalizedAnswer;
     }) ?? null;
@@ -342,17 +326,11 @@ export function validateSentenceBuilderAnswer(params: {
   options?: TextValidationOptions;
 }): SentenceBuilderValidationResult {
   const submittedText = params.submittedTokens.join(" ");
-  const normalizedSubmittedText = normalizeFreeTextAnswer(
-    submittedText,
-    params.options
-  );
+  const normalizedSubmittedText = normalizeFreeTextAnswer(submittedText, params.options);
 
   const matchedAnswer =
     params.question.acceptedAnswers.find((answer) => {
-      const normalizedAnswer = normalizeFreeTextAnswer(
-        answer.text,
-        params.options
-      );
+      const normalizedAnswer = normalizeFreeTextAnswer(answer.text, params.options);
       return normalizedSubmittedText === normalizedAnswer;
     }) ?? null;
 

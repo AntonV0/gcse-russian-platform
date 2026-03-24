@@ -70,9 +70,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
                   <span className="text-sm">
                     {isCompleted ? (
-                      <span className="font-medium text-green-600">
-                        ✓ Completed
-                      </span>
+                      <span className="font-medium text-green-600">✓ Completed</span>
                     ) : canAccessLesson ? (
                       <span className="text-gray-400">Not started</span>
                     ) : (

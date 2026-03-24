@@ -45,11 +45,7 @@ export async function createTeacherAssignmentAction({
 
   const trimmedCustomTask = customTask?.trim() || null;
 
-  if (
-    lessonIds.length === 0 &&
-    questionSetIds.length === 0 &&
-    !trimmedCustomTask
-  ) {
+  if (lessonIds.length === 0 && questionSetIds.length === 0 && !trimmedCustomTask) {
     return { success: false, error: "missing_items" as const };
   }
 
@@ -103,11 +99,7 @@ export async function createTeacherAssignmentAction({
       ]
     : [];
 
-  const assignmentItems = [
-    ...lessonItems,
-    ...questionSetItems,
-    ...customTaskItems,
-  ];
+  const assignmentItems = [...lessonItems, ...questionSetItems, ...customTaskItems];
 
   const { error: itemsError } = await supabase
     .from("assignment_items")

@@ -4,8 +4,7 @@ export const courses: Course[] = [
   {
     slug: "gcse-russian",
     title: "GCSE Russian",
-    description:
-      "Structured lessons, vocabulary, and exam practice for GCSE Russian.",
+    description: "Structured lessons, vocabulary, and exam practice for GCSE Russian.",
     variants: [
       {
         slug: "foundation",

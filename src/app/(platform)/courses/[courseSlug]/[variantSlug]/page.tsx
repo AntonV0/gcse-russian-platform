@@ -14,10 +14,7 @@ type VariantPageProps = {
 export default async function VariantPage({ params }: VariantPageProps) {
   const { courseSlug, variantSlug } = await params;
 
-  const { course, variant, modules } = await loadVariantPageData(
-    courseSlug,
-    variantSlug
-  );
+  const { course, variant, modules } = await loadVariantPageData(courseSlug, variantSlug);
 
   if (!course || !variant) {
     return <main>Variant not found.</main>;

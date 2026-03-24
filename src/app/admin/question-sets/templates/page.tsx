@@ -21,10 +21,7 @@ export default async function AdminQuestionSetTemplatesPage() {
       />
 
       <div className="mb-6">
-        <Link
-          href="/admin/question-sets"
-          className="rounded border px-4 py-2 text-sm"
-        >
+        <Link href="/admin/question-sets" className="rounded border px-4 py-2 text-sm">
           Back to question sets
         </Link>
       </div>

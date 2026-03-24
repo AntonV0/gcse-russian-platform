@@ -82,14 +82,12 @@ export default async function CreateQuestionSetFromTemplatePage({
             ) : null}
             {template.description ? (
               <p>
-                <span className="font-medium">Description:</span>{" "}
-                {template.description}
+                <span className="font-medium">Description:</span> {template.description}
               </p>
             ) : null}
             {template.instructions ? (
               <p>
-                <span className="font-medium">Instructions:</span>{" "}
-                {template.instructions}
+                <span className="font-medium">Instructions:</span> {template.instructions}
               </p>
             ) : null}
           </div>
@@ -99,11 +97,7 @@ export default async function CreateQuestionSetFromTemplatePage({
       <section>
         <DashboardCard title="New Question Set Details">
           <form action={createQuestionSetFromTemplateAction} className="space-y-4">
-            <input
-              type="hidden"
-              name="templateQuestionSetId"
-              value={template.id}
-            />
+            <input type="hidden" name="templateQuestionSetId" value={template.id} />
 
             <div>
               <label className="block text-sm font-medium">Title</label>
@@ -145,10 +139,7 @@ export default async function CreateQuestionSetFromTemplatePage({
               />
             </div>
 
-            <button
-              type="submit"
-              className="rounded-lg bg-black px-4 py-2 text-white"
-            >
+            <button type="submit" className="rounded-lg bg-black px-4 py-2 text-white">
               Create from template
             </button>
           </form>

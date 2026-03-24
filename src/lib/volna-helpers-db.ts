@@ -78,12 +78,14 @@ export async function getCurrentUserVolnaGroupsDb() {
 
   const { data: groups, error } = await supabase
     .from("teaching_groups")
-    .select(`
+    .select(
+      `
       *,
       course_variants!left (
         slug
       )
-    `)
+    `
+    )
     .in("id", groupIds)
     .eq("is_active", true);
 

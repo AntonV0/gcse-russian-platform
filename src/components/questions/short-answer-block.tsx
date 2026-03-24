@@ -82,12 +82,7 @@ export default function ShortAnswerBlock({
   }
 
   function handleSubmit() {
-    if (
-      !resolvedAnswer.trim() ||
-      resolvedHasSubmitted ||
-      isSubmitting ||
-      submitLocked
-    ) {
+    if (!resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked) {
       return;
     }
 

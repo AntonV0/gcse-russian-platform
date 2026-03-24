@@ -3,10 +3,7 @@ type DashboardCardProps = {
   children: React.ReactNode;
 };
 
-export default function DashboardCard({
-  title,
-  children,
-}: DashboardCardProps) {
+export default function DashboardCard({ title, children }: DashboardCardProps) {
   return (
     <div className="rounded-xl border bg-white p-5 shadow-sm">
       <h2 className="mb-2 font-semibold">{title}</h2>

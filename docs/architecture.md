@@ -84,7 +84,9 @@ erDiagram
 ## 🧠 Key Architectural Decisions
 
 ### Metadata-driven question system
+
 Questions are defined using flexible metadata rather than rigid schemas, allowing:
+
 - multiple answer strategies
 - easy extension
 - reusable UI components
@@ -92,7 +94,9 @@ Questions are defined using flexible metadata rather than rigid schemas, allowin
 ---
 
 ### Block-based lesson design
+
 Lessons are composed of reusable blocks:
+
 - improves consistency
 - simplifies content creation
 - allows future expansion
@@ -100,6 +104,7 @@ Lessons are composed of reusable blocks:
 ---
 
 ### Role-based access with Supabase RLS
+
 - Student, Teacher, Admin roles
 - Admin override logic for management views
 - Secure data isolation
@@ -107,6 +112,7 @@ Lessons are composed of reusable blocks:
 ---
 
 ### Template system
+
 - Standardises question creation
 - Speeds up content production
 - Reduces duplication errors

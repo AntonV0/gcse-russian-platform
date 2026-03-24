@@ -9,10 +9,7 @@ export default async function DebugVolnaPage() {
   const memberships = await getCurrentUserTeachingGroupMembershipsDb();
   const groups = await getTeachingGroupsForCurrentUserDb();
   const volnaGroups = await getCurrentUserVolnaGroupsDb();
-  const volnaGrant = await getCurrentCourseVariantAccessGrantDb(
-    "gcse-russian",
-    "volna"
-  );
+  const volnaGrant = await getCurrentCourseVariantAccessGrantDb("gcse-russian", "volna");
 
   return (
     <main className="space-y-6">

@@ -181,15 +181,8 @@ export default async function AdminQuestionEditPage({
         <DashboardCard title="Quick Actions">
           <form action={duplicateQuestionAction}>
             <input type="hidden" name="questionId" value={question.id} />
-            <input
-              type="hidden"
-              name="questionSetId"
-              value={question.question_set_id}
-            />
-            <button
-              type="submit"
-              className="rounded-lg border px-4 py-2 text-sm"
-            >
+            <input type="hidden" name="questionSetId" value={question.question_set_id} />
+            <button type="submit" className="rounded-lg border px-4 py-2 text-sm">
               Duplicate question
             </button>
           </form>

@@ -8,9 +8,7 @@ import AssignmentSubmissionForm from "@/components/assignments/assignment-submis
 export default async function DebugAssignmentsPage() {
   const assignments = await getCurrentUserAssignmentsDb();
   const firstAssignment = assignments[0] ?? null;
-  const items = firstAssignment
-    ? await getAssignmentItemsDb(firstAssignment.id)
-    : [];
+  const items = firstAssignment ? await getAssignmentItemsDb(firstAssignment.id) : [];
   const submission = firstAssignment
     ? await getCurrentUserAssignmentSubmissionDb(firstAssignment.id)
     : null;

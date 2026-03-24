@@ -42,16 +42,14 @@ export type StudentAssignmentCard = {
   assignment: DbAssignment;
   items: Array<
     DbAssignmentItem & {
-      lesson:
-        | {
-            id: string;
-            slug: string;
-            title: string;
-            module_slug: string;
-            variant_slug: string;
-            course_slug: string;
-          }
-        | null;
+      lesson: {
+        id: string;
+        slug: string;
+        title: string;
+        module_slug: string;
+        variant_slug: string;
+        course_slug: string;
+      } | null;
     }
   >;
   submission: DbAssignmentSubmission | null;
@@ -572,12 +570,14 @@ export async function getLessonOptionsForGroupDb(
     .maybeSingle();
 
   const { data: course } = group.course_id
-    ? await supabase.from("courses").select("slug").eq("id", group.course_id).maybeSingle()
+    ? await supabase
+        .from("courses")
+        .select("slug")
+        .eq("id", group.course_id)
+        .maybeSingle()
     : { data: null };
 
-  const moduleMap = new Map(
-    modules.map((m) => [m.id, { slug: m.slug, title: m.title }])
-  );
+  const moduleMap = new Map(modules.map((m) => [m.id, { slug: m.slug, title: m.title }]));
 
   return lessons.map((lesson) => {
     const module = moduleMap.get(lesson.module_id);
@@ -652,14 +652,16 @@ export async function getAssignmentsUsingQuestionSetDb(questionSetId: string) {
 
   const { data, error } = await supabase
     .from("assignment_items")
-    .select(`
+    .select(
+      `
       assignment:assignments (
         id,
         title,
         status,
         due_at
       )
-    `)
+    `
+    )
     .eq("item_type", "question_set")
     .eq("question_set_id", questionSetId);
 

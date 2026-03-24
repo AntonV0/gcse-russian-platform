@@ -32,17 +32,11 @@ export default async function DashboardPage() {
       />
 
       <section className="grid gap-4 md:grid-cols-3">
-        <DashboardCard title="Current course">
-          GCSE Russian
-        </DashboardCard>
+        <DashboardCard title="Current course">GCSE Russian</DashboardCard>
 
-        <DashboardCard title="Account">
-          {user?.email ?? "Not logged in"}
-        </DashboardCard>
+        <DashboardCard title="Account">{user?.email ?? "Not logged in"}</DashboardCard>
 
-        <DashboardCard title="Role">
-          {formatLabel(dashboard.role)}
-        </DashboardCard>
+        <DashboardCard title="Role">{formatLabel(dashboard.role)}</DashboardCard>
 
         {dashboard.role === "admin" && (
           <DashboardCard title="Admin Panel">
