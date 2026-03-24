@@ -278,8 +278,8 @@ export async function loadModulePageData(
     };
   }
 
-  const module = await getModuleBySlugForVariantIdDb(variant.id, moduleSlug);
-  if (!module) {
+  const courseModule = await getModuleBySlugForVariantIdDb(variant.id, moduleSlug);
+  if (!courseModule) {
     return {
       course,
       variant,
@@ -288,9 +288,9 @@ export async function loadModulePageData(
     };
   }
 
-  const lessons = await getLessonsByModuleIdDb(module.id);
+  const lessons = await getLessonsByModuleIdDb(courseModule.id);
 
-  return { course, variant, module, lessons };
+  return { course, variant, module: courseModule, lessons };
 }
 
 export async function loadLessonPageData(
@@ -325,8 +325,8 @@ export async function loadLessonPageData(
     };
   }
 
-  const module = await getModuleBySlugForVariantIdDb(variant.id, moduleSlug);
-  if (!module) {
+  const courseModule = await getModuleBySlugForVariantIdDb(variant.id, moduleSlug);
+  if (!courseModule) {
     return {
       course,
       variant,
@@ -338,7 +338,7 @@ export async function loadLessonPageData(
     };
   }
 
-  const lessons = await getLessonsByModuleIdDb(module.id);
+  const lessons = await getLessonsByModuleIdDb(courseModule.id);
   const currentIndex = lessons.findIndex((lesson) => lesson.slug === lessonSlug);
   const lesson = currentIndex >= 0 ? lessons[currentIndex] : null;
   const previousLesson = currentIndex > 0 ? lessons[currentIndex - 1] : null;
@@ -350,7 +350,7 @@ export async function loadLessonPageData(
   return {
     course,
     variant,
-    module,
+    module: courseModule,
     lesson,
     lessons,
     previousLesson,
@@ -406,7 +406,7 @@ export async function getLessonAccessMetaDb(
 
   if (!variant) return null;
 
-  const { data: module, error: moduleError } = await supabase
+  const { data: courseModule, error: moduleError } = await supabase
     .from("modules")
     .select("id")
     .eq("course_variant_id", variant.id)
@@ -423,12 +423,12 @@ export async function getLessonAccessMetaDb(
     return null;
   }
 
-  if (!module) return null;
+  if (!courseModule) return null;
 
   const { data: lesson, error: lessonError } = await supabase
     .from("lessons")
     .select("id, slug, is_trial_visible, requires_paid_access, available_in_volna")
-    .eq("module_id", module.id)
+    .eq("module_id", courseModule.id)
     .eq("slug", lessonSlug)
     .maybeSingle();
 

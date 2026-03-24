@@ -7,6 +7,18 @@ export type DashboardInfo = {
   accessMode: "trial" | "full" | "volna" | null;
 };
 
+type DashboardGrantRow = {
+  access_mode: string;
+  products:
+    | {
+        code: string | null;
+      }
+    | {
+        code: string | null;
+      }[]
+    | null;
+};
+
 export async function getDashboardInfo(): Promise<DashboardInfo> {
   const supabase = await createClient();
   const user = await getCurrentUser();
@@ -19,7 +31,6 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     };
   }
 
-  // --- check admin first ---
   const { data: profile } = await supabase
     .from("profiles")
     .select("is_admin")
@@ -34,7 +45,6 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     };
   }
 
-  // --- check teacher ---
   const { data: teacherMembership } = await supabase
     .from("teaching_group_members")
     .select("group_id")
@@ -50,7 +60,6 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     };
   }
 
-  // --- get access grants ---
   const { data: grants } = await supabase
     .from("user_access_grants")
     .select(
@@ -72,8 +81,10 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     };
   }
 
-  for (const grant of grants) {
-    const code = (grant as any).products?.code;
+  for (const grant of grants as DashboardGrantRow[]) {
+    const product = Array.isArray(grant.products) ? grant.products[0] : grant.products;
+
+    const code = product?.code;
 
     if (grant.access_mode === "volna") {
       return {

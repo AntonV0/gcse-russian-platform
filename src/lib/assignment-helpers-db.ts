@@ -205,16 +205,32 @@ export async function getLessonMetaByIdDb(lessonId: string) {
     return null;
   }
 
-  const row = data as any;
+  type LessonMetaRow = {
+    id: string;
+    slug: string;
+    title: string;
+    modules: {
+      slug: string;
+      title: string;
+      course_variants: {
+        slug: string;
+        courses: {
+          slug: string;
+        };
+      };
+    };
+  };
+
+  const row = data as unknown as LessonMetaRow;
 
   return {
-    id: row.id as string,
-    slug: row.slug as string,
-    title: row.title as string,
-    module_slug: row.modules.slug as string,
-    module_title: row.modules.title as string,
-    variant_slug: row.modules.course_variants.slug as string,
-    course_slug: row.modules.course_variants.courses.slug as string,
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    module_slug: row.modules.slug,
+    module_title: row.modules.title,
+    variant_slug: row.modules.course_variants.slug,
+    course_slug: row.modules.course_variants.courses.slug,
   };
 }
 
@@ -580,14 +596,14 @@ export async function getLessonOptionsForGroupDb(
   const moduleMap = new Map(modules.map((m) => [m.id, { slug: m.slug, title: m.title }]));
 
   return lessons.map((lesson) => {
-    const module = moduleMap.get(lesson.module_id);
+    const lessonModule = moduleMap.get(lesson.module_id);
 
     return {
       id: lesson.id,
       title: lesson.title,
       slug: lesson.slug,
-      module_slug: module?.slug ?? "",
-      module_title: module?.title ?? "",
+      module_slug: lessonModule?.slug ?? "",
+      module_title: lessonModule?.title ?? "",
       variant_slug: variant?.slug ?? "",
       course_slug: course?.slug ?? "",
     };
