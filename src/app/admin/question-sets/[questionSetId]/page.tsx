@@ -90,6 +90,15 @@ export default async function AdminQuestionSetDetailPage({
               Back to all question sets
             </Link>
 
+            {questionSet.is_template ? (
+              <Link
+                href={`/admin/question-sets/templates/${questionSet.id}/create`}
+                className="rounded border px-4 py-2 text-sm"
+              >
+                Create from this template
+              </Link>
+            ) : null}
+
             <Link
               href="/admin/question-sets/templates"
               className="rounded border px-4 py-2 text-sm"
