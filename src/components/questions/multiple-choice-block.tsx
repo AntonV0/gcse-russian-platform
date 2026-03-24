@@ -48,9 +48,9 @@ export default function MultipleChoiceBlock({
   feedbackCorrectAnswerText,
   feedbackAcceptedAnswerTexts = [],
 }: MultipleChoiceBlockProps) {
-  const [internalSelectedOptionId, setInternalSelectedOptionId] = useState<
-    string | null
-  >(null);
+  const [internalSelectedOptionId, setInternalSelectedOptionId] = useState<string | null>(
+    null
+  );
   const [internalHasSubmitted, setInternalHasSubmitted] = useState(false);
 
   const resolvedSelectedOptionId =
@@ -120,9 +120,7 @@ export default function MultipleChoiceBlock({
                   ? "border-black bg-gray-100"
                   : "border-gray-200 bg-white hover:bg-gray-50"
               } ${
-                resolvedHasSubmitted || isSubmitting
-                  ? "cursor-default"
-                  : "cursor-pointer"
+                resolvedHasSubmitted || isSubmitting ? "cursor-default" : "cursor-pointer"
               }`}
             >
               {option.text}

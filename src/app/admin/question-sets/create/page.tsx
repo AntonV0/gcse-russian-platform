@@ -19,36 +19,22 @@ export default async function CreateQuestionSetPage() {
       <form action={createQuestionSetAction} className="space-y-4">
         <div>
           <label className="block text-sm font-medium">Title</label>
-          <input
-            name="title"
-            required
-            className="w-full rounded border px-3 py-2"
-          />
+          <input name="title" required className="w-full rounded border px-3 py-2" />
         </div>
 
         <div>
           <label className="block text-sm font-medium">Slug</label>
-          <input
-            name="slug"
-            required
-            className="w-full rounded border px-3 py-2"
-          />
+          <input name="slug" required className="w-full rounded border px-3 py-2" />
         </div>
 
         <div>
           <label className="block text-sm font-medium">Description</label>
-          <textarea
-            name="description"
-            className="w-full rounded border px-3 py-2"
-          />
+          <textarea name="description" className="w-full rounded border px-3 py-2" />
         </div>
 
         <div>
           <label className="block text-sm font-medium">Instructions</label>
-          <textarea
-            name="instructions"
-            className="w-full rounded border px-3 py-2"
-          />
+          <textarea name="instructions" className="w-full rounded border px-3 py-2" />
         </div>
 
         <div className="rounded-xl border bg-white p-5 shadow-sm">
@@ -69,10 +55,7 @@ export default async function CreateQuestionSetPage() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="rounded-lg bg-black px-4 py-2 text-white"
-        >
+        <button type="submit" className="rounded-lg bg-black px-4 py-2 text-white">
           Create question set
         </button>
       </form>

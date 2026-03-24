@@ -35,18 +35,16 @@ export async function recordQuestionAttempt({
     return { success: false, error: "not_authenticated" as const };
   }
 
-  const { error: attemptError } = await supabase
-    .from("question_attempts")
-    .insert({
-      user_id: user.id,
-      question_id: questionId,
-      lesson_id: lessonId,
-      submitted_text: submittedText,
-      submitted_payload: submittedPayload,
-      is_correct: isCorrect,
-      awarded_marks: awardedMarks,
-      feedback,
-    });
+  const { error: attemptError } = await supabase.from("question_attempts").insert({
+    user_id: user.id,
+    question_id: questionId,
+    lesson_id: lessonId,
+    submitted_text: submittedText,
+    submitted_payload: submittedPayload,
+    is_correct: isCorrect,
+    awarded_marks: awardedMarks,
+    feedback,
+  });
 
   if (attemptError) {
     console.error("Error inserting question attempt:", attemptError);
@@ -90,8 +88,7 @@ export async function recordQuestionAttempt({
       .from("question_progress")
       .update({
         total_attempts: existingProgress.total_attempts + 1,
-        correct_attempts:
-          existingProgress.correct_attempts + (isCorrect ? 1 : 0),
+        correct_attempts: existingProgress.correct_attempts + (isCorrect ? 1 : 0),
         best_score:
           existingProgress.best_score == null
             ? numericScore

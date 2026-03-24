@@ -83,9 +83,7 @@ export default async function AssignmentDetailPage({
       <section className="mb-6">
         <DashboardCard title="Assignment items">
           {items.length === 0 ? (
-            <p className="text-sm text-gray-600">
-              No items attached to this assignment.
-            </p>
+            <p className="text-sm text-gray-600">No items attached to this assignment.</p>
           ) : (
             <ul className="space-y-3 text-sm">
               {items.map((item) => {

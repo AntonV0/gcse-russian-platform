@@ -24,7 +24,6 @@ export type VocabularySetLessonBlock = {
   vocabularySetSlug: string;
 };
 
-
 export type MultipleChoiceLessonBlock = {
   type: "multiple-choice";
   question: string;

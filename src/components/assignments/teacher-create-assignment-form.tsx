@@ -27,9 +27,7 @@ export default function TeacherCreateAssignmentForm({
   const [customTask, setCustomTask] = useState("");
   const [allowFileUpload, setAllowFileUpload] = useState(false);
   const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
-  const [selectedQuestionSetIds, setSelectedQuestionSetIds] = useState<string[]>(
-    []
-  );
+  const [selectedQuestionSetIds, setSelectedQuestionSetIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,9 +38,7 @@ export default function TeacherCreateAssignmentForm({
 
   function toggleLesson(lessonId: string) {
     setSelectedLessonIds((prev) =>
-      prev.includes(lessonId)
-        ? prev.filter((id) => id !== lessonId)
-        : [...prev, lessonId]
+      prev.includes(lessonId) ? prev.filter((id) => id !== lessonId) : [...prev, lessonId]
     );
   }
 
@@ -190,9 +186,7 @@ export default function TeacherCreateAssignmentForm({
                 />
                 <div>
                   <div className="font-medium">{lesson.title}</div>
-                  <div className="text-sm text-gray-600">
-                    {lesson.module_title}
-                  </div>
+                  <div className="text-sm text-gray-600">{lesson.module_title}</div>
                 </div>
               </label>
             ))}
@@ -223,9 +217,7 @@ export default function TeacherCreateAssignmentForm({
                 <div>
                   <div className="font-medium">{questionSet.title}</div>
                   {questionSet.description ? (
-                    <div className="text-sm text-gray-600">
-                      {questionSet.description}
-                    </div>
+                    <div className="text-sm text-gray-600">{questionSet.description}</div>
                   ) : null}
                 </div>
               </label>

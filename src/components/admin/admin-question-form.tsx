@@ -66,8 +66,7 @@ export default function AdminQuestionForm({
   const isTranslation = questionType === "translation";
   const showStrategySelector = isTextQuestion;
   const showTranslationSettings = isTranslation || questionType === "short_answer";
-  const showSelectionSettings =
-    isTranslation && answerStrategy === "selection_based";
+  const showSelectionSettings = isTranslation && answerStrategy === "selection_based";
   const showSentenceBuilderSettings =
     isTranslation && answerStrategy === "sentence_builder";
   const showAcceptedAnswers = isTextQuestion;
@@ -209,9 +208,7 @@ export default function AdminQuestionForm({
           <div className="grid gap-4 md:grid-cols-2">
             {isTranslation ? (
               <div>
-                <label className="block text-sm font-medium">
-                  Translation direction
-                </label>
+                <label className="block text-sm font-medium">Translation direction</label>
                 <select
                   name="translationDirection"
                   className="w-full rounded border px-3 py-2"
@@ -237,9 +234,7 @@ export default function AdminQuestionForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium">
-                Source language label
-              </label>
+              <label className="block text-sm font-medium">Source language label</label>
               <input
                 name="sourceLanguageLabel"
                 className="w-full rounded border px-3 py-2"
@@ -249,9 +244,7 @@ export default function AdminQuestionForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium">
-                Target language label
-              </label>
+              <label className="block text-sm font-medium">Target language label</label>
               <input
                 name="targetLanguageLabel"
                 className="w-full rounded border px-3 py-2"
@@ -279,9 +272,7 @@ export default function AdminQuestionForm({
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium">
-                Selection display mode
-              </label>
+              <label className="block text-sm font-medium">Selection display mode</label>
               <select
                 name="selectionDisplayMode"
                 className="w-full rounded border px-3 py-2"
@@ -323,7 +314,8 @@ export default function AdminQuestionForm({
               placeholder={`Я\nживу\nв\nЛондоне`}
             />
             <p className="mt-1 text-sm text-gray-500">
-              One token per line. Leave blank to auto-build from the primary accepted answer.
+              One token per line. Leave blank to auto-build from the primary accepted
+              answer.
             </p>
           </div>
         </div>
@@ -419,9 +411,7 @@ export default function AdminQuestionForm({
               type="checkbox"
               name="requireAudioCompletionBeforeSubmit"
               value="true"
-              defaultChecked={
-                defaultValues?.requireAudioCompletionBeforeSubmit ?? false
-              }
+              defaultChecked={defaultValues?.requireAudioCompletionBeforeSubmit ?? false}
             />
             Require audio completion before submit
           </label>
@@ -448,9 +438,7 @@ export default function AdminQuestionForm({
               </div>
 
               <div>
-                <label className="block text-sm font-medium">
-                  Correct option index
-                </label>
+                <label className="block text-sm font-medium">Correct option index</label>
                 <input
                   name="correctOptionIndex"
                   type="number"
@@ -465,9 +453,7 @@ export default function AdminQuestionForm({
 
           {showAcceptedAnswers ? (
             <div>
-              <label className="block text-sm font-medium">
-                Accepted answers
-              </label>
+              <label className="block text-sm font-medium">Accepted answers</label>
               <textarea
                 name="acceptedAnswersText"
                 className="w-full rounded border px-3 py-2"
@@ -494,10 +480,7 @@ export default function AdminQuestionForm({
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="rounded-lg bg-black px-4 py-2 text-white"
-      >
+      <button type="submit" className="rounded-lg bg-black px-4 py-2 text-white">
         {submitLabel}
       </button>
     </form>

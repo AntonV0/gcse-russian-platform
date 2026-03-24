@@ -25,11 +25,13 @@ This platform delivers a complete online learning experience, including:
 ## 🧠 Key Technical Features
 
 ### 🔹 Metadata-Driven Question Engine
+
 - Questions are dynamically rendered using structured metadata
 - Supports multiple answer strategies without hardcoding UI
 - Easily extensible for new question types
 
 ### 🔹 Reusable Block-Based Lesson System
+
 - Lessons are composed of modular blocks:
   - text
   - note
@@ -39,6 +41,7 @@ This platform delivers a complete online learning experience, including:
 - Enables fast content creation and consistency
 
 ### 🔹 Admin CMS (Custom Built)
+
 - Full CRUD system for:
   - question sets
   - questions
@@ -54,17 +57,20 @@ This platform delivers a complete online learning experience, including:
   - usage visibility
 
 ### 🔹 Question Set Templates
+
 - Mark question sets as reusable templates
 - Template type classification
 - Guided “create from template” workflow
 - Standardises content creation patterns
 
 ### 🔹 Usage Tracking System
+
 - Tracks which assignments use each question set
 - Helps prevent accidental deletion of in-use content
 - Links directly to relevant assignment pages
 
 ### 🔹 Assignment System
+
 - Teachers can:
   - create assignments
   - attach lessons and question sets
@@ -76,11 +82,13 @@ This platform delivers a complete online learning experience, including:
   - receive feedback
 
 ### 🔹 Role-Based Architecture
+
 - Admin → full system access
 - Teacher → group + assignment management
 - Student → course + homework access
 
 ### 🔹 Supabase Integration
+
 - PostgreSQL database
 - Row Level Security (RLS)
 - Auth system

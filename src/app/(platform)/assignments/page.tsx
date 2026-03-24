@@ -51,9 +51,7 @@ export default async function AssignmentsPage() {
                 <DashboardCard title={assignment.title}>
                   <div className="space-y-3">
                     {assignment.instructions ? (
-                      <p className="text-sm text-gray-700">
-                        {assignment.instructions}
-                      </p>
+                      <p className="text-sm text-gray-700">{assignment.instructions}</p>
                     ) : null}
 
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">

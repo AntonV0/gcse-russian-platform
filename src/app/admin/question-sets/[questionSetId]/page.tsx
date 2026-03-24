@@ -68,8 +68,7 @@ export default async function AdminQuestionSetDetailPage({
               <span className="font-medium">Slug:</span> {questionSet.slug ?? "—"}
             </p>
             <p>
-              <span className="font-medium">Source type:</span>{" "}
-              {questionSet.source_type}
+              <span className="font-medium">Source type:</span> {questionSet.source_type}
             </p>
             {questionSet.instructions ? (
               <p>
@@ -82,7 +81,6 @@ export default async function AdminQuestionSetDetailPage({
             </p>
           </div>
           <div className="flex flex-wrap gap-3 pt-3">
-            
             <Link
               href="/admin/question-sets"
               className="rounded border px-4 py-2 text-sm"
@@ -222,24 +220,18 @@ export default async function AdminQuestionSetDetailPage({
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <button
-                type="submit"
-                className="rounded-lg bg-black px-4 py-2 text-white"
-              >
+              <button type="submit" className="rounded-lg bg-black px-4 py-2 text-white">
                 Save question set
               </button>
             </div>
-            </form>
+          </form>
 
-            <form action={duplicateQuestionSetAction} className="mt-4">
-              <input type="hidden" name="questionSetId" value={questionSet.id} />
-              <button
-                type="submit"
-                className="rounded-lg border px-4 py-2 text-sm"
-              >
-                Duplicate question set
-              </button>
-            </form>
+          <form action={duplicateQuestionSetAction} className="mt-4">
+            <input type="hidden" name="questionSetId" value={questionSet.id} />
+            <button type="submit" className="rounded-lg border px-4 py-2 text-sm">
+              Duplicate question set
+            </button>
+          </form>
         </DashboardCard>
 
         <DashboardCard title="Danger Zone">
@@ -247,7 +239,8 @@ export default async function AdminQuestionSetDetailPage({
             <input type="hidden" name="questionSetId" value={questionSet.id} />
 
             <p className="text-sm text-gray-600">
-              Delete this question set and all of its questions, options, and accepted answers.
+              Delete this question set and all of its questions, options, and accepted
+              answers.
             </p>
 
             {usage.length > 0 ? (
@@ -276,10 +269,7 @@ export default async function AdminQuestionSetDetailPage({
 
           <form action={normalizeQuestionPositionsAction}>
             <input type="hidden" name="questionSetId" value={questionSet.id} />
-            <button
-              type="submit"
-              className="rounded border px-3 py-2 text-sm"
-            >
+            <button type="submit" className="rounded border px-3 py-2 text-sm">
               Normalize positions
             </button>
           </form>
@@ -292,110 +282,104 @@ export default async function AdminQuestionSetDetailPage({
           <div className="grid gap-4">
             {questions.map((question) => (
               <DashboardCard key={question.id} title={`Q${question.position}`}>
-                    <div className="space-y-2">
-              <p>
-                <span className="font-medium">Type:</span>{" "}
-                {formatQuestionType(question.question_type)}
-              </p>
-              <p>
-                <span className="font-medium">Prompt:</span> {question.prompt}
-              </p>
-              <p>
-                <span className="font-medium">Marks:</span> {question.marks}
-              </p>
-              <p>
-                <span className="font-medium">Active:</span>{" "}
-                {question.is_active ? "Yes" : "No"}
-              </p>
-              {question.audio_path ? (
-                <p>
-                  <span className="font-medium">Audio path:</span>{" "}
-                  {question.audio_path}
-                </p>
-              ) : null}
-              {question.metadata ? (
-                <pre className="overflow-x-auto rounded border bg-gray-50 p-3 text-xs text-gray-700">
-                  {JSON.stringify(question.metadata, null, 2)}
-                </pre>
-              ) : null}
+                <div className="space-y-2">
+                  <p>
+                    <span className="font-medium">Type:</span>{" "}
+                    {formatQuestionType(question.question_type)}
+                  </p>
+                  <p>
+                    <span className="font-medium">Prompt:</span> {question.prompt}
+                  </p>
+                  <p>
+                    <span className="font-medium">Marks:</span> {question.marks}
+                  </p>
+                  <p>
+                    <span className="font-medium">Active:</span>{" "}
+                    {question.is_active ? "Yes" : "No"}
+                  </p>
+                  {question.audio_path ? (
+                    <p>
+                      <span className="font-medium">Audio path:</span>{" "}
+                      {question.audio_path}
+                    </p>
+                  ) : null}
+                  {question.metadata ? (
+                    <pre className="overflow-x-auto rounded border bg-gray-50 p-3 text-xs text-gray-700">
+                      {JSON.stringify(question.metadata, null, 2)}
+                    </pre>
+                  ) : null}
 
-              <div className="flex flex-wrap gap-2 pt-2">
-                <Link
-                  href={`/admin/questions/${question.id}`}
-                  className="rounded border px-3 py-1 text-sm"
-                >
-                  Edit question
-                </Link>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Link
+                      href={`/admin/questions/${question.id}`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      Edit question
+                    </Link>
 
-                <form action={duplicateQuestionAction}>
-                  <input type="hidden" name="questionId" value={question.id} />
-                  <input type="hidden" name="questionSetId" value={questionSet.id} />
-                  <button
-                    type="submit"
-                    className="rounded border px-3 py-1 text-sm"
-                  >
-                    Duplicate
-                  </button>
-                </form>
+                    <form action={duplicateQuestionAction}>
+                      <input type="hidden" name="questionId" value={question.id} />
+                      <input type="hidden" name="questionSetId" value={questionSet.id} />
+                      <button type="submit" className="rounded border px-3 py-1 text-sm">
+                        Duplicate
+                      </button>
+                    </form>
 
-                <form action={moveQuestionAction}>
-                  <input type="hidden" name="questionId" value={question.id} />
-                  <input type="hidden" name="questionSetId" value={questionSet.id} />
-                  <input type="hidden" name="direction" value="up" />
-                  <button
-                    type="submit"
-                    className="rounded border px-3 py-1 text-sm"
-                    disabled={question.position === 1}
-                  >
-                    Move up
-                  </button>
-                </form>
+                    <form action={moveQuestionAction}>
+                      <input type="hidden" name="questionId" value={question.id} />
+                      <input type="hidden" name="questionSetId" value={questionSet.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <button
+                        type="submit"
+                        className="rounded border px-3 py-1 text-sm"
+                        disabled={question.position === 1}
+                      >
+                        Move up
+                      </button>
+                    </form>
 
-                <form action={moveQuestionAction}>
-                  <input type="hidden" name="questionId" value={question.id} />
-                  <input type="hidden" name="questionSetId" value={questionSet.id} />
-                  <input type="hidden" name="direction" value="down" />
-                  <button
-                    type="submit"
-                    className="rounded border px-3 py-1 text-sm"
-                    disabled={question.position === questions.length}
-                  >
-                    Move down
-                  </button>
-                </form>
+                    <form action={moveQuestionAction}>
+                      <input type="hidden" name="questionId" value={question.id} />
+                      <input type="hidden" name="questionSetId" value={questionSet.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <button
+                        type="submit"
+                        className="rounded border px-3 py-1 text-sm"
+                        disabled={question.position === questions.length}
+                      >
+                        Move down
+                      </button>
+                    </form>
 
-                <form action={toggleQuestionActiveAction}>
-                  <input type="hidden" name="questionId" value={question.id} />
-                  <input type="hidden" name="questionSetId" value={questionSet.id} />
-                  <input
-                    type="hidden"
-                    name="nextState"
-                    value={question.is_active ? "inactive" : "active"}
-                  />
-                  <button
-                    type="submit"
-                    className="rounded border px-3 py-1 text-sm"
-                  >
-                    {question.is_active ? "Deactivate" : "Activate"}
-                  </button>
-                </form>
+                    <form action={toggleQuestionActiveAction}>
+                      <input type="hidden" name="questionId" value={question.id} />
+                      <input type="hidden" name="questionSetId" value={questionSet.id} />
+                      <input
+                        type="hidden"
+                        name="nextState"
+                        value={question.is_active ? "inactive" : "active"}
+                      />
+                      <button type="submit" className="rounded border px-3 py-1 text-sm">
+                        {question.is_active ? "Deactivate" : "Activate"}
+                      </button>
+                    </form>
 
-                <form action={deleteQuestionAction}>
-                  <input type="hidden" name="questionId" value={question.id} />
-                  <input type="hidden" name="questionSetId" value={questionSet.id} />
-                  <button
-                    type="submit"
-                    className="rounded border border-red-300 px-3 py-1 text-sm text-red-700"
-                  >
-                    Delete
-                  </button>
-                </form>
-              </div>
-            </div>
-          </DashboardCard>
-              ))}
-            </div>
-          )}
+                    <form action={deleteQuestionAction}>
+                      <input type="hidden" name="questionId" value={question.id} />
+                      <input type="hidden" name="questionSetId" value={questionSet.id} />
+                      <button
+                        type="submit"
+                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700"
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </DashboardCard>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="max-w-4xl">

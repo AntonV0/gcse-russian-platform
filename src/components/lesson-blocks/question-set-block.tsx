@@ -32,11 +32,7 @@ export default async function QuestionSetBlock({
       ) : null}
 
       {questions.map((question) => (
-        <QuestionRenderer
-          key={question.id}
-          question={question}
-          lessonId={lessonId}
-        />
+        <QuestionRenderer key={question.id} question={question} lessonId={lessonId} />
       ))}
     </section>
   );

@@ -126,12 +126,7 @@ export default function TranslationBlock({
   }
 
   function handleSubmit() {
-    if (
-      !resolvedAnswer.trim() ||
-      resolvedHasSubmitted ||
-      isSubmitting ||
-      submitLocked
-    ) {
+    if (!resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked) {
       return;
     }
 

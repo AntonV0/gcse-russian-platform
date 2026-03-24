@@ -13,8 +13,8 @@ export default function Home() {
         </h1>
 
         <p className="mb-6 text-lg text-gray-600">
-          A structured online learning platform for GCSE Russian with lessons,
-          vocabulary, questions, and progress tracking.
+          A structured online learning platform for GCSE Russian with lessons, vocabulary,
+          questions, and progress tracking.
         </p>
 
         <div className="flex gap-3">

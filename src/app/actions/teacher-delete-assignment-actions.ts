@@ -15,10 +15,7 @@ export async function deleteTeacherAssignmentAction(assignmentId: string) {
     return { success: false, error: "not_authenticated" as const };
   }
 
-  const { error } = await supabase
-    .from("assignments")
-    .delete()
-    .eq("id", assignmentId);
+  const { error } = await supabase.from("assignments").delete().eq("id", assignmentId);
 
   if (error) {
     console.error("Error deleting assignment:", error);

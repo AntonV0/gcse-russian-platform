@@ -174,9 +174,7 @@ export async function loadQuestionSetBySlugDb(questionSetSlug: string) {
   };
 }
 
-export async function loadRuntimeQuestionSetBySlugDb(
-  questionSetSlug: string
-): Promise<{
+export async function loadRuntimeQuestionSetBySlugDb(questionSetSlug: string): Promise<{
   questionSet: RuntimeQuestionSet["questionSet"] | null;
   questions: RuntimeQuestion[];
 }> {

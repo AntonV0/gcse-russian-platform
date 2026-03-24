@@ -87,10 +87,7 @@ function buildStructuredMetadata(formData: FormData) {
   }
 
   const translationDirection = getTrimmedString(formData, "translationDirection");
-  if (
-    translationDirection === "to_russian" ||
-    translationDirection === "to_english"
-  ) {
+  if (translationDirection === "to_russian" || translationDirection === "to_english") {
     metadata.direction = translationDirection;
   }
 
@@ -115,10 +112,7 @@ function buildStructuredMetadata(formData: FormData) {
   }
 
   const selectionDisplayMode = getTrimmedString(formData, "selectionDisplayMode");
-  if (
-    selectionDisplayMode === "grouped" ||
-    selectionDisplayMode === "inline_gaps"
-  ) {
+  if (selectionDisplayMode === "grouped" || selectionDisplayMode === "inline_gaps") {
     metadata.selectionDisplayMode = selectionDisplayMode;
   }
 
@@ -207,9 +201,7 @@ async function generateUniqueQuestionSetTitle(params: {
     throw new Error("Failed to generate unique title");
   }
 
-  const existingTitles = new Set(
-    (data ?? []).map((row) => row.title).filter(Boolean)
-  );
+  const existingTitles = new Set((data ?? []).map((row) => row.title).filter(Boolean));
 
   const firstCopyTitle = `${normalizedBaseTitle} (Copy)`;
 
@@ -254,9 +246,7 @@ async function generateUniqueQuestionSetSlug(params: {
     throw new Error("Failed to generate unique slug");
   }
 
-  const existingSlugs = new Set(
-    (data ?? []).map((row) => row.slug).filter(Boolean)
-  );
+  const existingSlugs = new Set((data ?? []).map((row) => row.slug).filter(Boolean));
 
   if (!existingSlugs.has(copyBaseSlug)) {
     return copyBaseSlug;
@@ -397,9 +387,7 @@ export async function createQuestionAction(formData: FormData) {
 
   if (questionType === "multiple_choice") {
     const options = parseLineList(getTrimmedString(formData, "optionsText"));
-    const correctOptionIndex = Number(
-      getTrimmedString(formData, "correctOptionIndex")
-    );
+    const correctOptionIndex = Number(getTrimmedString(formData, "correctOptionIndex"));
 
     if (options.length < 2) {
       throw new Error("Multiple choice questions need at least 2 options");
@@ -530,9 +518,7 @@ export async function updateQuestionAction(formData: FormData) {
 
   if (questionType === "multiple_choice") {
     const options = parseLineList(getTrimmedString(formData, "optionsText"));
-    const correctOptionIndex = Number(
-      getTrimmedString(formData, "correctOptionIndex")
-    );
+    const correctOptionIndex = Number(getTrimmedString(formData, "correctOptionIndex"));
 
     if (options.length < 2) {
       throw new Error("Multiple choice questions need at least 2 options");
@@ -828,9 +814,7 @@ export async function moveQuestionAction(formData: FormData) {
   }
 
   const targetPosition =
-    direction === "up"
-      ? currentQuestion.position - 1
-      : currentQuestion.position + 1;
+    direction === "up" ? currentQuestion.position - 1 : currentQuestion.position + 1;
 
   if (targetPosition < 1) {
     redirect(`/admin/question-sets/${questionSetId}`);
@@ -970,7 +954,10 @@ export async function duplicateQuestionAction(formData: FormData) {
     .eq("question_set_id", questionSetId);
 
   if (existingQuestionsError) {
-    console.error("Error loading question count for duplication:", existingQuestionsError);
+    console.error(
+      "Error loading question count for duplication:",
+      existingQuestionsError
+    );
     throw new Error("Failed to load question set questions");
   }
 

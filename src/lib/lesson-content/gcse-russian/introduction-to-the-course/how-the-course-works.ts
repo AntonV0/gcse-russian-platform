@@ -13,9 +13,9 @@ export const howTheCourseWorksLessonBlocks: LessonBlock[] = [
       "Work through each lesson in order. Focus on understanding the vocabulary and structure before moving on to practice questions.",
   },
   {
-  type: "vocabulary-set",
-  title: "Starter vocabulary",
-  vocabularySetSlug: "foundation-intro-starter-vocabulary",
+    type: "vocabulary-set",
+    title: "Starter vocabulary",
+    vocabularySetSlug: "foundation-intro-starter-vocabulary",
   },
   {
     type: "question-set",
@@ -23,18 +23,18 @@ export const howTheCourseWorksLessonBlocks: LessonBlock[] = [
     questionSetSlug: "foundation-intro-how-the-course-works",
   },
   {
-  type: "question-set",
-  title: "Starter practice with audio",
-  questionSetSlug: "foundation-intro-how-the-course-works-audio",
+    type: "question-set",
+    title: "Starter practice with audio",
+    questionSetSlug: "foundation-intro-how-the-course-works-audio",
   },
   {
-  type: "question-set",
-  title: "Russian output strategy test",
-  questionSetSlug: "foundation-intro-russian-output-test",
+    type: "question-set",
+    title: "Russian output strategy test",
+    questionSetSlug: "foundation-intro-russian-output-test",
   },
   {
-  type: "question-set",
-  title: "Advanced question engine test",
-  questionSetSlug: "foundation-advanced-question-engine-test",
+    type: "question-set",
+    title: "Advanced question engine test",
+    questionSetSlug: "foundation-advanced-question-engine-test",
   },
 ];

@@ -13,9 +13,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <main className="mx-auto max-w-md">
       <div className="rounded-xl border bg-white p-6 shadow-sm">
         <h1 className="mb-2 text-3xl font-bold">Log in</h1>
-        <p className="mb-6 text-gray-600">
-          Access your GCSE Russian course dashboard.
-        </p>
+        <p className="mb-6 text-gray-600">Access your GCSE Russian course dashboard.</p>
 
         {error ? (
           <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">

@@ -22,13 +22,7 @@ export default async function LessonPageTemplate({
   lessonSlug,
   blocks,
 }: LessonPageTemplateProps) {
-  const {
-    course,
-    module,
-    lesson,
-    previousLesson,
-    nextLesson,
-  } = await loadLessonPageData(
+  const { course, module, lesson, previousLesson, nextLesson } = await loadLessonPageData(
     courseSlug,
     variantSlug,
     moduleSlug,

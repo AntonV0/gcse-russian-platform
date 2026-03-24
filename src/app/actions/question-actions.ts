@@ -12,8 +12,6 @@ type SubmitQuestionAttemptInput = {
   feedback?: string | null;
 };
 
-export async function submitQuestionAttemptAction(
-  input: SubmitQuestionAttemptInput
-) {
+export async function submitQuestionAttemptAction(input: SubmitQuestionAttemptInput) {
   return recordQuestionAttempt(input);
 }

@@ -9,18 +9,13 @@ export default async function CoursesPage() {
 
   return (
     <main>
-      <PageHeader
-        title="Courses"
-        description="Choose a course to continue learning."
-      />
+      <PageHeader title="Courses" description="Choose a course to continue learning." />
 
       <section className="grid gap-4 md:grid-cols-2">
         {courses.map((course) => (
           <Link key={course.slug} href={getCoursePath(course.slug)} className="block">
             <div className="transition hover:-translate-y-0.5">
-              <DashboardCard title={course.title}>
-                {course.description}
-              </DashboardCard>
+              <DashboardCard title={course.title}>{course.description}</DashboardCard>
             </div>
           </Link>
         ))}

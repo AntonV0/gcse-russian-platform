@@ -38,13 +38,8 @@ export default async function LessonPage({ params }: LessonPageProps) {
     return (
       <main className="max-w-xl">
         <h1 className="mb-4 text-2xl font-bold">Locked lesson</h1>
-        <p className="mb-4 text-gray-600">
-          This lesson is part of the full course.
-        </p>
-        <Link
-          href="/"
-          className="inline-block rounded-lg bg-black px-4 py-2 text-white"
-        >
+        <p className="mb-4 text-gray-600">This lesson is part of the full course.</p>
+        <Link href="/" className="inline-block rounded-lg bg-black px-4 py-2 text-white">
           View course options
         </Link>
       </main>

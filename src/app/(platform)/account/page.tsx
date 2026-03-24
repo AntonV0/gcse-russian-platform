@@ -11,23 +11,16 @@ export default async function AccountPage() {
 
   return (
     <main>
-      <PageHeader
-        title="Account"
-        description="Your profile and access information."
-      />
+      <PageHeader title="Account" description="Your profile and access information." />
 
       <section className="grid gap-4 md:grid-cols-2">
         <DashboardCard title="Full name">
           {profile?.full_name ?? "No name saved"}
         </DashboardCard>
 
-        <DashboardCard title="Email">
-          {user?.email ?? "Not logged in"}
-        </DashboardCard>
+        <DashboardCard title="Email">{user?.email ?? "Not logged in"}</DashboardCard>
 
-        <DashboardCard title="Role">
-          {dashboard?.role ?? "No role found"}
-        </DashboardCard>
+        <DashboardCard title="Role">{dashboard?.role ?? "No role found"}</DashboardCard>
 
         <DashboardCard title="Access mode">
           {courseAccess?.access_mode ?? "No access found"}

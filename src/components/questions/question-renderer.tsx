@@ -108,8 +108,7 @@ function getSelectionGroupsMetadata(
     }
 
     const options = optionsValue.filter(
-      (option): option is string =>
-        typeof option === "string" && option.trim().length > 0
+      (option): option is string => typeof option === "string" && option.trim().length > 0
     );
 
     if (options.length === 0) {
@@ -138,11 +137,9 @@ function getSelectionGroupsMetadata(
 
 function getValidationOptions(metadata: Record<string, unknown>) {
   return {
-    ignorePunctuation:
-      getBooleanMetadata(metadata, "ignorePunctuation") ?? false,
+    ignorePunctuation: getBooleanMetadata(metadata, "ignorePunctuation") ?? false,
     ignoreArticles: getBooleanMetadata(metadata, "ignoreArticles") ?? false,
-    collapseWhitespace:
-      getBooleanMetadata(metadata, "collapseWhitespace") ?? true,
+    collapseWhitespace: getBooleanMetadata(metadata, "collapseWhitespace") ?? true,
   };
 }
 
@@ -197,8 +194,7 @@ export default async function QuestionRenderer({
           acceptedAnswers={question.acceptedAnswers}
           explanation={question.explanation ?? undefined}
           placeholder={
-            getStringMetadata(question.metadata, "placeholder") ??
-            "Type your answer"
+            getStringMetadata(question.metadata, "placeholder") ?? "Type your answer"
           }
           audioUrl={audioUrl}
           listeningUi={listeningUi}
@@ -217,8 +213,7 @@ export default async function QuestionRenderer({
           acceptedAnswers={question.acceptedAnswers}
           explanation={question.explanation ?? undefined}
           placeholder={
-            getStringMetadata(question.metadata, "placeholder") ??
-            "Type your translation"
+            getStringMetadata(question.metadata, "placeholder") ?? "Type your translation"
           }
           audioUrl={audioUrl}
           listeningUi={listeningUi}

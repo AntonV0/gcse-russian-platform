@@ -10,8 +10,7 @@ export default async function VocabularySetBlock({
   title,
   vocabularySetSlug,
 }: VocabularySetBlockProps) {
-  const { vocabularySet, items } =
-    await loadVocabularySetBySlugDb(vocabularySetSlug);
+  const { vocabularySet, items } = await loadVocabularySetBySlugDb(vocabularySetSlug);
 
   if (!vocabularySet) {
     return (

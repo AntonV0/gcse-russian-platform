@@ -14,9 +14,7 @@ export default function TeacherSubmissionReviewForm({
   initialMark = null,
   initialFeedback = null,
 }: TeacherSubmissionReviewFormProps) {
-  const [mark, setMark] = useState(
-    initialMark == null ? "" : String(initialMark)
-  );
+  const [mark, setMark] = useState(initialMark == null ? "" : String(initialMark));
   const [feedback, setFeedback] = useState(initialFeedback ?? "");
   const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -68,9 +66,7 @@ export default function TeacherSubmissionReviewForm({
         {isPending ? "Saving..." : "Save review"}
       </button>
 
-      {saved ? (
-        <p className="text-sm font-medium text-green-600">Review saved.</p>
-      ) : null}
+      {saved ? <p className="text-sm font-medium text-green-600">Review saved.</p> : null}
     </div>
   );
 }

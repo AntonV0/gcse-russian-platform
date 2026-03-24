@@ -79,7 +79,8 @@ export async function canCurrentUserReviewAssignment(assignmentId: string) {
 
   const { data, error } = await supabase
     .from("assignments")
-    .select(`
+    .select(
+      `
       id,
       group_id,
       teaching_groups!inner (
@@ -89,13 +90,11 @@ export async function canCurrentUserReviewAssignment(assignmentId: string) {
           member_role
         )
       )
-    `)
+    `
+    )
     .eq("id", assignmentId)
     .eq("teaching_groups.teaching_group_members.user_id", user.id)
-    .in("teaching_groups.teaching_group_members.member_role", [
-      "teacher",
-      "assistant",
-    ])
+    .in("teaching_groups.teaching_group_members.member_role", ["teacher", "assistant"])
     .maybeSingle();
 
   if (error) {

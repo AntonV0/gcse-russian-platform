@@ -71,9 +71,7 @@ export async function getCoursesDb(): Promise<DbCourse[]> {
   return (data ?? []) as DbCourse[];
 }
 
-export async function getCourseBySlugDb(
-  courseSlug: string
-): Promise<DbCourse | null> {
+export async function getCourseBySlugDb(courseSlug: string): Promise<DbCourse | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -177,9 +175,7 @@ export async function getModuleBySlugForVariantIdDb(
   return (data as DbModule | null) ?? null;
 }
 
-export async function getLessonsByModuleIdDb(
-  moduleId: string
-): Promise<DbLesson[]> {
+export async function getLessonsByModuleIdDb(moduleId: string): Promise<DbLesson[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -233,10 +229,7 @@ export async function loadCoursePageData(courseSlug: string) {
   return { course, variants };
 }
 
-export async function loadVariantPageData(
-  courseSlug: string,
-  variantSlug: string
-) {
+export async function loadVariantPageData(courseSlug: string, variantSlug: string) {
   const course = await getCourseBySlugDb(courseSlug);
   if (!course) {
     return {

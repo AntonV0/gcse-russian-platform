@@ -53,9 +53,7 @@ export default async function AdminQuestionSetsPage() {
                     ) : null}
 
                     {questionSet.instructions ? (
-                      <p className="text-gray-500">
-                        {questionSet.instructions}
-                      </p>
+                      <p className="text-gray-500">{questionSet.instructions}</p>
                     ) : null}
                   </div>
                 </DashboardCard>

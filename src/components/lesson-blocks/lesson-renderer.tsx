@@ -12,10 +12,7 @@ type LessonRendererProps = {
   lessonId?: string | null;
 };
 
-export default function LessonRenderer({
-  blocks,
-  lessonId = null,
-}: LessonRendererProps) {
+export default function LessonRenderer({ blocks, lessonId = null }: LessonRendererProps) {
   return (
     <div className="space-y-4">
       {blocks.map((block, index) => {
@@ -24,21 +21,11 @@ export default function LessonRenderer({
             return <TextBlock key={index} content={block.content} />;
 
           case "note":
-            return (
-              <NoteBlock
-                key={index}
-                title={block.title}
-                content={block.content}
-              />
-            );
+            return <NoteBlock key={index} title={block.title} content={block.content} />;
 
           case "vocabulary":
             return (
-              <VocabularyBlock
-                key={index}
-                title={block.title}
-                items={block.items}
-              />
+              <VocabularyBlock key={index} title={block.title} items={block.items} />
             );
 
           case "vocabulary-set":

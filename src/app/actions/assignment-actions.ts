@@ -41,17 +41,15 @@ export async function submitAssignmentAction({
   }
 
   if (!existing) {
-    const { error: insertError } = await supabase
-      .from("assignment_submissions")
-      .insert({
-        assignment_id: assignmentId,
-        student_user_id: user.id,
-        status: "submitted",
-        submitted_text: submittedText.trim() || null,
-        submitted_file_path: submittedFilePath,
-        submitted_file_name: submittedFileName,
-        submitted_at: now,
-      });
+    const { error: insertError } = await supabase.from("assignment_submissions").insert({
+      assignment_id: assignmentId,
+      student_user_id: user.id,
+      status: "submitted",
+      submitted_text: submittedText.trim() || null,
+      submitted_file_path: submittedFilePath,
+      submitted_file_name: submittedFileName,
+      submitted_at: now,
+    });
 
     if (insertError) {
       console.error("Error inserting assignment submission:", insertError);

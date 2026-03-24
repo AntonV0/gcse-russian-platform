@@ -8,10 +8,7 @@ type VocabularyBlockProps = {
   items: VocabularyItem[];
 };
 
-export default function VocabularyBlock({
-  title,
-  items,
-}: VocabularyBlockProps) {
+export default function VocabularyBlock({ title, items }: VocabularyBlockProps) {
   return (
     <section className="rounded-xl border bg-white p-6 shadow-sm">
       <h2 className="mb-4 text-xl font-semibold">{title}</h2>
