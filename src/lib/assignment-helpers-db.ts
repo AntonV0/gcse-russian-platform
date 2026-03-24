@@ -23,11 +23,13 @@ export type DbAssignmentItem = {
   position: number;
 };
 
+export type AssignmentSubmissionStatus = "not_started" | "submitted" | "reviewed";
+
 export type DbAssignmentSubmission = {
   id: string;
   assignment_id: string;
   student_user_id: string;
-  status: string;
+  status: AssignmentSubmissionStatus;
   submitted_text: string | null;
   submitted_file_path: string | null;
   submitted_file_name: string | null;

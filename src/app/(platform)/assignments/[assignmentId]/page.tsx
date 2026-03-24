@@ -167,6 +167,9 @@ export default async function AssignmentDetailPage({
             initialFilePath={submission?.submitted_file_path ?? null}
             initialFileName={submission?.submitted_file_name ?? null}
             allowFileUpload={assignment.allow_file_upload}
+            status={submission?.status}
+            mark={submission?.mark}
+            feedback={submission?.feedback}
           />
         </DashboardCard>
       </section>
