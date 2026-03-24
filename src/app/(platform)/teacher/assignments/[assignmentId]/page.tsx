@@ -72,7 +72,16 @@ export default async function TeacherAssignmentReviewPage({
           />
         </div>
 
-        <DeleteAssignmentButton assignmentId={assignment.id} />
+        <div className="flex gap-2">
+          <Link
+            href={`/teacher/assignments/${assignment.id}/edit`}
+            className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
+          >
+            Edit
+          </Link>
+
+          <DeleteAssignmentButton assignmentId={assignment.id} />
+        </div>
       </div>
 
       <section className="mb-6 rounded-lg border p-4">

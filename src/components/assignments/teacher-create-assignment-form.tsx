@@ -3,31 +3,72 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { createTeacherAssignmentAction } from "@/app/actions/teacher-create-assignment-actions";
+import { updateTeacherAssignmentAction } from "@/app/actions/teacher-update-assignment-actions";
 import type {
   LessonOption,
   QuestionSetOption,
   TeacherGroupOption,
 } from "@/lib/assignment-helpers-db";
 
+type TeacherAssignmentFormInitialData = {
+  groupId: string;
+  title: string;
+  instructions: string | null;
+  dueAt: string | null;
+  lessonIds: string[];
+  questionSetIds: string[];
+  customTask: string | null;
+  allowFileUpload: boolean;
+};
+
 type TeacherCreateAssignmentFormProps = {
   groups: TeacherGroupOption[];
   lessonsByGroup: Record<string, LessonOption[]>;
   questionSets: QuestionSetOption[];
+  mode?: "create" | "edit";
+  assignmentId?: string;
+  initialData?: TeacherAssignmentFormInitialData;
 };
+
+function toDateTimeLocalValue(value: string | null | undefined) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60 * 1000);
+
+  return localDate.toISOString().slice(0, 16);
+}
 
 export default function TeacherCreateAssignmentForm({
   groups,
   lessonsByGroup,
   questionSets,
+  mode = "create",
+  assignmentId,
+  initialData,
 }: TeacherCreateAssignmentFormProps) {
-  const [groupId, setGroupId] = useState(groups[0]?.id ?? "");
-  const [title, setTitle] = useState("");
-  const [instructions, setInstructions] = useState("");
-  const [dueAt, setDueAt] = useState("");
-  const [customTask, setCustomTask] = useState("");
-  const [allowFileUpload, setAllowFileUpload] = useState(false);
-  const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
-  const [selectedQuestionSetIds, setSelectedQuestionSetIds] = useState<string[]>([]);
+  const isEditMode = mode === "edit";
+
+  const [groupId, setGroupId] = useState(initialData?.groupId ?? groups[0]?.id ?? "");
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [instructions, setInstructions] = useState(initialData?.instructions ?? "");
+  const [dueAt, setDueAt] = useState(toDateTimeLocalValue(initialData?.dueAt));
+  const [customTask, setCustomTask] = useState(initialData?.customTask ?? "");
+  const [allowFileUpload, setAllowFileUpload] = useState(
+    initialData?.allowFileUpload ?? false
+  );
+  const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>(
+    initialData?.lessonIds ?? []
+  );
+  const [selectedQuestionSetIds, setSelectedQuestionSetIds] = useState<string[]>(
+    initialData?.questionSetIds ?? []
+  );
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +100,7 @@ export default function TeacherCreateAssignmentForm({
     setError(null);
     setIsSubmitting(true);
 
-    const result = await createTeacherAssignmentAction({
+    const payload = {
       groupId,
       title,
       instructions,
@@ -68,10 +109,21 @@ export default function TeacherCreateAssignmentForm({
       questionSetIds: selectedQuestionSetIds,
       customTask,
       allowFileUpload,
-    });
+    };
+
+    const result =
+      isEditMode && assignmentId
+        ? await updateTeacherAssignmentAction({
+            assignmentId,
+            ...payload,
+          })
+        : await createTeacherAssignmentAction(payload);
 
     if (result && !result.success) {
       switch (result.error) {
+        case "missing_assignment_id":
+          setError("Missing assignment id.");
+          break;
         case "missing_title":
           setError("Please enter an assignment title.");
           break;
@@ -83,9 +135,17 @@ export default function TeacherCreateAssignmentForm({
             "Please select at least one lesson or question set, or add a custom task."
           );
           break;
+        case "assignment_update_failed":
+          setError("Something went wrong while updating the assignment.");
+          break;
         default:
-          setError("Something went wrong while creating the assignment.");
+          setError(
+            isEditMode
+              ? "Something went wrong while updating the assignment."
+              : "Something went wrong while creating the assignment."
+          );
       }
+
       setIsSubmitting(false);
     }
   }
@@ -93,7 +153,9 @@ export default function TeacherCreateAssignmentForm({
   return (
     <div className="space-y-6 rounded-lg border p-6">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold">New assignment</h2>
+        <h2 className="text-lg font-semibold">
+          {isEditMode ? "Edit assignment" : "New assignment"}
+        </h2>
         <Link
           href="/teacher/assignments"
           className="text-sm text-blue-600 hover:underline"
@@ -250,7 +312,13 @@ export default function TeacherCreateAssignmentForm({
           disabled={isSubmitting}
           className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
         >
-          {isSubmitting ? "Creating..." : "Create assignment"}
+          {isSubmitting
+            ? isEditMode
+              ? "Saving..."
+              : "Creating..."
+            : isEditMode
+              ? "Save changes"
+              : "Create assignment"}
         </button>
 
         <Link
