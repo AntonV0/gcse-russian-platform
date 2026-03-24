@@ -88,6 +88,28 @@ export default async function AssignmentDetailPage({
     getQuestionSetStartedMap(questionSetIds),
   ]);
 
+  const trackedItemCount = items.filter(
+    (item) => item.item_type === "lesson" || item.item_type === "question_set"
+  ).length;
+
+  const completedOrStartedCount = items.reduce((count, item) => {
+    if (item.item_type === "lesson" && item.lesson) {
+      const key = `${item.lesson.course_slug}|${item.lesson.variant_slug}|${item.lesson.module_slug}|${item.lesson.slug}`;
+      return count + (lessonProgressMap.get(key) ? 1 : 0);
+    }
+
+    if (item.item_type === "question_set" && item.questionSet) {
+      return count + (questionSetMap.get(item.questionSet.id) ? 1 : 0);
+    }
+
+    return count;
+  }, 0);
+
+  const progressPercent =
+    trackedItemCount > 0
+      ? Math.round((completedOrStartedCount / trackedItemCount) * 100)
+      : 0;
+
   return (
     <main>
       <div className="mb-6">
@@ -105,7 +127,7 @@ export default async function AssignmentDetailPage({
           description={assignment.instructions ?? undefined}
         />
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-4">
           <div className="rounded-lg border p-4">
             <p className="mb-1 text-sm font-medium text-gray-900">Due date</p>
             <p className={`text-sm ${getDueDateClass(dueStatus)}`}>
@@ -130,6 +152,20 @@ export default async function AssignmentDetailPage({
                 ? "File upload is allowed for this assignment."
                 : "Text submission only for this assignment."}
             </p>
+          </div>
+
+          <div className="rounded-lg border p-4">
+            <p className="mb-1 text-sm font-medium text-gray-900">Assignment progress</p>
+            <p className="text-sm text-gray-700">
+              {completedOrStartedCount} / {trackedItemCount} tracked items
+            </p>
+            <div className="mt-2 h-2 w-full rounded-full bg-gray-200">
+              <div
+                className="h-2 rounded-full bg-black"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-gray-500">{progressPercent}% complete</p>
           </div>
         </div>
       </div>
