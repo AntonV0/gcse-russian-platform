@@ -27,6 +27,27 @@ function formatDueDate(value: string | null) {
   }).format(new Date(value));
 }
 
+function getSubmissionSummary(status?: "not_started" | "submitted" | "reviewed") {
+  if (status === "reviewed") {
+    return {
+      title: "Reviewed",
+      description: "Your teacher has reviewed this homework.",
+    };
+  }
+
+  if (status === "submitted") {
+    return {
+      title: "Submitted",
+      description: "Your homework has been submitted and is waiting for review.",
+    };
+  }
+
+  return {
+    title: "Not started",
+    description: "You have not submitted this homework yet.",
+  };
+}
+
 export default async function AssignmentDetailPage({
   params,
 }: AssignmentDetailPageProps) {
@@ -43,6 +64,7 @@ export default async function AssignmentDetailPage({
   }
 
   const dueStatus = getDueDateStatus(assignment.due_at);
+  const submissionSummary = getSubmissionSummary(submission?.status);
 
   const submittedFileUrl = await getSignedStorageUrl(
     "assignment-submissions",
@@ -60,19 +82,39 @@ export default async function AssignmentDetailPage({
         </Link>
       </div>
 
-      <PageHeader
-        title={assignment.title}
-        description={assignment.instructions ?? undefined}
-      />
+      <div className="mb-6 space-y-4">
+        <PageHeader
+          title={assignment.title}
+          description={assignment.instructions ?? undefined}
+        />
 
-      <div className="mb-6 flex flex-wrap gap-4 items-center text-sm text-gray-600">
-        <span className={getDueDateClass(dueStatus)}>
-          Due: {formatDueDate(assignment.due_at)}
-          {dueStatus === "overdue" ? " (Overdue)" : ""}
-          {dueStatus === "soon" ? " (Due soon)" : ""}
-        </span>
-        <StatusBadge status={submission?.status} />
-        {assignment.allow_file_upload ? <span>File upload allowed</span> : null}
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-lg border p-4">
+            <p className="mb-1 text-sm font-medium text-gray-900">Due date</p>
+            <p className={`text-sm ${getDueDateClass(dueStatus)}`}>
+              {formatDueDate(assignment.due_at)}
+              {dueStatus === "overdue" ? " (Overdue)" : ""}
+              {dueStatus === "soon" ? " (Due soon)" : ""}
+            </p>
+          </div>
+
+          <div className="rounded-lg border p-4">
+            <p className="mb-1 text-sm font-medium text-gray-900">Submission status</p>
+            <div className="mb-2">
+              <StatusBadge status={submission?.status} />
+            </div>
+            <p className="text-sm text-gray-600">{submissionSummary.description}</p>
+          </div>
+
+          <div className="rounded-lg border p-4">
+            <p className="mb-1 text-sm font-medium text-gray-900">Homework settings</p>
+            <p className="text-sm text-gray-600">
+              {assignment.allow_file_upload
+                ? "File upload is allowed for this assignment."
+                : "Text submission only for this assignment."}
+            </p>
+          </div>
+        </div>
       </div>
 
       <section className="mb-6">
@@ -80,12 +122,20 @@ export default async function AssignmentDetailPage({
           {items.length === 0 ? (
             <p className="text-sm text-gray-600">No items attached to this assignment.</p>
           ) : (
-            <ul className="space-y-3 text-sm">
-              {items.map((item) => {
+            <ol className="space-y-3 text-sm">
+              {items.map((item, index) => {
                 if (item.item_type === "lesson" && item.lesson) {
                   return (
-                    <li key={item.id} className="rounded border p-3">
-                      <p className="mb-1 font-medium">Lesson</p>
+                    <li key={item.id} className="rounded border p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                          Step {index + 1}
+                        </span>
+                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                          Lesson
+                        </span>
+                      </div>
+
                       <Link
                         href={getLessonPath(
                           item.lesson.course_slug,
@@ -93,27 +143,39 @@ export default async function AssignmentDetailPage({
                           item.lesson.module_slug,
                           item.lesson.slug
                         )}
-                        className="text-blue-600 hover:underline"
+                        className="text-base font-medium text-blue-600 hover:underline"
                       >
                         {item.lesson.title}
                       </Link>
-                      <p className="text-gray-600">{item.lesson.module_title}</p>
+
+                      <p className="mt-1 text-gray-600">{item.lesson.module_title}</p>
                     </li>
                   );
                 }
 
                 if (item.item_type === "question_set" && item.questionSet?.slug) {
                   return (
-                    <li key={item.id} className="rounded border p-3">
-                      <p className="font-medium">Question set</p>
+                    <li key={item.id} className="rounded border p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                          Step {index + 1}
+                        </span>
+                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                          Question set
+                        </span>
+                      </div>
+
                       <Link
                         href={`/question-sets/${item.questionSet.slug}`}
-                        className="text-blue-600 hover:underline"
+                        className="text-base font-medium text-blue-600 hover:underline"
                       >
                         {item.questionSet.title}
                       </Link>
+
                       {item.questionSet.description ? (
-                        <p className="text-gray-700">{item.questionSet.description}</p>
+                        <p className="mt-1 text-gray-700">
+                          {item.questionSet.description}
+                        </p>
                       ) : null}
                     </li>
                   );
@@ -121,8 +183,16 @@ export default async function AssignmentDetailPage({
 
                 if (item.item_type === "custom_task") {
                   return (
-                    <li key={item.id} className="rounded border p-3">
-                      <p className="mb-1 font-medium">Custom task</p>
+                    <li key={item.id} className="rounded border p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                          Step {index + 1}
+                        </span>
+                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                          Custom task
+                        </span>
+                      </div>
+
                       <p className="text-gray-700">
                         {item.custom_prompt ?? "No task text provided."}
                       </p>
@@ -131,19 +201,28 @@ export default async function AssignmentDetailPage({
                 }
 
                 return (
-                  <li key={item.id} className="rounded border p-3">
-                    Assignment item
+                  <li key={item.id} className="rounded border p-4">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Step {index + 1}
+                      </span>
+                      <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                        Item
+                      </span>
+                    </div>
+
+                    <p className="text-gray-700">Assignment item</p>
                   </li>
                 );
               })}
-            </ul>
+            </ol>
           )}
         </DashboardCard>
       </section>
 
-      {submission?.submitted_file_name && submittedFileUrl ? (
+      {submittedFileUrl && submission?.submitted_file_name ? (
         <section className="mb-6">
-          <DashboardCard title="Uploaded file">
+          <DashboardCard title="Your uploaded file">
             <div className="space-y-2 text-sm">
               <p>{submission.submitted_file_name}</p>
               <Link
@@ -174,14 +253,30 @@ export default async function AssignmentDetailPage({
         </DashboardCard>
       </section>
 
-      {submission?.feedback ? (
+      {submission?.status === "reviewed" ||
+      submission?.feedback ||
+      submission?.mark != null ? (
         <section>
-          <DashboardCard title="Teacher feedback">
-            <div className="space-y-2 text-sm">
-              <p>{submission.feedback}</p>
-              {submission.mark != null ? (
-                <p className="font-medium">Mark: {submission.mark}</p>
+          <DashboardCard title="Review result">
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="mb-1 font-medium text-gray-900">Status</p>
+                <StatusBadge status={submission?.status} />
+              </div>
+
+              {submission?.mark != null ? (
+                <div>
+                  <p className="mb-1 font-medium text-gray-900">Mark</p>
+                  <p className="text-gray-700">{submission.mark}</p>
+                </div>
               ) : null}
+
+              <div>
+                <p className="mb-1 font-medium text-gray-900">Teacher feedback</p>
+                <p className="text-gray-700">
+                  {submission?.feedback ?? "No feedback has been provided yet."}
+                </p>
+              </div>
             </div>
           </DashboardCard>
         </section>
