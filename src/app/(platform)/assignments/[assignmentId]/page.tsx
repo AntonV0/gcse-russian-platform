@@ -10,6 +10,7 @@ import {
 import { getLessonPath } from "@/lib/routes";
 import { getSignedStorageUrl } from "@/lib/storage-helpers";
 import StatusBadge from "@/components/ui/status-badge";
+import { getDueDateClass, getDueDateStatus } from "@/lib/assignment-status";
 
 type AssignmentDetailPageProps = {
   params: Promise<{
@@ -26,19 +27,6 @@ function formatDueDate(value: string | null) {
   }).format(new Date(value));
 }
 
-function getSubmissionLabel(status: string | null | undefined) {
-  switch (status) {
-    case "submitted":
-      return "Submitted";
-    case "reviewed":
-      return "Reviewed";
-    case "returned":
-      return "Returned";
-    default:
-      return "Not started";
-  }
-}
-
 export default async function AssignmentDetailPage({
   params,
 }: AssignmentDetailPageProps) {
@@ -53,6 +41,8 @@ export default async function AssignmentDetailPage({
   if (!assignment) {
     return <main>Assignment not found.</main>;
   }
+
+  const dueStatus = getDueDateStatus(assignment.due_at);
 
   const submittedFileUrl = await getSignedStorageUrl(
     "assignment-submissions",
@@ -75,13 +65,13 @@ export default async function AssignmentDetailPage({
         description={assignment.instructions ?? undefined}
       />
 
-      <div className="mb-6 flex flex-wrap gap-4 text-sm text-gray-600">
-        <span>Due: {formatDueDate(assignment.due_at)}</span>
-        <div className="mb-6 flex flex-wrap gap-4 text-sm text-gray-600 items-center">
-          <span>Due: {formatDueDate(assignment.due_at)}</span>
-          <StatusBadge status={submission?.status} />
-          {assignment.allow_file_upload ? <span>File upload allowed</span> : null}
-        </div>
+      <div className="mb-6 flex flex-wrap gap-4 items-center text-sm text-gray-600">
+        <span className={getDueDateClass(dueStatus)}>
+          Due: {formatDueDate(assignment.due_at)}
+          {dueStatus === "overdue" ? " (Overdue)" : ""}
+          {dueStatus === "soon" ? " (Due soon)" : ""}
+        </span>
+        <StatusBadge status={submission?.status} />
         {assignment.allow_file_upload ? <span>File upload allowed</span> : null}
       </div>
 
