@@ -5,6 +5,7 @@ import TeacherAccessDenied from "@/components/assignments/teacher-access-denied"
 import { getTeacherAssignmentsDb } from "@/lib/assignment-helpers-db";
 import { isCurrentUserTeacherForAnyGroup } from "@/lib/teacher-auth";
 import StatusBadge from "@/components/ui/status-badge";
+import { getDueDateClass, getDueDateStatus } from "@/lib/assignment-status";
 
 function formatDueDate(value: string | null) {
   if (!value) return "No due date";
@@ -80,6 +81,7 @@ export default async function TeacherAssignmentsPage() {
                 submissionCount,
                 reviewedSubmissionCount,
               });
+              const dueStatus = getDueDateStatus(assignment.due_at);
 
               return (
                 <Link
@@ -100,7 +102,11 @@ export default async function TeacherAssignmentsPage() {
 
                         <div className="flex flex-wrap gap-4 items-center text-sm text-gray-600">
                           <span>Group: {group?.name ?? "Unknown group"}</span>
-                          <span>Due: {formatDueDate(assignment.due_at)}</span>
+                          <span className={getDueDateClass(dueStatus)}>
+                            Due: {formatDueDate(assignment.due_at)}
+                            {dueStatus === "overdue" ? " (Overdue)" : ""}
+                            {dueStatus === "soon" ? " (Due soon)" : ""}
+                          </span>
                           <span>Submissions: {submissionCount}</span>
                           {teacherStatus.badgeStatus ? (
                             <StatusBadge status={teacherStatus.badgeStatus} />
