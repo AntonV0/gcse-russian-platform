@@ -386,6 +386,7 @@ export type TeacherAssignmentListItem = {
     name: string;
   } | null;
   submissionCount: number;
+  reviewedSubmissionCount: number;
 };
 
 export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListItem[]> {
@@ -447,7 +448,11 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
 
   const results = await Promise.all(
     assignments.map(async (assignment) => {
-      const [{ data: group }, { count }] = await Promise.all([
+      const [
+        { data: group },
+        { count: submissionCount },
+        { count: reviewedSubmissionCount },
+      ] = await Promise.all([
         supabase
           .from("teaching_groups")
           .select("id, name")
@@ -457,12 +462,18 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
           .from("assignment_submissions")
           .select("*", { count: "exact", head: true })
           .eq("assignment_id", assignment.id),
+        supabase
+          .from("assignment_submissions")
+          .select("*", { count: "exact", head: true })
+          .eq("assignment_id", assignment.id)
+          .eq("status", "reviewed"),
       ]);
 
       return {
         assignment,
         group: group ?? null,
-        submissionCount: count ?? 0,
+        submissionCount: submissionCount ?? 0,
+        reviewedSubmissionCount: reviewedSubmissionCount ?? 0,
       };
     })
   );

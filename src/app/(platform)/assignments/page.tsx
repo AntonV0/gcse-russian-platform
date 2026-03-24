@@ -2,6 +2,7 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { getStudentAssignmentsWithDetailsDb } from "@/lib/assignment-helpers-db";
+import StatusBadge from "@/components/ui/status-badge";
 
 function formatDueDate(value: string | null) {
   if (!value) return "No due date";
@@ -56,7 +57,11 @@ export default async function AssignmentsPage() {
 
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                       <span>Due: {formatDueDate(assignment.due_at)}</span>
-                      <span>Status: {getSubmissionLabel(submission?.status)}</span>
+                      <div className="flex flex-wrap gap-4 text-sm text-gray-600 items-center">
+                        <span>Due: {formatDueDate(assignment.due_at)}</span>
+                        <StatusBadge status={submission?.status} />
+                        <span>Items: {items.length}</span>
+                      </div>
                       <span>Items: {items.length}</span>
                     </div>
                   </div>
