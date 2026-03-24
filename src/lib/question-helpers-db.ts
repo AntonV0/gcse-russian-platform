@@ -5,7 +5,7 @@ import {
   type RuntimeQuestionSet,
 } from "@/lib/question-engine";
 
-type DbQuestionSet = {
+export type DbQuestionSet = {
   id: string;
   slug: string | null;
   title: string;
