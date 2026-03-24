@@ -9,6 +9,7 @@ import {
 } from "@/lib/assignment-helpers-db";
 import { getLessonPath } from "@/lib/routes";
 import { getSignedStorageUrl } from "@/lib/storage-helpers";
+import StatusBadge from "@/components/ui/status-badge";
 
 type AssignmentDetailPageProps = {
   params: Promise<{
@@ -76,7 +77,11 @@ export default async function AssignmentDetailPage({
 
       <div className="mb-6 flex flex-wrap gap-4 text-sm text-gray-600">
         <span>Due: {formatDueDate(assignment.due_at)}</span>
-        <span>Status: {getSubmissionLabel(submission?.status)}</span>
+        <div className="mb-6 flex flex-wrap gap-4 text-sm text-gray-600 items-center">
+          <span>Due: {formatDueDate(assignment.due_at)}</span>
+          <StatusBadge status={submission?.status} />
+          {assignment.allow_file_upload ? <span>File upload allowed</span> : null}
+        </div>
         {assignment.allow_file_upload ? <span>File upload allowed</span> : null}
       </div>
 
