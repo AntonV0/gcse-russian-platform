@@ -1275,9 +1275,17 @@ export async function createQuestionSetFromTemplateAction(formData: FormData) {
   }
 
   const templateQuestionSetId = getTrimmedString(formData, "templateQuestionSetId");
+  const title = getTrimmedString(formData, "title");
+  const slug = getTrimmedString(formData, "slug");
+  const description = getOptionalString(formData, "description");
+  const instructions = getOptionalString(formData, "instructions");
 
   if (!templateQuestionSetId) {
     throw new Error("Missing template question set id");
+  }
+
+  if (!title || !slug) {
+    throw new Error("Missing required fields");
   }
 
   const supabase = await createClient();
@@ -1294,24 +1302,13 @@ export async function createQuestionSetFromTemplateAction(formData: FormData) {
     throw new Error("Failed to load template question set");
   }
 
-  const baseTitle = sourceSet.title;
-  const duplicatedTitle = await generateUniqueQuestionSetTitle({
-    supabase,
-    baseTitle,
-  });
-
-  const duplicatedSlug = await generateUniqueQuestionSetSlug({
-    supabase,
-    baseSlug: sourceSet.slug ?? sourceSet.title,
-  });
-
   const { data: newSet, error: newSetError } = await supabase
     .from("question_sets")
     .insert({
-      slug: duplicatedSlug,
-      title: duplicatedTitle,
-      description: sourceSet.description,
-      instructions: sourceSet.instructions,
+      slug,
+      title,
+      description,
+      instructions,
       source_type: sourceSet.source_type,
       is_template: false,
       template_type: sourceSet.template_type ?? null,

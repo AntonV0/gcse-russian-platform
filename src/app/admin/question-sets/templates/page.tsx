@@ -3,7 +3,6 @@ import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { getQuestionSetTemplatesDb } from "@/lib/question-helpers-db";
-import { createQuestionSetFromTemplateAction } from "@/app/actions/admin-question-actions";
 
 export default async function AdminQuestionSetTemplatesPage() {
   const canAccess = await requireAdminAccess();
@@ -60,19 +59,12 @@ export default async function AdminQuestionSetTemplatesPage() {
                     Open template
                   </Link>
 
-                  <form action={createQuestionSetFromTemplateAction}>
-                    <input
-                      type="hidden"
-                      name="templateQuestionSetId"
-                      value={template.id}
-                    />
-                    <button
-                      type="submit"
-                      className="rounded border px-4 py-2 text-sm"
-                    >
-                      Create from template
-                    </button>
-                  </form>
+                  <Link
+                    href={`/admin/question-sets/templates/${template.id}/create`}
+                    className="rounded border px-4 py-2 text-sm"
+                  >
+                    Create from template
+                  </Link>
                 </div>
               </div>
             </DashboardCard>
