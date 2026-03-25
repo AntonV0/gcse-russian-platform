@@ -7,18 +7,21 @@ type Props = {
   submissionId: string;
   initialMark?: number | null;
   initialFeedback?: string | null;
+  initiallyOpen?: boolean;
 };
 
 export default function TeacherSubmissionReviewForm({
   submissionId,
   initialMark = null,
   initialFeedback = null,
+  initiallyOpen = true,
 }: Props) {
   const [mark, setMark] = useState(initialMark == null ? "" : String(initialMark));
   const [feedback, setFeedback] = useState(initialFeedback ?? "");
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [isOpen, setIsOpen] = useState(initiallyOpen);
 
   function handleSubmit() {
     setError(null);
@@ -35,6 +38,7 @@ export default function TeacherSubmissionReviewForm({
 
       if (result.success) {
         setSaved(true);
+        setIsOpen(false);
       } else {
         setSaved(false);
         setError("Review could not be saved.");
@@ -54,9 +58,45 @@ export default function TeacherSubmissionReviewForm({
     setError(null);
   }
 
+  if (!isOpen) {
+    return (
+      <div className="space-y-2">
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpen(true);
+            setSaved(false);
+            setError(null);
+          }}
+          className="rounded border px-3 py-2 text-sm hover:bg-gray-50"
+        >
+          Edit review
+        </button>
+
+        {saved ? (
+          <p className="text-sm font-medium text-green-600">Review saved successfully.</p>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3 rounded border bg-white p-4">
-      <p className="text-sm font-medium">Review submission</p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm font-medium">Review submission</p>
+
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpen(false);
+            setSaved(false);
+            setError(null);
+          }}
+          className="text-sm text-gray-600 hover:underline"
+        >
+          Cancel
+        </button>
+      </div>
 
       <div className="space-y-1">
         <label className="text-sm font-medium">Mark</label>
