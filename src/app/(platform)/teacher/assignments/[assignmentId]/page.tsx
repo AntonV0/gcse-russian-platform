@@ -399,6 +399,7 @@ export default async function TeacherAssignmentReviewPage({
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <StatusBadge status={submission.status} />
+
                           {submission.mark != null ? (
                             <span className="text-sm font-medium text-gray-700">
                               Mark: {submission.mark}
@@ -406,9 +407,15 @@ export default async function TeacherAssignmentReviewPage({
                           ) : null}
                         </div>
 
-                        <p className="text-sm text-gray-600">
-                          Submitted: {formatDateTime(submission.submitted_at)}
-                        </p>
+                        <div className="text-right text-sm text-gray-600">
+                          <p>Submitted: {formatDateTime(submission.submitted_at)}</p>
+
+                          {submission.reviewed_at ? (
+                            <p className="text-green-600">
+                              Reviewed: {formatDateTime(submission.reviewed_at)}
+                            </p>
+                          ) : null}
+                        </div>
                       </div>
 
                       <div className="rounded border bg-gray-50 p-3 text-sm">
