@@ -17,9 +17,12 @@ export default function TeacherSubmissionReviewForm({
   const [mark, setMark] = useState(initialMark == null ? "" : String(initialMark));
   const [feedback, setFeedback] = useState(initialFeedback ?? "");
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit() {
+    setError(null);
+
     startTransition(async () => {
       const parsedMark =
         mark.trim() === "" ? null : Number.isNaN(Number(mark)) ? null : Number(mark);
@@ -30,8 +33,25 @@ export default function TeacherSubmissionReviewForm({
         feedback: feedback.trim() || null,
       });
 
-      setSaved(result.success);
+      if (result.success) {
+        setSaved(true);
+      } else {
+        setSaved(false);
+        setError("Review could not be saved.");
+      }
     });
+  }
+
+  function handleMarkChange(value: string) {
+    setMark(value);
+    setSaved(false);
+    setError(null);
+  }
+
+  function handleFeedbackChange(value: string) {
+    setFeedback(value);
+    setSaved(false);
+    setError(null);
   }
 
   return (
@@ -42,8 +62,9 @@ export default function TeacherSubmissionReviewForm({
         <label className="text-sm font-medium">Mark</label>
         <input
           type="number"
+          step="0.01"
           value={mark}
-          onChange={(e) => setMark(e.target.value)}
+          onChange={(e) => handleMarkChange(e.target.value)}
           className="w-full rounded border px-3 py-2"
           placeholder="Optional"
         />
@@ -53,7 +74,7 @@ export default function TeacherSubmissionReviewForm({
         <label className="text-sm font-medium">Feedback</label>
         <textarea
           value={feedback}
-          onChange={(e) => setFeedback(e.target.value)}
+          onChange={(e) => handleFeedbackChange(e.target.value)}
           rows={4}
           className="w-full rounded border px-3 py-2"
           placeholder="Write feedback for the student..."
@@ -61,6 +82,7 @@ export default function TeacherSubmissionReviewForm({
       </div>
 
       <button
+        type="button"
         onClick={handleSubmit}
         disabled={isPending}
         className="w-full rounded bg-black px-4 py-2 text-white disabled:opacity-50"
@@ -68,9 +90,11 @@ export default function TeacherSubmissionReviewForm({
         {isPending ? "Saving..." : "Save review"}
       </button>
 
-      {saved && (
+      {saved ? (
         <p className="text-sm font-medium text-green-600">Review saved successfully.</p>
-      )}
+      ) : null}
+
+      {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
     </div>
   );
 }
