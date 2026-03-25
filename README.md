@@ -1,144 +1,149 @@
 # GCSE Russian Course Platform
 
-A full-stack online learning platform for GCSE Russian students, combining structured courses, interactive lessons, and a teacher-led assignment system.
+A full-stack online learning platform for GCSE Russian students, combining structured courses, interactive lessons, and a teacher-led assignment workflow.
 
-Built as a real-world product powering **gcserussian.com** and supporting **Volna Online Russian School**.
+Built as a real product for **gcserussian.com** and supporting **Volna Online Russian School**.
 
 ---
 
 ## 🚀 Overview
 
-This platform delivers a complete online learning experience, including:
+This platform combines self-study course delivery with teacher-managed homework and review workflows.
 
-- Structured course delivery (Foundation, Higher, Volna tracks)
-- Block-based lesson system
-- Advanced database-driven question engine
-- Teacher → student assignment workflow
-- File uploads and feedback system
-- Role-based access (admin, teacher, student)
-- Progress tracking (variant-aware)
-- Template-driven content system (question sets)
-- Scalable architecture for future expansion
+It currently includes:
 
----
-
-## 🧠 Key Technical Features
-
-### 🔹 Metadata-Driven Question Engine
-
-- Questions are dynamically rendered using structured metadata
-- Supports multiple answer strategies without hardcoding UI
-- Easily extensible for new question types
-
-### 🔹 Reusable Block-Based Lesson System
-
-- Lessons are composed of modular blocks:
-  - text
-  - note
-  - vocabulary
-  - audio
-  - question sets
-- Enables fast content creation and consistency
-
-### 🔹 Admin CMS (Custom Built)
-
-- Full CRUD system for:
-  - question sets
-  - questions
-  - options
-  - accepted answers
-- Advanced tools:
-  - duplication
-  - reordering
-  - normalization
-  - activation toggles
-  - inline editing
-  - template system
-  - usage visibility
-
-### 🔹 Question Set Templates
-
-- Mark question sets as reusable templates
-- Template type classification
-- Guided “create from template” workflow
-- Standardises content creation patterns
-
-### 🔹 Usage Tracking System
-
-- Tracks which assignments use each question set
-- Helps prevent accidental deletion of in-use content
-- Links directly to relevant assignment pages
-
-### 🔹 Assignment System
-
-- Teachers can:
-  - create assignments
-  - attach lessons, question sets, and custom tasks
-  - review submissions
-  - give marks and feedback
-- Students can:
-  - complete tasks
-  - upload files
-  - receive feedback
-
-### 🔹 Assignment UX Layer
-
-- Reusable status badge system
-- Derived teacher review state based on submission data
-- Due date urgency states:
-  - overdue
-  - due soon
-  - normal
-- Teacher list highlighting for assignments that still need review
-
-### 🔹 Role-Based Architecture
-
-- Admin → full system access
-- Teacher → group + assignment management
-- Student → course + homework access
-
-### 🔹 Supabase Integration
-
-- PostgreSQL database
-- Row Level Security (RLS)
-- Auth system
-- File storage with signed URLs
+- Structured course delivery across **Foundation**, **Higher**, and **Volna** learning tracks
+- Student access modes for **trial**, **self-study/full**, and **Volna student** experiences
+- Block-based lesson rendering
+- Database-driven question engine with metadata-based behaviour
+- Custom admin tools for question sets, templates, and question authoring
+- Teacher assignment creation, editing, ordering, review, filtering, sorting, and reopening
+- Student submission workflow with text, file uploads, locking after review, and feedback visibility
+- Per-item assignment progress visibility for lessons and question sets
+- Role-aware dashboards and secure Supabase-backed data access
 
 ---
 
-## 🏗️ Architecture Overview
+## 🧠 Core Product Model
 
-### Course Hierarchy
+Two different concepts shape the platform and should not be confused.
+
+### Roles
+
+- **Admin** → system-level oversight and content management
+- **Teacher** → group-based teaching and assignment review
+- **Student** → course participation and homework submission
+
+### Student access modes
+
+- **Trial** → limited visible content and upgrade path
+- **Self-study / Full** → paid independent learning experience
+- **Volna student** → teacher-linked learning experience with assignments and review workflow
+
+The platform uses one shared codebase and data model, with permissions and UI differences driven by access rules rather than separate apps.
+
+---
+
+## 🧱 Main Systems
+
+### Lesson system
+
+Lessons are built from reusable content blocks. Current lesson rendering supports content such as:
+
+- text
+- note
+- vocabulary
+- audio
+- question set blocks
+
+This keeps lesson structure consistent and makes new content easier to create.
+
+### Question system
+
+Questions are stored in the database and rendered through structured metadata rather than one-off hardcoded components.
+
+Current supported and planned interaction patterns include:
+
+- multiple choice
+- short answer
+- translation
+- selection-based answers
+- sentence builder behaviour
+- listening/audio rules
+- validation rules such as punctuation and whitespace handling
+
+### Admin authoring system
+
+A custom admin CMS supports:
+
+- question set CRUD
+- question CRUD
+- option / accepted answer management
+- duplication
+- reordering
+- activation toggles
+- template-based authoring
+- usage visibility for linked assignments
+
+### Assignment system
+
+Teachers can:
+
+- create assignments
+- edit title, instructions, due date, and file-upload settings
+- attach lessons, question sets, and custom tasks
+- order assignment items
+- review submissions with mark and feedback
+- filter and sort submissions
+- reopen reviewed submissions for resubmission
+
+Students can:
+
+- view assignments
+- follow assignment items in order
+- submit text and optional file uploads
+- see submission state
+- get locked after review
+- view teacher feedback and marks
+- see per-item assignment progress
+
+---
+
+## 🏗️ High-Level Architecture
+
+### Course hierarchy
 
 - Course
-- Variant (Learning Track)
+- Variant
   - foundation
   - higher
   - volna
 - Module
 - Lesson
 
----
+### Main route structure
 
-### URL Structure
+```text
+/courses/[courseSlug]
+/courses/[courseSlug]/[variantSlug]
+/courses/[courseSlug]/[variantSlug]/modules/[moduleSlug]
+/courses/[courseSlug]/[variantSlug]/modules/[moduleSlug]/lessons/[lessonSlug]
 
-- /courses/[courseSlug]
-- /courses/[courseSlug]/[variantSlug]
-- /courses/[courseSlug]/[variantSlug]/modules/[moduleSlug]
-- /courses/[courseSlug]/[variantSlug]/modules/[moduleSlug]/lessons/[lessonSlug]
+/assignments
+/assignments/[assignmentId]
 
-- /assignments
-- /assignments/[assignmentId]
+/teacher/assignments
+/teacher/assignments/new
+/teacher/assignments/[assignmentId]
+/teacher/assignments/[assignmentId]/edit
 
-- /teacher/assignments
-- /teacher/assignments/new
-- /teacher/assignments/[assignmentId]
+/question-sets/[questionSetSlug]
 
-- /question-sets/[questionSetSlug]
-- /admin
-- /admin/question-sets
-- /admin/question-sets/templates
-- /admin/questions/[questionId]
+/admin
+/admin/question-sets
+/admin/question-sets/templates
+/admin/questions/[questionId]
+```
 
 ---
 
@@ -149,182 +154,166 @@ flowchart TD
 
   U[User] --> R{Role}
 
-  R -->|Student| SD[Student Dashboard]
-  R -->|Teacher| TD[Teacher Dashboard]
-  R -->|Admin| AD[Admin Access]
+  R -->|Student| S{Student access}
+  R -->|Teacher| T[Teacher workspace]
+  R -->|Admin| A[Admin workspace]
 
-  SD --> C[Courses]
-  SD --> A1[Assignments]
-  SD --> P[Progress]
+  S -->|Trial| ST[Trial student UI]
+  S -->|Self-study / Full| SS[Self-study UI]
+  S -->|Volna student| SV[Volna student UI]
 
-  TD --> TG[Teaching Groups]
-  TD --> TA[Teacher Assignments]
-  TD --> TR[Submission Review]
+  ST --> C[Courses]
+  SS --> C
+  SV --> C
+  SV --> ASG[Assignments]
 
-  AD --> AC[Admin Content Tools]
-  AC --> AQS[Question Set Management]
-  AC --> AQ[Question Management]
-  AC --> AT[Template System]
-
-  C --> CV[Course Variant]
+  C --> CV[Course variant]
   CV --> M[Modules]
   M --> L[Lessons]
 
-  L --> LB[Lesson Blocks]
-  LB --> TXT[Text / Note / Vocabulary]
-  LB --> QS[Question Set Block]
+  L --> LB[Lesson blocks]
+  LB --> TXT[Text / Notes / Vocabulary]
+  LB --> QSB[Question set block]
 
-  QS --> QSE[Question Engine]
-  QSE --> MCQ[Multiple Choice]
-  QSE --> SA[Short Answer]
-  QSE --> TRN[Translation]
-  QSE --> SB[Sentence Builder]
-  QSE --> SEL[Selection Based]
+  QSB --> QE[Question engine]
+  QE --> MCQ[Multiple choice]
+  QE --> SA[Short answer]
+  QE --> TRN[Translation]
+  QE --> SEL[Selection based]
+  QE --> SB[Sentence builder]
+  QE --> AU[Audio / listening behaviour]
+  QE --> VAL[Validation + metadata rules]
+  QE --> QP[Question attempts and progress]
 
-  QSE --> AU[Audio / Listening Mode]
-  QSE --> VAL[Validation Engine]
-  QSE --> QA[Question Attempts / Progress]
+  T --> TG[Teaching groups]
+  T --> TA[Teacher assignments]
+  T --> TR[Submission review]
 
-  A1 --> AS[Assignment Submission]
-  AS --> UP[Text + File Upload]
-  TR --> FB[Teacher Feedback + Mark]
+  TA --> AC[Create / Edit / Order items]
+  TR --> REV[Review / Reopen / Filter / Sort]
 
-  TA --> TSTAT[Derived Review Status]
-  TA --> DUE[Due Date Urgency UI]
-  AQS --> DUP[Duplicate / Normalize / Toggle / Preview]
-  AQS --> USE[Usage Visibility]
-  AQS --> TMP[Create from Template]
+  A --> CMS[Admin content tools]
+  CMS --> QS[Question set management]
+  CMS --> QQ[Question management]
+  CMS --> TMP[Template workflows]
+  CMS --> USE[Usage visibility]
 
-  UP --> ST[(Supabase Storage)]
+  ASG --> SUB[Submission workflow]
+  SUB --> TXT2[Text response]
+  SUB --> FILE[File upload]
+  SUB --> LOCK[Locked after review]
+  SUB --> FB[Teacher feedback + marks]
+  SUB --> PROG[Per-item assignment progress]
+
   C --> DB[(Supabase DB)]
-  A1 --> DB
-  TD --> DB
-  AD --> DB
-  QSE --> DB
-  QA --> DB
+  QE --> DB
+  T --> DB
+  A --> DB
+  FILE --> STOR[(Supabase Storage)]
 ```
 
 ---
 
-## 🔐 Access System
+## 🔐 Access Model
 
-### Tables
+### Key tables
 
 - products
 - prices
 - user_access_grants
 
-### Access Modes
+### Access modes
 
 - trial
 - full
 - volna
 
-### Key Logic
+### Main idea
 
-- Access is determined via `user_access_grants`
-- Each grant links to a `product`
-- Products define:
-  - course
-  - variant
-  - access type
+Access is determined through `user_access_grants`, linked to `products`, which define:
 
-### Lesson-level flags
+- course
+- variant
+- access mode
 
-- is_trial_visible
-- available_in_volna
+Lesson and course visibility can then be shaped by flags such as:
+
+- `is_trial_visible`
+- `available_in_volna`
 
 ---
 
-## 👥 Roles
+## 👥 Role Model
 
-- Admin → `profiles.is_admin = true`
-- Teacher → `teaching_group_members.member_role = teacher`
-- Student → default
+- **Admin** → `profiles.is_admin = true`
+- **Teacher / assistant** → `teaching_group_members.member_role`
+- **Student** → default authenticated learning user
+
+Role and access mode are separate concerns. A student may be in a Foundation, Higher, or Volna variant, and may also have trial/full/Volna access behaviour.
 
 ---
 
 ## 🎓 Volna System
 
-### Tables
+### Main tables
 
 - teaching_groups
 - teaching_group_members
-
-### Features
-
-- Teacher → student group management
-- Volna-specific course variant
-- Assignment distribution
-- Homework review workflow
-
----
-
-## 📝 Assignment System
-
-### Tables
-
 - assignments
 - assignment_items
 - assignment_submissions
 
-### Assignment items
+### Current Volna-specific capabilities
+
+- teacher-group relationships
+- teacher assignment creation and editing
+- student homework submission
+- review workflow with marks and feedback
+- reopening reviewed work
+- teacher filtering and prioritisation views
+
+---
+
+## 📝 Assignment Workflow
+
+### Assignment item types
 
 - lesson
 - question set
 - custom task
 
----
+### Teacher flow
 
-### Teacher Flow
+- create assignment
+- edit assignment fields
+- order items
+- review submissions
+- mark and give feedback
+- filter and sort review queues
+- reopen reviewed submissions when needed
 
-- Create assignment
-- Attach lessons
-- Attach question sets
-- Add custom tasks
-- Review submissions
-- Mark + give feedback
-- See derived review state in assignment lists
-- Prioritise assignments with pending reviews
+### Student flow
 
----
+- open assignment
+- follow ordered steps
+- complete linked lesson / question set work
+- submit text and optional file
+- see item-level progress
+- receive feedback
+- get locked after review unless teacher reopens
 
-### Student Flow
+### Current UX rules
 
-- View assignments
-- Access lesson + question sets
-- Submit homework (text + file upload)
-- View teacher feedback
-- See clear submission status
-- See overdue / due-soon visual warnings
-
----
-
-## 🧩 Lesson System
-
-Block-based architecture.
-
-### Supported blocks
-
-- text
-- note
-- vocabulary
-- multiple choice
-- short answer
-- translation
-- question set
-
-### Location
-
-- `src/components/lesson-blocks/`
+- derived teacher review state is calculated from submissions
+- due date urgency is separate from workflow state
+- reviewed submissions are locked on the student side
+- teacher can reopen to allow another submission round
 
 ---
 
 ## ❓ Question System
 
-Database-driven.
-
-### Tables
+### Main tables
 
 - question_sets
 - questions
@@ -333,95 +322,74 @@ Database-driven.
 - question_attempts
 - question_progress
 
----
-
-### Supported types
+### Supported question types
 
 - multiple_choice
 - short_answer
 - translation
 
----
+### Metadata-driven behaviour
 
-### Advanced Features
+The engine supports structured configuration such as:
 
-#### 🎧 Audio / Listening Mode
-
-- Audio playback per question
-- Max play limits
-- Auto-play support
-- Listening exam mode (restricted UI)
-- Submission lock until audio completes
-
-#### ✅ Validation Engine
-
-- Case-insensitive matching
-- Whitespace normalization
-- Optional:
-  - ignore punctuation
-  - ignore articles
-
-#### 🧠 Answer Strategies (metadata-driven)
-
-- text_input
-- selection_based
-- sentence_builder
-- upload_required (planned)
-
-#### 🔘 Selection-based questions
-
-- Grouped mode
-- Inline gap mode
+- answer strategy
+- listening mode
+- max plays
+- selection display mode
+- punctuation/article handling
+- sentence-building behaviour
 
 ---
 
 ## 📊 Progress Tracking
 
-### Tables
+### Main tables
 
 - lesson_progress
 - question_progress
+- question_attempts
 
-### Features
+### Current tracked behaviour
 
-- Variant-aware tracking
-- Per-question attempt tracking
-- Best score + attempts stored
+- lesson completion
+- question attempts and scores
+- assignment item progress
+  - lesson items show completed / not completed
+  - question set items show started / not started
 
 ---
 
-## 🧭 Dashboard System
-
-Role-aware dashboard:
+## 🧭 Dashboards and Views
 
 ### Admin
 
-- Full system visibility
-- Content + assignment control
-- Template management
-- Usage visibility
+- content management
+- templates
+- question set usage visibility
+- privileged system-wide visibility
 
 ### Teacher
 
-- Group-based context
-- Assignment management
-- Submission review
-- Pending review visibility
+- assignment lists
+- pending review prioritisation
+- submission review filters and sorting
+- reopen workflow
 
 ### Student
 
-- Learning track (foundation / higher / volna)
-- Access type (trial / full / volna)
-- Completed lessons
-- Assignment status visibility
+- course navigation
+- assignment lists
+- assignment detail pages
+- submission state and review result visibility
 
 ---
 
 ## 🗂️ Project Structure
 
+This is a representative structure, not an exhaustive file list.
+
 ```text
 src/
-
   app/
     (platform)/
       dashboard/
@@ -430,29 +398,31 @@ src/
       teacher/
       question-sets/
     admin/
+    actions/
 
   components/
     admin/
     assignments/
     layout/
-    ui/
     lesson-blocks/
     questions/
+    ui/
 
   lib/
-    auth.ts
-    teacher-auth.ts
     access.ts
-    dashboard-helpers.ts
-    assignment-helpers-db.ts
-    question-helpers-db.ts
-    course-helpers-db.ts
     access-helpers-db.ts
-    question-engine.ts
+    assignment-helpers-db.ts
+    assignment-progress.ts
+    auth.ts
+    course-helpers-db.ts
+    dashboard-helpers.ts
     progress.ts
+    question-engine.ts
+    question-helpers-db.ts
+    question-progress.ts
     routes.ts
-    media.ts
     storage-helpers.ts
+    teacher-auth.ts
     supabase/
 
   types/
@@ -462,14 +432,14 @@ src/
 
 ## 🗄️ Database Overview
 
-### Core Content
+### Core learning content
 
 - courses
 - course_variants
 - modules
 - lessons
 
-### Questions
+### Questions and templates
 
 - question_sets
 - questions
@@ -488,14 +458,15 @@ src/
 - assignment_items
 - assignment_submissions
 
-### Volna
+### Teaching groups
 
 - teaching_groups
 - teaching_group_members
 
-### Access
+### Access and billing
 
 - products
+- prices
 - user_access_grants
 
 ---
@@ -532,6 +503,7 @@ erDiagram
 
   PROFILES ||--o{ ASSIGNMENTS : creates
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : submits
+  PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : reviews
   PROFILES ||--o{ QUESTION_ATTEMPTS : answers
 
   COURSES {
@@ -596,8 +568,11 @@ erDiagram
     uuid id
     uuid group_id
     text title
-    boolean allow_file_upload
+    text instructions
+    timestamptz due_at
     text status
+    boolean allow_file_upload
+    uuid created_by
   }
 
   ASSIGNMENT_ITEMS {
@@ -606,6 +581,8 @@ erDiagram
     text item_type
     uuid lesson_id
     uuid question_set_id
+    text custom_prompt
+    int position
   }
 
   ASSIGNMENT_SUBMISSIONS {
@@ -616,6 +593,7 @@ erDiagram
     text submitted_text
     text submitted_file_path
     text submitted_file_name
+    timestamptz submitted_at
     numeric mark
     text feedback
     uuid reviewed_by
@@ -681,14 +659,14 @@ erDiagram
 
 ---
 
-## 🔐 Storage & Security
+## 🔐 Storage and Security
 
-- Supabase RLS enforced
-- Admin override logic for restricted teacher/assignment views
-- Private storage buckets
-- Signed URLs for secure file access
-- Assignment uploads scoped per user
-- Server-side validation of access
+- Supabase Auth
+- Supabase PostgreSQL
+- Row Level Security
+- signed URLs for uploaded files
+- assignment uploads scoped by user
+- helper-level admin-aware access handling for management views
 
 ---
 
@@ -723,13 +701,13 @@ SUPABASE_SERVICE_ROLE_KEY=
 npm install
 ```
 
-### 2. Run dev server
+### 2. Run the dev server
 
 ```bash
 npm run dev
 ```
 
-### 3. Open app
+### 3. Open locally
 
 ```text
 http://localhost:3000
@@ -737,16 +715,15 @@ http://localhost:3000
 
 ---
 
-## 🛣️ Future Improvements
+## 🛣️ Next Areas for Expansion
 
-- AI-assisted marking system
-- Speaking exam system
-- Audio recording tasks
-- Payment integration
-- Analytics dashboard
-- Bulk admin actions (multi-select, batch operations)
-- Advanced filtering/search in admin
-- Assignment editing and resubmission rules
+- payment integration
+- analytics and reporting
+- speaking workflows
+- audio recording tasks
+- richer assignment analytics
+- more advanced question-set progress summaries
+- broader admin tools
 
 ---
 
