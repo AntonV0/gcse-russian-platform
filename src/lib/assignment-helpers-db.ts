@@ -318,6 +318,12 @@ export type TeacherSubmissionReviewCard = {
     display_name: string | null;
     email: string | null;
   } | null;
+  reviewer: {
+    id: string;
+    full_name: string | null;
+    display_name: string | null;
+    email: string | null;
+  } | null;
 };
 
 export async function getAssignmentByIdDb(assignmentId: string) {
@@ -358,11 +364,23 @@ export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string)
 
   const detailed = await Promise.all(
     submissions.map(async (submission) => {
-      const { data: student, error: studentError } = await supabase
-        .from("profiles")
-        .select("id, full_name, display_name, email")
-        .eq("id", submission.student_user_id)
-        .maybeSingle();
+      const [
+        { data: student, error: studentError },
+        { data: reviewer, error: reviewerError },
+      ] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("id, full_name, display_name, email")
+          .eq("id", submission.student_user_id)
+          .maybeSingle(),
+        submission.reviewed_by
+          ? supabase
+              .from("profiles")
+              .select("id, full_name, display_name, email")
+              .eq("id", submission.reviewed_by)
+              .maybeSingle()
+          : Promise.resolve({ data: null, error: null }),
+      ]);
 
       if (studentError) {
         console.error("Error fetching student profile for submission:", {
@@ -371,9 +389,17 @@ export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string)
         });
       }
 
+      if (reviewerError) {
+        console.error("Error fetching reviewer profile for submission:", {
+          submissionId: submission.id,
+          error: reviewerError,
+        });
+      }
+
       return {
         submission,
         student: student ?? null,
+        reviewer: reviewer ?? null,
       };
     })
   );

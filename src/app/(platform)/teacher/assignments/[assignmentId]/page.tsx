@@ -45,6 +45,17 @@ function getSubmittedAtTime(value: string | null) {
   return Number.isNaN(timestamp) ? 0 : timestamp;
 }
 
+function getProfileName(
+  profile: {
+    display_name: string | null;
+    full_name: string | null;
+    email: string | null;
+  } | null
+) {
+  if (!profile) return null;
+  return profile.display_name || profile.full_name || profile.email || null;
+}
+
 export default async function TeacherAssignmentReviewPage({
   params,
   searchParams,
@@ -71,7 +82,7 @@ export default async function TeacherAssignmentReviewPage({
   const dueStatus = getDueDateStatus(assignment.due_at);
 
   const submissionsWithFiles = await Promise.all(
-    submissions.map(async ({ submission, student }) => {
+    submissions.map(async ({ submission, student, reviewer }) => {
       const fileUrl = await getSignedStorageUrl(
         "assignment-submissions",
         submission.submitted_file_path ?? null
@@ -80,6 +91,7 @@ export default async function TeacherAssignmentReviewPage({
       return {
         submission,
         student,
+        reviewer,
         fileUrl,
       };
     })
@@ -379,8 +391,9 @@ export default async function TeacherAssignmentReviewPage({
           </div>
         ) : (
           <div className="grid gap-4">
-            {visibleSubmissions.map(({ submission, student, fileUrl }) => {
+            {visibleSubmissions.map(({ submission, student, reviewer, fileUrl }) => {
               const isPending = submission.status !== "reviewed";
+              const reviewerName = getProfileName(reviewer);
 
               return (
                 <div
@@ -399,7 +412,6 @@ export default async function TeacherAssignmentReviewPage({
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <StatusBadge status={submission.status} />
-
                           {submission.mark != null ? (
                             <span className="text-sm font-medium text-gray-700">
                               Mark: {submission.mark}
@@ -413,6 +425,7 @@ export default async function TeacherAssignmentReviewPage({
                           {submission.reviewed_at ? (
                             <p className="text-green-600">
                               Reviewed: {formatDateTime(submission.reviewed_at)}
+                              {reviewerName ? ` by ${reviewerName}` : ""}
                             </p>
                           ) : null}
                         </div>
