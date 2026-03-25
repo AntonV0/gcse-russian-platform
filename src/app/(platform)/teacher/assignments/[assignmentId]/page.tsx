@@ -4,6 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import TeacherSubmissionReviewForm from "@/components/assignments/teacher-submission-review-form";
 import DeleteAssignmentButton from "@/components/assignments/delete-assignment-button";
 import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
+import ReopenSubmissionButton from "@/components/assignments/reopen-submission-button";
 import StatusBadge from "@/components/ui/status-badge";
 import {
   getAssignmentByIdDb,
@@ -455,6 +456,12 @@ export default async function TeacherAssignmentReviewPage({
                         <div className="rounded border bg-gray-50 p-3 text-sm">
                           <p className="mb-1 font-medium">Current feedback</p>
                           <p className="text-gray-700">{submission.feedback}</p>
+                        </div>
+                      ) : null}
+
+                      {submission.status === "reviewed" ? (
+                        <div className="border-t pt-3">
+                          <ReopenSubmissionButton submissionId={submission.id} />
                         </div>
                       ) : null}
 
