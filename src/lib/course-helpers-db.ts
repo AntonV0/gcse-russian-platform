@@ -145,6 +145,25 @@ export async function getVariantBySlugForCourseIdDb(
   return (data as DbCourseVariant | null) ?? null;
 }
 
+export async function getVariantByIdDb(
+  variantId: string
+): Promise<DbCourseVariant | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("course_variants")
+    .select("*")
+    .eq("id", variantId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching variant by id:", { variantId, error });
+    return null;
+  }
+
+  return (data as DbCourseVariant | null) ?? null;
+}
+
 export async function getModulesByVariantIdDb(
   courseVariantId: string
 ): Promise<DbModule[]> {
