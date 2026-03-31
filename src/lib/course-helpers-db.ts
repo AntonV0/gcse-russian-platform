@@ -88,6 +88,23 @@ export async function getCourseBySlugDb(courseSlug: string): Promise<DbCourse | 
   return (data as DbCourse | null) ?? null;
 }
 
+export async function getCourseByIdDb(courseId: string): Promise<DbCourse | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("courses")
+    .select("*")
+    .eq("id", courseId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching course by id:", { courseId, error });
+    return null;
+  }
+
+  return (data as DbCourse | null) ?? null;
+}
+
 export async function getVariantsByCourseIdDb(
   courseId: string
 ): Promise<DbCourseVariant[]> {
