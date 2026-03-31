@@ -110,6 +110,14 @@ export default async function AdminModuleDetailPage({
             >
               Edit module
             </Link>
+            <Link
+              href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
+            >
+              Open public module
+            </Link>
           </div>
         </div>
       </section>
