@@ -134,12 +134,12 @@ export default async function AdminLessonDetailPage({
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
           <div className="flex flex-col gap-3 px-4 py-4 text-sm">
-            <button
-              type="button"
+            <Link
+              href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
               className="rounded border px-3 py-2 text-left hover:bg-gray-50"
             >
               Edit lesson metadata
-            </button>
+            </Link>
 
             <button
               type="button"
