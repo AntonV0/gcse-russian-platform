@@ -211,6 +211,23 @@ export async function getModuleBySlugForVariantIdDb(
   return (data as DbModule | null) ?? null;
 }
 
+export async function getModuleByIdDb(moduleId: string): Promise<DbModule | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("modules")
+    .select("*")
+    .eq("id", moduleId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching module by id:", { moduleId, error });
+    return null;
+  }
+
+  return (data as DbModule | null) ?? null;
+}
+
 export async function getLessonsByModuleIdDb(moduleId: string): Promise<DbLesson[]> {
   const supabase = await createClient();
 
