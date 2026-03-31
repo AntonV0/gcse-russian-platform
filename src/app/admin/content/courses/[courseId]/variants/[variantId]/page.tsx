@@ -100,42 +100,51 @@ export default async function AdminVariantDetailPage({
       </section>
 
       <section className="mb-6">
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Add Module</div>
+        <details className="rounded-lg border bg-white">
+          <summary className="flex cursor-pointer items-center justify-between px-4 py-3 font-medium marker:content-none">
+            <span>Add Module</span>
+            <span className="text-sm text-gray-400">+</span>
+          </summary>
 
-          <form action={createModuleAction} className="space-y-4 px-4 py-4 text-sm">
-            <input type="hidden" name="courseId" value={course.id} />
-            <input type="hidden" name="variantId" value={variant.id} />
+          <div className="border-t">
+            <form action={createModuleAction} className="space-y-4 px-4 py-4 text-sm">
+              <input type="hidden" name="courseId" value={course.id} />
+              <input type="hidden" name="variantId" value={variant.id} />
 
-            <div>
-              <label className="mb-1 block font-medium">Title</label>
-              <input name="title" required className="w-full rounded border px-3 py-2" />
-            </div>
+              <div>
+                <label className="mb-1 block font-medium">Title</label>
+                <input
+                  name="title"
+                  required
+                  className="w-full rounded border px-3 py-2"
+                />
+              </div>
 
-            <div>
-              <label className="mb-1 block font-medium">Slug</label>
-              <input name="slug" required className="w-full rounded border px-3 py-2" />
-            </div>
+              <div>
+                <label className="mb-1 block font-medium">Slug</label>
+                <input name="slug" required className="w-full rounded border px-3 py-2" />
+              </div>
 
-            <div>
-              <label className="mb-1 block font-medium">Description</label>
-              <textarea
-                name="description"
-                rows={3}
-                className="w-full rounded border px-3 py-2"
-              />
-            </div>
+              <div>
+                <label className="mb-1 block font-medium">Description</label>
+                <textarea
+                  name="description"
+                  rows={3}
+                  className="w-full rounded border px-3 py-2"
+                />
+              </div>
 
-            <label className="flex items-center gap-2">
-              <input type="checkbox" name="isPublished" value="true" />
-              Published
-            </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" name="isPublished" value="true" />
+                Published
+              </label>
 
-            <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
-              Create module
-            </button>
-          </form>
-        </div>
+              <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
+                Create module
+              </button>
+            </form>
+          </div>
+        </details>
       </section>
 
       <section>
