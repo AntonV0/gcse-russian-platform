@@ -245,6 +245,23 @@ export async function getLessonsByModuleIdDb(moduleId: string): Promise<DbLesson
   return (data ?? []) as DbLesson[];
 }
 
+export async function getLessonByIdDb(lessonId: string): Promise<DbLesson | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .select("*")
+    .eq("id", lessonId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching lesson by id:", { lessonId, error });
+    return null;
+  }
+
+  return (data as DbLesson | null) ?? null;
+}
+
 export async function getLessonBySlugForModuleIdDb(
   moduleId: string,
   lessonSlug: string
