@@ -143,7 +143,9 @@ export default async function AdminCourseDetailPage({
 
       <section>
         <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Variants</div>
+          <div className="border-b px-4 py-3 font-medium">
+            Variants ({variants.length})
+          </div>
 
           <div className="divide-y">
             {variants.length === 0 ? (
@@ -200,6 +202,13 @@ export default async function AdminCourseDetailPage({
                         ↓
                       </button>
                     </form>
+
+                    <Link
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      Edit
+                    </Link>
 
                     <Link
                       href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
