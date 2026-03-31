@@ -75,7 +75,7 @@ export default async function AdminLessonDetailPage({
 
       <PageHeader
         title={lesson.title}
-        description={lesson.summary ?? "Manage lesson details and future content."}
+        description={lesson.summary ?? "Manage lesson details and content source."}
       />
 
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
@@ -141,24 +141,19 @@ export default async function AdminLessonDetailPage({
               Edit lesson metadata
             </Link>
 
-            <button
-              type="button"
+            <Link
+              href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
+              target="_blank"
+              rel="noreferrer"
               className="rounded border px-3 py-2 text-left hover:bg-gray-50"
             >
-              Manage lesson blocks
-            </button>
-
-            <button
-              type="button"
-              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
-            >
-              Link question sets
-            </button>
+              Open public lesson
+            </Link>
           </div>
         </div>
       </section>
 
-      <section className="mb-6 grid gap-4 lg:grid-cols-2">
+      <section className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-lg border bg-white">
           <div className="border-b px-4 py-3 font-medium">Content Source</div>
 
@@ -170,11 +165,6 @@ export default async function AdminLessonDetailPage({
               <span className="font-medium">Content key:</span>{" "}
               {lesson.content_key ?? "—"}
             </div>
-
-            <p className="pt-2 text-gray-500">
-              This section is designed to support the future move from code-backed lesson
-              content to database-backed lesson blocks.
-            </p>
           </div>
         </div>
 
@@ -183,47 +173,9 @@ export default async function AdminLessonDetailPage({
 
           <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
             <p>
-              This lesson currently stores its main content through the existing lesson
-              rendering pipeline.
+              This page is ready to expand later with lesson blocks, question set linking,
+              and database-backed lesson content management.
             </p>
-            <p>In the next phase, this page can expand to manage:</p>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>lesson blocks</li>
-              <li>block ordering</li>
-              <li>question set blocks</li>
-              <li>audio and vocabulary blocks</li>
-              <li>database-backed lesson content</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Public Route Context</div>
-
-          <div className="space-y-3 px-4 py-4 text-sm">
-            <div>
-              <span className="font-medium">Course slug:</span> {course.slug}
-            </div>
-            <div>
-              <span className="font-medium">Variant slug:</span> {variant.slug}
-            </div>
-            <div>
-              <span className="font-medium">Module slug:</span> {module.slug}
-            </div>
-            <div>
-              <span className="font-medium">Lesson slug:</span> {lesson.slug}
-            </div>
-
-            <Link
-              href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block text-blue-600 hover:underline"
-            >
-              Open public lesson →
-            </Link>
           </div>
         </div>
       </section>
