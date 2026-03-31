@@ -5,6 +5,10 @@ import {
   getModulesByVariantIdDb,
   getVariantByIdDb,
 } from "@/lib/course-helpers-db";
+import {
+  createModuleAction,
+  moveModuleAction,
+} from "@/app/actions/admin-content-actions";
 
 type AdminVariantDetailPageProps = {
   params: Promise<{
@@ -85,31 +89,58 @@ export default async function AdminVariantDetailPage({
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
           <div className="flex flex-col gap-3 px-4 py-4 text-sm">
-            <button
-              type="button"
+            <Link
+              href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
               className="rounded border px-3 py-2 text-left hover:bg-gray-50"
             >
               Edit variant
-            </button>
-
-            <button
-              type="button"
-              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
-            >
-              Add module
-            </button>
+            </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-6">
+        <div className="rounded-lg border bg-white">
+          <div className="border-b px-4 py-3 font-medium">Add Module</div>
+
+          <form action={createModuleAction} className="space-y-4 px-4 py-4 text-sm">
+            <input type="hidden" name="courseId" value={course.id} />
+            <input type="hidden" name="variantId" value={variant.id} />
+
+            <div>
+              <label className="mb-1 block font-medium">Title</label>
+              <input name="title" required className="w-full rounded border px-3 py-2" />
+            </div>
+
+            <div>
+              <label className="mb-1 block font-medium">Slug</label>
+              <input name="slug" required className="w-full rounded border px-3 py-2" />
+            </div>
+
+            <div>
+              <label className="mb-1 block font-medium">Description</label>
+              <textarea
+                name="description"
+                rows={3}
+                className="w-full rounded border px-3 py-2"
+              />
+            </div>
+
+            <label className="flex items-center gap-2">
+              <input type="checkbox" name="isPublished" value="true" />
+              Published
+            </label>
+
+            <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
+              Create module
+            </button>
+          </form>
         </div>
       </section>
 
       <section>
         <div className="rounded-lg border bg-white">
-          <div className="flex items-center justify-between border-b px-4 py-3">
-            <div className="font-medium">Modules</div>
-            <button type="button" className="text-sm text-blue-600 hover:underline">
-              + Add Module
-            </button>
-          </div>
+          <div className="border-b px-4 py-3 font-medium">Modules</div>
 
           <div className="divide-y">
             {modules.length === 0 ? (
@@ -117,21 +148,58 @@ export default async function AdminVariantDetailPage({
                 No modules found for this variant.
               </div>
             ) : (
-              modules.map((module) => (
-                <Link
+              modules.map((module, index) => (
+                <div
                   key={module.id}
-                  href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
+                  className="flex items-center justify-between gap-4 px-4 py-3"
                 >
-                  <div>
+                  <Link
+                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
+                    className="min-w-0 flex-1 hover:text-blue-600"
+                  >
                     <div className="font-medium">{module.title}</div>
                     <div className="text-sm text-gray-500">
                       {module.slug} · Position {module.position}
                     </div>
-                  </div>
+                  </Link>
 
-                  <span className="text-sm text-gray-400">→</span>
-                </Link>
+                  <div className="flex items-center gap-2">
+                    <form action={moveModuleAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="moduleId" value={module.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <button
+                        type="submit"
+                        disabled={index === 0}
+                        className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                      >
+                        ↑
+                      </button>
+                    </form>
+
+                    <form action={moveModuleAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="moduleId" value={module.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <button
+                        type="submit"
+                        disabled={index === modules.length - 1}
+                        className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                      >
+                        ↓
+                      </button>
+                    </form>
+
+                    <Link
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      Open
+                    </Link>
+                  </div>
+                </div>
               ))
             )}
           </div>
