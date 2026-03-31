@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminAccess } from "@/lib/admin-auth";
 
@@ -222,71 +223,73 @@ export async function moveVariantAction(formData: FormData) {
 
   const supabase = await createClient();
 
-  const { data: currentVariant, error: currentError } = await supabase
-    .from("course_variants")
-    .select("id, course_id, position")
-    .eq("id", variantId)
-    .eq("course_id", courseId)
-    .maybeSingle();
-
-  if (currentError || !currentVariant) {
-    console.error("Error loading current variant:", currentError);
-    throw new Error("Failed to load current variant");
-  }
-
-  const targetPosition =
-    direction === "up" ? currentVariant.position - 1 : currentVariant.position + 1;
-
-  if (targetPosition < 1) {
-    redirect(`/admin/content/courses/${courseId}`);
-  }
-
-  const { data: swapVariant, error: swapError } = await supabase
+  const { data: variants, error: loadError } = await supabase
     .from("course_variants")
     .select("id, position")
     .eq("course_id", courseId)
-    .eq("position", targetPosition)
-    .maybeSingle();
+    .order("position", { ascending: true });
 
-  if (swapError) {
-    console.error("Error loading swap variant:", swapError);
-    throw new Error("Failed to load target variant");
+  if (loadError || !variants) {
+    console.error("Error loading variants for reorder:", loadError);
+    throw new Error("Failed to load variants");
   }
 
-  if (!swapVariant) {
+  const currentIndex = variants.findIndex((variant) => variant.id === variantId);
+
+  if (currentIndex === -1) {
+    throw new Error("Variant not found in course");
+  }
+
+  const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+  if (targetIndex < 0 || targetIndex >= variants.length) {
+    revalidatePath(`/admin/content/courses/${courseId}`);
     redirect(`/admin/content/courses/${courseId}`);
   }
 
-  const { error: firstUpdateError } = await supabase
-    .from("course_variants")
-    .update({ position: 0 })
-    .eq("id", currentVariant.id);
+  const reordered = [...variants];
+  const [movedItem] = reordered.splice(currentIndex, 1);
+  reordered.splice(targetIndex, 0, movedItem);
 
-  if (firstUpdateError) {
-    console.error("Error setting temporary variant position:", firstUpdateError);
-    throw new Error("Failed to reorder variant");
+  // Pass 1: temporary positions far away from normal range
+  for (let index = 0; index < reordered.length; index += 1) {
+    const variant = reordered[index];
+    const temporaryPosition = 1000 + index;
+
+    const { error: tempError } = await supabase
+      .from("course_variants")
+      .update({ position: temporaryPosition })
+      .eq("id", variant.id)
+      .eq("course_id", courseId);
+
+    if (tempError) {
+      console.error("Error setting temporary variant position:", tempError);
+      throw new Error(
+        `Failed temporary variant reorder: ${tempError.message ?? "unknown error"}`
+      );
+    }
   }
 
-  const { error: secondUpdateError } = await supabase
-    .from("course_variants")
-    .update({ position: currentVariant.position })
-    .eq("id", swapVariant.id);
+  // Pass 2: final positions
+  for (let index = 0; index < reordered.length; index += 1) {
+    const variant = reordered[index];
+    const finalPosition = index + 1;
 
-  if (secondUpdateError) {
-    console.error("Error updating swap variant position:", secondUpdateError);
-    throw new Error("Failed to reorder variant");
+    const { error: finalError } = await supabase
+      .from("course_variants")
+      .update({ position: finalPosition })
+      .eq("id", variant.id)
+      .eq("course_id", courseId);
+
+    if (finalError) {
+      console.error("Error setting final variant position:", finalError);
+      throw new Error(
+        `Failed final variant reorder: ${finalError.message ?? "unknown error"}`
+      );
+    }
   }
 
-  const { error: thirdUpdateError } = await supabase
-    .from("course_variants")
-    .update({ position: swapVariant.position })
-    .eq("id", currentVariant.id);
-
-  if (thirdUpdateError) {
-    console.error("Error updating current variant position:", thirdUpdateError);
-    throw new Error("Failed to reorder variant");
-  }
-
+  revalidatePath(`/admin/content/courses/${courseId}`);
   redirect(`/admin/content/courses/${courseId}`);
 }
 
@@ -411,69 +414,65 @@ export async function moveModuleAction(formData: FormData) {
 
   const supabase = await createClient();
 
-  const { data: currentModule, error: currentError } = await supabase
-    .from("modules")
-    .select("id, course_variant_id, position")
-    .eq("id", moduleId)
-    .eq("course_variant_id", variantId)
-    .maybeSingle();
-
-  if (currentError || !currentModule) {
-    console.error("Error loading current module:", currentError);
-    throw new Error("Failed to load current module");
-  }
-
-  const targetPosition =
-    direction === "up" ? currentModule.position - 1 : currentModule.position + 1;
-
-  if (targetPosition < 1) {
-    redirect(`/admin/content/courses/${courseId}/variants/${variantId}`);
-  }
-
-  const { data: swapModule, error: swapError } = await supabase
+  const { data: modules, error } = await supabase
     .from("modules")
     .select("id, position")
     .eq("course_variant_id", variantId)
-    .eq("position", targetPosition)
-    .maybeSingle();
+    .order("position", { ascending: true });
 
-  if (swapError) {
-    console.error("Error loading swap module:", swapError);
-    throw new Error("Failed to load target module");
+  if (error || !modules) {
+    console.error("Error loading modules for reorder:", error);
+    throw new Error("Failed to load modules");
   }
 
-  if (!swapModule) {
+  const currentIndex = modules.findIndex((module) => module.id === moduleId);
+
+  if (currentIndex === -1) {
+    throw new Error("Module not found in variant");
+  }
+
+  const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+  if (targetIndex < 0 || targetIndex >= modules.length) {
     redirect(`/admin/content/courses/${courseId}/variants/${variantId}`);
   }
 
-  const { error: firstUpdateError } = await supabase
-    .from("modules")
-    .update({ position: 0 })
-    .eq("id", currentModule.id);
+  const reordered = [...modules];
+  const [movedItem] = reordered.splice(currentIndex, 1);
+  reordered.splice(targetIndex, 0, movedItem);
 
-  if (firstUpdateError) {
-    console.error("Error setting temporary module position:", firstUpdateError);
-    throw new Error("Failed to reorder module");
+  // Pass 1: temporary negative positions
+  for (let index = 0; index < reordered.length; index += 1) {
+    const module = reordered[index];
+    const temporaryPosition = -1 * (index + 1);
+
+    const { error: tempError } = await supabase
+      .from("modules")
+      .update({ position: temporaryPosition })
+      .eq("id", module.id)
+      .eq("course_variant_id", variantId);
+
+    if (tempError) {
+      console.error("Error setting temporary module position:", tempError);
+      throw new Error("Failed to reorder modules");
+    }
   }
 
-  const { error: secondUpdateError } = await supabase
-    .from("modules")
-    .update({ position: currentModule.position })
-    .eq("id", swapModule.id);
+  // Pass 2: final positions
+  for (let index = 0; index < reordered.length; index += 1) {
+    const module = reordered[index];
+    const finalPosition = index + 1;
 
-  if (secondUpdateError) {
-    console.error("Error updating swap module position:", secondUpdateError);
-    throw new Error("Failed to reorder module");
-  }
+    const { error: finalError } = await supabase
+      .from("modules")
+      .update({ position: finalPosition })
+      .eq("id", module.id)
+      .eq("course_variant_id", variantId);
 
-  const { error: thirdUpdateError } = await supabase
-    .from("modules")
-    .update({ position: swapModule.position })
-    .eq("id", currentModule.id);
-
-  if (thirdUpdateError) {
-    console.error("Error updating current module position:", thirdUpdateError);
-    throw new Error("Failed to reorder module");
+    if (finalError) {
+      console.error("Error setting final module position:", finalError);
+      throw new Error("Failed to reorder modules");
+    }
   }
 
   redirect(`/admin/content/courses/${courseId}/variants/${variantId}`);
