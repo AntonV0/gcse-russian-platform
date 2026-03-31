@@ -76,6 +76,14 @@ export default async function AdminCourseDetailPage({
             >
               Edit course
             </Link>
+            <Link
+              href={`/courses/${course.slug}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
+            >
+              Open public course
+            </Link>
           </div>
         </div>
       </section>
