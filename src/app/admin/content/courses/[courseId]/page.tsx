@@ -1,6 +1,10 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { getCourseByIdDb, getVariantsByCourseIdDb } from "@/lib/course-helpers-db";
+import {
+  createVariantAction,
+  moveVariantAction,
+} from "@/app/actions/admin-content-actions";
 
 type AdminCourseDetailPageProps = {
   params: Promise<{
@@ -66,31 +70,62 @@ export default async function AdminCourseDetailPage({
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
           <div className="flex flex-col gap-3 px-4 py-4 text-sm">
-            <button
-              type="button"
+            <Link
+              href={`/admin/content/courses/${course.id}/edit`}
               className="rounded border px-3 py-2 text-left hover:bg-gray-50"
             >
               Edit course
-            </button>
-
-            <button
-              type="button"
-              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
-            >
-              Add variant
-            </button>
+            </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-6">
+        <div className="rounded-lg border bg-white">
+          <div className="border-b px-4 py-3 font-medium">Add Variant</div>
+
+          <form action={createVariantAction} className="space-y-4 px-4 py-4 text-sm">
+            <input type="hidden" name="courseId" value={course.id} />
+
+            <div>
+              <label className="mb-1 block font-medium">Title</label>
+              <input name="title" required className="w-full rounded border px-3 py-2" />
+            </div>
+
+            <div>
+              <label className="mb-1 block font-medium">Slug</label>
+              <input name="slug" required className="w-full rounded border px-3 py-2" />
+            </div>
+
+            <div>
+              <label className="mb-1 block font-medium">Description</label>
+              <textarea
+                name="description"
+                rows={3}
+                className="w-full rounded border px-3 py-2"
+              />
+            </div>
+
+            <label className="flex items-center gap-2">
+              <input type="checkbox" name="isActive" value="true" defaultChecked />
+              Active
+            </label>
+
+            <label className="flex items-center gap-2">
+              <input type="checkbox" name="isPublished" value="true" />
+              Published
+            </label>
+
+            <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
+              Create variant
+            </button>
+          </form>
         </div>
       </section>
 
       <section>
         <div className="rounded-lg border bg-white">
-          <div className="flex items-center justify-between border-b px-4 py-3">
-            <div className="font-medium">Variants</div>
-            <button type="button" className="text-sm text-blue-600 hover:underline">
-              + Add Variant
-            </button>
-          </div>
+          <div className="border-b px-4 py-3 font-medium">Variants</div>
 
           <div className="divide-y">
             {variants.length === 0 ? (
@@ -98,21 +133,56 @@ export default async function AdminCourseDetailPage({
                 No variants found for this course.
               </div>
             ) : (
-              variants.map((variant) => (
-                <Link
+              variants.map((variant, index) => (
+                <div
                   key={variant.id}
-                  href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
+                  className="flex items-center justify-between gap-4 px-4 py-3"
                 >
-                  <div>
+                  <Link
+                    href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
+                    className="min-w-0 flex-1 hover:text-blue-600"
+                  >
                     <div className="font-medium">{variant.title}</div>
                     <div className="text-sm text-gray-500">
                       {variant.slug} · Position {variant.position}
                     </div>
-                  </div>
+                  </Link>
 
-                  <span className="text-sm text-gray-400">→</span>
-                </Link>
+                  <div className="flex items-center gap-2">
+                    <form action={moveVariantAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <button
+                        type="submit"
+                        disabled={index === 0}
+                        className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                      >
+                        ↑
+                      </button>
+                    </form>
+
+                    <form action={moveVariantAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <button
+                        type="submit"
+                        disabled={index === variants.length - 1}
+                        className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                      >
+                        ↓
+                      </button>
+                    </form>
+
+                    <Link
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      Open
+                    </Link>
+                  </div>
+                </div>
               ))
             )}
           </div>
