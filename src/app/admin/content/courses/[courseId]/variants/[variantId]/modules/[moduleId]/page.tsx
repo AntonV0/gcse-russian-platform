@@ -110,6 +110,7 @@ export default async function AdminModuleDetailPage({
             >
               Edit module
             </Link>
+
             <Link
               href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}`}
               target="_blank"
@@ -249,6 +250,20 @@ export default async function AdminModuleDetailPage({
                     <div className="font-medium">{lesson.title}</div>
                     <div className="text-sm text-gray-500">
                       {lesson.slug} · Position {lesson.position}
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                      <span className="rounded border px-2 py-0.5">
+                        {lesson.is_published ? "Published" : "Draft"}
+                      </span>
+                      <span className="rounded border px-2 py-0.5">
+                        {lesson.is_trial_visible ? "Trial" : "No Trial"}
+                      </span>
+                      <span className="rounded border px-2 py-0.5">
+                        {lesson.available_in_volna ? "Volna" : "No Volna"}
+                      </span>
+                      <span className="rounded border px-2 py-0.5">
+                        {lesson.content_source}
+                      </span>
                     </div>
                   </Link>
 

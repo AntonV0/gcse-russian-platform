@@ -95,6 +95,7 @@ export default async function AdminVariantDetailPage({
             >
               Edit variant
             </Link>
+
             <Link
               href={`/courses/${course.slug}/${variant.slug}`}
               target="_blank"
@@ -177,6 +178,11 @@ export default async function AdminVariantDetailPage({
                     <div className="font-medium">{module.title}</div>
                     <div className="text-sm text-gray-500">
                       {module.slug} · Position {module.position}
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                      <span className="rounded border px-2 py-0.5">
+                        {module.is_published ? "Published" : "Draft"}
+                      </span>
                     </div>
                   </Link>
 

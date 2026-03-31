@@ -76,6 +76,7 @@ export default async function AdminCourseDetailPage({
             >
               Edit course
             </Link>
+
             <Link
               href={`/courses/${course.slug}`}
               target="_blank"
@@ -162,6 +163,14 @@ export default async function AdminCourseDetailPage({
                     <div className="font-medium">{variant.title}</div>
                     <div className="text-sm text-gray-500">
                       {variant.slug} · Position {variant.position}
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                      <span className="rounded border px-2 py-0.5">
+                        {variant.is_active ? "Active" : "Inactive"}
+                      </span>
+                      <span className="rounded border px-2 py-0.5">
+                        {variant.is_published ? "Published" : "Draft"}
+                      </span>
                     </div>
                   </Link>
 
