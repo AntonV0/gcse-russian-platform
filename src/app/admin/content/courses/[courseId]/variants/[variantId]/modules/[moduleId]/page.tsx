@@ -163,24 +163,43 @@ export default async function AdminModuleDetailPage({
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                   <form action={moveLessonAction}>
                     <input type="hidden" name="courseId" value={course.id} />
                     <input type="hidden" name="variantId" value={variant.id} />
                     <input type="hidden" name="moduleId" value={module.id} />
                     <input type="hidden" name="lessonId" value={lesson.id} />
                     <input type="hidden" name="direction" value="up" />
-                    <button disabled={index === 0}>↑</button>
+                    <button
+                      type="submit"
+                      disabled={index === 0}
+                      className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                    >
+                      ↑
+                    </button>
                   </form>
 
                   <form action={moveLessonAction}>
-                    <input type="hidden" name="direction" value="down" />
-                    <input type="hidden" name="lessonId" value={lesson.id} />
-                    <input type="hidden" name="moduleId" value={module.id} />
-                    <input type="hidden" name="variantId" value={variant.id} />
                     <input type="hidden" name="courseId" value={course.id} />
-                    <button disabled={index === lessons.length - 1}>↓</button>
+                    <input type="hidden" name="variantId" value={variant.id} />
+                    <input type="hidden" name="moduleId" value={module.id} />
+                    <input type="hidden" name="lessonId" value={lesson.id} />
+                    <input type="hidden" name="direction" value="down" />
+                    <button
+                      type="submit"
+                      disabled={index === lessons.length - 1}
+                      className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                    >
+                      ↓
+                    </button>
                   </form>
+
+                  <Link
+                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
+                    className="rounded border px-3 py-1 text-sm"
+                  >
+                    Open
+                  </Link>
                 </div>
               </div>
             ))}
