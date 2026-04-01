@@ -27,7 +27,10 @@ export default function AdminSidebar() {
           Question Sets
         </Link>
 
-        <Link href="/admin/templates" className="rounded px-3 py-2 hover:bg-gray-100">
+        <Link
+          href="/admin/question-sets/templates"
+          className="rounded px-3 py-2 hover:bg-gray-100"
+        >
           Templates
         </Link>
 
@@ -35,7 +38,8 @@ export default function AdminSidebar() {
           Teaching
         </div>
 
-        <Link href="/admin/assignments" className="rounded px-3 py-2 hover:bg-gray-100">
+        {/* ✅ TEMPORARY: reuse teacher page */}
+        <Link href="/teacher/assignments" className="rounded px-3 py-2 hover:bg-gray-100">
           Assignments
         </Link>
 
