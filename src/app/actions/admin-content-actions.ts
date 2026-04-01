@@ -251,7 +251,6 @@ export async function moveVariantAction(formData: FormData) {
   const [movedItem] = reordered.splice(currentIndex, 1);
   reordered.splice(targetIndex, 0, movedItem);
 
-  // Pass 1: temporary positions far away from normal range
   for (let index = 0; index < reordered.length; index += 1) {
     const variant = reordered[index];
     const temporaryPosition = 1000 + index;
@@ -270,7 +269,6 @@ export async function moveVariantAction(formData: FormData) {
     }
   }
 
-  // Pass 2: final positions
   for (let index = 0; index < reordered.length; index += 1) {
     const variant = reordered[index];
     const finalPosition = index + 1;
@@ -287,6 +285,37 @@ export async function moveVariantAction(formData: FormData) {
         `Failed final variant reorder: ${finalError.message ?? "unknown error"}`
       );
     }
+  }
+
+  revalidatePath(`/admin/content/courses/${courseId}`);
+  redirect(`/admin/content/courses/${courseId}`);
+}
+
+export async function archiveVariantAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const courseId = getTrimmedString(formData, "courseId");
+  const variantId = getTrimmedString(formData, "variantId");
+
+  if (!courseId || !variantId) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("course_variants")
+    .update({
+      is_active: false,
+      is_published: false,
+    })
+    .eq("id", variantId)
+    .eq("course_id", courseId);
+
+  if (error) {
+    console.error("Error archiving variant:", error);
+    throw new Error("Failed to archive variant");
   }
 
   revalidatePath(`/admin/content/courses/${courseId}`);
@@ -434,6 +463,7 @@ export async function moveModuleAction(formData: FormData) {
   const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
 
   if (targetIndex < 0 || targetIndex >= modules.length) {
+    revalidatePath(`/admin/content/courses/${courseId}/variants/${variantId}`);
     redirect(`/admin/content/courses/${courseId}/variants/${variantId}`);
   }
 
@@ -441,10 +471,9 @@ export async function moveModuleAction(formData: FormData) {
   const [movedItem] = reordered.splice(currentIndex, 1);
   reordered.splice(targetIndex, 0, movedItem);
 
-  // Pass 1: temporary negative positions
   for (let index = 0; index < reordered.length; index += 1) {
     const module = reordered[index];
-    const temporaryPosition = -1 * (index + 1);
+    const temporaryPosition = 1000 + index;
 
     const { error: tempError } = await supabase
       .from("modules")
@@ -458,7 +487,6 @@ export async function moveModuleAction(formData: FormData) {
     }
   }
 
-  // Pass 2: final positions
   for (let index = 0; index < reordered.length; index += 1) {
     const module = reordered[index];
     const finalPosition = index + 1;
@@ -475,6 +503,38 @@ export async function moveModuleAction(formData: FormData) {
     }
   }
 
+  revalidatePath(`/admin/content/courses/${courseId}/variants/${variantId}`);
+  redirect(`/admin/content/courses/${courseId}/variants/${variantId}`);
+}
+
+export async function unpublishModuleAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const courseId = getTrimmedString(formData, "courseId");
+  const variantId = getTrimmedString(formData, "variantId");
+  const moduleId = getTrimmedString(formData, "moduleId");
+
+  if (!courseId || !variantId || !moduleId) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("modules")
+    .update({
+      is_published: false,
+    })
+    .eq("id", moduleId)
+    .eq("course_variant_id", variantId);
+
+  if (error) {
+    console.error("Error unpublishing module:", error);
+    throw new Error("Failed to unpublish module");
+  }
+
+  revalidatePath(`/admin/content/courses/${courseId}/variants/${variantId}`);
   redirect(`/admin/content/courses/${courseId}/variants/${variantId}`);
 }
 
@@ -659,6 +719,9 @@ export async function moveLessonAction(formData: FormData) {
   const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
 
   if (targetIndex < 0 || targetIndex >= lessons.length) {
+    revalidatePath(
+      `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}`
+    );
     redirect(
       `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}`
     );
@@ -700,7 +763,46 @@ export async function moveLessonAction(formData: FormData) {
     }
   }
 
+  revalidatePath(
+    `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}`
+  );
   redirect(
     `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}`
+  );
+}
+
+export async function unpublishLessonAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const courseId = getTrimmedString(formData, "courseId");
+  const variantId = getTrimmedString(formData, "variantId");
+  const moduleId = getTrimmedString(formData, "moduleId");
+  const lessonId = getTrimmedString(formData, "lessonId");
+
+  if (!courseId || !variantId || !moduleId || !lessonId) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lessons")
+    .update({
+      is_published: false,
+    })
+    .eq("id", lessonId)
+    .eq("module_id", moduleId);
+
+  if (error) {
+    console.error("Error unpublishing lesson:", error);
+    throw new Error("Failed to unpublish lesson");
+  }
+
+  revalidatePath(
+    `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}/lessons/${lessonId}`
+  );
+  redirect(
+    `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}/lessons/${lessonId}`
   );
 }

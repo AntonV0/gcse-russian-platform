@@ -6,6 +6,7 @@ import {
   getVariantByIdDb,
 } from "@/lib/course-helpers-db";
 import {
+  archiveVariantAction,
   createModuleAction,
   moveModuleAction,
 } from "@/app/actions/admin-content-actions";
@@ -154,6 +155,32 @@ export default async function AdminVariantDetailPage({
             </form>
           </div>
         </details>
+      </section>
+
+      <section className="mb-6">
+        <div className="rounded-lg border border-red-200 bg-white">
+          <div className="border-b border-red-200 px-4 py-3 font-medium text-red-700">
+            Danger Zone
+          </div>
+
+          <div className="space-y-3 px-4 py-4 text-sm">
+            <p className="text-gray-600">
+              Archiving this variant will make it inactive and unpublished, but it will
+              not hard delete its data.
+            </p>
+
+            <form action={archiveVariantAction}>
+              <input type="hidden" name="courseId" value={course.id} />
+              <input type="hidden" name="variantId" value={variant.id} />
+              <button
+                type="submit"
+                className="rounded border border-red-300 px-4 py-2 text-red-700 hover:bg-red-50"
+              >
+                Archive variant
+              </button>
+            </form>
+          </div>
+        </div>
       </section>
 
       <section>
