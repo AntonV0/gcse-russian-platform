@@ -7,20 +7,18 @@ export default async function AdminPage() {
     <main>
       <PageHeader
         title="Admin Panel"
-        description="Internal content and platform management tools."
+        description="Internal content, users, and teaching management tools."
       />
 
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {/* CONTENT (NEW - VERY IMPORTANT) */}
         <Link href="/admin/content" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Content">
-              Manage courses, modules, and lessons.
+              Manage courses, variants, modules, and lessons.
             </DashboardCard>
           </div>
         </Link>
 
-        {/* EXISTING */}
         <Link href="/admin/question-sets" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Question Sets">
@@ -31,17 +29,16 @@ export default async function AdminPage() {
 
         <Link href="/admin/question-sets/templates" className="block">
           <div className="transition hover:-translate-y-0.5">
-            <DashboardCard title="Question Set Templates">
-              Create and reuse structured content templates.
+            <DashboardCard title="Templates">
+              Manage reusable question set templates.
             </DashboardCard>
           </div>
         </Link>
 
-        {/* FUTURE (placeholders - optional but recommended) */}
-        <Link href="/admin/assignments" className="block">
+        <Link href="/teacher/assignments" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Assignments">
-              Manage homework and submissions.
+              Review and manage teacher assignments.
             </DashboardCard>
           </div>
         </Link>
@@ -49,7 +46,23 @@ export default async function AdminPage() {
         <Link href="/admin/teaching-groups" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Teaching Groups">
-              Organise students and classes.
+              View teaching groups, membership, and structure.
+            </DashboardCard>
+          </div>
+        </Link>
+
+        <Link href="/admin/students" className="block">
+          <div className="transition hover:-translate-y-0.5">
+            <DashboardCard title="Students">
+              View student accounts and access groupings.
+            </DashboardCard>
+          </div>
+        </Link>
+
+        <Link href="/admin/teachers" className="block">
+          <div className="transition hover:-translate-y-0.5">
+            <DashboardCard title="Teachers">
+              View admin and teaching accounts.
             </DashboardCard>
           </div>
         </Link>

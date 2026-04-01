@@ -136,11 +136,25 @@ export default async function AdminTeachingGroupDetailPage({
               const profile = profileMap.get(member.user_id);
 
               return (
-                <div key={member.user_id} className="px-4 py-4 text-sm">
-                  <div className="font-medium">
-                    {profile ? getPersonLabel(profile) : member.user_id}
+                <div
+                  key={member.user_id}
+                  className="flex items-center justify-between gap-4 px-4 py-4 text-sm"
+                >
+                  <div>
+                    <div className="font-medium">
+                      {profile ? getPersonLabel(profile) : member.user_id}
+                    </div>
+                    <div className="text-gray-500">{profile?.email || "No email"}</div>
                   </div>
-                  <div className="text-gray-500">{profile?.email || "No email"}</div>
+
+                  {profile ? (
+                    <Link
+                      href={`/admin/teachers/${profile.id}`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      View teacher
+                    </Link>
+                  ) : null}
                 </div>
               );
             })
