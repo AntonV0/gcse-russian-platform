@@ -1,3 +1,4 @@
+import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
@@ -30,6 +31,12 @@ function getPersonLabel(
   return profile.full_name || profile.display_name || profile.email || "Unnamed";
 }
 
+function formatRole(role: string) {
+  if (role === "admin") return "Admin";
+  if (role === "teacher") return "Teacher";
+  return role;
+}
+
 export default async function AdminTeachersPage() {
   const canAccess = await requireAdminAccess();
 
@@ -60,7 +67,6 @@ export default async function AdminTeachersPage() {
     if (!roleMap.has(membership.user_id)) {
       roleMap.set(membership.user_id, new Set<string>());
     }
-
     roleMap.get(membership.user_id)?.add(membership.member_role);
   }
 
@@ -119,12 +125,21 @@ export default async function AdminTeachersPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap justify-end gap-2 text-xs">
-                  {teacher.roles.map((role) => (
-                    <span key={role} className="rounded border px-2 py-0.5">
-                      {role}
-                    </span>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap justify-end gap-2 text-xs">
+                    {teacher.roles.map((role) => (
+                      <span key={role} className="rounded border px-2 py-0.5">
+                        {formatRole(role)}
+                      </span>
+                    ))}
+                  </div>
+
+                  <Link
+                    href={`/admin/teachers/${teacher.id}`}
+                    className="rounded border px-2 py-1 text-sm hover:bg-gray-50"
+                  >
+                    View
+                  </Link>
                 </div>
               </div>
             ))
