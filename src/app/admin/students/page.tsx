@@ -19,10 +19,12 @@ type AccessGrantRow = {
   product_id: string | null;
   starts_at: string | null;
   ends_at: string | null;
-  products: Array<{
-    code: string | null;
-    name: string | null;
-  }>;
+};
+
+type ProductRow = {
+  id: string;
+  code: string | null;
+  name: string | null;
 };
 
 type TeachingGroupMemberRow = {
@@ -36,8 +38,7 @@ type StudentCard = {
   full_name: string | null;
   display_name: string | null;
   accessLabel: string;
-  productCode: string | null;
-  productName: string | null;
+  isActive: boolean;
   startsAt: string | null;
   endsAt: string | null;
 };
@@ -61,13 +62,16 @@ function formatDate(value: string | null) {
   });
 }
 
-function getStudentBucket(grant: AccessGrantRow) {
-  const product = grant.products?.[0] ?? null;
-  const code = (product?.code ?? "").toLowerCase();
-  const name = (product?.name ?? "").toLowerCase();
+function getStudentBucket(
+  accessMode: string,
+  productCode: string | null,
+  productName: string | null
+) {
+  const code = (productCode ?? "").toLowerCase();
+  const name = (productName ?? "").toLowerCase();
   const combined = `${code} ${name}`;
 
-  if (grant.access_mode === "volna") {
+  if (accessMode === "volna") {
     return {
       key: "volna",
       label: "Volna School Students",
@@ -75,7 +79,7 @@ function getStudentBucket(grant: AccessGrantRow) {
     };
   }
 
-  if (grant.access_mode === "trial") {
+  if (accessMode === "trial") {
     return {
       key: "trial",
       label: "Trial Students",
@@ -83,12 +87,7 @@ function getStudentBucket(grant: AccessGrantRow) {
     };
   }
 
-  if (
-    grant.access_mode === "full" &&
-    (combined.includes("foundation") ||
-      code.includes("foundation") ||
-      name.includes("foundation"))
-  ) {
+  if (accessMode === "full" && combined.includes("foundation")) {
     return {
       key: "foundation",
       label: "Foundation Students",
@@ -96,10 +95,7 @@ function getStudentBucket(grant: AccessGrantRow) {
     };
   }
 
-  if (
-    grant.access_mode === "full" &&
-    (combined.includes("higher") || code.includes("higher") || name.includes("higher"))
-  ) {
+  if (accessMode === "full" && combined.includes("higher")) {
     return {
       key: "higher",
       label: "Higher Students",
@@ -110,7 +106,7 @@ function getStudentBucket(grant: AccessGrantRow) {
   return {
     key: "other",
     label: "Other Students",
-    accessLabel: grant.access_mode || "Unknown",
+    accessLabel: accessMode || "Unknown",
   };
 }
 
@@ -123,36 +119,28 @@ export default async function AdminStudentsPage() {
 
   const supabase = await createClient();
 
-  const [{ data: profiles }, { data: grants }, { data: memberships }] = await Promise.all(
-    [
-      supabase
-        .from("profiles")
-        .select("id, email, full_name, display_name, is_admin, created_at")
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("user_access_grants")
-        .select(
-          `
-        user_id,
-        access_mode,
-        is_active,
-        product_id,
-        starts_at,
-        ends_at,
-        products (
-          code,
-          name
-        )
-      `
-        )
-        .eq("is_active", true),
-      supabase.from("teaching_group_members").select("user_id, member_role"),
-    ]
-  );
+  const [
+    { data: profiles },
+    { data: grants },
+    { data: memberships },
+    { data: products },
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, email, full_name, display_name, is_admin, created_at")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("user_access_grants")
+      .select("user_id, access_mode, is_active, product_id, starts_at, ends_at")
+      .eq("is_active", true),
+    supabase.from("teaching_group_members").select("user_id, member_role"),
+    supabase.from("products").select("id, code, name"),
+  ]);
 
   const profileRows = (profiles ?? []) as ProfileRow[];
-  const grantRows = (grants ?? []) as unknown as AccessGrantRow[];
+  const grantRows = (grants ?? []) as AccessGrantRow[];
   const membershipRows = (memberships ?? []) as TeachingGroupMemberRow[];
+  const productRows = (products ?? []) as ProductRow[];
 
   const teacherIds = new Set(
     membershipRows
@@ -161,6 +149,7 @@ export default async function AdminStudentsPage() {
   );
 
   const profileMap = new Map(profileRows.map((profile) => [profile.id, profile]));
+  const productMap = new Map(productRows.map((product) => [product.id, product]));
   const groupedStudents = new Map<string, { label: string; rows: StudentCard[] }>();
 
   for (const grant of grantRows) {
@@ -169,8 +158,11 @@ export default async function AdminStudentsPage() {
     if (profile.is_admin) continue;
     if (teacherIds.has(profile.id)) continue;
 
-    const bucket = getStudentBucket(grant);
-    const product = grant.products?.[0] ?? null;
+    const product = grant.product_id ? (productMap.get(grant.product_id) ?? null) : null;
+    const productCode = product?.code ?? null;
+    const productName = product?.name ?? null;
+
+    const bucket = getStudentBucket(grant.access_mode, productCode, productName);
 
     if (!groupedStudents.has(bucket.key)) {
       groupedStudents.set(bucket.key, { label: bucket.label, rows: [] });
@@ -182,8 +174,7 @@ export default async function AdminStudentsPage() {
       full_name: profile.full_name,
       display_name: profile.display_name,
       accessLabel: bucket.accessLabel,
-      productCode: product?.code ?? null,
-      productName: product?.name ?? null,
+      isActive: grant.is_active,
       startsAt: grant.starts_at,
       endsAt: grant.ends_at,
     });
@@ -236,17 +227,9 @@ export default async function AdminStudentsPage() {
                           {student.accessLabel}
                         </span>
 
-                        {student.productName ? (
-                          <span className="rounded border px-2 py-0.5">
-                            {student.productName}
-                          </span>
-                        ) : null}
-
-                        {student.productCode ? (
-                          <span className="rounded border px-2 py-0.5">
-                            {student.productCode}
-                          </span>
-                        ) : null}
+                        <span className="rounded border px-2 py-0.5">
+                          {student.isActive ? "Active" : "Inactive"}
+                        </span>
                       </div>
                     </div>
 
