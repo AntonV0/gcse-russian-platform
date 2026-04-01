@@ -6,6 +6,7 @@ import {
   getModuleByIdDb,
   getVariantByIdDb,
 } from "@/lib/course-helpers-db";
+import { unpublishLessonAction } from "@/app/actions/admin-content-actions";
 
 type AdminLessonDetailPageProps = {
   params: Promise<{
@@ -153,7 +154,7 @@ export default async function AdminLessonDetailPage({
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      <section className="mb-6 grid gap-4 lg:grid-cols-2">
         <div className="rounded-lg border bg-white">
           <div className="border-b px-4 py-3 font-medium">Content Source</div>
 
@@ -176,6 +177,34 @@ export default async function AdminLessonDetailPage({
               This page is ready to expand later with lesson blocks, question set linking,
               and database-backed lesson content management.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="rounded-lg border border-red-200 bg-white">
+          <div className="border-b border-red-200 px-4 py-3 font-medium text-red-700">
+            Danger Zone
+          </div>
+
+          <div className="space-y-3 px-4 py-4 text-sm">
+            <p className="text-gray-600">
+              Unpublishing this lesson will hide it from normal public use, but it will
+              not hard delete its data.
+            </p>
+
+            <form action={unpublishLessonAction}>
+              <input type="hidden" name="courseId" value={course.id} />
+              <input type="hidden" name="variantId" value={variant.id} />
+              <input type="hidden" name="moduleId" value={module.id} />
+              <input type="hidden" name="lessonId" value={lesson.id} />
+              <button
+                type="submit"
+                className="rounded border border-red-300 px-4 py-2 text-red-700 hover:bg-red-50"
+              >
+                Unpublish lesson
+              </button>
+            </form>
           </div>
         </div>
       </section>
