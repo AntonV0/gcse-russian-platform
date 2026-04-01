@@ -1,3 +1,4 @@
+import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
@@ -35,7 +36,6 @@ type StudentCard = {
   full_name: string | null;
   display_name: string | null;
   accessLabel: string;
-  accessMode: string;
   productCode: string | null;
   productName: string | null;
   startsAt: string | null;
@@ -52,7 +52,6 @@ function formatDate(value: string | null) {
   if (!value) return "—";
 
   const date = new Date(value);
-
   if (Number.isNaN(date.getTime())) return value;
 
   return date.toLocaleDateString("en-GB", {
@@ -64,9 +63,17 @@ function formatDate(value: string | null) {
 
 function getStudentBucket(grant: AccessGrantRow) {
   const product = grant.products?.[0] ?? null;
-  const code = product?.code ?? "";
-  const name = product?.name ?? "";
-  const combined = `${code} ${name}`.toLowerCase();
+  const code = (product?.code ?? "").toLowerCase();
+  const name = (product?.name ?? "").toLowerCase();
+  const combined = `${code} ${name}`;
+
+  if (grant.access_mode === "volna") {
+    return {
+      key: "volna",
+      label: "Volna School Students",
+      accessLabel: "Volna",
+    };
+  }
 
   if (grant.access_mode === "trial") {
     return {
@@ -76,15 +83,12 @@ function getStudentBucket(grant: AccessGrantRow) {
     };
   }
 
-  if (grant.access_mode === "volna") {
-    return {
-      key: "volna",
-      label: "Volna Students",
-      accessLabel: "Volna",
-    };
-  }
-
-  if (grant.access_mode === "full" && combined.includes("foundation")) {
+  if (
+    grant.access_mode === "full" &&
+    (combined.includes("foundation") ||
+      code.includes("foundation") ||
+      name.includes("foundation"))
+  ) {
     return {
       key: "foundation",
       label: "Foundation Students",
@@ -92,7 +96,10 @@ function getStudentBucket(grant: AccessGrantRow) {
     };
   }
 
-  if (grant.access_mode === "full" && combined.includes("higher")) {
+  if (
+    grant.access_mode === "full" &&
+    (combined.includes("higher") || code.includes("higher") || name.includes("higher"))
+  ) {
     return {
       key: "higher",
       label: "Higher Students",
@@ -154,12 +161,10 @@ export default async function AdminStudentsPage() {
   );
 
   const profileMap = new Map(profileRows.map((profile) => [profile.id, profile]));
-
   const groupedStudents = new Map<string, { label: string; rows: StudentCard[] }>();
 
   for (const grant of grantRows) {
     const profile = profileMap.get(grant.user_id);
-
     if (!profile) continue;
     if (profile.is_admin) continue;
     if (teacherIds.has(profile.id)) continue;
@@ -168,10 +173,7 @@ export default async function AdminStudentsPage() {
     const product = grant.products?.[0] ?? null;
 
     if (!groupedStudents.has(bucket.key)) {
-      groupedStudents.set(bucket.key, {
-        label: bucket.label,
-        rows: [],
-      });
+      groupedStudents.set(bucket.key, { label: bucket.label, rows: [] });
     }
 
     groupedStudents.get(bucket.key)?.rows.push({
@@ -180,7 +182,6 @@ export default async function AdminStudentsPage() {
       full_name: profile.full_name,
       display_name: profile.display_name,
       accessLabel: bucket.accessLabel,
-      accessMode: grant.access_mode,
       productCode: product?.code ?? null,
       productName: product?.name ?? null,
       startsAt: grant.starts_at,
@@ -201,10 +202,14 @@ export default async function AdminStudentsPage() {
         description="Student accounts grouped by current access type."
       />
 
+      <div className="mb-6 rounded-lg border bg-white px-4 py-3 text-sm text-gray-600">
+        Total student accounts shown: {totalStudents}
+      </div>
+
       <div className="space-y-6">
         {orderedGroups.length === 0 ? (
           <div className="rounded-lg border bg-white px-4 py-6 text-sm text-gray-500">
-            No student accounts found.
+            No student accounts found or no active access grants.
           </div>
         ) : (
           orderedGroups.map((group) => (
@@ -245,9 +250,20 @@ export default async function AdminStudentsPage() {
                       </div>
                     </div>
 
-                    <div className="text-right text-xs text-gray-400">
-                      <div>Start: {formatDate(student.startsAt)}</div>
-                      <div>End: {formatDate(student.endsAt)}</div>
+                    <div className="flex flex-col items-end gap-2 text-xs">
+                      <div className="text-gray-400">
+                        <div>Start: {formatDate(student.startsAt)}</div>
+                        <div>End: {formatDate(student.endsAt)}</div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/admin/students/${student.id}`}
+                          className="rounded border px-2 py-1 hover:bg-gray-50"
+                        >
+                          View
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -255,10 +271,6 @@ export default async function AdminStudentsPage() {
             </div>
           ))
         )}
-
-        <div className="rounded-lg border bg-white px-4 py-3 text-sm text-gray-600">
-          Total student accounts shown: {totalStudents}
-        </div>
       </div>
     </main>
   );
