@@ -1,44 +1,18 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/admin-auth";
-import { createClient } from "@/lib/supabase/server";
-
-type ProfileRow = {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  display_name: string | null;
-  is_admin: boolean;
-  created_at: string;
-};
-
-type AccessGrantRow = {
-  id: string;
-  user_id: string;
-  access_mode: string;
-  is_active: boolean;
-  product_id: string | null;
-  starts_at: string | null;
-  ends_at: string | null;
-  products: Array<{
-    code: string | null;
-    name: string | null;
-  }>;
-};
-
-type TeachingGroupRow = {
-  id: string;
-  name: string;
-  course_id: string | null;
-  course_variant_id: string | null;
-  is_active: boolean;
-};
-
-type TeachingGroupMemberRow = {
-  user_id: string;
-  group_id: string;
-  member_role: string;
-};
+import {
+  getAdminAccessGrantsByUserIdDb,
+  getAdminProfileByIdDb,
+  getAdminTeachingGroupMembershipsByUserIdDb,
+  getAdminTeachingGroupsDb,
+  type AdminProfileRow,
+} from "@/lib/admin-user-helpers-db";
+import {
+  addStudentToTeachingGroupAction,
+  deactivateAccessGrantAction,
+  removeStudentFromTeachingGroupAction,
+} from "@/app/actions/admin-user-actions";
 
 function formatDateTime(value: string | null) {
   if (!value) return "—";
@@ -55,7 +29,7 @@ function formatDateTime(value: string | null) {
   });
 }
 
-function getPersonLabel(profile: ProfileRow) {
+function getPersonLabel(profile: AdminProfileRow) {
   return profile.full_name || profile.display_name || profile.email || "Unnamed";
 }
 
@@ -70,47 +44,13 @@ export default async function AdminStudentProfilePage({
   }
 
   const { userId } = await params;
-  const supabase = await createClient();
 
-  const [{ data: profile }, { data: grants }, { data: memberships }, { data: groups }] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select("id, email, full_name, display_name, is_admin, created_at")
-        .eq("id", userId)
-        .maybeSingle(),
-      supabase
-        .from("user_access_grants")
-        .select(
-          `
-          id,
-          user_id,
-          access_mode,
-          is_active,
-          product_id,
-          starts_at,
-          ends_at,
-          products (
-            code,
-            name
-          )
-        `
-        )
-        .eq("user_id", userId)
-        .order("starts_at", { ascending: false }),
-      supabase
-        .from("teaching_group_members")
-        .select("user_id, group_id, member_role")
-        .eq("user_id", userId),
-      supabase
-        .from("teaching_groups")
-        .select("id, name, course_id, course_variant_id, is_active"),
-    ]);
-
-  const student = profile as ProfileRow | null;
-  const accessGrants = (grants ?? []) as unknown as AccessGrantRow[];
-  const studentMemberships = (memberships ?? []) as TeachingGroupMemberRow[];
-  const teachingGroups = (groups ?? []) as TeachingGroupRow[];
+  const [student, accessGrants, studentMemberships, teachingGroups] = await Promise.all([
+    getAdminProfileByIdDb(userId),
+    getAdminAccessGrantsByUserIdDb(userId),
+    getAdminTeachingGroupMembershipsByUserIdDb(userId),
+    getAdminTeachingGroupsDb(),
+  ]);
 
   if (!student) {
     return <main>Student not found.</main>;
@@ -121,6 +61,16 @@ export default async function AdminStudentProfilePage({
     ...membership,
     group: groupMap.get(membership.group_id) ?? null,
   }));
+
+  const currentStudentGroupIds = new Set(
+    membershipsWithGroup
+      .filter((membership) => membership.member_role === "student")
+      .map((membership) => membership.group_id)
+  );
+
+  const availableGroups = teachingGroups.filter(
+    (group) => !currentStudentGroupIds.has(group.id)
+  );
 
   return (
     <main>
@@ -165,13 +115,11 @@ export default async function AdminStudentProfilePage({
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
           <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <p>Student editing tools can be added here next.</p>
-            <p>Good future actions:</p>
+            <p>This page now supports basic admin management.</p>
             <ul className="list-disc space-y-1 pl-5">
-              <li>edit access grants</li>
-              <li>assign to teaching group</li>
-              <li>view assignments</li>
-              <li>view progress</li>
+              <li>deactivate access grants</li>
+              <li>add student to teaching group</li>
+              <li>remove student from teaching group</li>
             </ul>
           </div>
         </div>
@@ -190,29 +138,81 @@ export default async function AdminStudentProfilePage({
               const product = grant.products?.[0] ?? null;
 
               return (
-                <div key={grant.id} className="px-4 py-4 text-sm">
-                  <div className="mb-2 flex flex-wrap gap-2">
-                    <span className="rounded border px-2 py-0.5">
-                      {grant.access_mode}
-                    </span>
-                    <span className="rounded border px-2 py-0.5">
-                      {grant.is_active ? "Active" : "Inactive"}
-                    </span>
-                    {product?.name ? (
-                      <span className="rounded border px-2 py-0.5">{product.name}</span>
-                    ) : null}
-                    {product?.code ? (
-                      <span className="rounded border px-2 py-0.5">{product.code}</span>
-                    ) : null}
+                <div
+                  key={grant.id}
+                  className="flex items-start justify-between gap-4 px-4 py-4 text-sm"
+                >
+                  <div>
+                    <div className="mb-2 flex flex-wrap gap-2">
+                      <span className="rounded border px-2 py-0.5">
+                        {grant.access_mode}
+                      </span>
+                      <span className="rounded border px-2 py-0.5">
+                        {grant.is_active ? "Active" : "Inactive"}
+                      </span>
+                      {product?.name ? (
+                        <span className="rounded border px-2 py-0.5">{product.name}</span>
+                      ) : null}
+                      {product?.code ? (
+                        <span className="rounded border px-2 py-0.5">{product.code}</span>
+                      ) : null}
+                    </div>
+
+                    <div className="text-gray-600">
+                      <div>Start: {formatDateTime(grant.starts_at)}</div>
+                      <div>End: {formatDateTime(grant.ends_at)}</div>
+                    </div>
                   </div>
 
-                  <div className="text-gray-600">
-                    <div>Start: {formatDateTime(grant.starts_at)}</div>
-                    <div>End: {formatDateTime(grant.ends_at)}</div>
-                  </div>
+                  {grant.is_active ? (
+                    <form action={deactivateAccessGrantAction}>
+                      <input type="hidden" name="userId" value={student.id} />
+                      <input type="hidden" name="grantId" value={grant.id} />
+                      <button
+                        type="submit"
+                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                      >
+                        Deactivate
+                      </button>
+                    </form>
+                  ) : null}
                 </div>
               );
             })
+          )}
+        </div>
+      </section>
+
+      <section className="mb-6 rounded-lg border bg-white">
+        <div className="border-b px-4 py-3 font-medium">Add To Teaching Group</div>
+
+        <div className="px-4 py-4 text-sm">
+          {availableGroups.length === 0 ? (
+            <div className="text-gray-500">No available teaching groups to add.</div>
+          ) : (
+            <form
+              action={addStudentToTeachingGroupAction}
+              className="flex flex-wrap gap-3"
+            >
+              <input type="hidden" name="userId" value={student.id} />
+
+              <select
+                name="groupId"
+                required
+                className="rounded border px-3 py-2 text-sm"
+              >
+                <option value="">Select group</option>
+                {availableGroups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+
+              <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
+                Add to group
+              </button>
+            </form>
           )}
         </div>
       </section>
@@ -231,14 +231,40 @@ export default async function AdminStudentProfilePage({
             membershipsWithGroup.map((membership) => (
               <div
                 key={`${membership.group_id}-${membership.member_role}`}
-                className="px-4 py-4 text-sm"
+                className="flex items-center justify-between gap-4 px-4 py-4 text-sm"
               >
-                <div className="font-medium">
-                  {membership.group?.name || membership.group_id}
+                <div>
+                  <div className="font-medium">
+                    {membership.group?.name || membership.group_id}
+                  </div>
+                  <div className="text-gray-600">Role: {membership.member_role}</div>
+                  <div className="text-gray-600">
+                    Group active: {membership.group?.is_active ? "Yes" : "No"}
+                  </div>
                 </div>
-                <div className="text-gray-600">Role: {membership.member_role}</div>
-                <div className="text-gray-600">
-                  Group active: {membership.group?.is_active ? "Yes" : "No"}
+
+                <div className="flex gap-2">
+                  {membership.group ? (
+                    <Link
+                      href={`/admin/teaching-groups/${membership.group.id}`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      Open group
+                    </Link>
+                  ) : null}
+
+                  {membership.member_role === "student" ? (
+                    <form action={removeStudentFromTeachingGroupAction}>
+                      <input type="hidden" name="userId" value={student.id} />
+                      <input type="hidden" name="groupId" value={membership.group_id} />
+                      <button
+                        type="submit"
+                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </form>
+                  ) : null}
                 </div>
               </div>
             ))

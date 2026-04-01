@@ -1,30 +1,16 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/admin-auth";
-import { createClient } from "@/lib/supabase/server";
-
-type ProfileRow = {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  display_name: string | null;
-  is_admin: boolean;
-  created_at: string;
-};
-
-type TeachingGroupRow = {
-  id: string;
-  name: string;
-  course_id: string | null;
-  course_variant_id: string | null;
-  is_active: boolean;
-};
-
-type TeachingGroupMemberRow = {
-  user_id: string;
-  group_id: string;
-  member_role: string;
-};
+import {
+  getAdminProfileByIdDb,
+  getAdminTeachingGroupMembershipsByUserIdDb,
+  getAdminTeachingGroupsDb,
+  type AdminProfileRow,
+} from "@/lib/admin-user-helpers-db";
+import {
+  addTeacherToTeachingGroupAction,
+  removeTeacherFromTeachingGroupAction,
+} from "@/app/actions/admin-user-actions";
 
 function formatDateTime(value: string | null) {
   if (!value) return "—";
@@ -41,7 +27,7 @@ function formatDateTime(value: string | null) {
   });
 }
 
-function getPersonLabel(profile: ProfileRow) {
+function getPersonLabel(profile: AdminProfileRow) {
   return profile.full_name || profile.display_name || profile.email || "Unnamed";
 }
 
@@ -56,26 +42,12 @@ export default async function AdminTeacherProfilePage({
   }
 
   const { userId } = await params;
-  const supabase = await createClient();
 
-  const [{ data: profile }, { data: memberships }, { data: groups }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("id, email, full_name, display_name, is_admin, created_at")
-      .eq("id", userId)
-      .maybeSingle(),
-    supabase
-      .from("teaching_group_members")
-      .select("user_id, group_id, member_role")
-      .eq("user_id", userId),
-    supabase
-      .from("teaching_groups")
-      .select("id, name, course_id, course_variant_id, is_active"),
+  const [teacher, teacherMemberships, teachingGroups] = await Promise.all([
+    getAdminProfileByIdDb(userId),
+    getAdminTeachingGroupMembershipsByUserIdDb(userId),
+    getAdminTeachingGroupsDb(),
   ]);
-
-  const teacher = profile as ProfileRow | null;
-  const teacherMemberships = (memberships ?? []) as TeachingGroupMemberRow[];
-  const teachingGroups = (groups ?? []) as TeachingGroupRow[];
 
   if (!teacher) {
     return <main>Teacher not found.</main>;
@@ -86,6 +58,16 @@ export default async function AdminTeacherProfilePage({
     ...membership,
     group: groupMap.get(membership.group_id) ?? null,
   }));
+
+  const currentTeacherGroupIds = new Set(
+    membershipsWithGroup
+      .filter((membership) => membership.member_role === "teacher")
+      .map((membership) => membership.group_id)
+  );
+
+  const availableGroups = teachingGroups.filter(
+    (group) => !currentTeacherGroupIds.has(group.id)
+  );
 
   return (
     <main>
@@ -130,14 +112,46 @@ export default async function AdminTeacherProfilePage({
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
           <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <p>Teacher management can be expanded here later.</p>
-            <p>Good future actions:</p>
+            <p>This page now supports basic teaching-group management.</p>
             <ul className="list-disc space-y-1 pl-5">
-              <li>assign to teaching group</li>
-              <li>remove from teaching group</li>
-              <li>view assignment workload</li>
+              <li>add teacher to teaching group</li>
+              <li>remove teacher from teaching group</li>
             </ul>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-6 rounded-lg border bg-white">
+        <div className="border-b px-4 py-3 font-medium">Add To Teaching Group</div>
+
+        <div className="px-4 py-4 text-sm">
+          {availableGroups.length === 0 ? (
+            <div className="text-gray-500">No available teaching groups to add.</div>
+          ) : (
+            <form
+              action={addTeacherToTeachingGroupAction}
+              className="flex flex-wrap gap-3"
+            >
+              <input type="hidden" name="userId" value={teacher.id} />
+
+              <select
+                name="groupId"
+                required
+                className="rounded border px-3 py-2 text-sm"
+              >
+                <option value="">Select group</option>
+                {availableGroups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+
+              <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
+                Add to group
+              </button>
+            </form>
+          )}
         </div>
       </section>
 
@@ -155,14 +169,40 @@ export default async function AdminTeacherProfilePage({
             membershipsWithGroup.map((membership) => (
               <div
                 key={`${membership.group_id}-${membership.member_role}`}
-                className="px-4 py-4 text-sm"
+                className="flex items-center justify-between gap-4 px-4 py-4 text-sm"
               >
-                <div className="font-medium">
-                  {membership.group?.name || membership.group_id}
+                <div>
+                  <div className="font-medium">
+                    {membership.group?.name || membership.group_id}
+                  </div>
+                  <div className="text-gray-600">Role: {membership.member_role}</div>
+                  <div className="text-gray-600">
+                    Group active: {membership.group?.is_active ? "Yes" : "No"}
+                  </div>
                 </div>
-                <div className="text-gray-600">Role: {membership.member_role}</div>
-                <div className="text-gray-600">
-                  Group active: {membership.group?.is_active ? "Yes" : "No"}
+
+                <div className="flex gap-2">
+                  {membership.group ? (
+                    <Link
+                      href={`/admin/teaching-groups/${membership.group.id}`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      Open group
+                    </Link>
+                  ) : null}
+
+                  {membership.member_role === "teacher" ? (
+                    <form action={removeTeacherFromTeachingGroupAction}>
+                      <input type="hidden" name="userId" value={teacher.id} />
+                      <input type="hidden" name="groupId" value={membership.group_id} />
+                      <button
+                        type="submit"
+                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </form>
+                  ) : null}
                 </div>
               </div>
             ))
