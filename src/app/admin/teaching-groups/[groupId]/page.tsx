@@ -25,6 +25,19 @@ type ProfileRow = {
   is_admin: boolean;
 };
 
+type CourseRow = {
+  id: string;
+  title: string;
+  slug: string;
+};
+
+type VariantRow = {
+  id: string;
+  course_id: string;
+  title: string;
+  slug: string;
+};
+
 function getPersonLabel(
   profile: Pick<ProfileRow, "full_name" | "display_name" | "email">
 ) {
@@ -44,7 +57,13 @@ export default async function AdminTeachingGroupDetailPage({
   const { groupId } = await params;
   const supabase = await createClient();
 
-  const [{ data: group }, { data: memberships }, { data: profiles }] = await Promise.all([
+  const [
+    { data: group },
+    { data: memberships },
+    { data: profiles },
+    { data: courses },
+    { data: variants },
+  ] = await Promise.all([
     supabase
       .from("teaching_groups")
       .select("id, name, course_id, course_variant_id, is_active")
@@ -55,17 +74,32 @@ export default async function AdminTeachingGroupDetailPage({
       .select("user_id, group_id, member_role")
       .eq("group_id", groupId),
     supabase.from("profiles").select("id, email, full_name, display_name, is_admin"),
+    supabase.from("courses").select("id, title, slug"),
+    supabase.from("course_variants").select("id, course_id, title, slug"),
   ]);
 
   const teachingGroup = group as TeachingGroupRow | null;
   const membershipRows = (memberships ?? []) as TeachingGroupMemberRow[];
   const profileRows = (profiles ?? []) as ProfileRow[];
+  const courseRows = (courses ?? []) as CourseRow[];
+  const variantRows = (variants ?? []) as VariantRow[];
 
   if (!teachingGroup) {
     return <main>Teaching group not found.</main>;
   }
 
   const profileMap = new Map(profileRows.map((profile) => [profile.id, profile]));
+  const courseMap = new Map(courseRows.map((course) => [course.id, course]));
+  const variantMap = new Map(variantRows.map((variant) => [variant.id, variant]));
+
+  const linkedCourse = teachingGroup.course_id
+    ? (courseMap.get(teachingGroup.course_id) ?? null)
+    : null;
+
+  const linkedVariant = teachingGroup.course_variant_id
+    ? (variantMap.get(teachingGroup.course_variant_id) ?? null)
+    : null;
+
   const teachers = membershipRows.filter((member) => member.member_role === "teacher");
   const students = membershipRows.filter((member) => member.member_role === "student");
 
@@ -98,12 +132,12 @@ export default async function AdminTeachingGroupDetailPage({
               {teachingGroup.is_active ? "Yes" : "No"}
             </div>
             <div>
-              <span className="font-medium">Course linked:</span>{" "}
-              {teachingGroup.course_id || "—"}
+              <span className="font-medium">Linked course:</span>{" "}
+              {linkedCourse ? linkedCourse.title : "—"}
             </div>
             <div>
-              <span className="font-medium">Variant linked:</span>{" "}
-              {teachingGroup.course_variant_id || "—"}
+              <span className="font-medium">Linked variant:</span>{" "}
+              {linkedVariant ? linkedVariant.title : "—"}
             </div>
           </div>
         </div>
@@ -111,14 +145,13 @@ export default async function AdminTeachingGroupDetailPage({
         <div className="rounded-lg border bg-white">
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
-          <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <p>Teaching group editing can be expanded here later.</p>
-            <p>Good future actions:</p>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>add/remove students</li>
-              <li>assign teacher</li>
-              <li>link course/variant</li>
-            </ul>
+          <div className="flex flex-col gap-3 px-4 py-4 text-sm">
+            <Link
+              href={`/admin/teaching-groups/${teachingGroup.id}/edit`}
+              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
+            >
+              Edit teaching group
+            </Link>
           </div>
         </div>
       </section>
