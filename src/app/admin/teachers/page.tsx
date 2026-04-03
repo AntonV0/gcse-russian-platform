@@ -15,6 +15,12 @@ type ProfileRow = {
 type TeachingGroupMemberRow = {
   user_id: string;
   member_role: string;
+  group_id: string;
+};
+
+type TeachingGroupRow = {
+  id: string;
+  name: string;
 };
 
 type TeacherCard = {
@@ -23,6 +29,7 @@ type TeacherCard = {
   full_name: string | null;
   display_name: string | null;
   roles: string[];
+  groupNames: string[];
 };
 
 function getPersonLabel(
@@ -37,37 +44,78 @@ function formatRole(role: string) {
   return role;
 }
 
-export default async function AdminTeachersPage() {
+function matchesSearch(teacher: TeacherCard, search: string) {
+  if (!search) return true;
+
+  const haystack = [
+    teacher.full_name ?? "",
+    teacher.display_name ?? "",
+    teacher.email ?? "",
+    ...teacher.groupNames,
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(search.toLowerCase());
+}
+
+export default async function AdminTeachersPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{
+    q?: string;
+  }>;
+}) {
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
     return <main>Access denied.</main>;
   }
 
+  const params = (await searchParams) ?? {};
+  const q = (params.q ?? "").trim();
+
   const supabase = await createClient();
 
-  const [{ data: profiles }, { data: memberships }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("id, email, full_name, display_name, is_admin, created_at")
-      .order("created_at", { ascending: false }),
-    supabase.from("teaching_group_members").select("user_id, member_role"),
-  ]);
+  const [{ data: profiles }, { data: memberships }, { data: groups }] = await Promise.all(
+    [
+      supabase
+        .from("profiles")
+        .select("id, email, full_name, display_name, is_admin, created_at")
+        .order("created_at", { ascending: false }),
+      supabase.from("teaching_group_members").select("user_id, member_role, group_id"),
+      supabase.from("teaching_groups").select("id, name"),
+    ]
+  );
 
   const profileRows = (profiles ?? []) as ProfileRow[];
   const membershipRows = (memberships ?? []) as TeachingGroupMemberRow[];
+  const groupRows = (groups ?? []) as TeachingGroupRow[];
+
+  const groupMap = new Map(groupRows.map((group) => [group.id, group.name]));
 
   const teacherMemberships = membershipRows.filter(
     (member) => member.member_role === "teacher"
   );
 
   const roleMap = new Map<string, Set<string>>();
+  const groupsMap = new Map<string, Set<string>>();
 
   for (const membership of teacherMemberships) {
     if (!roleMap.has(membership.user_id)) {
       roleMap.set(membership.user_id, new Set<string>());
     }
+
+    if (!groupsMap.has(membership.user_id)) {
+      groupsMap.set(membership.user_id, new Set<string>());
+    }
+
     roleMap.get(membership.user_id)?.add(membership.member_role);
+
+    const groupName = groupMap.get(membership.group_id);
+    if (groupName) {
+      groupsMap.get(membership.user_id)?.add(groupName);
+    }
   }
 
   const teacherCards: TeacherCard[] = [];
@@ -94,25 +142,59 @@ export default async function AdminTeachersPage() {
       full_name: profile.full_name,
       display_name: profile.display_name,
       roles: Array.from(roles),
+      groupNames: Array.from(groupsMap.get(profile.id) ?? []),
     });
   }
+
+  const filteredTeachers = teacherCards.filter((teacher) => matchesSearch(teacher, q));
 
   return (
     <main>
       <PageHeader title="Teachers" description="Admin and teaching accounts." />
 
+      <form className="mb-6 rounded-lg border bg-white p-4">
+        <div className="grid gap-4 md:grid-cols-[2fr_auto]">
+          <div>
+            <label className="mb-1 block text-sm font-medium">Search</label>
+            <input
+              type="text"
+              name="q"
+              defaultValue={q}
+              placeholder="Name, email, or teaching group"
+              className="w-full rounded border px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="flex items-end gap-2">
+            <button
+              type="submit"
+              className="rounded bg-black px-4 py-2 text-sm text-white"
+            >
+              Apply
+            </button>
+
+            <Link
+              href="/admin/teachers"
+              className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
+            >
+              Reset
+            </Link>
+          </div>
+        </div>
+      </form>
+
       <div className="rounded-lg border bg-white">
         <div className="border-b px-4 py-3 font-medium">
-          Teachers ({teacherCards.length})
+          Teachers ({filteredTeachers.length})
         </div>
 
         <div className="divide-y">
-          {teacherCards.length === 0 ? (
+          {filteredTeachers.length === 0 ? (
             <div className="px-4 py-6 text-sm text-gray-500">
               No teacher accounts found.
             </div>
           ) : (
-            teacherCards.map((teacher) => (
+            filteredTeachers.map((teacher) => (
               <div
                 key={teacher.id}
                 className="flex items-center justify-between gap-4 px-4 py-3"
@@ -123,24 +205,28 @@ export default async function AdminTeachersPage() {
                   <div className="text-sm text-gray-500">
                     {teacher.email || "No email"}
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-wrap justify-end gap-2 text-xs">
+                  <div className="mt-1 flex flex-wrap gap-2 text-xs">
                     {teacher.roles.map((role) => (
                       <span key={role} className="rounded border px-2 py-0.5">
                         {formatRole(role)}
                       </span>
                     ))}
-                  </div>
 
-                  <Link
-                    href={`/admin/teachers/${teacher.id}`}
-                    className="rounded border px-2 py-1 text-sm hover:bg-gray-50"
-                  >
-                    View
-                  </Link>
+                    {teacher.groupNames.map((groupName) => (
+                      <span key={groupName} className="rounded border px-2 py-0.5">
+                        {groupName}
+                      </span>
+                    ))}
+                  </div>
                 </div>
+
+                <Link
+                  href={`/admin/teachers/${teacher.id}`}
+                  className="rounded border px-2 py-1 text-sm hover:bg-gray-50"
+                >
+                  View
+                </Link>
               </div>
             ))
           )}

@@ -31,6 +31,12 @@ type ProductRow = {
 type TeachingGroupMemberRow = {
   user_id: string;
   member_role: string;
+  group_id: string;
+};
+
+type TeachingGroupRow = {
+  id: string;
+  name: string;
 };
 
 type StudentCard = {
@@ -39,9 +45,11 @@ type StudentCard = {
   full_name: string | null;
   display_name: string | null;
   accessLabel: string;
+  accessKey: string;
   isActive: boolean;
   startsAt: string | null;
   endsAt: string | null;
+  groupNames: string[];
 };
 
 function getPersonLabel(
@@ -119,12 +127,40 @@ function getGrantLabel(
   return getStudentBucket(accessMode, productCode, productName).accessLabel;
 }
 
-export default async function AdminStudentsPage() {
+function matchesSearch(student: StudentCard, search: string) {
+  if (!search) return true;
+
+  const haystack = [
+    student.full_name ?? "",
+    student.display_name ?? "",
+    student.email ?? "",
+    ...student.groupNames,
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(search.toLowerCase());
+}
+
+export default async function AdminStudentsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{
+    q?: string;
+    status?: string;
+    access?: string;
+  }>;
+}) {
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
     return <main>Access denied.</main>;
   }
+
+  const params = (await searchParams) ?? {};
+  const q = (params.q ?? "").trim();
+  const statusFilter = (params.status ?? "all").trim();
+  const accessFilter = (params.access ?? "all").trim();
 
   const supabase = await createClient();
 
@@ -133,6 +169,7 @@ export default async function AdminStudentsPage() {
     { data: grants },
     { data: memberships },
     { data: products },
+    { data: groups },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -142,14 +179,16 @@ export default async function AdminStudentsPage() {
       .from("user_access_grants")
       .select("id, user_id, access_mode, is_active, product_id, starts_at, ends_at")
       .order("starts_at", { ascending: false }),
-    supabase.from("teaching_group_members").select("user_id, member_role"),
+    supabase.from("teaching_group_members").select("user_id, member_role, group_id"),
     supabase.from("products").select("id, code, name"),
+    supabase.from("teaching_groups").select("id, name"),
   ]);
 
   const profileRows = (profiles ?? []) as ProfileRow[];
   const grantRows = (grants ?? []) as AccessGrantRow[];
   const membershipRows = (memberships ?? []) as TeachingGroupMemberRow[];
   const productRows = (products ?? []) as ProductRow[];
+  const groupRows = (groups ?? []) as TeachingGroupRow[];
 
   const teacherIds = new Set(
     membershipRows
@@ -157,9 +196,22 @@ export default async function AdminStudentsPage() {
       .map((member) => member.user_id)
   );
 
-  const profileMap = new Map(profileRows.map((profile) => [profile.id, profile]));
-  const productMap = new Map(productRows.map((product) => [product.id, product]));
+  const groupMap = new Map(groupRows.map((group) => [group.id, group.name]));
+  const studentGroupsByUserId = new Map<string, string[]>();
 
+  for (const membership of membershipRows) {
+    if (membership.member_role !== "student") continue;
+    if (!studentGroupsByUserId.has(membership.user_id)) {
+      studentGroupsByUserId.set(membership.user_id, []);
+    }
+
+    const groupName = groupMap.get(membership.group_id);
+    if (groupName) {
+      studentGroupsByUserId.get(membership.user_id)!.push(groupName);
+    }
+  }
+
+  const productMap = new Map(productRows.map((product) => [product.id, product]));
   const groupedStudents = new Map<string, { label: string; rows: StudentCard[] }>();
   const inactiveStudents: StudentCard[] = [];
 
@@ -178,6 +230,7 @@ export default async function AdminStudentsPage() {
 
     const userGrants = grantsByUserId.get(profile.id) ?? [];
     const activeGrant = userGrants.find((grant) => grant.is_active) ?? null;
+    const groupNames = studentGroupsByUserId.get(profile.id) ?? [];
 
     if (activeGrant) {
       const product = activeGrant.product_id
@@ -199,9 +252,11 @@ export default async function AdminStudentsPage() {
         full_name: profile.full_name,
         display_name: profile.display_name,
         accessLabel: bucket.accessLabel,
+        accessKey: bucket.key,
         isActive: true,
         startsAt: activeGrant.starts_at,
         endsAt: activeGrant.ends_at,
+        groupNames,
       });
 
       continue;
@@ -220,25 +275,53 @@ export default async function AdminStudentsPage() {
         )
       : "No Active Access";
 
+    const latestKey = latestGrant
+      ? getStudentBucket(
+          latestGrant.access_mode,
+          latestProduct?.code ?? null,
+          latestProduct?.name ?? null
+        ).key
+      : "none";
+
     inactiveStudents.push({
       id: profile.id,
       email: profile.email,
       full_name: profile.full_name,
       display_name: profile.display_name,
       accessLabel: latestLabel,
+      accessKey: latestKey,
       isActive: false,
       startsAt: latestGrant?.starts_at ?? null,
       endsAt: latestGrant?.ends_at ?? null,
+      groupNames,
     });
   }
 
   const orderedGroups = ["foundation", "higher", "volna", "trial", "other"]
     .map((key) => groupedStudents.get(key))
-    .filter(Boolean) as Array<{ label: string; rows: StudentCard[] }>;
+    .filter(Boolean)
+    .map((group) => ({
+      label: group!.label,
+      rows: group!.rows.filter((student) => {
+        if (!matchesSearch(student, q)) return false;
+        if (statusFilter === "active" && !student.isActive) return false;
+        if (statusFilter === "inactive" && student.isActive) return false;
+        if (accessFilter !== "all" && student.accessKey !== accessFilter) return false;
+        return true;
+      }),
+    }))
+    .filter((group) => group.rows.length > 0);
+
+  const filteredInactiveStudents = inactiveStudents.filter((student) => {
+    if (!matchesSearch(student, q)) return false;
+    if (statusFilter === "active") return false;
+    if (accessFilter !== "all" && student.accessKey !== accessFilter) return false;
+    return true;
+  });
 
   const totalStudents =
     orderedGroups.reduce((sum, group) => sum + group.rows.length, 0) +
-    inactiveStudents.length;
+    filteredInactiveStudents.length;
 
   return (
     <main>
@@ -247,12 +330,72 @@ export default async function AdminStudentsPage() {
         description="Student accounts grouped by current access type."
       />
 
+      <form className="mb-6 rounded-lg border bg-white p-4">
+        <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr_auto]">
+          <div>
+            <label className="mb-1 block text-sm font-medium">Search</label>
+            <input
+              type="text"
+              name="q"
+              defaultValue={q}
+              placeholder="Name, email, or teaching group"
+              className="w-full rounded border px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium">Status</label>
+            <select
+              name="status"
+              defaultValue={statusFilter}
+              className="w-full rounded border px-3 py-2 text-sm"
+            >
+              <option value="all">All</option>
+              <option value="active">Active only</option>
+              <option value="inactive">Inactive only</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium">Access</label>
+            <select
+              name="access"
+              defaultValue={accessFilter}
+              className="w-full rounded border px-3 py-2 text-sm"
+            >
+              <option value="all">All</option>
+              <option value="foundation">Foundation</option>
+              <option value="higher">Higher</option>
+              <option value="volna">Volna</option>
+              <option value="trial">Trial</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div className="flex items-end gap-2">
+            <button
+              type="submit"
+              className="rounded bg-black px-4 py-2 text-sm text-white"
+            >
+              Apply
+            </button>
+
+            <Link
+              href="/admin/students"
+              className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
+            >
+              Reset
+            </Link>
+          </div>
+        </div>
+      </form>
+
       <div className="mb-6 rounded-lg border bg-white px-4 py-3 text-sm text-gray-600">
         Total student accounts shown: {totalStudents}
       </div>
 
       <div className="space-y-6">
-        {orderedGroups.length === 0 && inactiveStudents.length === 0 ? (
+        {orderedGroups.length === 0 && filteredInactiveStudents.length === 0 ? (
           <div className="rounded-lg border bg-white px-4 py-6 text-sm text-gray-500">
             No student accounts found.
           </div>
@@ -283,6 +426,12 @@ export default async function AdminStudentsPage() {
                       </span>
 
                       <span className="rounded border px-2 py-0.5">Active</span>
+
+                      {student.groupNames.map((groupName) => (
+                        <span key={groupName} className="rounded border px-2 py-0.5">
+                          {groupName}
+                        </span>
+                      ))}
                     </div>
                   </div>
 
@@ -309,16 +458,16 @@ export default async function AdminStudentsPage() {
 
         <div className="rounded-lg border bg-white">
           <div className="border-b px-4 py-3 font-medium">
-            Inactive / No Active Access ({inactiveStudents.length})
+            Inactive / No Active Access ({filteredInactiveStudents.length})
           </div>
 
           <div className="divide-y">
-            {inactiveStudents.length === 0 ? (
+            {filteredInactiveStudents.length === 0 ? (
               <div className="px-4 py-6 text-sm text-gray-500">
                 No inactive students found.
               </div>
             ) : (
-              inactiveStudents.map((student) => (
+              filteredInactiveStudents.map((student) => (
                 <div
                   key={student.id}
                   className="flex items-center justify-between gap-4 px-4 py-3"
@@ -336,6 +485,12 @@ export default async function AdminStudentsPage() {
                       </span>
 
                       <span className="rounded border px-2 py-0.5">Inactive</span>
+
+                      {student.groupNames.map((groupName) => (
+                        <span key={groupName} className="rounded border px-2 py-0.5">
+                          {groupName}
+                        </span>
+                      ))}
                     </div>
                   </div>
 
