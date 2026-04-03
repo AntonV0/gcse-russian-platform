@@ -150,7 +150,7 @@ The relational model becomes more complex than embedding all interactive content
 
 ### Decision
 
-Use a custom admin interface for question authoring instead of direct database editing.
+Use a custom admin interface for question authoring and platform content management instead of direct database editing.
 
 ### Why
 
@@ -163,6 +163,7 @@ Educational content management is too complex and repetitive to be handled safel
 - template support
 - duplication and reordering workflows
 - usage visibility
+- safer operational control for users, groups, and access
 
 ### Tradeoff
 
@@ -243,7 +244,30 @@ There is a distinction between display-level role descriptions and permission-le
 
 ---
 
-## 10. Why use server actions for operational workflows?
+## 10. Why add an explicit teacher role field?
+
+### Decision
+
+Use `profiles.is_teacher` as the primary teacher-role flag, while still keeping `teaching_group_members.member_role` for group membership context.
+
+### Why
+
+Inferring teacher status only from group membership or heuristics is fragile and makes admin tooling harder to reason about.
+
+### Benefits
+
+- cleaner teacher detection
+- better student/teacher filtering
+- simpler teaching-group assignment UI
+- clearer role management from admin
+
+### Tradeoff
+
+Role and group membership now need to stay conceptually separate in documentation and helper logic.
+
+---
+
+## 11. Why use server actions for operational workflows?
 
 ### Decision
 
@@ -265,7 +289,7 @@ Interactive form UX still requires client components layered on top.
 
 ---
 
-## 11. Why derive teacher assignment state from submissions?
+## 12. Why derive teacher assignment state from submissions?
 
 ### Decision
 
@@ -293,7 +317,7 @@ Requires aggregate helper logic rather than a single flat field.
 
 ---
 
-## 12. Why separate status from due date urgency?
+## 13. Why separate status from due date urgency?
 
 ### Decision
 
@@ -318,7 +342,7 @@ Slightly more helper and UI logic.
 
 ---
 
-## 13. Why lock student submissions after review?
+## 14. Why lock student submissions after review?
 
 ### Decision
 
@@ -341,7 +365,7 @@ Teachers need a reopening action for revision loops.
 
 ---
 
-## 14. Why add a teacher reopen action?
+## 15. Why add a teacher reopen action?
 
 ### Decision
 
@@ -363,7 +387,7 @@ Still only preserves the latest state; a true audit trail would require an event
 
 ---
 
-## 15. Why support ordered mixed assignment items?
+## 16. Why support ordered mixed assignment items?
 
 ### Decision
 
@@ -391,7 +415,7 @@ Form and action logic become more structured than simple grouped arrays.
 
 ---
 
-## 16. Why assemble assignment progress from existing systems?
+## 17. Why assemble assignment progress from existing systems?
 
 ### Decision
 
@@ -419,11 +443,80 @@ Assignment progress needs helper logic because it is composed from multiple sour
 
 ---
 
-## 17. Why keep content partly file-driven and partly DB-driven?
+## 18. Why keep progress separate from access grants?
 
 ### Decision
 
-Lesson structure remains file-driven while reusable interactive content is database-driven.
+Do not tie historical progress deletion or rewriting to access-grant switching.
+
+### Why
+
+Students may move between trial, full, and Volna access, or between Foundation and Higher, without the platform losing their older work history.
+
+### Benefits
+
+- safer admin operations
+- reversible access changes
+- variant-aware progress history remains intact
+- less risk of destructive state changes
+
+### Tradeoff
+
+Admin pages need clearer visibility into active access, inactive access history, and per-variant progress.
+
+---
+
+## 19. Why use contextual admin navigation for content?
+
+### Decision
+
+Use context-first navigation for admin content management instead of flat global tabs.
+
+### Why
+
+Content entities such as variants, modules, and lessons make more sense when seen inside their parent course and variant context.
+
+### Benefits
+
+- clearer mental model
+- safer editing and ordering
+- better fit for reusable but hierarchically presented content
+- easier future extension to lesson authoring
+
+### Tradeoff
+
+Deep route nesting is more complex than a flat admin table approach.
+
+---
+
+## 20. Why add reusable admin feedback and confirmation components?
+
+### Decision
+
+Use shared admin feedback banners and confirmation buttons rather than hand-rolling action messaging on every page.
+
+### Why
+
+Operational admin tooling needs consistent success/error visibility and safer destructive actions.
+
+### Benefits
+
+- more consistent admin UX
+- lower duplication
+- safer remove/deactivate flows
+- easier to extend across the CMS
+
+### Tradeoff
+
+Slightly more component infrastructure for internal tooling.
+
+---
+
+## 21. Why keep content partly file-driven and partly DB-driven for now?
+
+### Decision
+
+Lesson structure remains partly file-driven while reusable interactive content is database-driven.
 
 ### Why
 
@@ -444,7 +537,7 @@ The overall content architecture is hybrid, which is more complex than a single-
 
 ---
 
-## 18. Why avoid premature restructuring of `lib/`?
+## 22. Why avoid premature restructuring of `lib/`?
 
 ### Decision
 
@@ -466,7 +559,7 @@ A future domain-based refactor may still make sense once systems stabilise.
 
 ---
 
-## 19. Why prioritise architecture before advanced features?
+## 23. Why prioritise architecture before advanced features?
 
 ### Decision
 
@@ -485,3 +578,27 @@ The long-term value of the platform depends more on solid structure than on addi
 ### Tradeoff
 
 Some eye-catching features arrive later, but on a stronger foundation.
+
+---
+
+## 24. Why should the next major step be database-driven lesson authoring?
+
+### Decision
+
+The next major content evolution should be moving lesson authoring and lesson blocks into the database and admin CMS.
+
+### Why
+
+The current hybrid model works for platform foundations, but real course production should not require code changes for each new lesson.
+
+### Benefits
+
+- non-code lesson creation
+- easier content scaling
+- reusable lesson blocks
+- stronger alignment with the question-set authoring model
+- cleaner path to modern step-based lesson UX
+
+### Tradeoff
+
+This will require careful schema design, block rendering contracts, and admin authoring UX before large-scale content writing begins.
