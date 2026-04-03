@@ -1,6 +1,6 @@
 # GCSE Russian Course Platform
 
-A full-stack online learning platform for GCSE Russian students, combining structured courses, interactive lessons, and a teacher-led assignment workflow.
+A full-stack online learning platform for GCSE Russian students, combining structured courses, interactive lessons, teacher-led assignment workflows, and a growing internal admin CMS.
 
 Built as a real product for **gcserussian.com** and supporting **Volna Online Russian School**.
 
@@ -17,6 +17,8 @@ It currently includes:
 - Block-based lesson rendering
 - Database-driven question engine with metadata-based behaviour
 - Custom admin tools for question sets, templates, and question authoring
+- Full admin content management for **courses, variants, modules, and lessons**
+- Admin user management for **students, teachers, and teaching groups**
 - Teacher assignment creation, editing, ordering, review, filtering, sorting, and reopening
 - Student submission workflow with text, file uploads, locking after review, and feedback visibility
 - Per-item assignment progress visibility for lessons and question sets
@@ -48,7 +50,7 @@ The platform uses one shared codebase and data model, with permissions and UI di
 
 ### Lesson system
 
-Lessons are built from reusable content blocks. Current lesson rendering supports content such as:
+Lessons are currently rendered from reusable content blocks. Existing lesson rendering supports content such as:
 
 - text
 - note
@@ -74,7 +76,9 @@ Current supported and planned interaction patterns include:
 
 ### Admin authoring system
 
-A custom admin CMS supports:
+A custom admin CMS now supports both **question authoring** and a growing **platform management layer**.
+
+Current admin capabilities include:
 
 - question set CRUD
 - question CRUD
@@ -84,6 +88,24 @@ A custom admin CMS supports:
 - activation toggles
 - template-based authoring
 - usage visibility for linked assignments
+- content management for:
+  - courses
+  - variants
+  - modules
+  - lessons
+- contextual content navigation:
+  - `/admin/content`
+  - `/admin/content/courses/[courseId]`
+  - `/admin/content/courses/[courseId]/variants/[variantId]`
+  - `/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]`
+  - `/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]/lessons/[lessonId]`
+- ordering controls for variants, modules, and lessons
+- dedicated edit pages for content entities
+- teaching group creation and editing
+- student, teacher, and teaching group management views
+- student access-grant switching
+- teacher-role management through `profiles.is_teacher`
+- admin feedback banners and confirmation flows for operational actions
 
 ### Assignment system
 
@@ -140,9 +162,30 @@ Students can:
 /question-sets/[questionSetSlug]
 
 /admin
+/admin/content
+/admin/content/courses/[courseId]
+/admin/content/courses/[courseId]/edit
+/admin/content/courses/[courseId]/variants/[variantId]
+/admin/content/courses/[courseId]/variants/[variantId]/edit
+/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]
+/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]/edit
+/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]/lessons/[lessonId]
+/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]/lessons/[lessonId]/edit
+
 /admin/question-sets
 /admin/question-sets/templates
 /admin/questions/[questionId]
+
+/admin/students
+/admin/students/[userId]
+
+/admin/teachers
+/admin/teachers/[userId]
+
+/admin/teaching-groups
+/admin/teaching-groups/new
+/admin/teaching-groups/[groupId]
+/admin/teaching-groups/[groupId]/edit
 ```
 
 ---
@@ -192,11 +235,14 @@ flowchart TD
   TA --> AC[Create / Edit / Order items]
   TR --> REV[Review / Reopen / Filter / Sort]
 
-  A --> CMS[Admin content tools]
+  A --> CMS[Admin CMS]
+  CMS --> CONTENT[Courses / Variants / Modules / Lessons]
   CMS --> QS[Question set management]
   CMS --> QQ[Question management]
   CMS --> TMP[Template workflows]
-  CMS --> USE[Usage visibility]
+  CMS --> USERS[Students / Teachers]
+  CMS --> GRP[Teaching groups]
+  CMS --> ACCESS[Access grants + teacher roles]
 
   ASG --> SUB[Submission workflow]
   SUB --> TXT2[Text response]
@@ -246,7 +292,8 @@ Lesson and course visibility can then be shaped by flags such as:
 ## 👥 Role Model
 
 - **Admin** → `profiles.is_admin = true`
-- **Teacher / assistant** → `teaching_group_members.member_role`
+- **Teacher** → `profiles.is_teacher = true`
+- **Teaching-group membership role** → `teaching_group_members.member_role`
 - **Student** → default authenticated learning user
 
 Role and access mode are separate concerns. A student may be in a Foundation, Higher, or Volna variant, and may also have trial/full/Volna access behaviour.
@@ -271,6 +318,8 @@ Role and access mode are separate concerns. A student may be in a Foundation, Hi
 - review workflow with marks and feedback
 - reopening reviewed work
 - teacher filtering and prioritisation views
+- admin teaching-group creation and editing
+- admin teacher/student group membership management
 
 ---
 
@@ -357,15 +406,24 @@ The engine supports structured configuration such as:
   - lesson items show completed / not completed
   - question set items show started / not started
 
+### Important note
+
+Progress is **variant-aware** and remains separate from access grants. This allows safe access switching without wiping historical progress.
+
 ---
 
 ## 🧭 Dashboards and Views
 
 ### Admin
 
+- admin overview dashboard with summary widgets
 - content management
-- templates
-- question set usage visibility
+- question set and template management
+- teaching-group management
+- student account management
+- teacher account management
+- access-grant switching
+- teacher-role toggling
 - privileged system-wide visibility
 
 ### Teacher
@@ -398,6 +456,11 @@ src/
       teacher/
       question-sets/
     admin/
+      content/
+      students/
+      teachers/
+      teaching-groups/
+      question-sets/
     actions/
 
   components/
@@ -411,6 +474,7 @@ src/
   lib/
     access.ts
     access-helpers-db.ts
+    admin-user-helpers-db.ts
     assignment-helpers-db.ts
     assignment-progress.ts
     auth.ts
@@ -469,6 +533,10 @@ src/
 - prices
 - user_access_grants
 
+### Roles and profiles
+
+- profiles
+
 ---
 
 ## 🗄️ Database Relationship Overview
@@ -504,7 +572,7 @@ erDiagram
   PROFILES ||--o{ ASSIGNMENTS : creates
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : submits
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : reviews
-  PROFILES ||--o{ QUESTION_ATTEMPTS : answers
+  PROFILES ||--o{ TEACHING_GROUP_MEMBERS : belongs_to
 
   COURSES {
     uuid id
@@ -603,6 +671,9 @@ erDiagram
   TEACHING_GROUPS {
     uuid id
     text name
+    uuid course_id
+    uuid course_variant_id
+    boolean is_active
   }
 
   TEACHING_GROUP_MEMBERS {
@@ -623,6 +694,13 @@ erDiagram
     uuid id
     uuid product_id
     uuid user_id
+    text access_mode
+    text source
+    timestamptz starts_at
+    timestamptz ends_at
+    boolean is_active
+    uuid granted_by
+    timestamptz created_at
   }
 
   LESSON_PROGRESS {
@@ -654,6 +732,7 @@ erDiagram
     uuid id
     text email
     boolean is_admin
+    boolean is_teacher
   }
 ```
 
@@ -667,6 +746,12 @@ erDiagram
 - signed URLs for uploaded files
 - assignment uploads scoped by user
 - helper-level admin-aware access handling for management views
+- explicit admin write policies for:
+  - content entities
+  - teaching groups
+  - teaching group memberships
+  - access grants
+  - profiles
 
 ---
 
@@ -717,12 +802,14 @@ http://localhost:3000
 
 ## 🛣️ Next Areas for Expansion
 
-- payment integration
-- analytics and reporting
+- database-driven lesson authoring and lesson-block admin tools
+- richer lesson block library
+- longer lesson flow UX (sections / steps / carousel / subpages)
+- payments and billing-driven access
 - speaking workflows
 - audio recording tasks
 - richer assignment analytics
-- more advanced question-set progress summaries
+- deeper progress summaries
 - broader admin tools
 
 ---

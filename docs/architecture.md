@@ -71,11 +71,14 @@ flowchart TD
   TA --> AC[Create / Edit / Order items]
   TR --> RV[Review / Reopen / Filter / Sort]
 
-  A --> CMS[Admin content tools]
-  CMS --> QS[Question set management]
-  CMS --> QQ[Question management]
+  A --> CMS[Admin CMS]
+  CMS --> CONTENT[Courses / Variants / Modules / Lessons]
+  CMS --> QS[Question sets]
+  CMS --> QQ[Questions]
   CMS --> TMP[Templates]
-  CMS --> USE[Usage visibility]
+  CMS --> USERS[Students / Teachers]
+  CMS --> GROUPS[Teaching groups]
+  CMS --> ACCESS[Access grants + roles]
 
   ASG --> SUB[Submission workflow]
   SUB --> TXT2[Text response]
@@ -119,6 +122,7 @@ Main concerns:
 - role-aware helpers
 - assignment workflow logic
 - question transformation and rendering support
+- admin CMS orchestration
 
 ### Data layer
 
@@ -139,6 +143,20 @@ Supabase provides:
 - Variant
 - Module
 - Lesson
+
+### Content management architecture
+
+Content is now administered through a contextual admin CMS.
+
+The navigation flow is:
+
+- Course list
+- Course detail
+- Variant detail
+- Module detail
+- Lesson detail
+
+This preserves parent-child context while still allowing reuse and future expansion.
 
 ### Lesson architecture
 
@@ -259,23 +277,43 @@ That means:
 - question set items use question activity
 - custom tasks remain teacher-defined work without automatic completion tracking
 
+### Access switching and progress
+
+Progress is intentionally separate from access grants.
+
+This means changing a student's active access does not need to delete or rewrite historical progress, which is especially important for variant-aware learning paths.
+
 ---
 
-## 7. Admin content system
+## 7. Admin content and operations system
 
-The platform includes a custom admin CMS for question content rather than relying on direct database editing.
+The platform now has two distinct admin surfaces under one CMS direction.
 
-It currently supports:
+### Content CMS
 
-- question set CRUD
-- question CRUD
-- option / accepted answer editing
-- duplication
-- reordering
-- template workflows
-- usage visibility
+Supports:
 
-This is important architecturally because it keeps reusable educational content in a managed system, not in ad hoc SQL operations.
+- course CRUD
+- variant CRUD
+- module CRUD
+- lesson CRUD shell
+- reordering for variants, modules, and lessons
+- contextual navigation and dedicated edit pages
+- public-view shortcuts
+
+### Operational admin tools
+
+Supports:
+
+- question set and question management
+- student account views
+- teacher account views
+- teaching group creation and editing
+- teaching group membership management
+- access-grant switching
+- teacher-role toggling
+- dashboard summary widgets
+- success/error banners and destructive-action confirmations
 
 ---
 
@@ -284,7 +322,8 @@ This is important architecturally because it keeps reusable educational content 
 ### Role handling
 
 - admin visibility uses `profiles.is_admin`
-- teacher access is group-aware
+- teacher role uses `profiles.is_teacher`
+- teaching-group membership role uses `teaching_group_members.member_role`
 - student access is default authenticated access
 
 ### Access modes
@@ -304,6 +343,17 @@ Security is enforced through a combination of:
 - Row Level Security policies in Supabase
 
 This is why some helper functions include admin-aware logic even when route access is already gated.
+
+### Important admin security detail
+
+Recent admin CMS work required explicit admin RLS support for:
+
+- profiles
+- user_access_grants
+- teaching_groups
+- teaching_group_members
+
+This made role switching, access switching, and teaching-group management behave as true admin workflows rather than read-only views.
 
 ---
 
@@ -340,6 +390,7 @@ erDiagram
   PROFILES ||--o{ ASSIGNMENTS : creates
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : submits
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : reviews
+  PROFILES ||--o{ TEACHING_GROUP_MEMBERS : belongs_to
 ```
 
 ---
@@ -358,6 +409,11 @@ src/
       teacher/
       question-sets/
     admin/
+      content/
+      question-sets/
+      students/
+      teachers/
+      teaching-groups/
     actions/
 
   components/
@@ -371,6 +427,7 @@ src/
   lib/
     access.ts
     access-helpers-db.ts
+    admin-user-helpers-db.ts
     assignment-helpers-db.ts
     assignment-progress.ts
     auth.ts
@@ -409,9 +466,10 @@ The platform now has several strong foundations:
 - reusable lesson renderer
 - reusable metadata-driven question engine
 - real teacher assignment workflow
-- custom admin tooling for scalable content production
+- admin CMS for both content and operational workflows
 - security model aligned across route checks, helpers, and RLS
 - assignment UX that reflects operational review state rather than raw record status
+- teacher-role and access-grant systems that are explicit rather than inferred ad hoc
 
 ---
 
@@ -419,6 +477,9 @@ The platform now has several strong foundations:
 
 The current architecture is strong enough to support future additions such as:
 
+- database-driven lesson authoring
+- lesson block management from admin
+- section-based or step-based lesson flow UX
 - payments and billing-driven access
 - speaking workflows
 - richer analytics
