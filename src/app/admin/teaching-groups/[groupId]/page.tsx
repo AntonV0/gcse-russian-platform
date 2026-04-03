@@ -2,6 +2,12 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import {
+  addStudentToTeachingGroupAction,
+  addTeacherToTeachingGroupAction,
+  removeStudentFromTeachingGroupAction,
+  removeTeacherFromTeachingGroupAction,
+} from "@/app/actions/admin-user-actions";
 
 type TeachingGroupRow = {
   id: string;
@@ -63,6 +69,7 @@ export default async function AdminTeachingGroupDetailPage({
     { data: profiles },
     { data: courses },
     { data: variants },
+    { data: grants },
   ] = await Promise.all([
     supabase
       .from("teaching_groups")
@@ -76,6 +83,10 @@ export default async function AdminTeachingGroupDetailPage({
     supabase.from("profiles").select("id, email, full_name, display_name, is_admin"),
     supabase.from("courses").select("id, title, slug"),
     supabase.from("course_variants").select("id, course_id, title, slug"),
+    supabase
+      .from("user_access_grants")
+      .select("user_id, is_active")
+      .eq("is_active", true),
   ]);
 
   const teachingGroup = group as TeachingGroupRow | null;
@@ -83,6 +94,10 @@ export default async function AdminTeachingGroupDetailPage({
   const profileRows = (profiles ?? []) as ProfileRow[];
   const courseRows = (courses ?? []) as CourseRow[];
   const variantRows = (variants ?? []) as VariantRow[];
+  const activeGrantRows = (grants ?? []) as Array<{
+    user_id: string;
+    is_active: boolean;
+  }>;
 
   if (!teachingGroup) {
     return <main>Teaching group not found.</main>;
@@ -102,6 +117,26 @@ export default async function AdminTeachingGroupDetailPage({
 
   const teachers = membershipRows.filter((member) => member.member_role === "teacher");
   const students = membershipRows.filter((member) => member.member_role === "student");
+
+  const teacherIdsInGroup = new Set(teachers.map((member) => member.user_id));
+  const studentIdsInGroup = new Set(students.map((member) => member.user_id));
+  const activeGrantUserIds = new Set(activeGrantRows.map((grant) => grant.user_id));
+
+  const availableTeachers = profileRows.filter((profile) => {
+    if (teacherIdsInGroup.has(profile.id)) return false;
+    return (
+      profile.is_admin ||
+      profile.email?.includes("+1@") ||
+      profile.full_name?.toLowerCase().includes("teacher")
+    );
+  });
+
+  const availableStudents = profileRows.filter((profile) => {
+    if (profile.is_admin) return false;
+    if (studentIdsInGroup.has(profile.id)) return false;
+    if (teacherIdsInGroup.has(profile.id)) return false;
+    return activeGrantUserIds.has(profile.id);
+  });
 
   return (
     <main>
@@ -156,6 +191,82 @@ export default async function AdminTeachingGroupDetailPage({
         </div>
       </section>
 
+      <section className="mb-6 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-lg border bg-white">
+          <div className="border-b px-4 py-3 font-medium">Add Teacher</div>
+
+          <div className="px-4 py-4 text-sm">
+            {availableTeachers.length === 0 ? (
+              <div className="text-gray-500">No available teachers to add.</div>
+            ) : (
+              <form
+                action={addTeacherToTeachingGroupAction}
+                className="flex flex-wrap gap-3"
+              >
+                <input type="hidden" name="groupId" value={teachingGroup.id} />
+
+                <select
+                  name="userId"
+                  required
+                  className="rounded border px-3 py-2 text-sm"
+                >
+                  <option value="">Select teacher</option>
+                  {availableTeachers.map((profile) => (
+                    <option key={profile.id} value={profile.id}>
+                      {getPersonLabel(profile)}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="submit"
+                  className="rounded border px-4 py-2 hover:bg-gray-50"
+                >
+                  Add teacher
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-white">
+          <div className="border-b px-4 py-3 font-medium">Add Student</div>
+
+          <div className="px-4 py-4 text-sm">
+            {availableStudents.length === 0 ? (
+              <div className="text-gray-500">No available students to add.</div>
+            ) : (
+              <form
+                action={addStudentToTeachingGroupAction}
+                className="flex flex-wrap gap-3"
+              >
+                <input type="hidden" name="groupId" value={teachingGroup.id} />
+
+                <select
+                  name="userId"
+                  required
+                  className="rounded border px-3 py-2 text-sm"
+                >
+                  <option value="">Select student</option>
+                  {availableStudents.map((profile) => (
+                    <option key={profile.id} value={profile.id}>
+                      {getPersonLabel(profile)}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="submit"
+                  className="rounded border px-4 py-2 hover:bg-gray-50"
+                >
+                  Add student
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
+
       <section className="mb-6 rounded-lg border bg-white">
         <div className="border-b px-4 py-3 font-medium">Teachers ({teachers.length})</div>
 
@@ -180,14 +291,27 @@ export default async function AdminTeachingGroupDetailPage({
                     <div className="text-gray-500">{profile?.email || "No email"}</div>
                   </div>
 
-                  {profile ? (
-                    <Link
-                      href={`/admin/teachers/${profile.id}`}
-                      className="rounded border px-3 py-1 text-sm"
-                    >
-                      View teacher
-                    </Link>
-                  ) : null}
+                  <div className="flex gap-2">
+                    {profile ? (
+                      <Link
+                        href={`/admin/teachers/${profile.id}`}
+                        className="rounded border px-3 py-1 text-sm"
+                      >
+                        View teacher
+                      </Link>
+                    ) : null}
+
+                    <form action={removeTeacherFromTeachingGroupAction}>
+                      <input type="hidden" name="userId" value={member.user_id} />
+                      <input type="hidden" name="groupId" value={teachingGroup.id} />
+                      <button
+                        type="submit"
+                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </form>
+                  </div>
                 </div>
               );
             })
@@ -219,14 +343,27 @@ export default async function AdminTeachingGroupDetailPage({
                     <div className="text-gray-500">{profile?.email || "No email"}</div>
                   </div>
 
-                  {profile ? (
-                    <Link
-                      href={`/admin/students/${profile.id}`}
-                      className="rounded border px-3 py-1 text-sm"
-                    >
-                      View student
-                    </Link>
-                  ) : null}
+                  <div className="flex gap-2">
+                    {profile ? (
+                      <Link
+                        href={`/admin/students/${profile.id}`}
+                        className="rounded border px-3 py-1 text-sm"
+                      >
+                        View student
+                      </Link>
+                    ) : null}
+
+                    <form action={removeStudentFromTeachingGroupAction}>
+                      <input type="hidden" name="userId" value={member.user_id} />
+                      <input type="hidden" name="groupId" value={teachingGroup.id} />
+                      <button
+                        type="submit"
+                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </form>
+                  </div>
                 </div>
               );
             })
