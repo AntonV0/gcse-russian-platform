@@ -2,6 +2,10 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import {
+  setTeacherRoleAction,
+  switchStudentAccessGrantAction,
+} from "@/app/actions/admin-user-actions";
 
 type ProfileRow = {
   id: string;
@@ -45,6 +49,7 @@ type StudentCard = {
   email: string | null;
   full_name: string | null;
   display_name: string | null;
+  isTeacher: boolean;
   accessLabel: string;
   accessKey: string;
   isActive: boolean;
@@ -128,6 +133,30 @@ function getGrantLabel(
   return getStudentBucket(accessMode, productCode, productName).accessLabel;
 }
 
+function getProductLabel(product: ProductRow) {
+  const code = (product.code ?? "").toLowerCase();
+  const name = (product.name ?? "").toLowerCase();
+  const combined = `${code} ${name}`;
+
+  if (combined.includes("foundation") && combined.includes("full")) {
+    return "Foundation Full";
+  }
+
+  if (combined.includes("higher") && combined.includes("full")) {
+    return "Higher Full";
+  }
+
+  if (combined.includes("volna")) {
+    return "Volna";
+  }
+
+  if (combined.includes("trial")) {
+    return "Trial";
+  }
+
+  return product.name || product.code || product.id;
+}
+
 function matchesSearch(student: StudentCard, search: string) {
   if (!search) return true;
 
@@ -150,6 +179,8 @@ export default async function AdminStudentsPage({
     q?: string;
     status?: string;
     access?: string;
+    success?: string;
+    error?: string;
   }>;
 }) {
   const canAccess = await requireAdminAccess();
@@ -162,6 +193,10 @@ export default async function AdminStudentsPage({
   const q = (params.q ?? "").trim();
   const statusFilter = (params.status ?? "all").trim();
   const accessFilter = (params.access ?? "all").trim();
+
+  const currentPathWithFilters = `/admin/students?q=${encodeURIComponent(q)}&status=${encodeURIComponent(
+    statusFilter
+  )}&access=${encodeURIComponent(accessFilter)}`;
 
   const supabase = await createClient();
 
@@ -181,7 +216,7 @@ export default async function AdminStudentsPage({
       .select("id, user_id, access_mode, is_active, product_id, starts_at, ends_at")
       .order("starts_at", { ascending: false }),
     supabase.from("teaching_group_members").select("user_id, member_role, group_id"),
-    supabase.from("products").select("id, code, name"),
+    supabase.from("products").select("id, code, name").order("name", { ascending: true }),
     supabase.from("teaching_groups").select("id, name"),
   ]);
 
@@ -202,6 +237,7 @@ export default async function AdminStudentsPage({
 
   for (const membership of membershipRows) {
     if (membership.member_role !== "student") continue;
+
     if (!studentGroupsByUserId.has(membership.user_id)) {
       studentGroupsByUserId.set(membership.user_id, []);
     }
@@ -253,6 +289,7 @@ export default async function AdminStudentsPage({
         email: profile.email,
         full_name: profile.full_name,
         display_name: profile.display_name,
+        isTeacher: profile.is_teacher,
         accessLabel: bucket.accessLabel,
         accessKey: bucket.key,
         isActive: true,
@@ -290,6 +327,7 @@ export default async function AdminStudentsPage({
       email: profile.email,
       full_name: profile.full_name,
       display_name: profile.display_name,
+      isTeacher: profile.is_teacher,
       accessLabel: latestLabel,
       accessKey: latestKey,
       isActive: false,
@@ -325,12 +363,34 @@ export default async function AdminStudentsPage({
     orderedGroups.reduce((sum, group) => sum + group.rows.length, 0) +
     filteredInactiveStudents.length;
 
+  const accessOptions = productRows.filter((product) => {
+    const combined = `${product.code ?? ""} ${product.name ?? ""}`.toLowerCase();
+    return (
+      combined.includes("trial") ||
+      combined.includes("foundation") ||
+      combined.includes("higher") ||
+      combined.includes("volna")
+    );
+  });
+
   return (
     <main>
       <PageHeader
         title="Students"
         description="Student accounts grouped by current access type."
       />
+
+      {params.success ? (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {params.success}
+        </div>
+      ) : null}
+
+      {params.error ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {params.error}
+        </div>
+      ) : null}
 
       <form className="mb-6 rounded-lg border bg-white p-4">
         <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr_auto]">
@@ -437,13 +497,59 @@ export default async function AdminStudentsPage({
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end gap-2 text-xs">
-                    <div className="text-gray-400">
+                  <div className="flex flex-col items-end gap-3 text-xs">
+                    <div className="text-right text-gray-400">
                       <div>Start: {formatDate(student.startsAt)}</div>
                       <div>End: {formatDate(student.endsAt)}</div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <form
+                        action={switchStudentAccessGrantAction}
+                        className="flex gap-2"
+                      >
+                        <input type="hidden" name="userId" value={student.id} />
+                        <input
+                          type="hidden"
+                          name="redirectTo"
+                          value={currentPathWithFilters}
+                        />
+                        <select
+                          name="productId"
+                          defaultValue=""
+                          className="rounded border px-2 py-1 text-xs"
+                        >
+                          <option value="">Switch access</option>
+                          {accessOptions.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {getProductLabel(product)}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="submit"
+                          className="rounded border px-2 py-1 hover:bg-gray-50"
+                        >
+                          Apply
+                        </button>
+                      </form>
+
+                      <form action={setTeacherRoleAction}>
+                        <input type="hidden" name="userId" value={student.id} />
+                        <input
+                          type="hidden"
+                          name="redirectTo"
+                          value={currentPathWithFilters}
+                        />
+                        <input type="hidden" name="mode" value="enable" />
+                        <button
+                          type="submit"
+                          className="rounded border px-2 py-1 hover:bg-gray-50"
+                        >
+                          Make teacher
+                        </button>
+                      </form>
+
                       <Link
                         href={`/admin/students/${student.id}`}
                         className="rounded border px-2 py-1 hover:bg-gray-50"
@@ -496,13 +602,59 @@ export default async function AdminStudentsPage({
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end gap-2 text-xs">
-                    <div className="text-gray-400">
+                  <div className="flex flex-col items-end gap-3 text-xs">
+                    <div className="text-right text-gray-400">
                       <div>Start: {formatDate(student.startsAt)}</div>
                       <div>End: {formatDate(student.endsAt)}</div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <form
+                        action={switchStudentAccessGrantAction}
+                        className="flex gap-2"
+                      >
+                        <input type="hidden" name="userId" value={student.id} />
+                        <input
+                          type="hidden"
+                          name="redirectTo"
+                          value={currentPathWithFilters}
+                        />
+                        <select
+                          name="productId"
+                          defaultValue=""
+                          className="rounded border px-2 py-1 text-xs"
+                        >
+                          <option value="">Switch access</option>
+                          {accessOptions.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {getProductLabel(product)}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="submit"
+                          className="rounded border px-2 py-1 hover:bg-gray-50"
+                        >
+                          Apply
+                        </button>
+                      </form>
+
+                      <form action={setTeacherRoleAction}>
+                        <input type="hidden" name="userId" value={student.id} />
+                        <input
+                          type="hidden"
+                          name="redirectTo"
+                          value={currentPathWithFilters}
+                        />
+                        <input type="hidden" name="mode" value="enable" />
+                        <button
+                          type="submit"
+                          className="rounded border px-2 py-1 hover:bg-gray-50"
+                        >
+                          Make teacher
+                        </button>
+                      </form>
+
                       <Link
                         href={`/admin/students/${student.id}`}
                         className="rounded border px-2 py-1 hover:bg-gray-50"

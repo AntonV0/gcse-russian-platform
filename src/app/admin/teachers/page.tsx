@@ -2,6 +2,7 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import { setTeacherRoleAction } from "@/app/actions/admin-user-actions";
 
 type ProfileRow = {
   id: string;
@@ -31,6 +32,7 @@ type TeacherCard = {
   display_name: string | null;
   roles: string[];
   groupNames: string[];
+  isTeacher: boolean;
 };
 
 function getPersonLabel(
@@ -65,6 +67,8 @@ export default async function AdminTeachersPage({
 }: {
   searchParams?: Promise<{
     q?: string;
+    success?: string;
+    error?: string;
   }>;
 }) {
   const canAccess = await requireAdminAccess();
@@ -75,6 +79,7 @@ export default async function AdminTeachersPage({
 
   const params = (await searchParams) ?? {};
   const q = (params.q ?? "").trim();
+  const currentPathWithFilters = `/admin/teachers?q=${encodeURIComponent(q)}`;
 
   const supabase = await createClient();
 
@@ -129,6 +134,7 @@ export default async function AdminTeachersPage({
       display_name: profile.display_name,
       roles: Array.from(roles),
       groupNames: Array.from(groupsMap.get(profile.id) ?? []),
+      isTeacher: profile.is_teacher,
     });
   }
 
@@ -137,6 +143,18 @@ export default async function AdminTeachersPage({
   return (
     <main>
       <PageHeader title="Teachers" description="Admin and teaching accounts." />
+
+      {params.success ? (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {params.success}
+        </div>
+      ) : null}
+
+      {params.error ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {params.error}
+        </div>
+      ) : null}
 
       <form className="mb-6 rounded-lg border bg-white p-4">
         <div className="grid gap-4 md:grid-cols-[2fr_auto]">
@@ -207,12 +225,32 @@ export default async function AdminTeachersPage({
                   </div>
                 </div>
 
-                <Link
-                  href={`/admin/teachers/${teacher.id}`}
-                  className="rounded border px-2 py-1 text-sm hover:bg-gray-50"
-                >
-                  View
-                </Link>
+                <div className="flex flex-wrap justify-end gap-2">
+                  {teacher.isTeacher ? (
+                    <form action={setTeacherRoleAction}>
+                      <input type="hidden" name="userId" value={teacher.id} />
+                      <input
+                        type="hidden"
+                        name="redirectTo"
+                        value={currentPathWithFilters}
+                      />
+                      <input type="hidden" name="mode" value="disable" />
+                      <button
+                        type="submit"
+                        className="rounded border px-2 py-1 text-sm hover:bg-gray-50"
+                      >
+                        Remove teacher
+                      </button>
+                    </form>
+                  ) : null}
+
+                  <Link
+                    href={`/admin/teachers/${teacher.id}`}
+                    className="rounded border px-2 py-1 text-sm hover:bg-gray-50"
+                  >
+                    View
+                  </Link>
+                </div>
               </div>
             ))
           )}
