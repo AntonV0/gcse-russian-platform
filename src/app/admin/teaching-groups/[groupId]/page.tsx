@@ -8,6 +8,8 @@ import {
   removeStudentFromTeachingGroupAction,
   removeTeacherFromTeachingGroupAction,
 } from "@/app/actions/admin-user-actions";
+import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
+import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 
 type TeachingGroupRow = {
   id: string;
@@ -166,17 +168,10 @@ export default async function AdminTeachingGroupDetailPage({
         description="Teaching group overview and membership."
       />
 
-      {resolvedSearchParams.success ? (
-        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {resolvedSearchParams.success}
-        </div>
-      ) : null}
-
-      {resolvedSearchParams.error ? (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {resolvedSearchParams.error}
-        </div>
-      ) : null}
+      <AdminFeedbackBanner
+        success={resolvedSearchParams.success}
+        error={resolvedSearchParams.error}
+      />
 
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
         <div className="rounded-lg border bg-white">
@@ -343,12 +338,12 @@ export default async function AdminTeachingGroupDetailPage({
                         name="redirectTo"
                         value={`/admin/teaching-groups/${teachingGroup.id}`}
                       />
-                      <button
-                        type="submit"
+                      <AdminConfirmButton
+                        confirmMessage="Remove this teacher from the teaching group?"
                         className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
                       >
                         Remove
-                      </button>
+                      </AdminConfirmButton>
                     </form>
                   </div>
                 </div>
@@ -400,12 +395,12 @@ export default async function AdminTeachingGroupDetailPage({
                         name="redirectTo"
                         value={`/admin/teaching-groups/${teachingGroup.id}`}
                       />
-                      <button
-                        type="submit"
+                      <AdminConfirmButton
+                        confirmMessage="Remove this student from the teaching group?"
                         className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
                       >
                         Remove
-                      </button>
+                      </AdminConfirmButton>
                     </form>
                   </div>
                 </div>
