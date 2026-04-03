@@ -16,6 +16,7 @@ import {
   addStudentToTeachingGroupAction,
   deactivateAccessGrantAction,
   removeStudentFromTeachingGroupAction,
+  setTeacherRoleAction,
   switchStudentAccessGrantAction,
 } from "@/app/actions/admin-user-actions";
 
@@ -89,8 +90,10 @@ function formatVariantLabel(variantSlug: string) {
 
 export default async function AdminStudentProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ userId: string }>;
+  searchParams?: Promise<{ success?: string; error?: string }>;
 }) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
@@ -98,6 +101,7 @@ export default async function AdminStudentProfilePage({
   }
 
   const { userId } = await params;
+  const resolvedSearchParams = (await searchParams) ?? {};
 
   const [
     student,
@@ -162,6 +166,18 @@ export default async function AdminStudentProfilePage({
         description="Student profile, access grants, teaching groups, and progress by variant."
       />
 
+      {resolvedSearchParams.success ? (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {resolvedSearchParams.success}
+        </div>
+      ) : null}
+
+      {resolvedSearchParams.error ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {resolvedSearchParams.error}
+        </div>
+      ) : null}
+
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
         <div className="rounded-lg border bg-white">
           <div className="border-b px-4 py-3 font-medium">Profile Details</div>
@@ -182,6 +198,10 @@ export default async function AdminStudentProfilePage({
               {student.is_admin ? "Yes" : "No"}
             </div>
             <div>
+              <span className="font-medium">Teacher role:</span>{" "}
+              {student.is_teacher ? "Yes" : "No"}
+            </div>
+            <div>
               <span className="font-medium">Created:</span>{" "}
               {formatDateTime(student.created_at)}
             </div>
@@ -192,13 +212,25 @@ export default async function AdminStudentProfilePage({
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
           <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <p>This page now helps you manage the student safely.</p>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>switch access type directly</li>
-              <li>deactivate current access if needed</li>
-              <li>see old access history</li>
-              <li>see progress by variant before switching</li>
-            </ul>
+            <form action={setTeacherRoleAction} className="space-y-2">
+              <input type="hidden" name="userId" value={student.id} />
+              <input
+                type="hidden"
+                name="redirectTo"
+                value={`/admin/students/${student.id}`}
+              />
+              <input
+                type="hidden"
+                name="mode"
+                value={student.is_teacher ? "disable" : "enable"}
+              />
+              <button
+                type="submit"
+                className="rounded border px-3 py-2 text-left hover:bg-gray-50"
+              >
+                {student.is_teacher ? "Remove teacher role" : "Enable teacher role"}
+              </button>
+            </form>
           </div>
         </div>
       </section>
@@ -235,6 +267,11 @@ export default async function AdminStudentProfilePage({
               <form action={deactivateAccessGrantAction}>
                 <input type="hidden" name="userId" value={student.id} />
                 <input type="hidden" name="grantId" value={activeGrant.id} />
+                <input
+                  type="hidden"
+                  name="redirectTo"
+                  value={`/admin/students/${student.id}`}
+                />
                 <button
                   type="submit"
                   className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
@@ -259,6 +296,11 @@ export default async function AdminStudentProfilePage({
               className="flex flex-wrap gap-3"
             >
               <input type="hidden" name="userId" value={student.id} />
+              <input
+                type="hidden"
+                name="redirectTo"
+                value={`/admin/students/${student.id}`}
+              />
 
               <select
                 name="productId"
@@ -357,6 +399,11 @@ export default async function AdminStudentProfilePage({
               className="flex flex-wrap gap-3"
             >
               <input type="hidden" name="userId" value={student.id} />
+              <input
+                type="hidden"
+                name="redirectTo"
+                value={`/admin/students/${student.id}`}
+              />
 
               <select
                 name="groupId"
@@ -419,6 +466,11 @@ export default async function AdminStudentProfilePage({
                     <form action={removeStudentFromTeachingGroupAction}>
                       <input type="hidden" name="userId" value={student.id} />
                       <input type="hidden" name="groupId" value={membership.group_id} />
+                      <input
+                        type="hidden"
+                        name="redirectTo"
+                        value={`/admin/students/${student.id}`}
+                      />
                       <button
                         type="submit"
                         className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"

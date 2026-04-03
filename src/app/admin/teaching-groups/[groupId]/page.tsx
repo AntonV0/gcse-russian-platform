@@ -29,6 +29,7 @@ type ProfileRow = {
   full_name: string | null;
   display_name: string | null;
   is_admin: boolean;
+  is_teacher: boolean;
 };
 
 type CourseRow = {
@@ -85,7 +86,9 @@ export default async function AdminTeachingGroupDetailPage({
       .select("user_id, group_id, member_role")
       .eq("group_id", groupId),
     supabase.from("teaching_group_members").select("user_id, group_id, member_role"),
-    supabase.from("profiles").select("id, email, full_name, display_name, is_admin"),
+    supabase
+      .from("profiles")
+      .select("id, email, full_name, display_name, is_admin, is_teacher"),
     supabase.from("courses").select("id, title, slug"),
     supabase.from("course_variants").select("id, course_id, title, slug"),
     supabase
@@ -136,11 +139,12 @@ export default async function AdminTeachingGroupDetailPage({
 
   const availableTeachers = profileRows.filter((profile) => {
     if (teacherIdsInGroup.has(profile.id)) return false;
-    return profile.is_admin || knownTeacherIds.has(profile.id);
+    return profile.is_admin || profile.is_teacher || knownTeacherIds.has(profile.id);
   });
 
   const availableStudents = profileRows.filter((profile) => {
     if (profile.is_admin) return false;
+    if (profile.is_teacher) return false;
     if (studentIdsInGroup.has(profile.id)) return false;
     if (teacherIdsInGroup.has(profile.id)) return false;
     return activeGrantUserIds.has(profile.id);

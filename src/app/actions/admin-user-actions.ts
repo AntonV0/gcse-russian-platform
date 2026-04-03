@@ -30,6 +30,52 @@ function getRedirectTo(formData: FormData, fallback: string) {
   return redirectTo || fallback;
 }
 
+export async function setTeacherRoleAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const userId = getTrimmedString(formData, "userId");
+  const mode = getTrimmedString(formData, "mode");
+  const redirectTo = getRedirectTo(formData, `/admin/students/${userId}`);
+
+  if (!userId || !mode) {
+    redirect(buildRedirectUrl(redirectTo, { error: "Missing required fields" }));
+  }
+
+  if (mode !== "enable" && mode !== "disable") {
+    redirect(buildRedirectUrl(redirectTo, { error: "Invalid teacher role action" }));
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      is_teacher: mode === "enable",
+    })
+    .eq("id", userId);
+
+  if (error) {
+    console.error("Error updating teacher role:", { userId, mode, error });
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to update teacher role: ${error.message ?? "unknown error"}`,
+      })
+    );
+  }
+
+  revalidatePath("/admin/students");
+  revalidatePath("/admin/teachers");
+  revalidatePath(`/admin/students/${userId}`);
+  revalidatePath(`/admin/teachers/${userId}`);
+
+  redirect(
+    buildRedirectUrl(redirectTo, {
+      success: mode === "enable" ? "Teacher role enabled" : "Teacher role removed",
+    })
+  );
+}
+
 export async function deactivateAccessGrantAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");

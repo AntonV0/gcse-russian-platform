@@ -9,6 +9,7 @@ type ProfileRow = {
   full_name: string | null;
   display_name: string | null;
   is_admin: boolean;
+  is_teacher: boolean;
   created_at: string;
 };
 
@@ -173,7 +174,7 @@ export default async function AdminStudentsPage({
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, email, full_name, display_name, is_admin, created_at")
+      .select("id, email, full_name, display_name, is_admin, is_teacher, created_at")
       .order("created_at", { ascending: false }),
     supabase
       .from("user_access_grants")
@@ -226,6 +227,7 @@ export default async function AdminStudentsPage({
 
   for (const profile of profileRows) {
     if (profile.is_admin) continue;
+    if (profile.is_teacher) continue;
     if (teacherIds.has(profile.id)) continue;
 
     const userGrants = grantsByUserId.get(profile.id) ?? [];
