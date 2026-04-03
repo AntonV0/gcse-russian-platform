@@ -3,15 +3,20 @@ import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import {
   getAdminAccessGrantsByUserIdDb,
+  getAdminProductsDb,
   getAdminProfileByIdDb,
   getAdminTeachingGroupMembershipsByUserIdDb,
   getAdminTeachingGroupsDb,
+  getAdminVariantProgressSummaryByUserIdDb,
+  type AdminAccessGrantRow,
+  type AdminProductRow,
   type AdminProfileRow,
 } from "@/lib/admin-user-helpers-db";
 import {
   addStudentToTeachingGroupAction,
   deactivateAccessGrantAction,
   removeStudentFromTeachingGroupAction,
+  switchStudentAccessGrantAction,
 } from "@/app/actions/admin-user-actions";
 
 function formatDateTime(value: string | null) {
@@ -33,6 +38,55 @@ function getPersonLabel(profile: AdminProfileRow) {
   return profile.full_name || profile.display_name || profile.email || "Unnamed";
 }
 
+function getGrantLabel(grant: AdminAccessGrantRow) {
+  const product = grant.products?.[0] ?? null;
+  const code = (product?.code ?? "").toLowerCase();
+  const name = (product?.name ?? "").toLowerCase();
+  const combined = `${code} ${name}`;
+
+  if (grant.access_mode === "volna") return "Volna";
+  if (grant.access_mode === "trial") return "Trial";
+  if (grant.access_mode === "full" && combined.includes("foundation")) {
+    return "Foundation Full";
+  }
+  if (grant.access_mode === "full" && combined.includes("higher")) {
+    return "Higher Full";
+  }
+
+  return grant.access_mode;
+}
+
+function getProductLabel(product: AdminProductRow) {
+  const code = (product.code ?? "").toLowerCase();
+  const name = (product.name ?? "").toLowerCase();
+  const combined = `${code} ${name}`;
+
+  if (combined.includes("foundation") && combined.includes("full")) {
+    return "Foundation Full";
+  }
+
+  if (combined.includes("higher") && combined.includes("full")) {
+    return "Higher Full";
+  }
+
+  if (combined.includes("volna")) {
+    return "Volna";
+  }
+
+  if (combined.includes("trial")) {
+    return "Trial";
+  }
+
+  return product.name || product.code || product.id;
+}
+
+function formatVariantLabel(variantSlug: string) {
+  return variantSlug
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export default async function AdminStudentProfilePage({
   params,
 }: {
@@ -45,16 +99,39 @@ export default async function AdminStudentProfilePage({
 
   const { userId } = await params;
 
-  const [student, accessGrants, studentMemberships, teachingGroups] = await Promise.all([
+  const [
+    student,
+    accessGrants,
+    studentMemberships,
+    teachingGroups,
+    progressSummary,
+    products,
+  ] = await Promise.all([
     getAdminProfileByIdDb(userId),
     getAdminAccessGrantsByUserIdDb(userId),
     getAdminTeachingGroupMembershipsByUserIdDb(userId),
     getAdminTeachingGroupsDb(),
+    getAdminVariantProgressSummaryByUserIdDb(userId),
+    getAdminProductsDb(),
   ]);
 
   if (!student) {
     return <main>Student not found.</main>;
   }
+
+  const activeGrant = accessGrants.find((grant) => grant.is_active) ?? null;
+  const inactiveGrants = accessGrants.filter((grant) => !grant.is_active);
+
+  const selectableProducts = products.filter((product) => {
+    const combined = `${product.code ?? ""} ${product.name ?? ""}`.toLowerCase();
+
+    return (
+      combined.includes("trial") ||
+      combined.includes("foundation") ||
+      combined.includes("higher") ||
+      combined.includes("volna")
+    );
+  });
 
   const groupMap = new Map(teachingGroups.map((group) => [group.id, group]));
   const membershipsWithGroup = studentMemberships.map((membership) => ({
@@ -82,7 +159,7 @@ export default async function AdminStudentProfilePage({
 
       <PageHeader
         title={getPersonLabel(student)}
-        description="Student profile, access grants, and teaching group memberships."
+        description="Student profile, access grants, teaching groups, and progress by variant."
       />
 
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
@@ -115,70 +192,155 @@ export default async function AdminStudentProfilePage({
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
           <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <p>This page now supports basic admin management.</p>
+            <p>This page now helps you manage the student safely.</p>
             <ul className="list-disc space-y-1 pl-5">
-              <li>deactivate access grants</li>
-              <li>add student to teaching group</li>
-              <li>remove student from teaching group</li>
+              <li>switch access type directly</li>
+              <li>deactivate current access if needed</li>
+              <li>see old access history</li>
+              <li>see progress by variant before switching</li>
             </ul>
           </div>
         </div>
       </section>
 
       <section className="mb-6 rounded-lg border bg-white">
+        <div className="border-b px-4 py-3 font-medium">Current Active Access</div>
+
+        <div className="divide-y">
+          {!activeGrant ? (
+            <div className="px-4 py-6 text-sm text-gray-500">
+              No active access grant found.
+            </div>
+          ) : (
+            <div className="flex items-start justify-between gap-4 px-4 py-4 text-sm">
+              <div>
+                <div className="mb-2 flex flex-wrap gap-2">
+                  <span className="rounded border px-2 py-0.5">
+                    {getGrantLabel(activeGrant)}
+                  </span>
+                  <span className="rounded border px-2 py-0.5">Active</span>
+                  {activeGrant.products?.[0]?.name ? (
+                    <span className="rounded border px-2 py-0.5">
+                      {activeGrant.products[0].name}
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="text-gray-600">
+                  <div>Start: {formatDateTime(activeGrant.starts_at)}</div>
+                  <div>End: {formatDateTime(activeGrant.ends_at)}</div>
+                </div>
+              </div>
+
+              <form action={deactivateAccessGrantAction}>
+                <input type="hidden" name="userId" value={student.id} />
+                <input type="hidden" name="grantId" value={activeGrant.id} />
+                <button
+                  type="submit"
+                  className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                >
+                  Deactivate
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="mb-6 rounded-lg border bg-white">
+        <div className="border-b px-4 py-3 font-medium">Switch Access Type</div>
+
+        <div className="px-4 py-4 text-sm">
+          {selectableProducts.length === 0 ? (
+            <div className="text-gray-500">No selectable products found.</div>
+          ) : (
+            <form
+              action={switchStudentAccessGrantAction}
+              className="flex flex-wrap gap-3"
+            >
+              <input type="hidden" name="userId" value={student.id} />
+
+              <select
+                name="productId"
+                required
+                className="rounded border px-3 py-2 text-sm"
+                defaultValue=""
+              >
+                <option value="">Select access type</option>
+                {selectableProducts.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {getProductLabel(product)}
+                  </option>
+                ))}
+              </select>
+
+              <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
+                Switch access
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
+
+      <section className="mb-6 rounded-lg border bg-white">
         <div className="border-b px-4 py-3 font-medium">
-          Access Grants ({accessGrants.length})
+          Access History ({inactiveGrants.length})
         </div>
 
         <div className="divide-y">
-          {accessGrants.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">No access grants found.</div>
+          {inactiveGrants.length === 0 ? (
+            <div className="px-4 py-6 text-sm text-gray-500">
+              No inactive access grants found.
+            </div>
           ) : (
-            accessGrants.map((grant) => {
-              const product = grant.products?.[0] ?? null;
-
-              return (
-                <div
-                  key={grant.id}
-                  className="flex items-start justify-between gap-4 px-4 py-4 text-sm"
-                >
-                  <div>
-                    <div className="mb-2 flex flex-wrap gap-2">
-                      <span className="rounded border px-2 py-0.5">
-                        {grant.access_mode}
-                      </span>
-                      <span className="rounded border px-2 py-0.5">
-                        {grant.is_active ? "Active" : "Inactive"}
-                      </span>
-                      {product?.name ? (
-                        <span className="rounded border px-2 py-0.5">{product.name}</span>
-                      ) : null}
-                      {product?.code ? (
-                        <span className="rounded border px-2 py-0.5">{product.code}</span>
-                      ) : null}
-                    </div>
-
-                    <div className="text-gray-600">
-                      <div>Start: {formatDateTime(grant.starts_at)}</div>
-                      <div>End: {formatDateTime(grant.ends_at)}</div>
-                    </div>
-                  </div>
-
-                  {grant.is_active ? (
-                    <form action={deactivateAccessGrantAction}>
-                      <input type="hidden" name="userId" value={student.id} />
-                      <input type="hidden" name="grantId" value={grant.id} />
-                      <button
-                        type="submit"
-                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
-                      >
-                        Deactivate
-                      </button>
-                    </form>
+            inactiveGrants.map((grant) => (
+              <div key={grant.id} className="px-4 py-4 text-sm">
+                <div className="mb-2 flex flex-wrap gap-2">
+                  <span className="rounded border px-2 py-0.5">
+                    {getGrantLabel(grant)}
+                  </span>
+                  <span className="rounded border px-2 py-0.5">Inactive</span>
+                  {grant.products?.[0]?.name ? (
+                    <span className="rounded border px-2 py-0.5">
+                      {grant.products[0].name}
+                    </span>
                   ) : null}
                 </div>
-              );
-            })
+
+                <div className="text-gray-600">
+                  <div>Start: {formatDateTime(grant.starts_at)}</div>
+                  <div>End: {formatDateTime(grant.ends_at)}</div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      <section className="mb-6 rounded-lg border bg-white">
+        <div className="border-b px-4 py-3 font-medium">
+          Progress Summary by Variant ({progressSummary.length})
+        </div>
+
+        <div className="divide-y">
+          {progressSummary.length === 0 ? (
+            <div className="px-4 py-6 text-sm text-gray-500">
+              No completed lesson progress found yet.
+            </div>
+          ) : (
+            progressSummary.map((row) => (
+              <div
+                key={`${row.course_slug}-${row.variant_slug}`}
+                className="px-4 py-4 text-sm"
+              >
+                <div className="font-medium">
+                  {row.course_slug} · {formatVariantLabel(row.variant_slug)}
+                </div>
+                <div className="text-gray-600">
+                  Completed lessons: {row.completed_lessons}
+                </div>
+              </div>
+            ))
           )}
         </div>
       </section>

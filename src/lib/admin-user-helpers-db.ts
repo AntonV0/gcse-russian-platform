@@ -37,6 +37,18 @@ export type AdminTeachingGroupMemberRow = {
   member_role: string;
 };
 
+export type AdminVariantProgressSummaryRow = {
+  course_slug: string;
+  variant_slug: string;
+  completed_lessons: number;
+};
+
+export type AdminProductRow = {
+  id: string;
+  code: string | null;
+  name: string | null;
+};
+
 export async function getAdminProfileByIdDb(userId: string) {
   const supabase = await createClient();
 
@@ -118,4 +130,72 @@ export async function getAdminTeachingGroupMembershipsByUserIdDb(userId: string)
   }
 
   return (data as AdminTeachingGroupMemberRow[]) ?? [];
+}
+
+export async function getAdminVariantProgressSummaryByUserIdDb(
+  userId: string
+): Promise<AdminVariantProgressSummaryRow[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_progress")
+    .select("course_slug, variant_slug, completed")
+    .eq("user_id", userId)
+    .eq("completed", true);
+
+  if (error) {
+    console.error("Error fetching admin variant progress summary by user id:", {
+      userId,
+      error,
+    });
+    return [];
+  }
+
+  const rows =
+    (data as Array<{
+      course_slug: string;
+      variant_slug: string;
+      completed: boolean;
+    }>) ?? [];
+
+  const summaryMap = new Map<string, AdminVariantProgressSummaryRow>();
+
+  for (const row of rows) {
+    const key = `${row.course_slug}::${row.variant_slug}`;
+
+    if (!summaryMap.has(key)) {
+      summaryMap.set(key, {
+        course_slug: row.course_slug,
+        variant_slug: row.variant_slug,
+        completed_lessons: 0,
+      });
+    }
+
+    const current = summaryMap.get(key)!;
+    current.completed_lessons += 1;
+  }
+
+  return Array.from(summaryMap.values()).sort((a, b) => {
+    if (a.course_slug !== b.course_slug) {
+      return a.course_slug.localeCompare(b.course_slug);
+    }
+
+    return a.variant_slug.localeCompare(b.variant_slug);
+  });
+}
+
+export async function getAdminProductsDb(): Promise<AdminProductRow[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, code, name")
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching admin products:", error);
+    return [];
+  }
+
+  return (data as AdminProductRow[]) ?? [];
 }
