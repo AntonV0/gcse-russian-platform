@@ -472,13 +472,13 @@ export async function moveModuleAction(formData: FormData) {
   reordered.splice(targetIndex, 0, movedItem);
 
   for (let index = 0; index < reordered.length; index += 1) {
-    const module = reordered[index];
+    const courseModule = reordered[index];
     const temporaryPosition = 1000 + index;
 
     const { error: tempError } = await supabase
       .from("modules")
       .update({ position: temporaryPosition })
-      .eq("id", module.id)
+      .eq("id", courseModule.id)
       .eq("course_variant_id", variantId);
 
     if (tempError) {
@@ -488,13 +488,13 @@ export async function moveModuleAction(formData: FormData) {
   }
 
   for (let index = 0; index < reordered.length; index += 1) {
-    const module = reordered[index];
+    const courseModule = reordered[index];
     const finalPosition = index + 1;
 
     const { error: finalError } = await supabase
       .from("modules")
       .update({ position: finalPosition })
-      .eq("id", module.id)
+      .eq("id", courseModule.id)
       .eq("course_variant_id", variantId);
 
     if (finalError) {
