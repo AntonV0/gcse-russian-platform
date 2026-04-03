@@ -24,6 +24,19 @@ type ProfileRow = {
   display_name: string | null;
 };
 
+type CourseRow = {
+  id: string;
+  title: string;
+  slug: string;
+};
+
+type VariantRow = {
+  id: string;
+  course_id: string;
+  title: string;
+  slug: string;
+};
+
 function getPersonLabel(
   profile: Pick<ProfileRow, "full_name" | "display_name" | "email">
 ) {
@@ -38,22 +51,38 @@ export default async function AdminTeachingGroupsPage() {
 
   const supabase = await createClient();
 
-  const [{ data: groups }, { data: memberships }, { data: profiles }] = await Promise.all(
-    [
-      supabase
-        .from("teaching_groups")
-        .select("id, name, course_id, course_variant_id, is_active")
-        .order("name", { ascending: true }),
-      supabase.from("teaching_group_members").select("group_id, user_id, member_role"),
-      supabase.from("profiles").select("id, email, full_name, display_name"),
-    ]
-  );
+  const [
+    { data: groups },
+    { data: memberships },
+    { data: profiles },
+    { data: courses },
+    { data: variants },
+  ] = await Promise.all([
+    supabase
+      .from("teaching_groups")
+      .select("id, name, course_id, course_variant_id, is_active")
+      .order("name", { ascending: true }),
+    supabase.from("teaching_group_members").select("group_id, user_id, member_role"),
+    supabase.from("profiles").select("id, email, full_name, display_name"),
+    supabase
+      .from("courses")
+      .select("id, title, slug")
+      .order("title", { ascending: true }),
+    supabase
+      .from("course_variants")
+      .select("id, course_id, title, slug")
+      .order("title", { ascending: true }),
+  ]);
 
   const groupRows = (groups ?? []) as TeachingGroupRow[];
   const membershipRows = (memberships ?? []) as TeachingGroupMemberRow[];
   const profileRows = (profiles ?? []) as ProfileRow[];
+  const courseRows = (courses ?? []) as CourseRow[];
+  const variantRows = (variants ?? []) as VariantRow[];
 
   const profileMap = new Map(profileRows.map((profile) => [profile.id, profile]));
+  const courseMap = new Map(courseRows.map((course) => [course.id, course]));
+  const variantMap = new Map(variantRows.map((variant) => [variant.id, variant]));
 
   const counts = new Map<
     string,
@@ -75,7 +104,6 @@ export default async function AdminTeachingGroupsPage() {
 
     if (membership.member_role === "teacher") {
       current.teachers += 1;
-
       const profile = profileMap.get(membership.user_id);
       if (profile) {
         current.teacherNames.push(getPersonLabel(profile));
@@ -89,10 +117,19 @@ export default async function AdminTeachingGroupsPage() {
 
   return (
     <main>
-      <PageHeader
-        title="Teaching Groups"
-        description="View groups, teacher assignment, and membership structure."
-      />
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <PageHeader
+          title="Teaching Groups"
+          description="View groups, teacher assignment, and membership structure."
+        />
+
+        <Link
+          href="/admin/teaching-groups/new"
+          className="rounded bg-black px-4 py-2 text-white"
+        >
+          New teaching group
+        </Link>
+      </div>
 
       <div className="rounded-lg border bg-white">
         <div className="border-b px-4 py-3 font-medium">
@@ -112,6 +149,13 @@ export default async function AdminTeachingGroupsPage() {
                 students: 0,
                 teacherNames: [],
               };
+
+              const linkedCourse = group.course_id
+                ? (courseMap.get(group.course_id) ?? null)
+                : null;
+              const linkedVariant = group.course_variant_id
+                ? (variantMap.get(group.course_variant_id) ?? null)
+                : null;
 
               return (
                 <div
@@ -140,22 +184,35 @@ export default async function AdminTeachingGroupsPage() {
                         {group.is_active ? "Active" : "Inactive"}
                       </span>
 
-                      {group.course_id ? (
-                        <span className="rounded border px-2 py-0.5">Course linked</span>
+                      {linkedCourse ? (
+                        <span className="rounded border px-2 py-0.5">
+                          {linkedCourse.title}
+                        </span>
                       ) : null}
 
-                      {group.course_variant_id ? (
-                        <span className="rounded border px-2 py-0.5">Variant linked</span>
+                      {linkedVariant ? (
+                        <span className="rounded border px-2 py-0.5">
+                          {linkedVariant.title}
+                        </span>
                       ) : null}
                     </div>
                   </Link>
 
-                  <Link
-                    href={`/admin/teaching-groups/${group.id}`}
-                    className="rounded border px-3 py-1 text-sm"
-                  >
-                    Open
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/admin/teaching-groups/${group.id}/edit`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      Edit
+                    </Link>
+
+                    <Link
+                      href={`/admin/teaching-groups/${group.id}`}
+                      className="rounded border px-3 py-1 text-sm"
+                    >
+                      Open
+                    </Link>
+                  </div>
                 </div>
               );
             })
