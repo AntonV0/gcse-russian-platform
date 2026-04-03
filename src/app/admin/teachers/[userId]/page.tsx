@@ -10,6 +10,7 @@ import {
 import {
   addTeacherToTeachingGroupAction,
   removeTeacherFromTeachingGroupAction,
+  setTeacherRoleAction,
 } from "@/app/actions/admin-user-actions";
 
 function formatDateTime(value: string | null) {
@@ -27,14 +28,16 @@ function formatDateTime(value: string | null) {
   });
 }
 
-function getPersonLabel(profile: AdminProfileRow) {
+function getPersonLabel(profile: AdminProfileRow & { is_teacher?: boolean }) {
   return profile.full_name || profile.display_name || profile.email || "Unnamed";
 }
 
 export default async function AdminTeacherProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ userId: string }>;
+  searchParams?: Promise<{ success?: string; error?: string }>;
 }) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
@@ -42,6 +45,7 @@ export default async function AdminTeacherProfilePage({
   }
 
   const { userId } = await params;
+  const resolvedSearchParams = (await searchParams) ?? {};
 
   const [teacher, teacherMemberships, teachingGroups] = await Promise.all([
     getAdminProfileByIdDb(userId),
@@ -52,6 +56,8 @@ export default async function AdminTeacherProfilePage({
   if (!teacher) {
     return <main>Teacher not found.</main>;
   }
+
+  const teacherWithRole = teacher as AdminProfileRow & { is_teacher?: boolean };
 
   const groupMap = new Map(teachingGroups.map((group) => [group.id, group]));
   const membershipsWithGroup = teacherMemberships.map((membership) => ({
@@ -78,9 +84,21 @@ export default async function AdminTeacherProfilePage({
       </div>
 
       <PageHeader
-        title={getPersonLabel(teacher)}
+        title={getPersonLabel(teacherWithRole)}
         description="Teacher/admin account overview."
       />
+
+      {resolvedSearchParams.success ? (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {resolvedSearchParams.success}
+        </div>
+      ) : null}
+
+      {resolvedSearchParams.error ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {resolvedSearchParams.error}
+        </div>
+      ) : null}
 
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
         <div className="rounded-lg border bg-white">
@@ -88,22 +106,27 @@ export default async function AdminTeacherProfilePage({
 
           <div className="space-y-3 px-4 py-4 text-sm">
             <div>
-              <span className="font-medium">Full name:</span> {teacher.full_name || "—"}
+              <span className="font-medium">Full name:</span>{" "}
+              {teacherWithRole.full_name || "—"}
             </div>
             <div>
               <span className="font-medium">Display name:</span>{" "}
-              {teacher.display_name || "—"}
+              {teacherWithRole.display_name || "—"}
             </div>
             <div>
-              <span className="font-medium">Email:</span> {teacher.email || "—"}
+              <span className="font-medium">Email:</span> {teacherWithRole.email || "—"}
             </div>
             <div>
               <span className="font-medium">Admin:</span>{" "}
-              {teacher.is_admin ? "Yes" : "No"}
+              {teacherWithRole.is_admin ? "Yes" : "No"}
+            </div>
+            <div>
+              <span className="font-medium">Teacher role:</span>{" "}
+              {teacherWithRole.is_teacher ? "Yes" : "No"}
             </div>
             <div>
               <span className="font-medium">Created:</span>{" "}
-              {formatDateTime(teacher.created_at)}
+              {formatDateTime(teacherWithRole.created_at)}
             </div>
           </div>
         </div>
@@ -112,11 +135,27 @@ export default async function AdminTeacherProfilePage({
           <div className="border-b px-4 py-3 font-medium">Actions</div>
 
           <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <p>This page now supports basic teaching-group management.</p>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>add teacher to teaching group</li>
-              <li>remove teacher from teaching group</li>
-            </ul>
+            <form action={setTeacherRoleAction} className="space-y-2">
+              <input type="hidden" name="userId" value={teacherWithRole.id} />
+              <input
+                type="hidden"
+                name="redirectTo"
+                value={`/admin/teachers/${teacherWithRole.id}`}
+              />
+              <input
+                type="hidden"
+                name="mode"
+                value={teacherWithRole.is_teacher ? "disable" : "enable"}
+              />
+              <button
+                type="submit"
+                className="rounded border px-3 py-2 text-left hover:bg-gray-50"
+              >
+                {teacherWithRole.is_teacher
+                  ? "Remove teacher role"
+                  : "Enable teacher role"}
+              </button>
+            </form>
           </div>
         </div>
       </section>
@@ -132,7 +171,12 @@ export default async function AdminTeacherProfilePage({
               action={addTeacherToTeachingGroupAction}
               className="flex flex-wrap gap-3"
             >
-              <input type="hidden" name="userId" value={teacher.id} />
+              <input type="hidden" name="userId" value={teacherWithRole.id} />
+              <input
+                type="hidden"
+                name="redirectTo"
+                value={`/admin/teachers/${teacherWithRole.id}`}
+              />
 
               <select
                 name="groupId"
@@ -193,8 +237,13 @@ export default async function AdminTeacherProfilePage({
 
                   {membership.member_role === "teacher" ? (
                     <form action={removeTeacherFromTeachingGroupAction}>
-                      <input type="hidden" name="userId" value={teacher.id} />
+                      <input type="hidden" name="userId" value={teacherWithRole.id} />
                       <input type="hidden" name="groupId" value={membership.group_id} />
+                      <input
+                        type="hidden"
+                        name="redirectTo"
+                        value={`/admin/teachers/${teacherWithRole.id}`}
+                      />
                       <button
                         type="submit"
                         className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"

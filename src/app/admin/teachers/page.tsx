@@ -9,6 +9,7 @@ type ProfileRow = {
   full_name: string | null;
   display_name: string | null;
   is_admin: boolean;
+  is_teacher: boolean;
   created_at: string;
 };
 
@@ -81,7 +82,7 @@ export default async function AdminTeachersPage({
     [
       supabase
         .from("profiles")
-        .select("id, email, full_name, display_name, is_admin, created_at")
+        .select("id, email, full_name, display_name, is_admin, is_teacher, created_at")
         .order("created_at", { ascending: false }),
       supabase.from("teaching_group_members").select("user_id, member_role, group_id"),
       supabase.from("teaching_groups").select("id, name"),
@@ -98,19 +99,12 @@ export default async function AdminTeachersPage({
     (member) => member.member_role === "teacher"
   );
 
-  const roleMap = new Map<string, Set<string>>();
   const groupsMap = new Map<string, Set<string>>();
 
   for (const membership of teacherMemberships) {
-    if (!roleMap.has(membership.user_id)) {
-      roleMap.set(membership.user_id, new Set<string>());
-    }
-
     if (!groupsMap.has(membership.user_id)) {
       groupsMap.set(membership.user_id, new Set<string>());
     }
-
-    roleMap.get(membership.user_id)?.add(membership.member_role);
 
     const groupName = groupMap.get(membership.group_id);
     if (groupName) {
@@ -123,16 +117,8 @@ export default async function AdminTeachersPage({
   for (const profile of profileRows) {
     const roles = new Set<string>();
 
-    if (profile.is_admin) {
-      roles.add("admin");
-    }
-
-    const teachingRoles = roleMap.get(profile.id);
-    if (teachingRoles) {
-      for (const role of teachingRoles) {
-        roles.add(role);
-      }
-    }
+    if (profile.is_admin) roles.add("admin");
+    if (profile.is_teacher) roles.add("teacher");
 
     if (roles.size === 0) continue;
 
