@@ -9,15 +9,37 @@ function getTrimmedString(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
 }
 
+function buildRedirectUrl(
+  basePath: string,
+  params: Record<string, string | null | undefined>
+) {
+  const searchParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value) {
+      searchParams.set(key, value);
+    }
+  }
+
+  const query = searchParams.toString();
+  return query ? `${basePath}?${query}` : basePath;
+}
+
+function getRedirectTo(formData: FormData, fallback: string) {
+  const redirectTo = getTrimmedString(formData, "redirectTo");
+  return redirectTo || fallback;
+}
+
 export async function deactivateAccessGrantAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
 
   const userId = getTrimmedString(formData, "userId");
   const grantId = getTrimmedString(formData, "grantId");
+  const redirectTo = getRedirectTo(formData, `/admin/students/${userId}`);
 
   if (!userId || !grantId) {
-    throw new Error("Missing required fields");
+    redirect(buildRedirectUrl(redirectTo, { error: "Missing required fields" }));
   }
 
   const supabase = await createClient();
@@ -30,12 +52,16 @@ export async function deactivateAccessGrantAction(formData: FormData) {
 
   if (error) {
     console.error("Error deactivating access grant:", { userId, grantId, error });
-    throw new Error("Failed to deactivate access grant");
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to deactivate access grant: ${error.message ?? "unknown error"}`,
+      })
+    );
   }
 
   revalidatePath(`/admin/students/${userId}`);
   revalidatePath("/admin/students");
-  redirect(`/admin/students/${userId}`);
+  redirect(buildRedirectUrl(redirectTo, { success: "Access grant deactivated" }));
 }
 
 export async function switchStudentAccessGrantAction(formData: FormData) {
@@ -44,9 +70,10 @@ export async function switchStudentAccessGrantAction(formData: FormData) {
 
   const userId = getTrimmedString(formData, "userId");
   const productId = getTrimmedString(formData, "productId");
+  const redirectTo = getRedirectTo(formData, `/admin/students/${userId}`);
 
   if (!userId || !productId) {
-    throw new Error("Missing required fields");
+    redirect(buildRedirectUrl(redirectTo, { error: "Missing required fields" }));
   }
 
   const supabase = await createClient();
@@ -63,7 +90,11 @@ export async function switchStudentAccessGrantAction(formData: FormData) {
       productId,
       error: productError,
     });
-    throw new Error("Failed to load selected product");
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to load selected product: ${productError?.message ?? "unknown error"}`,
+      })
+    );
   }
 
   let accessMode = "full";
@@ -75,7 +106,6 @@ export async function switchStudentAccessGrantAction(formData: FormData) {
     accessMode = "volna";
   }
 
-  // Step 1: deactivate all currently active grants for this user
   const { error: deactivateError } = await supabase
     .from("user_access_grants")
     .update({ is_active: false })
@@ -87,12 +117,13 @@ export async function switchStudentAccessGrantAction(formData: FormData) {
       userId,
       error: deactivateError,
     });
-    throw new Error(
-      `Failed to deactivate current access: ${deactivateError.message ?? "unknown error"}`
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to deactivate current access: ${deactivateError.message ?? "unknown error"}`,
+      })
     );
   }
 
-  // Step 2: if a matching grant already exists for this user/product, reactivate it
   const { data: existingGrant, error: existingGrantError } = await supabase
     .from("user_access_grants")
     .select("id")
@@ -108,8 +139,10 @@ export async function switchStudentAccessGrantAction(formData: FormData) {
       productId,
       error: existingGrantError,
     });
-    throw new Error(
-      `Failed to check existing access grant: ${existingGrantError.message ?? "unknown error"}`
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to check existing access grant: ${existingGrantError.message ?? "unknown error"}`,
+      })
     );
   }
 
@@ -133,12 +166,13 @@ export async function switchStudentAccessGrantAction(formData: FormData) {
         grantId: existingGrant.id,
         error: reactivateError,
       });
-      throw new Error(
-        `Failed to reactivate existing access grant: ${reactivateError.message ?? "unknown error"}`
+      redirect(
+        buildRedirectUrl(redirectTo, {
+          error: `Failed to reactivate existing access grant: ${reactivateError.message ?? "unknown error"}`,
+        })
       );
     }
   } else {
-    // Step 3: otherwise create a new grant
     const { error: insertError } = await supabase.from("user_access_grants").insert({
       user_id: userId,
       product_id: product.id,
@@ -157,15 +191,17 @@ export async function switchStudentAccessGrantAction(formData: FormData) {
         error: insertError,
       });
 
-      throw new Error(
-        `Failed to create new access grant: ${insertError.message ?? "unknown error"}`
+      redirect(
+        buildRedirectUrl(redirectTo, {
+          error: `Failed to create new access grant: ${insertError.message ?? "unknown error"}`,
+        })
       );
     }
   }
 
   revalidatePath(`/admin/students/${userId}`);
   revalidatePath("/admin/students");
-  redirect(`/admin/students/${userId}`);
+  redirect(buildRedirectUrl(redirectTo, { success: "Student access updated" }));
 }
 
 export async function addStudentToTeachingGroupAction(formData: FormData) {
@@ -174,9 +210,10 @@ export async function addStudentToTeachingGroupAction(formData: FormData) {
 
   const userId = getTrimmedString(formData, "userId");
   const groupId = getTrimmedString(formData, "groupId");
+  const redirectTo = getRedirectTo(formData, `/admin/students/${userId}`);
 
   if (!userId || !groupId) {
-    throw new Error("Missing required fields");
+    redirect(buildRedirectUrl(redirectTo, { error: "Missing required fields" }));
   }
 
   const supabase = await createClient();
@@ -195,7 +232,11 @@ export async function addStudentToTeachingGroupAction(formData: FormData) {
       groupId,
       error: existingError,
     });
-    throw new Error("Failed to check existing student membership");
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to check existing student membership: ${existingError.message ?? "unknown error"}`,
+      })
+    );
   }
 
   if (!existingMembership) {
@@ -211,13 +252,17 @@ export async function addStudentToTeachingGroupAction(formData: FormData) {
         groupId,
         error,
       });
-      throw new Error("Failed to add student to teaching group");
+      redirect(
+        buildRedirectUrl(redirectTo, {
+          error: `Failed to add student to teaching group: ${error.message ?? "unknown error"}`,
+        })
+      );
     }
   }
 
   revalidatePath(`/admin/students/${userId}`);
   revalidatePath(`/admin/teaching-groups/${groupId}`);
-  redirect(`/admin/students/${userId}`);
+  redirect(buildRedirectUrl(redirectTo, { success: "Student added to teaching group" }));
 }
 
 export async function removeStudentFromTeachingGroupAction(formData: FormData) {
@@ -226,9 +271,10 @@ export async function removeStudentFromTeachingGroupAction(formData: FormData) {
 
   const userId = getTrimmedString(formData, "userId");
   const groupId = getTrimmedString(formData, "groupId");
+  const redirectTo = getRedirectTo(formData, `/admin/students/${userId}`);
 
   if (!userId || !groupId) {
-    throw new Error("Missing required fields");
+    redirect(buildRedirectUrl(redirectTo, { error: "Missing required fields" }));
   }
 
   const supabase = await createClient();
@@ -246,12 +292,18 @@ export async function removeStudentFromTeachingGroupAction(formData: FormData) {
       groupId,
       error,
     });
-    throw new Error("Failed to remove student from teaching group");
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to remove student from teaching group: ${error.message ?? "unknown error"}`,
+      })
+    );
   }
 
   revalidatePath(`/admin/students/${userId}`);
   revalidatePath(`/admin/teaching-groups/${groupId}`);
-  redirect(`/admin/students/${userId}`);
+  redirect(
+    buildRedirectUrl(redirectTo, { success: "Student removed from teaching group" })
+  );
 }
 
 export async function addTeacherToTeachingGroupAction(formData: FormData) {
@@ -260,9 +312,10 @@ export async function addTeacherToTeachingGroupAction(formData: FormData) {
 
   const userId = getTrimmedString(formData, "userId");
   const groupId = getTrimmedString(formData, "groupId");
+  const redirectTo = getRedirectTo(formData, `/admin/teachers/${userId}`);
 
   if (!userId || !groupId) {
-    throw new Error("Missing required fields");
+    redirect(buildRedirectUrl(redirectTo, { error: "Missing required fields" }));
   }
 
   const supabase = await createClient();
@@ -281,7 +334,11 @@ export async function addTeacherToTeachingGroupAction(formData: FormData) {
       groupId,
       error: existingError,
     });
-    throw new Error("Failed to check existing teacher membership");
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to check existing teacher membership: ${existingError.message ?? "unknown error"}`,
+      })
+    );
   }
 
   if (!existingMembership) {
@@ -297,13 +354,17 @@ export async function addTeacherToTeachingGroupAction(formData: FormData) {
         groupId,
         error,
       });
-      throw new Error("Failed to add teacher to teaching group");
+      redirect(
+        buildRedirectUrl(redirectTo, {
+          error: `Failed to add teacher to teaching group: ${error.message ?? "unknown error"}`,
+        })
+      );
     }
   }
 
   revalidatePath(`/admin/teachers/${userId}`);
   revalidatePath(`/admin/teaching-groups/${groupId}`);
-  redirect(`/admin/teachers/${userId}`);
+  redirect(buildRedirectUrl(redirectTo, { success: "Teacher added to teaching group" }));
 }
 
 export async function removeTeacherFromTeachingGroupAction(formData: FormData) {
@@ -312,9 +373,10 @@ export async function removeTeacherFromTeachingGroupAction(formData: FormData) {
 
   const userId = getTrimmedString(formData, "userId");
   const groupId = getTrimmedString(formData, "groupId");
+  const redirectTo = getRedirectTo(formData, `/admin/teachers/${userId}`);
 
   if (!userId || !groupId) {
-    throw new Error("Missing required fields");
+    redirect(buildRedirectUrl(redirectTo, { error: "Missing required fields" }));
   }
 
   const supabase = await createClient();
@@ -332,10 +394,16 @@ export async function removeTeacherFromTeachingGroupAction(formData: FormData) {
       groupId,
       error,
     });
-    throw new Error("Failed to remove teacher from teaching group");
+    redirect(
+      buildRedirectUrl(redirectTo, {
+        error: `Failed to remove teacher from teaching group: ${error.message ?? "unknown error"}`,
+      })
+    );
   }
 
   revalidatePath(`/admin/teachers/${userId}`);
   revalidatePath(`/admin/teaching-groups/${groupId}`);
-  redirect(`/admin/teachers/${userId}`);
+  redirect(
+    buildRedirectUrl(redirectTo, { success: "Teacher removed from teaching group" })
+  );
 }

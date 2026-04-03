@@ -52,8 +52,10 @@ function getPersonLabel(
 
 export default async function AdminTeachingGroupDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ groupId: string }>;
+  searchParams?: Promise<{ success?: string; error?: string }>;
 }) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
@@ -61,11 +63,13 @@ export default async function AdminTeachingGroupDetailPage({
   }
 
   const { groupId } = await params;
+  const resolvedSearchParams = (await searchParams) ?? {};
   const supabase = await createClient();
 
   const [
     { data: group },
-    { data: memberships },
+    { data: currentGroupMemberships },
+    { data: allMemberships },
     { data: profiles },
     { data: courses },
     { data: variants },
@@ -80,6 +84,7 @@ export default async function AdminTeachingGroupDetailPage({
       .from("teaching_group_members")
       .select("user_id, group_id, member_role")
       .eq("group_id", groupId),
+    supabase.from("teaching_group_members").select("user_id, group_id, member_role"),
     supabase.from("profiles").select("id, email, full_name, display_name, is_admin"),
     supabase.from("courses").select("id, title, slug"),
     supabase.from("course_variants").select("id, course_id, title, slug"),
@@ -90,7 +95,8 @@ export default async function AdminTeachingGroupDetailPage({
   ]);
 
   const teachingGroup = group as TeachingGroupRow | null;
-  const membershipRows = (memberships ?? []) as TeachingGroupMemberRow[];
+  const membershipRows = (currentGroupMemberships ?? []) as TeachingGroupMemberRow[];
+  const allMembershipRows = (allMemberships ?? []) as TeachingGroupMemberRow[];
   const profileRows = (profiles ?? []) as ProfileRow[];
   const courseRows = (courses ?? []) as CourseRow[];
   const variantRows = (variants ?? []) as VariantRow[];
@@ -122,13 +128,15 @@ export default async function AdminTeachingGroupDetailPage({
   const studentIdsInGroup = new Set(students.map((member) => member.user_id));
   const activeGrantUserIds = new Set(activeGrantRows.map((grant) => grant.user_id));
 
+  const knownTeacherIds = new Set(
+    allMembershipRows
+      .filter((member) => member.member_role === "teacher")
+      .map((member) => member.user_id)
+  );
+
   const availableTeachers = profileRows.filter((profile) => {
     if (teacherIdsInGroup.has(profile.id)) return false;
-    return (
-      profile.is_admin ||
-      profile.email?.includes("+1@") ||
-      profile.full_name?.toLowerCase().includes("teacher")
-    );
+    return profile.is_admin || knownTeacherIds.has(profile.id);
   });
 
   const availableStudents = profileRows.filter((profile) => {
@@ -153,6 +161,18 @@ export default async function AdminTeachingGroupDetailPage({
         title={teachingGroup.name}
         description="Teaching group overview and membership."
       />
+
+      {resolvedSearchParams.success ? (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {resolvedSearchParams.success}
+        </div>
+      ) : null}
+
+      {resolvedSearchParams.error ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {resolvedSearchParams.error}
+        </div>
+      ) : null}
 
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
         <div className="rounded-lg border bg-white">
@@ -204,6 +224,11 @@ export default async function AdminTeachingGroupDetailPage({
                 className="flex flex-wrap gap-3"
               >
                 <input type="hidden" name="groupId" value={teachingGroup.id} />
+                <input
+                  type="hidden"
+                  name="redirectTo"
+                  value={`/admin/teaching-groups/${teachingGroup.id}`}
+                />
 
                 <select
                   name="userId"
@@ -241,6 +266,11 @@ export default async function AdminTeachingGroupDetailPage({
                 className="flex flex-wrap gap-3"
               >
                 <input type="hidden" name="groupId" value={teachingGroup.id} />
+                <input
+                  type="hidden"
+                  name="redirectTo"
+                  value={`/admin/teaching-groups/${teachingGroup.id}`}
+                />
 
                 <select
                   name="userId"
@@ -304,6 +334,11 @@ export default async function AdminTeachingGroupDetailPage({
                     <form action={removeTeacherFromTeachingGroupAction}>
                       <input type="hidden" name="userId" value={member.user_id} />
                       <input type="hidden" name="groupId" value={teachingGroup.id} />
+                      <input
+                        type="hidden"
+                        name="redirectTo"
+                        value={`/admin/teaching-groups/${teachingGroup.id}`}
+                      />
                       <button
                         type="submit"
                         className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
@@ -356,6 +391,11 @@ export default async function AdminTeachingGroupDetailPage({
                     <form action={removeStudentFromTeachingGroupAction}>
                       <input type="hidden" name="userId" value={member.user_id} />
                       <input type="hidden" name="groupId" value={teachingGroup.id} />
+                      <input
+                        type="hidden"
+                        name="redirectTo"
+                        value={`/admin/teaching-groups/${teachingGroup.id}`}
+                      />
                       <button
                         type="submit"
                         className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
