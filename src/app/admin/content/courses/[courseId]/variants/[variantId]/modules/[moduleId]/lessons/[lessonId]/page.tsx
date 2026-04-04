@@ -158,7 +158,7 @@ export default async function AdminLessonDetailPage({
         </div>
       </section>
 
-      <section className="mb-6 grid gap-4 lg:grid-cols-2">
+      <section className="mb-6">
         <div className="rounded-lg border bg-white">
           <div className="border-b px-4 py-3 font-medium">Content Source</div>
 
@@ -172,12 +172,24 @@ export default async function AdminLessonDetailPage({
             </div>
           </div>
         </div>
+      </section>
 
+      <section className="mb-6">
         <div className="rounded-lg border bg-white">
           <div className="border-b px-4 py-3 font-medium">Lesson Builder</div>
 
           <div className="px-4 py-4">
-            <AdminLessonBuilder lessonId={lesson.id} sections={sections} />
+            <AdminLessonBuilder
+              lessonId={lesson.id}
+              courseId={course.id}
+              variantId={variant.id}
+              moduleId={module.id}
+              lessonSlug={lesson.slug}
+              courseSlug={course.slug}
+              variantSlug={variant.slug}
+              moduleSlug={module.slug}
+              sections={sections}
+            />
           </div>
         </div>
       </section>
