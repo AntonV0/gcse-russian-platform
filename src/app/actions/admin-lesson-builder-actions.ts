@@ -90,6 +90,56 @@ async function getNextBlockPosition(sectionId: string) {
   return (data?.length ?? 0) + 1;
 }
 
+async function createSimpleContentBlock(params: {
+  formData: FormData;
+  sectionId: string;
+  blockType: "header" | "subheader" | "text" | "callout" | "exam-tip";
+  data: Record<string, unknown>;
+}) {
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(params.sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: params.sectionId,
+    block_type: params.blockType,
+    position: nextPosition,
+    is_published: true,
+    data: params.data,
+    settings: {},
+  });
+
+  if (error) {
+    console.error(`Error creating ${params.blockType} block:`, error);
+    throw new Error(`Failed to create ${params.blockType} block`);
+  }
+
+  await revalidateLessonPaths(params.formData);
+}
+
+async function updateSimpleContentBlock(params: {
+  formData: FormData;
+  blockId: string;
+  blockType: "header" | "subheader" | "text" | "callout" | "exam-tip";
+  data: Record<string, unknown>;
+}) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: params.data,
+    })
+    .eq("id", params.blockId)
+    .eq("block_type", params.blockType);
+
+  if (error) {
+    console.error(`Error updating ${params.blockType} block:`, error);
+    throw new Error(`Failed to update ${params.blockType} block`);
+  }
+
+  await revalidateLessonPaths(params.formData);
+}
+
 export async function createSectionAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
@@ -156,6 +206,112 @@ export async function updateSectionAction(formData: FormData) {
   await revalidateLessonPaths(formData);
 }
 
+export async function createHeaderBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const content = getTrimmedString(formData, "content");
+
+  if (!sectionId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  await createSimpleContentBlock({
+    formData,
+    sectionId,
+    blockType: "header",
+    data: { content },
+  });
+}
+
+export async function updateHeaderBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  await updateSimpleContentBlock({
+    formData,
+    blockId,
+    blockType: "header",
+    data: { content },
+  });
+}
+
+export async function createSubheaderBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const content = getTrimmedString(formData, "content");
+
+  if (!sectionId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  await createSimpleContentBlock({
+    formData,
+    sectionId,
+    blockType: "subheader",
+    data: { content },
+  });
+}
+
+export async function updateSubheaderBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  await updateSimpleContentBlock({
+    formData,
+    blockId,
+    blockType: "subheader",
+    data: { content },
+  });
+}
+
+export async function createDividerBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+
+  if (!sectionId) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "divider",
+    position: nextPosition,
+    is_published: true,
+    data: {},
+    settings: {},
+  });
+
+  if (error) {
+    console.error("Error creating divider block:", error);
+    throw new Error("Failed to create divider block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
 export async function createTextBlockAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
@@ -167,24 +323,12 @@ export async function createTextBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: "text",
-    position: nextPosition,
-    is_published: true,
+  await createSimpleContentBlock({
+    formData,
+    sectionId,
+    blockType: "text",
     data: { content },
-    settings: {},
   });
-
-  if (error) {
-    console.error("Error creating text block:", error);
-    throw new Error("Failed to create text block");
-  }
-
-  await revalidateLessonPaths(formData);
 }
 
 export async function updateTextBlockAction(formData: FormData) {
@@ -198,22 +342,12 @@ export async function updateTextBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_blocks")
-    .update({
-      data: { content },
-    })
-    .eq("id", blockId)
-    .eq("block_type", "text");
-
-  if (error) {
-    console.error("Error updating text block:", error);
-    throw new Error("Failed to update text block");
-  }
-
-  await revalidateLessonPaths(formData);
+  await updateSimpleContentBlock({
+    formData,
+    blockId,
+    blockType: "text",
+    data: { content },
+  });
 }
 
 export async function createNoteBlockAction(formData: FormData) {
@@ -276,6 +410,86 @@ export async function updateNoteBlockAction(formData: FormData) {
   }
 
   await revalidateLessonPaths(formData);
+}
+
+export async function createCalloutBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
+  const content = getTrimmedString(formData, "content");
+
+  if (!sectionId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  await createSimpleContentBlock({
+    formData,
+    sectionId,
+    blockType: "callout",
+    data: { title: title || undefined, content },
+  });
+}
+
+export async function updateCalloutBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  await updateSimpleContentBlock({
+    formData,
+    blockId,
+    blockType: "callout",
+    data: { title: title || undefined, content },
+  });
+}
+
+export async function createExamTipBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
+  const content = getTrimmedString(formData, "content");
+
+  if (!sectionId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  await createSimpleContentBlock({
+    formData,
+    sectionId,
+    blockType: "exam-tip",
+    data: { title: title || undefined, content },
+  });
+}
+
+export async function updateExamTipBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  await updateSimpleContentBlock({
+    formData,
+    blockId,
+    blockType: "exam-tip",
+    data: { title: title || undefined, content },
+  });
 }
 
 export async function createQuestionSetBlockAction(formData: FormData) {
