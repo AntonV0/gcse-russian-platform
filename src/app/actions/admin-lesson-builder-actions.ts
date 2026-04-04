@@ -194,6 +194,85 @@ export async function createSectionAction(formData: FormData) {
   await revalidateLessonPaths(formData);
 }
 
+export async function duplicateSectionAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const lessonId = getTrimmedString(formData, "lessonId");
+  const sectionId = getTrimmedString(formData, "sectionId");
+
+  if (!lessonId || !sectionId) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { data: section, error: sectionError } = await supabase
+    .from("lesson_sections")
+    .select("*")
+    .eq("id", sectionId)
+    .single();
+
+  if (sectionError || !section) {
+    console.error("Error loading section for duplication:", sectionError);
+    throw new Error("Failed to load section");
+  }
+
+  const nextSectionPosition = await getNextSectionPosition(lessonId);
+
+  const { data: newSection, error: insertSectionError } = await supabase
+    .from("lesson_sections")
+    .insert({
+      lesson_id: lessonId,
+      title: `${section.title} (Copy)`,
+      description: section.description,
+      section_kind: section.section_kind,
+      position: nextSectionPosition,
+      is_published: false,
+      settings: section.settings ?? {},
+    })
+    .select("*")
+    .single();
+
+  if (insertSectionError || !newSection) {
+    console.error("Error duplicating section:", insertSectionError);
+    throw new Error("Failed to duplicate section");
+  }
+
+  const { data: blocks, error: blocksError } = await supabase
+    .from("lesson_blocks")
+    .select("*")
+    .eq("lesson_section_id", sectionId)
+    .order("position", { ascending: true });
+
+  if (blocksError) {
+    console.error("Error loading section blocks for duplication:", blocksError);
+    throw new Error("Failed to duplicate section blocks");
+  }
+
+  if (blocks && blocks.length > 0) {
+    const duplicatedBlocks = blocks.map((block, index) => ({
+      lesson_section_id: newSection.id,
+      block_type: block.block_type,
+      position: index + 1,
+      is_published: false,
+      data: block.data ?? {},
+      settings: block.settings ?? {},
+    }));
+
+    const { error: insertBlocksError } = await supabase
+      .from("lesson_blocks")
+      .insert(duplicatedBlocks);
+
+    if (insertBlocksError) {
+      console.error("Error inserting duplicated blocks:", insertBlocksError);
+      throw new Error("Failed to duplicate section blocks");
+    }
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
 export async function updateSectionAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
@@ -727,6 +806,49 @@ export async function updateVocabularyBlockAction(formData: FormData) {
   if (error) {
     console.error("Error updating vocabulary block:", error);
     throw new Error("Failed to update vocabulary block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function duplicateBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const blockId = getTrimmedString(formData, "blockId");
+
+  if (!sectionId || !blockId) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { data: block, error } = await supabase
+    .from("lesson_blocks")
+    .select("*")
+    .eq("id", blockId)
+    .single();
+
+  if (error || !block) {
+    console.error("Error loading block for duplication:", error);
+    throw new Error("Failed to load block");
+  }
+
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error: insertError } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: block.block_type,
+    position: nextPosition,
+    is_published: false,
+    data: block.data ?? {},
+    settings: block.settings ?? {},
+  });
+
+  if (insertError) {
+    console.error("Error duplicating block:", insertError);
+    throw new Error("Failed to duplicate block");
   }
 
   await revalidateLessonPaths(formData);
