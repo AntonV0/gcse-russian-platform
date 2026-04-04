@@ -11,10 +11,15 @@ type LessonPageProps = {
     moduleSlug: string;
     lessonSlug: string;
   }>;
+  searchParams?: Promise<{
+    step?: string;
+  }>;
 };
 
-export default async function LessonPage({ params }: LessonPageProps) {
+export default async function LessonPage({ params, searchParams }: LessonPageProps) {
   const { courseSlug, variantSlug, moduleSlug, lessonSlug } = await params;
+  const resolvedSearchParams = await searchParams;
+  const currentStep = resolvedSearchParams?.step;
 
   const { course, module, lesson } = await loadLessonPageData(
     courseSlug,
@@ -59,6 +64,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
       moduleSlug={moduleSlug}
       lessonSlug={lessonSlug}
       sections={lessonContent.sections}
+      currentStep={currentStep}
     />
   );
 }
