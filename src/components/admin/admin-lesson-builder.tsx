@@ -1,13 +1,20 @@
 import {
+  createNoteBlockAction,
+  createQuestionSetBlockAction,
   createSectionAction,
   createTextBlockAction,
-  createNoteBlockAction,
+  createVocabularySetBlockAction,
   deleteBlockAction,
   deleteSectionAction,
   moveBlockAction,
   moveSectionAction,
   toggleBlockPublishedAction,
   toggleSectionPublishedAction,
+  updateNoteBlockAction,
+  updateQuestionSetBlockAction,
+  updateSectionAction,
+  updateTextBlockAction,
+  updateVocabularySetBlockAction,
 } from "@/app/actions/admin-lesson-builder-actions";
 
 type AdminLessonBuilderProps = {
@@ -60,6 +67,190 @@ function BuilderHiddenFields(props: {
   );
 }
 
+function TextBlockEditor(props: {
+  block: {
+    id: string;
+    data: Record<string, unknown>;
+  };
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+}) {
+  const content =
+    typeof props.block.data.content === "string" ? props.block.data.content : "";
+
+  return (
+    <form action={updateTextBlockAction} className="space-y-2">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="blockId" value={props.block.id} />
+
+      <textarea
+        name="content"
+        required
+        rows={4}
+        defaultValue={content}
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-gray-50">
+        Save text block
+      </button>
+    </form>
+  );
+}
+
+function NoteBlockEditor(props: {
+  block: {
+    id: string;
+    data: Record<string, unknown>;
+  };
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+}) {
+  const title = typeof props.block.data.title === "string" ? props.block.data.title : "";
+  const content =
+    typeof props.block.data.content === "string" ? props.block.data.content : "";
+
+  return (
+    <form action={updateNoteBlockAction} className="space-y-2">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="blockId" value={props.block.id} />
+
+      <input
+        name="title"
+        required
+        defaultValue={title}
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <textarea
+        name="content"
+        required
+        rows={4}
+        defaultValue={content}
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-gray-50">
+        Save note block
+      </button>
+    </form>
+  );
+}
+
+function QuestionSetBlockEditor(props: {
+  block: {
+    id: string;
+    data: Record<string, unknown>;
+  };
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+}) {
+  const title = typeof props.block.data.title === "string" ? props.block.data.title : "";
+  const questionSetSlug =
+    typeof props.block.data.questionSetSlug === "string"
+      ? props.block.data.questionSetSlug
+      : "";
+
+  return (
+    <form action={updateQuestionSetBlockAction} className="space-y-2">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="blockId" value={props.block.id} />
+
+      <input
+        name="title"
+        defaultValue={title}
+        placeholder="Optional heading"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <input
+        name="questionSetSlug"
+        required
+        defaultValue={questionSetSlug}
+        placeholder="question-set-slug"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-gray-50">
+        Save question-set block
+      </button>
+    </form>
+  );
+}
+
+function VocabularySetBlockEditor(props: {
+  block: {
+    id: string;
+    data: Record<string, unknown>;
+  };
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+}) {
+  const title = typeof props.block.data.title === "string" ? props.block.data.title : "";
+  const vocabularySetSlug =
+    typeof props.block.data.vocabularySetSlug === "string"
+      ? props.block.data.vocabularySetSlug
+      : "";
+
+  return (
+    <form action={updateVocabularySetBlockAction} className="space-y-2">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="blockId" value={props.block.id} />
+
+      <input
+        name="title"
+        defaultValue={title}
+        placeholder="Optional heading"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <input
+        name="vocabularySetSlug"
+        required
+        defaultValue={vocabularySetSlug}
+        placeholder="vocabulary-set-slug"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-gray-50">
+        Save vocabulary-set block
+      </button>
+    </form>
+  );
+}
+
 function renderBlockPreview(block: {
   block_type: string;
   data: Record<string, unknown>;
@@ -69,8 +260,55 @@ function renderBlockPreview(block: {
       return typeof block.data.content === "string" ? block.data.content : "Text block";
     case "note":
       return typeof block.data.title === "string" ? block.data.title : "Note block";
+    case "question-set":
+      return typeof block.data.questionSetSlug === "string"
+        ? block.data.questionSetSlug
+        : "Question set block";
+    case "vocabulary-set":
+      return typeof block.data.vocabularySetSlug === "string"
+        ? block.data.vocabularySetSlug
+        : "Vocabulary set block";
     default:
       return block.block_type;
+  }
+}
+
+function BlockEditPanel(props: {
+  block: {
+    id: string;
+    block_type: string;
+    data: Record<string, unknown>;
+  };
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+}) {
+  switch (props.block.block_type) {
+    case "text":
+      return <TextBlockEditor block={props.block} routeFields={props.routeFields} />;
+    case "note":
+      return <NoteBlockEditor block={props.block} routeFields={props.routeFields} />;
+    case "question-set":
+      return (
+        <QuestionSetBlockEditor block={props.block} routeFields={props.routeFields} />
+      );
+    case "vocabulary-set":
+      return (
+        <VocabularySetBlockEditor block={props.block} routeFields={props.routeFields} />
+      );
+    default:
+      return (
+        <div className="text-sm text-gray-500">
+          Editing is not supported yet for this block type.
+        </div>
+      );
   }
 }
 
@@ -103,6 +341,7 @@ export default function AdminLessonBuilder({
         <ol className="list-decimal space-y-1 pl-5 text-sm text-gray-600">
           <li>Create a section first.</li>
           <li>Add blocks inside that section.</li>
+          <li>Use edit panels to refine content.</li>
           <li>Use publish controls to show or hide content.</li>
           <li>Use arrows to reorder sections and blocks.</li>
           <li>Open the public lesson to check the result.</li>
@@ -240,6 +479,53 @@ export default function AdminLessonBuilder({
                 </div>
               </div>
 
+              <details className="rounded border bg-gray-50 p-3">
+                <summary className="cursor-pointer text-sm font-medium">
+                  Edit section metadata
+                </summary>
+
+                <form action={updateSectionAction} className="mt-3 space-y-2">
+                  <BuilderHiddenFields {...routeFields} />
+                  <input type="hidden" name="sectionId" value={section.id} />
+
+                  <input
+                    name="title"
+                    required
+                    defaultValue={section.title}
+                    className="w-full rounded border px-3 py-2 text-sm"
+                  />
+
+                  <input
+                    name="description"
+                    defaultValue={section.description ?? ""}
+                    className="w-full rounded border px-3 py-2 text-sm"
+                  />
+
+                  <select
+                    name="sectionKind"
+                    defaultValue={section.section_kind}
+                    className="w-full rounded border px-3 py-2 text-sm"
+                  >
+                    <option value="intro">intro</option>
+                    <option value="content">content</option>
+                    <option value="grammar">grammar</option>
+                    <option value="practice">practice</option>
+                    <option value="reading_practice">reading_practice</option>
+                    <option value="writing_practice">writing_practice</option>
+                    <option value="speaking_practice">speaking_practice</option>
+                    <option value="listening_practice">listening_practice</option>
+                    <option value="summary">summary</option>
+                  </select>
+
+                  <button
+                    type="submit"
+                    className="rounded border px-3 py-2 text-sm hover:bg-white"
+                  >
+                    Save section
+                  </button>
+                </form>
+              </details>
+
               <div className="space-y-2">
                 <div className="text-sm font-medium">Blocks</div>
 
@@ -320,65 +606,139 @@ export default function AdminLessonBuilder({
                           </form>
                         </div>
                       </div>
+
+                      <details className="rounded border bg-gray-50 p-3">
+                        <summary className="cursor-pointer text-sm font-medium">
+                          Edit block
+                        </summary>
+
+                        <div className="mt-3">
+                          <BlockEditPanel block={block} routeFields={routeFields} />
+                        </div>
+                      </details>
                     </div>
                   ))
                 )}
               </div>
 
               <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded border bg-gray-50 p-3">
-                  <div className="mb-2 text-sm font-medium">Add Text Block</div>
+                <div className="rounded border bg-gray-50 p-3 space-y-4">
+                  <div>
+                    <div className="mb-2 text-sm font-medium">Add Text Block</div>
 
-                  <form action={createTextBlockAction} className="space-y-2">
-                    <BuilderHiddenFields {...routeFields} />
-                    <input type="hidden" name="sectionId" value={section.id} />
+                    <form action={createTextBlockAction} className="space-y-2">
+                      <BuilderHiddenFields {...routeFields} />
+                      <input type="hidden" name="sectionId" value={section.id} />
 
-                    <textarea
-                      name="content"
-                      required
-                      rows={4}
-                      placeholder="Write the text content here..."
-                      className="w-full rounded border px-3 py-2 text-sm"
-                    />
+                      <textarea
+                        name="content"
+                        required
+                        rows={4}
+                        placeholder="Write the text content here..."
+                        className="w-full rounded border px-3 py-2 text-sm"
+                      />
 
-                    <button
-                      type="submit"
-                      className="rounded border px-3 py-2 text-sm hover:bg-white"
-                    >
-                      Add text block
-                    </button>
-                  </form>
+                      <button
+                        type="submit"
+                        className="rounded border px-3 py-2 text-sm hover:bg-white"
+                      >
+                        Add text block
+                      </button>
+                    </form>
+                  </div>
+
+                  <div>
+                    <div className="mb-2 text-sm font-medium">Add Note Block</div>
+
+                    <form action={createNoteBlockAction} className="space-y-2">
+                      <BuilderHiddenFields {...routeFields} />
+                      <input type="hidden" name="sectionId" value={section.id} />
+
+                      <input
+                        name="title"
+                        required
+                        placeholder="Study tip"
+                        className="w-full rounded border px-3 py-2 text-sm"
+                      />
+
+                      <textarea
+                        name="content"
+                        required
+                        rows={4}
+                        placeholder="Write the note content here..."
+                        className="w-full rounded border px-3 py-2 text-sm"
+                      />
+
+                      <button
+                        type="submit"
+                        className="rounded border px-3 py-2 text-sm hover:bg-white"
+                      >
+                        Add note block
+                      </button>
+                    </form>
+                  </div>
                 </div>
 
-                <div className="rounded border bg-gray-50 p-3">
-                  <div className="mb-2 text-sm font-medium">Add Note Block</div>
+                <div className="rounded border bg-gray-50 p-3 space-y-4">
+                  <div>
+                    <div className="mb-2 text-sm font-medium">Add Question Set Block</div>
 
-                  <form action={createNoteBlockAction} className="space-y-2">
-                    <BuilderHiddenFields {...routeFields} />
-                    <input type="hidden" name="sectionId" value={section.id} />
+                    <form action={createQuestionSetBlockAction} className="space-y-2">
+                      <BuilderHiddenFields {...routeFields} />
+                      <input type="hidden" name="sectionId" value={section.id} />
 
-                    <input
-                      name="title"
-                      required
-                      placeholder="Study tip"
-                      className="w-full rounded border px-3 py-2 text-sm"
-                    />
+                      <input
+                        name="title"
+                        placeholder="Optional heading"
+                        className="w-full rounded border px-3 py-2 text-sm"
+                      />
 
-                    <textarea
-                      name="content"
-                      required
-                      rows={4}
-                      placeholder="Write the note content here..."
-                      className="w-full rounded border px-3 py-2 text-sm"
-                    />
+                      <input
+                        name="questionSetSlug"
+                        required
+                        placeholder="question-set-slug"
+                        className="w-full rounded border px-3 py-2 text-sm"
+                      />
 
-                    <button
-                      type="submit"
-                      className="rounded border px-3 py-2 text-sm hover:bg-white"
-                    >
-                      Add note block
-                    </button>
-                  </form>
+                      <button
+                        type="submit"
+                        className="rounded border px-3 py-2 text-sm hover:bg-white"
+                      >
+                        Add question-set block
+                      </button>
+                    </form>
+                  </div>
+
+                  <div>
+                    <div className="mb-2 text-sm font-medium">
+                      Add Vocabulary Set Block
+                    </div>
+
+                    <form action={createVocabularySetBlockAction} className="space-y-2">
+                      <BuilderHiddenFields {...routeFields} />
+                      <input type="hidden" name="sectionId" value={section.id} />
+
+                      <input
+                        name="title"
+                        placeholder="Optional heading"
+                        className="w-full rounded border px-3 py-2 text-sm"
+                      />
+
+                      <input
+                        name="vocabularySetSlug"
+                        required
+                        placeholder="vocabulary-set-slug"
+                        className="w-full rounded border px-3 py-2 text-sm"
+                      />
+
+                      <button
+                        type="submit"
+                        className="rounded border px-3 py-2 text-sm hover:bg-white"
+                      >
+                        Add vocabulary-set block
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
