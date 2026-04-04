@@ -22,6 +22,7 @@
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 
 # debug logs
@@ -36,12 +37,26 @@ yarn-error.log*
 .env.development
 .env.production
 .env*
+.env*.local
 
 # vercel
 .vercel
 
-# supabase
+# supabase local/dev artifacts
 .supabase
+supabase/.temp
+supabase/.branches
+supabase/docker
+
+# local database dumps / exports
+*.sql.gz
+*.dump
+*.bak
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 
 # typescript
 *.tsbuildinfo
