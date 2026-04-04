@@ -2,6 +2,12 @@ import {
   createSectionAction,
   createTextBlockAction,
   createNoteBlockAction,
+  deleteBlockAction,
+  deleteSectionAction,
+  moveBlockAction,
+  moveSectionAction,
+  toggleBlockPublishedAction,
+  toggleSectionPublishedAction,
 } from "@/app/actions/admin-lesson-builder-actions";
 
 type AdminLessonBuilderProps = {
@@ -97,6 +103,8 @@ export default function AdminLessonBuilder({
         <ol className="list-decimal space-y-1 pl-5 text-sm text-gray-600">
           <li>Create a section first.</li>
           <li>Add blocks inside that section.</li>
+          <li>Use publish controls to show or hide content.</li>
+          <li>Use arrows to reorder sections and blocks.</li>
           <li>Open the public lesson to check the result.</li>
         </ol>
       </div>
@@ -160,17 +168,76 @@ export default function AdminLessonBuilder({
             No sections yet. Create your first section above.
           </div>
         ) : (
-          sections.map((section) => (
+          sections.map((section, sectionIndex) => (
             <div key={section.id} className="rounded-lg border bg-white p-4 space-y-4">
-              <div>
-                <div className="font-medium">{section.title}</div>
-                <div className="mt-1 text-xs text-gray-500">
-                  Kind: {section.section_kind} · Position: {section.position} ·{" "}
-                  {section.is_published ? "Published" : "Draft"}
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <div className="font-medium">{section.title}</div>
+                  <div className="mt-1 text-xs text-gray-500">
+                    Kind: {section.section_kind} · Position: {section.position} ·{" "}
+                    {section.is_published ? "Published" : "Draft"}
+                  </div>
+                  {section.description ? (
+                    <div className="mt-1 text-sm text-gray-600">
+                      {section.description}
+                    </div>
+                  ) : null}
                 </div>
-                {section.description ? (
-                  <div className="mt-1 text-sm text-gray-600">{section.description}</div>
-                ) : null}
+
+                <div className="flex flex-wrap gap-2">
+                  <form action={moveSectionAction}>
+                    <BuilderHiddenFields {...routeFields} />
+                    <input type="hidden" name="sectionId" value={section.id} />
+                    <input type="hidden" name="direction" value="up" />
+                    <button
+                      type="submit"
+                      disabled={sectionIndex === 0}
+                      className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                    >
+                      ↑
+                    </button>
+                  </form>
+
+                  <form action={moveSectionAction}>
+                    <BuilderHiddenFields {...routeFields} />
+                    <input type="hidden" name="sectionId" value={section.id} />
+                    <input type="hidden" name="direction" value="down" />
+                    <button
+                      type="submit"
+                      disabled={sectionIndex === sections.length - 1}
+                      className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                    >
+                      ↓
+                    </button>
+                  </form>
+
+                  <form action={toggleSectionPublishedAction}>
+                    <BuilderHiddenFields {...routeFields} />
+                    <input type="hidden" name="sectionId" value={section.id} />
+                    <input
+                      type="hidden"
+                      name="nextState"
+                      value={section.is_published ? "draft" : "published"}
+                    />
+                    <button
+                      type="submit"
+                      className="rounded border px-3 py-1 text-sm hover:bg-gray-50"
+                    >
+                      {section.is_published ? "Unpublish" : "Publish"}
+                    </button>
+                  </form>
+
+                  <form action={deleteSectionAction}>
+                    <BuilderHiddenFields {...routeFields} />
+                    <input type="hidden" name="sectionId" value={section.id} />
+                    <button
+                      type="submit"
+                      className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                    >
+                      Delete section
+                    </button>
+                  </form>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -181,18 +248,77 @@ export default function AdminLessonBuilder({
                     No blocks in this section yet.
                   </div>
                 ) : (
-                  section.blocks.map((block) => (
+                  section.blocks.map((block, blockIndex) => (
                     <div
                       key={block.id}
-                      className="rounded border px-3 py-2 text-sm flex items-start justify-between gap-4"
+                      className="rounded border px-3 py-3 text-sm space-y-3"
                     >
-                      <div>
-                        <div className="font-medium">{block.block_type}</div>
-                        <div className="text-gray-600">{renderBlockPreview(block)}</div>
-                      </div>
+                      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                        <div>
+                          <div className="font-medium">{block.block_type}</div>
+                          <div className="text-gray-600">{renderBlockPreview(block)}</div>
+                          <div className="mt-1 text-xs text-gray-500">
+                            Position {block.position} ·{" "}
+                            {block.is_published ? "Published" : "Draft"}
+                          </div>
+                        </div>
 
-                      <div className="text-xs text-gray-500">
-                        Position {block.position}
+                        <div className="flex flex-wrap gap-2">
+                          <form action={moveBlockAction}>
+                            <BuilderHiddenFields {...routeFields} />
+                            <input type="hidden" name="sectionId" value={section.id} />
+                            <input type="hidden" name="blockId" value={block.id} />
+                            <input type="hidden" name="direction" value="up" />
+                            <button
+                              type="submit"
+                              disabled={blockIndex === 0}
+                              className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                            >
+                              ↑
+                            </button>
+                          </form>
+
+                          <form action={moveBlockAction}>
+                            <BuilderHiddenFields {...routeFields} />
+                            <input type="hidden" name="sectionId" value={section.id} />
+                            <input type="hidden" name="blockId" value={block.id} />
+                            <input type="hidden" name="direction" value="down" />
+                            <button
+                              type="submit"
+                              disabled={blockIndex === section.blocks.length - 1}
+                              className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+                            >
+                              ↓
+                            </button>
+                          </form>
+
+                          <form action={toggleBlockPublishedAction}>
+                            <BuilderHiddenFields {...routeFields} />
+                            <input type="hidden" name="blockId" value={block.id} />
+                            <input
+                              type="hidden"
+                              name="nextState"
+                              value={block.is_published ? "draft" : "published"}
+                            />
+                            <button
+                              type="submit"
+                              className="rounded border px-3 py-1 text-sm hover:bg-gray-50"
+                            >
+                              {block.is_published ? "Unpublish" : "Publish"}
+                            </button>
+                          </form>
+
+                          <form action={deleteBlockAction}>
+                            <BuilderHiddenFields {...routeFields} />
+                            <input type="hidden" name="blockId" value={block.id} />
+                            <button
+                              type="submit"
+                              className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                            >
+                              Delete block
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   ))
