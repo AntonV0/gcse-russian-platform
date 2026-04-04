@@ -49,42 +49,36 @@ function buildLessonStepHref(params: {
   )}?step=${params.stepNumber}`;
 }
 
-function SectionProgressBar({
+function StepMetaBar({
   currentStepNumber,
   totalSteps,
+  sectionKind,
+  sectionDescription,
 }: {
   currentStepNumber: number;
   totalSteps: number;
+  sectionKind: string;
+  sectionDescription?: string;
 }) {
-  const progressPercent =
-    totalSteps <= 1 ? 100 : Math.round((currentStepNumber / totalSteps) * 100);
-
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
-      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="rounded-2xl border bg-white px-4 py-4 shadow-sm">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-900">
-            Lesson section {currentStepNumber} of {totalSteps}
-          </p>
-          <p className="text-sm text-gray-600">
-            Work through the lesson one step at a time.
-          </p>
+          <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            Step {currentStepNumber} of {totalSteps} · {sectionKind.replaceAll("_", " ")}
+          </div>
+          {sectionDescription ? (
+            <p className="mt-1 text-sm text-gray-600">{sectionDescription}</p>
+          ) : null}
         </div>
 
-        <div className="text-sm font-medium text-gray-700">{progressPercent}%</div>
-      </div>
-
-      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
-        <div
-          className="h-full rounded-full bg-black transition-all"
-          style={{ width: `${progressPercent}%` }}
-        />
+        <div className="text-sm text-gray-500">One section at a time</div>
       </div>
     </div>
   );
 }
 
-function SectionStepNav({
+function StepTracker({
   sections,
   currentStepIndex,
   courseSlug,
@@ -101,12 +95,14 @@ function SectionStepNav({
 }) {
   return (
     <div className="rounded-2xl border bg-white p-4 shadow-sm">
-      <div className="mb-3">
-        <h2 className="font-semibold">Lesson sections</h2>
-        <p className="text-sm text-gray-600">Jump to any section in this lesson.</p>
+      <div className="mb-4">
+        <p className="text-sm font-semibold text-gray-900">
+          Section {currentStepIndex + 1} of {sections.length}
+        </p>
+        <p className="text-sm text-gray-600">Jump to any lesson section.</p>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
         {sections.map((section, index) => {
           const stepNumber = index + 1;
           const isActive = index === currentStepIndex;
@@ -121,7 +117,35 @@ function SectionStepNav({
                 lessonSlug,
                 stepNumber,
               })}
-              className={`rounded-xl border px-3 py-3 text-sm transition ${
+              className={`min-w-[2.75rem] rounded-full border px-3 py-2 text-center text-sm font-medium transition ${
+                isActive
+                  ? "border-black bg-black text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+              aria-current={isActive ? "step" : undefined}
+            >
+              {stepNumber}
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="space-y-2">
+        {sections.map((section, index) => {
+          const stepNumber = index + 1;
+          const isActive = index === currentStepIndex;
+
+          return (
+            <Link
+              key={section.id}
+              href={buildLessonStepHref({
+                courseSlug,
+                variantSlug,
+                moduleSlug,
+                lessonSlug,
+                stepNumber,
+              })}
+              className={`block rounded-xl border px-3 py-3 transition ${
                 isActive
                   ? "border-black bg-black text-white"
                   : "border-gray-200 bg-white hover:bg-gray-50"
@@ -130,12 +154,12 @@ function SectionStepNav({
               <div className="mb-1 text-xs uppercase tracking-wide opacity-75">
                 Step {stepNumber}
               </div>
-              <div className="font-medium">{section.title}</div>
+              <div className="text-sm font-medium">{section.title}</div>
               {section.description ? (
                 <div
                   className={`mt-1 text-xs ${
                     isActive ? "text-gray-200" : "text-gray-500"
-                  }`}
+                  } line-clamp-2`}
                 >
                   {section.description}
                 </div>
@@ -190,9 +214,9 @@ function SectionPager({
     <div className="rounded-2xl border bg-white p-4 shadow-sm">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-semibold">Section navigation</h2>
+          <h2 className="font-semibold text-gray-900">Section navigation</h2>
           <p className="text-sm text-gray-600">
-            Move through the lesson section by section.
+            Continue through the lesson at your own pace.
           </p>
         </div>
 
@@ -270,42 +294,48 @@ export default async function LessonPageTemplate({
         lessonDescription={lesson.summary ?? ""}
       />
 
-      <SectionProgressBar
-        currentStepNumber={currentStepNumber}
-        totalSteps={sections.length}
-      />
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="space-y-6">
+          <StepMetaBar
+            currentStepNumber={currentStepNumber}
+            totalSteps={sections.length}
+            sectionKind={currentSection.sectionKind}
+            sectionDescription={currentSection.description}
+          />
 
-      {sections.length > 1 ? (
-        <SectionStepNav
-          sections={sections}
-          currentStepIndex={currentStepIndex}
-          courseSlug={courseSlug}
-          variantSlug={variantSlug}
-          moduleSlug={moduleSlug}
-          lessonSlug={lessonSlug}
-        />
-      ) : null}
+          <LessonRenderer sections={[currentSection]} lessonId={lesson.id} />
 
-      <LessonRenderer sections={[currentSection]} lessonId={lesson.id} />
+          <SectionPager
+            currentStepIndex={currentStepIndex}
+            totalSteps={sections.length}
+            courseSlug={courseSlug}
+            variantSlug={variantSlug}
+            moduleSlug={moduleSlug}
+            lessonSlug={lessonSlug}
+          />
 
-      <SectionPager
-        currentStepIndex={currentStepIndex}
-        totalSteps={sections.length}
-        courseSlug={courseSlug}
-        variantSlug={variantSlug}
-        moduleSlug={moduleSlug}
-        lessonSlug={lessonSlug}
-      />
+          {isFinalStep ? (
+            <LessonCompletionForm
+              courseSlug={courseSlug}
+              variantSlug={variantSlug}
+              moduleSlug={moduleSlug}
+              lessonSlug={lessonSlug}
+              completed={!!progress?.completed}
+            />
+          ) : null}
+        </div>
 
-      {isFinalStep ? (
-        <LessonCompletionForm
-          courseSlug={courseSlug}
-          variantSlug={variantSlug}
-          moduleSlug={moduleSlug}
-          lessonSlug={lessonSlug}
-          completed={!!progress?.completed}
-        />
-      ) : null}
+        <aside className="xl:sticky xl:top-6 xl:self-start">
+          <StepTracker
+            sections={sections}
+            currentStepIndex={currentStepIndex}
+            courseSlug={courseSlug}
+            variantSlug={variantSlug}
+            moduleSlug={moduleSlug}
+            lessonSlug={lessonSlug}
+          />
+        </aside>
+      </div>
 
       <LessonFooterNav
         moduleHref={moduleHref}
