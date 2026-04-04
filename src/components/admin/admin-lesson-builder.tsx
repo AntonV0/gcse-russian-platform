@@ -10,6 +10,7 @@ import {
   createSectionAction,
   createSubheaderBlockAction,
   createTextBlockAction,
+  createVocabularyBlockAction,
   createVocabularySetBlockAction,
   deleteBlockAction,
   deleteSectionAction,
@@ -27,6 +28,7 @@ import {
   updateSectionAction,
   updateSubheaderBlockAction,
   updateTextBlockAction,
+  updateVocabularyBlockAction,
   updateVocabularySetBlockAction,
 } from "@/app/actions/admin-lesson-builder-actions";
 
@@ -66,6 +68,23 @@ type RouteFields = {
   moduleSlug: string;
   lessonSlug: string;
 };
+
+function stringifyVocabularyItems(items: unknown): string {
+  if (!Array.isArray(items)) return "";
+
+  return items
+    .map((item) => {
+      if (!item || typeof item !== "object") return "";
+
+      const record = item as Record<string, unknown>;
+      const russian = typeof record.russian === "string" ? record.russian : "";
+      const english = typeof record.english === "string" ? record.english : "";
+
+      return russian && english ? `${russian} | ${english}` : "";
+    })
+    .filter(Boolean)
+    .join("\n");
+}
 
 function BuilderHiddenFields(props: RouteFields) {
   return (
@@ -318,6 +337,45 @@ function AudioBlockEditor(props: {
   );
 }
 
+function VocabularyBlockEditor(props: {
+  blockId: string;
+  routeFields: RouteFields;
+  defaultTitle: string;
+  defaultItems: unknown;
+}) {
+  return (
+    <form action={updateVocabularyBlockAction} className="space-y-2">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="blockId" value={props.blockId} />
+
+      <input
+        name="title"
+        required
+        defaultValue={props.defaultTitle}
+        placeholder="Key vocabulary"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <textarea
+        name="items"
+        required
+        rows={6}
+        defaultValue={stringifyVocabularyItems(props.defaultItems)}
+        placeholder={`дом | house\nшкола | school`}
+        className="w-full rounded border px-3 py-2 font-mono text-sm"
+      />
+
+      <p className="text-xs text-gray-500">
+        Use one item per line in the format: russian | english
+      </p>
+
+      <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-gray-50">
+        Save vocabulary block
+      </button>
+    </form>
+  );
+}
+
 function renderBlockPreview(block: {
   block_type: string;
   data: Record<string, unknown>;
@@ -329,6 +387,7 @@ function renderBlockPreview(block: {
       return typeof block.data.content === "string"
         ? block.data.content
         : block.block_type;
+
     case "note":
     case "callout":
     case "exam-tip":
@@ -337,20 +396,37 @@ function renderBlockPreview(block: {
         : typeof block.data.content === "string"
           ? block.data.content
           : block.block_type;
+
     case "image":
-      return typeof block.data.src === "string" ? block.data.src : "Image block";
+      return typeof block.data.caption === "string"
+        ? block.data.caption
+        : typeof block.data.src === "string"
+          ? block.data.src
+          : "Image block";
+
     case "audio":
-      return typeof block.data.src === "string" ? block.data.src : "Audio block";
+      return typeof block.data.title === "string"
+        ? block.data.title
+        : typeof block.data.src === "string"
+          ? block.data.src
+          : "Audio block";
+
+    case "vocabulary":
+      return typeof block.data.title === "string" ? block.data.title : "Vocabulary block";
+
     case "question-set":
       return typeof block.data.questionSetSlug === "string"
         ? block.data.questionSetSlug
         : "Question set block";
+
     case "vocabulary-set":
       return typeof block.data.vocabularySetSlug === "string"
         ? block.data.vocabularySetSlug
         : "Vocabulary set block";
+
     case "divider":
       return "Divider";
+
     default:
       return block.block_type;
   }
@@ -489,6 +565,18 @@ function BlockEditPanel(props: {
               ? props.block.data.autoPlay
               : false
           }
+        />
+      );
+
+    case "vocabulary":
+      return (
+        <VocabularyBlockEditor
+          blockId={props.block.id}
+          routeFields={props.routeFields}
+          defaultTitle={
+            typeof props.block.data.title === "string" ? props.block.data.title : ""
+          }
+          defaultItems={props.block.data.items}
         />
       );
 
@@ -708,6 +796,38 @@ function AddAudioBlockForm(props: { sectionId: string; routeFields: RouteFields 
   );
 }
 
+function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFields }) {
+  return (
+    <form action={createVocabularyBlockAction} className="space-y-2">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="sectionId" value={props.sectionId} />
+
+      <input
+        name="title"
+        required
+        placeholder="Key vocabulary"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <textarea
+        name="items"
+        required
+        rows={6}
+        placeholder={`дом | house\nшкола | school`}
+        className="w-full rounded border px-3 py-2 font-mono text-sm"
+      />
+
+      <p className="text-xs text-gray-500">
+        Use one item per line in the format: russian | english
+      </p>
+
+      <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-white">
+        Add vocabulary block
+      </button>
+    </form>
+  );
+}
+
 function AddBlockGroup({
   title,
   description,
@@ -761,7 +881,9 @@ export default function AdminLessonBuilder({
         <ol className="list-decimal space-y-1 pl-5 text-sm text-gray-600">
           <li>Create a section first.</li>
           <li>Add structure blocks like header, subheader, and divider.</li>
-          <li>Add explanation blocks like text, note, callout, and exam tip.</li>
+          <li>
+            Add explanation blocks like text, note, callout, exam tip, and vocabulary.
+          </li>
           <li>Add media blocks like image and audio.</li>
           <li>Add embedded practice with question-set and vocabulary-set blocks.</li>
           <li>Use edit panels to refine content.</li>
@@ -1102,7 +1224,7 @@ export default function AdminLessonBuilder({
 
                   <AddBlockGroup
                     title="Add teaching block"
-                    description="Explanations, notes, callouts, and tips"
+                    description="Explanations, notes, callouts, tips, and vocabulary"
                   >
                     <div className="grid gap-4 lg:grid-cols-2">
                       <AddSimpleTextBlockForm
@@ -1139,6 +1261,11 @@ export default function AdminLessonBuilder({
                         buttonLabel="Add exam tip block"
                         titlePlaceholder="Optional title"
                         contentPlaceholder="Advice for exam success..."
+                      />
+
+                      <AddVocabularyBlockForm
+                        sectionId={section.id}
+                        routeFields={routeFields}
                       />
                     </div>
                   </AddBlockGroup>

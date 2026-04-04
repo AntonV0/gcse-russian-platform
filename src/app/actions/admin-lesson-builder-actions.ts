@@ -13,6 +13,22 @@ function getBoolean(formData: FormData, key: string) {
   return formData.get(key) === "true";
 }
 
+function parseVocabularyItems(raw: string) {
+  return raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [russian, english] = line.split("|").map((part) => part?.trim() ?? "");
+
+      if (!russian || !english) {
+        throw new Error("Vocabulary lines must use the format: russian | english");
+      }
+
+      return { russian, english };
+    });
+}
+
 function getAdminLessonPath(params: {
   courseId: string;
   variantId: string;
@@ -639,6 +655,78 @@ export async function updateAudioBlockAction(formData: FormData) {
   if (error) {
     console.error("Error updating audio block:", error);
     throw new Error("Failed to update audio block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function createVocabularyBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
+  const itemsRaw = getTrimmedString(formData, "items");
+
+  if (!sectionId || !title || !itemsRaw) {
+    throw new Error("Missing required fields");
+  }
+
+  const items = parseVocabularyItems(itemsRaw);
+
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "vocabulary",
+    position: nextPosition,
+    is_published: true,
+    data: {
+      title,
+      items,
+    },
+    settings: {},
+  });
+
+  if (error) {
+    console.error("Error creating vocabulary block:", error);
+    throw new Error("Failed to create vocabulary block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function updateVocabularyBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
+  const itemsRaw = getTrimmedString(formData, "items");
+
+  if (!blockId || !title || !itemsRaw) {
+    throw new Error("Missing required fields");
+  }
+
+  const items = parseVocabularyItems(itemsRaw);
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: {
+        title,
+        items,
+      },
+    })
+    .eq("id", blockId)
+    .eq("block_type", "vocabulary");
+
+  if (error) {
+    console.error("Error updating vocabulary block:", error);
+    throw new Error("Failed to update vocabulary block");
   }
 
   await revalidateLessonPaths(formData);

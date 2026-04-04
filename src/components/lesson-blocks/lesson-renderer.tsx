@@ -28,7 +28,7 @@ function CalloutBlock({ title, content }: { title?: string; content: string }) {
   return (
     <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
       {title ? <div className="mb-1 font-semibold text-blue-900">{title}</div> : null}
-      <p className="text-blue-900 whitespace-pre-wrap">{content}</p>
+      <p className="whitespace-pre-wrap text-blue-900">{content}</p>
     </div>
   );
 }
@@ -37,7 +37,7 @@ function ExamTipBlock({ title, content }: { title?: string; content: string }) {
   return (
     <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
       <div className="mb-1 font-semibold text-amber-900">{title ?? "Exam tip"}</div>
-      <p className="text-amber-900 whitespace-pre-wrap">{content}</p>
+      <p className="whitespace-pre-wrap text-amber-900">{content}</p>
     </div>
   );
 }
@@ -77,7 +77,7 @@ function AudioBlock({
   autoPlay?: boolean;
 }) {
   return (
-    <div className="rounded-xl border bg-white px-4 py-3 space-y-2">
+    <div className="space-y-2 rounded-xl border bg-white px-4 py-3">
       {title ? <div className="font-medium">{title}</div> : null}
       <audio controls autoPlay={autoPlay} className="w-full">
         <source src={src} />
