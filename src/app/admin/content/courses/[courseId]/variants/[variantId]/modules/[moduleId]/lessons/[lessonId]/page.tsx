@@ -1,11 +1,13 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
 import {
   getCourseByIdDb,
   getLessonByIdDb,
   getModuleByIdDb,
   getVariantByIdDb,
 } from "@/lib/course-helpers-db";
+import { getLessonSectionsWithBlocksDb } from "@/lib/lesson-admin-helpers-db";
 import { unpublishLessonAction } from "@/app/actions/admin-content-actions";
 
 type AdminLessonDetailPageProps = {
@@ -44,6 +46,8 @@ export default async function AdminLessonDetailPage({
   ) {
     return <main>Lesson not found.</main>;
   }
+
+  const sections = await getLessonSectionsWithBlocksDb(lesson.id);
 
   return (
     <main>
@@ -170,13 +174,10 @@ export default async function AdminLessonDetailPage({
         </div>
 
         <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Future Lesson Builder</div>
+          <div className="border-b px-4 py-3 font-medium">Lesson Builder</div>
 
-          <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <p>
-              This page is ready to expand later with lesson blocks, question set linking,
-              and database-backed lesson content management.
-            </p>
+          <div className="px-4 py-4">
+            <AdminLessonBuilder lessonId={lesson.id} sections={sections} />
           </div>
         </div>
       </section>
