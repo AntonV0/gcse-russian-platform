@@ -58,6 +58,38 @@ async function revalidateLessonPaths(formData: FormData) {
   redirect(adminPath);
 }
 
+async function getNextSectionPosition(lessonId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_sections")
+    .select("id")
+    .eq("lesson_id", lessonId);
+
+  if (error) {
+    console.error("Error counting lesson sections:", error);
+    throw new Error("Failed to prepare section position");
+  }
+
+  return (data?.length ?? 0) + 1;
+}
+
+async function getNextBlockPosition(sectionId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_blocks")
+    .select("id")
+    .eq("lesson_section_id", sectionId);
+
+  if (error) {
+    console.error("Error counting lesson blocks:", error);
+    throw new Error("Failed to prepare block position");
+  }
+
+  return (data?.length ?? 0) + 1;
+}
+
 export async function createSectionAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
@@ -72,18 +104,7 @@ export async function createSectionAction(formData: FormData) {
   }
 
   const supabase = await createClient();
-
-  const { data: existingSections, error: countError } = await supabase
-    .from("lesson_sections")
-    .select("id")
-    .eq("lesson_id", lessonId);
-
-  if (countError) {
-    console.error("Error counting lesson sections:", countError);
-    throw new Error("Failed to prepare section position");
-  }
-
-  const nextPosition = (existingSections?.length ?? 0) + 1;
+  const nextPosition = await getNextSectionPosition(lessonId);
 
   const { error } = await supabase.from("lesson_sections").insert({
     lesson_id: lessonId,
@@ -103,6 +124,38 @@ export async function createSectionAction(formData: FormData) {
   await revalidateLessonPaths(formData);
 }
 
+export async function updateSectionAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
+  const description = getTrimmedString(formData, "description");
+  const sectionKind = getTrimmedString(formData, "sectionKind") || "content";
+
+  if (!sectionId || !title) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_sections")
+    .update({
+      title,
+      description: description || null,
+      section_kind: sectionKind,
+    })
+    .eq("id", sectionId);
+
+  if (error) {
+    console.error("Error updating lesson section:", error);
+    throw new Error("Failed to update section");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
 export async function createTextBlockAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
@@ -115,18 +168,7 @@ export async function createTextBlockAction(formData: FormData) {
   }
 
   const supabase = await createClient();
-
-  const { data: existingBlocks, error: countError } = await supabase
-    .from("lesson_blocks")
-    .select("id")
-    .eq("lesson_section_id", sectionId);
-
-  if (countError) {
-    console.error("Error counting lesson blocks:", countError);
-    throw new Error("Failed to prepare block position");
-  }
-
-  const nextPosition = (existingBlocks?.length ?? 0) + 1;
+  const nextPosition = await getNextBlockPosition(sectionId);
 
   const { error } = await supabase.from("lesson_blocks").insert({
     lesson_section_id: sectionId,
@@ -145,6 +187,35 @@ export async function createTextBlockAction(formData: FormData) {
   await revalidateLessonPaths(formData);
 }
 
+export async function updateTextBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: { content },
+    })
+    .eq("id", blockId)
+    .eq("block_type", "text");
+
+  if (error) {
+    console.error("Error updating text block:", error);
+    throw new Error("Failed to update text block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
 export async function createNoteBlockAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
@@ -158,18 +229,7 @@ export async function createNoteBlockAction(formData: FormData) {
   }
 
   const supabase = await createClient();
-
-  const { data: existingBlocks, error: countError } = await supabase
-    .from("lesson_blocks")
-    .select("id")
-    .eq("lesson_section_id", sectionId);
-
-  if (countError) {
-    console.error("Error counting lesson blocks:", countError);
-    throw new Error("Failed to prepare block position");
-  }
-
-  const nextPosition = (existingBlocks?.length ?? 0) + 1;
+  const nextPosition = await getNextBlockPosition(sectionId);
 
   const { error } = await supabase.from("lesson_blocks").insert({
     lesson_section_id: sectionId,
@@ -183,6 +243,172 @@ export async function createNoteBlockAction(formData: FormData) {
   if (error) {
     console.error("Error creating note block:", error);
     throw new Error("Failed to create note block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function updateNoteBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !title || !content) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: { title, content },
+    })
+    .eq("id", blockId)
+    .eq("block_type", "note");
+
+  if (error) {
+    console.error("Error updating note block:", error);
+    throw new Error("Failed to update note block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function createQuestionSetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
+  const questionSetSlug = getTrimmedString(formData, "questionSetSlug");
+
+  if (!sectionId || !questionSetSlug) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "question-set",
+    position: nextPosition,
+    is_published: true,
+    data: {
+      title: title || undefined,
+      questionSetSlug,
+    },
+    settings: {},
+  });
+
+  if (error) {
+    console.error("Error creating question-set block:", error);
+    throw new Error("Failed to create question-set block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function updateQuestionSetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
+  const questionSetSlug = getTrimmedString(formData, "questionSetSlug");
+
+  if (!blockId || !questionSetSlug) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: {
+        title: title || undefined,
+        questionSetSlug,
+      },
+    })
+    .eq("id", blockId)
+    .eq("block_type", "question-set");
+
+  if (error) {
+    console.error("Error updating question-set block:", error);
+    throw new Error("Failed to update question-set block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function createVocabularySetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
+  const vocabularySetSlug = getTrimmedString(formData, "vocabularySetSlug");
+
+  if (!sectionId || !vocabularySetSlug) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "vocabulary-set",
+    position: nextPosition,
+    is_published: true,
+    data: {
+      title: title || undefined,
+      vocabularySetSlug,
+    },
+    settings: {},
+  });
+
+  if (error) {
+    console.error("Error creating vocabulary-set block:", error);
+    throw new Error("Failed to create vocabulary-set block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function updateVocabularySetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
+  const vocabularySetSlug = getTrimmedString(formData, "vocabularySetSlug");
+
+  if (!blockId || !vocabularySetSlug) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: {
+        title: title || undefined,
+        vocabularySetSlug,
+      },
+    })
+    .eq("id", blockId)
+    .eq("block_type", "vocabulary-set");
+
+  if (error) {
+    console.error("Error updating vocabulary-set block:", error);
+    throw new Error("Failed to update vocabulary-set block");
   }
 
   await revalidateLessonPaths(formData);
