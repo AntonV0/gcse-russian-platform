@@ -28,7 +28,7 @@ function CalloutBlock({ title, content }: { title?: string; content: string }) {
   return (
     <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
       {title ? <div className="mb-1 font-semibold text-blue-900">{title}</div> : null}
-      <p className="text-blue-900">{content}</p>
+      <p className="text-blue-900 whitespace-pre-wrap">{content}</p>
     </div>
   );
 }
@@ -37,7 +37,53 @@ function ExamTipBlock({ title, content }: { title?: string; content: string }) {
   return (
     <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
       <div className="mb-1 font-semibold text-amber-900">{title ?? "Exam tip"}</div>
-      <p className="text-amber-900">{content}</p>
+      <p className="text-amber-900 whitespace-pre-wrap">{content}</p>
+    </div>
+  );
+}
+
+function ImageBlock({
+  src,
+  alt,
+  caption,
+}: {
+  src: string;
+  alt?: string;
+  caption?: string;
+}) {
+  return (
+    <figure className="space-y-2">
+      <img
+        src={src}
+        alt={alt ?? caption ?? "Lesson image"}
+        className="max-h-[500px] w-full rounded-xl border object-contain bg-white"
+      />
+      {caption ? (
+        <figcaption className="text-sm text-gray-600">{caption}</figcaption>
+      ) : null}
+    </figure>
+  );
+}
+
+function AudioBlock({
+  title,
+  src,
+  caption,
+  autoPlay,
+}: {
+  title?: string;
+  src: string;
+  caption?: string;
+  autoPlay?: boolean;
+}) {
+  return (
+    <div className="rounded-xl border bg-white px-4 py-3 space-y-2">
+      {title ? <div className="font-medium">{title}</div> : null}
+      <audio controls autoPlay={autoPlay} className="w-full">
+        <source src={src} />
+        Your browser does not support the audio element.
+      </audio>
+      {caption ? <div className="text-sm text-gray-600">{caption}</div> : null}
     </div>
   );
 }
@@ -96,6 +142,27 @@ export default function LessonRenderer({
                       key={index}
                       title={block.title}
                       content={block.content}
+                    />
+                  );
+
+                case "image":
+                  return (
+                    <ImageBlock
+                      key={index}
+                      src={block.src}
+                      alt={block.alt}
+                      caption={block.caption}
+                    />
+                  );
+
+                case "audio":
+                  return (
+                    <AudioBlock
+                      key={index}
+                      title={block.title}
+                      src={block.src}
+                      caption={block.caption}
+                      autoPlay={block.autoPlay}
                     />
                   );
 

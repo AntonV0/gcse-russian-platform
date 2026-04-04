@@ -1,8 +1,10 @@
 import {
+  createAudioBlockAction,
   createCalloutBlockAction,
   createDividerBlockAction,
   createExamTipBlockAction,
   createHeaderBlockAction,
+  createImageBlockAction,
   createNoteBlockAction,
   createQuestionSetBlockAction,
   createSectionAction,
@@ -15,9 +17,11 @@ import {
   moveSectionAction,
   toggleBlockPublishedAction,
   toggleSectionPublishedAction,
+  updateAudioBlockAction,
   updateCalloutBlockAction,
   updateExamTipBlockAction,
   updateHeaderBlockAction,
+  updateImageBlockAction,
   updateNoteBlockAction,
   updateQuestionSetBlockAction,
   updateSectionAction,
@@ -201,6 +205,117 @@ function SlugBlockEditor(props: {
   );
 }
 
+function ImageBlockEditor(props: {
+  blockId: string;
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+  defaultSrc: string;
+  defaultAlt: string;
+  defaultCaption: string;
+}) {
+  return (
+    <form action={updateImageBlockAction} className="space-y-2">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="blockId" value={props.blockId} />
+
+      <input
+        name="src"
+        required
+        defaultValue={props.defaultSrc}
+        placeholder="https://..."
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <input
+        name="alt"
+        defaultValue={props.defaultAlt}
+        placeholder="Alt text"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <input
+        name="caption"
+        defaultValue={props.defaultCaption}
+        placeholder="Optional caption"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-gray-50">
+        Save image block
+      </button>
+    </form>
+  );
+}
+
+function AudioBlockEditor(props: {
+  blockId: string;
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+  defaultTitle: string;
+  defaultSrc: string;
+  defaultCaption: string;
+  defaultAutoPlay: boolean;
+}) {
+  return (
+    <form action={updateAudioBlockAction} className="space-y-2">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="blockId" value={props.blockId} />
+
+      <input
+        name="title"
+        defaultValue={props.defaultTitle}
+        placeholder="Optional title"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <input
+        name="src"
+        required
+        defaultValue={props.defaultSrc}
+        placeholder="https://..."
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <input
+        name="caption"
+        defaultValue={props.defaultCaption}
+        placeholder="Optional caption"
+        className="w-full rounded border px-3 py-2 text-sm"
+      />
+
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          name="autoPlay"
+          value="true"
+          defaultChecked={props.defaultAutoPlay}
+        />
+        Auto play
+      </label>
+
+      <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-gray-50">
+        Save audio block
+      </button>
+    </form>
+  );
+}
+
 function renderBlockPreview(block: {
   block_type: string;
   data: Record<string, unknown>;
@@ -220,6 +335,10 @@ function renderBlockPreview(block: {
         : typeof block.data.content === "string"
           ? block.data.content
           : block.block_type;
+    case "image":
+      return typeof block.data.src === "string" ? block.data.src : "Image block";
+    case "audio":
+      return typeof block.data.src === "string" ? block.data.src : "Audio block";
     case "question-set":
       return typeof block.data.questionSetSlug === "string"
         ? block.data.questionSetSlug
@@ -338,6 +457,45 @@ function BlockEditPanel(props: {
           }
           action={updateExamTipBlockAction}
           label="exam tip block"
+        />
+      );
+
+    case "image":
+      return (
+        <ImageBlockEditor
+          blockId={props.block.id}
+          routeFields={props.routeFields}
+          defaultSrc={
+            typeof props.block.data.src === "string" ? props.block.data.src : ""
+          }
+          defaultAlt={
+            typeof props.block.data.alt === "string" ? props.block.data.alt : ""
+          }
+          defaultCaption={
+            typeof props.block.data.caption === "string" ? props.block.data.caption : ""
+          }
+        />
+      );
+
+    case "audio":
+      return (
+        <AudioBlockEditor
+          blockId={props.block.id}
+          routeFields={props.routeFields}
+          defaultTitle={
+            typeof props.block.data.title === "string" ? props.block.data.title : ""
+          }
+          defaultSrc={
+            typeof props.block.data.src === "string" ? props.block.data.src : ""
+          }
+          defaultCaption={
+            typeof props.block.data.caption === "string" ? props.block.data.caption : ""
+          }
+          defaultAutoPlay={
+            typeof props.block.data.autoPlay === "boolean"
+              ? props.block.data.autoPlay
+              : false
+          }
         />
       );
 
@@ -529,6 +687,107 @@ function AddSlugBlockForm(props: {
   );
 }
 
+function AddImageBlockForm(props: {
+  sectionId: string;
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+}) {
+  return (
+    <div>
+      <div className="mb-2 text-sm font-medium">Add Image Block</div>
+
+      <form action={createImageBlockAction} className="space-y-2">
+        <BuilderHiddenFields {...props.routeFields} />
+        <input type="hidden" name="sectionId" value={props.sectionId} />
+
+        <input
+          name="src"
+          required
+          placeholder="https://..."
+          className="w-full rounded border px-3 py-2 text-sm"
+        />
+
+        <input
+          name="alt"
+          placeholder="Alt text"
+          className="w-full rounded border px-3 py-2 text-sm"
+        />
+
+        <input
+          name="caption"
+          placeholder="Optional caption"
+          className="w-full rounded border px-3 py-2 text-sm"
+        />
+
+        <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-white">
+          Add image block
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function AddAudioBlockForm(props: {
+  sectionId: string;
+  routeFields: {
+    courseId: string;
+    variantId: string;
+    moduleId: string;
+    lessonId: string;
+    courseSlug: string;
+    variantSlug: string;
+    moduleSlug: string;
+    lessonSlug: string;
+  };
+}) {
+  return (
+    <div>
+      <div className="mb-2 text-sm font-medium">Add Audio Block</div>
+
+      <form action={createAudioBlockAction} className="space-y-2">
+        <BuilderHiddenFields {...props.routeFields} />
+        <input type="hidden" name="sectionId" value={props.sectionId} />
+
+        <input
+          name="title"
+          placeholder="Optional title"
+          className="w-full rounded border px-3 py-2 text-sm"
+        />
+
+        <input
+          name="src"
+          required
+          placeholder="https://..."
+          className="w-full rounded border px-3 py-2 text-sm"
+        />
+
+        <input
+          name="caption"
+          placeholder="Optional caption"
+          className="w-full rounded border px-3 py-2 text-sm"
+        />
+
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="autoPlay" value="true" />
+          Auto play
+        </label>
+
+        <button type="submit" className="rounded border px-3 py-2 text-sm hover:bg-white">
+          Add audio block
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export default function AdminLessonBuilder({
   lessonId,
   courseId,
@@ -559,6 +818,7 @@ export default function AdminLessonBuilder({
           <li>Create a section first.</li>
           <li>Add structure blocks like header, subheader, and divider.</li>
           <li>Add explanation blocks like text, note, callout, and exam tip.</li>
+          <li>Add media blocks like image and audio.</li>
           <li>Add embedded practice with question-set and vocabulary-set blocks.</li>
           <li>Use edit panels to refine content.</li>
           <li>Use publish controls to show or hide content.</li>
@@ -840,7 +1100,7 @@ export default function AdminLessonBuilder({
                 )}
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-3">
+              <div className="grid gap-4 lg:grid-cols-4">
                 <div className="rounded border bg-gray-50 p-3 space-y-4">
                   <AddSimpleTextBlockForm
                     title="Add Header Block"
@@ -916,6 +1176,12 @@ export default function AdminLessonBuilder({
                     titlePlaceholder="Optional title"
                     contentPlaceholder="Advice for exam success..."
                   />
+                </div>
+
+                <div className="rounded border bg-gray-50 p-3 space-y-4">
+                  <AddImageBlockForm sectionId={section.id} routeFields={routeFields} />
+
+                  <AddAudioBlockForm sectionId={section.id} routeFields={routeFields} />
                 </div>
 
                 <div className="rounded border bg-gray-50 p-3 space-y-4">

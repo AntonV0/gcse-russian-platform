@@ -46,6 +46,21 @@ export type ExamTipLessonBlock = {
   content: string;
 };
 
+export type ImageLessonBlock = {
+  type: "image";
+  src: string;
+  alt?: string;
+  caption?: string;
+};
+
+export type AudioLessonBlock = {
+  type: "audio";
+  title?: string;
+  src: string;
+  caption?: string;
+  autoPlay?: boolean;
+};
+
 export type VocabularyLessonBlock = {
   type: "vocabulary";
   title: string;
@@ -94,6 +109,8 @@ export type LessonBlock =
   | NoteLessonBlock
   | CalloutLessonBlock
   | ExamTipLessonBlock
+  | ImageLessonBlock
+  | AudioLessonBlock
   | VocabularyLessonBlock
   | VocabularySetLessonBlock
   | QuestionSetLessonBlock

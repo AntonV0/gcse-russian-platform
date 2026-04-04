@@ -56,6 +56,10 @@ function optionalString(value: unknown): string | undefined {
   return typeof value === "string" && value.trim().length > 0 ? value : undefined;
 }
 
+function optionalBoolean(value: unknown): boolean | undefined {
+  return typeof value === "boolean" ? value : undefined;
+}
+
 function mapDbBlockToLessonBlock(row: DbLessonBlock): LessonBlock {
   const data = row.data ?? {};
 
@@ -102,6 +106,23 @@ function mapDbBlockToLessonBlock(row: DbLessonBlock): LessonBlock {
         type: "exam-tip",
         title: optionalString(data.title),
         content: requireString(data.content, "content"),
+      };
+
+    case "image":
+      return {
+        type: "image",
+        src: requireString(data.src, "src"),
+        alt: optionalString(data.alt),
+        caption: optionalString(data.caption),
+      };
+
+    case "audio":
+      return {
+        type: "audio",
+        title: optionalString(data.title),
+        src: requireString(data.src, "src"),
+        caption: optionalString(data.caption),
+        autoPlay: optionalBoolean(data.autoPlay),
       };
 
     case "vocabulary":
