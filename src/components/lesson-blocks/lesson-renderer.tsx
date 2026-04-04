@@ -100,6 +100,10 @@ export default function LessonRenderer({
           className="space-y-4 rounded-2xl border bg-gray-50/50 p-4 md:p-6"
         >
           <div className="space-y-1">
+            <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              {section.sectionKind.replaceAll("_", " ")}
+            </div>
+
             <h2 className="text-2xl font-semibold">{section.title}</h2>
 
             {section.description ? (
