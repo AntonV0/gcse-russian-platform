@@ -12,6 +12,36 @@ type LessonRendererProps = {
   lessonId?: string | null;
 };
 
+function HeaderBlock({ content }: { content: string }) {
+  return <h3 className="text-3xl font-bold">{content}</h3>;
+}
+
+function SubheaderBlock({ content }: { content: string }) {
+  return <h4 className="text-xl font-semibold">{content}</h4>;
+}
+
+function DividerBlock() {
+  return <hr className="my-4 border-gray-300" />;
+}
+
+function CalloutBlock({ title, content }: { title?: string; content: string }) {
+  return (
+    <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
+      {title ? <div className="mb-1 font-semibold text-blue-900">{title}</div> : null}
+      <p className="text-blue-900">{content}</p>
+    </div>
+  );
+}
+
+function ExamTipBlock({ title, content }: { title?: string; content: string }) {
+  return (
+    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+      <div className="mb-1 font-semibold text-amber-900">{title ?? "Exam tip"}</div>
+      <p className="text-amber-900">{content}</p>
+    </div>
+  );
+}
+
 export default function LessonRenderer({
   sections,
   lessonId = null,
@@ -34,12 +64,39 @@ export default function LessonRenderer({
           <div className="space-y-4">
             {section.blocks.map((block, index) => {
               switch (block.type) {
+                case "header":
+                  return <HeaderBlock key={index} content={block.content} />;
+
+                case "subheader":
+                  return <SubheaderBlock key={index} content={block.content} />;
+
+                case "divider":
+                  return <DividerBlock key={index} />;
+
                 case "text":
                   return <TextBlock key={index} content={block.content} />;
 
                 case "note":
                   return (
                     <NoteBlock key={index} title={block.title} content={block.content} />
+                  );
+
+                case "callout":
+                  return (
+                    <CalloutBlock
+                      key={index}
+                      title={block.title}
+                      content={block.content}
+                    />
+                  );
+
+                case "exam-tip":
+                  return (
+                    <ExamTipBlock
+                      key={index}
+                      title={block.title}
+                      content={block.content}
+                    />
                   );
 
                 case "vocabulary":

@@ -60,6 +60,23 @@ function mapDbBlockToLessonBlock(row: DbLessonBlock): LessonBlock {
   const data = row.data ?? {};
 
   switch (row.block_type) {
+    case "header":
+      return {
+        type: "header",
+        content: requireString(data.content, "content"),
+      };
+
+    case "subheader":
+      return {
+        type: "subheader",
+        content: requireString(data.content, "content"),
+      };
+
+    case "divider":
+      return {
+        type: "divider",
+      };
+
     case "text":
       return {
         type: "text",
@@ -70,6 +87,20 @@ function mapDbBlockToLessonBlock(row: DbLessonBlock): LessonBlock {
       return {
         type: "note",
         title: requireString(data.title, "title"),
+        content: requireString(data.content, "content"),
+      };
+
+    case "callout":
+      return {
+        type: "callout",
+        title: optionalString(data.title),
+        content: requireString(data.content, "content"),
+      };
+
+    case "exam-tip":
+      return {
+        type: "exam-tip",
+        title: optionalString(data.title),
         content: requireString(data.content, "content"),
       };
 

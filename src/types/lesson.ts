@@ -9,6 +9,20 @@ export type LessonSectionKind =
   | "listening_practice"
   | "summary";
 
+export type HeaderLessonBlock = {
+  type: "header";
+  content: string;
+};
+
+export type SubheaderLessonBlock = {
+  type: "subheader";
+  content: string;
+};
+
+export type DividerLessonBlock = {
+  type: "divider";
+};
+
 export type TextLessonBlock = {
   type: "text";
   content: string;
@@ -17,6 +31,18 @@ export type TextLessonBlock = {
 export type NoteLessonBlock = {
   type: "note";
   title: string;
+  content: string;
+};
+
+export type CalloutLessonBlock = {
+  type: "callout";
+  title?: string;
+  content: string;
+};
+
+export type ExamTipLessonBlock = {
+  type: "exam-tip";
+  title?: string;
   content: string;
 };
 
@@ -61,8 +87,13 @@ export type QuestionSetLessonBlock = {
 };
 
 export type LessonBlock =
+  | HeaderLessonBlock
+  | SubheaderLessonBlock
+  | DividerLessonBlock
   | TextLessonBlock
   | NoteLessonBlock
+  | CalloutLessonBlock
+  | ExamTipLessonBlock
   | VocabularyLessonBlock
   | VocabularySetLessonBlock
   | QuestionSetLessonBlock
