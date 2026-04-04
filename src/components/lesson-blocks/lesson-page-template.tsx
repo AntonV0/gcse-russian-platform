@@ -2,7 +2,7 @@ import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
 import LessonCompletionForm from "@/components/lesson-blocks/lesson-completion-form";
-import type { LessonBlock } from "@/types/lesson";
+import type { LessonSection } from "@/types/lesson";
 import { loadLessonPageData } from "@/lib/course-helpers-db";
 import { getLessonProgress } from "@/lib/progress";
 import { getLessonPath, getModulePath } from "@/lib/routes";
@@ -12,7 +12,7 @@ type LessonPageTemplateProps = {
   variantSlug: string;
   moduleSlug: string;
   lessonSlug: string;
-  blocks: LessonBlock[];
+  sections: LessonSection[];
 };
 
 export default async function LessonPageTemplate({
@@ -20,7 +20,7 @@ export default async function LessonPageTemplate({
   variantSlug,
   moduleSlug,
   lessonSlug,
-  blocks,
+  sections,
 }: LessonPageTemplateProps) {
   const { course, module, lesson, previousLesson, nextLesson } = await loadLessonPageData(
     courseSlug,
@@ -52,7 +52,7 @@ export default async function LessonPageTemplate({
         lessonDescription={lesson.summary ?? ""}
       />
 
-      <LessonRenderer blocks={blocks} lessonId={lesson.id} />
+      <LessonRenderer sections={sections} lessonId={lesson.id} />
 
       <LessonCompletionForm
         courseSlug={courseSlug}

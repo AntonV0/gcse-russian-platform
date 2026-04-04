@@ -1,7 +1,3 @@
-// ------------------------
-// SECTION + BLOCK STRUCTURE
-// ------------------------
-
 export type LessonSectionKind =
   | "intro"
   | "content"
@@ -12,10 +8,6 @@ export type LessonSectionKind =
   | "speaking_practice"
   | "listening_practice"
   | "summary";
-
-// ------------------------
-// BLOCK TYPES
-// ------------------------
 
 export type TextLessonBlock = {
   type: "text";
@@ -43,12 +35,6 @@ export type VocabularySetLessonBlock = {
   vocabularySetSlug: string;
 };
 
-export type QuestionSetLessonBlock = {
-  type: "question-set";
-  title?: string;
-  questionSetSlug: string;
-};
-
 export type MultipleChoiceLessonBlock = {
   type: "multiple-choice";
   question: string;
@@ -68,9 +54,11 @@ export type ShortAnswerLessonBlock = {
   placeholder?: string;
 };
 
-// ------------------------
-// FUTURE-PROOF BASE TYPE
-// ------------------------
+export type QuestionSetLessonBlock = {
+  type: "question-set";
+  title?: string;
+  questionSetSlug: string;
+};
 
 export type LessonBlock =
   | TextLessonBlock
@@ -80,34 +68,6 @@ export type LessonBlock =
   | QuestionSetLessonBlock
   | MultipleChoiceLessonBlock
   | ShortAnswerLessonBlock;
-
-// ------------------------
-// DB STRUCTURES
-// ------------------------
-
-export type LessonBlockDB = {
-  id: string;
-  lesson_section_id: string;
-  block_type: string;
-  position: number;
-  data: any;
-  is_published: boolean;
-};
-
-export type LessonSectionDB = {
-  id: string;
-  lesson_id: string;
-  title: string;
-  description?: string;
-  section_kind: LessonSectionKind;
-  position: number;
-  is_published: boolean;
-  settings: any;
-};
-
-// ------------------------
-// FRONTEND SHAPES
-// ------------------------
 
 export type LessonSection = {
   id: string;

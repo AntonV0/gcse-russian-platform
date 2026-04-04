@@ -1,7 +1,7 @@
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
-import { getLessonBlocks } from "@/lib/lesson-content";
 import { loadLessonPageData } from "@/lib/course-helpers-db";
 import { canUserAccessLesson } from "@/lib/access";
+import { loadLessonContentByLessonIdDb } from "@/lib/lesson-content-helpers-db";
 import Link from "next/link";
 
 type LessonPageProps = {
@@ -46,9 +46,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
     );
   }
 
-  const blocks = getLessonBlocks(courseSlug, variantSlug, moduleSlug, lessonSlug);
+  const lessonContent = await loadLessonContentByLessonIdDb(lesson.id);
 
-  if (!blocks) {
+  if (lessonContent.sections.length === 0) {
     return <main>Lesson content not found.</main>;
   }
 
@@ -58,7 +58,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
       variantSlug={variantSlug}
       moduleSlug={moduleSlug}
       lessonSlug={lessonSlug}
-      blocks={blocks}
+      sections={lessonContent.sections}
     />
   );
 }
