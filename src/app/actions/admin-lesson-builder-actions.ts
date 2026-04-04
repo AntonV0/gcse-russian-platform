@@ -9,6 +9,10 @@ function getTrimmedString(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
 }
 
+function getBoolean(formData: FormData, key: string) {
+  return formData.get(key) === "true";
+}
+
 function getAdminLessonPath(params: {
   courseId: string;
   variantId: string;
@@ -490,6 +494,154 @@ export async function updateExamTipBlockAction(formData: FormData) {
     blockType: "exam-tip",
     data: { title: title || undefined, content },
   });
+}
+
+export async function createImageBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const src = getTrimmedString(formData, "src");
+  const alt = getTrimmedString(formData, "alt");
+  const caption = getTrimmedString(formData, "caption");
+
+  if (!sectionId || !src) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "image",
+    position: nextPosition,
+    is_published: true,
+    data: {
+      src,
+      alt: alt || undefined,
+      caption: caption || undefined,
+    },
+    settings: {},
+  });
+
+  if (error) {
+    console.error("Error creating image block:", error);
+    throw new Error("Failed to create image block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function updateImageBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const src = getTrimmedString(formData, "src");
+  const alt = getTrimmedString(formData, "alt");
+  const caption = getTrimmedString(formData, "caption");
+
+  if (!blockId || !src) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: {
+        src,
+        alt: alt || undefined,
+        caption: caption || undefined,
+      },
+    })
+    .eq("id", blockId)
+    .eq("block_type", "image");
+
+  if (error) {
+    console.error("Error updating image block:", error);
+    throw new Error("Failed to update image block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function createAudioBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
+  const src = getTrimmedString(formData, "src");
+  const caption = getTrimmedString(formData, "caption");
+  const autoPlay = getBoolean(formData, "autoPlay");
+
+  if (!sectionId || !src) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "audio",
+    position: nextPosition,
+    is_published: true,
+    data: {
+      title: title || undefined,
+      src,
+      caption: caption || undefined,
+      autoPlay,
+    },
+    settings: {},
+  });
+
+  if (error) {
+    console.error("Error creating audio block:", error);
+    throw new Error("Failed to create audio block");
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function updateAudioBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
+  const src = getTrimmedString(formData, "src");
+  const caption = getTrimmedString(formData, "caption");
+  const autoPlay = getBoolean(formData, "autoPlay");
+
+  if (!blockId || !src) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: {
+        title: title || undefined,
+        src,
+        caption: caption || undefined,
+        autoPlay,
+      },
+    })
+    .eq("id", blockId)
+    .eq("block_type", "audio");
+
+  if (error) {
+    console.error("Error updating audio block:", error);
+    throw new Error("Failed to update audio block");
+  }
+
+  await revalidateLessonPaths(formData);
 }
 
 export async function createQuestionSetBlockAction(formData: FormData) {
