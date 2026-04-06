@@ -77,6 +77,20 @@ type RouteFields = {
 type LessonSection = AdminLessonBuilderProps["sections"][number];
 type LessonBlock = LessonSection["blocks"][number];
 
+type NewBlockType =
+  | "header"
+  | "subheader"
+  | "divider"
+  | "text"
+  | "note"
+  | "callout"
+  | "exam-tip"
+  | "vocabulary"
+  | "image"
+  | "audio"
+  | "question-set"
+  | "vocabulary-set";
+
 function stringifyVocabularyItems(items: unknown) {
   if (!Array.isArray(items)) return "";
 
@@ -912,28 +926,284 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
   );
 }
 
-function AddBlockGroup({
-  title,
-  description,
-  children,
-  defaultOpen = false,
-}: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
+function BlockTypeButton(props: {
+  label: string;
+  value: NewBlockType;
+  selectedValue: NewBlockType | null;
+  onSelect: (value: NewBlockType) => void;
 }) {
+  const isSelected = props.selectedValue === props.value;
+
   return (
-    <details
-      open={defaultOpen}
-      className="rounded-xl border bg-gray-50 [&_summary::-webkit-details-marker]:hidden"
+    <button
+      type="button"
+      onClick={() => props.onSelect(props.value)}
+      className={`rounded-xl border px-3 py-2 text-sm transition ${
+        isSelected ? "border-black bg-black text-white" : "bg-white hover:bg-gray-50"
+      }`}
     >
-      <summary className="cursor-pointer select-none px-4 py-3 hover:bg-gray-100">
-        <div className="font-medium text-gray-900">{title}</div>
-        <div className="text-sm text-gray-500">{description}</div>
-      </summary>
-      <div className="border-t p-4">{children}</div>
-    </details>
+      {props.label}
+    </button>
+  );
+}
+
+function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFields }) {
+  const section = props.section;
+
+  const [selectedNewBlockType, setSelectedNewBlockType] = useState<NewBlockType | null>(
+    props.section.blocks.length === 0 ? "text" : null
+  );
+
+  useEffect(() => {
+    setSelectedNewBlockType(props.section.blocks.length === 0 ? "text" : null);
+  }, [props.section.id, props.section.blocks.length]);
+
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4">
+        <div>
+          <div className="mb-2 text-sm font-medium text-gray-900">Structure</div>
+          <div className="flex flex-wrap gap-2">
+            <BlockTypeButton
+              label="Header"
+              value="header"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+            <BlockTypeButton
+              label="Subheader"
+              value="subheader"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+            <BlockTypeButton
+              label="Divider"
+              value="divider"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-2 text-sm font-medium text-gray-900">Teaching</div>
+          <div className="flex flex-wrap gap-2">
+            <BlockTypeButton
+              label="Text"
+              value="text"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+            <BlockTypeButton
+              label="Note"
+              value="note"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+            <BlockTypeButton
+              label="Callout"
+              value="callout"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+            <BlockTypeButton
+              label="Exam tip"
+              value="exam-tip"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+            <BlockTypeButton
+              label="Vocabulary"
+              value="vocabulary"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-2 text-sm font-medium text-gray-900">Media</div>
+          <div className="flex flex-wrap gap-2">
+            <BlockTypeButton
+              label="Image"
+              value="image"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+            <BlockTypeButton
+              label="Audio"
+              value="audio"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-2 text-sm font-medium text-gray-900">Practice</div>
+          <div className="flex flex-wrap gap-2">
+            <BlockTypeButton
+              label="Question set"
+              value="question-set"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+            <BlockTypeButton
+              label="Vocabulary set"
+              value="vocabulary-set"
+              selectedValue={selectedNewBlockType}
+              onSelect={setSelectedNewBlockType}
+            />
+          </div>
+        </div>
+      </div>
+
+      {!selectedNewBlockType ? (
+        <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
+          Choose a block type above to add it to this section.
+        </div>
+      ) : (
+        <div className="rounded-2xl border bg-gray-50 p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <div className="font-medium text-gray-900">
+                New {friendlyBlockType(selectedNewBlockType)}
+              </div>
+              <div className="text-sm text-gray-500">
+                Fill in the details for this new block.
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setSelectedNewBlockType(null)}
+              className="rounded-lg border px-3 py-2 text-sm hover:bg-white"
+            >
+              Clear
+            </button>
+          </div>
+
+          {selectedNewBlockType === "header" ? (
+            <AddSimpleTextBlockForm
+              placeholder="Big heading for this section"
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+              action={createHeaderBlockAction}
+              buttonLabel="Add header block"
+            />
+          ) : null}
+
+          {selectedNewBlockType === "subheader" ? (
+            <AddSimpleTextBlockForm
+              placeholder="Smaller heading for this section"
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+              action={createSubheaderBlockAction}
+              buttonLabel="Add subheader block"
+            />
+          ) : null}
+
+          {selectedNewBlockType === "divider" ? (
+            <form action={createDividerBlockAction} className="space-y-2">
+              <BuilderHiddenFields {...props.routeFields} />
+              <input type="hidden" name="sectionId" value={props.section.id} />
+              <button
+                type="submit"
+                className="rounded-lg border px-3 py-2 text-sm hover:bg-white"
+              >
+                Add divider block
+              </button>
+            </form>
+          ) : null}
+
+          {selectedNewBlockType === "text" ? (
+            <AddSimpleTextBlockForm
+              placeholder="Write the text content here..."
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+              action={createTextBlockAction}
+              buttonLabel="Add text block"
+            />
+          ) : null}
+
+          {selectedNewBlockType === "note" ? (
+            <AddTitledContentBlockForm
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+              action={createNoteBlockAction}
+              buttonLabel="Add note block"
+              titlePlaceholder="Study tip"
+              contentPlaceholder="Write the note content here..."
+            />
+          ) : null}
+
+          {selectedNewBlockType === "callout" ? (
+            <AddTitledContentBlockForm
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+              action={createCalloutBlockAction}
+              buttonLabel="Add callout block"
+              titlePlaceholder="Optional title"
+              contentPlaceholder="Important information or reminder..."
+            />
+          ) : null}
+
+          {selectedNewBlockType === "exam-tip" ? (
+            <AddTitledContentBlockForm
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+              action={createExamTipBlockAction}
+              buttonLabel="Add exam tip block"
+              titlePlaceholder="Optional title"
+              contentPlaceholder="Advice for exam success..."
+            />
+          ) : null}
+
+          {selectedNewBlockType === "vocabulary" ? (
+            <AddVocabularyBlockForm
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+            />
+          ) : null}
+
+          {selectedNewBlockType === "image" ? (
+            <AddImageBlockForm
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+            />
+          ) : null}
+
+          {selectedNewBlockType === "audio" ? (
+            <AddAudioBlockForm
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+            />
+          ) : null}
+
+          {selectedNewBlockType === "question-set" ? (
+            <AddSlugBlockForm
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+              action={createQuestionSetBlockAction}
+              buttonLabel="Add question-set block"
+              slugFieldName="questionSetSlug"
+              slugPlaceholder="question-set-slug"
+            />
+          ) : null}
+
+          {selectedNewBlockType === "vocabulary-set" ? (
+            <AddSlugBlockForm
+              sectionId={props.section.id}
+              routeFields={props.routeFields}
+              action={createVocabularySetBlockAction}
+              buttonLabel="Add vocabulary-set block"
+              slugFieldName="vocabularySetSlug"
+              slugPlaceholder="vocabulary-set-slug"
+            />
+          ) : null}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1400,128 +1670,8 @@ function LessonSectionEditor(props: {
         </div>
       </Panel>
 
-      <Panel title="Add blocks" description="Add new blocks to the selected section.">
-        <div className="space-y-3">
-          <AddBlockGroup
-            title="Add structure block"
-            description="Headers and dividers for lesson layout"
-            defaultOpen={section.blocks.length === 0}
-          >
-            <div className="grid gap-4 lg:grid-cols-3">
-              <AddSimpleTextBlockForm
-                placeholder="Big heading for this section"
-                sectionId={section.id}
-                routeFields={props.routeFields}
-                action={createHeaderBlockAction}
-                buttonLabel="Add header block"
-              />
-
-              <AddSimpleTextBlockForm
-                placeholder="Smaller heading for this section"
-                sectionId={section.id}
-                routeFields={props.routeFields}
-                action={createSubheaderBlockAction}
-                buttonLabel="Add subheader block"
-              />
-
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-gray-900">Divider</div>
-                <form action={createDividerBlockAction} className="space-y-2">
-                  <BuilderHiddenFields {...props.routeFields} />
-                  <input type="hidden" name="sectionId" value={section.id} />
-                  <button
-                    type="submit"
-                    className="rounded-lg border px-3 py-2 text-sm hover:bg-white"
-                  >
-                    Add divider block
-                  </button>
-                </form>
-              </div>
-            </div>
-          </AddBlockGroup>
-
-          <AddBlockGroup
-            title="Add teaching block"
-            description="Explanations, notes, callouts, tips, and vocabulary"
-          >
-            <div className="grid gap-4 lg:grid-cols-2">
-              <AddSimpleTextBlockForm
-                placeholder="Write the text content here..."
-                sectionId={section.id}
-                routeFields={props.routeFields}
-                action={createTextBlockAction}
-                buttonLabel="Add text block"
-              />
-
-              <AddTitledContentBlockForm
-                sectionId={section.id}
-                routeFields={props.routeFields}
-                action={createNoteBlockAction}
-                buttonLabel="Add note block"
-                titlePlaceholder="Study tip"
-                contentPlaceholder="Write the note content here..."
-              />
-
-              <AddTitledContentBlockForm
-                sectionId={section.id}
-                routeFields={props.routeFields}
-                action={createCalloutBlockAction}
-                buttonLabel="Add callout block"
-                titlePlaceholder="Optional title"
-                contentPlaceholder="Important information or reminder..."
-              />
-
-              <AddTitledContentBlockForm
-                sectionId={section.id}
-                routeFields={props.routeFields}
-                action={createExamTipBlockAction}
-                buttonLabel="Add exam tip block"
-                titlePlaceholder="Optional title"
-                contentPlaceholder="Advice for exam success..."
-              />
-
-              <AddVocabularyBlockForm
-                sectionId={section.id}
-                routeFields={props.routeFields}
-              />
-            </div>
-          </AddBlockGroup>
-
-          <AddBlockGroup
-            title="Add media block"
-            description="Images and audio for explanations and listening practice"
-          >
-            <div className="grid gap-4 lg:grid-cols-2">
-              <AddImageBlockForm sectionId={section.id} routeFields={props.routeFields} />
-              <AddAudioBlockForm sectionId={section.id} routeFields={props.routeFields} />
-            </div>
-          </AddBlockGroup>
-
-          <AddBlockGroup
-            title="Add embedded practice block"
-            description="Pull in reusable question sets or vocabulary sets"
-          >
-            <div className="grid gap-4 lg:grid-cols-2">
-              <AddSlugBlockForm
-                sectionId={section.id}
-                routeFields={props.routeFields}
-                action={createQuestionSetBlockAction}
-                buttonLabel="Add question-set block"
-                slugFieldName="questionSetSlug"
-                slugPlaceholder="question-set-slug"
-              />
-
-              <AddSlugBlockForm
-                sectionId={section.id}
-                routeFields={props.routeFields}
-                action={createVocabularySetBlockAction}
-                buttonLabel="Add vocabulary-set block"
-                slugFieldName="vocabularySetSlug"
-                slugPlaceholder="vocabulary-set-slug"
-              />
-            </div>
-          </AddBlockGroup>
-        </div>
+      <Panel title="Add block" description="Choose a block type, then fill in the form.">
+        <AddBlockComposer section={section} routeFields={props.routeFields} />
       </Panel>
     </div>
   );
