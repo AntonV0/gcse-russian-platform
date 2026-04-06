@@ -59,7 +59,7 @@ export default async function RootLayout({
           </div>
         </header>
 
-        <div className="mx-auto max-w-6xl px-6 py-8">{children}</div>
+        <div className="px-6 py-8 md:px-8">{children}</div>
       </body>
     </html>
   );
