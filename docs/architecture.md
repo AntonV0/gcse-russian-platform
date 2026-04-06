@@ -50,8 +50,14 @@ flowchart TD
   CV --> M[Modules]
   M --> L[Lessons]
 
-  L --> LB[Lesson blocks]
+  L --> SEC[Lesson sections]
+  SEC --> STEP[Step-based lesson flow]
+  SEC --> LB[Lesson blocks]
+  STEP --> VIS[Visited-section progression]
+  VIS --> LSP[lesson_section_progress]
+
   LB --> TXT[Text / Notes / Vocabulary]
+  LB --> AUD[Audio]
   LB --> QSB[Question set block]
 
   QSB --> QE[Question engine]
@@ -91,6 +97,7 @@ flowchart TD
   QE --> DB
   T --> DB
   A --> DB
+  LSP --> DB
   FILE --> STOR[(Supabase Storage)]
 ```
 
@@ -122,7 +129,11 @@ Main concerns:
 - role-aware helpers
 - assignment workflow logic
 - question transformation and rendering support
+<<<<<<< HEAD
 - admin CMS orchestration
+=======
+- lesson step unlocking and section visit tracking
+>>>>>>> dev
 
 ### Data layer
 
@@ -171,6 +182,33 @@ That means a lesson is composed from reusable block types such as:
 - question set block
 
 This keeps layout logic reusable and allows lesson content to grow without rewriting page structure.
+
+### Section-based lesson flow
+
+Lessons now also support a **section-based step system** on top of the block renderer.
+
+This adds a second structural layer:
+
+- Lesson
+- Section
+- Block
+
+Sections are used for:
+
+- breaking long lessons into steps
+- pacing the student experience
+- step-based navigation
+- progressive unlocking
+- visited-section tracking
+
+### Current student lesson behaviour
+
+- lessons open on a current section
+- first visit to a section is recorded in the database
+- visiting a section unlocks the next section
+- previously visited sections remain accessible
+- students cannot skip arbitrarily ahead beyond the allowed progression
+- manual lesson completion still exists separately from section visits
 
 ### Question architecture
 
@@ -253,6 +291,23 @@ Used for:
 - completed lesson state
 - assignment lesson item progress
 
+### Lesson section progress
+
+Stored in `lesson_section_progress`.
+
+Used for:
+
+- first-visit tracking per section
+- revisit timestamps and visit count
+- lesson step unlocking
+- honest visited-section progress UI
+
+Tracked fields include:
+
+- `first_visited_at`
+- `last_visited_at`
+- `visit_count`
+
 ### Question progress
 
 Stored through:
@@ -277,11 +332,25 @@ That means:
 - question set items use question activity
 - custom tasks remain teacher-defined work without automatic completion tracking
 
+<<<<<<< HEAD
 ### Access switching and progress
 
 Progress is intentionally separate from access grants.
 
 This means changing a student's active access does not need to delete or rewrite historical progress, which is especially important for variant-aware learning paths.
+=======
+### Key progress design decision
+
+Section progression is currently **visit-based**, not explicit section-completion-button based.
+
+That decision was made to avoid:
+
+- repetitive click-heavy UX
+- fake completion actions
+- unnecessary friction in long lessons
+
+This keeps lesson flow smoother while still creating real, DB-backed progress state.
+>>>>>>> dev
 
 ---
 
@@ -314,6 +383,19 @@ Supports:
 - teacher-role toggling
 - dashboard summary widgets
 - success/error banners and destructive-action confirmations
+
+### Lesson authoring status
+
+Lesson content architecture has moved forward during this phase, but it is still in a **hybrid state**.
+
+Current state:
+
+- lesson progression and section progress are DB-backed
+- student lesson step flow is DB-aware
+- lesson block rendering is reusable
+- lesson content authoring is **not yet fully CMS-driven in the same way as question sets**
+
+This is an important architectural boundary because the next major step is to make lessons fully database-authored through admin tools.
 
 ---
 
@@ -365,6 +447,8 @@ erDiagram
   COURSES ||--o{ COURSE_VARIANTS : has
   COURSE_VARIANTS ||--o{ MODULES : has
   MODULES ||--o{ LESSONS : has
+  LESSONS ||--o{ LESSON_SECTIONS : has
+  LESSON_SECTIONS ||--o{ LESSON_SECTION_PROGRESS : tracked_in
 
   COURSES ||--o{ PRODUCTS : linked_to
   COURSE_VARIANTS ||--o{ PRODUCTS : linked_to
@@ -390,8 +474,29 @@ erDiagram
   PROFILES ||--o{ ASSIGNMENTS : creates
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : submits
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : reviews
+<<<<<<< HEAD
   PROFILES ||--o{ TEACHING_GROUP_MEMBERS : belongs_to
+=======
+  AUTH_USERS ||--o{ LESSON_PROGRESS : has
+  AUTH_USERS ||--o{ LESSON_SECTION_PROGRESS : has
+>>>>>>> dev
 ```
+
+### Important lesson-progress distinction
+
+There are now **two separate lesson progress layers**:
+
+1. `lesson_progress`
+   - lesson-level completion
+   - manual completion state
+   - used by assignment lesson items
+
+2. `lesson_section_progress`
+   - section-level visitation
+   - step unlocking
+   - visited-section UX state
+
+This separation is intentional and avoids overloading one table with two different concepts.
 
 ---
 
@@ -445,6 +550,16 @@ src/
   types/
 ```
 
+### Files made more important by this phase
+
+The following architectural areas now matter more because of the lesson-section system:
+
+- `src/lib/progress.ts`
+- student lesson page template / section navigation components
+- lesson rendering helpers
+- future lesson authoring helpers
+- future lesson-section-aware admin authoring flows
+
 ---
 
 ## 11. Tech stack
@@ -469,7 +584,12 @@ The platform now has several strong foundations:
 - admin CMS for both content and operational workflows
 - security model aligned across route checks, helpers, and RLS
 - assignment UX that reflects operational review state rather than raw record status
+<<<<<<< HEAD
 - teacher-role and access-grant systems that are explicit rather than inferred ad hoc
+=======
+- **section-based lesson progression with DB-backed visit tracking**
+- **clean separation between lesson completion and section visitation**
+>>>>>>> dev
 
 ---
 
@@ -485,3 +605,7 @@ The current architecture is strong enough to support future additions such as:
 - richer analytics
 - deeper progress summaries
 - broader admin content operations
+- full DB-driven lesson content authoring
+- section-level quizzes/checkpoints
+- richer lesson engagement analytics
+- future true section-completion logic, if needed
