@@ -129,11 +129,8 @@ Main concerns:
 - role-aware helpers
 - assignment workflow logic
 - question transformation and rendering support
-<<<<<<< HEAD
 - admin CMS orchestration
-=======
 - lesson step unlocking and section visit tracking
->>>>>>> dev
 
 ### Data layer
 
@@ -332,13 +329,12 @@ That means:
 - question set items use question activity
 - custom tasks remain teacher-defined work without automatic completion tracking
 
-<<<<<<< HEAD
 ### Access switching and progress
 
 Progress is intentionally separate from access grants.
 
 This means changing a student's active access does not need to delete or rewrite historical progress, which is especially important for variant-aware learning paths.
-=======
+
 ### Key progress design decision
 
 Section progression is currently **visit-based**, not explicit section-completion-button based.
@@ -350,7 +346,6 @@ That decision was made to avoid:
 - unnecessary friction in long lessons
 
 This keeps lesson flow smoother while still creating real, DB-backed progress state.
->>>>>>> dev
 
 ---
 
@@ -474,12 +469,9 @@ erDiagram
   PROFILES ||--o{ ASSIGNMENTS : creates
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : submits
   PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : reviews
-<<<<<<< HEAD
   PROFILES ||--o{ TEACHING_GROUP_MEMBERS : belongs_to
-=======
   AUTH_USERS ||--o{ LESSON_PROGRESS : has
   AUTH_USERS ||--o{ LESSON_SECTION_PROGRESS : has
->>>>>>> dev
 ```
 
 ### Important lesson-progress distinction
@@ -584,12 +576,9 @@ The platform now has several strong foundations:
 - admin CMS for both content and operational workflows
 - security model aligned across route checks, helpers, and RLS
 - assignment UX that reflects operational review state rather than raw record status
-<<<<<<< HEAD
 - teacher-role and access-grant systems that are explicit rather than inferred ad hoc
-=======
 - **section-based lesson progression with DB-backed visit tracking**
 - **clean separation between lesson completion and section visitation**
->>>>>>> dev
 
 ---
 

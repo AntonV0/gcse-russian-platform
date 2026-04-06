@@ -581,7 +581,6 @@ Some eye-catching features arrive later, but on a stronger foundation.
 
 ---
 
-<<<<<<< HEAD
 ## 24. Why should the next major step be database-driven lesson authoring?
 
 ### Decision
@@ -603,7 +602,7 @@ The current hybrid model works for platform foundations, but real course product
 ### Tradeoff
 
 This will require careful schema design, block rendering contracts, and admin authoring UX before large-scale content writing begins.
-=======
+
 ## 20. Why use visit-based section progression instead of completion buttons?
 
 ### Decision
@@ -643,4 +642,3 @@ This system is designed to evolve into:
 - true section completion (optional)
 - adaptive unlocking
 - engagement analytics
->>>>>>> dev
