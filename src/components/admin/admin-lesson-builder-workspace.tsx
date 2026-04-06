@@ -1216,53 +1216,132 @@ function LessonSectionSidebar(props: {
   return (
     <div className="space-y-4">
       <Panel title="Sections" description="Select a section to focus the editor.">
-        <div className="space-y-2">
+        <div className="space-y-3">
           {props.sections.length === 0 ? (
             <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
               No sections yet.
             </div>
           ) : (
-            props.sections.map((section) => {
+            props.sections.map((section, index) => {
               const isSelected = section.id === props.selectedSectionId;
 
               return (
-                <button
+                <div
                   key={section.id}
-                  type="button"
-                  onClick={() => props.onSelectSection(section.id)}
-                  className={`w-full rounded-xl border px-4 py-3 text-left transition ${
-                    isSelected
-                      ? "border-black bg-black text-white"
-                      : "bg-white hover:bg-gray-50"
+                  className={`rounded-xl border transition ${
+                    isSelected ? "border-black bg-black text-white" : "bg-white"
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="font-medium">
-                        {section.position}. {section.title}
+                  <button
+                    type="button"
+                    onClick={() => props.onSelectSection(section.id)}
+                    className="w-full px-4 py-3 text-left"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="font-medium">
+                          {section.position}. {section.title}
+                        </div>
+                        <div
+                          className={`mt-1 text-xs ${
+                            isSelected ? "text-gray-200" : "text-gray-500"
+                          }`}
+                        >
+                          {section.blocks.length} block(s) · {section.section_kind}
+                        </div>
                       </div>
-                      <div
-                        className={`mt-1 text-xs ${
-                          isSelected ? "text-gray-200" : "text-gray-500"
+
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-[11px] ${
+                          isSelected
+                            ? "border-white/20 bg-white/10 text-white"
+                            : section.is_published
+                              ? "border-green-200 bg-green-50 text-green-700"
+                              : "border-amber-200 bg-amber-50 text-amber-700"
                         }`}
                       >
-                        {section.blocks.length} block(s) · {section.section_kind}
-                      </div>
+                        {section.is_published ? "Published" : "Draft"}
+                      </span>
                     </div>
+                  </button>
 
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-[11px] ${
-                        isSelected
-                          ? "border-white/20 bg-white/10 text-white"
-                          : section.is_published
-                            ? "border-green-200 bg-green-50 text-green-700"
-                            : "border-amber-200 bg-amber-50 text-amber-700"
-                      }`}
-                    >
-                      {section.is_published ? "Published" : "Draft"}
-                    </span>
+                  <div
+                    className={`border-t px-3 py-2 ${
+                      isSelected ? "border-white/10" : "border-gray-200"
+                    }`}
+                  >
+                    <div className="grid grid-cols-2 gap-2">
+                      <form action={moveSectionAction}>
+                        <BuilderHiddenFields {...props.routeFields} />
+                        <input type="hidden" name="sectionId" value={section.id} />
+                        <input type="hidden" name="direction" value="up" />
+                        <button
+                          type="submit"
+                          disabled={index === 0}
+                          className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
+                            isSelected
+                              ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          Move up
+                        </button>
+                      </form>
+
+                      <form action={moveSectionAction}>
+                        <BuilderHiddenFields {...props.routeFields} />
+                        <input type="hidden" name="sectionId" value={section.id} />
+                        <input type="hidden" name="direction" value="down" />
+                        <button
+                          type="submit"
+                          disabled={index === props.sections.length - 1}
+                          className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
+                            isSelected
+                              ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          Move down
+                        </button>
+                      </form>
+
+                      <form action={duplicateSectionAction}>
+                        <BuilderHiddenFields {...props.routeFields} />
+                        <input type="hidden" name="sectionId" value={section.id} />
+                        <button
+                          type="submit"
+                          className={`w-full rounded-lg border px-2 py-2 text-xs ${
+                            isSelected
+                              ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          Duplicate
+                        </button>
+                      </form>
+
+                      <form action={toggleSectionPublishedAction}>
+                        <BuilderHiddenFields {...props.routeFields} />
+                        <input type="hidden" name="sectionId" value={section.id} />
+                        <input
+                          type="hidden"
+                          name="nextState"
+                          value={section.is_published ? "draft" : "published"}
+                        />
+                        <button
+                          type="submit"
+                          className={`w-full rounded-lg border px-2 py-2 text-xs ${
+                            isSelected
+                              ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {section.is_published ? "Unpublish" : "Publish"}
+                        </button>
+                      </form>
+                    </div>
                   </div>
-                </button>
+                </div>
               );
             })
           )}
