@@ -209,7 +209,7 @@ function StepTracker({
 
               {section.description ? (
                 <div
-                  className={`mt-1 text-xs ${
+                  className={`mt-1 line-clamp-2 text-xs ${
                     isActive
                       ? "text-gray-200"
                       : isVisited
@@ -217,7 +217,7 @@ function StepTracker({
                         : isUnlocked
                           ? "text-gray-500"
                           : "text-gray-400"
-                  } line-clamp-2`}
+                  }`}
                 >
                   {section.description}
                 </div>
@@ -366,13 +366,19 @@ export default async function LessonPageTemplate({
   }
 
   const requestedStepIndex = clampStepIndex(currentStep, sections.length);
-  const visitedIdsBefore = new Set(await getVisitedLessonSectionIds(lesson.id));
-  const maxVisitedIndexBefore = getMaxVisitedIndex(sections, visitedIdsBefore);
-  const allowedMaxIndexBefore = getAllowedMaxIndex(
-    sections.length,
-    maxVisitedIndexBefore
-  );
-  const effectiveStepIndex = Math.min(requestedStepIndex, allowedMaxIndexBefore);
+
+  // Mark the requested section as visited first so the unlock state is correct
+  // in the same request.
+  const requestedSection = sections[requestedStepIndex];
+  await markLessonSectionVisited(lesson.id, requestedSection.id);
+
+  // Read updated visited state after the write.
+  const visitedIds = new Set(await getVisitedLessonSectionIds(lesson.id));
+  const maxVisitedIndex = getMaxVisitedIndex(sections, visitedIds);
+  const allowedMaxIndex = getAllowedMaxIndex(sections.length, maxVisitedIndex);
+
+  // Clamp against the updated allowed index.
+  const effectiveStepIndex = Math.min(requestedStepIndex, allowedMaxIndex);
 
   if (effectiveStepIndex !== requestedStepIndex) {
     redirect(
@@ -387,13 +393,6 @@ export default async function LessonPageTemplate({
   }
 
   const currentSection = sections[effectiveStepIndex];
-
-  await markLessonSectionVisited(lesson.id, currentSection.id);
-
-  const visitedIdsAfter = new Set(await getVisitedLessonSectionIds(lesson.id));
-  const maxVisitedIndexAfter = getMaxVisitedIndex(sections, visitedIdsAfter);
-  const allowedMaxIndexAfter = getAllowedMaxIndex(sections.length, maxVisitedIndexAfter);
-
   const moduleHref = getModulePath(course.slug, variantSlug, moduleSlug);
   const currentStepNumber = effectiveStepIndex + 1;
   const isFinalStep = effectiveStepIndex === sections.length - 1;
@@ -421,7 +420,7 @@ export default async function LessonPageTemplate({
 
           <SectionPager
             currentStepIndex={effectiveStepIndex}
-            allowedMaxIndex={allowedMaxIndexAfter}
+            allowedMaxIndex={allowedMaxIndex}
             totalSteps={sections.length}
             courseSlug={courseSlug}
             variantSlug={variantSlug}
@@ -444,8 +443,8 @@ export default async function LessonPageTemplate({
           <StepTracker
             sections={sections}
             currentStepIndex={effectiveStepIndex}
-            allowedMaxIndex={allowedMaxIndexAfter}
-            visitedSectionIds={visitedIdsAfter}
+            allowedMaxIndex={allowedMaxIndex}
+            visitedSectionIds={visitedIds}
             courseSlug={courseSlug}
             variantSlug={variantSlug}
             moduleSlug={moduleSlug}
