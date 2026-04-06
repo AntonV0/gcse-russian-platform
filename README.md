@@ -15,6 +15,8 @@ It currently includes:
 - Structured course delivery across **Foundation**, **Higher**, and **Volna** learning tracks
 - Student access modes for **trial**, **self-study/full**, and **Volna student** experiences
 - Block-based lesson rendering
+- **Section-based lesson navigation with progressive unlocking (NEW)**
+- **DB-backed section visit tracking (lesson_section_progress) (NEW)**
 - Database-driven question engine with metadata-based behaviour
 - Custom admin tools for question sets, templates, and question authoring
 - Teacher assignment creation, editing, ordering, review, filtering, sorting, and reopening
@@ -48,7 +50,25 @@ The platform uses one shared codebase and data model, with permissions and UI di
 
 ### Lesson system
 
-Lessons are built from reusable content blocks. Current lesson rendering supports content such as:
+Lessons are built from reusable content blocks.
+
+#### Structure (UPDATED)
+
+- Lesson
+- Sections (steps)
+- Blocks (content)
+
+#### Behaviour (NEW)
+
+- Lessons are divided into sections
+- Sections unlock progressively
+- First visit to a section is recorded in the database
+- Visiting a section unlocks the next section
+- Users cannot skip ahead beyond allowed progression
+- Previously visited sections remain accessible
+- Lesson completion remains a separate manual action
+
+#### Supported content blocks
 
 - text
 - note
@@ -171,7 +191,8 @@ flowchart TD
   CV --> M[Modules]
   M --> L[Lessons]
 
-  L --> LB[Lesson blocks]
+  L --> SEC[Lesson sections (NEW)]
+  SEC --> LB[Lesson blocks]
   LB --> TXT[Text / Notes / Vocabulary]
   LB --> QSB[Question set block]
 
@@ -346,16 +367,25 @@ The engine supports structured configuration such as:
 ### Main tables
 
 - lesson_progress
+- **lesson_section_progress (NEW)**
 - question_progress
 - question_attempts
 
 ### Current tracked behaviour
 
 - lesson completion
+- **section visit tracking and unlocking (NEW)**
 - question attempts and scores
 - assignment item progress
   - lesson items show completed / not completed
   - question set items show started / not started
+
+### Section progress behaviour
+
+- first visit is recorded in DB
+- visit unlocks next section
+- revisits increment visit count
+- progress UI reflects visited sections (not forced completion)
 
 ---
 
@@ -449,6 +479,7 @@ src/
 ### Progress
 
 - lesson_progress
+- **lesson_section_progress (NEW)**
 - question_progress
 - question_attempts
 
@@ -468,194 +499,6 @@ src/
 - products
 - prices
 - user_access_grants
-
----
-
-## 🗄️ Database Relationship Overview
-
-```mermaid
-erDiagram
-
-  COURSES ||--o{ COURSE_VARIANTS : has
-  COURSE_VARIANTS ||--o{ MODULES : has
-  MODULES ||--o{ LESSONS : has
-
-  COURSES ||--o{ PRODUCTS : linked_to
-  COURSE_VARIANTS ||--o{ PRODUCTS : linked_to
-  PRODUCTS ||--o{ USER_ACCESS_GRANTS : grants
-
-  LESSONS ||--o{ LESSON_PROGRESS : tracked_in
-
-  QUESTION_SETS ||--o{ QUESTIONS : contains
-  QUESTIONS ||--o{ QUESTION_OPTIONS : has
-  QUESTIONS ||--o{ QUESTION_ACCEPTED_ANSWERS : has
-  QUESTIONS ||--o{ QUESTION_ATTEMPTS : logs
-  QUESTIONS ||--o{ QUESTION_PROGRESS : tracked_in
-
-  TEACHING_GROUPS ||--o{ TEACHING_GROUP_MEMBERS : has
-  TEACHING_GROUPS ||--o{ ASSIGNMENTS : receives
-
-  ASSIGNMENTS ||--o{ ASSIGNMENT_ITEMS : contains
-  ASSIGNMENTS ||--o{ ASSIGNMENT_SUBMISSIONS : receives
-
-  LESSONS ||--o{ ASSIGNMENT_ITEMS : may_reference
-  QUESTION_SETS ||--o{ ASSIGNMENT_ITEMS : may_reference
-
-  PROFILES ||--o{ ASSIGNMENTS : creates
-  PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : submits
-  PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : reviews
-  PROFILES ||--o{ QUESTION_ATTEMPTS : answers
-
-  COURSES {
-    uuid id
-    text slug
-    text title
-  }
-
-  COURSE_VARIANTS {
-    uuid id
-    uuid course_id
-    text slug
-    text title
-  }
-
-  MODULES {
-    uuid id
-    uuid course_variant_id
-    text slug
-    text title
-  }
-
-  LESSONS {
-    uuid id
-    uuid module_id
-    text slug
-    text title
-  }
-
-  QUESTION_SETS {
-    uuid id
-    text slug
-    text title
-    boolean is_template
-    text template_type
-  }
-
-  QUESTIONS {
-    uuid id
-    uuid question_set_id
-    text question_type
-    text prompt
-    jsonb metadata
-    text audio_path
-  }
-
-  QUESTION_OPTIONS {
-    uuid id
-    uuid question_id
-    text option_text
-    boolean is_correct
-  }
-
-  QUESTION_ACCEPTED_ANSWERS {
-    uuid id
-    uuid question_id
-    text answer_text
-    boolean is_primary
-  }
-
-  ASSIGNMENTS {
-    uuid id
-    uuid group_id
-    text title
-    text instructions
-    timestamptz due_at
-    text status
-    boolean allow_file_upload
-    uuid created_by
-  }
-
-  ASSIGNMENT_ITEMS {
-    uuid id
-    uuid assignment_id
-    text item_type
-    uuid lesson_id
-    uuid question_set_id
-    text custom_prompt
-    int position
-  }
-
-  ASSIGNMENT_SUBMISSIONS {
-    uuid id
-    uuid assignment_id
-    uuid student_user_id
-    text status
-    text submitted_text
-    text submitted_file_path
-    text submitted_file_name
-    timestamptz submitted_at
-    numeric mark
-    text feedback
-    uuid reviewed_by
-    timestamptz reviewed_at
-  }
-
-  TEACHING_GROUPS {
-    uuid id
-    text name
-  }
-
-  TEACHING_GROUP_MEMBERS {
-    uuid id
-    uuid group_id
-    uuid user_id
-    text member_role
-  }
-
-  PRODUCTS {
-    uuid id
-    uuid course_id
-    uuid course_variant_id
-    text access_mode
-  }
-
-  USER_ACCESS_GRANTS {
-    uuid id
-    uuid product_id
-    uuid user_id
-  }
-
-  LESSON_PROGRESS {
-    uuid id
-    uuid user_id
-    text course_slug
-    text variant_slug
-    text lesson_slug
-    boolean completed
-  }
-
-  QUESTION_PROGRESS {
-    uuid id
-    uuid user_id
-    uuid question_id
-    int total_attempts
-    int correct_attempts
-  }
-
-  QUESTION_ATTEMPTS {
-    uuid id
-    uuid user_id
-    uuid question_id
-    boolean is_correct
-    numeric awarded_marks
-  }
-
-  PROFILES {
-    uuid id
-    text email
-    boolean is_admin
-  }
-```
 
 ---
 
@@ -724,6 +567,7 @@ http://localhost:3000
 - richer assignment analytics
 - more advanced question-set progress summaries
 - broader admin tools
+- **DB-driven lesson content system (sections + blocks)**
 
 ---
 
