@@ -52,9 +52,7 @@ The platform uses one shared codebase and data model, with permissions and UI di
 
 ### Lesson system
 
-<<<<<<< HEAD
 Lessons are currently rendered from reusable content blocks. Existing lesson rendering supports content such as:
-=======
 Lessons are built from reusable content blocks.
 
 #### Structure (UPDATED)
@@ -74,7 +72,6 @@ Lessons are built from reusable content blocks.
 - Lesson completion remains a separate manual action
 
 #### Supported content blocks
->>>>>>> dev
 
 - text
 - note
@@ -433,18 +430,16 @@ The engine supports structured configuration such as:
   - lesson items show completed / not completed
   - question set items show started / not started
 
-<<<<<<< HEAD
 ### Important note
 
 Progress is **variant-aware** and remains separate from access grants. This allows safe access switching without wiping historical progress.
-=======
+
 ### Section progress behaviour
 
 - first visit is recorded in DB
 - visit unlocks next section
 - revisits increment visit count
 - progress UI reflects visited sections (not forced completion)
->>>>>>> dev
 
 ---
 
@@ -576,7 +571,6 @@ src/
 
 ---
 
-<<<<<<< HEAD
 ## 🗄️ Database Relationship Overview
 
 ```mermaid
@@ -776,8 +770,6 @@ erDiagram
 
 ---
 
-=======
->>>>>>> dev
 ## 🔐 Storage and Security
 
 - Supabase Auth
