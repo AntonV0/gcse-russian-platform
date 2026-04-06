@@ -8,6 +8,7 @@ import type { LessonSection } from "@/types/lesson";
 import { loadLessonPageData } from "@/lib/course-helpers-db";
 import {
   getLessonProgress,
+  getLessonSectionProgressSummary,
   getVisitedLessonSectionIds,
   markLessonSectionVisited,
 } from "@/lib/progress";
@@ -76,25 +77,37 @@ function StepMetaBar({
   totalSteps,
   sectionKind,
   sectionDescription,
+  visitedPercent,
 }: {
   currentStepNumber: number;
   totalSteps: number;
   sectionKind: string;
   sectionDescription?: string;
+  visitedPercent: number;
 }) {
   return (
     <div className="rounded-2xl border bg-white px-4 py-4 shadow-sm">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
-            Step {currentStepNumber} of {totalSteps} · {sectionKind.replaceAll("_", " ")}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              Step {currentStepNumber} of {totalSteps} ·{" "}
+              {sectionKind.replaceAll("_", " ")}
+            </div>
+            {sectionDescription ? (
+              <p className="mt-1 text-sm text-gray-600">{sectionDescription}</p>
+            ) : null}
           </div>
-          {sectionDescription ? (
-            <p className="mt-1 text-sm text-gray-600">{sectionDescription}</p>
-          ) : null}
+
+          <div className="text-sm text-gray-500">Visited progress: {visitedPercent}%</div>
         </div>
 
-        <div className="text-sm text-gray-500">One section at a time</div>
+        <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+          <div
+            className="h-full rounded-full bg-black transition-all"
+            style={{ width: `${visitedPercent}%` }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -339,6 +352,57 @@ function SectionPager({
   );
 }
 
+function LessonCompletionPanel({
+  courseSlug,
+  variantSlug,
+  moduleSlug,
+  lessonSlug,
+  completed,
+  visitedCount,
+  totalSections,
+  allVisited,
+}: {
+  courseSlug: string;
+  variantSlug: string;
+  moduleSlug: string;
+  lessonSlug: string;
+  completed: boolean;
+  visitedCount: number;
+  totalSections: number;
+  allVisited: boolean;
+}) {
+  return (
+    <div className="space-y-4 rounded-2xl border bg-white p-5 shadow-sm">
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900">Finish lesson</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Lesson completion stays manual, but section visit progress is tracked
+          automatically.
+        </p>
+      </div>
+
+      <div className="rounded-xl border bg-gray-50 p-4 text-sm">
+        <div className="font-medium text-gray-900">
+          Visited sections: {visitedCount} / {totalSections}
+        </div>
+        <div className="mt-1 text-gray-600">
+          {allVisited
+            ? "You have visited every section in this lesson."
+            : "Visit all sections before marking the lesson complete for the best learning flow."}
+        </div>
+      </div>
+
+      <LessonCompletionForm
+        courseSlug={courseSlug}
+        variantSlug={variantSlug}
+        moduleSlug={moduleSlug}
+        lessonSlug={lessonSlug}
+        completed={completed}
+      />
+    </div>
+  );
+}
+
 export default async function LessonPageTemplate({
   courseSlug,
   variantSlug,
@@ -366,18 +430,18 @@ export default async function LessonPageTemplate({
   }
 
   const requestedStepIndex = clampStepIndex(currentStep, sections.length);
-
-  // Mark the requested section as visited first so the unlock state is correct
-  // in the same request.
   const requestedSection = sections[requestedStepIndex];
+
   await markLessonSectionVisited(lesson.id, requestedSection.id);
 
-  // Read updated visited state after the write.
   const visitedIds = new Set(await getVisitedLessonSectionIds(lesson.id));
+  const progressSummary = await getLessonSectionProgressSummary(
+    lesson.id,
+    sections.length
+  );
+
   const maxVisitedIndex = getMaxVisitedIndex(sections, visitedIds);
   const allowedMaxIndex = getAllowedMaxIndex(sections.length, maxVisitedIndex);
-
-  // Clamp against the updated allowed index.
   const effectiveStepIndex = Math.min(requestedStepIndex, allowedMaxIndex);
 
   if (effectiveStepIndex !== requestedStepIndex) {
@@ -414,6 +478,7 @@ export default async function LessonPageTemplate({
             totalSteps={sections.length}
             sectionKind={currentSection.sectionKind}
             sectionDescription={currentSection.description}
+            visitedPercent={progressSummary.percent}
           />
 
           <LessonRenderer sections={[currentSection]} lessonId={lesson.id} />
@@ -429,12 +494,15 @@ export default async function LessonPageTemplate({
           />
 
           {isFinalStep ? (
-            <LessonCompletionForm
+            <LessonCompletionPanel
               courseSlug={courseSlug}
               variantSlug={variantSlug}
               moduleSlug={moduleSlug}
               lessonSlug={lessonSlug}
               completed={!!progress?.completed}
+              visitedCount={progressSummary.visitedCount}
+              totalSections={progressSummary.totalSections}
+              allVisited={progressSummary.allVisited}
             />
           ) : null}
         </div>
