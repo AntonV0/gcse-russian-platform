@@ -280,6 +280,32 @@ function Panel({
   );
 }
 
+function ConfirmSubmitButton({
+  children,
+  confirmMessage,
+  className,
+}: {
+  children: React.ReactNode;
+  confirmMessage: string;
+  className?: string;
+}) {
+  return (
+    <button
+      type="submit"
+      onClick={(event) => {
+        const confirmed = window.confirm(confirmMessage);
+
+        if (!confirmed) {
+          event.preventDefault();
+        }
+      }}
+      className={className}
+    >
+      {children}
+    </button>
+  );
+}
+
 function CompactDisclosure({
   title,
   description,
@@ -1509,12 +1535,12 @@ function LessonInspectorPanel(props: {
             <form action={deleteBlockAction}>
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="blockId" value={props.block.id} />
-              <button
-                type="submit"
+              <ConfirmSubmitButton
+                confirmMessage={`Delete this ${friendlyBlockType(props.block.block_type).toLowerCase()} block?`}
                 className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
               >
                 Delete block
-              </button>
+              </ConfirmSubmitButton>
             </form>
           </div>
         </div>
@@ -1604,12 +1630,12 @@ function LessonInspectorPanel(props: {
           <form action={deleteSectionAction}>
             <BuilderHiddenFields {...props.routeFields} />
             <input type="hidden" name="sectionId" value={props.section.id} />
-            <button
-              type="submit"
+            <ConfirmSubmitButton
+              confirmMessage={`Delete section "${props.section.title}"? This will remove the section and its blocks.`}
               className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
             >
               Delete section
-            </button>
+            </ConfirmSubmitButton>
           </form>
         </div>
       </div>
