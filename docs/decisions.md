@@ -581,6 +581,7 @@ Some eye-catching features arrive later, but on a stronger foundation.
 
 ---
 
+<<<<<<< HEAD
 ## 24. Why should the next major step be database-driven lesson authoring?
 
 ### Decision
@@ -602,3 +603,44 @@ The current hybrid model works for platform foundations, but real course product
 ### Tradeoff
 
 This will require careful schema design, block rendering contracts, and admin authoring UX before large-scale content writing begins.
+=======
+## 20. Why use visit-based section progression instead of completion buttons?
+
+### Decision
+
+Track lesson progress through **section visits**, not explicit "complete section" actions.
+
+### Why
+
+Requiring users to manually complete each section introduces friction and does not reflect real learning behaviour.
+
+A user who has opened and read a section has meaningfully progressed, even without clicking a button.
+
+### Benefits
+
+- smoother UX (no repetitive actions)
+- more natural progression
+- better engagement
+- avoids fake completion clicks
+- simpler mental model for students
+
+### Tradeoff
+
+Visit tracking does not guarantee understanding or mastery.
+
+### Mitigation
+
+- lesson completion remains manual
+- future additions can include:
+  - quizzes per section
+  - checkpoints
+  - required interactions
+
+### Future evolution
+
+This system is designed to evolve into:
+
+- true section completion (optional)
+- adaptive unlocking
+- engagement analytics
+>>>>>>> dev

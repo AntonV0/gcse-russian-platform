@@ -15,6 +15,8 @@ It currently includes:
 - Structured course delivery across **Foundation**, **Higher**, and **Volna** learning tracks
 - Student access modes for **trial**, **self-study/full**, and **Volna student** experiences
 - Block-based lesson rendering
+- **Section-based lesson navigation with progressive unlocking (NEW)**
+- **DB-backed section visit tracking (lesson_section_progress) (NEW)**
 - Database-driven question engine with metadata-based behaviour
 - Custom admin tools for question sets, templates, and question authoring
 - Full admin content management for **courses, variants, modules, and lessons**
@@ -50,7 +52,29 @@ The platform uses one shared codebase and data model, with permissions and UI di
 
 ### Lesson system
 
+<<<<<<< HEAD
 Lessons are currently rendered from reusable content blocks. Existing lesson rendering supports content such as:
+=======
+Lessons are built from reusable content blocks.
+
+#### Structure (UPDATED)
+
+- Lesson
+- Sections (steps)
+- Blocks (content)
+
+#### Behaviour (NEW)
+
+- Lessons are divided into sections
+- Sections unlock progressively
+- First visit to a section is recorded in the database
+- Visiting a section unlocks the next section
+- Users cannot skip ahead beyond allowed progression
+- Previously visited sections remain accessible
+- Lesson completion remains a separate manual action
+
+#### Supported content blocks
+>>>>>>> dev
 
 - text
 - note
@@ -214,7 +238,8 @@ flowchart TD
   CV --> M[Modules]
   M --> L[Lessons]
 
-  L --> LB[Lesson blocks]
+  L --> SEC[Lesson sections (NEW)]
+  SEC --> LB[Lesson blocks]
   LB --> TXT[Text / Notes / Vocabulary]
   LB --> QSB[Question set block]
 
@@ -395,20 +420,31 @@ The engine supports structured configuration such as:
 ### Main tables
 
 - lesson_progress
+- **lesson_section_progress (NEW)**
 - question_progress
 - question_attempts
 
 ### Current tracked behaviour
 
 - lesson completion
+- **section visit tracking and unlocking (NEW)**
 - question attempts and scores
 - assignment item progress
   - lesson items show completed / not completed
   - question set items show started / not started
 
+<<<<<<< HEAD
 ### Important note
 
 Progress is **variant-aware** and remains separate from access grants. This allows safe access switching without wiping historical progress.
+=======
+### Section progress behaviour
+
+- first visit is recorded in DB
+- visit unlocks next section
+- revisits increment visit count
+- progress UI reflects visited sections (not forced completion)
+>>>>>>> dev
 
 ---
 
@@ -513,6 +549,7 @@ src/
 ### Progress
 
 - lesson_progress
+- **lesson_section_progress (NEW)**
 - question_progress
 - question_attempts
 
@@ -539,6 +576,7 @@ src/
 
 ---
 
+<<<<<<< HEAD
 ## 🗄️ Database Relationship Overview
 
 ```mermaid
@@ -738,6 +776,8 @@ erDiagram
 
 ---
 
+=======
+>>>>>>> dev
 ## 🔐 Storage and Security
 
 - Supabase Auth
@@ -811,6 +851,7 @@ http://localhost:3000
 - richer assignment analytics
 - deeper progress summaries
 - broader admin tools
+- **DB-driven lesson content system (sections + blocks)**
 
 ---
 

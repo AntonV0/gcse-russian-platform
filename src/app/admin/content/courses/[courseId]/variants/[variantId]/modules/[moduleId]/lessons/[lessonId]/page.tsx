@@ -1,11 +1,13 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
 import {
   getCourseByIdDb,
   getLessonByIdDb,
   getModuleByIdDb,
   getVariantByIdDb,
 } from "@/lib/course-helpers-db";
+import { getLessonSectionsWithBlocksDb } from "@/lib/lesson-admin-helpers-db";
 import { unpublishLessonAction } from "@/app/actions/admin-content-actions";
 
 type AdminLessonDetailPageProps = {
@@ -19,6 +21,15 @@ type AdminLessonDetailPageProps = {
 
 function formatBoolean(value: boolean) {
   return value ? "Yes" : "No";
+}
+
+function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-2xl border bg-white shadow-sm">
+      <div className="border-b px-5 py-4 font-semibold text-gray-900">{title}</div>
+      <div className="p-5">{children}</div>
+    </section>
+  );
 }
 
 export default async function AdminLessonDetailPage({
@@ -45,9 +56,11 @@ export default async function AdminLessonDetailPage({
     return <main>Lesson not found.</main>;
   }
 
+  const sections = await getLessonSectionsWithBlocksDb(lesson.id);
+
   return (
-    <main>
-      <div className="mb-4 flex flex-wrap gap-4 text-sm">
+    <main className="space-y-6">
+      <div className="flex flex-wrap gap-4 text-sm">
         <Link href="/admin/content" className="text-blue-600 hover:underline">
           ← Back to content
         </Link>
@@ -76,14 +89,12 @@ export default async function AdminLessonDetailPage({
 
       <PageHeader
         title={lesson.title}
-        description={lesson.summary ?? "Manage lesson details and content source."}
+        description={lesson.summary ?? "Manage lesson details and lesson content."}
       />
 
-      <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Lesson Details</div>
-
-          <div className="space-y-3 px-4 py-4 text-sm">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_380px]">
+        <InfoCard title="Lesson details">
+          <div className="grid gap-3 text-sm sm:grid-cols-2">
             <div>
               <span className="font-medium">Course:</span> {course.title}
             </div>
@@ -98,9 +109,6 @@ export default async function AdminLessonDetailPage({
             </div>
             <div>
               <span className="font-medium">Slug:</span> {lesson.slug}
-            </div>
-            <div>
-              <span className="font-medium">Summary:</span> {lesson.summary ?? "—"}
             </div>
             <div>
               <span className="font-medium">Lesson type:</span> {lesson.lesson_type}
@@ -129,84 +137,92 @@ export default async function AdminLessonDetailPage({
               {formatBoolean(lesson.available_in_volna)}
             </div>
           </div>
-        </div>
 
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Actions</div>
-
-          <div className="flex flex-col gap-3 px-4 py-4 text-sm">
-            <Link
-              href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
-              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
-            >
-              Edit lesson metadata
-            </Link>
-
-            <Link
-              href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
-            >
-              Open public lesson
-            </Link>
+          <div className="mt-4 rounded-xl border bg-gray-50 p-4 text-sm">
+            <span className="font-medium">Summary:</span> {lesson.summary ?? "—"}
           </div>
-        </div>
-      </section>
+        </InfoCard>
 
-      <section className="mb-6 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Content Source</div>
-
-          <div className="space-y-3 px-4 py-4 text-sm">
-            <div>
-              <span className="font-medium">Source:</span> {lesson.content_source}
-            </div>
-            <div>
-              <span className="font-medium">Content key:</span>{" "}
-              {lesson.content_key ?? "—"}
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Future Lesson Builder</div>
-
-          <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <p>
-              This page is ready to expand later with lesson blocks, question set linking,
-              and database-backed lesson content management.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div className="rounded-lg border border-red-200 bg-white">
-          <div className="border-b border-red-200 px-4 py-3 font-medium text-red-700">
-            Danger Zone
-          </div>
-
-          <div className="space-y-3 px-4 py-4 text-sm">
-            <p className="text-gray-600">
-              Unpublishing this lesson will hide it from normal public use, but it will
-              not hard delete its data.
-            </p>
-
-            <form action={unpublishLessonAction}>
-              <input type="hidden" name="courseId" value={course.id} />
-              <input type="hidden" name="variantId" value={variant.id} />
-              <input type="hidden" name="moduleId" value={module.id} />
-              <input type="hidden" name="lessonId" value={lesson.id} />
-              <button
-                type="submit"
-                className="rounded border border-red-300 px-4 py-2 text-red-700 hover:bg-red-50"
+        <div className="space-y-6">
+          <InfoCard title="Actions">
+            <div className="flex flex-col gap-3 text-sm">
+              <Link
+                href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
+                className="rounded-xl border px-3 py-2 hover:bg-gray-50"
               >
-                Unpublish lesson
-              </button>
-            </form>
-          </div>
+                Edit lesson metadata
+              </Link>
+
+              <Link
+                href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border px-3 py-2 hover:bg-gray-50"
+              >
+                Open public lesson
+              </Link>
+            </div>
+          </InfoCard>
+
+          <InfoCard title="Content source">
+            <div className="space-y-3 text-sm">
+              <div>
+                <span className="font-medium">Source:</span> {lesson.content_source}
+              </div>
+              <div>
+                <span className="font-medium">Content key:</span>{" "}
+                {lesson.content_key ?? "—"}
+              </div>
+            </div>
+          </InfoCard>
+
+          <section className="rounded-2xl border border-red-200 bg-white shadow-sm">
+            <div className="border-b border-red-200 px-5 py-4 font-semibold text-red-700">
+              Danger zone
+            </div>
+
+            <div className="space-y-3 p-5 text-sm">
+              <p className="text-gray-600">
+                Unpublishing this lesson will hide it from normal public use, but it will
+                not hard delete its data.
+              </p>
+
+              <form action={unpublishLessonAction}>
+                <input type="hidden" name="courseId" value={course.id} />
+                <input type="hidden" name="variantId" value={variant.id} />
+                <input type="hidden" name="moduleId" value={module.id} />
+                <input type="hidden" name="lessonId" value={lesson.id} />
+                <button
+                  type="submit"
+                  className="rounded-xl border border-red-300 px-4 py-2 text-red-700 hover:bg-red-50"
+                >
+                  Unpublish lesson
+                </button>
+              </form>
+            </div>
+          </section>
         </div>
+      </div>
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Lesson builder</h2>
+          <p className="text-sm text-gray-600">
+            Build and organise lesson sections and blocks for long-form authoring.
+          </p>
+        </div>
+
+        <AdminLessonBuilder
+          lessonId={lesson.id}
+          courseId={course.id}
+          variantId={variant.id}
+          moduleId={module.id}
+          lessonSlug={lesson.slug}
+          courseSlug={course.slug}
+          variantSlug={variant.slug}
+          moduleSlug={module.slug}
+          sections={sections}
+        />
       </section>
     </main>
   );
