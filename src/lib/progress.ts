@@ -100,6 +100,23 @@ export async function getVisitedLessonSectionIds(lessonId: string): Promise<stri
   return rows.map((row) => row.section_id);
 }
 
+export async function getLessonSectionProgressSummary(
+  lessonId: string,
+  totalSections: number
+) {
+  const rows = await getLessonSectionProgress(lessonId);
+  const visitedCount = rows.length;
+  const percent =
+    totalSections > 0 ? Math.round((visitedCount / totalSections) * 100) : 0;
+
+  return {
+    visitedCount,
+    totalSections,
+    percent,
+    allVisited: totalSections > 0 && visitedCount >= totalSections,
+  };
+}
+
 export async function markLessonSectionVisited(lessonId: string, sectionId: string) {
   const user = await getCurrentUser();
 
@@ -107,20 +124,50 @@ export async function markLessonSectionVisited(lessonId: string, sectionId: stri
 
   const supabase = await createClient();
 
-  const { error } = await supabase.from("lesson_section_progress").upsert(
-    {
+  const { data: existing, error: existingError } = await supabase
+    .from("lesson_section_progress")
+    .select("id, visit_count")
+    .eq("user_id", user.id)
+    .eq("lesson_id", lessonId)
+    .eq("section_id", sectionId)
+    .maybeSingle();
+
+  if (existingError) {
+    console.error("Error checking lesson section visit:", existingError);
+    return;
+  }
+
+  const now = new Date().toISOString();
+
+  if (!existing) {
+    const { error: insertError } = await supabase.from("lesson_section_progress").insert({
       user_id: user.id,
       lesson_id: lessonId,
       section_id: sectionId,
-      last_visited_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    {
-      onConflict: "user_id,lesson_id,section_id",
-    }
-  );
+      first_visited_at: now,
+      last_visited_at: now,
+      visit_count: 1,
+      created_at: now,
+      updated_at: now,
+    });
 
-  if (error) {
-    console.error("Error marking lesson section visited:", error);
+    if (insertError) {
+      console.error("Error inserting lesson section visit:", insertError);
+    }
+
+    return;
+  }
+
+  const { error: updateError } = await supabase
+    .from("lesson_section_progress")
+    .update({
+      last_visited_at: now,
+      updated_at: now,
+      visit_count: (existing.visit_count ?? 1) + 1,
+    })
+    .eq("id", existing.id);
+
+  if (updateError) {
+    console.error("Error updating lesson section visit:", updateError);
   }
 }
