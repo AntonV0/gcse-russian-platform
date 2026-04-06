@@ -1077,7 +1077,7 @@ function LessonInspectorPanel(props: {
 
   if (props.block) {
     return (
-      <Panel title="Block inspector" description="Quick actions for the selected block.">
+      <Panel title="Block inspector" description="Edit the selected block.">
         <div className="space-y-4">
           <div className="space-y-2 text-sm">
             <div>
@@ -1094,6 +1094,10 @@ function LessonInspectorPanel(props: {
             <div className="text-gray-600 break-words">
               {renderBlockPreview(props.block)}
             </div>
+          </div>
+
+          <div className="rounded-xl border bg-gray-50 p-3">
+            <BlockEditPanel block={props.block} routeFields={props.routeFields} />
           </div>
 
           <div className="grid gap-2">
@@ -1352,7 +1356,7 @@ function LessonSectionEditor(props: {
         </form>
       </CompactDisclosure>
 
-      <Panel title="Blocks" description="Select a block to focus it in the inspector.">
+      <Panel title="Blocks" description="Select a block to edit it in the inspector.">
         <div className="space-y-3">
           {section.blocks.length === 0 ? (
             <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
@@ -1363,41 +1367,33 @@ function LessonSectionEditor(props: {
               const isSelected = block.id === props.selectedBlockId;
 
               return (
-                <details
+                <button
                   key={block.id}
-                  open={isSelected}
-                  className={`rounded-xl border bg-white [&_summary::-webkit-details-marker]:hidden ${
-                    isSelected ? "border-black" : ""
+                  type="button"
+                  onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
+                  className={`w-full rounded-xl border px-4 py-4 text-left transition ${
+                    isSelected ? "border-black bg-gray-50" : "bg-white hover:bg-gray-50"
                   }`}
                 >
-                  <summary
-                    onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
-                    className="cursor-pointer px-4 py-4 hover:bg-gray-50"
-                  >
-                    <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                      <div className="min-w-0 space-y-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium text-gray-900">
-                            {friendlyBlockType(block.block_type)}
-                          </span>
-                          <Badge tone={block.is_published ? "success" : "warning"}>
-                            {block.is_published ? "Published" : "Draft"}
-                          </Badge>
-                          <Badge tone="muted">Position {block.position}</Badge>
-                          {isSelected ? <Badge tone="default">Selected</Badge> : null}
-                        </div>
+                  <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                    <div className="min-w-0 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium text-gray-900">
+                          {friendlyBlockType(block.block_type)}
+                        </span>
+                        <Badge tone={block.is_published ? "success" : "warning"}>
+                          {block.is_published ? "Published" : "Draft"}
+                        </Badge>
+                        <Badge tone="muted">Position {block.position}</Badge>
+                        {isSelected ? <Badge tone="default">Selected</Badge> : null}
+                      </div>
 
-                        <div className="max-w-4xl truncate text-sm text-gray-600">
-                          {renderBlockPreview(block)}
-                        </div>
+                      <div className="max-w-4xl truncate text-sm text-gray-600">
+                        {renderBlockPreview(block)}
                       </div>
                     </div>
-                  </summary>
-
-                  <div className="border-t p-4">
-                    <BlockEditPanel block={block} routeFields={props.routeFields} />
                   </div>
-                </details>
+                </button>
               );
             })
           )}
@@ -1645,7 +1641,7 @@ export default function AdminLessonBuilderWorkspace({
                 Keep copied content as draft until checked on the public lesson page.
               </div>
               <div className="rounded-xl border bg-gray-50 p-3">
-                Select a block to focus it in the inspector.
+                Select a block to edit it in the inspector.
               </div>
             </div>
           </Panel>
