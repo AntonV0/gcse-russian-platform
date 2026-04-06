@@ -1658,7 +1658,7 @@ function LessonSectionEditor(props: {
                         {isSelected ? <Badge tone="default">Selected</Badge> : null}
                       </div>
 
-                      <div className="max-w-4xl truncate text-sm text-gray-600">
+                      <div className="text-sm text-gray-600 line-clamp-2 break-words">
                         {renderBlockPreview(block)}
                       </div>
                     </div>
@@ -1747,8 +1747,8 @@ export default function AdminLessonBuilderWorkspace({
         <StatCard label="Published blocks" value={publishedBlocks} />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)_320px]">
-        <aside className="space-y-6 xl:sticky xl:top-6 xl:self-start">
+      <section className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)] 2xl:grid-cols-[260px_minmax(0,1fr)_320px]">
+        <aside className="space-y-6 2xl:sticky 2xl:top-6 2xl:self-start">
           <LessonSectionSidebar
             sections={sections}
             selectedSectionId={selectedSectionId}
@@ -1769,7 +1769,7 @@ export default function AdminLessonBuilderWorkspace({
           />
         </div>
 
-        <aside className="space-y-6 xl:sticky xl:top-6 xl:self-start">
+        <aside className="space-y-6 2xl:sticky 2xl:top-6 2xl:self-start">
           <LessonInspectorPanel
             section={selectedSection}
             block={selectedBlock}
