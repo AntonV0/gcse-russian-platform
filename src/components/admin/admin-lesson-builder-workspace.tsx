@@ -1536,7 +1536,9 @@ function LessonInspectorPanel(props: {
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="blockId" value={props.block.id} />
               <ConfirmSubmitButton
-                confirmMessage={`Delete this ${friendlyBlockType(props.block.block_type).toLowerCase()} block?`}
+                confirmMessage={`Delete this ${friendlyBlockType(
+                  props.block.block_type
+                ).toLowerCase()} block?`}
                 className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
               >
                 Delete block
@@ -1631,7 +1633,7 @@ function LessonInspectorPanel(props: {
             <BuilderHiddenFields {...props.routeFields} />
             <input type="hidden" name="sectionId" value={props.section.id} />
             <ConfirmSubmitButton
-              confirmMessage={`Delete section "${props.section.title}"? This will remove the section and its blocks.`}
+              confirmMessage={`Delete section "${props.section.title}"? This will remove the section and all blocks inside it.`}
               className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
             >
               Delete section
@@ -1687,7 +1689,7 @@ function LessonSectionEditor(props: {
       <CompactDisclosure
         title="Edit section metadata"
         description="Update section title, description, and section kind."
-        defaultOpen
+        defaultOpen={section.blocks.length === 0}
       >
         <form action={updateSectionAction} className="space-y-3">
           <BuilderHiddenFields {...props.routeFields} />
@@ -1738,37 +1740,103 @@ function LessonSectionEditor(props: {
               No blocks in this section yet.
             </div>
           ) : (
-            section.blocks.map((block) => {
+            section.blocks.map((block, blockIndex) => {
               const isSelected = block.id === props.selectedBlockId;
 
               return (
-                <button
+                <div
                   key={block.id}
-                  type="button"
-                  onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
-                  className={`w-full rounded-xl border px-4 py-4 text-left transition ${
-                    isSelected ? "border-black bg-gray-50" : "bg-white hover:bg-gray-50"
+                  className={`rounded-xl border transition ${
+                    isSelected ? "border-black bg-gray-50" : "bg-white"
                   }`}
                 >
-                  <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                    <div className="min-w-0 space-y-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-medium text-gray-900">
-                          {friendlyBlockType(block.block_type)}
-                        </span>
-                        <Badge tone={block.is_published ? "success" : "warning"}>
-                          {block.is_published ? "Published" : "Draft"}
-                        </Badge>
-                        <Badge tone="muted">Position {block.position}</Badge>
-                        {isSelected ? <Badge tone="default">Selected</Badge> : null}
-                      </div>
+                  <button
+                    type="button"
+                    onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
+                    className="w-full px-4 py-4 text-left"
+                  >
+                    <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                      <div className="min-w-0 space-y-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-medium text-gray-900">
+                            {friendlyBlockType(block.block_type)}
+                          </span>
+                          <Badge tone={block.is_published ? "success" : "warning"}>
+                            {block.is_published ? "Published" : "Draft"}
+                          </Badge>
+                          <Badge tone="muted">Position {block.position}</Badge>
+                          {isSelected ? <Badge tone="default">Selected</Badge> : null}
+                        </div>
 
-                      <div className="text-sm text-gray-600 line-clamp-2 break-words">
-                        {renderBlockPreview(block)}
+                        <div className="text-sm text-gray-600 line-clamp-2 break-words">
+                          {renderBlockPreview(block)}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </button>
+                  </button>
+
+                  {isSelected ? (
+                    <div className="border-t px-3 py-3">
+                      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                        <form action={moveBlockAction}>
+                          <BuilderHiddenFields {...props.routeFields} />
+                          <input type="hidden" name="sectionId" value={section.id} />
+                          <input type="hidden" name="blockId" value={block.id} />
+                          <input type="hidden" name="direction" value="up" />
+                          <button
+                            type="submit"
+                            disabled={blockIndex === 0}
+                            className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
+                          >
+                            Move up
+                          </button>
+                        </form>
+
+                        <form action={moveBlockAction}>
+                          <BuilderHiddenFields {...props.routeFields} />
+                          <input type="hidden" name="sectionId" value={section.id} />
+                          <input type="hidden" name="blockId" value={block.id} />
+                          <input type="hidden" name="direction" value="down" />
+                          <button
+                            type="submit"
+                            disabled={blockIndex === section.blocks.length - 1}
+                            className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
+                          >
+                            Move down
+                          </button>
+                        </form>
+
+                        <form action={duplicateBlockAction}>
+                          <BuilderHiddenFields {...props.routeFields} />
+                          <input type="hidden" name="sectionId" value={section.id} />
+                          <input type="hidden" name="blockId" value={block.id} />
+                          <button
+                            type="submit"
+                            className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
+                          >
+                            Duplicate
+                          </button>
+                        </form>
+
+                        <form action={toggleBlockPublishedAction}>
+                          <BuilderHiddenFields {...props.routeFields} />
+                          <input type="hidden" name="blockId" value={block.id} />
+                          <input
+                            type="hidden"
+                            name="nextState"
+                            value={block.is_published ? "draft" : "published"}
+                          />
+                          <button
+                            type="submit"
+                            className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
+                          >
+                            {block.is_published ? "Unpublish" : "Publish"}
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
               );
             })
           )}
