@@ -137,6 +137,54 @@ function friendlyBlockType(blockType: string) {
   }
 }
 
+function getBlockTypeAccent(blockType: string) {
+  switch (blockType) {
+    case "header":
+    case "subheader":
+    case "divider":
+      return "border-slate-200 bg-slate-50 text-slate-700";
+    case "text":
+    case "note":
+    case "callout":
+    case "exam-tip":
+      return "border-blue-200 bg-blue-50 text-blue-700";
+    case "vocabulary":
+    case "vocabulary-set":
+      return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    case "image":
+    case "audio":
+      return "border-purple-200 bg-purple-50 text-purple-700";
+    case "question-set":
+      return "border-amber-200 bg-amber-50 text-amber-700";
+    default:
+      return "border-gray-200 bg-gray-50 text-gray-700";
+  }
+}
+
+function getBlockTypeGroupLabel(blockType: string) {
+  switch (blockType) {
+    case "header":
+    case "subheader":
+    case "divider":
+      return "Structure";
+    case "text":
+    case "note":
+    case "callout":
+    case "exam-tip":
+      return "Teaching";
+    case "vocabulary":
+    case "vocabulary-set":
+      return "Vocabulary";
+    case "image":
+    case "audio":
+      return "Media";
+    case "question-set":
+      return "Practice";
+    default:
+      return "Block";
+  }
+}
+
 function renderBlockPreview(block: {
   block_type: string;
   data: Record<string, unknown>;
@@ -1273,7 +1321,20 @@ function LessonSectionSidebar(props: {
                             isSelected ? "text-gray-200" : "text-gray-500"
                           }`}
                         >
-                          {section.blocks.length} block(s) · {section.section_kind}
+                          {section.section_kind}
+                        </div>
+                        <div
+                          className={`mt-2 flex flex-wrap gap-2 text-[11px] ${
+                            isSelected ? "text-gray-200" : "text-gray-500"
+                          }`}
+                        >
+                          <span className="rounded-full border border-current/20 px-2 py-0.5">
+                            {section.blocks.length} block(s)
+                          </span>
+                          <span className="rounded-full border border-current/20 px-2 py-0.5">
+                            {section.blocks.filter((block) => block.is_published).length}{" "}
+                            published
+                          </span>
                         </div>
                       </div>
 
@@ -1445,7 +1506,9 @@ function LessonInspectorPanel(props: {
   if (!props.section) {
     return (
       <Panel title="Inspector" description="Select a section to begin editing.">
-        <p className="text-sm text-gray-500">No section selected.</p>
+        <div className="rounded-xl border border-dashed bg-gray-50 px-4 py-8 text-sm text-gray-500">
+          No section selected yet.
+        </div>
       </Panel>
     );
   }
@@ -1454,20 +1517,32 @@ function LessonInspectorPanel(props: {
     return (
       <Panel title="Block inspector" description="Edit the selected block.">
         <div className="space-y-4">
-          <div className="space-y-2 text-sm">
-            <div>
-              <span className="font-medium">Type:</span>{" "}
-              {friendlyBlockType(props.block.block_type)}
+          <div className="rounded-xl border bg-gray-50 p-4">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span
+                className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getBlockTypeAccent(
+                  props.block.block_type
+                )}`}
+              >
+                {getBlockTypeGroupLabel(props.block.block_type)}
+              </span>
+
+              <span className="font-medium text-gray-900">
+                {friendlyBlockType(props.block.block_type)}
+              </span>
+
+              <Badge tone={props.block.is_published ? "success" : "warning"}>
+                {props.block.is_published ? "Published" : "Draft"}
+              </Badge>
             </div>
-            <div>
-              <span className="font-medium">Position:</span> {props.block.position}
-            </div>
-            <div>
-              <span className="font-medium">Status:</span>{" "}
-              {props.block.is_published ? "Published" : "Draft"}
-            </div>
-            <div className="text-gray-600 break-words">
-              {renderBlockPreview(props.block)}
+
+            <div className="space-y-2 text-sm">
+              <div>
+                <span className="font-medium">Position:</span> {props.block.position}
+              </div>
+              <div className="text-gray-600 break-words">
+                {renderBlockPreview(props.block)}
+              </div>
             </div>
           </div>
 
@@ -1556,23 +1631,29 @@ function LessonInspectorPanel(props: {
       description="Quick actions for the selected section."
     >
       <div className="space-y-4">
-        <div className="space-y-2 text-sm">
-          <div>
-            <span className="font-medium">Section:</span> {props.section.title}
+        <div className="rounded-xl border bg-gray-50 p-4">
+          <div className="space-y-2 text-sm">
+            <div>
+              <span className="font-medium">Section:</span> {props.section.title}
+            </div>
+            <div>
+              <span className="font-medium">Kind:</span> {props.section.section_kind}
+            </div>
+            <div>
+              <span className="font-medium">Position:</span> {props.section.position}
+            </div>
+            <div>
+              <span className="font-medium">Status:</span>{" "}
+              {props.section.is_published ? "Published" : "Draft"}
+            </div>
+            <div>
+              <span className="font-medium">Blocks:</span> {props.section.blocks.length}
+            </div>
           </div>
-          <div>
-            <span className="font-medium">Kind:</span> {props.section.section_kind}
-          </div>
-          <div>
-            <span className="font-medium">Position:</span> {props.section.position}
-          </div>
-          <div>
-            <span className="font-medium">Status:</span>{" "}
-            {props.section.is_published ? "Published" : "Draft"}
-          </div>
-          <div>
-            <span className="font-medium">Blocks:</span> {props.section.blocks.length}
-          </div>
+        </div>
+
+        <div className="rounded-xl border border-dashed bg-white px-4 py-4 text-sm text-gray-500">
+          Select a block in the center column to edit its content here.
         </div>
 
         <div className="grid gap-2">
@@ -1758,13 +1839,24 @@ function LessonSectionEditor(props: {
                     <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
                       <div className="min-w-0 space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getBlockTypeAccent(
+                              block.block_type
+                            )}`}
+                          >
+                            {getBlockTypeGroupLabel(block.block_type)}
+                          </span>
+
                           <span className="font-medium text-gray-900">
                             {friendlyBlockType(block.block_type)}
                           </span>
+
                           <Badge tone={block.is_published ? "success" : "warning"}>
                             {block.is_published ? "Published" : "Draft"}
                           </Badge>
+
                           <Badge tone="muted">Position {block.position}</Badge>
+
                           {isSelected ? <Badge tone="default">Selected</Badge> : null}
                         </div>
 
