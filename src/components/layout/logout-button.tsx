@@ -1,14 +1,12 @@
 import { signOut } from "@/app/actions/auth";
+import Button from "@/components/ui/button";
 
 export default function LogoutButton() {
   return (
     <form action={signOut}>
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
+      <Button type="submit" variant="secondary" size="sm">
         Log out
-      </button>
+      </Button>
     </form>
   );
 }

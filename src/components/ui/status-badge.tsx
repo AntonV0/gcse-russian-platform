@@ -1,3 +1,6 @@
+import Badge from "@/components/ui/badge";
+import { appIcons } from "@/lib/icons";
+
 type Status = "not_started" | "submitted" | "reviewed" | "returned";
 
 function getStatusConfig(status: Status) {
@@ -5,22 +8,26 @@ function getStatusConfig(status: Status) {
     case "submitted":
       return {
         label: "Submitted",
-        className: "bg-yellow-100 text-yellow-800 border-yellow-200",
+        tone: "warning" as const,
+        icon: appIcons.pending,
       };
     case "reviewed":
       return {
         label: "Reviewed",
-        className: "bg-green-100 text-green-800 border-green-200",
+        tone: "success" as const,
+        icon: appIcons.completed,
       };
     case "returned":
       return {
         label: "Returned",
-        className: "bg-blue-100 text-blue-800 border-blue-200",
+        tone: "info" as const,
+        icon: appIcons.next,
       };
     default:
       return {
         label: "Not started",
-        className: "bg-gray-100 text-gray-700 border-gray-200",
+        tone: "muted" as const,
+        icon: appIcons.help,
       };
   }
 }
@@ -31,13 +38,11 @@ export default function StatusBadge({ status }: { status?: string | null }) {
       ? status
       : "not_started";
 
-  const { label, className } = getStatusConfig(normalized);
+  const { label, tone, icon } = getStatusConfig(normalized);
 
   return (
-    <span
-      className={`inline-flex items-center rounded-md border px-2 py-1 text-xs font-medium ${className}`}
-    >
+    <Badge tone={tone} icon={icon}>
       {label}
-    </span>
+    </Badge>
   );
 }
