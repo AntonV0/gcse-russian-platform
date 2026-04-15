@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminAccess } from "@/lib/admin-auth";
+import { getPresetBlocksForInsert } from "@/lib/lesson-block-presets";
 import {
   normalizeAudioBlockData,
   normalizeCalloutBlockData,
@@ -164,6 +165,40 @@ async function updateSimpleContentBlock(params: {
   }
 
   await revalidateLessonPaths(params.formData);
+}
+
+export async function insertBlockPresetAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const presetId = getTrimmedString(formData, "presetId");
+
+  if (!sectionId || !presetId) {
+    throw new Error("Missing required fields");
+  }
+
+  const presetBlocks = getPresetBlocksForInsert(presetId);
+  const supabase = await createClient();
+  const startingPosition = await getNextBlockPosition(sectionId);
+
+  const rows = presetBlocks.map((block, index) => ({
+    lesson_section_id: sectionId,
+    block_type: block.blockType,
+    position: startingPosition + index,
+    is_published: true,
+    data: block.data,
+    settings: {},
+  }));
+
+  const { error } = await supabase.from("lesson_blocks").insert(rows);
+
+  if (error) {
+    console.error("Error inserting preset blocks:", error);
+    throw new Error(`Failed to insert preset blocks: ${error.message}`);
+  }
+
+  await revalidateLessonPaths(formData);
 }
 
 export async function createSectionAction(formData: FormData) {

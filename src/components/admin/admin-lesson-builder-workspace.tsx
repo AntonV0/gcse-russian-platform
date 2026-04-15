@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { insertBlockPresetAction } from "@/app/actions/admin-lesson-builder-actions";
+import { lessonBlockPresets } from "@/lib/lesson-block-presets";
+import { getDefaultBlockData } from "@/lib/lesson-blocks";
 import {
   createAudioBlockAction,
   createCalloutBlockAction,
@@ -725,6 +728,7 @@ function BlockEditPanel(props: {
 
 function AddSimpleTextBlockForm(props: {
   placeholder: string;
+  defaultValue?: string;
   sectionId: string;
   routeFields: RouteFields;
   action: (formData: FormData) => void | Promise<void>;
@@ -739,6 +743,7 @@ function AddSimpleTextBlockForm(props: {
         required
         rows={3}
         placeholder={props.placeholder}
+        defaultValue={props.defaultValue}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
       <button
@@ -758,6 +763,8 @@ function AddTitledContentBlockForm(props: {
   buttonLabel: string;
   titlePlaceholder: string;
   contentPlaceholder: string;
+  defaultTitle?: string;
+  defaultContent?: string;
 }) {
   return (
     <form action={props.action} className="space-y-2">
@@ -766,6 +773,7 @@ function AddTitledContentBlockForm(props: {
       <input
         name="title"
         placeholder={props.titlePlaceholder}
+        defaultValue={props.defaultTitle}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
       <textarea
@@ -773,6 +781,7 @@ function AddTitledContentBlockForm(props: {
         required
         rows={4}
         placeholder={props.contentPlaceholder}
+        defaultValue={props.defaultContent}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
       <button
@@ -885,6 +894,11 @@ function AddAudioBlockForm(props: { sectionId: string; routeFields: RouteFields 
 }
 
 function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFields }) {
+  const defaults = getDefaultBlockData("vocabulary") as {
+    title?: string;
+    items?: { russian: string; english: string }[];
+  };
+
   return (
     <form action={createVocabularyBlockAction} className="space-y-2">
       <BuilderHiddenFields {...props.routeFields} />
@@ -893,12 +907,16 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
         name="title"
         required
         placeholder="Key vocabulary"
+        defaultValue={defaults.title ?? ""}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
       <textarea
         name="items"
         required
         rows={6}
+        defaultValue={(defaults.items ?? [])
+          .map((item) => `${item.russian} | ${item.english}`)
+          .join("\n")}
         placeholder={`дом | house\nшкола | school`}
         className="w-full rounded-xl border px-3 py-2 font-mono text-sm"
       />
@@ -948,6 +966,40 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
   return (
     <div className="space-y-4">
       <div className="grid gap-4">
+        <div className="rounded-2xl border bg-white p-4">
+          <div className="mb-3">
+            <div className="font-medium text-gray-900">Quick presets</div>
+            <div className="text-sm text-gray-500">
+              Insert a ready-made starter structure for this section.
+            </div>
+          </div>
+
+          <div className="grid gap-3">
+            {lessonBlockPresets.map((preset) => (
+              <form
+                key={preset.id}
+                action={insertBlockPresetAction}
+                className="rounded-xl border p-3"
+              >
+                <BuilderHiddenFields {...props.routeFields} />
+                <input type="hidden" name="sectionId" value={props.section.id} />
+                <input type="hidden" name="presetId" value={preset.id} />
+
+                <div className="mb-2">
+                  <div className="font-medium text-gray-900">{preset.label}</div>
+                  <div className="text-sm text-gray-500">{preset.description}</div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+                >
+                  Insert preset
+                </button>
+              </form>
+            ))}
+          </div>
+        </div>
         <div>
           <div className="mb-2 text-sm font-medium text-gray-900">Structure</div>
           <div className="flex flex-wrap gap-2">
@@ -1073,6 +1125,7 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
           {selectedNewBlockType === "header" && (
             <AddSimpleTextBlockForm
               placeholder="Big heading for this section"
+              defaultValue={String(getDefaultBlockData("header").content ?? "")}
               sectionId={props.section.id}
               routeFields={props.routeFields}
               action={createHeaderBlockAction}
@@ -1083,6 +1136,7 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
           {selectedNewBlockType === "subheader" && (
             <AddSimpleTextBlockForm
               placeholder="Smaller heading for this section"
+              defaultValue={String(getDefaultBlockData("subheader").content ?? "")}
               sectionId={props.section.id}
               routeFields={props.routeFields}
               action={createSubheaderBlockAction}
@@ -1106,6 +1160,7 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
           {selectedNewBlockType === "text" && (
             <AddSimpleTextBlockForm
               placeholder="Write the text content here..."
+              defaultValue={String(getDefaultBlockData("text").content ?? "")}
               sectionId={props.section.id}
               routeFields={props.routeFields}
               action={createTextBlockAction}
@@ -1121,6 +1176,8 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               buttonLabel="Add note block"
               titlePlaceholder="Study tip"
               contentPlaceholder="Write the note content here..."
+              defaultTitle={String(getDefaultBlockData("note").title ?? "")}
+              defaultContent={String(getDefaultBlockData("note").content ?? "")}
             />
           )}
 
@@ -1132,6 +1189,8 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               buttonLabel="Add callout block"
               titlePlaceholder="Optional title"
               contentPlaceholder="Important information or reminder..."
+              defaultTitle={String(getDefaultBlockData("callout").title ?? "")}
+              defaultContent={String(getDefaultBlockData("callout").content ?? "")}
             />
           )}
 
@@ -1143,6 +1202,8 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               buttonLabel="Add exam tip block"
               titlePlaceholder="Optional title"
               contentPlaceholder="Advice for exam success..."
+              defaultTitle={String(getDefaultBlockData("exam-tip").title ?? "")}
+              defaultContent={String(getDefaultBlockData("exam-tip").content ?? "")}
             />
           )}
 
