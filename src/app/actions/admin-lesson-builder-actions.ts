@@ -22,6 +22,8 @@ import {
   normalizeTextBlockData,
   normalizeVocabularyBlockData,
   normalizeVocabularySetBlockData,
+  requireString,
+  optionalString,
 } from "@/lib/lesson-blocks";
 
 function getTrimmedString(formData: FormData, key: string) {
@@ -57,6 +59,11 @@ function getRouteRedirectPath(formData: FormData) {
   const lessonId = getTrimmedString(formData, "lessonId");
 
   return `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}/lessons/${lessonId}`;
+}
+
+function revalidateLessonTemplatePaths() {
+  revalidatePath("/admin/lesson-templates");
+  revalidatePath("/admin/lesson-templates/block-presets");
 }
 
 async function revalidateLessonPaths(formData: FormData) {
@@ -1634,4 +1641,396 @@ export async function insertLessonTemplateAction(formData: FormData) {
   }
 
   await revalidateLessonPaths(formData);
+}
+
+export async function createLessonBlockPresetAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const title = getTrimmedString(formData, "title");
+  const slug = getTrimmedString(formData, "slug");
+  const description = getTrimmedString(formData, "description");
+
+  if (!title || !slug) {
+    throw new Error("Title and slug are required");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("lesson_block_presets").insert({
+    title,
+    slug,
+    description: description || null,
+    is_active: true,
+  });
+
+  if (error) {
+    console.error("Error creating lesson block preset:", error);
+    throw new Error(`Failed to create block preset: ${error.message}`);
+  }
+
+  revalidateLessonTemplatePaths();
+}
+
+export async function updateLessonBlockPresetAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const presetId = getTrimmedString(formData, "presetId");
+  const title = getTrimmedString(formData, "title");
+  const slug = getTrimmedString(formData, "slug");
+  const description = getTrimmedString(formData, "description");
+  const isActive = String(formData.get("isActive") || "") === "true";
+
+  if (!presetId || !title || !slug) {
+    throw new Error("Preset id, title, and slug are required");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_block_presets")
+    .update({
+      title,
+      slug,
+      description: description || null,
+      is_active: isActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", presetId);
+
+  if (error) {
+    console.error("Error updating lesson block preset:", error);
+    throw new Error(`Failed to update block preset: ${error.message}`);
+  }
+
+  revalidateLessonTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+}
+
+export async function deleteLessonBlockPresetAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const presetId = getTrimmedString(formData, "presetId");
+  if (!presetId) {
+    throw new Error("Preset id is required");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_block_presets")
+    .delete()
+    .eq("id", presetId);
+
+  if (error) {
+    console.error("Error deleting lesson block preset:", error);
+    throw new Error(`Failed to delete block preset: ${error.message}`);
+  }
+
+  revalidateLessonTemplatePaths();
+  redirect("/admin/lesson-templates/block-presets");
+}
+
+type TemplateBlockType =
+  | "header"
+  | "subheader"
+  | "divider"
+  | "text"
+  | "note"
+  | "callout"
+  | "exam-tip"
+  | "vocabulary"
+  | "image"
+  | "audio"
+  | "question-set"
+  | "vocabulary-set";
+
+function normalizeTemplateBlockData(
+  blockType: TemplateBlockType,
+  formData: FormData
+): Record<string, unknown> {
+  switch (blockType) {
+    case "header":
+      return normalizeHeaderBlockData({
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "subheader":
+      return normalizeSubheaderBlockData({
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "divider":
+      return {};
+
+    case "text":
+      return normalizeTextBlockData({
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "note":
+      return normalizeNoteBlockData({
+        title: getTrimmedString(formData, "title"),
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "callout":
+      return normalizeCalloutBlockData({
+        title: getTrimmedString(formData, "title"),
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "exam-tip":
+      return normalizeExamTipBlockData({
+        title: getTrimmedString(formData, "title"),
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "image":
+      return normalizeImageBlockData({
+        src: getTrimmedString(formData, "src"),
+        alt: getTrimmedString(formData, "alt"),
+        caption: getTrimmedString(formData, "caption"),
+      });
+
+    case "audio":
+      return normalizeAudioBlockData({
+        title: getTrimmedString(formData, "title"),
+        src: getTrimmedString(formData, "src"),
+        caption: getTrimmedString(formData, "caption"),
+        autoPlay: String(formData.get("autoPlay") || "") === "true",
+      });
+
+    case "vocabulary":
+      return normalizeVocabularyBlockData({
+        title: getTrimmedString(formData, "title"),
+        items: getTrimmedString(formData, "items"),
+      });
+
+    case "question-set":
+      return normalizeQuestionSetBlockData({
+        title: getTrimmedString(formData, "title"),
+        questionSetSlug: getTrimmedString(formData, "questionSetSlug"),
+      });
+
+    case "vocabulary-set":
+      return normalizeVocabularySetBlockData({
+        title: getTrimmedString(formData, "title"),
+        vocabularySetSlug: getTrimmedString(formData, "vocabularySetSlug"),
+      });
+
+    default:
+      throw new Error(`Unsupported template block type: ${blockType}`);
+  }
+}
+
+async function getNextLessonBlockPresetBlockPosition(presetId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_block_preset_blocks")
+    .select("position")
+    .eq("lesson_block_preset_id", presetId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error getting next lesson block preset block position:", error);
+    throw new Error(`Failed to get next preset block position: ${error.message}`);
+  }
+
+  return data?.position ? data.position + 1 : 1;
+}
+
+export async function createLessonBlockPresetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const presetId = getTrimmedString(formData, "presetId");
+  const blockType = getTrimmedString(formData, "blockType") as TemplateBlockType;
+
+  if (!presetId || !blockType) {
+    throw new Error("Preset id and block type are required");
+  }
+
+  const data = normalizeTemplateBlockData(blockType, formData);
+  const position = await getNextLessonBlockPresetBlockPosition(presetId);
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("lesson_block_preset_blocks").insert({
+    lesson_block_preset_id: presetId,
+    block_type: blockType,
+    position,
+    data,
+    is_active: true,
+  });
+
+  if (error) {
+    console.error("Error creating lesson block preset block:", error);
+    throw new Error(`Failed to create preset block: ${error.message}`);
+  }
+
+  revalidateLessonTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+}
+
+export async function updateLessonBlockPresetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const presetId = getTrimmedString(formData, "presetId");
+  const presetBlockId = getTrimmedString(formData, "presetBlockId");
+  const blockType = getTrimmedString(formData, "blockType") as TemplateBlockType;
+  const isActive = String(formData.get("isActive") || "") === "true";
+
+  if (!presetId || !presetBlockId || !blockType) {
+    throw new Error("Preset id, preset block id, and block type are required");
+  }
+
+  const data = normalizeTemplateBlockData(blockType, formData);
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_block_preset_blocks")
+    .update({
+      data,
+      is_active: isActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", presetBlockId)
+    .eq("lesson_block_preset_id", presetId);
+
+  if (error) {
+    console.error("Error updating lesson block preset block:", error);
+    throw new Error(`Failed to update preset block: ${error.message}`);
+  }
+
+  revalidateLessonTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+}
+
+export async function deleteLessonBlockPresetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const presetId = getTrimmedString(formData, "presetId");
+  const presetBlockId = getTrimmedString(formData, "presetBlockId");
+
+  if (!presetId || !presetBlockId) {
+    throw new Error("Preset id and preset block id are required");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_block_preset_blocks")
+    .delete()
+    .eq("id", presetBlockId)
+    .eq("lesson_block_preset_id", presetId);
+
+  if (error) {
+    console.error("Error deleting lesson block preset block:", error);
+    throw new Error(`Failed to delete preset block: ${error.message}`);
+  }
+
+  const { data: remainingBlocks, error: loadError } = await supabase
+    .from("lesson_block_preset_blocks")
+    .select("id")
+    .eq("lesson_block_preset_id", presetId)
+    .order("position", { ascending: true });
+
+  if (loadError) {
+    console.error("Error loading remaining preset blocks:", loadError);
+    throw new Error(`Failed to normalize preset block order: ${loadError.message}`);
+  }
+
+  for (let index = 0; index < (remainingBlocks?.length ?? 0); index += 1) {
+    const row = remainingBlocks![index];
+
+    const { error: tempError } = await supabase
+      .from("lesson_block_preset_blocks")
+      .update({ position: -1 * (index + 1) })
+      .eq("id", row.id);
+
+    if (tempError) {
+      console.error("Error setting temporary preset block positions:", tempError);
+      throw new Error(`Failed to normalize preset block order: ${tempError.message}`);
+    }
+  }
+
+  for (let index = 0; index < (remainingBlocks?.length ?? 0); index += 1) {
+    const row = remainingBlocks![index];
+
+    const { error: finalError } = await supabase
+      .from("lesson_block_preset_blocks")
+      .update({ position: index + 1 })
+      .eq("id", row.id);
+
+    if (finalError) {
+      console.error("Error setting final preset block positions:", finalError);
+      throw new Error(`Failed to normalize preset block order: ${finalError.message}`);
+    }
+  }
+
+  revalidateLessonTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+}
+
+export async function reorderLessonBlockPresetBlocksAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const presetId = getTrimmedString(formData, "presetId");
+  const orderedPresetBlockIdsRaw = getTrimmedString(formData, "orderedPresetBlockIds");
+
+  if (!presetId || !orderedPresetBlockIdsRaw) {
+    throw new Error("Missing required fields");
+  }
+
+  const orderedPresetBlockIds = orderedPresetBlockIdsRaw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  if (orderedPresetBlockIds.length === 0) {
+    throw new Error("No preset block ids provided");
+  }
+
+  const supabase = await createClient();
+
+  for (let index = 0; index < orderedPresetBlockIds.length; index += 1) {
+    const presetBlockId = orderedPresetBlockIds[index];
+
+    const { error } = await supabase
+      .from("lesson_block_preset_blocks")
+      .update({ position: -1 * (index + 1) })
+      .eq("id", presetBlockId)
+      .eq("lesson_block_preset_id", presetId);
+
+    if (error) {
+      console.error("Error setting temporary preset block positions:", error);
+      throw new Error(`Failed to reorder preset blocks: ${error.message}`);
+    }
+  }
+
+  for (let index = 0; index < orderedPresetBlockIds.length; index += 1) {
+    const presetBlockId = orderedPresetBlockIds[index];
+
+    const { error } = await supabase
+      .from("lesson_block_preset_blocks")
+      .update({ position: index + 1 })
+      .eq("id", presetBlockId)
+      .eq("lesson_block_preset_id", presetId);
+
+    if (error) {
+      console.error("Error setting final preset block positions:", error);
+      throw new Error(`Failed to reorder preset blocks: ${error.message}`);
+    }
+  }
+
+  revalidateLessonTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
 }

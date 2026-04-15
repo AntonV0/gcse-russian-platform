@@ -3,10 +3,53 @@ import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import { appIcons } from "@/lib/icons";
+import { createLessonBlockPresetAction } from "@/app/actions/admin-lesson-builder-actions";
 import {
   getLessonBlockPresetBlocksDb,
   getLessonBlockPresetsDb,
 } from "@/lib/lesson-template-helpers-db";
+
+function CreatePresetCard() {
+  return (
+    <section className="rounded-2xl border bg-white p-4 shadow-sm">
+      <div className="mb-3">
+        <div className="font-medium text-gray-900">Create block preset</div>
+        <div className="text-sm text-gray-500">
+          Add a reusable starter block group for lesson authoring.
+        </div>
+      </div>
+
+      <form action={createLessonBlockPresetAction} className="grid gap-3 md:grid-cols-3">
+        <input
+          name="title"
+          required
+          placeholder="Preset title"
+          className="rounded-xl border px-3 py-2 text-sm"
+        />
+        <input
+          name="slug"
+          required
+          placeholder="preset-slug"
+          className="rounded-xl border px-3 py-2 text-sm"
+        />
+        <input
+          name="description"
+          placeholder="Optional description"
+          className="rounded-xl border px-3 py-2 text-sm"
+        />
+
+        <div className="md:col-span-3">
+          <button
+            type="submit"
+            className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+          >
+            Create preset
+          </button>
+        </div>
+      </form>
+    </section>
+  );
+}
 
 export default async function AdminLessonBlockPresetsPage() {
   const presets = await getLessonBlockPresetsDb();
@@ -29,15 +72,12 @@ export default async function AdminLessonBlockPresetsPage() {
           description="Reusable starter block groups for lesson authoring."
         />
 
-        <div className="flex gap-2">
-          <Button href="/admin/lesson-templates" variant="secondary" icon={appIcons.back}>
-            Back
-          </Button>
-          <Button href="#" variant="primary" icon={appIcons.create}>
-            Create preset
-          </Button>
-        </div>
+        <Button href="/admin/lesson-templates" variant="secondary" icon={appIcons.back}>
+          Back
+        </Button>
       </div>
+
+      <CreatePresetCard />
 
       {presets.length === 0 ? (
         <div className="rounded-xl border border-dashed bg-white px-4 py-8 text-sm text-gray-500">
