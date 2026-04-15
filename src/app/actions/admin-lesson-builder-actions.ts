@@ -4,6 +4,19 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminAccess } from "@/lib/admin-auth";
+import {
+  normalizeAudioBlockData,
+  normalizeCalloutBlockData,
+  normalizeExamTipBlockData,
+  normalizeHeaderBlockData,
+  normalizeImageBlockData,
+  normalizeNoteBlockData,
+  normalizeQuestionSetBlockData,
+  normalizeSubheaderBlockData,
+  normalizeTextBlockData,
+  normalizeVocabularyBlockData,
+  normalizeVocabularySetBlockData,
+} from "@/lib/lesson-blocks";
 
 function getTrimmedString(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -11,22 +24,6 @@ function getTrimmedString(formData: FormData, key: string) {
 
 function getBoolean(formData: FormData, key: string) {
   return formData.get(key) === "true";
-}
-
-function parseVocabularyItems(raw: string) {
-  return raw
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [russian, english] = line.split("|").map((part) => part?.trim() ?? "");
-
-      if (!russian || !english) {
-        throw new Error("Vocabulary lines must use the format: russian | english");
-      }
-
-      return { russian, english };
-    });
 }
 
 function getAdminLessonPath(params: {
@@ -329,7 +326,7 @@ export async function createHeaderBlockAction(formData: FormData) {
     formData,
     sectionId,
     blockType: "header",
-    data: { content },
+    data: normalizeHeaderBlockData({ content }),
   });
 }
 
@@ -348,7 +345,7 @@ export async function updateHeaderBlockAction(formData: FormData) {
     formData,
     blockId,
     blockType: "header",
-    data: { content },
+    data: normalizeHeaderBlockData({ content }),
   });
 }
 
@@ -367,7 +364,7 @@ export async function createSubheaderBlockAction(formData: FormData) {
     formData,
     sectionId,
     blockType: "subheader",
-    data: { content },
+    data: normalizeSubheaderBlockData({ content }),
   });
 }
 
@@ -386,7 +383,7 @@ export async function updateSubheaderBlockAction(formData: FormData) {
     formData,
     blockId,
     blockType: "subheader",
-    data: { content },
+    data: normalizeSubheaderBlockData({ content }),
   });
 }
 
@@ -435,7 +432,7 @@ export async function createTextBlockAction(formData: FormData) {
     formData,
     sectionId,
     blockType: "text",
-    data: { content },
+    data: normalizeTextBlockData({ content }),
   });
 }
 
@@ -454,7 +451,7 @@ export async function updateTextBlockAction(formData: FormData) {
     formData,
     blockId,
     blockType: "text",
-    data: { content },
+    data: normalizeTextBlockData({ content }),
   });
 }
 
@@ -478,7 +475,7 @@ export async function createNoteBlockAction(formData: FormData) {
     block_type: "note",
     position: nextPosition,
     is_published: true,
-    data: { title, content },
+    data: normalizeNoteBlockData({ title, content }),
     settings: {},
   });
 
@@ -507,7 +504,7 @@ export async function updateNoteBlockAction(formData: FormData) {
   const { error } = await supabase
     .from("lesson_blocks")
     .update({
-      data: { title, content },
+      data: normalizeNoteBlockData({ title, content }),
     })
     .eq("id", blockId)
     .eq("block_type", "note");
@@ -536,7 +533,7 @@ export async function createCalloutBlockAction(formData: FormData) {
     formData,
     sectionId,
     blockType: "callout",
-    data: { title: title || undefined, content },
+    data: normalizeCalloutBlockData({ title, content }),
   });
 }
 
@@ -556,7 +553,7 @@ export async function updateCalloutBlockAction(formData: FormData) {
     formData,
     blockId,
     blockType: "callout",
-    data: { title: title || undefined, content },
+    data: normalizeCalloutBlockData({ title, content }),
   });
 }
 
@@ -576,7 +573,7 @@ export async function createExamTipBlockAction(formData: FormData) {
     formData,
     sectionId,
     blockType: "exam-tip",
-    data: { title: title || undefined, content },
+    data: normalizeExamTipBlockData({ title, content }),
   });
 }
 
@@ -596,7 +593,7 @@ export async function updateExamTipBlockAction(formData: FormData) {
     formData,
     blockId,
     blockType: "exam-tip",
-    data: { title: title || undefined, content },
+    data: normalizeExamTipBlockData({ title, content }),
   });
 }
 
@@ -621,11 +618,7 @@ export async function createImageBlockAction(formData: FormData) {
     block_type: "image",
     position: nextPosition,
     is_published: true,
-    data: {
-      src,
-      alt: alt || undefined,
-      caption: caption || undefined,
-    },
+    data: normalizeImageBlockData({ src, alt, caption }),
     settings: {},
   });
 
@@ -655,11 +648,7 @@ export async function updateImageBlockAction(formData: FormData) {
   const { error } = await supabase
     .from("lesson_blocks")
     .update({
-      data: {
-        src,
-        alt: alt || undefined,
-        caption: caption || undefined,
-      },
+      data: normalizeImageBlockData({ src, alt, caption }),
     })
     .eq("id", blockId)
     .eq("block_type", "image");
@@ -694,12 +683,7 @@ export async function createAudioBlockAction(formData: FormData) {
     block_type: "audio",
     position: nextPosition,
     is_published: true,
-    data: {
-      title: title || undefined,
-      src,
-      caption: caption || undefined,
-      autoPlay,
-    },
+    data: normalizeAudioBlockData({ title, src, caption, autoPlay }),
     settings: {},
   });
 
@@ -730,12 +714,7 @@ export async function updateAudioBlockAction(formData: FormData) {
   const { error } = await supabase
     .from("lesson_blocks")
     .update({
-      data: {
-        title: title || undefined,
-        src,
-        caption: caption || undefined,
-        autoPlay,
-      },
+      data: normalizeAudioBlockData({ title, src, caption, autoPlay }),
     })
     .eq("id", blockId)
     .eq("block_type", "audio");
@@ -760,8 +739,6 @@ export async function createVocabularyBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const items = parseVocabularyItems(itemsRaw);
-
   const supabase = await createClient();
   const nextPosition = await getNextBlockPosition(sectionId);
 
@@ -770,10 +747,10 @@ export async function createVocabularyBlockAction(formData: FormData) {
     block_type: "vocabulary",
     position: nextPosition,
     is_published: true,
-    data: {
+    data: normalizeVocabularyBlockData({
       title,
-      items,
-    },
+      items: itemsRaw,
+    }),
     settings: {},
   });
 
@@ -797,17 +774,15 @@ export async function updateVocabularyBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const items = parseVocabularyItems(itemsRaw);
-
   const supabase = await createClient();
 
   const { error } = await supabase
     .from("lesson_blocks")
     .update({
-      data: {
+      data: normalizeVocabularyBlockData({
         title,
-        items,
-      },
+        items: itemsRaw,
+      }),
     })
     .eq("id", blockId)
     .eq("block_type", "vocabulary");
@@ -883,10 +858,10 @@ export async function createQuestionSetBlockAction(formData: FormData) {
     block_type: "question-set",
     position: nextPosition,
     is_published: true,
-    data: {
-      title: title || undefined,
+    data: normalizeQuestionSetBlockData({
+      title,
       questionSetSlug,
-    },
+    }),
     settings: {},
   });
 
@@ -915,10 +890,10 @@ export async function updateQuestionSetBlockAction(formData: FormData) {
   const { error } = await supabase
     .from("lesson_blocks")
     .update({
-      data: {
-        title: title || undefined,
+      data: normalizeQuestionSetBlockData({
+        title,
         questionSetSlug,
-      },
+      }),
     })
     .eq("id", blockId)
     .eq("block_type", "question-set");
@@ -951,10 +926,10 @@ export async function createVocabularySetBlockAction(formData: FormData) {
     block_type: "vocabulary-set",
     position: nextPosition,
     is_published: true,
-    data: {
-      title: title || undefined,
+    data: normalizeVocabularySetBlockData({
+      title,
       vocabularySetSlug,
-    },
+    }),
     settings: {},
   });
 
@@ -983,10 +958,10 @@ export async function updateVocabularySetBlockAction(formData: FormData) {
   const { error } = await supabase
     .from("lesson_blocks")
     .update({
-      data: {
-        title: title || undefined,
+      data: normalizeVocabularySetBlockData({
+        title,
         vocabularySetSlug,
-      },
+      }),
     })
     .eq("id", blockId)
     .eq("block_type", "vocabulary-set");
