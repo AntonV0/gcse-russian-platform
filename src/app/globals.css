@@ -17,7 +17,6 @@
   --border-strong: #c3d0de;
 
   /* ========= Brand colours ========= */
-  /* Subtle nod to Russian colour palette without feeling flag-heavy */
   --brand-blue: #2f6fed;
   --brand-blue-hover: #235bd0;
   --brand-blue-soft: #eaf2ff;
@@ -88,6 +87,34 @@
     rgba(217, 75, 82, 0.08) 0%,
     rgba(255, 255, 255, 1) 100%
   );
+
+  /* ========= Dark mode ========= */
+  [data-theme="dark"] {
+    --background: #0f172a;
+    --background-elevated: #111827;
+    --background-muted: #1f2937;
+    --background-soft-blue: #172554;
+    --background-soft-red: #3f1d1d;
+
+    --text-primary: #e5e7eb;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --text-inverse: #0f172a;
+
+    --border: #2a3647;
+    --border-strong: #3a4a5f;
+
+    --brand-blue: #4f8cff;
+    --brand-blue-hover: #3a73e0;
+
+    --brand-red: #ef5a61;
+    --brand-red-hover: #d6454c;
+
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #4f8cff;
+  }
 }
 
 html {
@@ -101,10 +128,7 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(47, 111, 237, 0.05), transparent 30%),
-    radial-gradient(circle at top right, rgba(217, 75, 82, 0.04), transparent 28%),
-    var(--background);
+  background: var(--background);
   color: var(--text-primary);
   font-family:
     Inter,
@@ -527,6 +551,17 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.app-nav-link {
+  color: var(--text-secondary);
+  transition:
+    color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.app-nav-link:hover {
+  color: var(--brand-blue);
 }
 
 /* ========= Tablet / desktop spacing ========= */
