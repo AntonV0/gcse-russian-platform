@@ -1291,6 +1291,23 @@ export async function reorderSectionsAction(formData: FormData) {
 
   const supabase = await createClient();
 
+  // Phase 1: move reordered items to temporary negative positions
+  for (let index = 0; index < orderedSectionIds.length; index += 1) {
+    const sectionId = orderedSectionIds[index];
+
+    const { error } = await supabase
+      .from("lesson_sections")
+      .update({ position: -1 * (index + 1) })
+      .eq("id", sectionId)
+      .eq("lesson_id", lessonId);
+
+    if (error) {
+      console.error("Error setting temporary section positions:", error);
+      throw new Error(`Failed to reorder sections: ${error.message}`);
+    }
+  }
+
+  // Phase 2: write final positions
   for (let index = 0; index < orderedSectionIds.length; index += 1) {
     const sectionId = orderedSectionIds[index];
 
@@ -1301,7 +1318,7 @@ export async function reorderSectionsAction(formData: FormData) {
       .eq("lesson_id", lessonId);
 
     if (error) {
-      console.error("Error reordering sections:", error);
+      console.error("Error setting final section positions:", error);
       throw new Error(`Failed to reorder sections: ${error.message}`);
     }
   }
@@ -1334,6 +1351,23 @@ export async function reorderBlocksAction(formData: FormData) {
 
   const supabase = await createClient();
 
+  // Phase 1: move reordered items to temporary negative positions
+  for (let index = 0; index < orderedBlockIds.length; index += 1) {
+    const blockId = orderedBlockIds[index];
+
+    const { error } = await supabase
+      .from("lesson_blocks")
+      .update({ position: -1 * (index + 1) })
+      .eq("id", blockId)
+      .eq("section_id", sectionId);
+
+    if (error) {
+      console.error("Error setting temporary block positions:", error);
+      throw new Error(`Failed to reorder blocks: ${error.message}`);
+    }
+  }
+
+  // Phase 2: write final positions
   for (let index = 0; index < orderedBlockIds.length; index += 1) {
     const blockId = orderedBlockIds[index];
 
@@ -1344,7 +1378,7 @@ export async function reorderBlocksAction(formData: FormData) {
       .eq("section_id", sectionId);
 
     if (error) {
-      console.error("Error reordering blocks:", error);
+      console.error("Error setting final block positions:", error);
       throw new Error(`Failed to reorder blocks: ${error.message}`);
     }
   }
