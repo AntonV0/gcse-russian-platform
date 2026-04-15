@@ -412,6 +412,30 @@ function MiniStatPill({ label, value }: { label: string; value: string | number 
   );
 }
 
+function usePersistentBoolean(key: string, defaultValue: boolean) {
+  const [value, setValue] = useState(defaultValue);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(key);
+
+    if (stored === "true") {
+      setValue(true);
+    } else if (stored === "false") {
+      setValue(false);
+    }
+  }, [key]);
+
+  useEffect(() => {
+    window.localStorage.setItem(key, String(value));
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}
+
+function getLessonBuilderStorageKey(lessonId: string, suffix: string) {
+  return `lesson-builder:${lessonId}:${suffix}`;
+}
+
 function TextLikeEditor(props: {
   blockId: string;
   routeFields: RouteFields;
@@ -1317,22 +1341,65 @@ function LessonSectionSidebar(props: {
   selectedSectionId: string | null;
   onSelectSection: (sectionId: string) => void;
   routeFields: RouteFields;
+  sectionSearch: string;
+  onSectionSearchChange: (value: string) => void;
 }) {
+  const normalizedQuery = props.sectionSearch.trim().toLowerCase();
+
+  const filteredSections = props.sections.filter((section) => {
+    if (!normalizedQuery) return true;
+
+    return (
+      section.title.toLowerCase().includes(normalizedQuery) ||
+      section.section_kind.toLowerCase().includes(normalizedQuery) ||
+      String(section.position).includes(normalizedQuery)
+    );
+  });
+
+  useEffect(() => {
+    if (!props.selectedSectionId) return;
+
+    const element = document.getElementById(`sidebar-section-${props.selectedSectionId}`);
+    element?.scrollIntoView({ block: "nearest" });
+  }, [props.selectedSectionId]);
+
   return (
     <div className="space-y-4">
       <Panel title="Sections" description="Select a section to focus the editor.">
         <div className="space-y-3">
+          <div className="space-y-2">
+            <input
+              value={props.sectionSearch}
+              onChange={(event) => props.onSectionSearchChange(event.target.value)}
+              placeholder="Search sections..."
+              className="w-full rounded-xl border px-3 py-2 text-sm"
+            />
+
+            <div className="text-xs text-gray-500">
+              Showing {filteredSections.length} of {props.sections.length} section
+              {props.sections.length === 1 ? "" : "s"}
+            </div>
+          </div>
+
           {props.sections.length === 0 ? (
             <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
               No sections yet.
             </div>
+          ) : filteredSections.length === 0 ? (
+            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
+              No sections match your search.
+            </div>
           ) : (
-            props.sections.map((section, index) => {
+            filteredSections.map((section, index) => {
+              const actualIndex = props.sections.findIndex(
+                (item) => item.id === section.id
+              );
               const isSelected = section.id === props.selectedSectionId;
 
               return (
                 <div
                   key={section.id}
+                  id={`sidebar-section-${section.id}`}
                   className={`rounded-xl border transition ${
                     isSelected ? "border-black bg-black text-white" : "bg-white"
                   }`}
@@ -1395,7 +1462,7 @@ function LessonSectionSidebar(props: {
                         <input type="hidden" name="direction" value="up" />
                         <button
                           type="submit"
-                          disabled={index === 0}
+                          disabled={actualIndex === 0}
                           className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -1412,7 +1479,7 @@ function LessonSectionSidebar(props: {
                         <input type="hidden" name="direction" value="down" />
                         <button
                           type="submit"
-                          disabled={index === props.sections.length - 1}
+                          disabled={actualIndex === props.sections.length - 1}
                           className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -2083,18 +2150,47 @@ export default function AdminLessonBuilderWorkspace({
     [sections]
   );
 
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    sections[0]?.id ?? null
-  );
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [sectionSearch, setSectionSearch] = useState("");
   const [blockSearch, setBlockSearch] = useState("");
+
+  const [isSidebarOpen, setIsSidebarOpen] = usePersistentBoolean(
+    getLessonBuilderStorageKey(lessonId, "sidebar-open"),
+    true
+  );
+  const [isInspectorOpen, setIsInspectorOpen] = usePersistentBoolean(
+    getLessonBuilderStorageKey(lessonId, "inspector-open"),
+    true
+  );
+
+  useEffect(() => {
+    const storedSectionId = window.localStorage.getItem(
+      getLessonBuilderStorageKey(lessonId, "selected-section-id")
+    );
+
+    if (storedSectionId && sections.some((section) => section.id === storedSectionId)) {
+      setSelectedSectionId(storedSectionId);
+      return;
+    }
+
+    setSelectedSectionId(sections[0]?.id ?? null);
+  }, [lessonId, sections]);
+
+  useEffect(() => {
+    if (!selectedSectionId) return;
+
+    window.localStorage.setItem(
+      getLessonBuilderStorageKey(lessonId, "selected-section-id"),
+      selectedSectionId
+    );
+  }, [lessonId, selectedSectionId]);
 
   useEffect(() => {
     if (sections.length === 0) {
       setSelectedSectionId(null);
       setSelectedBlockId(null);
+      setSectionSearch("");
       setBlockSearch("");
       return;
     }
@@ -2207,6 +2303,8 @@ export default function AdminLessonBuilderWorkspace({
                 setBlockSearch("");
               }}
               routeFields={routeFields}
+              sectionSearch={sectionSearch}
+              onSectionSearchChange={setSectionSearch}
             />
           </aside>
         ) : null}
