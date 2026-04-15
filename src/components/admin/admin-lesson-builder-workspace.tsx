@@ -111,6 +111,11 @@ type DragBlockState = {
   blockId: string;
 } | null;
 
+type DraggedBlockContext = {
+  blockId: string;
+  sourceSectionId: string;
+} | null;
+
 function stringifyVocabularyItems(items: unknown) {
   if (!Array.isArray(items)) return "";
 
@@ -1262,14 +1267,23 @@ function LessonSectionSidebar(props: {
   routeFields: RouteFields;
   sectionSearch: string;
   onSectionSearchChange: (value: string) => void;
+  draggedBlockContext: {
+    blockId: string;
+    sourceSectionId: string;
+  } | null;
+  onBlockDropComplete: () => void;
 }) {
   const normalizedQuery = props.sectionSearch.trim().toLowerCase();
   const [dragSection, setDragSection] = useState<DragSectionState>(null);
   const [dropTargetSectionId, setDropTargetSectionId] = useState<string | null>(null);
+  const [blockDropTargetSectionId, setBlockDropTargetSectionId] = useState<string | null>(
+    null
+  );
   const [isPending, startTransition] = useTransition();
 
   const filteredSections = props.sections.filter((section) => {
     if (!normalizedQuery) return true;
+
     return (
       section.title.toLowerCase().includes(normalizedQuery) ||
       section.section_kind.toLowerCase().includes(normalizedQuery) ||
@@ -1279,6 +1293,7 @@ function LessonSectionSidebar(props: {
 
   useEffect(() => {
     if (!props.selectedSectionId) return;
+
     const element = document.getElementById(`sidebar-section-${props.selectedSectionId}`);
     element?.scrollIntoView({ block: "nearest" });
   }, [props.selectedSectionId]);
@@ -1289,6 +1304,7 @@ function LessonSectionSidebar(props: {
     const reordered = [...props.sections];
     const sourceIndex = reordered.findIndex((section) => section.id === sourceSectionId);
     const targetIndex = reordered.findIndex((section) => section.id === targetSectionId);
+
     if (sourceIndex === -1 || targetIndex === -1) return;
 
     const [moved] = reordered.splice(sourceIndex, 1);
@@ -1310,6 +1326,29 @@ function LessonSectionSidebar(props: {
     });
   }
 
+  function submitBlockMove(targetSectionId: string) {
+    if (!props.draggedBlockContext) return;
+    if (props.draggedBlockContext.sourceSectionId === targetSectionId) return;
+
+    const formData = new FormData();
+    formData.set("courseId", props.routeFields.courseId);
+    formData.set("variantId", props.routeFields.variantId);
+    formData.set("moduleId", props.routeFields.moduleId);
+    formData.set("lessonId", props.routeFields.lessonId);
+    formData.set("courseSlug", props.routeFields.courseSlug);
+    formData.set("variantSlug", props.routeFields.variantSlug);
+    formData.set("moduleSlug", props.routeFields.moduleSlug);
+    formData.set("lessonSlug", props.routeFields.lessonSlug);
+    formData.set("blockId", props.draggedBlockContext.blockId);
+    formData.set("sourceSectionId", props.draggedBlockContext.sourceSectionId);
+    formData.set("targetSectionId", targetSectionId);
+
+    startTransition(async () => {
+      await moveBlockToSectionAction(formData);
+      props.onBlockDropComplete();
+    });
+  }
+
   return (
     <div className="space-y-4">
       <Panel title="Sections" description="Select a section to focus the editor.">
@@ -1321,10 +1360,11 @@ function LessonSectionSidebar(props: {
               placeholder="Search sections..."
               className="w-full rounded-xl border px-3 py-2 text-sm"
             />
+
             <div className="text-xs text-gray-500">
               Showing {filteredSections.length} of {props.sections.length} section
               {props.sections.length === 1 ? "" : "s"}
-              {isPending ? " · Saving order..." : ""}
+              {isPending ? " · Saving..." : ""}
             </div>
           </div>
 
@@ -1342,35 +1382,66 @@ function LessonSectionSidebar(props: {
                 (item) => item.id === section.id
               );
               const isSelected = section.id === props.selectedSectionId;
-              const isDropTarget = dropTargetSectionId === section.id;
+              const isSectionDropTarget = dropTargetSectionId === section.id;
+              const isBlockDropTarget = blockDropTargetSectionId === section.id;
+              const canAcceptDraggedBlock =
+                !!props.draggedBlockContext &&
+                props.draggedBlockContext.sourceSectionId !== section.id;
 
               return (
                 <div
                   key={section.id}
                   id={`sidebar-section-${section.id}`}
-                  draggable={!isPending}
-                  onDragStart={() => setDragSection({ sectionId: section.id })}
+                  draggable={!isPending && !props.draggedBlockContext}
+                  onDragStart={() => {
+                    if (!props.draggedBlockContext) {
+                      setDragSection({ sectionId: section.id });
+                    }
+                  }}
                   onDragOver={(event) => {
                     event.preventDefault();
-                    setDropTargetSectionId(section.id);
+
+                    if (props.draggedBlockContext) {
+                      if (canAcceptDraggedBlock) {
+                        setBlockDropTargetSectionId(section.id);
+                      }
+                    } else {
+                      setDropTargetSectionId(section.id);
+                    }
                   }}
                   onDragLeave={() => {
-                    if (dropTargetSectionId === section.id) setDropTargetSectionId(null);
+                    if (dropTargetSectionId === section.id) {
+                      setDropTargetSectionId(null);
+                    }
+                    if (blockDropTargetSectionId === section.id) {
+                      setBlockDropTargetSectionId(null);
+                    }
                   }}
                   onDrop={(event) => {
                     event.preventDefault();
-                    if (dragSection?.sectionId)
+
+                    if (props.draggedBlockContext) {
+                      if (canAcceptDraggedBlock) {
+                        submitBlockMove(section.id);
+                      }
+                    } else if (dragSection?.sectionId) {
                       submitSectionOrder(dragSection.sectionId, section.id);
+                    }
+
                     setDragSection(null);
                     setDropTargetSectionId(null);
+                    setBlockDropTargetSectionId(null);
                   }}
                   onDragEnd={() => {
                     setDragSection(null);
                     setDropTargetSectionId(null);
+                    setBlockDropTargetSectionId(null);
                   }}
                   className={`rounded-xl border transition ${
                     isSelected ? "border-black bg-black text-white" : "bg-white"
-                  } ${isDropTarget ? "ring-2 ring-blue-300" : ""} ${isPending ? "opacity-70" : ""}`}
+                  } ${isSectionDropTarget ? "ring-2 ring-blue-300" : ""} ${
+                    isBlockDropTarget ? "ring-2 ring-green-300" : ""
+                  } ${isPending ? "opacity-70" : ""}`}
                 >
                   <button
                     type="button"
@@ -1383,12 +1454,16 @@ function LessonSectionSidebar(props: {
                           {section.position}. {section.title}
                         </div>
                         <div
-                          className={`mt-1 text-xs ${isSelected ? "text-gray-200" : "text-gray-500"}`}
+                          className={`mt-1 text-xs ${
+                            isSelected ? "text-gray-200" : "text-gray-500"
+                          }`}
                         >
                           {section.section_kind}
                         </div>
                         <div
-                          className={`mt-2 flex flex-wrap gap-2 text-[11px] ${isSelected ? "text-gray-200" : "text-gray-500"}`}
+                          className={`mt-2 flex flex-wrap gap-2 text-[11px] ${
+                            isSelected ? "text-gray-200" : "text-gray-500"
+                          }`}
                         >
                           <span className="rounded-full border border-current/20 px-2 py-0.5">
                             {section.blocks.length} block(s)
@@ -1398,6 +1473,16 @@ function LessonSectionSidebar(props: {
                             published
                           </span>
                         </div>
+
+                        {isBlockDropTarget ? (
+                          <div
+                            className={`mt-2 text-xs font-medium ${
+                              isSelected ? "text-green-200" : "text-green-700"
+                            }`}
+                          >
+                            Drop block here to move it into this section
+                          </div>
+                        ) : null}
                       </div>
 
                       <span
@@ -1415,7 +1500,9 @@ function LessonSectionSidebar(props: {
                   </button>
 
                   <div
-                    className={`border-t px-3 py-2 ${isSelected ? "border-white/10" : "border-gray-200"}`}
+                    className={`border-t px-3 py-2 ${
+                      isSelected ? "border-white/10" : "border-gray-200"
+                    }`}
                   >
                     <div className="grid grid-cols-2 gap-2">
                       <form action={moveSectionAction}>
@@ -1424,7 +1511,9 @@ function LessonSectionSidebar(props: {
                         <input type="hidden" name="direction" value="up" />
                         <button
                           type="submit"
-                          disabled={actualIndex === 0 || isPending}
+                          disabled={
+                            actualIndex === 0 || isPending || !!props.draggedBlockContext
+                          }
                           className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -1442,7 +1531,9 @@ function LessonSectionSidebar(props: {
                         <button
                           type="submit"
                           disabled={
-                            actualIndex === props.sections.length - 1 || isPending
+                            actualIndex === props.sections.length - 1 ||
+                            isPending ||
+                            !!props.draggedBlockContext
                           }
                           className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
                             isSelected
@@ -1459,7 +1550,7 @@ function LessonSectionSidebar(props: {
                         <input type="hidden" name="sectionId" value={section.id} />
                         <button
                           type="submit"
-                          disabled={isPending}
+                          disabled={isPending || !!props.draggedBlockContext}
                           className={`w-full rounded-lg border px-2 py-2 text-xs ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -1480,7 +1571,7 @@ function LessonSectionSidebar(props: {
                         />
                         <button
                           type="submit"
-                          disabled={isPending}
+                          disabled={isPending || !!props.draggedBlockContext}
                           className={`w-full rounded-lg border px-2 py-2 text-xs ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -1840,6 +1931,8 @@ function DraggableBlockList(props: {
   routeFields: RouteFields;
   selectedBlockId: string | null;
   onSelectBlock: (blockId: string | null) => void;
+  onBlockDragStart: (payload: { blockId: string; sourceSectionId: string }) => void;
+  onBlockDragEnd: () => void;
 }) {
   const [dragBlock, setDragBlock] = useState<DragBlockState>(null);
   const [dropTargetBlockId, setDropTargetBlockId] = useState<string | null>(null);
@@ -1851,6 +1944,7 @@ function DraggableBlockList(props: {
     const reordered = [...props.section.blocks];
     const sourceIndex = reordered.findIndex((block) => block.id === sourceBlockId);
     const targetIndex = reordered.findIndex((block) => block.id === targetBlockId);
+
     if (sourceIndex === -1 || targetIndex === -1) return;
 
     const [moved] = reordered.splice(sourceIndex, 1);
@@ -1884,27 +1978,43 @@ function DraggableBlockList(props: {
           <div
             key={block.id}
             draggable={!isPending}
-            onDragStart={() => setDragBlock({ blockId: block.id })}
+            onDragStart={() => {
+              setDragBlock({ blockId: block.id });
+              props.onBlockDragStart({
+                blockId: block.id,
+                sourceSectionId: props.section.id,
+              });
+            }}
             onDragOver={(event) => {
               event.preventDefault();
               setDropTargetBlockId(block.id);
             }}
             onDragLeave={() => {
-              if (dropTargetBlockId === block.id) setDropTargetBlockId(null);
+              if (dropTargetBlockId === block.id) {
+                setDropTargetBlockId(null);
+              }
             }}
             onDrop={(event) => {
               event.preventDefault();
-              if (dragBlock?.blockId) submitBlockOrder(dragBlock.blockId, block.id);
+
+              if (dragBlock?.blockId) {
+                submitBlockOrder(dragBlock.blockId, block.id);
+              }
+
               setDragBlock(null);
               setDropTargetBlockId(null);
+              props.onBlockDragEnd();
             }}
             onDragEnd={() => {
               setDragBlock(null);
               setDropTargetBlockId(null);
+              props.onBlockDragEnd();
             }}
             className={`rounded-xl border transition ${
               isSelected ? "border-black bg-gray-50" : "bg-white"
-            } ${isDropTarget ? "ring-2 ring-blue-300" : ""} ${isPending ? "opacity-70" : ""}`}
+            } ${isDropTarget ? "ring-2 ring-blue-300" : ""} ${
+              isPending ? "opacity-70" : ""
+            }`}
           >
             <button
               type="button"
@@ -2022,6 +2132,8 @@ function LessonSectionEditor(props: {
   blockSearch: string;
   onBlockSearchChange: (value: string) => void;
   onJumpToAddBlock: () => void;
+  onBlockDragStart: (payload: { blockId: string; sourceSectionId: string }) => void;
+  onBlockDragEnd: () => void;
 }) {
   if (!props.section) {
     return (
@@ -2180,6 +2292,8 @@ function LessonSectionEditor(props: {
               routeFields={props.routeFields}
               selectedBlockId={props.selectedBlockId}
               onSelectBlock={props.onSelectBlock}
+              onBlockDragStart={props.onBlockDragStart}
+              onBlockDragEnd={props.onBlockDragEnd}
             />
           )}
         </div>
@@ -2237,6 +2351,8 @@ export default function AdminLessonBuilderWorkspace({
     getLessonBuilderStorageKey(lessonId, "inspector-open"),
     true
   );
+  const [draggedBlockContext, setDraggedBlockContext] =
+    useState<DraggedBlockContext>(null);
 
   useEffect(() => {
     const storedSectionId = window.localStorage.getItem(
@@ -2379,6 +2495,11 @@ export default function AdminLessonBuilderWorkspace({
               routeFields={routeFields}
               sectionSearch={sectionSearch}
               onSectionSearchChange={setSectionSearch}
+              draggedBlockContext={draggedBlockContext}
+              onBlockDropComplete={() => {
+                setDraggedBlockContext(null);
+                setSelectedBlockId(null);
+              }}
             />
           </aside>
         ) : null}
@@ -2400,6 +2521,12 @@ export default function AdminLessonBuilderWorkspace({
               document
                 .getElementById("add-block-composer")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            onBlockDragStart={(payload) => {
+              setDraggedBlockContext(payload);
+            }}
+            onBlockDragEnd={() => {
+              setDraggedBlockContext(null);
             }}
           />
         </div>
