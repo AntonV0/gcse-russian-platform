@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   createAudioBlockAction,
   createCalloutBlockAction,
@@ -21,6 +21,8 @@ import {
   duplicateSectionAction,
   moveBlockAction,
   moveSectionAction,
+  reorderBlocksAction,
+  reorderSectionsAction,
   toggleBlockPublishedAction,
   toggleSectionPublishedAction,
   updateAudioBlockAction,
@@ -90,6 +92,14 @@ type NewBlockType =
   | "audio"
   | "question-set"
   | "vocabulary-set";
+
+type DragSectionState = {
+  sectionId: string;
+} | null;
+
+type DragBlockState = {
+  blockId: string;
+} | null;
 
 function stringifyVocabularyItems(items: unknown) {
   if (!Array.isArray(items)) return "";
@@ -342,10 +352,7 @@ function ConfirmSubmitButton({
       type="submit"
       onClick={(event) => {
         const confirmed = window.confirm(confirmMessage);
-
-        if (!confirmed) {
-          event.preventDefault();
-        }
+        if (!confirmed) event.preventDefault();
       }}
       className={className}
     >
@@ -417,12 +424,8 @@ function usePersistentBoolean(key: string, defaultValue: boolean) {
 
   useEffect(() => {
     const stored = window.localStorage.getItem(key);
-
-    if (stored === "true") {
-      setValue(true);
-    } else if (stored === "false") {
-      setValue(false);
-    }
+    if (stored === "true") setValue(true);
+    else if (stored === "false") setValue(false);
   }, [key]);
 
   useEffect(() => {
@@ -684,7 +687,6 @@ function BlockEditPanel(props: {
           label="header block"
         />
       );
-
     case "subheader":
       return (
         <TextLikeEditor
@@ -697,7 +699,6 @@ function BlockEditPanel(props: {
           label="subheader block"
         />
       );
-
     case "text":
       return (
         <TextLikeEditor
@@ -710,7 +711,6 @@ function BlockEditPanel(props: {
           label="text block"
         />
       );
-
     case "note":
       return (
         <TitledContentEditor
@@ -727,7 +727,6 @@ function BlockEditPanel(props: {
           titleRequired
         />
       );
-
     case "callout":
       return (
         <TitledContentEditor
@@ -743,7 +742,6 @@ function BlockEditPanel(props: {
           label="callout block"
         />
       );
-
     case "exam-tip":
       return (
         <TitledContentEditor
@@ -759,7 +757,6 @@ function BlockEditPanel(props: {
           label="exam tip block"
         />
       );
-
     case "image":
       return (
         <ImageBlockEditor
@@ -776,7 +773,6 @@ function BlockEditPanel(props: {
           }
         />
       );
-
     case "audio":
       return (
         <AudioBlockEditor
@@ -798,7 +794,6 @@ function BlockEditPanel(props: {
           }
         />
       );
-
     case "vocabulary":
       return (
         <VocabularyBlockEditor
@@ -810,7 +805,6 @@ function BlockEditPanel(props: {
           defaultItems={props.block.data.items}
         />
       );
-
     case "question-set":
       return (
         <SlugBlockEditor
@@ -829,7 +823,6 @@ function BlockEditPanel(props: {
           label="question-set block"
         />
       );
-
     case "vocabulary-set":
       return (
         <SlugBlockEditor
@@ -848,12 +841,10 @@ function BlockEditPanel(props: {
           label="vocabulary-set block"
         />
       );
-
     case "divider":
       return (
         <div className="text-sm text-gray-500">Divider blocks do not need editing.</div>
       );
-
     default:
       return (
         <div className="text-sm text-gray-500">
@@ -1077,8 +1068,6 @@ function BlockTypeButton(props: {
 }
 
 function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFields }) {
-  const section = props.section;
-
   const [selectedNewBlockType, setSelectedNewBlockType] = useState<NewBlockType | null>(
     props.section.blocks.length === 0 ? "text" : null
   );
@@ -1212,7 +1201,7 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
             </button>
           </div>
 
-          {selectedNewBlockType === "header" ? (
+          {selectedNewBlockType === "header" && (
             <AddSimpleTextBlockForm
               placeholder="Big heading for this section"
               sectionId={props.section.id}
@@ -1220,9 +1209,9 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               action={createHeaderBlockAction}
               buttonLabel="Add header block"
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "subheader" ? (
+          {selectedNewBlockType === "subheader" && (
             <AddSimpleTextBlockForm
               placeholder="Smaller heading for this section"
               sectionId={props.section.id}
@@ -1230,9 +1219,9 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               action={createSubheaderBlockAction}
               buttonLabel="Add subheader block"
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "divider" ? (
+          {selectedNewBlockType === "divider" && (
             <form action={createDividerBlockAction} className="space-y-2">
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="sectionId" value={props.section.id} />
@@ -1243,9 +1232,9 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
                 Add divider block
               </button>
             </form>
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "text" ? (
+          {selectedNewBlockType === "text" && (
             <AddSimpleTextBlockForm
               placeholder="Write the text content here..."
               sectionId={props.section.id}
@@ -1253,9 +1242,9 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               action={createTextBlockAction}
               buttonLabel="Add text block"
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "note" ? (
+          {selectedNewBlockType === "note" && (
             <AddTitledContentBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
@@ -1264,9 +1253,9 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               titlePlaceholder="Study tip"
               contentPlaceholder="Write the note content here..."
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "callout" ? (
+          {selectedNewBlockType === "callout" && (
             <AddTitledContentBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
@@ -1275,9 +1264,9 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               titlePlaceholder="Optional title"
               contentPlaceholder="Important information or reminder..."
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "exam-tip" ? (
+          {selectedNewBlockType === "exam-tip" && (
             <AddTitledContentBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
@@ -1286,30 +1275,30 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               titlePlaceholder="Optional title"
               contentPlaceholder="Advice for exam success..."
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "vocabulary" ? (
+          {selectedNewBlockType === "vocabulary" && (
             <AddVocabularyBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "image" ? (
+          {selectedNewBlockType === "image" && (
             <AddImageBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "audio" ? (
+          {selectedNewBlockType === "audio" && (
             <AddAudioBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "question-set" ? (
+          {selectedNewBlockType === "question-set" && (
             <AddSlugBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
@@ -1318,9 +1307,9 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               slugFieldName="questionSetSlug"
               slugPlaceholder="question-set-slug"
             />
-          ) : null}
+          )}
 
-          {selectedNewBlockType === "vocabulary-set" ? (
+          {selectedNewBlockType === "vocabulary-set" && (
             <AddSlugBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
@@ -1329,7 +1318,7 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
               slugFieldName="vocabularySetSlug"
               slugPlaceholder="vocabulary-set-slug"
             />
-          ) : null}
+          )}
         </div>
       )}
     </div>
@@ -1345,10 +1334,12 @@ function LessonSectionSidebar(props: {
   onSectionSearchChange: (value: string) => void;
 }) {
   const normalizedQuery = props.sectionSearch.trim().toLowerCase();
+  const [dragSection, setDragSection] = useState<DragSectionState>(null);
+  const [dropTargetSectionId, setDropTargetSectionId] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const filteredSections = props.sections.filter((section) => {
     if (!normalizedQuery) return true;
-
     return (
       section.title.toLowerCase().includes(normalizedQuery) ||
       section.section_kind.toLowerCase().includes(normalizedQuery) ||
@@ -1358,10 +1349,36 @@ function LessonSectionSidebar(props: {
 
   useEffect(() => {
     if (!props.selectedSectionId) return;
-
     const element = document.getElementById(`sidebar-section-${props.selectedSectionId}`);
     element?.scrollIntoView({ block: "nearest" });
   }, [props.selectedSectionId]);
+
+  function submitSectionOrder(sourceSectionId: string, targetSectionId: string) {
+    if (sourceSectionId === targetSectionId) return;
+
+    const reordered = [...props.sections];
+    const sourceIndex = reordered.findIndex((section) => section.id === sourceSectionId);
+    const targetIndex = reordered.findIndex((section) => section.id === targetSectionId);
+    if (sourceIndex === -1 || targetIndex === -1) return;
+
+    const [moved] = reordered.splice(sourceIndex, 1);
+    reordered.splice(targetIndex, 0, moved);
+
+    const formData = new FormData();
+    formData.set("courseId", props.routeFields.courseId);
+    formData.set("variantId", props.routeFields.variantId);
+    formData.set("moduleId", props.routeFields.moduleId);
+    formData.set("lessonId", props.routeFields.lessonId);
+    formData.set("courseSlug", props.routeFields.courseSlug);
+    formData.set("variantSlug", props.routeFields.variantSlug);
+    formData.set("moduleSlug", props.routeFields.moduleSlug);
+    formData.set("lessonSlug", props.routeFields.lessonSlug);
+    formData.set("orderedSectionIds", reordered.map((section) => section.id).join(","));
+
+    startTransition(async () => {
+      await reorderSectionsAction(formData);
+    });
+  }
 
   return (
     <div className="space-y-4">
@@ -1374,10 +1391,10 @@ function LessonSectionSidebar(props: {
               placeholder="Search sections..."
               className="w-full rounded-xl border px-3 py-2 text-sm"
             />
-
             <div className="text-xs text-gray-500">
               Showing {filteredSections.length} of {props.sections.length} section
               {props.sections.length === 1 ? "" : "s"}
+              {isPending ? " · Saving order..." : ""}
             </div>
           </div>
 
@@ -1390,19 +1407,40 @@ function LessonSectionSidebar(props: {
               No sections match your search.
             </div>
           ) : (
-            filteredSections.map((section, index) => {
+            filteredSections.map((section) => {
               const actualIndex = props.sections.findIndex(
                 (item) => item.id === section.id
               );
               const isSelected = section.id === props.selectedSectionId;
+              const isDropTarget = dropTargetSectionId === section.id;
 
               return (
                 <div
                   key={section.id}
                   id={`sidebar-section-${section.id}`}
+                  draggable={!isPending}
+                  onDragStart={() => setDragSection({ sectionId: section.id })}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    setDropTargetSectionId(section.id);
+                  }}
+                  onDragLeave={() => {
+                    if (dropTargetSectionId === section.id) setDropTargetSectionId(null);
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    if (dragSection?.sectionId)
+                      submitSectionOrder(dragSection.sectionId, section.id);
+                    setDragSection(null);
+                    setDropTargetSectionId(null);
+                  }}
+                  onDragEnd={() => {
+                    setDragSection(null);
+                    setDropTargetSectionId(null);
+                  }}
                   className={`rounded-xl border transition ${
                     isSelected ? "border-black bg-black text-white" : "bg-white"
-                  }`}
+                  } ${isDropTarget ? "ring-2 ring-blue-300" : ""} ${isPending ? "opacity-70" : ""}`}
                 >
                   <button
                     type="button"
@@ -1415,16 +1453,12 @@ function LessonSectionSidebar(props: {
                           {section.position}. {section.title}
                         </div>
                         <div
-                          className={`mt-1 text-xs ${
-                            isSelected ? "text-gray-200" : "text-gray-500"
-                          }`}
+                          className={`mt-1 text-xs ${isSelected ? "text-gray-200" : "text-gray-500"}`}
                         >
                           {section.section_kind}
                         </div>
                         <div
-                          className={`mt-2 flex flex-wrap gap-2 text-[11px] ${
-                            isSelected ? "text-gray-200" : "text-gray-500"
-                          }`}
+                          className={`mt-2 flex flex-wrap gap-2 text-[11px] ${isSelected ? "text-gray-200" : "text-gray-500"}`}
                         >
                           <span className="rounded-full border border-current/20 px-2 py-0.5">
                             {section.blocks.length} block(s)
@@ -1451,9 +1485,7 @@ function LessonSectionSidebar(props: {
                   </button>
 
                   <div
-                    className={`border-t px-3 py-2 ${
-                      isSelected ? "border-white/10" : "border-gray-200"
-                    }`}
+                    className={`border-t px-3 py-2 ${isSelected ? "border-white/10" : "border-gray-200"}`}
                   >
                     <div className="grid grid-cols-2 gap-2">
                       <form action={moveSectionAction}>
@@ -1462,7 +1494,7 @@ function LessonSectionSidebar(props: {
                         <input type="hidden" name="direction" value="up" />
                         <button
                           type="submit"
-                          disabled={actualIndex === 0}
+                          disabled={actualIndex === 0 || isPending}
                           className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -1479,7 +1511,9 @@ function LessonSectionSidebar(props: {
                         <input type="hidden" name="direction" value="down" />
                         <button
                           type="submit"
-                          disabled={actualIndex === props.sections.length - 1}
+                          disabled={
+                            actualIndex === props.sections.length - 1 || isPending
+                          }
                           className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -1495,6 +1529,7 @@ function LessonSectionSidebar(props: {
                         <input type="hidden" name="sectionId" value={section.id} />
                         <button
                           type="submit"
+                          disabled={isPending}
                           className={`w-full rounded-lg border px-2 py-2 text-xs ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -1515,6 +1550,7 @@ function LessonSectionSidebar(props: {
                         />
                         <button
                           type="submit"
+                          disabled={isPending}
                           className={`w-full rounded-lg border px-2 py-2 text-xs ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -1709,9 +1745,7 @@ function LessonInspectorPanel(props: {
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="blockId" value={props.block.id} />
               <ConfirmSubmitButton
-                confirmMessage={`Delete this ${friendlyBlockType(
-                  props.block.block_type
-                ).toLowerCase()} block?`}
+                confirmMessage={`Delete this ${friendlyBlockType(props.block.block_type).toLowerCase()} block?`}
                 className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
               >
                 Delete block
@@ -1831,6 +1865,186 @@ function LessonInspectorPanel(props: {
   );
 }
 
+function DraggableBlockList(props: {
+  section: LessonSection;
+  filteredBlocks: LessonBlock[];
+  routeFields: RouteFields;
+  selectedBlockId: string | null;
+  onSelectBlock: (blockId: string | null) => void;
+}) {
+  const [dragBlock, setDragBlock] = useState<DragBlockState>(null);
+  const [dropTargetBlockId, setDropTargetBlockId] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  function submitBlockOrder(sourceBlockId: string, targetBlockId: string) {
+    if (sourceBlockId === targetBlockId) return;
+
+    const reordered = [...props.section.blocks];
+    const sourceIndex = reordered.findIndex((block) => block.id === sourceBlockId);
+    const targetIndex = reordered.findIndex((block) => block.id === targetBlockId);
+    if (sourceIndex === -1 || targetIndex === -1) return;
+
+    const [moved] = reordered.splice(sourceIndex, 1);
+    reordered.splice(targetIndex, 0, moved);
+
+    const formData = new FormData();
+    formData.set("courseId", props.routeFields.courseId);
+    formData.set("variantId", props.routeFields.variantId);
+    formData.set("moduleId", props.routeFields.moduleId);
+    formData.set("lessonId", props.routeFields.lessonId);
+    formData.set("courseSlug", props.routeFields.courseSlug);
+    formData.set("variantSlug", props.routeFields.variantSlug);
+    formData.set("moduleSlug", props.routeFields.moduleSlug);
+    formData.set("lessonSlug", props.routeFields.lessonSlug);
+    formData.set("sectionId", props.section.id);
+    formData.set("orderedBlockIds", reordered.map((block) => block.id).join(","));
+
+    startTransition(async () => {
+      await reorderBlocksAction(formData);
+    });
+  }
+
+  return (
+    <div className="space-y-3">
+      {props.filteredBlocks.map((block) => {
+        const blockIndex = props.section.blocks.findIndex((item) => item.id === block.id);
+        const isSelected = block.id === props.selectedBlockId;
+        const isDropTarget = dropTargetBlockId === block.id;
+
+        return (
+          <div
+            key={block.id}
+            draggable={!isPending}
+            onDragStart={() => setDragBlock({ blockId: block.id })}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDropTargetBlockId(block.id);
+            }}
+            onDragLeave={() => {
+              if (dropTargetBlockId === block.id) setDropTargetBlockId(null);
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              if (dragBlock?.blockId) submitBlockOrder(dragBlock.blockId, block.id);
+              setDragBlock(null);
+              setDropTargetBlockId(null);
+            }}
+            onDragEnd={() => {
+              setDragBlock(null);
+              setDropTargetBlockId(null);
+            }}
+            className={`rounded-xl border transition ${
+              isSelected ? "border-black bg-gray-50" : "bg-white"
+            } ${isDropTarget ? "ring-2 ring-blue-300" : ""} ${isPending ? "opacity-70" : ""}`}
+          >
+            <button
+              type="button"
+              onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
+              className="w-full px-4 py-4 text-left"
+            >
+              <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                <div className="min-w-0 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getBlockTypeAccent(
+                        block.block_type
+                      )}`}
+                    >
+                      {getBlockTypeGroupLabel(block.block_type)}
+                    </span>
+
+                    <span className="font-medium text-gray-900">
+                      {friendlyBlockType(block.block_type)}
+                    </span>
+
+                    <Badge tone={block.is_published ? "success" : "warning"}>
+                      {block.is_published ? "Published" : "Draft"}
+                    </Badge>
+
+                    <Badge tone="muted">Position {block.position}</Badge>
+
+                    {isSelected ? <Badge tone="default">Selected</Badge> : null}
+                  </div>
+
+                  <div className="text-sm text-gray-600 line-clamp-2 break-words">
+                    {renderBlockPreview(block)}
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            {isSelected ? (
+              <div className="border-t px-3 py-3">
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                  <form action={moveBlockAction}>
+                    <BuilderHiddenFields {...props.routeFields} />
+                    <input type="hidden" name="sectionId" value={props.section.id} />
+                    <input type="hidden" name="blockId" value={block.id} />
+                    <input type="hidden" name="direction" value="up" />
+                    <button
+                      type="submit"
+                      disabled={blockIndex === 0 || isPending}
+                      className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
+                    >
+                      Move up
+                    </button>
+                  </form>
+
+                  <form action={moveBlockAction}>
+                    <BuilderHiddenFields {...props.routeFields} />
+                    <input type="hidden" name="sectionId" value={props.section.id} />
+                    <input type="hidden" name="blockId" value={block.id} />
+                    <input type="hidden" name="direction" value="down" />
+                    <button
+                      type="submit"
+                      disabled={
+                        blockIndex === props.section.blocks.length - 1 || isPending
+                      }
+                      className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
+                    >
+                      Move down
+                    </button>
+                  </form>
+
+                  <form action={duplicateBlockAction}>
+                    <BuilderHiddenFields {...props.routeFields} />
+                    <input type="hidden" name="sectionId" value={props.section.id} />
+                    <input type="hidden" name="blockId" value={block.id} />
+                    <button
+                      type="submit"
+                      disabled={isPending}
+                      className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
+                    >
+                      Duplicate
+                    </button>
+                  </form>
+
+                  <form action={toggleBlockPublishedAction}>
+                    <BuilderHiddenFields {...props.routeFields} />
+                    <input type="hidden" name="blockId" value={block.id} />
+                    <input
+                      type="hidden"
+                      name="nextState"
+                      value={block.is_published ? "draft" : "published"}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isPending}
+                      className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
+                    >
+                      {block.is_published ? "Unpublish" : "Publish"}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function LessonSectionEditor(props: {
   section: LessonSection | null;
   routeFields: RouteFields;
@@ -1855,7 +2069,6 @@ function LessonSectionEditor(props: {
   }
 
   const section = props.section;
-
   const normalizedQuery = props.blockSearch.trim().toLowerCase();
 
   const filteredBlocks = section.blocks.filter((block) => {
@@ -1992,121 +2205,13 @@ function LessonSectionEditor(props: {
               No blocks match your search.
             </div>
           ) : (
-            <div className="space-y-3">
-              {filteredBlocks.map((block) => {
-                const blockIndex = section.blocks.findIndex(
-                  (item) => item.id === block.id
-                );
-                const isSelected = block.id === props.selectedBlockId;
-
-                return (
-                  <div
-                    key={block.id}
-                    className={`rounded-xl border transition ${
-                      isSelected ? "border-black bg-gray-50" : "bg-white"
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
-                      className="w-full px-4 py-4 text-left"
-                    >
-                      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                        <div className="min-w-0 space-y-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span
-                              className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getBlockTypeAccent(
-                                block.block_type
-                              )}`}
-                            >
-                              {getBlockTypeGroupLabel(block.block_type)}
-                            </span>
-
-                            <span className="font-medium text-gray-900">
-                              {friendlyBlockType(block.block_type)}
-                            </span>
-
-                            <Badge tone={block.is_published ? "success" : "warning"}>
-                              {block.is_published ? "Published" : "Draft"}
-                            </Badge>
-
-                            <Badge tone="muted">Position {block.position}</Badge>
-
-                            {isSelected ? <Badge tone="default">Selected</Badge> : null}
-                          </div>
-
-                          <div className="text-sm text-gray-600 line-clamp-2 break-words">
-                            {renderBlockPreview(block)}
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-
-                    {isSelected ? (
-                      <div className="border-t px-3 py-3">
-                        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                          <form action={moveBlockAction}>
-                            <BuilderHiddenFields {...props.routeFields} />
-                            <input type="hidden" name="sectionId" value={section.id} />
-                            <input type="hidden" name="blockId" value={block.id} />
-                            <input type="hidden" name="direction" value="up" />
-                            <button
-                              type="submit"
-                              disabled={blockIndex === 0}
-                              className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
-                            >
-                              Move up
-                            </button>
-                          </form>
-
-                          <form action={moveBlockAction}>
-                            <BuilderHiddenFields {...props.routeFields} />
-                            <input type="hidden" name="sectionId" value={section.id} />
-                            <input type="hidden" name="blockId" value={block.id} />
-                            <input type="hidden" name="direction" value="down" />
-                            <button
-                              type="submit"
-                              disabled={blockIndex === section.blocks.length - 1}
-                              className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
-                            >
-                              Move down
-                            </button>
-                          </form>
-
-                          <form action={duplicateBlockAction}>
-                            <BuilderHiddenFields {...props.routeFields} />
-                            <input type="hidden" name="sectionId" value={section.id} />
-                            <input type="hidden" name="blockId" value={block.id} />
-                            <button
-                              type="submit"
-                              className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
-                            >
-                              Duplicate
-                            </button>
-                          </form>
-
-                          <form action={toggleBlockPublishedAction}>
-                            <BuilderHiddenFields {...props.routeFields} />
-                            <input type="hidden" name="blockId" value={block.id} />
-                            <input
-                              type="hidden"
-                              name="nextState"
-                              value={block.is_published ? "draft" : "published"}
-                            />
-                            <button
-                              type="submit"
-                              className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
-                            >
-                              {block.is_published ? "Unpublish" : "Publish"}
-                            </button>
-                          </form>
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
+            <DraggableBlockList
+              section={section}
+              filteredBlocks={filteredBlocks}
+              routeFields={props.routeFields}
+              selectedBlockId={props.selectedBlockId}
+              onSelectBlock={props.onSelectBlock}
+            />
           )}
         </div>
       </Panel>
@@ -2316,9 +2421,7 @@ export default function AdminLessonBuilderWorkspace({
             selectedBlockId={selectedBlockId}
             onSelectBlock={(blockId) => {
               setSelectedBlockId(blockId);
-              if (blockId) {
-                setIsInspectorOpen(true);
-              }
+              if (blockId) setIsInspectorOpen(true);
             }}
             blockSearch={blockSearch}
             onBlockSearchChange={setBlockSearch}
