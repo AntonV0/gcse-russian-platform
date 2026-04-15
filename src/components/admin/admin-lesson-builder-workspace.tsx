@@ -20,6 +20,7 @@ import {
   duplicateBlockAction,
   duplicateSectionAction,
   moveBlockAction,
+  moveBlockToSectionAction,
   moveSectionAction,
   reorderBlocksAction,
   reorderSectionsAction,
@@ -1632,6 +1633,7 @@ function LessonSectionSidebar(props: {
 function LessonInspectorPanel(props: {
   section: LessonSection | null;
   block: LessonBlock | null;
+  sections: LessonSection[];
   routeFields: RouteFields;
   sectionIndex: number;
   totalSections: number;
@@ -1682,6 +1684,42 @@ function LessonInspectorPanel(props: {
 
           <div className="rounded-xl border bg-gray-50 p-3">
             <BlockEditPanel block={props.block} routeFields={props.routeFields} />
+          </div>
+
+          <div className="rounded-xl border bg-white p-3">
+            <div className="mb-2 text-sm font-medium text-gray-900">
+              Move to another section
+            </div>
+
+            <form action={moveBlockToSectionAction} className="space-y-2">
+              <BuilderHiddenFields {...props.routeFields} />
+              <input type="hidden" name="blockId" value={props.block.id} />
+              <input type="hidden" name="sourceSectionId" value={props.section.id} />
+
+              <select
+                name="targetSectionId"
+                defaultValue=""
+                className="w-full rounded-xl border px-3 py-2 text-sm"
+              >
+                <option value="" disabled>
+                  Select target section
+                </option>
+                {props.sections
+                  .filter((section) => section.id !== props.section?.id)
+                  .map((section) => (
+                    <option key={section.id} value={section.id}>
+                      {section.position}. {section.title}
+                    </option>
+                  ))}
+              </select>
+
+              <button
+                type="submit"
+                className="w-full rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+              >
+                Move block to section
+              </button>
+            </form>
           </div>
 
           <div className="grid gap-2">
@@ -1745,7 +1783,9 @@ function LessonInspectorPanel(props: {
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="blockId" value={props.block.id} />
               <ConfirmSubmitButton
-                confirmMessage={`Delete this ${friendlyBlockType(props.block.block_type).toLowerCase()} block?`}
+                confirmMessage={`Delete this ${friendlyBlockType(
+                  props.block.block_type
+                ).toLowerCase()} block?`}
                 className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
               >
                 Delete block
@@ -2421,7 +2461,9 @@ export default function AdminLessonBuilderWorkspace({
             selectedBlockId={selectedBlockId}
             onSelectBlock={(blockId) => {
               setSelectedBlockId(blockId);
-              if (blockId) setIsInspectorOpen(true);
+              if (blockId) {
+                setIsInspectorOpen(true);
+              }
             }}
             blockSearch={blockSearch}
             onBlockSearchChange={setBlockSearch}
@@ -2438,6 +2480,7 @@ export default function AdminLessonBuilderWorkspace({
             <LessonInspectorPanel
               section={selectedSection}
               block={selectedBlock}
+              sections={sections}
               routeFields={routeFields}
               sectionIndex={sectionIndex}
               totalSections={sections.length}
