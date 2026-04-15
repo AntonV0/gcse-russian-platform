@@ -238,6 +238,28 @@ function ConfirmSubmitButton({
   );
 }
 
+function DragHandle({
+  label,
+  tone = "default",
+}: {
+  label: string;
+  tone?: "default" | "active";
+}) {
+  return (
+    <div
+      className={`inline-flex items-center gap-2 rounded-lg border px-2 py-1 text-[11px] ${
+        tone === "active"
+          ? "border-blue-300 bg-blue-50 text-blue-700"
+          : "border-gray-200 bg-gray-50 text-gray-500"
+      }`}
+      aria-hidden="true"
+    >
+      <span className="tracking-tight">⋮⋮</span>
+      <span>{label}</span>
+    </div>
+  );
+}
+
 function ToolbarButton({
   children,
   onClick,
@@ -1437,10 +1459,10 @@ function LessonSectionSidebar(props: {
                     setDropTargetSectionId(null);
                     setBlockDropTargetSectionId(null);
                   }}
-                  className={`rounded-xl border transition ${
+                  className={`rounded-xl border transition-shadow transition-colors ${
                     isSelected ? "border-black bg-black text-white" : "bg-white"
-                  } ${isSectionDropTarget ? "ring-2 ring-blue-300" : ""} ${
-                    isBlockDropTarget ? "ring-2 ring-green-300" : ""
+                  } ${isSectionDropTarget ? "ring-2 ring-blue-300 shadow-md" : ""} ${
+                    isBlockDropTarget ? "ring-2 ring-green-300 shadow-md" : ""
                   } ${isPending ? "opacity-70" : ""}`}
                 >
                   <button
@@ -1450,6 +1472,21 @@ function LessonSectionSidebar(props: {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
+                        <div className="mb-2">
+                          <DragHandle
+                            label={
+                              props.draggedBlockContext
+                                ? "Drop block here"
+                                : "Drag section"
+                            }
+                            tone={
+                              isBlockDropTarget || isSectionDropTarget
+                                ? "active"
+                                : "default"
+                            }
+                          />
+                        </div>
+
                         <div className="font-medium">
                           {section.position}. {section.title}
                         </div>
@@ -1680,7 +1717,7 @@ function LessonInspectorPanel(props: {
                   props.block.block_type
                 )}`}
               >
-                {getLessonBlockAccentClass(props.block.block_type)}
+                {getLessonBlockGroupLabel(props.block.block_type)}
               </span>
 
               <span className="font-medium text-gray-900">
@@ -1696,7 +1733,7 @@ function LessonInspectorPanel(props: {
               <div>
                 <span className="font-medium">Position:</span> {props.block.position}
               </div>
-              <div className="text-gray-600 break-words">
+              <div className="rounded-lg bg-white px-3 py-2 text-gray-600 break-words">
                 {getLessonBlockPreview(props.block)}
               </div>
             </div>
@@ -1969,6 +2006,12 @@ function DraggableBlockList(props: {
 
   return (
     <div className="space-y-3">
+      {isPending ? (
+        <div className="rounded-xl border bg-blue-50 px-3 py-2 text-sm text-blue-700">
+          Saving block order...
+        </div>
+      ) : null}
+
       {props.filteredBlocks.map((block) => {
         const blockIndex = props.section.blocks.findIndex((item) => item.id === block.id);
         const isSelected = block.id === props.selectedBlockId;
@@ -2010,9 +2053,9 @@ function DraggableBlockList(props: {
               setDropTargetBlockId(null);
               props.onBlockDragEnd();
             }}
-            className={`rounded-xl border transition ${
+            className={`rounded-xl border transition-shadow transition-colors ${
               isSelected ? "border-black bg-gray-50" : "bg-white"
-            } ${isDropTarget ? "ring-2 ring-blue-300" : ""} ${
+            } ${isDropTarget ? "ring-2 ring-blue-300 shadow-md" : ""} ${
               isPending ? "opacity-70" : ""
             }`}
           >
@@ -2023,6 +2066,11 @@ function DraggableBlockList(props: {
             >
               <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
                 <div className="min-w-0 space-y-2">
+                  <DragHandle
+                    label="Drag block"
+                    tone={isDropTarget ? "active" : "default"}
+                  />
+
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
@@ -2275,6 +2323,11 @@ function LessonSectionEditor(props: {
                 Add block
               </button>
             </div>
+          </div>
+
+          <div className="rounded-xl border bg-gray-50 px-3 py-3 text-sm text-gray-600">
+            Drag a block to reorder it within this section, or drag it onto a section in
+            the left sidebar to move it there.
           </div>
 
           {section.blocks.length === 0 ? (
