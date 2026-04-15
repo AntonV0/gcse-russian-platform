@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { insertBlockPresetAction } from "@/app/actions/admin-lesson-builder-actions";
 import { lessonBlockPresets } from "@/lib/lesson-block-presets";
 import { getDefaultBlockData } from "@/lib/lesson-blocks";
+import {
+  insertBlockPresetAction,
+  insertLessonTemplateAction,
+  insertSectionTemplateAction,
+} from "@/app/actions/admin-lesson-builder-actions";
+import { lessonSectionTemplates } from "@/lib/lesson-section-templates";
+import { lessonTemplates } from "@/lib/lesson-templates";
 import {
   createAudioBlockAction,
   createCalloutBlockAction,
@@ -1627,6 +1633,36 @@ function LessonSectionSidebar(props: {
         </div>
       </Panel>
 
+      <Panel
+        title="Section templates"
+        description="Insert a ready-made section with starter blocks."
+      >
+        <div className="grid gap-3">
+          {lessonSectionTemplates.map((template) => (
+            <form
+              key={template.id}
+              action={insertSectionTemplateAction}
+              className="rounded-xl border p-3"
+            >
+              <BuilderHiddenFields {...props.routeFields} />
+              <input type="hidden" name="templateId" value={template.id} />
+
+              <div className="mb-2">
+                <div className="font-medium text-gray-900">{template.label}</div>
+                <div className="text-sm text-gray-500">{template.description}</div>
+              </div>
+
+              <button
+                type="submit"
+                className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+              >
+                Insert section template
+              </button>
+            </form>
+          ))}
+        </div>
+      </Panel>
+
       <Panel title="Add section" description="Create a section first, then add blocks.">
         <form action={createSectionAction} className="space-y-3">
           <BuilderHiddenFields {...props.routeFields} />
@@ -2469,7 +2505,40 @@ export default function AdminLessonBuilderWorkspace({
         <StatCard label="Published sections" value={publishedSections} />
         <StatCard label="Published blocks" value={publishedBlocks} />
       </section>
+      <Panel
+        title="Lesson templates"
+        description="Create several structured sections at once for faster lesson setup."
+      >
+        <div className="grid gap-3 lg:grid-cols-2">
+          {lessonTemplates.map((template) => (
+            <form
+              key={template.id}
+              action={insertLessonTemplateAction}
+              className="rounded-xl border p-4"
+            >
+              <BuilderHiddenFields {...routeFields} />
+              <input type="hidden" name="templateId" value={template.id} />
 
+              <div className="mb-2">
+                <div className="font-medium text-gray-900">{template.label}</div>
+                <div className="text-sm text-gray-500">{template.description}</div>
+              </div>
+
+              <div className="mb-3 text-xs text-gray-500">
+                {template.sections.length} section
+                {template.sections.length === 1 ? "" : "s"}
+              </div>
+
+              <button
+                type="submit"
+                className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+              >
+                Insert lesson template
+              </button>
+            </form>
+          ))}
+        </div>
+      </Panel>
       <section className="sticky top-4 z-10 rounded-2xl border bg-white/95 p-3 shadow-sm backdrop-blur">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
