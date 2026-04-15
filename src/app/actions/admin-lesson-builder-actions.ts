@@ -47,6 +47,15 @@ function getPublicLessonPath(params: {
   return `/courses/${params.courseSlug}/${params.variantSlug}/modules/${params.moduleSlug}/lessons/${params.lessonSlug}`;
 }
 
+function getRouteRedirectPath(formData: FormData) {
+  const courseId = getTrimmedString(formData, "courseId");
+  const variantId = getTrimmedString(formData, "variantId");
+  const moduleId = getTrimmedString(formData, "moduleId");
+  const lessonId = getTrimmedString(formData, "lessonId");
+
+  return `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}/lessons/${lessonId}`;
+}
+
 async function revalidateLessonPaths(formData: FormData) {
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
@@ -1256,4 +1265,90 @@ export async function toggleBlockPublishedAction(formData: FormData) {
   }
 
   await revalidateLessonPaths(formData);
+}
+
+export async function reorderSectionsAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const lessonId = getTrimmedString(formData, "lessonId");
+  const orderedSectionIdsRaw = getTrimmedString(formData, "orderedSectionIds");
+
+  if (!lessonId || !orderedSectionIdsRaw) {
+    throw new Error("Missing required fields");
+  }
+
+  const orderedSectionIds = orderedSectionIdsRaw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  if (orderedSectionIds.length === 0) {
+    throw new Error("No section ids provided");
+  }
+
+  const supabase = await createClient();
+
+  for (let index = 0; index < orderedSectionIds.length; index += 1) {
+    const sectionId = orderedSectionIds[index];
+
+    const { error } = await supabase
+      .from("lesson_sections")
+      .update({ position: index + 1 })
+      .eq("id", sectionId)
+      .eq("lesson_id", lessonId);
+
+    if (error) {
+      console.error("Error reordering sections:", error);
+      throw new Error(`Failed to reorder sections: ${error.message}`);
+    }
+  }
+
+  const redirectPath = getRouteRedirectPath(formData);
+  revalidatePath(redirectPath);
+}
+
+export async function reorderBlocksAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const orderedBlockIdsRaw = getTrimmedString(formData, "orderedBlockIds");
+
+  if (!sectionId || !orderedBlockIdsRaw) {
+    throw new Error("Missing required fields");
+  }
+
+  const orderedBlockIds = orderedBlockIdsRaw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  if (orderedBlockIds.length === 0) {
+    throw new Error("No block ids provided");
+  }
+
+  const supabase = await createClient();
+
+  for (let index = 0; index < orderedBlockIds.length; index += 1) {
+    const blockId = orderedBlockIds[index];
+
+    const { error } = await supabase
+      .from("lesson_blocks")
+      .update({ position: index + 1 })
+      .eq("id", blockId)
+      .eq("section_id", sectionId);
+
+    if (error) {
+      console.error("Error reordering blocks:", error);
+      throw new Error(`Failed to reorder blocks: ${error.message}`);
+    }
+  }
+
+  const redirectPath = getRouteRedirectPath(formData);
+  revalidatePath(redirectPath);
 }
