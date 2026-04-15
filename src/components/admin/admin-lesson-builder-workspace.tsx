@@ -39,6 +39,12 @@ import {
   updateVocabularyBlockAction,
   updateVocabularySetBlockAction,
 } from "@/app/actions/admin-lesson-builder-actions";
+import {
+  getLessonBlockAccentClass,
+  getLessonBlockGroupLabel,
+  getLessonBlockLabel,
+  getLessonBlockPreview,
+} from "@/lib/lesson-blocks";
 
 type AdminLessonBuilderProps = {
   lessonId: string;
@@ -115,144 +121,6 @@ function stringifyVocabularyItems(items: unknown) {
     })
     .filter(Boolean)
     .join("\n");
-}
-
-function friendlyBlockType(blockType: string) {
-  switch (blockType) {
-    case "header":
-      return "Header";
-    case "subheader":
-      return "Subheader";
-    case "divider":
-      return "Divider";
-    case "text":
-      return "Text";
-    case "note":
-      return "Note";
-    case "callout":
-      return "Callout";
-    case "exam-tip":
-      return "Exam tip";
-    case "image":
-      return "Image";
-    case "audio":
-      return "Audio";
-    case "vocabulary":
-      return "Vocabulary";
-    case "vocabulary-set":
-      return "Vocabulary set";
-    case "question-set":
-      return "Question set";
-    default:
-      return blockType;
-  }
-}
-
-function getBlockTypeAccent(blockType: string) {
-  switch (blockType) {
-    case "header":
-    case "subheader":
-    case "divider":
-      return "border-slate-200 bg-slate-50 text-slate-700";
-    case "text":
-    case "note":
-    case "callout":
-    case "exam-tip":
-      return "border-blue-200 bg-blue-50 text-blue-700";
-    case "vocabulary":
-    case "vocabulary-set":
-      return "border-emerald-200 bg-emerald-50 text-emerald-700";
-    case "image":
-    case "audio":
-      return "border-purple-200 bg-purple-50 text-purple-700";
-    case "question-set":
-      return "border-amber-200 bg-amber-50 text-amber-700";
-    default:
-      return "border-gray-200 bg-gray-50 text-gray-700";
-  }
-}
-
-function getBlockTypeGroupLabel(blockType: string) {
-  switch (blockType) {
-    case "header":
-    case "subheader":
-    case "divider":
-      return "Structure";
-    case "text":
-    case "note":
-    case "callout":
-    case "exam-tip":
-      return "Teaching";
-    case "vocabulary":
-    case "vocabulary-set":
-      return "Vocabulary";
-    case "image":
-    case "audio":
-      return "Media";
-    case "question-set":
-      return "Practice";
-    default:
-      return "Block";
-  }
-}
-
-function renderBlockPreview(block: {
-  block_type: string;
-  data: Record<string, unknown>;
-}) {
-  switch (block.block_type) {
-    case "header":
-    case "subheader":
-    case "text":
-      return typeof block.data.content === "string"
-        ? block.data.content
-        : block.block_type;
-
-    case "note":
-    case "callout":
-    case "exam-tip":
-      return typeof block.data.title === "string"
-        ? block.data.title
-        : typeof block.data.content === "string"
-          ? block.data.content
-          : block.block_type;
-
-    case "image":
-      return typeof block.data.caption === "string"
-        ? block.data.caption
-        : typeof block.data.src === "string"
-          ? block.data.src
-          : "Image block";
-
-    case "audio":
-      return typeof block.data.title === "string"
-        ? block.data.title
-        : typeof block.data.src === "string"
-          ? block.data.src
-          : "Audio block";
-
-    case "vocabulary":
-      if (Array.isArray(block.data.items)) {
-        return `${block.data.items.length} item(s)`;
-      }
-      return typeof block.data.title === "string" ? block.data.title : "Vocabulary block";
-
-    case "question-set":
-      return typeof block.data.questionSetSlug === "string"
-        ? block.data.questionSetSlug
-        : "Question set block";
-
-    case "vocabulary-set":
-      return typeof block.data.vocabularySetSlug === "string"
-        ? block.data.vocabularySetSlug
-        : "Vocabulary set block";
-
-    case "divider":
-      return "Divider";
-
-    default:
-      return block.block_type;
-  }
 }
 
 function getSectionCounts(sections: LessonSection[]) {
@@ -1186,7 +1054,7 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <div className="font-medium text-gray-900">
-                New {friendlyBlockType(selectedNewBlockType)}
+                New {getLessonBlockLabel(selectedNewBlockType)}
               </div>
               <div className="text-sm text-gray-500">
                 Fill in the details for this new block.
@@ -1656,15 +1524,15 @@ function LessonInspectorPanel(props: {
           <div className="rounded-xl border bg-gray-50 p-4">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <span
-                className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getBlockTypeAccent(
+                className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
                   props.block.block_type
                 )}`}
               >
-                {getBlockTypeGroupLabel(props.block.block_type)}
+                {getLessonBlockAccentClass(props.block.block_type)}
               </span>
 
               <span className="font-medium text-gray-900">
-                {friendlyBlockType(props.block.block_type)}
+                {getLessonBlockLabel(props.block.block_type)}
               </span>
 
               <Badge tone={props.block.is_published ? "success" : "warning"}>
@@ -1677,7 +1545,7 @@ function LessonInspectorPanel(props: {
                 <span className="font-medium">Position:</span> {props.block.position}
               </div>
               <div className="text-gray-600 break-words">
-                {renderBlockPreview(props.block)}
+                {getLessonBlockPreview(props.block)}
               </div>
             </div>
           </div>
@@ -1783,7 +1651,7 @@ function LessonInspectorPanel(props: {
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="blockId" value={props.block.id} />
               <ConfirmSubmitButton
-                confirmMessage={`Delete this ${friendlyBlockType(
+                confirmMessage={`Delete this ${getLessonBlockLabel(
                   props.block.block_type
                 ).toLowerCase()} block?`}
                 className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
@@ -1986,15 +1854,15 @@ function DraggableBlockList(props: {
                 <div className="min-w-0 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <span
-                      className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getBlockTypeAccent(
+                      className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
                         block.block_type
                       )}`}
                     >
-                      {getBlockTypeGroupLabel(block.block_type)}
+                      {getLessonBlockGroupLabel(block.block_type)}
                     </span>
 
                     <span className="font-medium text-gray-900">
-                      {friendlyBlockType(block.block_type)}
+                      {getLessonBlockLabel(block.block_type)}
                     </span>
 
                     <Badge tone={block.is_published ? "success" : "warning"}>
@@ -2007,7 +1875,7 @@ function DraggableBlockList(props: {
                   </div>
 
                   <div className="text-sm text-gray-600 line-clamp-2 break-words">
-                    {renderBlockPreview(block)}
+                    {getLessonBlockPreview(block)}
                   </div>
                 </div>
               </div>
@@ -2114,9 +1982,9 @@ function LessonSectionEditor(props: {
   const filteredBlocks = section.blocks.filter((block) => {
     if (!normalizedQuery) return true;
 
-    const typeLabel = friendlyBlockType(block.block_type).toLowerCase();
-    const preview = renderBlockPreview(block).toLowerCase();
-    const groupLabel = getBlockTypeGroupLabel(block.block_type).toLowerCase();
+    const typeLabel = getLessonBlockLabel(block.block_type).toLowerCase();
+    const preview = getLessonBlockPreview(block).toLowerCase();
+    const groupLabel = getLessonBlockGroupLabel(block.block_type).toLowerCase();
 
     return (
       typeLabel.includes(normalizedQuery) ||
@@ -2155,7 +2023,7 @@ function LessonSectionEditor(props: {
                 .map(([blockType, count]) => (
                   <MiniStatPill
                     key={blockType}
-                    label={friendlyBlockType(blockType)}
+                    label={getLessonBlockLabel(blockType)}
                     value={count}
                   />
                 ))}
@@ -2382,7 +2250,7 @@ export default function AdminLessonBuilderWorkspace({
               {selectedSection
                 ? `${selectedSection.blocks.length} block(s)${
                     selectedBlock
-                      ? ` · Selected block: ${friendlyBlockType(selectedBlock.block_type)}`
+                      ? ` · Selected block: ${getLessonBlockLabel(selectedBlock.block_type)}`
                       : ""
                   }`
                 : "Select a section to begin."}
