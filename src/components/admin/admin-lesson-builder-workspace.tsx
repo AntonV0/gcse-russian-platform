@@ -3,15 +3,12 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useFormStatus } from "react-dom";
-import { lessonBlockPresets } from "@/lib/lesson-block-presets";
 import { getDefaultBlockData } from "@/lib/lesson-blocks";
 import {
   insertBlockPresetAction,
   insertLessonTemplateAction,
   insertSectionTemplateAction,
 } from "@/app/actions/admin-lesson-builder-actions";
-import { lessonSectionTemplates } from "@/lib/lesson-section-templates";
-import { lessonTemplates } from "@/lib/lesson-templates";
 import {
   createAudioBlockAction,
   createCalloutBlockAction,
@@ -81,6 +78,28 @@ type AdminLessonBuilderProps = {
       data: Record<string, unknown>;
     }[];
   }[];
+  templateOptions: {
+    blockPresets: {
+      id: string;
+      label: string;
+      description: string;
+      blocksCount: number;
+    }[];
+    sectionTemplates: {
+      id: string;
+      label: string;
+      description: string;
+      defaultSectionTitle: string;
+      defaultSectionKind: string;
+      presetCount: number;
+    }[];
+    lessonTemplates: {
+      id: string;
+      label: string;
+      description: string;
+      sectionsCount: number;
+    }[];
+  };
 };
 
 type RouteFields = {
@@ -1047,7 +1066,16 @@ function BlockTypeButton(props: {
   );
 }
 
-function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFields }) {
+function AddBlockComposer(props: {
+  section: LessonSection;
+  routeFields: RouteFields;
+  blockPresetOptions: {
+    id: string;
+    label: string;
+    description: string;
+    blocksCount: number;
+  }[];
+}) {
   const [selectedNewBlockType, setSelectedNewBlockType] = useState<NewBlockType | null>(
     props.section.blocks.length === 0 ? "text" : null
   );
@@ -1068,33 +1096,43 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
           </div>
 
           <div className="grid gap-3">
-            {lessonBlockPresets.map((preset) => (
-              <form
-                key={preset.id}
-                action={insertBlockPresetAction}
-                className="rounded-xl border p-3"
-              >
-                <BuilderHiddenFields {...props.routeFields} />
-                <input type="hidden" name="sectionId" value={props.section.id} />
-                <input type="hidden" name="presetId" value={preset.id} />
+            {props.blockPresetOptions.length === 0 ? (
+              <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
+                No DB block presets found yet.
+              </div>
+            ) : (
+              props.blockPresetOptions.map((preset) => (
+                <form
+                  key={preset.id}
+                  action={insertBlockPresetAction}
+                  className="rounded-xl border p-3"
+                >
+                  <BuilderHiddenFields {...props.routeFields} />
+                  <input type="hidden" name="sectionId" value={props.section.id} />
+                  <input type="hidden" name="presetId" value={preset.id} />
 
-                <div className="mb-2">
-                  <div className="font-medium text-gray-900">{preset.label}</div>
-                  <div className="text-sm text-gray-500">{preset.description}</div>
-                </div>
+                  <div className="mb-2">
+                    <div className="font-medium text-gray-900">{preset.label}</div>
+                    <div className="text-sm text-gray-500">{preset.description}</div>
+                    <div className="mt-2 text-xs text-gray-500">
+                      {preset.blocksCount} block{preset.blocksCount === 1 ? "" : "s"}
+                    </div>
+                  </div>
 
-                <div className="space-y-2">
-                  <PendingSubmitButton
-                    idleLabel="Insert preset"
-                    pendingLabel="Inserting preset..."
-                    className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
-                  />
-                  <PendingStatusText pendingText="Adding starter blocks to this section..." />
-                </div>
-              </form>
-            ))}
+                  <div className="space-y-2">
+                    <PendingSubmitButton
+                      idleLabel="Insert preset"
+                      pendingLabel="Inserting preset..."
+                      className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                    />
+                    <PendingStatusText pendingText="Adding starter blocks to this section..." />
+                  </div>
+                </form>
+              ))
+            )}
           </div>
         </div>
+
         <div>
           <div className="mb-2 text-sm font-medium text-gray-900">Structure</div>
           <div className="flex flex-wrap gap-2">
@@ -1362,6 +1400,14 @@ function LessonSectionSidebar(props: {
     sourceSectionId: string;
   } | null;
   onBlockDropComplete: () => void;
+  sectionTemplateOptions: {
+    id: string;
+    label: string;
+    description: string;
+    defaultSectionTitle: string;
+    defaultSectionKind: string;
+    presetCount: number;
+  }[];
 }) {
   const normalizedQuery = props.sectionSearch.trim().toLowerCase();
   const [dragSection, setDragSection] = useState<DragSectionState>(null);
@@ -1704,30 +1750,45 @@ function LessonSectionSidebar(props: {
         description="Insert a ready-made section with starter blocks."
       >
         <div className="grid gap-3">
-          {lessonSectionTemplates.map((template) => (
-            <form
-              key={template.id}
-              action={insertSectionTemplateAction}
-              className="rounded-xl border p-3"
-            >
-              <BuilderHiddenFields {...props.routeFields} />
-              <input type="hidden" name="templateId" value={template.id} />
+          {props.sectionTemplateOptions.length === 0 ? (
+            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
+              No DB section templates found yet.
+            </div>
+          ) : (
+            props.sectionTemplateOptions.map((template) => (
+              <form
+                key={template.id}
+                action={insertSectionTemplateAction}
+                className="rounded-xl border p-3"
+              >
+                <BuilderHiddenFields {...props.routeFields} />
+                <input type="hidden" name="templateId" value={template.id} />
 
-              <div className="mb-2">
-                <div className="font-medium text-gray-900">{template.label}</div>
-                <div className="text-sm text-gray-500">{template.description}</div>
-              </div>
+                <div className="mb-2">
+                  <div className="font-medium text-gray-900">{template.label}</div>
+                  <div className="text-sm text-gray-500">{template.description}</div>
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
+                    <span>{template.defaultSectionTitle}</span>
+                    <span>·</span>
+                    <span>{template.defaultSectionKind}</span>
+                    <span>·</span>
+                    <span>
+                      {template.presetCount} preset{template.presetCount === 1 ? "" : "s"}
+                    </span>
+                  </div>
+                </div>
 
-              <div className="space-y-2">
-                <PendingSubmitButton
-                  idleLabel="Insert section template"
-                  pendingLabel="Inserting section template..."
-                  className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
-                />
-                <PendingStatusText pendingText="Creating the section and starter blocks..." />
-              </div>
-            </form>
-          ))}
+                <div className="space-y-2">
+                  <PendingSubmitButton
+                    idleLabel="Insert section template"
+                    pendingLabel="Inserting section template..."
+                    className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                  />
+                  <PendingStatusText pendingText="Creating the section and starter blocks..." />
+                </div>
+              </form>
+            ))
+          )}
         </div>
       </Panel>
 
@@ -2290,6 +2351,7 @@ function LessonSectionEditor(props: {
   onJumpToAddBlock: () => void;
   onBlockDragStart: (payload: { blockId: string; sourceSectionId: string }) => void;
   onBlockDragEnd: () => void;
+  templateOptions: AdminLessonBuilderProps["templateOptions"];
 }) {
   if (!props.section) {
     return (
@@ -2467,7 +2529,11 @@ function LessonSectionEditor(props: {
           title="Add block"
           description="Choose a block type, then fill in the form."
         >
-          <AddBlockComposer section={section} routeFields={props.routeFields} />
+          <AddBlockComposer
+            section={section}
+            routeFields={props.routeFields}
+            blockPresetOptions={props.templateOptions.blockPresets}
+          />
         </Panel>
       </div>
     </div>
@@ -2484,6 +2550,7 @@ export default function AdminLessonBuilderWorkspace({
   variantSlug,
   moduleSlug,
   sections,
+  templateOptions,
 }: AdminLessonBuilderProps) {
   const routeFields: RouteFields = {
     courseId,
@@ -2584,35 +2651,41 @@ export default function AdminLessonBuilderWorkspace({
         description="Create several structured sections at once for faster lesson setup."
       >
         <div className="grid gap-3 lg:grid-cols-2">
-          {lessonTemplates.map((template) => (
-            <form
-              key={template.id}
-              action={insertLessonTemplateAction}
-              className="rounded-xl border p-4"
-            >
-              <BuilderHiddenFields {...routeFields} />
-              <input type="hidden" name="templateId" value={template.id} />
+          {templateOptions.lessonTemplates.length === 0 ? (
+            <div className="rounded-xl border border-dashed bg-white px-4 py-8 text-sm text-gray-500">
+              No DB lesson templates found yet.
+            </div>
+          ) : (
+            templateOptions.lessonTemplates.map((template) => (
+              <form
+                key={template.id}
+                action={insertLessonTemplateAction}
+                className="rounded-xl border p-4"
+              >
+                <BuilderHiddenFields {...routeFields} />
+                <input type="hidden" name="templateId" value={template.id} />
 
-              <div className="mb-2">
-                <div className="font-medium text-gray-900">{template.label}</div>
-                <div className="text-sm text-gray-500">{template.description}</div>
-              </div>
+                <div className="mb-2">
+                  <div className="font-medium text-gray-900">{template.label}</div>
+                  <div className="text-sm text-gray-500">{template.description}</div>
+                </div>
 
-              <div className="mb-3 text-xs text-gray-500">
-                {template.sections.length} section
-                {template.sections.length === 1 ? "" : "s"}
-              </div>
+                <div className="mb-3 text-xs text-gray-500">
+                  {template.sectionsCount} section
+                  {template.sectionsCount === 1 ? "" : "s"}
+                </div>
 
-              <div className="space-y-2">
-                <PendingSubmitButton
-                  idleLabel="Insert lesson template"
-                  pendingLabel="Inserting lesson template..."
-                  className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
-                />
-                <PendingStatusText pendingText="Creating sections and starter blocks..." />
-              </div>
-            </form>
-          ))}
+                <div className="space-y-2">
+                  <PendingSubmitButton
+                    idleLabel="Insert lesson template"
+                    pendingLabel="Inserting lesson template..."
+                    className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                  />
+                  <PendingStatusText pendingText="Creating sections and starter blocks..." />
+                </div>
+              </form>
+            ))
+          )}
         </div>
       </Panel>
       <section className="sticky top-4 z-10 rounded-2xl border bg-white/95 p-3 shadow-sm backdrop-blur">
@@ -2698,6 +2771,7 @@ export default function AdminLessonBuilderWorkspace({
                 setDraggedBlockContext(null);
                 setSelectedBlockId(null);
               }}
+              sectionTemplateOptions={templateOptions.sectionTemplates}
             />
           </aside>
         ) : null}
@@ -2726,6 +2800,7 @@ export default function AdminLessonBuilderWorkspace({
             onBlockDragEnd={() => {
               setDraggedBlockContext(null);
             }}
+            templateOptions={templateOptions}
           />
         </div>
 

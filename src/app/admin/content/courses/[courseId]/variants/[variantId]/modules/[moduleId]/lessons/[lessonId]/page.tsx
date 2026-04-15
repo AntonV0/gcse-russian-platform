@@ -3,6 +3,7 @@ import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
 import { appIcons } from "@/lib/icons";
+import { getLessonBuilderTemplateOptionsDb } from "@/lib/lesson-template-helpers-db";
 import {
   getCourseByIdDb,
   getLessonByIdDb,
@@ -86,6 +87,7 @@ export default async function AdminLessonDetailPage({
   }
 
   const sections = await getLessonSectionsWithBlocksDb(lesson.id);
+  const templateOptions = await getLessonBuilderTemplateOptionsDb();
 
   return (
     <main className="space-y-6">
@@ -154,14 +156,15 @@ export default async function AdminLessonDetailPage({
 
         <AdminLessonBuilder
           lessonId={lesson.id}
-          courseId={course.id}
-          variantId={variant.id}
-          moduleId={module.id}
+          courseId={courseId}
+          variantId={variantId}
+          moduleId={moduleId}
           lessonSlug={lesson.slug}
           courseSlug={course.slug}
           variantSlug={variant.slug}
           moduleSlug={module.slug}
           sections={sections}
+          templateOptions={templateOptions}
         />
       </section>
 

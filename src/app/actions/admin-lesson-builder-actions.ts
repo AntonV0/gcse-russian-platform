@@ -4,13 +4,12 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminAccess } from "@/lib/admin-auth";
-import { getPresetBlocksForInsert } from "@/lib/lesson-block-presets";
 import { resolveSectionKind } from "@/lib/lesson-blocks";
 import {
-  getBlocksForSectionTemplate,
-  getSectionTemplateById,
-} from "@/lib/lesson-section-templates";
-import { lessonTemplates } from "@/lib/lesson-templates";
+  getLessonTemplateInsertDataDb,
+  getPresetBlocksForInsertDb,
+  getSectionTemplateInsertDataDb,
+} from "@/lib/lesson-template-helpers-db";
 import {
   normalizeAudioBlockData,
   normalizeCalloutBlockData,
@@ -201,7 +200,7 @@ export async function insertBlockPresetAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const presetBlocks = getPresetBlocksForInsert(presetId);
+  const presetBlocks = await getPresetBlocksForInsertDb(presetId);
   const supabase = await createClient();
   const startingPosition = await getNextBlockPosition(sectionId);
 
@@ -1536,8 +1535,7 @@ export async function insertSectionTemplateAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const template = getSectionTemplateById(templateId);
-  const blocks = getBlocksForSectionTemplate(templateId);
+  const templateData = await getSectionTemplateInsertDataDb(templateId);
   const supabase = await createClient();
 
   const nextSectionPosition = await getNextSectionPosition(lessonId);
@@ -1546,9 +1544,9 @@ export async function insertSectionTemplateAction(formData: FormData) {
     .from("lesson_sections")
     .insert({
       lesson_id: lessonId,
-      title: template.title,
-      description: template.description,
-      section_kind: template.sectionKind,
+      title: templateData.template.default_section_title,
+      description: templateData.template.description,
+      section_kind: templateData.template.default_section_kind,
       position: nextSectionPosition,
       is_published: true,
       settings: {},
@@ -1563,8 +1561,8 @@ export async function insertSectionTemplateAction(formData: FormData) {
     );
   }
 
-  if (blocks.length > 0) {
-    const rows = blocks.map((block, index) => ({
+  if (templateData.blocks.length > 0) {
+    const rows = templateData.blocks.map((block, index) => ({
       lesson_section_id: insertedSection.id,
       block_type: block.blockType,
       position: index + 1,
@@ -1595,27 +1593,24 @@ export async function insertLessonTemplateAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const template = lessonTemplates.find((item) => item.id === templateId);
-
-  if (!template) {
-    throw new Error("Lesson template not found");
-  }
-
+  const templateData = await getLessonTemplateInsertDataDb(templateId);
   const supabase = await createClient();
   const startingSectionPosition = await getNextSectionPosition(lessonId);
 
-  for (let sectionIndex = 0; sectionIndex < template.sections.length; sectionIndex += 1) {
-    const sectionTemplate = template.sections[sectionIndex];
-    const baseTemplate = getSectionTemplateById(sectionTemplate.sectionTemplateId);
-    const blocks = getBlocksForSectionTemplate(sectionTemplate.sectionTemplateId);
+  for (
+    let sectionIndex = 0;
+    sectionIndex < templateData.sections.length;
+    sectionIndex += 1
+  ) {
+    const section = templateData.sections[sectionIndex];
 
     const { data: insertedSection, error: sectionError } = await supabase
       .from("lesson_sections")
       .insert({
         lesson_id: lessonId,
-        title: sectionTemplate.title,
-        description: baseTemplate.description,
-        section_kind: sectionTemplate.sectionKind,
+        title: section.title,
+        description: section.description,
+        section_kind: section.sectionKind,
         position: startingSectionPosition + sectionIndex,
         is_published: true,
         settings: {},
@@ -1630,8 +1625,8 @@ export async function insertLessonTemplateAction(formData: FormData) {
       );
     }
 
-    if (blocks.length > 0) {
-      const rows = blocks.map((block, blockIndex) => ({
+    if (section.blocks.length > 0) {
+      const rows = section.blocks.map((block, blockIndex) => ({
         lesson_section_id: insertedSection.id,
         block_type: block.blockType,
         position: blockIndex + 1,
