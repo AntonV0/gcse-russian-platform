@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { lessonBlockPresets } from "@/lib/lesson-block-presets";
 import { getDefaultBlockData } from "@/lib/lesson-blocks";
@@ -1477,6 +1478,10 @@ function LessonSectionSidebar(props: {
                 !!props.draggedBlockContext &&
                 props.draggedBlockContext.sourceSectionId !== section.id;
 
+              const publishedBlockCount = section.blocks.filter(
+                (block) => block.is_published
+              ).length;
+
               return (
                 <div
                   key={section.id}
@@ -1526,89 +1531,77 @@ function LessonSectionSidebar(props: {
                     setDropTargetSectionId(null);
                     setBlockDropTargetSectionId(null);
                   }}
-                  className={`rounded-xl border transition-shadow transition-colors ${
+                  className={`rounded-2xl border transition-shadow transition-colors ${
                     isSelected ? "border-black bg-black text-white" : "bg-white"
                   } ${isSectionDropTarget ? "ring-2 ring-blue-300 shadow-md" : ""} ${
                     isBlockDropTarget ? "ring-2 ring-green-300 shadow-md" : ""
                   } ${isPending ? "opacity-70" : ""}`}
                 >
-                  <button
-                    type="button"
-                    onClick={() => props.onSelectSection(section.id)}
-                    className="w-full px-4 py-3 text-left"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="mb-2">
-                          <DragHandle
-                            label={
-                              props.draggedBlockContext
-                                ? "Drop block here"
-                                : "Drag section"
-                            }
-                            tone={
-                              isBlockDropTarget || isSectionDropTarget
-                                ? "active"
-                                : "default"
-                            }
-                          />
-                        </div>
+                  <div className="flex items-start justify-between gap-3 px-4 py-4">
+                    <button
+                      type="button"
+                      onClick={() => props.onSelectSection(section.id)}
+                      className="min-w-0 flex-1 text-left"
+                    >
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <DragHandle
+                          label={
+                            props.draggedBlockContext ? "Drop block here" : "Drag section"
+                          }
+                          tone={
+                            isBlockDropTarget || isSectionDropTarget
+                              ? "active"
+                              : "default"
+                          }
+                        />
 
-                        <div className="font-medium">
-                          {section.position}. {section.title}
-                        </div>
-                        <div
-                          className={`mt-1 text-xs ${
-                            isSelected ? "text-gray-200" : "text-gray-500"
+                        <span
+                          className={`rounded-full border px-2.5 py-1 text-[11px] ${
+                            isSelected
+                              ? "border-white/20 bg-white/10 text-white"
+                              : section.is_published
+                                ? "border-green-200 bg-green-50 text-green-700"
+                                : "border-amber-200 bg-amber-50 text-amber-700"
                           }`}
                         >
-                          {section.section_kind}
-                        </div>
-                        <div
-                          className={`mt-2 flex flex-wrap gap-2 text-[11px] ${
-                            isSelected ? "text-gray-200" : "text-gray-500"
-                          }`}
-                        >
-                          <span className="rounded-full border border-current/20 px-2 py-0.5">
-                            {section.blocks.length} block(s)
-                          </span>
-                          <span className="rounded-full border border-current/20 px-2 py-0.5">
-                            {section.blocks.filter((block) => block.is_published).length}{" "}
-                            published
-                          </span>
-                        </div>
-
-                        {isBlockDropTarget ? (
-                          <div
-                            className={`mt-2 text-xs font-medium ${
-                              isSelected ? "text-green-200" : "text-green-700"
-                            }`}
-                          >
-                            Drop block here to move it into this section
-                          </div>
-                        ) : null}
+                          {section.is_published ? "Published" : "Draft"}
+                        </span>
                       </div>
 
-                      <span
-                        className={`rounded-full border px-2 py-0.5 text-[11px] ${
-                          isSelected
-                            ? "border-white/20 bg-white/10 text-white"
-                            : section.is_published
-                              ? "border-green-200 bg-green-50 text-green-700"
-                              : "border-amber-200 bg-amber-50 text-amber-700"
+                      <div className="font-medium">
+                        {section.position}. {section.title}
+                      </div>
+
+                      <div
+                        className={`mt-1 text-xs ${
+                          isSelected ? "text-gray-200" : "text-gray-500"
                         }`}
                       >
-                        {section.is_published ? "Published" : "Draft"}
-                      </span>
-                    </div>
-                  </button>
+                        {section.section_kind}
+                      </div>
 
-                  <div
-                    className={`border-t px-3 py-2 ${
-                      isSelected ? "border-white/10" : "border-gray-200"
-                    }`}
-                  >
-                    <div className="grid grid-cols-2 gap-2">
+                      <div
+                        className={`mt-3 text-[11px] ${
+                          isSelected ? "text-gray-200" : "text-gray-500"
+                        }`}
+                      >
+                        <span className="rounded-full border border-current/20 px-2.5 py-1">
+                          {publishedBlockCount}/{section.blocks.length} block(s) published
+                        </span>
+                      </div>
+
+                      {isBlockDropTarget ? (
+                        <div
+                          className={`mt-2 text-xs font-medium ${
+                            isSelected ? "text-green-200" : "text-green-700"
+                          }`}
+                        >
+                          Drop block here to move it into this section
+                        </div>
+                      ) : null}
+                    </button>
+
+                    <div className="flex flex-col gap-2">
                       <form action={moveSectionAction}>
                         <BuilderHiddenFields {...props.routeFields} />
                         <input type="hidden" name="sectionId" value={section.id} />
@@ -1618,13 +1611,15 @@ function LessonSectionSidebar(props: {
                           disabled={
                             actualIndex === 0 || isPending || !!props.draggedBlockContext
                           }
-                          className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg border text-sm disabled:opacity-50 ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
-                              : "hover:bg-gray-50"
+                              : "bg-white hover:bg-gray-50"
                           }`}
+                          aria-label="Move section up"
+                          title="Move section up"
                         >
-                          Move up
+                          <ChevronUp size={16} />
                         </button>
                       </form>
 
@@ -1639,16 +1634,26 @@ function LessonSectionSidebar(props: {
                             isPending ||
                             !!props.draggedBlockContext
                           }
-                          className={`w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 ${
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg border text-sm disabled:opacity-50 ${
                             isSelected
                               ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
-                              : "hover:bg-gray-50"
+                              : "bg-white hover:bg-gray-50"
                           }`}
+                          aria-label="Move section down"
+                          title="Move section down"
                         >
-                          Move down
+                          <ChevronDown size={16} />
                         </button>
                       </form>
+                    </div>
+                  </div>
 
+                  <div
+                    className={`border-t px-3 py-3 ${
+                      isSelected ? "border-white/10" : "border-gray-200"
+                    }`}
+                  >
+                    <div className="grid grid-cols-2 gap-2">
                       <form action={duplicateSectionAction}>
                         <BuilderHiddenFields {...props.routeFields} />
                         <input type="hidden" name="sectionId" value={section.id} />

@@ -2,7 +2,6 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
-import AppIcon from "@/components/ui/app-icon";
 import { appIcons } from "@/lib/icons";
 import { getCourseByIdDb, getVariantsByCourseIdDb } from "@/lib/course-helpers-db";
 import {
@@ -185,7 +184,7 @@ export default async function AdminCourseDetailPage({
             variants.map((variant, index) => (
               <div
                 key={variant.id}
-                className="flex items-center justify-between gap-4 rounded-xl border p-4"
+                className="flex items-start justify-between gap-4 rounded-xl border p-4"
               >
                 <Link
                   href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
@@ -213,54 +212,58 @@ export default async function AdminCourseDetailPage({
                   </div>
                 </Link>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <form action={moveVariantAction}>
-                    <input type="hidden" name="courseId" value={course.id} />
-                    <input type="hidden" name="variantId" value={variant.id} />
-                    <input type="hidden" name="direction" value="up" />
+                <div className="flex items-start gap-2">
+                  <div className="flex flex-col gap-2">
+                    <form action={moveVariantAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="secondary"
+                        disabled={index === 0}
+                        icon={appIcons.up}
+                        iconOnly
+                        ariaLabel="Move variant up"
+                      />
+                    </form>
+
+                    <form action={moveVariantAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="secondary"
+                        disabled={index === variants.length - 1}
+                        icon={appIcons.down}
+                        iconOnly
+                        ariaLabel="Move variant down"
+                      />
+                    </form>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
                     <Button
-                      type="submit"
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
                       size="sm"
                       variant="secondary"
-                      disabled={index === 0}
-                      icon={appIcons.back}
+                      icon={appIcons.edit}
                     >
-                      Up
+                      Edit
                     </Button>
-                  </form>
 
-                  <form action={moveVariantAction}>
-                    <input type="hidden" name="courseId" value={course.id} />
-                    <input type="hidden" name="variantId" value={variant.id} />
-                    <input type="hidden" name="direction" value="down" />
                     <Button
-                      type="submit"
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
                       size="sm"
                       variant="secondary"
-                      disabled={index === variants.length - 1}
-                      icon={appIcons.next}
+                      icon={appIcons.preview}
                     >
-                      Down
+                      Open
                     </Button>
-                  </form>
-
-                  <Button
-                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
-                    size="sm"
-                    variant="secondary"
-                    icon={appIcons.edit}
-                  >
-                    Edit
-                  </Button>
-
-                  <Button
-                    href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
-                    size="sm"
-                    variant="secondary"
-                    icon={appIcons.preview}
-                  >
-                    Open
-                  </Button>
+                  </div>
                 </div>
               </div>
             ))

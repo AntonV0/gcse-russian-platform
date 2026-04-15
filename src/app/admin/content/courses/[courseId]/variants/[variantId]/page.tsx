@@ -223,7 +223,7 @@ export default async function AdminVariantDetailPage({
             modules.map((module, index) => (
               <div
                 key={module.id}
-                className="flex items-center justify-between gap-4 rounded-xl border p-4"
+                className="flex items-start justify-between gap-4 rounded-xl border p-4"
               >
                 <a
                   href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
@@ -244,56 +244,60 @@ export default async function AdminVariantDetailPage({
                   </div>
                 </a>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <form action={moveModuleAction}>
-                    <input type="hidden" name="courseId" value={course.id} />
-                    <input type="hidden" name="variantId" value={variant.id} />
-                    <input type="hidden" name="moduleId" value={module.id} />
-                    <input type="hidden" name="direction" value="up" />
+                <div className="flex items-start gap-2">
+                  <div className="flex flex-col gap-2">
+                    <form action={moveModuleAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="moduleId" value={module.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="secondary"
+                        disabled={index === 0}
+                        icon={appIcons.up}
+                        iconOnly
+                        ariaLabel="Move module up"
+                      />
+                    </form>
+
+                    <form action={moveModuleAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="moduleId" value={module.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="secondary"
+                        disabled={index === modules.length - 1}
+                        icon={appIcons.down}
+                        iconOnly
+                        ariaLabel="Move module down"
+                      />
+                    </form>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
                     <Button
-                      type="submit"
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
                       size="sm"
                       variant="secondary"
-                      disabled={index === 0}
-                      icon={appIcons.back}
+                      icon={appIcons.edit}
                     >
-                      Up
+                      Edit
                     </Button>
-                  </form>
 
-                  <form action={moveModuleAction}>
-                    <input type="hidden" name="courseId" value={course.id} />
-                    <input type="hidden" name="variantId" value={variant.id} />
-                    <input type="hidden" name="moduleId" value={module.id} />
-                    <input type="hidden" name="direction" value="down" />
                     <Button
-                      type="submit"
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
                       size="sm"
                       variant="secondary"
-                      disabled={index === modules.length - 1}
-                      icon={appIcons.next}
+                      icon={appIcons.preview}
                     >
-                      Down
+                      Open
                     </Button>
-                  </form>
-
-                  <Button
-                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
-                    size="sm"
-                    variant="secondary"
-                    icon={appIcons.edit}
-                  >
-                    Edit
-                  </Button>
-
-                  <Button
-                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-                    size="sm"
-                    variant="secondary"
-                    icon={appIcons.preview}
-                  >
-                    Open
-                  </Button>
+                  </div>
                 </div>
               </div>
             ))
