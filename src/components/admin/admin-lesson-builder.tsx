@@ -1,3 +1,5 @@
+"use client";
+
 import AdminLessonBuilderWorkspace from "@/components/admin/admin-lesson-builder-workspace";
 
 type AdminLessonBuilderProps = {
@@ -24,6 +26,28 @@ type AdminLessonBuilderProps = {
       data: Record<string, unknown>;
     }[];
   }[];
+  templateOptions: {
+    blockPresets: {
+      id: string;
+      label: string;
+      description: string;
+      blocksCount: number;
+    }[];
+    sectionTemplates: {
+      id: string;
+      label: string;
+      description: string;
+      defaultSectionTitle: string;
+      defaultSectionKind: string;
+      presetCount: number;
+    }[];
+    lessonTemplates: {
+      id: string;
+      label: string;
+      description: string;
+      sectionsCount: number;
+    }[];
+  };
 };
 
 export default function AdminLessonBuilder(props: AdminLessonBuilderProps) {
