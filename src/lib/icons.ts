@@ -42,6 +42,7 @@ import {
   Lock,
   Menu,
   Mic,
+  Moon,
   Palette,
   PenSquare,
   Pencil,
@@ -52,6 +53,7 @@ import {
   Search,
   Settings,
   SquarePen,
+  Sun,
   Trash2,
   Type,
   Unlock,
@@ -78,6 +80,8 @@ export const appIcons = {
   vocabulary: Volume2,
   image: ImageIcon,
   file: FileText,
+  sun: Sun,
+  moon: Moon,
   completed: CheckCircle2,
   pending: Clock3,
   locked: Lock,
@@ -205,6 +209,8 @@ export const curatedLucideIconNames = new Set<string>([
   "CheckSquare",
   "Type",
   "Pencil",
+  "Sun",
+  "Moon",
 ]);
 
 export type AppIconKey = keyof typeof appIcons;

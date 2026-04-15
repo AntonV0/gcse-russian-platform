@@ -5,9 +5,9 @@ type PageHeaderProps = {
 
 export default function PageHeader({ title, description }: PageHeaderProps) {
   return (
-    <div className="mb-8">
-      <h1 className="mb-2 text-3xl font-bold">{title}</h1>
-      {description ? <p className="text-gray-600">{description}</p> : null}
+    <div className="mb-8 app-header-block">
+      <h1 className="app-title">{title}</h1>
+      {description ? <p className="app-subtitle">{description}</p> : null}
     </div>
   );
 }
