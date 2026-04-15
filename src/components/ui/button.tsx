@@ -7,12 +7,14 @@ type ButtonVariant = "primary" | "secondary" | "quiet" | "success" | "warning" |
 type ButtonSize = "sm" | "md";
 
 type BaseProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
   className?: string;
   icon?: LucideIcon;
   iconPosition?: "left" | "right";
+  iconOnly?: boolean;
+  ariaLabel?: string;
 };
 
 type ButtonAsButtonProps = BaseProps &
@@ -29,7 +31,7 @@ type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 function getVariantClass(variant: ButtonVariant) {
   switch (variant) {
     case "primary":
-      return "bg-black text-white hover:opacity-90 border border-black";
+      return "border border-black bg-black text-white hover:opacity-90";
     case "secondary":
       return "border bg-white text-black hover:bg-gray-50";
     case "quiet":
@@ -45,30 +47,31 @@ function getVariantClass(variant: ButtonVariant) {
   }
 }
 
-function getSizeClass(size: ButtonSize) {
-  switch (size) {
-    case "sm":
-      return "px-3 py-2 text-sm rounded-lg";
-    case "md":
-      return "px-4 py-2.5 text-sm rounded-xl";
-    default:
-      return "px-4 py-2.5 text-sm rounded-xl";
+function getSizeClass(size: ButtonSize, iconOnly: boolean) {
+  if (iconOnly) {
+    return size === "sm" ? "h-9 w-9 rounded-lg" : "h-10 w-10 rounded-xl";
   }
+
+  return size === "sm"
+    ? "rounded-lg px-3 py-2 text-sm"
+    : "rounded-xl px-4 py-2.5 text-sm";
 }
 
 function getClassName({
   variant = "secondary",
   size = "md",
+  iconOnly = false,
   className,
 }: {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  iconOnly?: boolean;
   className?: string;
 }) {
   return [
     "inline-flex items-center justify-center gap-2 font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
     getVariantClass(variant),
-    getSizeClass(size),
+    getSizeClass(size, iconOnly),
     className,
   ]
     .filter(Boolean)
@@ -79,15 +82,21 @@ function ButtonInner({
   children,
   icon,
   iconPosition = "left",
+  iconOnly = false,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   icon?: LucideIcon;
   iconPosition?: "left" | "right";
+  iconOnly?: boolean;
 }) {
+  if (iconOnly && icon) {
+    return <AppIcon icon={icon} size={18} />;
+  }
+
   return (
     <>
       {icon && iconPosition === "left" ? <AppIcon icon={icon} size={18} /> : null}
-      <span>{children}</span>
+      {children ? <span>{children}</span> : null}
       {icon && iconPosition === "right" ? <AppIcon icon={icon} size={18} /> : null}
     </>
   );
@@ -101,14 +110,26 @@ export default function Button(props: ButtonProps) {
     className,
     icon,
     iconPosition = "left",
+    iconOnly = false,
+    ariaLabel,
   } = props;
 
-  const mergedClassName = getClassName({ variant, size, className });
+  const mergedClassName = getClassName({
+    variant,
+    size,
+    iconOnly,
+    className,
+  });
 
   if ("href" in props && props.href) {
     return (
-      <Link href={props.href} className={mergedClassName}>
-        <ButtonInner icon={icon} iconPosition={iconPosition}>
+      <Link
+        href={props.href}
+        className={mergedClassName}
+        aria-label={ariaLabel}
+        title={ariaLabel}
+      >
+        <ButtonInner icon={icon} iconPosition={iconPosition} iconOnly={iconOnly}>
           {children}
         </ButtonInner>
       </Link>
@@ -120,15 +141,20 @@ export default function Button(props: ButtonProps) {
     size: _size,
     icon: _icon,
     iconPosition: _iconPosition,
+    iconOnly: _iconOnly,
+    ariaLabel: _ariaLabel,
     href: _href,
     ...buttonProps
-  } = props as ButtonAsButtonProps & {
-    href?: never;
-  };
+  } = props as ButtonAsButtonProps & { href?: never };
 
   return (
-    <button {...buttonProps} className={mergedClassName}>
-      <ButtonInner icon={icon} iconPosition={iconPosition}>
+    <button
+      {...buttonProps}
+      className={mergedClassName}
+      aria-label={ariaLabel}
+      title={ariaLabel}
+    >
+      <ButtonInner icon={icon} iconPosition={iconPosition} iconOnly={iconOnly}>
         {children}
       </ButtonInner>
     </button>

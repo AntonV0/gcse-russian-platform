@@ -3,8 +3,10 @@ import {
   BookOpen,
   BookText,
   CheckCircle2,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   CircleHelp,
   ClipboardList,
   Clock3,
@@ -61,5 +63,7 @@ export const appIcons = {
   users: Users,
   back: ChevronLeft,
   next: ChevronRight,
+  up: ChevronUp,
+  down: ChevronDown,
   uiLab: WandSparkles,
 } as const;

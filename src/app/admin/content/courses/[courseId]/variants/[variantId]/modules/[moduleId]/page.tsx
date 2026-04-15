@@ -290,7 +290,7 @@ export default async function AdminModuleDetailPage({
             lessons.map((lesson, index) => (
               <div
                 key={lesson.id}
-                className="flex items-center justify-between gap-4 rounded-xl border p-4"
+                className="flex items-start justify-between gap-4 rounded-xl border p-4"
               >
                 <a
                   href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
@@ -329,58 +329,62 @@ export default async function AdminModuleDetailPage({
                   </div>
                 </a>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <form action={moveLessonAction}>
-                    <input type="hidden" name="courseId" value={course.id} />
-                    <input type="hidden" name="variantId" value={variant.id} />
-                    <input type="hidden" name="moduleId" value={module.id} />
-                    <input type="hidden" name="lessonId" value={lesson.id} />
-                    <input type="hidden" name="direction" value="up" />
+                <div className="flex items-start gap-2">
+                  <div className="flex flex-col gap-2">
+                    <form action={moveLessonAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="moduleId" value={module.id} />
+                      <input type="hidden" name="lessonId" value={lesson.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="secondary"
+                        disabled={index === 0}
+                        icon={appIcons.up}
+                        iconOnly
+                        ariaLabel="Move lesson up"
+                      />
+                    </form>
+
+                    <form action={moveLessonAction}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input type="hidden" name="variantId" value={variant.id} />
+                      <input type="hidden" name="moduleId" value={module.id} />
+                      <input type="hidden" name="lessonId" value={lesson.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="secondary"
+                        disabled={index === lessons.length - 1}
+                        icon={appIcons.down}
+                        iconOnly
+                        ariaLabel="Move lesson down"
+                      />
+                    </form>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
                     <Button
-                      type="submit"
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
                       size="sm"
                       variant="secondary"
-                      disabled={index === 0}
-                      icon={appIcons.back}
+                      icon={appIcons.edit}
                     >
-                      Up
+                      Edit
                     </Button>
-                  </form>
 
-                  <form action={moveLessonAction}>
-                    <input type="hidden" name="courseId" value={course.id} />
-                    <input type="hidden" name="variantId" value={variant.id} />
-                    <input type="hidden" name="moduleId" value={module.id} />
-                    <input type="hidden" name="lessonId" value={lesson.id} />
-                    <input type="hidden" name="direction" value="down" />
                     <Button
-                      type="submit"
+                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
                       size="sm"
                       variant="secondary"
-                      disabled={index === lessons.length - 1}
-                      icon={appIcons.next}
+                      icon={appIcons.preview}
                     >
-                      Down
+                      Open
                     </Button>
-                  </form>
-
-                  <Button
-                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
-                    size="sm"
-                    variant="secondary"
-                    icon={appIcons.edit}
-                  >
-                    Edit
-                  </Button>
-
-                  <Button
-                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
-                    size="sm"
-                    variant="secondary"
-                    icon={appIcons.preview}
-                  >
-                    Open
-                  </Button>
+                  </div>
                 </div>
               </div>
             ))
