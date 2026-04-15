@@ -1,6 +1,8 @@
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { setTeacherRoleAction } from "@/app/actions/admin-user-actions";
@@ -160,16 +162,14 @@ export default async function AdminTeachersPage({
 
       <form className="mb-6 rounded-xl border bg-white p-4 shadow-sm">
         <div className="grid gap-4 md:grid-cols-[2fr_auto]">
-          <div>
-            <label className="mb-1 block text-sm font-medium">Search</label>
-            <input
+          <FormField label="Search">
+            <Input
               type="text"
               name="q"
               defaultValue={q}
               placeholder="Name, email, or teaching group"
-              className="w-full rounded border px-3 py-2 text-sm"
             />
-          </div>
+          </FormField>
 
           <div className="flex items-end gap-2">
             <Button type="submit" variant="primary" icon={appIcons.filter}>
