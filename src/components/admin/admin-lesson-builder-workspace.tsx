@@ -403,6 +403,15 @@ function CompactDisclosure({
   );
 }
 
+function MiniStatPill({ label, value }: { label: string; value: string | number }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border bg-gray-50 px-2.5 py-1 text-xs text-gray-700">
+      <span className="font-medium">{value}</span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
 function TextLikeEditor(props: {
   blockId: string;
   routeFields: RouteFields;
@@ -1760,6 +1769,9 @@ function LessonSectionEditor(props: {
   routeFields: RouteFields;
   selectedBlockId: string | null;
   onSelectBlock: (blockId: string | null) => void;
+  blockSearch: string;
+  onBlockSearchChange: (value: string) => void;
+  onJumpToAddBlock: () => void;
 }) {
   if (!props.section) {
     return (
@@ -1776,6 +1788,27 @@ function LessonSectionEditor(props: {
   }
 
   const section = props.section;
+
+  const normalizedQuery = props.blockSearch.trim().toLowerCase();
+
+  const filteredBlocks = section.blocks.filter((block) => {
+    if (!normalizedQuery) return true;
+
+    const typeLabel = friendlyBlockType(block.block_type).toLowerCase();
+    const preview = renderBlockPreview(block).toLowerCase();
+    const groupLabel = getBlockTypeGroupLabel(block.block_type).toLowerCase();
+
+    return (
+      typeLabel.includes(normalizedQuery) ||
+      preview.includes(normalizedQuery) ||
+      groupLabel.includes(normalizedQuery)
+    );
+  });
+
+  const blockTypeCounts = section.blocks.reduce<Record<string, number>>((acc, block) => {
+    acc[block.block_type] = (acc[block.block_type] ?? 0) + 1;
+    return acc;
+  }, {});
 
   return (
     <div className="space-y-6">
@@ -1794,6 +1827,20 @@ function LessonSectionEditor(props: {
           ) : (
             <p className="text-sm text-gray-400">No section description yet.</p>
           )}
+
+          {section.blocks.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(blockTypeCounts)
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([blockType, count]) => (
+                  <MiniStatPill
+                    key={blockType}
+                    label={friendlyBlockType(blockType)}
+                    value={count}
+                  />
+                ))}
+            </div>
+          ) : null}
         </div>
       </Panel>
 
@@ -1845,129 +1892,166 @@ function LessonSectionEditor(props: {
       </CompactDisclosure>
 
       <Panel title="Blocks" description="Select a block to edit it in the inspector.">
-        <div className="space-y-3">
+        <div className="space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm text-gray-500">
+              Showing {filteredBlocks.length} of {section.blocks.length} block
+              {section.blocks.length === 1 ? "" : "s"}
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                value={props.blockSearch}
+                onChange={(event) => props.onBlockSearchChange(event.target.value)}
+                placeholder="Search blocks..."
+                className="w-full rounded-xl border px-3 py-2 text-sm sm:w-64"
+              />
+              <button
+                type="button"
+                onClick={props.onJumpToAddBlock}
+                className="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50"
+              >
+                Add block
+              </button>
+            </div>
+          </div>
+
           {section.blocks.length === 0 ? (
             <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
               No blocks in this section yet.
             </div>
+          ) : filteredBlocks.length === 0 ? (
+            <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
+              No blocks match your search.
+            </div>
           ) : (
-            section.blocks.map((block, blockIndex) => {
-              const isSelected = block.id === props.selectedBlockId;
+            <div className="space-y-3">
+              {filteredBlocks.map((block) => {
+                const blockIndex = section.blocks.findIndex(
+                  (item) => item.id === block.id
+                );
+                const isSelected = block.id === props.selectedBlockId;
 
-              return (
-                <div
-                  key={block.id}
-                  className={`rounded-xl border transition ${
-                    isSelected ? "border-black bg-gray-50" : "bg-white"
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
-                    className="w-full px-4 py-4 text-left"
+                return (
+                  <div
+                    key={block.id}
+                    className={`rounded-xl border transition ${
+                      isSelected ? "border-black bg-gray-50" : "bg-white"
+                    }`}
                   >
-                    <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                      <div className="min-w-0 space-y-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getBlockTypeAccent(
-                              block.block_type
-                            )}`}
-                          >
-                            {getBlockTypeGroupLabel(block.block_type)}
-                          </span>
+                    <button
+                      type="button"
+                      onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
+                      className="w-full px-4 py-4 text-left"
+                    >
+                      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                        <div className="min-w-0 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getBlockTypeAccent(
+                                block.block_type
+                              )}`}
+                            >
+                              {getBlockTypeGroupLabel(block.block_type)}
+                            </span>
 
-                          <span className="font-medium text-gray-900">
-                            {friendlyBlockType(block.block_type)}
-                          </span>
+                            <span className="font-medium text-gray-900">
+                              {friendlyBlockType(block.block_type)}
+                            </span>
 
-                          <Badge tone={block.is_published ? "success" : "warning"}>
-                            {block.is_published ? "Published" : "Draft"}
-                          </Badge>
+                            <Badge tone={block.is_published ? "success" : "warning"}>
+                              {block.is_published ? "Published" : "Draft"}
+                            </Badge>
 
-                          <Badge tone="muted">Position {block.position}</Badge>
+                            <Badge tone="muted">Position {block.position}</Badge>
 
-                          {isSelected ? <Badge tone="default">Selected</Badge> : null}
-                        </div>
+                            {isSelected ? <Badge tone="default">Selected</Badge> : null}
+                          </div>
 
-                        <div className="text-sm text-gray-600 line-clamp-2 break-words">
-                          {renderBlockPreview(block)}
+                          <div className="text-sm text-gray-600 line-clamp-2 break-words">
+                            {renderBlockPreview(block)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </button>
+                    </button>
 
-                  {isSelected ? (
-                    <div className="border-t px-3 py-3">
-                      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                        <form action={moveBlockAction}>
-                          <BuilderHiddenFields {...props.routeFields} />
-                          <input type="hidden" name="sectionId" value={section.id} />
-                          <input type="hidden" name="blockId" value={block.id} />
-                          <input type="hidden" name="direction" value="up" />
-                          <button
-                            type="submit"
-                            disabled={blockIndex === 0}
-                            className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
-                          >
-                            Move up
-                          </button>
-                        </form>
+                    {isSelected ? (
+                      <div className="border-t px-3 py-3">
+                        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                          <form action={moveBlockAction}>
+                            <BuilderHiddenFields {...props.routeFields} />
+                            <input type="hidden" name="sectionId" value={section.id} />
+                            <input type="hidden" name="blockId" value={block.id} />
+                            <input type="hidden" name="direction" value="up" />
+                            <button
+                              type="submit"
+                              disabled={blockIndex === 0}
+                              className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
+                            >
+                              Move up
+                            </button>
+                          </form>
 
-                        <form action={moveBlockAction}>
-                          <BuilderHiddenFields {...props.routeFields} />
-                          <input type="hidden" name="sectionId" value={section.id} />
-                          <input type="hidden" name="blockId" value={block.id} />
-                          <input type="hidden" name="direction" value="down" />
-                          <button
-                            type="submit"
-                            disabled={blockIndex === section.blocks.length - 1}
-                            className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
-                          >
-                            Move down
-                          </button>
-                        </form>
+                          <form action={moveBlockAction}>
+                            <BuilderHiddenFields {...props.routeFields} />
+                            <input type="hidden" name="sectionId" value={section.id} />
+                            <input type="hidden" name="blockId" value={block.id} />
+                            <input type="hidden" name="direction" value="down" />
+                            <button
+                              type="submit"
+                              disabled={blockIndex === section.blocks.length - 1}
+                              className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
+                            >
+                              Move down
+                            </button>
+                          </form>
 
-                        <form action={duplicateBlockAction}>
-                          <BuilderHiddenFields {...props.routeFields} />
-                          <input type="hidden" name="sectionId" value={section.id} />
-                          <input type="hidden" name="blockId" value={block.id} />
-                          <button
-                            type="submit"
-                            className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
-                          >
-                            Duplicate
-                          </button>
-                        </form>
+                          <form action={duplicateBlockAction}>
+                            <BuilderHiddenFields {...props.routeFields} />
+                            <input type="hidden" name="sectionId" value={section.id} />
+                            <input type="hidden" name="blockId" value={block.id} />
+                            <button
+                              type="submit"
+                              className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
+                            >
+                              Duplicate
+                            </button>
+                          </form>
 
-                        <form action={toggleBlockPublishedAction}>
-                          <BuilderHiddenFields {...props.routeFields} />
-                          <input type="hidden" name="blockId" value={block.id} />
-                          <input
-                            type="hidden"
-                            name="nextState"
-                            value={block.is_published ? "draft" : "published"}
-                          />
-                          <button
-                            type="submit"
-                            className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
-                          >
-                            {block.is_published ? "Unpublish" : "Publish"}
-                          </button>
-                        </form>
+                          <form action={toggleBlockPublishedAction}>
+                            <BuilderHiddenFields {...props.routeFields} />
+                            <input type="hidden" name="blockId" value={block.id} />
+                            <input
+                              type="hidden"
+                              name="nextState"
+                              value={block.is_published ? "draft" : "published"}
+                            />
+                            <button
+                              type="submit"
+                              className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
+                            >
+                              {block.is_published ? "Unpublish" : "Publish"}
+                            </button>
+                          </form>
+                        </div>
                       </div>
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </Panel>
 
-      <Panel title="Add block" description="Choose a block type, then fill in the form.">
-        <AddBlockComposer section={section} routeFields={props.routeFields} />
-      </Panel>
+      <div id="add-block-composer">
+        <Panel
+          title="Add block"
+          description="Choose a block type, then fill in the form."
+        >
+          <AddBlockComposer section={section} routeFields={props.routeFields} />
+        </Panel>
+      </div>
     </div>
   );
 }
@@ -2005,11 +2089,13 @@ export default function AdminLessonBuilderWorkspace({
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [blockSearch, setBlockSearch] = useState("");
 
   useEffect(() => {
     if (sections.length === 0) {
       setSelectedSectionId(null);
       setSelectedBlockId(null);
+      setBlockSearch("");
       return;
     }
 
@@ -2018,6 +2104,7 @@ export default function AdminLessonBuilderWorkspace({
     if (!stillExists) {
       setSelectedSectionId(sections[0].id);
       setSelectedBlockId(null);
+      setBlockSearch("");
     }
   }, [sections, selectedSectionId]);
 
@@ -2076,8 +2163,23 @@ export default function AdminLessonBuilderWorkspace({
               {isInspectorOpen ? "Hide inspector" : "Show inspector"}
             </ToolbarButton>
 
-            <ToolbarButton onClick={() => setSelectedBlockId(null)}>
+            <ToolbarButton
+              onClick={() => {
+                setSelectedBlockId(null);
+                setBlockSearch("");
+              }}
+            >
               Clear block selection
+            </ToolbarButton>
+
+            <ToolbarButton
+              onClick={() => {
+                document
+                  .getElementById("add-block-composer")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              Jump to add block
             </ToolbarButton>
           </div>
         </div>
@@ -2102,6 +2204,7 @@ export default function AdminLessonBuilderWorkspace({
               onSelectSection={(sectionId) => {
                 setSelectedSectionId(sectionId);
                 setSelectedBlockId(null);
+                setBlockSearch("");
               }}
               routeFields={routeFields}
             />
@@ -2113,7 +2216,19 @@ export default function AdminLessonBuilderWorkspace({
             section={selectedSection}
             routeFields={routeFields}
             selectedBlockId={selectedBlockId}
-            onSelectBlock={setSelectedBlockId}
+            onSelectBlock={(blockId) => {
+              setSelectedBlockId(blockId);
+              if (blockId) {
+                setIsInspectorOpen(true);
+              }
+            }}
+            blockSearch={blockSearch}
+            onBlockSearchChange={setBlockSearch}
+            onJumpToAddBlock={() => {
+              document
+                .getElementById("add-block-composer")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
           />
         </div>
 
