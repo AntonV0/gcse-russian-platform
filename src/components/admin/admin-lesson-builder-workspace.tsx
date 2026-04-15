@@ -354,6 +354,28 @@ function ConfirmSubmitButton({
   );
 }
 
+function ToolbarButton({
+  children,
+  onClick,
+  isActive = false,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  isActive?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-lg border px-3 py-2 text-sm transition ${
+        isActive ? "border-black bg-black text-white" : "bg-white hover:bg-gray-50"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 function CompactDisclosure({
   title,
   description,
@@ -1652,8 +1674,15 @@ function LessonInspectorPanel(props: {
           </div>
         </div>
 
-        <div className="rounded-xl border border-dashed bg-white px-4 py-4 text-sm text-gray-500">
-          Select a block in the center column to edit its content here.
+        <div className="space-y-2 rounded-xl border border-dashed bg-white px-4 py-4 text-sm text-gray-500">
+          <div>Select a block in the center column to edit its content here.</div>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="rounded-lg border px-3 py-2 text-xs text-gray-700 hover:bg-gray-50"
+          >
+            Back to top
+          </button>
         </div>
 
         <div className="grid gap-2">
@@ -1738,8 +1767,9 @@ function LessonSectionEditor(props: {
         title="Lesson editor"
         description="Select a section from the left to start editing."
       >
-        <div className="rounded-xl border border-dashed px-4 py-10 text-sm text-gray-500">
-          No section selected.
+        <div className="space-y-3 rounded-xl border border-dashed px-4 py-10 text-sm text-gray-500">
+          <div>No section selected.</div>
+          <div>Use the sections panel to choose a section or create a new one.</div>
         </div>
       </Panel>
     );
@@ -1973,6 +2003,8 @@ export default function AdminLessonBuilderWorkspace({
     sections[0]?.id ?? null
   );
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(true);
 
   useEffect(() => {
     if (sections.length === 0) {
@@ -2012,18 +2044,69 @@ export default function AdminLessonBuilderWorkspace({
         <StatCard label="Published blocks" value={publishedBlocks} />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)] 2xl:grid-cols-[260px_minmax(0,1fr)_320px]">
-        <aside className="space-y-6 2xl:sticky 2xl:top-6 2xl:self-start">
-          <LessonSectionSidebar
-            sections={sections}
-            selectedSectionId={selectedSectionId}
-            onSelectSection={(sectionId) => {
-              setSelectedSectionId(sectionId);
-              setSelectedBlockId(null);
-            }}
-            routeFields={routeFields}
-          />
-        </aside>
+      <section className="sticky top-4 z-10 rounded-2xl border bg-white/95 p-3 shadow-sm backdrop-blur">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <div className="text-sm font-medium text-gray-900">
+              {selectedSection ? `Editing: ${selectedSection.title}` : "Lesson builder"}
+            </div>
+            <div className="text-xs text-gray-500">
+              {selectedSection
+                ? `${selectedSection.blocks.length} block(s)${
+                    selectedBlock
+                      ? ` · Selected block: ${friendlyBlockType(selectedBlock.block_type)}`
+                      : ""
+                  }`
+                : "Select a section to begin."}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <ToolbarButton
+              onClick={() => setIsSidebarOpen((value) => !value)}
+              isActive={isSidebarOpen}
+            >
+              {isSidebarOpen ? "Hide sections" : "Show sections"}
+            </ToolbarButton>
+
+            <ToolbarButton
+              onClick={() => setIsInspectorOpen((value) => !value)}
+              isActive={isInspectorOpen}
+            >
+              {isInspectorOpen ? "Hide inspector" : "Show inspector"}
+            </ToolbarButton>
+
+            <ToolbarButton onClick={() => setSelectedBlockId(null)}>
+              Clear block selection
+            </ToolbarButton>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={`grid gap-6 ${
+          isSidebarOpen && isInspectorOpen
+            ? "xl:grid-cols-[260px_minmax(0,1fr)] 2xl:grid-cols-[260px_minmax(0,1fr)_320px]"
+            : isSidebarOpen
+              ? "xl:grid-cols-[260px_minmax(0,1fr)]"
+              : isInspectorOpen
+                ? "2xl:grid-cols-[minmax(0,1fr)_320px]"
+                : "grid-cols-1"
+        }`}
+      >
+        {isSidebarOpen ? (
+          <aside className="space-y-6 xl:sticky xl:top-24 xl:self-start">
+            <LessonSectionSidebar
+              sections={sections}
+              selectedSectionId={selectedSectionId}
+              onSelectSection={(sectionId) => {
+                setSelectedSectionId(sectionId);
+                setSelectedBlockId(null);
+              }}
+              routeFields={routeFields}
+            />
+          </aside>
+        ) : null}
 
         <div className="min-w-0">
           <LessonSectionEditor
@@ -2034,33 +2117,35 @@ export default function AdminLessonBuilderWorkspace({
           />
         </div>
 
-        <aside className="space-y-6 2xl:sticky 2xl:top-6 2xl:self-start">
-          <LessonInspectorPanel
-            section={selectedSection}
-            block={selectedBlock}
-            routeFields={routeFields}
-            sectionIndex={sectionIndex}
-            totalSections={sections.length}
-            blockIndex={blockIndex}
-          />
+        {isInspectorOpen ? (
+          <aside className="space-y-6 2xl:sticky 2xl:top-24 2xl:self-start">
+            <LessonInspectorPanel
+              section={selectedSection}
+              block={selectedBlock}
+              routeFields={routeFields}
+              sectionIndex={sectionIndex}
+              totalSections={sections.length}
+              blockIndex={blockIndex}
+            />
 
-          <Panel title="Authoring notes">
-            <div className="grid gap-3 text-sm text-gray-600">
-              <div className="rounded-xl border bg-gray-50 p-3">
-                Create the section outline before writing detailed content.
+            <Panel title="Authoring notes">
+              <div className="grid gap-3 text-sm text-gray-600">
+                <div className="rounded-xl border bg-gray-50 p-3">
+                  Create the section outline before writing detailed content.
+                </div>
+                <div className="rounded-xl border bg-gray-50 p-3">
+                  Duplicate sections or blocks when lessons follow a repeated structure.
+                </div>
+                <div className="rounded-xl border bg-gray-50 p-3">
+                  Keep copied content as draft until checked on the public lesson page.
+                </div>
+                <div className="rounded-xl border bg-gray-50 p-3">
+                  Select a block to edit it in the inspector.
+                </div>
               </div>
-              <div className="rounded-xl border bg-gray-50 p-3">
-                Duplicate sections or blocks when lessons follow a repeated structure.
-              </div>
-              <div className="rounded-xl border bg-gray-50 p-3">
-                Keep copied content as draft until checked on the public lesson page.
-              </div>
-              <div className="rounded-xl border bg-gray-50 p-3">
-                Select a block to edit it in the inspector.
-              </div>
-            </div>
-          </Panel>
-        </aside>
+            </Panel>
+          </aside>
+        ) : null}
       </section>
     </div>
   );
