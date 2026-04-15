@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoutButton from "@/components/layout/logout-button";
+import AppIcon from "@/components/ui/app-icon";
+import { appIcons } from "@/lib/icons";
 
 function getNavItemClass(isActive: boolean) {
   return [
-    "rounded px-3 py-2 transition",
-    isActive ? "bg-gray-100 font-medium text-black" : "hover:bg-gray-100 text-black",
+    "flex items-center gap-2 rounded-xl px-3 py-2 transition",
+    isActive ? "bg-gray-100 font-medium text-black" : "text-black hover:bg-gray-100",
   ].join(" ");
 }
 
@@ -31,7 +33,8 @@ export default function AdminSidebar() {
 
       <nav className="flex flex-col gap-1 text-sm">
         <Link href="/admin" className={getNavItemClass(isDashboard)}>
-          Dashboard
+          <AppIcon icon={appIcons.dashboard} size={18} />
+          <span>Dashboard</span>
         </Link>
 
         <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
@@ -39,7 +42,8 @@ export default function AdminSidebar() {
         </div>
 
         <Link href="/admin/ui" className={getNavItemClass(isUiLab)}>
-          UI Lab
+          <AppIcon icon={appIcons.uiLab} size={18} />
+          <span>UI Lab</span>
         </Link>
 
         <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
@@ -47,7 +51,8 @@ export default function AdminSidebar() {
         </div>
 
         <Link href="/admin/content" className={getNavItemClass(isContent)}>
-          Courses / Modules / Lessons
+          <AppIcon icon={appIcons.courses} size={18} />
+          <span>Courses / Modules / Lessons</span>
         </Link>
 
         <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
@@ -58,14 +63,16 @@ export default function AdminSidebar() {
           href="/admin/question-sets"
           className={getNavItemClass(isQuestionSets && !isTemplates)}
         >
-          Question Sets
+          <AppIcon icon={appIcons.help} size={18} />
+          <span>Question Sets</span>
         </Link>
 
         <Link
           href="/admin/question-sets/templates"
           className={getNavItemClass(isTemplates)}
         >
-          Templates
+          <AppIcon icon={appIcons.file} size={18} />
+          <span>Templates</span>
         </Link>
 
         <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
@@ -73,11 +80,13 @@ export default function AdminSidebar() {
         </div>
 
         <Link href="/teacher/assignments" className={getNavItemClass(isAssignments)}>
-          Assignments
+          <AppIcon icon={appIcons.assignments} size={18} />
+          <span>Assignments</span>
         </Link>
 
         <Link href="/admin/teaching-groups" className={getNavItemClass(isTeachingGroups)}>
-          Teaching Groups
+          <AppIcon icon={appIcons.users} size={18} />
+          <span>Teaching Groups</span>
         </Link>
 
         <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
@@ -85,11 +94,13 @@ export default function AdminSidebar() {
         </div>
 
         <Link href="/admin/students" className={getNavItemClass(isStudents)}>
-          Students
+          <AppIcon icon={appIcons.user} size={18} />
+          <span>Students</span>
         </Link>
 
         <Link href="/admin/teachers" className={getNavItemClass(isTeachers)}>
-          Teachers
+          <AppIcon icon={appIcons.users} size={18} />
+          <span>Teachers</span>
         </Link>
       </nav>
 

@@ -2,6 +2,8 @@ import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import StatusBadge from "@/components/ui/status-badge";
 import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { appIcons } from "@/lib/icons";
 
@@ -73,24 +75,23 @@ function SectionCard({
 
 function ButtonPreview({
   label,
-  className,
+  variant,
   iconName,
 }: {
   label: string;
-  className: string;
+  variant: "primary" | "secondary" | "quiet" | "success" | "warning" | "danger";
   iconName?: keyof typeof appIcons;
 }) {
-  const Icon = iconName ? appIcons[iconName] : null;
+  const Icon = iconName ? appIcons[iconName] : undefined;
 
   return (
     <div className="space-y-2 rounded-xl border bg-gray-50 p-4">
       <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </div>
-      <button type="button" className={className}>
-        {Icon ? <AppIcon icon={Icon} size={18} /> : null}
-        <span>{label}</span>
-      </button>
+      <Button type="button" variant={variant} icon={Icon}>
+        {label}
+      </Button>
     </div>
   );
 }
@@ -144,20 +145,14 @@ function IconPreviewCard({
       </div>
 
       <div className="mt-4 flex flex-wrap gap-3">
-        <div className="inline-flex items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm text-gray-700">
-          <AppIcon icon={Icon} size={18} />
-          <span>Neutral</span>
-        </div>
-
-        <div className="inline-flex items-center gap-2 rounded-lg border bg-black px-3 py-2 text-sm text-white">
+        <Badge icon={Icon}>Neutral</Badge>
+        <span className="inline-flex items-center gap-2 rounded-lg border bg-black px-3 py-2 text-sm text-white">
           <AppIcon icon={Icon} size={18} />
           <span>Dark surface</span>
-        </div>
-
-        <div className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
-          <AppIcon icon={Icon} size={18} />
-          <span>Status usage</span>
-        </div>
+        </span>
+        <Badge tone="success" icon={Icon}>
+          Status usage
+        </Badge>
       </div>
     </div>
   );
@@ -219,41 +214,12 @@ export default async function AdminUiPage() {
         description="Start with a small, consistent button language before rolling anything out more widely."
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <ButtonPreview
-            label="Primary"
-            iconName="next"
-            className="inline-flex items-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
-          />
-
-          <ButtonPreview
-            label="Secondary"
-            iconName="edit"
-            className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-sm font-medium text-black transition hover:bg-gray-50"
-          />
-
-          <ButtonPreview
-            label="Quiet"
-            iconName="search"
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
-          />
-
-          <ButtonPreview
-            label="Success"
-            iconName="completed"
-            className="inline-flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-2.5 text-sm font-medium text-green-800 transition hover:bg-green-100"
-          />
-
-          <ButtonPreview
-            label="Warning"
-            iconName="pending"
-            className="inline-flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-800 transition hover:bg-amber-100"
-          />
-
-          <ButtonPreview
-            label="Danger"
-            iconName="delete"
-            className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 transition hover:bg-red-100"
-          />
+          <ButtonPreview label="Primary" variant="primary" iconName="next" />
+          <ButtonPreview label="Secondary" variant="secondary" iconName="edit" />
+          <ButtonPreview label="Quiet" variant="quiet" iconName="search" />
+          <ButtonPreview label="Success" variant="success" iconName="completed" />
+          <ButtonPreview label="Warning" variant="warning" iconName="pending" />
+          <ButtonPreview label="Danger" variant="danger" iconName="delete" />
         </div>
       </SectionCard>
 
@@ -267,20 +233,17 @@ export default async function AdminUiPage() {
           <StatusBadge status="reviewed" />
           <StatusBadge status="returned" />
 
-          <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-700">
-            <AppIcon icon={appIcons.pending} size={14} />
+          <Badge tone="muted" icon={appIcons.pending}>
             Draft
-          </span>
+          </Badge>
 
-          <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs text-green-700">
-            <AppIcon icon={appIcons.completed} size={14} />
+          <Badge tone="success" icon={appIcons.completed}>
             Published
-          </span>
+          </Badge>
 
-          <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs text-blue-700">
-            <AppIcon icon={appIcons.translation} size={14} />
+          <Badge tone="info" icon={appIcons.translation}>
             Translation
-          </span>
+          </Badge>
         </div>
       </SectionCard>
 
