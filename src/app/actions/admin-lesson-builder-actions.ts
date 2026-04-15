@@ -6,6 +6,11 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { getPresetBlocksForInsert } from "@/lib/lesson-block-presets";
 import {
+  getBlocksForSectionTemplate,
+  getSectionTemplateById,
+} from "@/lib/lesson-section-templates";
+import { lessonTemplates } from "@/lib/lesson-templates";
+import {
   normalizeAudioBlockData,
   normalizeCalloutBlockData,
   normalizeExamTipBlockData,
@@ -1500,4 +1505,133 @@ export async function moveBlockToSectionAction(formData: FormData) {
 
   const redirectPath = getRouteRedirectPath(formData);
   revalidatePath(redirectPath);
+}
+
+export async function insertSectionTemplateAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const lessonId = getTrimmedString(formData, "lessonId");
+  const templateId = getTrimmedString(formData, "templateId");
+
+  if (!lessonId || !templateId) {
+    throw new Error("Missing required fields");
+  }
+
+  const template = getSectionTemplateById(templateId);
+  const blocks = getBlocksForSectionTemplate(templateId);
+  const supabase = await createClient();
+
+  const nextSectionPosition = await getNextSectionPosition(lessonId);
+
+  const { data: insertedSection, error: sectionError } = await supabase
+    .from("lesson_sections")
+    .insert({
+      lesson_id: lessonId,
+      title: template.title,
+      description: template.description,
+      section_kind: template.sectionKind,
+      position: nextSectionPosition,
+      is_published: true,
+      settings: {},
+    })
+    .select("id")
+    .single();
+
+  if (sectionError || !insertedSection) {
+    console.error("Error inserting section template:", sectionError);
+    throw new Error(
+      `Failed to insert section template: ${sectionError?.message ?? "Unknown error"}`
+    );
+  }
+
+  if (blocks.length > 0) {
+    const rows = blocks.map((block, index) => ({
+      lesson_section_id: insertedSection.id,
+      block_type: block.blockType,
+      position: index + 1,
+      is_published: true,
+      data: block.data,
+      settings: {},
+    }));
+
+    const { error: blocksError } = await supabase.from("lesson_blocks").insert(rows);
+
+    if (blocksError) {
+      console.error("Error inserting section template blocks:", blocksError);
+      throw new Error(`Failed to insert section template blocks: ${blocksError.message}`);
+    }
+  }
+
+  await revalidateLessonPaths(formData);
+}
+
+export async function insertLessonTemplateAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const lessonId = getTrimmedString(formData, "lessonId");
+  const templateId = getTrimmedString(formData, "templateId");
+
+  if (!lessonId || !templateId) {
+    throw new Error("Missing required fields");
+  }
+
+  const template = lessonTemplates.find((item) => item.id === templateId);
+
+  if (!template) {
+    throw new Error("Lesson template not found");
+  }
+
+  const supabase = await createClient();
+  const startingSectionPosition = await getNextSectionPosition(lessonId);
+
+  for (let sectionIndex = 0; sectionIndex < template.sections.length; sectionIndex += 1) {
+    const sectionTemplate = template.sections[sectionIndex];
+    const baseTemplate = getSectionTemplateById(sectionTemplate.sectionTemplateId);
+    const blocks = getBlocksForSectionTemplate(sectionTemplate.sectionTemplateId);
+
+    const { data: insertedSection, error: sectionError } = await supabase
+      .from("lesson_sections")
+      .insert({
+        lesson_id: lessonId,
+        title: sectionTemplate.title,
+        description: baseTemplate.description,
+        section_kind: sectionTemplate.sectionKind,
+        position: startingSectionPosition + sectionIndex,
+        is_published: true,
+        settings: {},
+      })
+      .select("id")
+      .single();
+
+    if (sectionError || !insertedSection) {
+      console.error("Error inserting lesson template section:", sectionError);
+      throw new Error(
+        `Failed to insert lesson template section: ${sectionError?.message ?? "Unknown error"}`
+      );
+    }
+
+    if (blocks.length > 0) {
+      const rows = blocks.map((block, blockIndex) => ({
+        lesson_section_id: insertedSection.id,
+        block_type: block.blockType,
+        position: blockIndex + 1,
+        is_published: true,
+        data: block.data,
+        settings: {},
+      }));
+
+      const { error: blocksError } = await supabase.from("lesson_blocks").insert(rows);
+
+      if (blocksError) {
+        console.error("Error inserting lesson template blocks:", blocksError);
+        throw new Error(
+          `Failed to insert lesson template blocks: ${blocksError.message}`
+        );
+      }
+    }
+  }
+
+  await revalidateLessonPaths(formData);
 }
