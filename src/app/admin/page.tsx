@@ -120,6 +120,15 @@ export default async function AdminPage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Link href="/admin/ui" className="block">
+          <div className="transition hover:-translate-y-0.5">
+            <DashboardCard title="UI Lab">
+              Preview buttons, cards, badges, and Lucide icons before using them in the
+              platform.
+            </DashboardCard>
+          </div>
+        </Link>
+
         <Link href="/admin/content" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Content">

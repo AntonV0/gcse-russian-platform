@@ -16,6 +16,7 @@ export default function AdminSidebar() {
 
   const isDashboard = pathname === "/admin";
   const isContent = pathname.startsWith("/admin/content");
+  const isUiLab = pathname.startsWith("/admin/ui");
   const isQuestionSets =
     pathname === "/admin/question-sets" || pathname.startsWith("/admin/question-sets/");
   const isTemplates = pathname === "/admin/question-sets/templates";
@@ -31,6 +32,14 @@ export default function AdminSidebar() {
       <nav className="flex flex-col gap-1 text-sm">
         <Link href="/admin" className={getNavItemClass(isDashboard)}>
           Dashboard
+        </Link>
+
+        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
+          Design
+        </div>
+
+        <Link href="/admin/ui" className={getNavItemClass(isUiLab)}>
+          UI Lab
         </Link>
 
         <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
