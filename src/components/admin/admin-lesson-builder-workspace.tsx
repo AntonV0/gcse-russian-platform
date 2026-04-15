@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { useFormStatus } from "react-dom";
 import { lessonBlockPresets } from "@/lib/lesson-block-presets";
 import { getDefaultBlockData } from "@/lib/lesson-blocks";
 import {
@@ -288,6 +289,40 @@ function ToolbarButton({
   );
 }
 
+function PendingSubmitButton({
+  idleLabel,
+  pendingLabel,
+  className,
+}: {
+  idleLabel: string;
+  pendingLabel: string;
+  className?: string;
+}) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button type="submit" disabled={pending} className={className}>
+      {pending ? pendingLabel : idleLabel}
+    </button>
+  );
+}
+
+function PendingStatusText({
+  idleText,
+  pendingText,
+}: {
+  idleText?: string;
+  pendingText: string;
+}) {
+  const { pending } = useFormStatus();
+
+  return (
+    <div className="text-xs text-gray-500">
+      {pending ? pendingText : (idleText ?? "")}
+    </div>
+  );
+}
+
 function CompactDisclosure({
   title,
   description,
@@ -362,12 +397,14 @@ function TextLikeEditor(props: {
         defaultValue={props.defaultValue}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Save {props.label}
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel={`Save ${props.label}`}
+          pendingLabel="Saving..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Updating block..." />
+      </div>
     </form>
   );
 }
@@ -398,12 +435,14 @@ function TitledContentEditor(props: {
         defaultValue={props.defaultContent}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Save {props.label}
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel={`Save ${props.label}`}
+          pendingLabel="Saving..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Updating block..." />
+      </div>
     </form>
   );
 }
@@ -433,12 +472,14 @@ function SlugBlockEditor(props: {
         defaultValue={props.defaultSlug}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Save {props.label}
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel={`Save ${props.label}`}
+          pendingLabel="Saving..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Updating block..." />
+      </div>
     </form>
   );
 }
@@ -473,12 +514,14 @@ function ImageBlockEditor(props: {
         placeholder="Optional caption"
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Save image block
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel="Save image block"
+          pendingLabel="Saving image block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Updating image block..." />
+      </div>
     </form>
   );
 }
@@ -523,12 +566,14 @@ function AudioBlockEditor(props: {
         />
         Auto play
       </label>
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Save audio block
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel="Save audio block"
+          pendingLabel="Saving audio block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Updating audio block..." />
+      </div>
     </form>
   );
 }
@@ -561,12 +606,14 @@ function VocabularyBlockEditor(props: {
       <p className="text-xs text-gray-500">
         Use one item per line in the format: russian | english
       </p>
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Save vocabulary block
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel="Save vocabulary block"
+          pendingLabel="Saving vocabulary block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Updating vocabulary block..." />
+      </div>
     </form>
   );
 }
@@ -779,12 +826,14 @@ function AddSimpleTextBlockForm(props: {
         defaultValue={props.defaultValue}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        {props.buttonLabel}
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel={props.buttonLabel}
+          pendingLabel="Adding block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Saving new block..." />
+      </div>
     </form>
   );
 }
@@ -817,12 +866,14 @@ function AddTitledContentBlockForm(props: {
         defaultValue={props.defaultContent}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        {props.buttonLabel}
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel={props.buttonLabel}
+          pendingLabel="Adding block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Saving new block..." />
+      </div>
     </form>
   );
 }
@@ -850,12 +901,14 @@ function AddSlugBlockForm(props: {
         placeholder={props.slugPlaceholder}
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        {props.buttonLabel}
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel={props.buttonLabel}
+          pendingLabel="Adding block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Saving linked practice block..." />
+      </div>
     </form>
   );
 }
@@ -881,12 +934,14 @@ function AddImageBlockForm(props: { sectionId: string; routeFields: RouteFields 
         placeholder="Optional caption"
         className="w-full rounded-xl border px-3 py-2 text-sm"
       />
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Add image block
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel="Add image block"
+          pendingLabel="Adding image block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Saving image block..." />
+      </div>
     </form>
   );
 }
@@ -916,12 +971,14 @@ function AddAudioBlockForm(props: { sectionId: string; routeFields: RouteFields 
         <input type="checkbox" name="autoPlay" value="true" />
         Auto play
       </label>
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Add audio block
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel="Add audio block"
+          pendingLabel="Adding audio block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Saving audio block..." />
+      </div>
     </form>
   );
 }
@@ -956,12 +1013,14 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
       <p className="text-xs text-gray-500">
         Use one item per line in the format: russian | english
       </p>
-      <button
-        type="submit"
-        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-      >
-        Add vocabulary block
-      </button>
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel="Add vocabulary block"
+          pendingLabel="Adding vocabulary block..."
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Saving vocabulary block..." />
+      </div>
     </form>
   );
 }
@@ -1023,12 +1082,14 @@ function AddBlockComposer(props: { section: LessonSection; routeFields: RouteFie
                   <div className="text-sm text-gray-500">{preset.description}</div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-                >
-                  Insert preset
-                </button>
+                <div className="space-y-2">
+                  <PendingSubmitButton
+                    idleLabel="Insert preset"
+                    pendingLabel="Inserting preset..."
+                    className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                  />
+                  <PendingStatusText pendingText="Adding starter blocks to this section..." />
+                </div>
               </form>
             ))}
           </div>
@@ -1652,12 +1713,14 @@ function LessonSectionSidebar(props: {
                 <div className="text-sm text-gray-500">{template.description}</div>
               </div>
 
-              <button
-                type="submit"
-                className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-              >
-                Insert section template
-              </button>
+              <div className="space-y-2">
+                <PendingSubmitButton
+                  idleLabel="Insert section template"
+                  pendingLabel="Inserting section template..."
+                  className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                />
+                <PendingStatusText pendingText="Creating the section and starter blocks..." />
+              </div>
             </form>
           ))}
         </div>
@@ -1711,12 +1774,14 @@ function LessonSectionSidebar(props: {
             </select>
           </div>
 
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90"
-          >
-            Add section
-          </button>
+          <div className="space-y-2">
+            <PendingSubmitButton
+              idleLabel="Add section"
+              pendingLabel="Adding section..."
+              className="w-full rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
+            />
+            <PendingStatusText pendingText="Creating section..." />
+          </div>
         </form>
       </Panel>
     </div>
@@ -1806,12 +1871,14 @@ function LessonInspectorPanel(props: {
                   ))}
               </select>
 
-              <button
-                type="submit"
-                className="w-full rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-              >
-                Move block to section
-              </button>
+              <div className="space-y-2">
+                <PendingSubmitButton
+                  idleLabel="Move block to section"
+                  pendingLabel="Moving block..."
+                  className="w-full rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                />
+                <PendingStatusText pendingText="Moving block and reordering sections..." />
+              </div>
             </form>
           </div>
 
@@ -2327,12 +2394,14 @@ function LessonSectionEditor(props: {
             <option value="summary">summary</option>
           </select>
 
-          <button
-            type="submit"
-            className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-          >
-            Save section
-          </button>
+          <div className="space-y-2">
+            <PendingSubmitButton
+              idleLabel="Save section"
+              pendingLabel="Saving section..."
+              className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+            />
+            <PendingStatusText pendingText="Updating section metadata..." />
+          </div>
         </form>
       </CompactDisclosure>
 
@@ -2529,12 +2598,14 @@ export default function AdminLessonBuilderWorkspace({
                 {template.sections.length === 1 ? "" : "s"}
               </div>
 
-              <button
-                type="submit"
-                className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-              >
-                Insert lesson template
-              </button>
+              <div className="space-y-2">
+                <PendingSubmitButton
+                  idleLabel="Insert lesson template"
+                  pendingLabel="Inserting lesson template..."
+                  className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                />
+                <PendingStatusText pendingText="Creating sections and starter blocks..." />
+              </div>
             </form>
           ))}
         </div>
