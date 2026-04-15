@@ -3,6 +3,10 @@ import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import Textarea from "@/components/ui/textarea";
+import CheckboxField from "@/components/ui/checkbox-field";
 import { getCoursesDb } from "@/lib/course-helpers-db";
 import { createCourseAction } from "@/app/actions/admin-content-actions";
 import { appIcons } from "@/lib/icons";
@@ -24,15 +28,6 @@ function SectionCard({
       </div>
       <div className="p-4">{children}</div>
     </section>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
-      {children}
-    </div>
   );
 }
 
@@ -127,40 +122,21 @@ export default async function AdminContentPage() {
           description="Create a new top-level course entry."
         >
           <form action={createCourseAction} className="space-y-4 text-sm">
-            <Field label="Title">
-              <input
-                name="title"
-                required
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Title">
+              <Input name="title" required />
+            </FormField>
 
-            <Field label="Slug">
-              <input
-                name="slug"
-                required
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Slug">
+              <Input name="slug" required />
+            </FormField>
 
-            <Field label="Description">
-              <textarea
-                name="description"
-                rows={3}
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Description">
+              <Textarea name="description" rows={3} />
+            </FormField>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" name="isActive" value="true" defaultChecked />
-                Active
-              </label>
-
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" name="isPublished" value="true" />
-                Published
-              </label>
+              <CheckboxField name="isActive" label="Active" defaultChecked />
+              <CheckboxField name="isPublished" label="Published" />
             </div>
 
             <Button type="submit" variant="primary" icon={appIcons.create}>
