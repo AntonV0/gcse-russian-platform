@@ -200,3 +200,53 @@ export async function getLessonTemplateOverviewDb() {
     lessonTemplateSections,
   };
 }
+
+export async function getLessonBlockPresetByIdDb(
+  presetId: string
+): Promise<DbLessonBlockPreset | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_block_presets")
+    .select("*")
+    .eq("id", presetId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching lesson block preset by id:", error);
+    return null;
+  }
+
+  return data as DbLessonBlockPreset;
+}
+
+export async function getLessonBlockPresetBlocksByPresetIdDb(
+  presetId: string
+): Promise<DbLessonBlockPresetBlock[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_block_preset_blocks")
+    .select("*")
+    .eq("lesson_block_preset_id", presetId)
+    .order("position", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching lesson block preset blocks by preset id:", error);
+    return [];
+  }
+
+  return (data ?? []) as DbLessonBlockPresetBlock[];
+}
+
+export async function getLessonBlockPresetDetailDb(presetId: string) {
+  const [preset, blocks] = await Promise.all([
+    getLessonBlockPresetByIdDb(presetId),
+    getLessonBlockPresetBlocksByPresetIdDb(presetId),
+  ]);
+
+  return {
+    preset,
+    blocks,
+  };
+}
