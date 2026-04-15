@@ -344,3 +344,27 @@ export default async function AdminUiPage() {
     </main>
   );
 }
+
+function AllIconsPreview() {
+  const entries = Object.entries(appIcons);
+
+  return (
+    <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <h2 className="mb-4 text-lg font-semibold">All Icons</h2>
+
+      <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+        {entries.map(([name, Icon]) => (
+          <div
+            key={name}
+            className="flex flex-col items-center gap-2 rounded-xl border p-3 text-xs text-gray-600"
+          >
+            <AppIcon icon={Icon} size={20} />
+            <span className="text-center">{name}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+<AllIconsPreview />;
