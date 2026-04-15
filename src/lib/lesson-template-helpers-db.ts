@@ -302,3 +302,55 @@ export async function getLessonSectionTemplateDetailDb(templateId: string) {
     allPresets,
   };
 }
+
+export async function getLessonTemplateByIdDb(
+  templateId: string
+): Promise<DbLessonTemplate | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_templates")
+    .select("*")
+    .eq("id", templateId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching lesson template by id:", error);
+    return null;
+  }
+
+  return data as DbLessonTemplate;
+}
+
+export async function getLessonTemplateSectionsByTemplateIdDb(
+  templateId: string
+): Promise<DbLessonTemplateSection[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_template_sections")
+    .select("*")
+    .eq("lesson_template_id", templateId)
+    .order("position", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching lesson template sections by template id:", error);
+    return [];
+  }
+
+  return (data ?? []) as DbLessonTemplateSection[];
+}
+
+export async function getLessonTemplateDetailDb(templateId: string) {
+  const [template, templateSections, allSectionTemplates] = await Promise.all([
+    getLessonTemplateByIdDb(templateId),
+    getLessonTemplateSectionsByTemplateIdDb(templateId),
+    getLessonSectionTemplatesDb(),
+  ]);
+
+  return {
+    template,
+    templateSections,
+    allSectionTemplates,
+  };
+}
