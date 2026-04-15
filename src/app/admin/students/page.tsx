@@ -1,11 +1,14 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import {
   setTeacherRoleAction,
   switchStudentAccessGrantAction,
 } from "@/app/actions/admin-user-actions";
+import { appIcons } from "@/lib/icons";
 
 type ProfileRow = {
   id: string;
@@ -170,6 +173,24 @@ function matchesSearch(student: StudentCard, search: string) {
     .toLowerCase();
 
   return haystack.includes(search.toLowerCase());
+}
+
+function SuccessErrorBanners({ success, error }: { success?: string; error?: string }) {
+  return (
+    <>
+      {success ? (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {success}
+        </div>
+      ) : null}
+
+      {error ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {error}
+        </div>
+      ) : null}
+    </>
+  );
 }
 
 export default async function AdminStudentsPage({
@@ -380,19 +401,9 @@ export default async function AdminStudentsPage({
         description="Student accounts grouped by current access type."
       />
 
-      {params.success ? (
-        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {params.success}
-        </div>
-      ) : null}
+      <SuccessErrorBanners success={params.success} error={params.error} />
 
-      {params.error ? (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {params.error}
-        </div>
-      ) : null}
-
-      <form className="mb-6 rounded-lg border bg-white p-4">
+      <form className="mb-6 rounded-xl border bg-white p-4 shadow-sm">
         <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr_auto]">
           <div>
             <label className="mb-1 block text-sm font-medium">Search</label>
@@ -435,36 +446,30 @@ export default async function AdminStudentsPage({
           </div>
 
           <div className="flex items-end gap-2">
-            <button
-              type="submit"
-              className="rounded bg-black px-4 py-2 text-sm text-white"
-            >
+            <Button type="submit" variant="primary" icon={appIcons.filter}>
               Apply
-            </button>
+            </Button>
 
-            <Link
-              href="/admin/students"
-              className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
-            >
+            <Button href="/admin/students" variant="secondary" icon={appIcons.back}>
               Reset
-            </Link>
+            </Button>
           </div>
         </div>
       </form>
 
-      <div className="mb-6 rounded-lg border bg-white px-4 py-3 text-sm text-gray-600">
+      <div className="mb-6 rounded-xl border bg-white px-4 py-3 text-sm text-gray-600 shadow-sm">
         Total student accounts shown: {totalStudents}
       </div>
 
       <div className="space-y-6">
         {orderedGroups.length === 0 && filteredInactiveStudents.length === 0 ? (
-          <div className="rounded-lg border bg-white px-4 py-6 text-sm text-gray-500">
+          <div className="rounded-xl border bg-white px-4 py-6 text-sm text-gray-500 shadow-sm">
             No student accounts found.
           </div>
         ) : null}
 
         {orderedGroups.map((group) => (
-          <div key={group.label} className="rounded-lg border bg-white">
+          <div key={group.label} className="rounded-xl border bg-white shadow-sm">
             <div className="border-b px-4 py-3 font-medium">
               {group.label} ({group.rows.length})
             </div>
@@ -473,7 +478,7 @@ export default async function AdminStudentsPage({
               {group.rows.map((student) => (
                 <div
                   key={student.id}
-                  className="flex items-center justify-between gap-4 px-4 py-3"
+                  className="flex items-center justify-between gap-4 px-4 py-4"
                 >
                   <div>
                     <div className="font-medium">{getPersonLabel(student)}</div>
@@ -482,17 +487,19 @@ export default async function AdminStudentsPage({
                       {student.email || "No email"}
                     </div>
 
-                    <div className="mt-1 flex flex-wrap gap-2 text-xs">
-                      <span className="rounded border px-2 py-0.5">
+                    <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                      <Badge tone="info" icon={appIcons.user}>
                         {student.accessLabel}
-                      </span>
+                      </Badge>
 
-                      <span className="rounded border px-2 py-0.5">Active</span>
+                      <Badge tone="success" icon={appIcons.completed}>
+                        Active
+                      </Badge>
 
                       {student.groupNames.map((groupName) => (
-                        <span key={groupName} className="rounded border px-2 py-0.5">
+                        <Badge key={groupName} tone="muted" icon={appIcons.users}>
                           {groupName}
-                        </span>
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -526,12 +533,9 @@ export default async function AdminStudentsPage({
                             </option>
                           ))}
                         </select>
-                        <button
-                          type="submit"
-                          className="rounded border px-2 py-1 hover:bg-gray-50"
-                        >
+                        <Button type="submit" variant="secondary" size="sm">
                           Apply
-                        </button>
+                        </Button>
                       </form>
 
                       <form action={setTeacherRoleAction}>
@@ -542,20 +546,19 @@ export default async function AdminStudentsPage({
                           value={currentPathWithFilters}
                         />
                         <input type="hidden" name="mode" value="enable" />
-                        <button
-                          type="submit"
-                          className="rounded border px-2 py-1 hover:bg-gray-50"
-                        >
+                        <Button type="submit" variant="secondary" size="sm">
                           Make teacher
-                        </button>
+                        </Button>
                       </form>
 
-                      <Link
+                      <Button
                         href={`/admin/students/${student.id}`}
-                        className="rounded border px-2 py-1 hover:bg-gray-50"
+                        variant="secondary"
+                        size="sm"
+                        icon={appIcons.preview}
                       >
                         View
-                      </Link>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -564,7 +567,7 @@ export default async function AdminStudentsPage({
           </div>
         ))}
 
-        <div className="rounded-lg border bg-white">
+        <div className="rounded-xl border bg-white shadow-sm">
           <div className="border-b px-4 py-3 font-medium">
             Inactive / No Active Access ({filteredInactiveStudents.length})
           </div>
@@ -578,7 +581,7 @@ export default async function AdminStudentsPage({
               filteredInactiveStudents.map((student) => (
                 <div
                   key={student.id}
-                  className="flex items-center justify-between gap-4 px-4 py-3"
+                  className="flex items-center justify-between gap-4 px-4 py-4"
                 >
                   <div>
                     <div className="font-medium">{getPersonLabel(student)}</div>
@@ -587,17 +590,19 @@ export default async function AdminStudentsPage({
                       {student.email || "No email"}
                     </div>
 
-                    <div className="mt-1 flex flex-wrap gap-2 text-xs">
-                      <span className="rounded border px-2 py-0.5">
+                    <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                      <Badge tone="muted" icon={appIcons.user}>
                         {student.accessLabel}
-                      </span>
+                      </Badge>
 
-                      <span className="rounded border px-2 py-0.5">Inactive</span>
+                      <Badge tone="warning" icon={appIcons.pending}>
+                        Inactive
+                      </Badge>
 
                       {student.groupNames.map((groupName) => (
-                        <span key={groupName} className="rounded border px-2 py-0.5">
+                        <Badge key={groupName} tone="muted" icon={appIcons.users}>
                           {groupName}
-                        </span>
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -631,12 +636,9 @@ export default async function AdminStudentsPage({
                             </option>
                           ))}
                         </select>
-                        <button
-                          type="submit"
-                          className="rounded border px-2 py-1 hover:bg-gray-50"
-                        >
+                        <Button type="submit" variant="secondary" size="sm">
                           Apply
-                        </button>
+                        </Button>
                       </form>
 
                       <form action={setTeacherRoleAction}>
@@ -647,20 +649,19 @@ export default async function AdminStudentsPage({
                           value={currentPathWithFilters}
                         />
                         <input type="hidden" name="mode" value="enable" />
-                        <button
-                          type="submit"
-                          className="rounded border px-2 py-1 hover:bg-gray-50"
-                        >
+                        <Button type="submit" variant="secondary" size="sm">
                           Make teacher
-                        </button>
+                        </Button>
                       </form>
 
-                      <Link
+                      <Button
                         href={`/admin/students/${student.id}`}
-                        className="rounded border px-2 py-1 hover:bg-gray-50"
+                        variant="secondary"
+                        size="sm"
+                        icon={appIcons.preview}
                       >
                         View
-                      </Link>
+                      </Button>
                     </div>
                   </div>
                 </div>

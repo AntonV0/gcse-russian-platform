@@ -1,8 +1,12 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
+import AppIcon from "@/components/ui/app-icon";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import { appIcons } from "@/lib/icons";
 
 type ProfileRow = {
   id: string;
@@ -14,6 +18,26 @@ type AccessGrantRow = {
   user_id: string;
   is_active: boolean;
 };
+
+function StatCard({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: number;
+  icon: keyof typeof appIcons;
+}) {
+  return (
+    <div className="rounded-xl border bg-white px-4 py-4 shadow-sm">
+      <div className="flex items-center gap-2 text-sm text-gray-500">
+        <AppIcon icon={appIcons[icon]} size={16} />
+        <span>{label}</span>
+      </div>
+      <div className="mt-2 text-2xl font-semibold">{value}</div>
+    </div>
+  );
+}
 
 export default async function AdminPage() {
   const canAccess = await requireAdminAccess();
@@ -67,64 +91,40 @@ export default async function AdminPage() {
 
   return (
     <main>
-      <PageHeader
-        title="Admin Panel"
-        description="Internal content, users, and teaching management tools."
-      />
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <PageHeader
+          title="Admin Panel"
+          description="Internal content, users, and teaching management tools."
+        />
+
+        <Button href="/admin/ui" variant="secondary" icon={appIcons.uiLab}>
+          Open UI Lab
+        </Button>
+      </div>
 
       <section className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-lg border bg-white px-4 py-4">
-          <div className="text-sm text-gray-500">Courses</div>
-          <div className="mt-1 text-2xl font-semibold">{courseCount ?? 0}</div>
-        </div>
-
-        <div className="rounded-lg border bg-white px-4 py-4">
-          <div className="text-sm text-gray-500">Variants</div>
-          <div className="mt-1 text-2xl font-semibold">{variantCount ?? 0}</div>
-        </div>
-
-        <div className="rounded-lg border bg-white px-4 py-4">
-          <div className="text-sm text-gray-500">Modules</div>
-          <div className="mt-1 text-2xl font-semibold">{moduleCount ?? 0}</div>
-        </div>
-
-        <div className="rounded-lg border bg-white px-4 py-4">
-          <div className="text-sm text-gray-500">Lessons</div>
-          <div className="mt-1 text-2xl font-semibold">{lessonCount ?? 0}</div>
-        </div>
-
-        <div className="rounded-lg border bg-white px-4 py-4">
-          <div className="text-sm text-gray-500">Students</div>
-          <div className="mt-1 text-2xl font-semibold">{studentProfiles.length}</div>
-        </div>
-
-        <div className="rounded-lg border bg-white px-4 py-4">
-          <div className="text-sm text-gray-500">Active Students</div>
-          <div className="mt-1 text-2xl font-semibold">{activeStudents}</div>
-        </div>
-
-        <div className="rounded-lg border bg-white px-4 py-4">
-          <div className="text-sm text-gray-500">Inactive Students</div>
-          <div className="mt-1 text-2xl font-semibold">{inactiveStudents}</div>
-        </div>
-
-        <div className="rounded-lg border bg-white px-4 py-4">
-          <div className="text-sm text-gray-500">Teachers / Admins</div>
-          <div className="mt-1 text-2xl font-semibold">{teacherProfiles.length}</div>
-        </div>
-
-        <div className="rounded-lg border bg-white px-4 py-4 md:col-span-2 xl:col-span-1">
-          <div className="text-sm text-gray-500">Teaching Groups</div>
-          <div className="mt-1 text-2xl font-semibold">{teachingGroupCount ?? 0}</div>
-        </div>
+        <StatCard label="Courses" value={courseCount ?? 0} icon="courses" />
+        <StatCard label="Variants" value={variantCount ?? 0} icon="file" />
+        <StatCard label="Modules" value={moduleCount ?? 0} icon="lessonContent" />
+        <StatCard label="Lessons" value={lessonCount ?? 0} icon="lessons" />
+        <StatCard label="Students" value={studentProfiles.length} icon="user" />
+        <StatCard label="Active Students" value={activeStudents} icon="completed" />
+        <StatCard label="Inactive Students" value={inactiveStudents} icon="pending" />
+        <StatCard label="Teachers / Admins" value={teacherProfiles.length} icon="users" />
+        <StatCard label="Teaching Groups" value={teachingGroupCount ?? 0} icon="users" />
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Link href="/admin/ui" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="UI Lab">
-              Preview buttons, cards, badges, and Lucide icons before using them in the
-              platform.
+              <div className="flex items-start gap-3">
+                <AppIcon icon={appIcons.uiLab} className="mt-0.5 text-gray-700" />
+                <div>
+                  Preview buttons, cards, badges, and Lucide icons before using them in
+                  the platform.
+                </div>
+              </div>
             </DashboardCard>
           </div>
         </Link>
@@ -132,7 +132,10 @@ export default async function AdminPage() {
         <Link href="/admin/content" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Content">
-              Manage courses, variants, modules, and lessons.
+              <div className="flex items-start gap-3">
+                <AppIcon icon={appIcons.courses} className="mt-0.5 text-gray-700" />
+                <div>Manage courses, variants, modules, and lessons.</div>
+              </div>
             </DashboardCard>
           </div>
         </Link>
@@ -140,7 +143,10 @@ export default async function AdminPage() {
         <Link href="/admin/question-sets" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Question Sets">
-              Create and manage reusable question sets.
+              <div className="flex items-start gap-3">
+                <AppIcon icon={appIcons.help} className="mt-0.5 text-gray-700" />
+                <div>Create and manage reusable question sets.</div>
+              </div>
             </DashboardCard>
           </div>
         </Link>
@@ -148,7 +154,10 @@ export default async function AdminPage() {
         <Link href="/admin/question-sets/templates" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Templates">
-              Manage reusable question set templates.
+              <div className="flex items-start gap-3">
+                <AppIcon icon={appIcons.file} className="mt-0.5 text-gray-700" />
+                <div>Manage reusable question set templates.</div>
+              </div>
             </DashboardCard>
           </div>
         </Link>
@@ -156,7 +165,10 @@ export default async function AdminPage() {
         <Link href="/teacher/assignments" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Assignments">
-              Review and manage teacher assignments.
+              <div className="flex items-start gap-3">
+                <AppIcon icon={appIcons.assignments} className="mt-0.5 text-gray-700" />
+                <div>Review and manage teacher assignments.</div>
+              </div>
             </DashboardCard>
           </div>
         </Link>
@@ -164,7 +176,10 @@ export default async function AdminPage() {
         <Link href="/admin/teaching-groups" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Teaching Groups">
-              View teaching groups, membership, and structure.
+              <div className="flex items-start gap-3">
+                <AppIcon icon={appIcons.users} className="mt-0.5 text-gray-700" />
+                <div>View teaching groups, membership, and structure.</div>
+              </div>
             </DashboardCard>
           </div>
         </Link>
@@ -172,7 +187,10 @@ export default async function AdminPage() {
         <Link href="/admin/students" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Students">
-              View student accounts and access groupings.
+              <div className="flex items-start gap-3">
+                <AppIcon icon={appIcons.user} className="mt-0.5 text-gray-700" />
+                <div>View student accounts and access groupings.</div>
+              </div>
             </DashboardCard>
           </div>
         </Link>
@@ -180,7 +198,10 @@ export default async function AdminPage() {
         <Link href="/admin/teachers" className="block">
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Teachers">
-              View admin and teaching accounts.
+              <div className="flex items-start gap-3">
+                <AppIcon icon={appIcons.users} className="mt-0.5 text-gray-700" />
+                <div>View admin and teaching accounts.</div>
+              </div>
             </DashboardCard>
           </div>
         </Link>

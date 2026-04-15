@@ -1,8 +1,10 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { getQuestionSetTemplatesDb } from "@/lib/question-helpers-db";
+import { appIcons } from "@/lib/icons";
 
 export default async function AdminQuestionSetTemplatesPage() {
   const canAccess = await requireAdminAccess();
@@ -21,13 +23,13 @@ export default async function AdminQuestionSetTemplatesPage() {
       />
 
       <div className="mb-6">
-        <Link href="/admin/question-sets" className="rounded border px-4 py-2 text-sm">
+        <Button href="/admin/question-sets" variant="secondary" icon={appIcons.back}>
           Back to question sets
-        </Link>
+        </Button>
       </div>
 
       {templates.length === 0 ? (
-        <div className="rounded-lg border p-6 text-sm text-gray-600">
+        <div className="rounded-xl border bg-white p-6 text-sm text-gray-600 shadow-sm">
           No templates yet.
         </div>
       ) : (
@@ -35,33 +37,38 @@ export default async function AdminQuestionSetTemplatesPage() {
           {templates.map((template) => (
             <DashboardCard key={template.id} title={template.title}>
               <div className="space-y-3 text-sm text-gray-700">
-                <p>
-                  <span className="font-medium">Slug:</span> {template.slug}
-                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="muted" icon={appIcons.file}>
+                    {template.slug}
+                  </Badge>
 
-                {template.template_type ? (
-                  <p>
-                    <span className="font-medium">Template type:</span>{" "}
-                    {template.template_type}
-                  </p>
-                ) : null}
+                  {template.template_type ? (
+                    <Badge tone="info" icon={appIcons.settings}>
+                      {template.template_type}
+                    </Badge>
+                  ) : null}
+                </div>
 
                 {template.description ? <p>{template.description}</p> : null}
 
                 <div className="flex flex-wrap gap-3">
-                  <Link
+                  <Button
                     href={`/admin/question-sets/${template.id}`}
-                    className="rounded border px-4 py-2 text-sm"
+                    variant="secondary"
+                    size="sm"
+                    icon={appIcons.preview}
                   >
                     Open template
-                  </Link>
+                  </Button>
 
-                  <Link
+                  <Button
                     href={`/admin/question-sets/templates/${template.id}/create`}
-                    className="rounded border px-4 py-2 text-sm"
+                    variant="secondary"
+                    size="sm"
+                    icon={appIcons.write}
                   >
                     Create from template
-                  </Link>
+                  </Button>
                 </div>
               </div>
             </DashboardCard>
