@@ -409,52 +409,149 @@ export function mapDbBlockToLessonBlock(row: DbLessonBlockLike): LessonBlock {
 }
 
 export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): string {
-  const typedBlock = "type" in block ? block : mapDbBlockToLessonBlock(block);
+  if ("type" in block) {
+    switch (block.type) {
+      case "header":
+      case "subheader":
+      case "text":
+        return block.content;
 
-  switch (typedBlock.type) {
+      case "note":
+        return block.title || block.content;
+
+      case "callout":
+      case "exam-tip":
+        return block.title || block.content;
+
+      case "image":
+        return block.caption
+          ? `Image · ${block.caption}`
+          : block.alt
+            ? `Image · ${block.alt}`
+            : block.src
+              ? `Image · ${block.src}`
+              : "Image block";
+
+      case "audio":
+        return block.title
+          ? `Audio · ${block.title}`
+          : block.caption
+            ? `Audio · ${block.caption}`
+            : block.src
+              ? `Audio · ${block.src}`
+              : "Audio block";
+
+      case "vocabulary":
+        return block.items.length > 0
+          ? `${block.items.length} item(s) · ${block.items
+              .slice(0, 2)
+              .map((item) => `${item.russian} = ${item.english}`)
+              .join(", ")}`
+          : "Vocabulary block";
+
+      case "vocabulary-set":
+        return block.title
+          ? `Vocabulary set · ${block.title}`
+          : `Vocabulary set · ${block.vocabularySetSlug}`;
+
+      case "question-set":
+        return block.title
+          ? `Question set · ${block.title}`
+          : `Question set · ${block.questionSetSlug}`;
+
+      case "multiple-choice":
+        return `Multiple choice · ${block.question}`;
+
+      case "short-answer":
+        return `Short answer · ${block.question}`;
+
+      case "divider":
+        return "Divider";
+
+      default:
+        return "Block";
+    }
+  }
+
+  const data = block.data ?? {};
+
+  switch (block.block_type) {
     case "header":
     case "subheader":
     case "text":
-      return typedBlock.content;
+      return typeof data.content === "string" && data.content.trim().length > 0
+        ? data.content
+        : getLessonBlockLabel(block.block_type);
 
     case "note":
-      return typedBlock.title || typedBlock.content;
-
     case "callout":
     case "exam-tip":
-      return typedBlock.title || typedBlock.content;
+      return typeof data.title === "string" && data.title.trim().length > 0
+        ? data.title
+        : typeof data.content === "string" && data.content.trim().length > 0
+          ? data.content
+          : getLessonBlockLabel(block.block_type);
 
     case "image":
-      return typedBlock.caption || typedBlock.src;
+      return typeof data.caption === "string" && data.caption.trim().length > 0
+        ? `Image · ${data.caption}`
+        : typeof data.alt === "string" && data.alt.trim().length > 0
+          ? `Image · ${data.alt}`
+          : typeof data.src === "string" && data.src.trim().length > 0
+            ? `Image · ${data.src}`
+            : "Image block";
 
     case "audio":
-      return typedBlock.title || typedBlock.src;
+      return typeof data.title === "string" && data.title.trim().length > 0
+        ? `Audio · ${data.title}`
+        : typeof data.caption === "string" && data.caption.trim().length > 0
+          ? `Audio · ${data.caption}`
+          : typeof data.src === "string" && data.src.trim().length > 0
+            ? `Audio · ${data.src}`
+            : "Audio block";
 
     case "vocabulary":
-      return typedBlock.items.length > 0
-        ? `${typedBlock.items.length} item(s) · ${typedBlock.items
-            .slice(0, 2)
-            .map((item) => `${item.russian} = ${item.english}`)
-            .join(", ")}`
+      if (Array.isArray(data.items) && data.items.length > 0) {
+        const preview = data.items
+          .slice(0, 2)
+          .map((item) => {
+            if (!item || typeof item !== "object") return "";
+            const record = item as Record<string, unknown>;
+            const russian = typeof record.russian === "string" ? record.russian : "";
+            const english = typeof record.english === "string" ? record.english : "";
+            return russian && english ? `${russian} = ${english}` : "";
+          })
+          .filter(Boolean)
+          .join(", ");
+
+        return `${data.items.length} item(s)${preview ? ` · ${preview}` : ""}`;
+      }
+
+      return typeof data.title === "string" && data.title.trim().length > 0
+        ? data.title
         : "Vocabulary block";
 
     case "vocabulary-set":
-      return typedBlock.title || typedBlock.vocabularySetSlug;
+      return typeof data.title === "string" && data.title.trim().length > 0
+        ? `Vocabulary set · ${data.title}`
+        : typeof data.vocabularySetSlug === "string" &&
+            data.vocabularySetSlug.trim().length > 0
+          ? `Vocabulary set · ${data.vocabularySetSlug}`
+          : "Vocabulary set block";
 
     case "question-set":
-      return typedBlock.title || typedBlock.questionSetSlug;
-
-    case "multiple-choice":
-      return typedBlock.question;
-
-    case "short-answer":
-      return typedBlock.question;
+      return typeof data.title === "string" && data.title.trim().length > 0
+        ? `Question set · ${data.title}`
+        : typeof data.questionSetSlug === "string" &&
+            data.questionSetSlug.trim().length > 0
+          ? `Question set · ${data.questionSetSlug}`
+          : "Question set block";
 
     case "divider":
       return "Divider";
 
     default:
-      return "Block";
+      return getLessonBlockLabel(block.block_type);
   }
 }
 
