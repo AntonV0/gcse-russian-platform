@@ -250,3 +250,55 @@ export async function getLessonBlockPresetDetailDb(presetId: string) {
     blocks,
   };
 }
+
+export async function getLessonSectionTemplateByIdDb(
+  templateId: string
+): Promise<DbLessonSectionTemplate | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_section_templates")
+    .select("*")
+    .eq("id", templateId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching lesson section template by id:", error);
+    return null;
+  }
+
+  return data as DbLessonSectionTemplate;
+}
+
+export async function getLessonSectionTemplatePresetLinksByTemplateIdDb(
+  templateId: string
+): Promise<DbLessonSectionTemplatePreset[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_section_template_presets")
+    .select("*")
+    .eq("lesson_section_template_id", templateId)
+    .order("position", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching lesson section template preset links:", error);
+    return [];
+  }
+
+  return (data ?? []) as DbLessonSectionTemplatePreset[];
+}
+
+export async function getLessonSectionTemplateDetailDb(templateId: string) {
+  const [template, presetLinks, allPresets] = await Promise.all([
+    getLessonSectionTemplateByIdDb(templateId),
+    getLessonSectionTemplatePresetLinksByTemplateIdDb(templateId),
+    getLessonBlockPresetsDb(),
+  ]);
+
+  return {
+    template,
+    presetLinks,
+    allPresets,
+  };
+}
