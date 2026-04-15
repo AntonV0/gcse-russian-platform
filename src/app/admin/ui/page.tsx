@@ -6,6 +6,7 @@ import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { appIcons } from "@/lib/icons";
+import AllIconsBrowser from "@/components/admin/all-icons-browser";
 
 const iconPreviewGroups = [
   {
@@ -32,6 +33,17 @@ const iconPreviewGroups = [
       { name: "image", label: "Image" },
       { name: "file", label: "File" },
       { name: "help", label: "Help" },
+      { name: "modules", label: "Modules" },
+      { name: "blocks", label: "Blocks" },
+      { name: "language", label: "Language" },
+      { name: "question", label: "Question" },
+      { name: "exercise", label: "Exercise" },
+      { name: "text", label: "Text" },
+      { name: "speaking", label: "Speaking" },
+      { name: "learning", label: "Learning" },
+      { name: "school", label: "School" },
+      { name: "brain", label: "Brain" },
+      { name: "idea", label: "Idea" },
     ] as const,
   },
   {
@@ -44,11 +56,20 @@ const iconPreviewGroups = [
       { name: "search", label: "Search" },
       { name: "filter", label: "Filter" },
       { name: "preview", label: "Preview" },
+      { name: "hidden", label: "Hidden" },
       { name: "edit", label: "Edit" },
       { name: "write", label: "Write" },
+      { name: "create", label: "Create" },
+      { name: "save", label: "Save" },
       { name: "delete", label: "Delete" },
       { name: "back", label: "Back" },
       { name: "next", label: "Next" },
+      { name: "up", label: "Up" },
+      { name: "down", label: "Down" },
+      { name: "warning", label: "Warning" },
+      { name: "info", label: "Info" },
+      { name: "alert", label: "Alert" },
+      { name: "refresh", label: "Refresh" },
     ] as const,
   },
 ];
@@ -158,6 +179,61 @@ function IconPreviewCard({
   );
 }
 
+function RecommendedIconBuckets() {
+  return (
+    <SectionCard
+      title="Recommended extra icon areas"
+      description="Good candidates for future UI use across course content, GCSE topics, lesson blocks, and admin tools."
+    >
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl border bg-gray-50 p-4">
+          <div className="mb-2 font-medium">Course structure</div>
+          <div className="space-y-1 text-sm text-gray-600">
+            <p>courses</p>
+            <p>modules</p>
+            <p>lessons</p>
+            <p>blocks</p>
+            <p>folder / folderOpen</p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-gray-50 p-4">
+          <div className="mb-2 font-medium">Learning modes</div>
+          <div className="space-y-1 text-sm text-gray-600">
+            <p>translation</p>
+            <p>listening</p>
+            <p>speaking</p>
+            <p>audio</p>
+            <p>question / exercise</p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-gray-50 p-4">
+          <div className="mb-2 font-medium">GCSE-style content</div>
+          <div className="space-y-1 text-sm text-gray-600">
+            <p>language</p>
+            <p>learning</p>
+            <p>school</p>
+            <p>brain</p>
+            <p>idea</p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-gray-50 p-4">
+          <div className="mb-2 font-medium">Admin utilities</div>
+          <div className="space-y-1 text-sm text-gray-600">
+            <p>save</p>
+            <p>refresh</p>
+            <p>warning / alert</p>
+            <p>hidden / preview</p>
+            <p>filter / search</p>
+          </div>
+        </div>
+      </div>
+    </SectionCard>
+  );
+}
+
 export default async function AdminUiPage() {
   const canAccess = await requireAdminAccess();
 
@@ -208,6 +284,8 @@ export default async function AdminUiPage() {
           </div>
         </div>
       </SectionCard>
+
+      <RecommendedIconBuckets />
 
       <SectionCard
         title="Button previews"
@@ -298,6 +376,13 @@ export default async function AdminUiPage() {
       </div>
 
       <SectionCard
+        title="All Lucide Icons"
+        description="A full browseable grid of Lucide icons for fast scanning before choosing what to add to the curated app icon set."
+      >
+        <AllIconsBrowser />
+      </SectionCard>
+
+      <SectionCard
         title="Recommended first picks"
         description="A sensible starter set for the rest of the platform."
       >
@@ -344,27 +429,3 @@ export default async function AdminUiPage() {
     </main>
   );
 }
-
-function AllIconsPreview() {
-  const entries = Object.entries(appIcons);
-
-  return (
-    <section className="rounded-2xl border bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold">All Icons</h2>
-
-      <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
-        {entries.map(([name, Icon]) => (
-          <div
-            key={name}
-            className="flex flex-col items-center gap-2 rounded-xl border p-3 text-xs text-gray-600"
-          >
-            <AppIcon icon={Icon} size={20} />
-            <span className="text-center">{name}</span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-<AllIconsPreview />;
