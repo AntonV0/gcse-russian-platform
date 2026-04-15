@@ -1,7 +1,9 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import Select from "@/components/ui/select";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -405,45 +407,33 @@ export default async function AdminStudentsPage({
 
       <form className="mb-6 rounded-xl border bg-white p-4 shadow-sm">
         <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr_auto]">
-          <div>
-            <label className="mb-1 block text-sm font-medium">Search</label>
-            <input
+          <FormField label="Search">
+            <Input
               type="text"
               name="q"
               defaultValue={q}
               placeholder="Name, email, or teaching group"
-              className="w-full rounded border px-3 py-2 text-sm"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium">Status</label>
-            <select
-              name="status"
-              defaultValue={statusFilter}
-              className="w-full rounded border px-3 py-2 text-sm"
-            >
+          <FormField label="Status">
+            <Select name="status" defaultValue={statusFilter}>
               <option value="all">All</option>
               <option value="active">Active only</option>
               <option value="inactive">Inactive only</option>
-            </select>
-          </div>
+            </Select>
+          </FormField>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium">Access</label>
-            <select
-              name="access"
-              defaultValue={accessFilter}
-              className="w-full rounded border px-3 py-2 text-sm"
-            >
+          <FormField label="Access">
+            <Select name="access" defaultValue={accessFilter}>
               <option value="all">All</option>
               <option value="foundation">Foundation</option>
               <option value="higher">Higher</option>
               <option value="volna">Volna</option>
               <option value="trial">Trial</option>
               <option value="other">Other</option>
-            </select>
-          </div>
+            </Select>
+          </FormField>
 
           <div className="flex items-end gap-2">
             <Button type="submit" variant="primary" icon={appIcons.filter}>
@@ -521,10 +511,10 @@ export default async function AdminStudentsPage({
                           name="redirectTo"
                           value={currentPathWithFilters}
                         />
-                        <select
+                        <Select
                           name="productId"
                           defaultValue=""
-                          className="rounded border px-2 py-1 text-xs"
+                          className="w-auto min-w-[140px] px-2 py-1 text-xs"
                         >
                           <option value="">Switch access</option>
                           {accessOptions.map((product) => (
@@ -532,7 +522,7 @@ export default async function AdminStudentsPage({
                               {getProductLabel(product)}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                         <Button type="submit" variant="secondary" size="sm">
                           Apply
                         </Button>
@@ -624,10 +614,10 @@ export default async function AdminStudentsPage({
                           name="redirectTo"
                           value={currentPathWithFilters}
                         />
-                        <select
+                        <Select
                           name="productId"
                           defaultValue=""
-                          className="rounded border px-2 py-1 text-xs"
+                          className="w-auto min-w-[140px] px-2 py-1 text-xs"
                         >
                           <option value="">Switch access</option>
                           {accessOptions.map((product) => (
@@ -635,7 +625,7 @@ export default async function AdminStudentsPage({
                               {getProductLabel(product)}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                         <Button type="submit" variant="secondary" size="sm">
                           Apply
                         </Button>
