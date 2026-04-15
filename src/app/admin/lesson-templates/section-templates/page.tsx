@@ -3,10 +3,78 @@ import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import { appIcons } from "@/lib/icons";
+import { createLessonSectionTemplateAction } from "@/app/actions/admin-lesson-builder-actions";
 import {
   getLessonSectionTemplatePresetsDb,
   getLessonSectionTemplatesDb,
 } from "@/lib/lesson-template-helpers-db";
+
+function CreateSectionTemplateCard() {
+  return (
+    <section className="rounded-2xl border bg-white p-4 shadow-sm">
+      <div className="mb-3">
+        <div className="font-medium text-gray-900">Create section template</div>
+        <div className="text-sm text-gray-500">
+          Add a reusable section blueprint that can compose block presets.
+        </div>
+      </div>
+
+      <form
+        action={createLessonSectionTemplateAction}
+        className="grid gap-3 md:grid-cols-2"
+      >
+        <input
+          name="title"
+          required
+          placeholder="Section template title"
+          className="rounded-xl border px-3 py-2 text-sm"
+        />
+        <input
+          name="slug"
+          required
+          placeholder="section-template-slug"
+          className="rounded-xl border px-3 py-2 text-sm"
+        />
+        <input
+          name="defaultSectionTitle"
+          required
+          placeholder="Default section title"
+          className="rounded-xl border px-3 py-2 text-sm"
+        />
+        <select
+          name="defaultSectionKind"
+          required
+          defaultValue="content"
+          className="rounded-xl border px-3 py-2 text-sm"
+        >
+          <option value="intro">intro</option>
+          <option value="content">content</option>
+          <option value="grammar">grammar</option>
+          <option value="practice">practice</option>
+          <option value="reading_practice">reading_practice</option>
+          <option value="writing_practice">writing_practice</option>
+          <option value="speaking_practice">speaking_practice</option>
+          <option value="listening_practice">listening_practice</option>
+          <option value="summary">summary</option>
+        </select>
+        <input
+          name="description"
+          placeholder="Optional description"
+          className="rounded-xl border px-3 py-2 text-sm md:col-span-2"
+        />
+
+        <div className="md:col-span-2">
+          <button
+            type="submit"
+            className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+          >
+            Create section template
+          </button>
+        </div>
+      </form>
+    </section>
+  );
+}
 
 export default async function AdminLessonSectionTemplatesPage() {
   const templates = await getLessonSectionTemplatesDb();
@@ -29,15 +97,12 @@ export default async function AdminLessonSectionTemplatesPage() {
           description="Reusable section blueprints built from ordered block presets."
         />
 
-        <div className="flex gap-2">
-          <Button href="/admin/lesson-templates" variant="secondary" icon={appIcons.back}>
-            Back
-          </Button>
-          <Button href="#" variant="primary" icon={appIcons.create}>
-            Create section template
-          </Button>
-        </div>
+        <Button href="/admin/lesson-templates" variant="secondary" icon={appIcons.back}>
+          Back
+        </Button>
       </div>
+
+      <CreateSectionTemplateCard />
 
       {templates.length === 0 ? (
         <div className="rounded-xl border border-dashed bg-white px-4 py-8 text-sm text-gray-500">

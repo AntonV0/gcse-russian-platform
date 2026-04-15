@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { getPresetBlocksForInsert } from "@/lib/lesson-block-presets";
+import { resolveSectionKind } from "@/lib/lesson-blocks";
 import {
   getBlocksForSectionTemplate,
   getSectionTemplateById,
@@ -64,6 +65,11 @@ function getRouteRedirectPath(formData: FormData) {
 function revalidateLessonTemplatePaths() {
   revalidatePath("/admin/lesson-templates");
   revalidatePath("/admin/lesson-templates/block-presets");
+}
+
+function revalidateLessonSectionTemplatePaths() {
+  revalidatePath("/admin/lesson-templates");
+  revalidatePath("/admin/lesson-templates/section-templates");
 }
 
 async function revalidateLessonPaths(formData: FormData) {
@@ -2033,4 +2039,292 @@ export async function reorderLessonBlockPresetBlocksAction(formData: FormData) {
 
   revalidateLessonTemplatePaths();
   revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+}
+
+export async function createLessonSectionTemplateAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const title = getTrimmedString(formData, "title");
+  const slug = getTrimmedString(formData, "slug");
+  const description = getTrimmedString(formData, "description");
+  const defaultSectionTitle = getTrimmedString(formData, "defaultSectionTitle");
+  const defaultSectionKindRaw = getTrimmedString(formData, "defaultSectionKind");
+
+  if (!title || !slug || !defaultSectionTitle || !defaultSectionKindRaw) {
+    throw new Error(
+      "Title, slug, default section title, and default section kind are required"
+    );
+  }
+
+  const defaultSectionKind = resolveSectionKind(defaultSectionKindRaw);
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("lesson_section_templates").insert({
+    title,
+    slug,
+    description: description || null,
+    default_section_title: defaultSectionTitle,
+    default_section_kind: defaultSectionKind,
+    is_active: true,
+  });
+
+  if (error) {
+    console.error("Error creating lesson section template:", error);
+    throw new Error(`Failed to create section template: ${error.message}`);
+  }
+
+  revalidateLessonSectionTemplatePaths();
+}
+
+export async function updateLessonSectionTemplateAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const templateId = getTrimmedString(formData, "templateId");
+  const title = getTrimmedString(formData, "title");
+  const slug = getTrimmedString(formData, "slug");
+  const description = getTrimmedString(formData, "description");
+  const defaultSectionTitle = getTrimmedString(formData, "defaultSectionTitle");
+  const defaultSectionKindRaw = getTrimmedString(formData, "defaultSectionKind");
+  const isActive = String(formData.get("isActive") || "") === "true";
+
+  if (!templateId || !title || !slug || !defaultSectionTitle || !defaultSectionKindRaw) {
+    throw new Error(
+      "Template id, title, slug, default section title, and default section kind are required"
+    );
+  }
+
+  const defaultSectionKind = resolveSectionKind(defaultSectionKindRaw);
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_section_templates")
+    .update({
+      title,
+      slug,
+      description: description || null,
+      default_section_title: defaultSectionTitle,
+      default_section_kind: defaultSectionKind,
+      is_active: isActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", templateId);
+
+  if (error) {
+    console.error("Error updating lesson section template:", error);
+    throw new Error(`Failed to update section template: ${error.message}`);
+  }
+
+  revalidateLessonSectionTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
+}
+
+export async function deleteLessonSectionTemplateAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const templateId = getTrimmedString(formData, "templateId");
+  if (!templateId) {
+    throw new Error("Template id is required");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_section_templates")
+    .delete()
+    .eq("id", templateId);
+
+  if (error) {
+    console.error("Error deleting lesson section template:", error);
+    throw new Error(`Failed to delete section template: ${error.message}`);
+  }
+
+  revalidateLessonSectionTemplatePaths();
+  redirect("/admin/lesson-templates/section-templates");
+}
+
+async function getNextLessonSectionTemplatePresetPosition(templateId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_section_template_presets")
+    .select("position")
+    .eq("lesson_section_template_id", templateId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error getting next lesson section template preset position:", error);
+    throw new Error(
+      `Failed to get next section template preset position: ${error.message}`
+    );
+  }
+
+  return data?.position ? data.position + 1 : 1;
+}
+
+export async function addPresetToLessonSectionTemplateAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const templateId = getTrimmedString(formData, "templateId");
+  const presetId = getTrimmedString(formData, "presetId");
+
+  if (!templateId || !presetId) {
+    throw new Error("Template id and preset id are required");
+  }
+
+  const position = await getNextLessonSectionTemplatePresetPosition(templateId);
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("lesson_section_template_presets").insert({
+    lesson_section_template_id: templateId,
+    lesson_block_preset_id: presetId,
+    position,
+  });
+
+  if (error) {
+    console.error("Error adding preset to lesson section template:", error);
+    throw new Error(`Failed to add preset to section template: ${error.message}`);
+  }
+
+  revalidateLessonSectionTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
+}
+
+export async function removePresetFromLessonSectionTemplateAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const templateId = getTrimmedString(formData, "templateId");
+  const presetId = getTrimmedString(formData, "presetId");
+
+  if (!templateId || !presetId) {
+    throw new Error("Template id and preset id are required");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_section_template_presets")
+    .delete()
+    .eq("lesson_section_template_id", templateId)
+    .eq("lesson_block_preset_id", presetId);
+
+  if (error) {
+    console.error("Error removing preset from lesson section template:", error);
+    throw new Error(`Failed to remove preset from section template: ${error.message}`);
+  }
+
+  const { data: remainingLinks, error: loadError } = await supabase
+    .from("lesson_section_template_presets")
+    .select("lesson_block_preset_id")
+    .eq("lesson_section_template_id", templateId)
+    .order("position", { ascending: true });
+
+  if (loadError) {
+    console.error("Error loading remaining section template preset links:", loadError);
+    throw new Error(
+      `Failed to normalize section template preset order: ${loadError.message}`
+    );
+  }
+
+  for (let index = 0; index < (remainingLinks?.length ?? 0); index += 1) {
+    const row = remainingLinks![index];
+
+    const { error: tempError } = await supabase
+      .from("lesson_section_template_presets")
+      .update({ position: -1 * (index + 1) })
+      .eq("lesson_section_template_id", templateId)
+      .eq("lesson_block_preset_id", row.lesson_block_preset_id);
+
+    if (tempError) {
+      console.error(
+        "Error setting temporary section template preset positions:",
+        tempError
+      );
+      throw new Error(
+        `Failed to normalize section template preset order: ${tempError.message}`
+      );
+    }
+  }
+
+  for (let index = 0; index < (remainingLinks?.length ?? 0); index += 1) {
+    const row = remainingLinks![index];
+
+    const { error: finalError } = await supabase
+      .from("lesson_section_template_presets")
+      .update({ position: index + 1 })
+      .eq("lesson_section_template_id", templateId)
+      .eq("lesson_block_preset_id", row.lesson_block_preset_id);
+
+    if (finalError) {
+      console.error("Error setting final section template preset positions:", finalError);
+      throw new Error(
+        `Failed to normalize section template preset order: ${finalError.message}`
+      );
+    }
+  }
+
+  revalidateLessonSectionTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
+}
+
+export async function reorderLessonSectionTemplatePresetsAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const templateId = getTrimmedString(formData, "templateId");
+  const orderedPresetIdsRaw = getTrimmedString(formData, "orderedPresetIds");
+
+  if (!templateId || !orderedPresetIdsRaw) {
+    throw new Error("Missing required fields");
+  }
+
+  const orderedPresetIds = orderedPresetIdsRaw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  if (orderedPresetIds.length === 0) {
+    throw new Error("No preset ids provided");
+  }
+
+  const supabase = await createClient();
+
+  for (let index = 0; index < orderedPresetIds.length; index += 1) {
+    const presetId = orderedPresetIds[index];
+
+    const { error } = await supabase
+      .from("lesson_section_template_presets")
+      .update({ position: -1 * (index + 1) })
+      .eq("lesson_section_template_id", templateId)
+      .eq("lesson_block_preset_id", presetId);
+
+    if (error) {
+      console.error("Error setting temporary section template preset positions:", error);
+      throw new Error(`Failed to reorder section template presets: ${error.message}`);
+    }
+  }
+
+  for (let index = 0; index < orderedPresetIds.length; index += 1) {
+    const presetId = orderedPresetIds[index];
+
+    const { error } = await supabase
+      .from("lesson_section_template_presets")
+      .update({ position: index + 1 })
+      .eq("lesson_section_template_id", templateId)
+      .eq("lesson_block_preset_id", presetId);
+
+    if (error) {
+      console.error("Error setting final section template preset positions:", error);
+      throw new Error(`Failed to reorder section template presets: ${error.message}`);
+    }
+  }
+
+  revalidateLessonSectionTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
 }
