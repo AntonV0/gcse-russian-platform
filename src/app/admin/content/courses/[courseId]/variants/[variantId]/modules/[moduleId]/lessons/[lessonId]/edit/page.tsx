@@ -1,5 +1,10 @@
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import Textarea from "@/components/ui/textarea";
+import Select from "@/components/ui/select";
+import CheckboxField from "@/components/ui/checkbox-field";
 import { appIcons } from "@/lib/icons";
 import {
   getCourseByIdDb,
@@ -17,15 +22,6 @@ type AdminLessonEditPageProps = {
     lessonId: string;
   }>;
 };
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
-      {children}
-    </div>
-  );
-}
 
 export default async function AdminLessonEditPage({ params }: AdminLessonEditPageProps) {
   const { courseId, variantId, moduleId, lessonId } = await params;
@@ -105,119 +101,69 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
           <input type="hidden" name="moduleId" value={module.id} />
           <input type="hidden" name="lessonId" value={lesson.id} />
 
-          <Field label="Title">
-            <input
-              name="title"
-              required
-              defaultValue={lesson.title}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Title">
+            <Input name="title" required defaultValue={lesson.title} />
+          </FormField>
 
-          <Field label="Slug">
-            <input
-              name="slug"
-              required
-              defaultValue={lesson.slug}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Slug">
+            <Input name="slug" required defaultValue={lesson.slug} />
+          </FormField>
 
-          <Field label="Summary">
-            <textarea
-              name="summary"
-              rows={4}
-              defaultValue={lesson.summary ?? ""}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Summary">
+            <Textarea name="summary" rows={4} defaultValue={lesson.summary ?? ""} />
+          </FormField>
 
-          <Field label="Lesson type">
-            <input
-              name="lessonType"
-              defaultValue={lesson.lesson_type}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Lesson type">
+            <Input name="lessonType" defaultValue={lesson.lesson_type} />
+          </FormField>
 
-          <Field label="Position">
-            <input
-              name="position"
-              type="number"
-              min="1"
-              defaultValue={lesson.position}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Position">
+            <Input name="position" type="number" min="1" defaultValue={lesson.position} />
+          </FormField>
 
-          <Field label="Estimated minutes">
-            <input
+          <FormField label="Estimated minutes">
+            <Input
               name="estimatedMinutes"
               type="number"
               min="1"
               defaultValue={lesson.estimated_minutes ?? ""}
-              className="w-full rounded-xl border px-3 py-2"
             />
-          </Field>
+          </FormField>
 
-          <Field label="Content source">
-            <select
-              name="contentSource"
-              defaultValue={lesson.content_source}
-              className="w-full rounded-xl border px-3 py-2"
-            >
+          <FormField label="Content source">
+            <Select name="contentSource" defaultValue={lesson.content_source}>
               <option value="code">code</option>
               <option value="database">database</option>
-            </select>
-          </Field>
+            </Select>
+          </FormField>
 
-          <Field label="Content key">
-            <input
-              name="contentKey"
-              defaultValue={lesson.content_key ?? ""}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Content key">
+            <Input name="contentKey" defaultValue={lesson.content_key ?? ""} />
+          </FormField>
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name="isPublished"
-              value="true"
-              defaultChecked={lesson.is_published}
-            />
-            Published
-          </label>
+          <CheckboxField
+            name="isPublished"
+            label="Published"
+            defaultChecked={lesson.is_published}
+          />
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name="isTrialVisible"
-              value="true"
-              defaultChecked={lesson.is_trial_visible}
-            />
-            Trial visible
-          </label>
+          <CheckboxField
+            name="isTrialVisible"
+            label="Trial visible"
+            defaultChecked={lesson.is_trial_visible}
+          />
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name="requiresPaidAccess"
-              value="true"
-              defaultChecked={lesson.requires_paid_access}
-            />
-            Requires paid access
-          </label>
+          <CheckboxField
+            name="requiresPaidAccess"
+            label="Requires paid access"
+            defaultChecked={lesson.requires_paid_access}
+          />
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name="availableInVolna"
-              value="true"
-              defaultChecked={lesson.available_in_volna}
-            />
-            Available in Volna
-          </label>
+          <CheckboxField
+            name="availableInVolna"
+            label="Available in Volna"
+            defaultChecked={lesson.available_in_volna}
+          />
 
           <div className="flex flex-wrap gap-3 pt-2">
             <Button type="submit" variant="primary" icon={appIcons.completed}>

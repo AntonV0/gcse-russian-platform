@@ -1,5 +1,9 @@
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import Textarea from "@/components/ui/textarea";
+import CheckboxField from "@/components/ui/checkbox-field";
 import { appIcons } from "@/lib/icons";
 import { getCourseByIdDb } from "@/lib/course-helpers-db";
 import { updateCourseAction } from "@/app/actions/admin-content-actions";
@@ -9,15 +13,6 @@ type AdminCourseEditPageProps = {
     courseId: string;
   }>;
 };
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
-      {children}
-    </div>
-  );
-}
 
 export default async function AdminCourseEditPage({ params }: AdminCourseEditPageProps) {
   const { courseId } = await params;
@@ -57,52 +52,33 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
         <form action={updateCourseAction} className="space-y-4 p-5 text-sm">
           <input type="hidden" name="courseId" value={course.id} />
 
-          <Field label="Title">
-            <input
-              name="title"
-              required
-              defaultValue={course.title}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Title">
+            <Input name="title" required defaultValue={course.title} />
+          </FormField>
 
-          <Field label="Slug">
-            <input
-              name="slug"
-              required
-              defaultValue={course.slug}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Slug">
+            <Input name="slug" required defaultValue={course.slug} />
+          </FormField>
 
-          <Field label="Description">
-            <textarea
+          <FormField label="Description">
+            <Textarea
               name="description"
               rows={4}
               defaultValue={course.description ?? ""}
-              className="w-full rounded-xl border px-3 py-2"
             />
-          </Field>
+          </FormField>
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name="isActive"
-              value="true"
-              defaultChecked={course.is_active}
-            />
-            Active
-          </label>
+          <CheckboxField
+            name="isActive"
+            label="Active"
+            defaultChecked={course.is_active}
+          />
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name="isPublished"
-              value="true"
-              defaultChecked={course.is_published}
-            />
-            Published
-          </label>
+          <CheckboxField
+            name="isPublished"
+            label="Published"
+            defaultChecked={course.is_published}
+          />
 
           <div className="flex flex-wrap gap-3 pt-2">
             <Button type="submit" variant="primary" icon={appIcons.completed}>
