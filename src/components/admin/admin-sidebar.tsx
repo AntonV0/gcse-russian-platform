@@ -21,7 +21,8 @@ export default function AdminSidebar() {
   const isUiLab = pathname.startsWith("/admin/ui");
   const isQuestionSets =
     pathname === "/admin/question-sets" || pathname.startsWith("/admin/question-sets/");
-  const isTemplates = pathname === "/admin/question-sets/templates";
+  const isQuestionTemplates = pathname === "/admin/question-sets/templates";
+  const isLessonTemplates = pathname.startsWith("/admin/lesson-templates");
   const isAssignments = pathname.startsWith("/teacher/assignments");
   const isTeachingGroups = pathname.startsWith("/admin/teaching-groups");
   const isStudents = pathname.startsWith("/admin/students");
@@ -55,13 +56,21 @@ export default function AdminSidebar() {
           <span>Courses / Modules / Lessons</span>
         </Link>
 
+        <Link
+          href="/admin/lesson-templates"
+          className={getNavItemClass(isLessonTemplates)}
+        >
+          <AppIcon icon={appIcons.file} size={18} />
+          <span>Lesson Templates</span>
+        </Link>
+
         <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
           Questions
         </div>
 
         <Link
           href="/admin/question-sets"
-          className={getNavItemClass(isQuestionSets && !isTemplates)}
+          className={getNavItemClass(isQuestionSets && !isQuestionTemplates)}
         >
           <AppIcon icon={appIcons.help} size={18} />
           <span>Question Sets</span>
@@ -69,7 +78,7 @@ export default function AdminSidebar() {
 
         <Link
           href="/admin/question-sets/templates"
-          className={getNavItemClass(isTemplates)}
+          className={getNavItemClass(isQuestionTemplates)}
         >
           <AppIcon icon={appIcons.file} size={18} />
           <span>Templates</span>
