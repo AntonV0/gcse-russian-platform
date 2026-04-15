@@ -2,6 +2,10 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import Textarea from "@/components/ui/textarea";
+import CheckboxField from "@/components/ui/checkbox-field";
 import { appIcons } from "@/lib/icons";
 import { getCourseByIdDb, getVariantsByCourseIdDb } from "@/lib/course-helpers-db";
 import {
@@ -32,15 +36,6 @@ function SectionCard({
       </div>
       <div className="p-5">{children}</div>
     </section>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
-      {children}
-    </div>
   );
 }
 
@@ -133,39 +128,22 @@ export default async function AdminCourseDetailPage({
           <form action={createVariantAction} className="space-y-4 text-sm">
             <input type="hidden" name="courseId" value={course.id} />
 
-            <Field label="Title">
-              <input
-                name="title"
-                required
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Title">
+              <Input name="title" required />
+            </FormField>
 
-            <Field label="Slug">
-              <input
-                name="slug"
-                required
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Slug">
+              <Input name="slug" required />
+            </FormField>
 
-            <Field label="Description">
-              <textarea
-                name="description"
-                rows={3}
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Description">
+              <Textarea name="description" rows={3} />
+            </FormField>
 
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" name="isActive" value="true" defaultChecked />
-              Active
-            </label>
-
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" name="isPublished" value="true" />
-              Published
-            </label>
+            <div className="space-y-2">
+              <CheckboxField name="isActive" label="Active" defaultChecked />
+              <CheckboxField name="isPublished" label="Published" />
+            </div>
 
             <Button type="submit" variant="primary" icon={appIcons.create}>
               Create variant

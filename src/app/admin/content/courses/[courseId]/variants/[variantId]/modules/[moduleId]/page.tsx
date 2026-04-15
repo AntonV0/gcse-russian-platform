@@ -1,6 +1,11 @@
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import Textarea from "@/components/ui/textarea";
+import Select from "@/components/ui/select";
+import CheckboxField from "@/components/ui/checkbox-field";
 import { appIcons } from "@/lib/icons";
 import {
   getCourseByIdDb,
@@ -39,15 +44,6 @@ function SectionCard({
       </div>
       <div className="p-5">{children}</div>
     </section>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
-      {children}
-    </div>
   );
 }
 
@@ -170,86 +166,47 @@ export default async function AdminModuleDetailPage({
             <input type="hidden" name="variantId" value={variant.id} />
             <input type="hidden" name="moduleId" value={module.id} />
 
-            <Field label="Title">
-              <input
-                name="title"
-                required
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Title">
+              <Input name="title" required />
+            </FormField>
 
-            <Field label="Slug">
-              <input
-                name="slug"
-                required
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Slug">
+              <Input name="slug" required />
+            </FormField>
 
-            <Field label="Summary">
-              <textarea
-                name="summary"
-                rows={3}
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Summary">
+              <Textarea name="summary" rows={3} />
+            </FormField>
 
-            <Field label="Lesson type">
-              <input
-                name="lessonType"
-                defaultValue="lesson"
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Lesson type">
+              <Input name="lessonType" defaultValue="lesson" />
+            </FormField>
 
-            <Field label="Estimated minutes">
-              <input
-                name="estimatedMinutes"
-                type="number"
-                min="1"
-                className="w-full rounded-xl border px-3 py-2"
-              />
-            </Field>
+            <FormField label="Estimated minutes">
+              <Input name="estimatedMinutes" type="number" min="1" />
+            </FormField>
 
-            <Field label="Content source">
-              <select
-                name="contentSource"
-                defaultValue="code"
-                className="w-full rounded-xl border px-3 py-2"
-              >
+            <FormField label="Content source">
+              <Select name="contentSource" defaultValue="code">
                 <option value="code">code</option>
                 <option value="database">database</option>
-              </select>
-            </Field>
+              </Select>
+            </FormField>
 
-            <Field label="Content key">
-              <input name="contentKey" className="w-full rounded-xl border px-3 py-2" />
-            </Field>
+            <FormField label="Content key">
+              <Input name="contentKey" />
+            </FormField>
 
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" name="isPublished" value="true" />
-              Published
-            </label>
-
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" name="isTrialVisible" value="true" />
-              Trial visible
-            </label>
-
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
+            <div className="space-y-2">
+              <CheckboxField name="isPublished" label="Published" />
+              <CheckboxField name="isTrialVisible" label="Trial visible" />
+              <CheckboxField
                 name="requiresPaidAccess"
-                value="true"
+                label="Requires paid access"
                 defaultChecked
               />
-              Requires paid access
-            </label>
-
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" name="availableInVolna" value="true" />
-              Available in Volna
-            </label>
+              <CheckboxField name="availableInVolna" label="Available in Volna" />
+            </div>
 
             <Button type="submit" variant="primary" icon={appIcons.create}>
               Create lesson
