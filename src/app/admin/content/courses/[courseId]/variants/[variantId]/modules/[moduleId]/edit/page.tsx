@@ -1,5 +1,9 @@
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import Textarea from "@/components/ui/textarea";
+import CheckboxField from "@/components/ui/checkbox-field";
 import { appIcons } from "@/lib/icons";
 import {
   getCourseByIdDb,
@@ -15,15 +19,6 @@ type AdminModuleEditPageProps = {
     moduleId: string;
   }>;
 };
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
-      {children}
-    </div>
-  );
-}
 
 export default async function AdminModuleEditPage({ params }: AdminModuleEditPageProps) {
   const { courseId, variantId, moduleId } = await params;
@@ -91,52 +86,31 @@ export default async function AdminModuleEditPage({ params }: AdminModuleEditPag
           <input type="hidden" name="variantId" value={variant.id} />
           <input type="hidden" name="moduleId" value={module.id} />
 
-          <Field label="Title">
-            <input
-              name="title"
-              required
-              defaultValue={module.title}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Title">
+            <Input name="title" required defaultValue={module.title} />
+          </FormField>
 
-          <Field label="Slug">
-            <input
-              name="slug"
-              required
-              defaultValue={module.slug}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Slug">
+            <Input name="slug" required defaultValue={module.slug} />
+          </FormField>
 
-          <Field label="Description">
-            <textarea
+          <FormField label="Description">
+            <Textarea
               name="description"
               rows={4}
               defaultValue={module.description ?? ""}
-              className="w-full rounded-xl border px-3 py-2"
             />
-          </Field>
+          </FormField>
 
-          <Field label="Position">
-            <input
-              name="position"
-              type="number"
-              min="1"
-              defaultValue={module.position}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-          </Field>
+          <FormField label="Position">
+            <Input name="position" type="number" min="1" defaultValue={module.position} />
+          </FormField>
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name="isPublished"
-              value="true"
-              defaultChecked={module.is_published}
-            />
-            Published
-          </label>
+          <CheckboxField
+            name="isPublished"
+            label="Published"
+            defaultChecked={module.is_published}
+          />
 
           <div className="flex flex-wrap gap-3 pt-2">
             <Button type="submit" variant="primary" icon={appIcons.completed}>
