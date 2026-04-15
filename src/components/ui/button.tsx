@@ -115,8 +115,19 @@ export default function Button(props: ButtonProps) {
     );
   }
 
+  const {
+    variant: _variant,
+    size: _size,
+    icon: _icon,
+    iconPosition: _iconPosition,
+    href: _href,
+    ...buttonProps
+  } = props as ButtonAsButtonProps & {
+    href?: never;
+  };
+
   return (
-    <button {...props} className={mergedClassName}>
+    <button {...buttonProps} className={mergedClassName}>
       <ButtonInner icon={icon} iconPosition={iconPosition}>
         {children}
       </ButtonInner>

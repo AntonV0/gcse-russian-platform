@@ -1,8 +1,12 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
+import AppIcon from "@/components/ui/app-icon";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { getQuestionSetsDb } from "@/lib/question-helpers-db";
+import { appIcons } from "@/lib/icons";
 
 export default async function AdminQuestionSetsPage() {
   const canAccess = await requireAdminAccess();
@@ -21,16 +25,17 @@ export default async function AdminQuestionSetsPage() {
           description="Manage reusable question sets for lessons and assignments."
         />
 
-        <Link
+        <Button
           href="/admin/question-sets/create"
-          className="inline-block rounded-lg bg-black px-4 py-2 text-sm text-white"
+          variant="primary"
+          icon={appIcons.write}
         >
           Create question set
-        </Link>
+        </Button>
       </div>
 
       {questionSets.length === 0 ? (
-        <div className="rounded-lg border p-6 text-sm text-gray-600">
+        <div className="rounded-xl border bg-white p-6 text-sm text-gray-600 shadow-sm">
           No question sets found.
         </div>
       ) : (
@@ -43,10 +48,12 @@ export default async function AdminQuestionSetsPage() {
             >
               <div className="transition hover:-translate-y-0.5">
                 <DashboardCard title={questionSet.title}>
-                  <div className="space-y-2">
-                    <p>
-                      <span className="font-medium">Slug:</span> {questionSet.slug}
-                    </p>
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-2">
+                      <Badge tone="muted" icon={appIcons.file}>
+                        {questionSet.slug}
+                      </Badge>
+                    </div>
 
                     {questionSet.description ? (
                       <p className="text-gray-700">{questionSet.description}</p>
@@ -55,6 +62,11 @@ export default async function AdminQuestionSetsPage() {
                     {questionSet.instructions ? (
                       <p className="text-gray-500">{questionSet.instructions}</p>
                     ) : null}
+
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <AppIcon icon={appIcons.preview} size={16} />
+                      <span>Open question set</span>
+                    </div>
                   </div>
                 </DashboardCard>
               </div>

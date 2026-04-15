@@ -1,7 +1,10 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import { appIcons } from "@/lib/icons";
 
 type TeachingGroupRow = {
   id: string;
@@ -123,15 +126,12 @@ export default async function AdminTeachingGroupsPage() {
           description="View groups, teacher assignment, and membership structure."
         />
 
-        <Link
-          href="/admin/teaching-groups/new"
-          className="rounded bg-black px-4 py-2 text-white"
-        >
+        <Button href="/admin/teaching-groups/new" variant="primary" icon={appIcons.write}>
           New teaching group
-        </Link>
+        </Button>
       </div>
 
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-xl border bg-white shadow-sm">
         <div className="border-b px-4 py-3 font-medium">
           Teaching Groups ({groupRows.length})
         </div>
@@ -160,7 +160,7 @@ export default async function AdminTeachingGroupsPage() {
               return (
                 <div
                   key={group.id}
-                  className="flex items-center justify-between gap-4 px-4 py-3"
+                  className="flex items-center justify-between gap-4 px-4 py-4"
                 >
                   <Link
                     href={`/admin/teaching-groups/${group.id}`}
@@ -168,7 +168,7 @@ export default async function AdminTeachingGroupsPage() {
                   >
                     <div className="font-medium">{group.name}</div>
 
-                    <div className="text-sm text-gray-500">
+                    <div className="mt-1 text-sm text-gray-500">
                       Teachers: {count.teachers} · Students: {count.students} · Total:{" "}
                       {count.total}
                     </div>
@@ -179,39 +179,46 @@ export default async function AdminTeachingGroupsPage() {
                       </div>
                     ) : null}
 
-                    <div className="mt-1 flex flex-wrap gap-2 text-xs">
-                      <span className="rounded border px-2 py-0.5">
+                    <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                      <Badge
+                        tone={group.is_active ? "success" : "warning"}
+                        icon={group.is_active ? appIcons.completed : appIcons.pending}
+                      >
                         {group.is_active ? "Active" : "Inactive"}
-                      </span>
+                      </Badge>
 
                       {linkedCourse ? (
-                        <span className="rounded border px-2 py-0.5">
+                        <Badge tone="muted" icon={appIcons.courses}>
                           {linkedCourse.title}
-                        </span>
+                        </Badge>
                       ) : null}
 
                       {linkedVariant ? (
-                        <span className="rounded border px-2 py-0.5">
+                        <Badge tone="muted" icon={appIcons.file}>
                           {linkedVariant.title}
-                        </span>
+                        </Badge>
                       ) : null}
                     </div>
                   </Link>
 
                   <div className="flex items-center gap-2">
-                    <Link
+                    <Button
                       href={`/admin/teaching-groups/${group.id}/edit`}
-                      className="rounded border px-3 py-1 text-sm"
+                      variant="secondary"
+                      size="sm"
+                      icon={appIcons.edit}
                     >
                       Edit
-                    </Link>
+                    </Button>
 
-                    <Link
+                    <Button
                       href={`/admin/teaching-groups/${group.id}`}
-                      className="rounded border px-3 py-1 text-sm"
+                      variant="secondary"
+                      size="sm"
+                      icon={appIcons.preview}
                     >
                       Open
-                    </Link>
+                    </Button>
                   </div>
                 </div>
               );

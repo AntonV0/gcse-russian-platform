@@ -1,8 +1,10 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { setTeacherRoleAction } from "@/app/actions/admin-user-actions";
+import { appIcons } from "@/lib/icons";
 
 type ProfileRow = {
   id: string;
@@ -156,7 +158,7 @@ export default async function AdminTeachersPage({
         </div>
       ) : null}
 
-      <form className="mb-6 rounded-lg border bg-white p-4">
+      <form className="mb-6 rounded-xl border bg-white p-4 shadow-sm">
         <div className="grid gap-4 md:grid-cols-[2fr_auto]">
           <div>
             <label className="mb-1 block text-sm font-medium">Search</label>
@@ -170,24 +172,18 @@ export default async function AdminTeachersPage({
           </div>
 
           <div className="flex items-end gap-2">
-            <button
-              type="submit"
-              className="rounded bg-black px-4 py-2 text-sm text-white"
-            >
+            <Button type="submit" variant="primary" icon={appIcons.filter}>
               Apply
-            </button>
+            </Button>
 
-            <Link
-              href="/admin/teachers"
-              className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
-            >
+            <Button href="/admin/teachers" variant="secondary" icon={appIcons.back}>
               Reset
-            </Link>
+            </Button>
           </div>
         </div>
       </form>
 
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-xl border bg-white shadow-sm">
         <div className="border-b px-4 py-3 font-medium">
           Teachers ({filteredTeachers.length})
         </div>
@@ -201,7 +197,7 @@ export default async function AdminTeachersPage({
             filteredTeachers.map((teacher) => (
               <div
                 key={teacher.id}
-                className="flex items-center justify-between gap-4 px-4 py-3"
+                className="flex items-center justify-between gap-4 px-4 py-4"
               >
                 <div>
                   <div className="font-medium">{getPersonLabel(teacher)}</div>
@@ -210,17 +206,17 @@ export default async function AdminTeachersPage({
                     {teacher.email || "No email"}
                   </div>
 
-                  <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs">
                     {teacher.roles.map((role) => (
-                      <span key={role} className="rounded border px-2 py-0.5">
+                      <Badge key={role} tone="info" icon={appIcons.users}>
                         {formatRole(role)}
-                      </span>
+                      </Badge>
                     ))}
 
                     {teacher.groupNames.map((groupName) => (
-                      <span key={groupName} className="rounded border px-2 py-0.5">
+                      <Badge key={groupName} tone="muted" icon={appIcons.users}>
                         {groupName}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                 </div>
@@ -235,21 +231,20 @@ export default async function AdminTeachersPage({
                         value={currentPathWithFilters}
                       />
                       <input type="hidden" name="mode" value="disable" />
-                      <button
-                        type="submit"
-                        className="rounded border px-2 py-1 text-sm hover:bg-gray-50"
-                      >
+                      <Button type="submit" variant="secondary" size="sm">
                         Remove teacher
-                      </button>
+                      </Button>
                     </form>
                   ) : null}
 
-                  <Link
+                  <Button
                     href={`/admin/teachers/${teacher.id}`}
-                    className="rounded border px-2 py-1 text-sm hover:bg-gray-50"
+                    variant="secondary"
+                    size="sm"
+                    icon={appIcons.preview}
                   >
                     View
-                  </Link>
+                  </Button>
                 </div>
               </div>
             ))
