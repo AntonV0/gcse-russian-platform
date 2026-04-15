@@ -1351,7 +1351,7 @@ export async function reorderBlocksAction(formData: FormData) {
 
   const supabase = await createClient();
 
-  // Phase 1: move reordered items to temporary negative positions
+  // Phase 1: temporary negative positions
   for (let index = 0; index < orderedBlockIds.length; index += 1) {
     const blockId = orderedBlockIds[index];
 
@@ -1359,7 +1359,7 @@ export async function reorderBlocksAction(formData: FormData) {
       .from("lesson_blocks")
       .update({ position: -1 * (index + 1) })
       .eq("id", blockId)
-      .eq("section_id", sectionId);
+      .eq("lesson_section_id", sectionId);
 
     if (error) {
       console.error("Error setting temporary block positions:", error);
@@ -1367,7 +1367,7 @@ export async function reorderBlocksAction(formData: FormData) {
     }
   }
 
-  // Phase 2: write final positions
+  // Phase 2: final positions
   for (let index = 0; index < orderedBlockIds.length; index += 1) {
     const blockId = orderedBlockIds[index];
 
@@ -1375,7 +1375,7 @@ export async function reorderBlocksAction(formData: FormData) {
       .from("lesson_blocks")
       .update({ position: index + 1 })
       .eq("id", blockId)
-      .eq("section_id", sectionId);
+      .eq("lesson_section_id", sectionId);
 
     if (error) {
       console.error("Error setting final block positions:", error);
