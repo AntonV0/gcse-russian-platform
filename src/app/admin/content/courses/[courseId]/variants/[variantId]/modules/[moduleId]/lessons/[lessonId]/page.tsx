@@ -1,6 +1,8 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
 import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
+import { appIcons } from "@/lib/icons";
 import {
   getCourseByIdDb,
   getLessonByIdDb,
@@ -87,31 +89,34 @@ export default async function AdminLessonDetailPage({
 
   return (
     <main className="space-y-6">
-      <div className="flex flex-wrap gap-4 text-sm">
-        <Link href="/admin/content" className="text-blue-600 hover:underline">
-          ← Back to content
-        </Link>
+      <div className="flex flex-wrap gap-2">
+        <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
+          Back to content
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {course.title}
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {variant.title}
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {module.title}
-        </Link>
+        </Button>
       </div>
 
       <PageHeader
@@ -129,21 +134,21 @@ export default async function AdminLessonDetailPage({
           </div>
 
           <div className="flex flex-wrap gap-2 text-sm">
-            <Link
+            <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
-              className="rounded-xl border bg-white px-3 py-2 hover:bg-gray-50"
+              variant="secondary"
+              icon={appIcons.edit}
             >
               Edit lesson metadata
-            </Link>
+            </Button>
 
-            <Link
+            <Button
               href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-xl border bg-white px-3 py-2 hover:bg-gray-50"
+              variant="secondary"
+              icon={appIcons.preview}
             >
               Open public lesson
-            </Link>
+            </Button>
           </div>
         </div>
 
@@ -213,6 +218,27 @@ export default async function AdminLessonDetailPage({
             <div className="mt-4 rounded-xl border bg-gray-50 p-4 text-sm">
               <span className="font-medium">Summary:</span> {lesson.summary ?? "—"}
             </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Badge
+                tone={lesson.is_published ? "info" : "muted"}
+                icon={appIcons.preview}
+              >
+                {lesson.is_published ? "Published" : "Draft"}
+              </Badge>
+              <Badge
+                tone={lesson.is_trial_visible ? "success" : "muted"}
+                icon={appIcons.help}
+              >
+                {lesson.is_trial_visible ? "Trial visible" : "No trial"}
+              </Badge>
+              <Badge
+                tone={lesson.available_in_volna ? "success" : "muted"}
+                icon={appIcons.users}
+              >
+                {lesson.available_in_volna ? "Available in Volna" : "Not in Volna"}
+              </Badge>
+            </div>
           </InfoCard>
 
           <div className="space-y-6">
@@ -244,12 +270,9 @@ export default async function AdminLessonDetailPage({
                   <input type="hidden" name="variantId" value={variant.id} />
                   <input type="hidden" name="moduleId" value={module.id} />
                   <input type="hidden" name="lessonId" value={lesson.id} />
-                  <button
-                    type="submit"
-                    className="rounded-xl border border-red-300 px-4 py-2 text-red-700 hover:bg-red-50"
-                  >
+                  <Button type="submit" variant="danger" icon={appIcons.delete}>
                     Unpublish lesson
-                  </button>
+                  </Button>
                 </form>
               </div>
             </section>

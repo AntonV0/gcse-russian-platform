@@ -1,5 +1,6 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import { appIcons } from "@/lib/icons";
 import {
   getCourseByIdDb,
   getLessonByIdDb,
@@ -16,6 +17,15 @@ type AdminLessonEditPageProps = {
     lessonId: string;
   }>;
 };
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 export default async function AdminLessonEditPage({ params }: AdminLessonEditPageProps) {
   const { courseId, variantId, moduleId, lessonId } = await params;
@@ -40,39 +50,43 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
   }
 
   return (
-    <main>
-      <div className="mb-4 flex flex-wrap gap-4 text-sm">
-        <Link href="/admin/content" className="text-blue-600 hover:underline">
-          ← Back to content
-        </Link>
+    <main className="space-y-6">
+      <div className="flex flex-wrap gap-2">
+        <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
+          Back to content
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {course.title}
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {variant.title}
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {module.title}
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {lesson.title}
-        </Link>
+        </Button>
       </div>
 
       <PageHeader
@@ -80,98 +94,92 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
         description="Update lesson metadata and access settings."
       />
 
-      <section className="max-w-3xl rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Lesson Settings</div>
+      <section className="max-w-3xl rounded-2xl border bg-white shadow-sm">
+        <div className="border-b px-5 py-4 font-semibold text-gray-900">
+          Lesson settings
+        </div>
 
-        <form action={updateLessonAction} className="space-y-4 px-4 py-4 text-sm">
+        <form action={updateLessonAction} className="space-y-4 p-5 text-sm">
           <input type="hidden" name="courseId" value={course.id} />
           <input type="hidden" name="variantId" value={variant.id} />
           <input type="hidden" name="moduleId" value={module.id} />
           <input type="hidden" name="lessonId" value={lesson.id} />
 
-          <div>
-            <label className="mb-1 block font-medium">Title</label>
+          <Field label="Title">
             <input
               name="title"
               required
               defaultValue={lesson.title}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Slug</label>
+          <Field label="Slug">
             <input
               name="slug"
               required
               defaultValue={lesson.slug}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Summary</label>
+          <Field label="Summary">
             <textarea
               name="summary"
               rows={4}
               defaultValue={lesson.summary ?? ""}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Lesson type</label>
+          <Field label="Lesson type">
             <input
               name="lessonType"
               defaultValue={lesson.lesson_type}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Position</label>
+          <Field label="Position">
             <input
               name="position"
               type="number"
               min="1"
               defaultValue={lesson.position}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Estimated minutes</label>
+          <Field label="Estimated minutes">
             <input
               name="estimatedMinutes"
               type="number"
               min="1"
               defaultValue={lesson.estimated_minutes ?? ""}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Content source</label>
+          <Field label="Content source">
             <select
               name="contentSource"
               defaultValue={lesson.content_source}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             >
               <option value="code">code</option>
               <option value="database">database</option>
             </select>
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Content key</label>
+          <Field label="Content key">
             <input
               name="contentKey"
               defaultValue={lesson.content_key ?? ""}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"
               name="isPublished"
@@ -181,7 +189,7 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
             Published
           </label>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"
               name="isTrialVisible"
@@ -191,7 +199,7 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
             Trial visible
           </label>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"
               name="requiresPaidAccess"
@@ -201,7 +209,7 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
             Requires paid access
           </label>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"
               name="availableInVolna"
@@ -212,16 +220,17 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
           </label>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <button type="submit" className="rounded bg-black px-4 py-2 text-white">
+            <Button type="submit" variant="primary" icon={appIcons.completed}>
               Save lesson
-            </button>
+            </Button>
 
-            <Link
+            <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
-              className="rounded border px-4 py-2 hover:bg-gray-50"
+              variant="secondary"
+              icon={appIcons.back}
             >
               Cancel
-            </Link>
+            </Button>
           </div>
         </form>
       </section>

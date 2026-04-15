@@ -1,5 +1,7 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
+import { appIcons } from "@/lib/icons";
 import {
   getCourseByIdDb,
   getLessonsByModuleIdDb,
@@ -19,6 +21,35 @@ type AdminModuleDetailPageProps = {
     moduleId: string;
   }>;
 };
+
+function SectionCard({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border bg-white shadow-sm">
+      <div className="border-b px-5 py-4">
+        <h2 className="font-semibold text-gray-900">{title}</h2>
+        {description ? <p className="mt-1 text-sm text-gray-600">{description}</p> : null}
+      </div>
+      <div className="p-5">{children}</div>
+    </section>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 export default async function AdminModuleDetailPage({
   params,
@@ -43,25 +74,27 @@ export default async function AdminModuleDetailPage({
   }
 
   return (
-    <main>
-      <div className="mb-4 flex flex-wrap gap-4 text-sm">
-        <Link href="/admin/content" className="text-blue-600 hover:underline">
-          ← Back to content
-        </Link>
+    <main className="space-y-6">
+      <div className="flex flex-wrap gap-2">
+        <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
+          Back to content
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {course.title}
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {variant.title}
-        </Link>
+        </Button>
       </div>
 
       <PageHeader
@@ -69,11 +102,9 @@ export default async function AdminModuleDetailPage({
         description={module.description ?? "Manage lessons in this module."}
       />
 
-      <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Module Details</div>
-
-          <div className="space-y-3 px-4 py-4 text-sm">
+      <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+        <SectionCard title="Module details">
+          <div className="space-y-3 text-sm">
             <div>
               <span className="font-medium">Course:</span> {course.title}
             </div>
@@ -89,263 +120,273 @@ export default async function AdminModuleDetailPage({
             <div>
               <span className="font-medium">Position:</span> {module.position}
             </div>
-            <div>
-              <span className="font-medium">Published:</span>{" "}
-              {module.is_published ? "Yes" : "No"}
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              <Badge
+                tone={module.is_published ? "info" : "muted"}
+                icon={appIcons.preview}
+              >
+                {module.is_published ? "Published" : "Draft"}
+              </Badge>
             </div>
+
             {module.description ? (
               <div>
                 <span className="font-medium">Description:</span> {module.description}
               </div>
             ) : null}
           </div>
-        </div>
+        </SectionCard>
 
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Actions</div>
-
-          <div className="flex flex-col gap-3 px-4 py-4 text-sm">
-            <Link
+        <SectionCard title="Actions">
+          <div className="flex flex-col gap-3">
+            <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
-              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
+              variant="secondary"
+              icon={appIcons.edit}
             >
               Edit module
-            </Link>
+            </Button>
 
-            <Link
+            <Button
               href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}`}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
+              variant="secondary"
+              icon={appIcons.preview}
             >
               Open public module
-            </Link>
+            </Button>
           </div>
-        </div>
+        </SectionCard>
       </section>
 
-      <section className="mb-6">
-        <details className="rounded-lg border bg-white">
-          <summary className="flex cursor-pointer items-center justify-between px-4 py-3 font-medium marker:content-none">
-            <span>Add Lesson</span>
-            <span className="text-sm text-gray-400">+</span>
-          </summary>
+      <details className="rounded-2xl border bg-white shadow-sm">
+        <summary className="cursor-pointer select-none px-5 py-4 font-semibold text-gray-900">
+          Add Lesson
+        </summary>
 
-          <div className="border-t">
-            <form action={createLessonAction} className="space-y-4 px-4 py-4 text-sm">
-              <input type="hidden" name="courseId" value={course.id} />
-              <input type="hidden" name="variantId" value={variant.id} />
-              <input type="hidden" name="moduleId" value={module.id} />
+        <div className="border-t p-5">
+          <form action={createLessonAction} className="space-y-4 text-sm">
+            <input type="hidden" name="courseId" value={course.id} />
+            <input type="hidden" name="variantId" value={variant.id} />
+            <input type="hidden" name="moduleId" value={module.id} />
 
-              <div>
-                <label className="mb-1 block font-medium">Title</label>
-                <input
-                  name="title"
-                  required
-                  className="w-full rounded border px-3 py-2"
-                />
-              </div>
+            <Field label="Title">
+              <input
+                name="title"
+                required
+                className="w-full rounded-xl border px-3 py-2"
+              />
+            </Field>
 
-              <div>
-                <label className="mb-1 block font-medium">Slug</label>
-                <input name="slug" required className="w-full rounded border px-3 py-2" />
-              </div>
+            <Field label="Slug">
+              <input
+                name="slug"
+                required
+                className="w-full rounded-xl border px-3 py-2"
+              />
+            </Field>
 
-              <div>
-                <label className="mb-1 block font-medium">Summary</label>
-                <textarea
-                  name="summary"
-                  rows={3}
-                  className="w-full rounded border px-3 py-2"
-                />
-              </div>
+            <Field label="Summary">
+              <textarea
+                name="summary"
+                rows={3}
+                className="w-full rounded-xl border px-3 py-2"
+              />
+            </Field>
 
-              <div>
-                <label className="mb-1 block font-medium">Lesson type</label>
-                <input
-                  name="lessonType"
-                  defaultValue="lesson"
-                  className="w-full rounded border px-3 py-2"
-                />
-              </div>
+            <Field label="Lesson type">
+              <input
+                name="lessonType"
+                defaultValue="lesson"
+                className="w-full rounded-xl border px-3 py-2"
+              />
+            </Field>
 
-              <div>
-                <label className="mb-1 block font-medium">Estimated minutes</label>
-                <input
-                  name="estimatedMinutes"
-                  type="number"
-                  min="1"
-                  className="w-full rounded border px-3 py-2"
-                />
-              </div>
+            <Field label="Estimated minutes">
+              <input
+                name="estimatedMinutes"
+                type="number"
+                min="1"
+                className="w-full rounded-xl border px-3 py-2"
+              />
+            </Field>
 
-              <div>
-                <label className="mb-1 block font-medium">Content source</label>
-                <select
-                  name="contentSource"
-                  defaultValue="code"
-                  className="w-full rounded border px-3 py-2"
-                >
-                  <option value="code">code</option>
-                  <option value="database">database</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block font-medium">Content key</label>
-                <input name="contentKey" className="w-full rounded border px-3 py-2" />
-              </div>
-
-              <label className="flex items-center gap-2">
-                <input type="checkbox" name="isPublished" value="true" />
-                Published
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input type="checkbox" name="isTrialVisible" value="true" />
-                Trial visible
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="requiresPaidAccess"
-                  value="true"
-                  defaultChecked
-                />
-                Requires paid access
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input type="checkbox" name="availableInVolna" value="true" />
-                Available in Volna
-              </label>
-
-              <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
-                Create lesson
-              </button>
-            </form>
-          </div>
-        </details>
-      </section>
-
-      <section className="mb-6">
-        <div className="rounded-lg border border-red-200 bg-white">
-          <div className="border-b border-red-200 px-4 py-3 font-medium text-red-700">
-            Danger Zone
-          </div>
-
-          <div className="space-y-3 px-4 py-4 text-sm">
-            <p className="text-gray-600">
-              Unpublishing this module will hide it from normal public use, but it will
-              not hard delete its data.
-            </p>
-
-            <form action={unpublishModuleAction}>
-              <input type="hidden" name="courseId" value={course.id} />
-              <input type="hidden" name="variantId" value={variant.id} />
-              <input type="hidden" name="moduleId" value={module.id} />
-              <button
-                type="submit"
-                className="rounded border border-red-300 px-4 py-2 text-red-700 hover:bg-red-50"
+            <Field label="Content source">
+              <select
+                name="contentSource"
+                defaultValue="code"
+                className="w-full rounded-xl border px-3 py-2"
               >
-                Unpublish module
-              </button>
-            </form>
-          </div>
+                <option value="code">code</option>
+                <option value="database">database</option>
+              </select>
+            </Field>
+
+            <Field label="Content key">
+              <input name="contentKey" className="w-full rounded-xl border px-3 py-2" />
+            </Field>
+
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input type="checkbox" name="isPublished" value="true" />
+              Published
+            </label>
+
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input type="checkbox" name="isTrialVisible" value="true" />
+              Trial visible
+            </label>
+
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                name="requiresPaidAccess"
+                value="true"
+                defaultChecked
+              />
+              Requires paid access
+            </label>
+
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input type="checkbox" name="availableInVolna" value="true" />
+              Available in Volna
+            </label>
+
+            <Button type="submit" variant="primary" icon={appIcons.create}>
+              Create lesson
+            </Button>
+          </form>
+        </div>
+      </details>
+
+      <section className="rounded-2xl border border-red-200 bg-white shadow-sm">
+        <div className="border-b border-red-200 px-5 py-4 font-semibold text-red-700">
+          Danger zone
+        </div>
+
+        <div className="space-y-3 p-5 text-sm">
+          <p className="text-gray-600">
+            Unpublishing this module will hide it from normal public use, but it will not
+            hard delete its data.
+          </p>
+
+          <form action={unpublishModuleAction}>
+            <input type="hidden" name="courseId" value={course.id} />
+            <input type="hidden" name="variantId" value={variant.id} />
+            <input type="hidden" name="moduleId" value={module.id} />
+            <Button type="submit" variant="danger" icon={appIcons.delete}>
+              Unpublish module
+            </Button>
+          </form>
         </div>
       </section>
 
-      <section>
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Lessons ({lessons.length})</div>
-
-          <div className="divide-y">
-            {lessons.length === 0 ? (
-              <div className="px-4 py-6 text-sm text-gray-500">
-                No lessons found for this module.
-              </div>
-            ) : (
-              lessons.map((lesson, index) => (
-                <div
-                  key={lesson.id}
-                  className="flex items-center justify-between gap-4 px-4 py-3"
+      <SectionCard title={`Lessons (${lessons.length})`}>
+        <div className="space-y-3">
+          {lessons.length === 0 ? (
+            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
+              No lessons found for this module.
+            </div>
+          ) : (
+            lessons.map((lesson, index) => (
+              <div
+                key={lesson.id}
+                className="flex items-center justify-between gap-4 rounded-xl border p-4"
+              >
+                <a
+                  href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
+                  className="min-w-0 flex-1"
                 >
-                  <Link
-                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
-                    className="min-w-0 flex-1 hover:text-blue-600"
-                  >
-                    <div className="font-medium">{lesson.title}</div>
-                    <div className="text-sm text-gray-500">
-                      {lesson.slug} · Position {lesson.position}
-                    </div>
-                    <div className="mt-1 flex flex-wrap gap-2 text-xs">
-                      <span className="rounded border px-2 py-0.5">
-                        {lesson.is_published ? "Published" : "Draft"}
-                      </span>
-                      <span className="rounded border px-2 py-0.5">
-                        {lesson.is_trial_visible ? "Trial" : "No Trial"}
-                      </span>
-                      <span className="rounded border px-2 py-0.5">
-                        {lesson.available_in_volna ? "Volna" : "No Volna"}
-                      </span>
-                      <span className="rounded border px-2 py-0.5">
-                        {lesson.content_source}
-                      </span>
-                    </div>
-                  </Link>
-
-                  <div className="flex items-center gap-2">
-                    <form action={moveLessonAction}>
-                      <input type="hidden" name="courseId" value={course.id} />
-                      <input type="hidden" name="variantId" value={variant.id} />
-                      <input type="hidden" name="moduleId" value={module.id} />
-                      <input type="hidden" name="lessonId" value={lesson.id} />
-                      <input type="hidden" name="direction" value="up" />
-                      <button
-                        type="submit"
-                        disabled={index === 0}
-                        className="rounded border px-3 py-1 text-sm disabled:opacity-50"
-                      >
-                        ↑
-                      </button>
-                    </form>
-
-                    <form action={moveLessonAction}>
-                      <input type="hidden" name="courseId" value={course.id} />
-                      <input type="hidden" name="variantId" value={variant.id} />
-                      <input type="hidden" name="moduleId" value={module.id} />
-                      <input type="hidden" name="lessonId" value={lesson.id} />
-                      <input type="hidden" name="direction" value="down" />
-                      <button
-                        type="submit"
-                        disabled={index === lessons.length - 1}
-                        className="rounded border px-3 py-1 text-sm disabled:opacity-50"
-                      >
-                        ↓
-                      </button>
-                    </form>
-
-                    <Link
-                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
-                      className="rounded border px-3 py-1 text-sm"
-                    >
-                      Edit
-                    </Link>
-
-                    <Link
-                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
-                      className="rounded border px-3 py-1 text-sm"
-                    >
-                      Open
-                    </Link>
+                  <div className="font-medium text-gray-900">{lesson.title}</div>
+                  <div className="mt-1 text-sm text-gray-500">
+                    {lesson.slug} · Position {lesson.position}
                   </div>
+
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                    <Badge
+                      tone={lesson.is_published ? "info" : "muted"}
+                      icon={appIcons.preview}
+                    >
+                      {lesson.is_published ? "Published" : "Draft"}
+                    </Badge>
+
+                    <Badge
+                      tone={lesson.is_trial_visible ? "success" : "muted"}
+                      icon={appIcons.help}
+                    >
+                      {lesson.is_trial_visible ? "Trial" : "No Trial"}
+                    </Badge>
+
+                    <Badge
+                      tone={lesson.available_in_volna ? "success" : "muted"}
+                      icon={appIcons.users}
+                    >
+                      {lesson.available_in_volna ? "Volna" : "No Volna"}
+                    </Badge>
+
+                    <Badge tone="muted" icon={appIcons.file}>
+                      {lesson.content_source}
+                    </Badge>
+                  </div>
+                </a>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <form action={moveLessonAction}>
+                    <input type="hidden" name="courseId" value={course.id} />
+                    <input type="hidden" name="variantId" value={variant.id} />
+                    <input type="hidden" name="moduleId" value={module.id} />
+                    <input type="hidden" name="lessonId" value={lesson.id} />
+                    <input type="hidden" name="direction" value="up" />
+                    <Button
+                      type="submit"
+                      size="sm"
+                      variant="secondary"
+                      disabled={index === 0}
+                      icon={appIcons.back}
+                    >
+                      Up
+                    </Button>
+                  </form>
+
+                  <form action={moveLessonAction}>
+                    <input type="hidden" name="courseId" value={course.id} />
+                    <input type="hidden" name="variantId" value={variant.id} />
+                    <input type="hidden" name="moduleId" value={module.id} />
+                    <input type="hidden" name="lessonId" value={lesson.id} />
+                    <input type="hidden" name="direction" value="down" />
+                    <Button
+                      type="submit"
+                      size="sm"
+                      variant="secondary"
+                      disabled={index === lessons.length - 1}
+                      icon={appIcons.next}
+                    >
+                      Down
+                    </Button>
+                  </form>
+
+                  <Button
+                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
+                    size="sm"
+                    variant="secondary"
+                    icon={appIcons.edit}
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
+                    size="sm"
+                    variant="secondary"
+                    icon={appIcons.preview}
+                  >
+                    Open
+                  </Button>
                 </div>
-              ))
-            )}
-          </div>
+              </div>
+            ))
+          )}
         </div>
-      </section>
+      </SectionCard>
     </main>
   );
 }

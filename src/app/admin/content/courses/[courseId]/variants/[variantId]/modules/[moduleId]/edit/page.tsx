@@ -1,5 +1,6 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import { appIcons } from "@/lib/icons";
 import {
   getCourseByIdDb,
   getModuleByIdDb,
@@ -14,6 +15,15 @@ type AdminModuleEditPageProps = {
     moduleId: string;
   }>;
 };
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium text-gray-900">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 export default async function AdminModuleEditPage({ params }: AdminModuleEditPageProps) {
   const { courseId, variantId, moduleId } = await params;
@@ -35,32 +45,35 @@ export default async function AdminModuleEditPage({ params }: AdminModuleEditPag
   }
 
   return (
-    <main>
-      <div className="mb-4 flex flex-wrap gap-4 text-sm">
-        <Link href="/admin/content" className="text-blue-600 hover:underline">
-          ← Back to content
-        </Link>
+    <main className="space-y-6">
+      <div className="flex flex-wrap gap-2">
+        <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
+          Back to content
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {course.title}
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {variant.title}
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          icon={appIcons.back}
         >
           Back to {module.title}
-        </Link>
+        </Button>
       </div>
 
       <PageHeader
@@ -68,56 +81,54 @@ export default async function AdminModuleEditPage({ params }: AdminModuleEditPag
         description="Update module details and ordering."
       />
 
-      <section className="max-w-3xl rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Module Settings</div>
+      <section className="max-w-3xl rounded-2xl border bg-white shadow-sm">
+        <div className="border-b px-5 py-4 font-semibold text-gray-900">
+          Module settings
+        </div>
 
-        <form action={updateModuleAction} className="space-y-4 px-4 py-4 text-sm">
+        <form action={updateModuleAction} className="space-y-4 p-5 text-sm">
           <input type="hidden" name="courseId" value={course.id} />
           <input type="hidden" name="variantId" value={variant.id} />
           <input type="hidden" name="moduleId" value={module.id} />
 
-          <div>
-            <label className="mb-1 block font-medium">Title</label>
+          <Field label="Title">
             <input
               name="title"
               required
               defaultValue={module.title}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Slug</label>
+          <Field label="Slug">
             <input
               name="slug"
               required
               defaultValue={module.slug}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Description</label>
+          <Field label="Description">
             <textarea
               name="description"
               rows={4}
               defaultValue={module.description ?? ""}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-1 block font-medium">Position</label>
+          <Field label="Position">
             <input
               name="position"
               type="number"
               min="1"
               defaultValue={module.position}
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded-xl border px-3 py-2"
             />
-          </div>
+          </Field>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"
               name="isPublished"
@@ -128,16 +139,17 @@ export default async function AdminModuleEditPage({ params }: AdminModuleEditPag
           </label>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <button type="submit" className="rounded bg-black px-4 py-2 text-white">
+            <Button type="submit" variant="primary" icon={appIcons.completed}>
               Save module
-            </button>
+            </Button>
 
-            <Link
+            <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-              className="rounded border px-4 py-2 hover:bg-gray-50"
+              variant="secondary"
+              icon={appIcons.back}
             >
               Cancel
-            </Link>
+            </Button>
           </div>
         </form>
       </section>
