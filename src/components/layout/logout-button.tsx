@@ -1,3 +1,5 @@
+"use client";
+
 import { signOut } from "@/app/actions/auth";
 import Button from "@/components/ui/button";
 import { appIcons } from "@/lib/icons";
