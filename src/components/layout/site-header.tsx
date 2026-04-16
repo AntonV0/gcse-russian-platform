@@ -45,12 +45,11 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/88 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/88 shadow-[0_2px_8px_rgba(16,32,51,0.04)] backdrop-blur">
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
-          {/* Brand */}
           <Link href="/" className="app-brand-lockup shrink-0" onClick={closeMobileMenu}>
-            <span className="app-brand-mark">
+            <span className="app-brand-mark ring-1 ring-[var(--border)]">
               <AppIcon icon={appIcons.school} size={18} className="app-brand-text" />
             </span>
 
@@ -59,7 +58,6 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
             </span>
           </Link>
 
-          {/* Desktop navigation */}
           <div className="hidden items-center gap-4 md:flex">
             <nav className="flex items-center gap-4 text-sm">
               {navItems.map((item) => (
@@ -84,7 +82,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
 
             {user ? (
               <>
-                <span className="max-w-[220px] truncate text-sm app-text-soft">
+                <span className="max-w-[220px] truncate text-sm text-[color:var(--text-muted)]/85">
                   {user.email}
                 </span>
                 <LogoutButton />
@@ -104,7 +102,6 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
             )}
           </div>
 
-          {/* Mobile controls */}
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
 
@@ -124,7 +121,6 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
           </div>
         </div>
 
-        {/* Mobile dropdown panel */}
         {isMobileMenuOpen ? (
           <div className="mt-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 shadow-[var(--shadow-lg)] md:hidden">
             <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wide app-text-soft">
