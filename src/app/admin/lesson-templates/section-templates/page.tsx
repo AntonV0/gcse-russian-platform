@@ -3,7 +3,7 @@ import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import { appIcons } from "@/lib/shared/icons";
-import { createLessonSectionTemplateAction } from "@/app/actions/admin-lesson-builder-actions";
+import { createLessonSectionTemplateAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import {
   getLessonSectionTemplatePresetsDb,
   getLessonSectionTemplatesDb,

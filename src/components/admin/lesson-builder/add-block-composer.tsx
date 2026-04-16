@@ -15,7 +15,7 @@ import {
   createVocabularyBlockAction,
   createVocabularySetBlockAction,
   insertBlockPresetAction,
-} from "@/app/actions/admin-lesson-builder-actions";
+} from "@/app/actions/admin/admin-lesson-builder-actions";
 import type {
   LessonSection,
   NewBlockType,

@@ -12,7 +12,7 @@ import {
   deleteQuestionAction,
   duplicateQuestionAction,
   updateQuestionAction,
-} from "@/app/actions/admin-question-actions";
+} from "@/app/actions/admin/admin-question-actions";
 import AdminQuestionForm from "@/components/admin/admin-question-form";
 
 type AdminQuestionEditPageProps = {

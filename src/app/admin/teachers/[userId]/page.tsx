@@ -11,7 +11,7 @@ import {
   addTeacherToTeachingGroupAction,
   removeTeacherFromTeachingGroupAction,
   setTeacherRoleAction,
-} from "@/app/actions/admin-user-actions";
+} from "@/app/actions/admin/admin-user-actions";
 import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 

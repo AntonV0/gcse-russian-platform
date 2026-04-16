@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { reviewAssignmentSubmissionAction } from "@/app/actions/teacher-assignment-actions";
+import { reviewAssignmentSubmissionAction } from "@/app/actions/teacher/teacher-assignment-actions";
 
 type Props = {
   submissionId: string;

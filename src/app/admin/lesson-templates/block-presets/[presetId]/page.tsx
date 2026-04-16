@@ -10,7 +10,7 @@ import {
   reorderLessonBlockPresetBlocksAction,
   updateLessonBlockPresetAction,
   updateLessonBlockPresetBlockAction,
-} from "@/app/actions/admin-lesson-builder-actions";
+} from "@/app/actions/admin/admin-lesson-builder-actions";
 import { getLessonBlockPresetDetailDb } from "@/lib/lesson-template-helpers-db";
 import {
   getLessonBlockAccentClass,

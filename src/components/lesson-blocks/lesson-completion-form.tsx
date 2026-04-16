@@ -1,4 +1,7 @@
-import { markLessonComplete, markLessonIncomplete } from "@/app/actions/progress";
+import {
+  markLessonComplete,
+  markLessonIncomplete,
+} from "@/app/actions/progress/progress";
 
 type LessonCompletionFormProps = {
   courseSlug: string;

@@ -9,7 +9,7 @@ import {
   removePresetFromLessonSectionTemplateAction,
   reorderLessonSectionTemplatePresetsAction,
   updateLessonSectionTemplateAction,
-} from "@/app/actions/admin-lesson-builder-actions";
+} from "@/app/actions/admin/admin-lesson-builder-actions";
 import { getLessonSectionTemplateDetailDb } from "@/lib/lesson-template-helpers-db";
 
 export default async function AdminLessonSectionTemplateDetailPage({

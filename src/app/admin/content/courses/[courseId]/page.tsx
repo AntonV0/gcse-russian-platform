@@ -14,7 +14,7 @@ import {
 import {
   createVariantAction,
   moveVariantAction,
-} from "@/app/actions/admin-content-actions";
+} from "@/app/actions/admin/admin-content-actions";
 import SectionCard from "@/components/ui/section-card";
 
 type AdminCourseDetailPageProps = {

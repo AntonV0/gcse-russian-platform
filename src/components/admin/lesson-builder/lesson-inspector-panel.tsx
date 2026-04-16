@@ -10,7 +10,7 @@ import {
   moveSectionAction,
   toggleBlockPublishedAction,
   toggleSectionPublishedAction,
-} from "@/app/actions/admin-lesson-builder-actions";
+} from "@/app/actions/admin/admin-lesson-builder-actions";
 import { BlockEditPanel } from "@/components/admin/lesson-builder/block-editors";
 import type {
   LessonBlock,

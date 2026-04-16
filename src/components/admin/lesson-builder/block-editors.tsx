@@ -12,7 +12,7 @@ import {
   updateTextBlockAction,
   updateVocabularyBlockAction,
   updateVocabularySetBlockAction,
-} from "@/app/actions/admin-lesson-builder-actions";
+} from "@/app/actions/admin/admin-lesson-builder-actions";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
 import {
   BuilderHiddenFields,

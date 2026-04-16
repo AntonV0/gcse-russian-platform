@@ -1,4 +1,4 @@
-import { signUp } from "@/app/actions/auth";
+import { signUp } from "@/app/actions/auth/auth";
 
 type SignUpPageProps = {
   searchParams: Promise<{

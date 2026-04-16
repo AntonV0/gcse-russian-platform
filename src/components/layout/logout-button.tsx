@@ -1,6 +1,6 @@
 "use client";
 
-import { signOut } from "@/app/actions/auth";
+import { signOut } from "@/app/actions/auth/auth";
 import Button from "@/components/ui/button";
 import { appIcons } from "@/lib/shared/icons";
 

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { createTeacherAssignmentAction } from "@/app/actions/teacher-create-assignment-actions";
-import { updateTeacherAssignmentAction } from "@/app/actions/teacher-update-assignment-actions";
+import { createTeacherAssignmentAction } from "@/app/actions/teacher/teacher-create-assignment-actions";
+import { updateTeacherAssignmentAction } from "@/app/actions/teacher/teacher-update-assignment-actions";
 import type {
   LessonOption,
   QuestionSetOption,

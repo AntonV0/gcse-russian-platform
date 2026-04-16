@@ -6,7 +6,7 @@ import {
   type RuntimeMultipleChoiceQuestion,
   validateMultipleChoiceAnswer,
 } from "@/lib/question-engine";
-import { submitQuestionAttemptAction } from "@/app/actions/question-actions";
+import { submitQuestionAttemptAction } from "@/app/actions/questions/question-actions";
 
 type TrackedMultipleChoiceBlockProps = {
   questionId: string;

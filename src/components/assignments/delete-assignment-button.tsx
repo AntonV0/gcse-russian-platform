@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { deleteTeacherAssignmentAction } from "@/app/actions/teacher-delete-assignment-actions";
+import { deleteTeacherAssignmentAction } from "@/app/actions/teacher/teacher-delete-assignment-actions";
 
 type DeleteAssignmentButtonProps = {
   assignmentId: string;

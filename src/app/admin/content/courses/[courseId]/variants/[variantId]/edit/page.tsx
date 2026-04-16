@@ -6,7 +6,7 @@ import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
 import { appIcons } from "@/lib/shared/icons";
 import { getCourseByIdDb, getVariantByIdDb } from "@/lib/courses/course-helpers-db";
-import { updateVariantAction } from "@/app/actions/admin-content-actions";
+import { updateVariantAction } from "@/app/actions/admin/admin-content-actions";
 
 type AdminVariantEditPageProps = {
   params: Promise<{

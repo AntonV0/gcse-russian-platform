@@ -15,7 +15,7 @@ import {
   validateSentenceBuilderAnswer,
   validateTextAnswer,
 } from "@/lib/question-engine";
-import { submitQuestionAttemptAction } from "@/app/actions/question-actions";
+import { submitQuestionAttemptAction } from "@/app/actions/questions/question-actions";
 
 type TranslationDirection = "to_russian" | "to_english";
 

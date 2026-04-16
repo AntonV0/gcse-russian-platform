@@ -6,7 +6,7 @@ import {
   moveBlockAction,
   reorderBlocksAction,
   toggleBlockPublishedAction,
-} from "@/app/actions/admin-lesson-builder-actions";
+} from "@/app/actions/admin/admin-lesson-builder-actions";
 import type {
   DragBlockState,
   LessonBlock,

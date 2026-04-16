@@ -16,7 +16,7 @@ import {
   PendingSubmitButton,
   BuilderHiddenFields,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
-import { updateSectionAction } from "@/app/actions/admin-lesson-builder-actions";
+import { updateSectionAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import { SECTION_KIND_OPTIONS } from "@/components/admin/lesson-builder/lesson-builder-types";
 import {
   getLessonBlockGroupLabel,
