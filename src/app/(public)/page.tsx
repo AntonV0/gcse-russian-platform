@@ -8,19 +8,19 @@ const platformHighlights = [
   {
     title: "Structured learning",
     description:
-      "Lessons, modules, and guided progression designed for GCSE Russian revision and study.",
+      "Clear lesson pathways across topics, designed specifically for GCSE Russian progression.",
     icon: appIcons.lessons,
   },
   {
-    title: "Interactive practice",
+    title: "Exam-focused practice",
     description:
-      "Vocabulary, questions, translations, and listening tasks in one focused learning space.",
+      "Translation, listening, vocabulary, and exam-style tasks aligned with Edexcel 1RU0.",
     icon: appIcons.question,
   },
   {
     title: "Track progress",
     description:
-      "Clear learning paths, course access, and progress visibility for students and teachers.",
+      "See what you’ve completed, what’s next, and stay organised throughout your revision.",
     icon: appIcons.completed,
   },
 ];
@@ -29,31 +29,53 @@ const landingLinks = [
   {
     title: "Lessons",
     description:
-      "Explore structured modules and lesson pathways built around GCSE Russian study.",
+      "Follow structured modules covering themes, grammar, and vocabulary step by step.",
     href: "/courses",
     icon: appIcons.lessons,
   },
   {
     title: "Practice",
     description:
-      "Work through vocabulary, translation, listening, and exam-style revision tasks.",
+      "Work through translation, listening, and exam-style tasks to reinforce learning.",
     href: "/dashboard",
     icon: appIcons.audio,
   },
   {
     title: "Progress",
-    description:
-      "Track completion, continue where you left off, and keep revision organised.",
+    description: "Track completion and continue your learning without losing your place.",
     href: "/dashboard",
     icon: appIcons.completed,
+  },
+];
+
+const audience = [
+  {
+    title: "Students",
+    description:
+      "Ideal for GCSE Russian students who want a clear structure for revision and learning.",
+    icon: appIcons.school,
+  },
+  {
+    title: "Parents",
+    description:
+      "A reliable, structured platform to support your child’s GCSE Russian preparation.",
+    icon: appIcons.user,
+  },
+  {
+    title: "Volna students",
+    description:
+      "Integrated with teacher-led learning, assignments, and feedback workflows.",
+    icon: appIcons.dashboard,
   },
 ];
 
 export default function Home() {
   return (
     <div className="py-8 md:py-12">
+      {/* HERO */}
       <section className="app-surface-brand app-section-padding-lg overflow-hidden">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.92fr)] lg:items-start">
+          {/* LEFT */}
           <div className="space-y-6">
             <div className="space-y-3">
               <Badge tone="info" icon={appIcons.info}>
@@ -64,8 +86,9 @@ export default function Home() {
                 <h1 className="app-title max-w-3xl">GCSE Russian Course Platform</h1>
 
                 <p className="app-subtitle max-w-2xl">
-                  A clean, structured online learning platform for GCSE Russian, combining
-                  lessons, vocabulary, practice tasks, and progress tracking in one place.
+                  A structured online learning platform for Pearson Edexcel GCSE Russian
+                  (1RU0), combining structured lessons, exam-focused practice, and
+                  progress tracking for Foundation and Higher students.
                 </p>
               </div>
             </div>
@@ -93,12 +116,13 @@ export default function Home() {
             </div>
           </div>
 
+          {/* RIGHT PANEL */}
           <div className="app-card app-section-padding">
             <div className="mb-4 flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <h2 className="app-section-title">What this app is for</h2>
+                <h2 className="app-section-title">Built for GCSE Russian</h2>
                 <p className="mt-1 text-sm app-text-muted">
-                  A focused GCSE Russian study space for self-study and teacher-led use.
+                  Designed to support both independent study and teacher-led learning.
                 </p>
               </div>
 
@@ -138,6 +162,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* PRIMARY NAV CARDS */}
       <section className="mt-8 grid gap-4 md:grid-cols-3">
         {landingLinks.map((item) => (
           <Link
@@ -161,6 +186,35 @@ export default function Home() {
             <p className="app-text-muted text-sm">{item.description}</p>
           </Link>
         ))}
+      </section>
+
+      {/* WHO IT'S FOR */}
+      <section className="mt-10">
+        <div className="mb-4">
+          <h2 className="app-section-title text-lg">Who this platform is for</h2>
+          <p className="text-sm app-text-muted mt-1">
+            Designed to support GCSE Russian students and families at every stage of
+            preparation.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {audience.map((item) => (
+            <div
+              key={item.title}
+              className="app-card app-section-padding flex items-start gap-4"
+            >
+              <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--background-muted)]">
+                <AppIcon icon={item.icon} size={18} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold">{item.title}</h3>
+                <p className="text-sm app-text-muted mt-1">{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

@@ -60,6 +60,7 @@ import {
   Volume2,
   WandSparkles,
   X,
+  Clock, // ✅ ADDED
 } from "lucide-react";
 
 export const appIcons = {
@@ -79,6 +80,7 @@ export const appIcons = {
   sun: Sun,
   moon: Moon,
   completed: CheckCircle2,
+  pending: Clock, // ✅ ADDED (FIX)
   locked: Lock,
   unlocked: Unlock,
   help: CircleHelp,
@@ -155,6 +157,7 @@ export const curatedLucideIconNames = new Set<string>([
   "Volume2",
   "Image",
   "CheckCircle2",
+  "Clock", // ✅ ADD HERE
   "Lock",
   "Unlock",
   "CircleHelp",
