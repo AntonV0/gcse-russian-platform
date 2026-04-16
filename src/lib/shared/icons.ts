@@ -60,7 +60,12 @@ import {
   Volume2,
   WandSparkles,
   X,
-  Clock, // ✅ ADDED
+  Clock,
+  SlidersHorizontal,
+  Folder,
+  PanelLeft,
+  PanelsTopLeft,
+  Sparkles,
 } from "lucide-react";
 
 export const appIcons = {
@@ -80,7 +85,7 @@ export const appIcons = {
   sun: Sun,
   moon: Moon,
   completed: CheckCircle2,
-  pending: Clock, // ✅ ADDED (FIX)
+  pending: Clock,
   locked: Lock,
   unlocked: Unlock,
   help: CircleHelp,
@@ -116,6 +121,7 @@ export const appIcons = {
 
   modules: Layers,
   folderOpen: FolderOpen,
+  folder: Folder,
   list: List,
   blocks: Blocks,
   menu: Menu,
@@ -132,6 +138,8 @@ export const appIcons = {
   warning: AlertTriangle,
   info: Info,
   alert: AlertCircle,
+  error: AlertCircle,
+  success: CheckCircle2,
 
   component: Component,
   palette: Palette,
@@ -142,6 +150,13 @@ export const appIcons = {
   exercise: CheckSquare,
   text: Type,
   pencil: Pencil,
+
+  /* New semantic aliases for UI Lab / future pages */
+  navigation: PanelLeft,
+  header: PanelsTopLeft,
+  surfaces: Layers,
+  forms: SlidersHorizontal,
+  feedback: Sparkles,
 } as const;
 
 export const curatedLucideIconNames = new Set<string>([
@@ -157,7 +172,7 @@ export const curatedLucideIconNames = new Set<string>([
   "Volume2",
   "Image",
   "CheckCircle2",
-  "Clock", // ✅ ADD HERE
+  "Clock",
   "Lock",
   "Unlock",
   "CircleHelp",
@@ -187,6 +202,7 @@ export const curatedLucideIconNames = new Set<string>([
   "RefreshCw",
   "Layers",
   "FolderOpen",
+  "Folder",
   "List",
   "Blocks",
   "Menu",
@@ -207,6 +223,10 @@ export const curatedLucideIconNames = new Set<string>([
   "Pencil",
   "Sun",
   "Moon",
+  "SlidersHorizontal",
+  "PanelLeft",
+  "PanelsTopLeft",
+  "Sparkles",
 ]);
 
 export type AppIconKey = keyof typeof appIcons;
