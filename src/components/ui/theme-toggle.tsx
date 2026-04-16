@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Button from "@/components/ui/button";
 import AppIcon from "@/components/ui/app-icon";
 import { appIcons } from "@/lib/icons";
 
@@ -29,8 +28,18 @@ export default function ThemeToggle() {
   if (!mounted) return null;
 
   return (
-    <Button variant="secondary" size="sm" onClick={toggleTheme} title="Toggle theme">
-      <AppIcon icon={theme === "dark" ? appIcons.sun : appIcons.moon} size={16} />
-    </Button>
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className="app-icon-button app-focus-ring"
+      aria-label="Toggle theme"
+      title="Toggle theme"
+    >
+      <AppIcon
+        icon={theme === "dark" ? appIcons.sun : appIcons.moon}
+        size={17}
+        className="app-icon-button-icon"
+      />
+    </button>
   );
 }
