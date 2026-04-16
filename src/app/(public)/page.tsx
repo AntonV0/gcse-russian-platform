@@ -51,10 +51,10 @@ const landingLinks = [
 
 export default function Home() {
   return (
-    <main className="app-page max-w-6xl py-10 md:py-14">
+    <main className="app-page py-10 md:py-14">
       <section className="app-surface-brand app-section-padding-lg overflow-hidden">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.95fr)] lg:items-start">
-          {/* Left side: hero content */}
+          {/* Hero content */}
           <div className="space-y-6">
             <div className="space-y-3">
               <Badge tone="info" icon={appIcons.info}>
@@ -81,7 +81,6 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* These are more useful for product positioning and SEO than generic tags. */}
             <div className="flex flex-wrap gap-2">
               <Badge tone="muted" icon={appIcons.school}>
                 Edexcel GCSE 1RU0
@@ -95,7 +94,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right side: product summary panel */}
+          {/* Right-side product summary */}
           <div className="app-card app-section-padding">
             <div className="mb-4 flex items-start justify-between gap-4">
               <div className="min-w-0">
@@ -141,7 +140,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bottom cards now act as real entry points instead of decorative blocks. */}
+      {/* Main navigation cards for the app shell */}
       <section className="mt-8 grid gap-4 md:grid-cols-3">
         {landingLinks.map((item) => (
           <Link
@@ -149,9 +148,13 @@ export default function Home() {
             href={item.href}
             className="app-card app-card-hover app-section-padding block cursor-pointer transition hover:-translate-y-1"
           >
-            <div className="mb-3 flex items-center gap-2">
-              <AppIcon icon={item.icon} size={18} className="app-brand-text" />
-              <h2 className="app-section-title">{item.title}</h2>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <AppIcon icon={item.icon} size={18} className="app-brand-text" />
+                <h2 className="app-section-title">{item.title}</h2>
+              </div>
+
+              <AppIcon icon={appIcons.next} size={16} className="app-text-soft" />
             </div>
 
             <p className="app-text-muted text-sm">{item.description}</p>
