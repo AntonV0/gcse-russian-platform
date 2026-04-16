@@ -2,7 +2,7 @@
 
 import { useReducer } from "react";
 import AppIcon from "@/components/ui/app-icon";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 function getCurrentTheme(): "light" | "dark" {
   if (typeof document === "undefined") {

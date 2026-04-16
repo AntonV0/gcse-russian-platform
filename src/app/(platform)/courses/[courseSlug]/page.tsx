@@ -1,8 +1,8 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { loadCoursePageData } from "@/lib/course-helpers-db";
-import { getVariantPath } from "@/lib/routes";
+import { loadCoursePageData } from "@/lib/courses/course-helpers-db";
+import { getVariantPath } from "@/lib/access/routes";
 
 type CoursePageProps = {
   params: Promise<{

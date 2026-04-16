@@ -1,5 +1,5 @@
-import { getCurrentCourseAccess } from "@/lib/auth";
-import { getLessonAccessMetaDb } from "@/lib/course-helpers-db";
+import { getCurrentCourseAccess } from "@/lib/auth/auth";
+import { getLessonAccessMetaDb } from "@/lib/courses/course-helpers-db";
 
 export type LessonAccessState = "accessible" | "locked";
 

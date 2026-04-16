@@ -7,9 +7,9 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
-import { getCoursesDb } from "@/lib/course-helpers-db";
+import { getCoursesDb } from "@/lib/courses/course-helpers-db";
 import { createCourseAction } from "@/app/actions/admin-content-actions";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 import SectionCard from "@/components/ui/section-card";
 
 export default async function AdminContentPage() {

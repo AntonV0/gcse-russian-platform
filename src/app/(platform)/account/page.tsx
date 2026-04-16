@@ -1,7 +1,11 @@
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { getCurrentCourseAccess, getCurrentProfile, getCurrentUser } from "@/lib/auth";
-import { getDashboardInfo } from "@/lib/dashboard-helpers";
+import {
+  getCurrentCourseAccess,
+  getCurrentProfile,
+  getCurrentUser,
+} from "@/lib/auth/auth";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
 export default async function AccountPage() {
   const user = await getCurrentUser();

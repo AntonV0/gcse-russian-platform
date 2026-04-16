@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getLessonPath, getModulePath } from "@/lib/routes";
+import { getLessonPath, getModulePath } from "@/lib/access/routes";
 
 export async function markLessonComplete(formData: FormData): Promise<void> {
   const courseSlug = String(formData.get("courseSlug") || "");

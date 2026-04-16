@@ -2,9 +2,9 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 type TeachingGroupRow = {
   id: string;

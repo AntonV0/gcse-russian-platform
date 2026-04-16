@@ -1,6 +1,6 @@
 import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 export default function SiteFooter() {
   return (

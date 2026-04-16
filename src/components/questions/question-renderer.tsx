@@ -1,7 +1,7 @@
 import TrackedMultipleChoiceBlock from "@/components/questions/tracked-multiple-choice-block";
 import TrackedShortAnswerBlock from "@/components/questions/tracked-short-answer-block";
 import type { RuntimeQuestion } from "@/lib/question-engine";
-import { getPublicAudioUrl } from "@/lib/media";
+import { getPublicAudioUrl } from "@/lib/shared/media";
 
 type QuestionRendererProps = {
   question: RuntimeQuestion;

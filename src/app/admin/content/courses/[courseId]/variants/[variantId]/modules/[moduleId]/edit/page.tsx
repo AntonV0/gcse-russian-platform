@@ -4,12 +4,12 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 import {
   getCourseByIdDb,
   getModuleByIdDb,
   getVariantByIdDb,
-} from "@/lib/course-helpers-db";
+} from "@/lib/courses/course-helpers-db";
 import { updateModuleAction } from "@/app/actions/admin-content-actions";
 
 type AdminModuleEditPageProps = {

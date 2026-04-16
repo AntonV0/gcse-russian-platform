@@ -1,9 +1,9 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
-import { getCourseProgressSummary } from "@/lib/progress";
-import { getDashboardInfo } from "@/lib/dashboard-helpers";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
+import { getCourseProgressSummary } from "@/lib/progress/progress";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
 function formatLabel(value: string | null) {
   if (!value) return "—";

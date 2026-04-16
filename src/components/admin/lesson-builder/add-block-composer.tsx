@@ -26,7 +26,7 @@ import {
   PendingStatusText,
   PendingSubmitButton,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
-import { getDefaultBlockData, getLessonBlockLabel } from "@/lib/lesson-blocks";
+import { getDefaultBlockData, getLessonBlockLabel } from "@/lib/lessons/lesson-blocks";
 
 function AddSimpleTextBlockForm(props: {
   placeholder: string;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 function getNavItemClass(isActive: boolean) {
   return [

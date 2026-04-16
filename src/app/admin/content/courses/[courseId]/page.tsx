@@ -6,8 +6,11 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
-import { appIcons } from "@/lib/icons";
-import { getCourseByIdDb, getVariantsByCourseIdDb } from "@/lib/course-helpers-db";
+import { appIcons } from "@/lib/shared/icons";
+import {
+  getCourseByIdDb,
+  getVariantsByCourseIdDb,
+} from "@/lib/courses/course-helpers-db";
 import {
   createVariantAction,
   moveVariantAction,

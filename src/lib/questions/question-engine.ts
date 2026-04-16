@@ -3,7 +3,7 @@ import type {
   DbQuestionAcceptedAnswer,
   DbQuestionOption,
   DbQuestionSet,
-} from "@/lib/question-helpers-db";
+} from "@/lib/questions/question-helpers-db";
 
 export type SupportedQuestionType = "multiple_choice" | "short_answer" | "translation";
 

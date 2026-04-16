@@ -5,14 +5,14 @@ import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
 import LessonCompletionForm from "@/components/lesson-blocks/lesson-completion-form";
 import type { LessonSection } from "@/types/lesson";
-import { loadLessonPageData } from "@/lib/course-helpers-db";
+import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import {
   getLessonProgress,
   getLessonSectionProgressSummary,
   getVisitedLessonSectionIds,
   markLessonSectionVisited,
-} from "@/lib/progress";
-import { getLessonPath, getModulePath } from "@/lib/routes";
+} from "@/lib/progress/progress";
+import { getLessonPath, getModulePath } from "@/lib/access/routes";
 
 type LessonPageTemplateProps = {
   courseSlug: string;

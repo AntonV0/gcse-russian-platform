@@ -3,7 +3,7 @@ import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import AppIcon from "@/components/ui/app-icon";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 import { getLessonTemplateOverviewDb } from "@/lib/lesson-template-helpers-db";
 import SectionCard from "@/components/ui/section-card";
 

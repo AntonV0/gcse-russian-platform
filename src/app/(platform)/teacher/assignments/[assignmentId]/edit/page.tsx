@@ -9,9 +9,9 @@ import {
   getTeacherGroupsDb,
   getLessonOptionsForGroupDb,
   getQuestionSetOptionsDb,
-} from "@/lib/assignment-helpers-db";
+} from "@/lib/assignments/assignment-helpers-db";
 
-import { canCurrentUserReviewAssignment } from "@/lib/teacher-auth";
+import { canCurrentUserReviewAssignment } from "@/lib/auth/teacher-auth";
 
 type Props = {
   params: Promise<{

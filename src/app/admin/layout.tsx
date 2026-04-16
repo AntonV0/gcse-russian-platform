@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth";
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { getCurrentUser } from "@/lib/auth/auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import AdminSidebar from "@/components/admin/admin-sidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

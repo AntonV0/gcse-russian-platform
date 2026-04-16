@@ -2,8 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/layout/logout-button";
 import PageContainer from "@/components/layout/page-container";
-import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/routes";
-import { getCurrentUser } from "@/lib/auth";
+import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/access/routes";
+import { getCurrentUser } from "@/lib/auth/auth";
 
 export default async function PlatformLayout({
   children,

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { loadModulePageData } from "@/lib/course-helpers-db";
-import { getLessonPath } from "@/lib/routes";
-import { getModuleProgress } from "@/lib/progress-module";
-import { getLessonAccessState } from "@/lib/access";
+import { loadModulePageData } from "@/lib/courses/course-helpers-db";
+import { getLessonPath } from "@/lib/access/routes";
+import { getModuleProgress } from "@/lib/progress/progress-module";
+import { getLessonAccessState } from "@/lib/access/access";
 
 type ModulePageProps = {
   params: Promise<{

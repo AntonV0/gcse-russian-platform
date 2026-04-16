@@ -1,6 +1,6 @@
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getQuestionSetByIdDb,
   getQuestionsByQuestionSetIdIncludingInactiveDb,
@@ -18,7 +18,7 @@ import {
   toggleQuestionActiveAction,
   updateQuestionSetAction,
 } from "@/app/actions/admin-question-actions";
-import { getAssignmentsUsingQuestionSetDb } from "@/lib/assignment-helpers-db";
+import { getAssignmentsUsingQuestionSetDb } from "@/lib/assignments/assignment-helpers-db";
 
 type AdminQuestionSetDetailPageProps = {
   params: Promise<{

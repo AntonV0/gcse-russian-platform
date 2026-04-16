@@ -4,9 +4,9 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { getQuestionSetsDb } from "@/lib/question-helpers-db";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 export default async function AdminQuestionSetsPage() {
   const canAccess = await requireAdminAccess();

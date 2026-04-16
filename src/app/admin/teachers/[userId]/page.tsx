@@ -1,12 +1,12 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getAdminProfileByIdDb,
   getAdminTeachingGroupMembershipsByUserIdDb,
   getAdminTeachingGroupsDb,
   type AdminProfileRow,
-} from "@/lib/admin-user-helpers-db";
+} from "@/lib/users/admin-user-helpers-db";
 import {
   addTeacherToTeachingGroupAction,
   removeTeacherFromTeachingGroupAction,

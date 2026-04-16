@@ -3,9 +3,9 @@ import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Button from "@/components/ui/button";
 import AppIcon from "@/components/ui/app-icon";
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 type ProfileRow = {
   id: string;

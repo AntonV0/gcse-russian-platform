@@ -4,8 +4,8 @@ import StatusBadge from "@/components/ui/status-badge";
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
-import { requireAdminAccess } from "@/lib/admin-auth";
-import { appIcons } from "@/lib/icons";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import { appIcons } from "@/lib/shared/icons";
 import AllIconsBrowser from "@/components/admin/all-icons-browser";
 import SectionCard from "@/components/ui/section-card";
 
