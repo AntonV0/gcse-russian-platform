@@ -31,7 +31,7 @@ It would be too costly and fragile to maintain separate apps for each one.
 
 ### Tradeoff
 
-Access logic becomes more important and must be documented clearly, because the same role can appear in different product experiences.
+Access logic becomes more important and must be documented clearly.
 
 ---
 
@@ -49,17 +49,14 @@ A student is still a student whether they are:
 - self-study
 - Volna
 
-Teacher and admin permissions solve different problems than course visibility and student UX behaviour.
-
 ### Benefits
 
 - cleaner mental model
 - clearer permission design
-- avoids forcing product logic into a role field
 
 ### Tradeoff
 
-The documentation and diagrams must reflect two axes instead of one.
+Documentation must reflect two axes.
 
 ---
 
@@ -67,31 +64,20 @@ The documentation and diagrams must reflect two axes instead of one.
 
 ### Decision
 
-Questions are stored with structured metadata rather than a rigid schema for each behaviour type.
+Questions use structured metadata.
 
 ### Why
 
-The platform needs to support multiple interaction styles without rewriting the UI system each time.
-
-Examples include:
-
-- multiple choice
-- short answer
-- translation
-- selection-based answers
-- sentence builder behaviour
-- listening mode configuration
+Supports many interaction types without rewriting UI.
 
 ### Benefits
 
-- easier to extend
-- fewer hardcoded branches
-- reusable rendering logic
-- flexible authoring model
+- flexible
+- reusable
 
 ### Tradeoff
 
-More complexity is pushed into transformation, validation, and runtime interpretation.
+More runtime complexity.
 
 ---
 
@@ -99,22 +85,20 @@ More complexity is pushed into transformation, validation, and runtime interpret
 
 ### Decision
 
-Lessons are built from reusable blocks instead of hardcoded pages.
+Lessons use reusable blocks.
 
 ### Why
 
-The course needs repeatable structure with controlled variety across many lessons.
+Enables scalable content.
 
 ### Benefits
 
-- consistent content layout
-- faster lesson creation
-- easier maintenance
-- future expansion without rewriting lesson pages
+- consistency
+- reuse
 
 ### Tradeoff
 
-Block systems need conventions to stay coherent and not become too loose.
+Needs structure discipline.
 
 ---
 
@@ -122,27 +106,12 @@ Block systems need conventions to stay coherent and not become too loose.
 
 ### Decision
 
-Question sets are reusable entities, not embedded directly into lesson definitions.
-
-### Why
-
-The same question set may be used:
-
-- inside a lesson
-- in homework
-- as a template source
-- as a duplicated starting point for new content
+Question sets are reusable entities.
 
 ### Benefits
 
 - reuse
-- cleaner content boundaries
-- stronger admin workflows
-- better scalability
-
-### Tradeoff
-
-The relational model becomes more complex than embedding all interactive content directly in one place.
+- scalability
 
 ---
 
@@ -150,24 +119,12 @@ The relational model becomes more complex than embedding all interactive content
 
 ### Decision
 
-Use a custom admin interface for question authoring and platform content management instead of direct database editing.
-
-### Why
-
-Educational content management is too complex and repetitive to be handled safely through raw SQL or dashboard editing alone.
+Use internal CMS.
 
 ### Benefits
 
-- faster content production
-- fewer relationship mistakes
-- template support
-- duplication and reordering workflows
-- usage visibility
-- safer operational control for users, groups, and access
-
-### Tradeoff
-
-Admin tooling takes longer to build initially.
+- safer content management
+- faster workflows
 
 ---
 
@@ -175,470 +132,264 @@ Admin tooling takes longer to build initially.
 
 ### Decision
 
-Question sets can be marked as templates and used to generate new working sets.
-
-### Why
-
-Many educational activities reuse the same structural pattern with different prompts, vocabulary, or metadata.
-
-### Benefits
-
-- faster authoring
-- less setup repetition
-- fewer mistakes
-- standardised content patterns
-
-### Tradeoff
-
-Templates add organisational complexity and need clear naming and maintenance discipline.
+Templates generate reusable content.
 
 ---
 
-## 8. Why use Supabase with Row Level Security?
+## 8. Why use Supabase with RLS?
 
 ### Decision
 
-Use Supabase for database, auth, storage, and access policies.
-
-### Why
-
-The platform needs:
-
-- authenticated users
-- private uploads
-- role-aware access
-- secure write rules
-- scalable content and progress storage
-
-### Benefits
-
-- strong security model
-- one integrated backend stack
-- clearer access control close to the data layer
-
-### Tradeoff
-
-RLS increases debugging complexity, especially when combined with application-level permission helpers.
+Use Supabase backend.
 
 ---
 
-## 9. Why keep admin access as an explicit privilege override?
+## 9. Why explicit admin role?
 
 ### Decision
 
-Admin access is determined by `profiles.is_admin`, not just a general role label.
-
-### Why
-
-Admin behaviour in this platform is a system-level override, not simply another everyday user role.
-
-### Benefits
-
-- clearer source of truth
-- easier permission checks
-- less ambiguity between teacher and admin behaviour
-
-### Tradeoff
-
-There is a distinction between display-level role descriptions and permission-level admin handling.
+profiles.is_admin controls admin.
 
 ---
 
-## 10. Why add an explicit teacher role field?
+## 10. Why explicit teacher role?
 
 ### Decision
 
-Use `profiles.is_teacher` as the primary teacher-role flag, while still keeping `teaching_group_members.member_role` for group membership context.
-
-### Why
-
-Inferring teacher status only from group membership or heuristics is fragile and makes admin tooling harder to reason about.
-
-### Benefits
-
-- cleaner teacher detection
-- better student/teacher filtering
-- simpler teaching-group assignment UI
-- clearer role management from admin
-
-### Tradeoff
-
-Role and group membership now need to stay conceptually separate in documentation and helper logic.
+profiles.is_teacher used.
 
 ---
 
-## 11. Why use server actions for operational workflows?
+## 11. Why use server actions?
 
 ### Decision
 
-Use server actions for admin and assignment write flows.
-
-### Why
-
-These workflows are tightly tied to authenticated writes, redirects, and secure server-side logic.
-
-### Benefits
-
-- keeps sensitive logic on the server
-- good fit with App Router
-- simpler write flow for forms and operational tooling
-
-### Tradeoff
-
-Interactive form UX still requires client components layered on top.
+Use server actions for writes.
 
 ---
 
-## 12. Why derive teacher assignment state from submissions?
+## 12. Why derive assignment state?
 
 ### Decision
 
-Teacher-facing assignment state is derived from submission data rather than trusted from assignment status alone.
-
-### Why
-
-Operational review state matters more to teachers than publication state.
-
-A published assignment may still be:
-
-- awaiting first submission
-- awaiting review
-- fully reviewed
-
-### Benefits
-
-- more accurate teacher views
-- better prioritisation
-- clearer workload signals
-
-### Tradeoff
-
-Requires aggregate helper logic rather than a single flat field.
+State from submissions.
 
 ---
 
-## 13. Why separate status from due date urgency?
+## 13. Why separate status from urgency?
 
 ### Decision
 
-Treat workflow state and deadline urgency as separate UI signals.
-
-### Why
-
-They answer different questions:
-
-- status → where is this in the workflow?
-- due date urgency → how urgent is this now?
-
-### Benefits
-
-- clearer scanning
-- less ambiguity
-- reusable UI rules across student and teacher pages
-
-### Tradeoff
-
-Slightly more helper and UI logic.
+Separate concerns.
 
 ---
 
-## 14. Why lock student submissions after review?
+## 14. Why lock submissions?
 
 ### Decision
 
-Reviewed submissions become locked on the student side.
-
-### Why
-
-For this platform, reviewed work should feel completed unless a teacher intentionally reopens it.
-
-### Benefits
-
-- clearer workflow
-- avoids accidental overwriting
-- makes teacher review meaningful
-- matches exam-style expectations more closely
-
-### Tradeoff
-
-Teachers need a reopening action for revision loops.
+Lock after review.
 
 ---
 
-## 15. Why add a teacher reopen action?
+## 15. Why reopen action?
 
 ### Decision
 
-Teachers can reopen a reviewed submission instead of allowing unlimited student overwrites.
-
-### Why
-
-This preserves review integrity while still allowing another submission round when needed.
-
-### Benefits
-
-- controlled resubmission workflow
-- better teacher oversight
-- preserves a clearer review lifecycle
-
-### Tradeoff
-
-Still only preserves the latest state; a true audit trail would require an event history table later.
+Controlled resubmission.
 
 ---
 
-## 16. Why support ordered mixed assignment items?
+## 16. Why ordered assignment items?
 
 ### Decision
 
-Assignments store ordered items across multiple item types instead of grouping lessons, question sets, and tasks separately.
-
-### Why
-
-The learning experience depends on sequence, not just membership.
-
-Teachers need to define flows such as:
-
-- lesson
-- question set
-- custom written task
-
-### Benefits
-
-- true assignment sequencing
-- better student guidance
-- scalable to more item types later
-
-### Tradeoff
-
-Form and action logic become more structured than simple grouped arrays.
+Ordered sequence.
 
 ---
 
-## 17. Why assemble assignment progress from existing systems?
+## 17. Why derived assignment progress?
 
 ### Decision
 
-Assignment item progress is derived from lesson and question activity rather than stored as a completely separate new system.
-
-### Why
-
-The platform already tracks:
-
-- lesson completion
-- question attempts
-- question progress
-
-Reusing those systems keeps the design simpler.
-
-### Benefits
-
-- less duplication
-- progress remains close to source-of-truth activity
-- easier to evolve in stages
-
-### Tradeoff
-
-Assignment progress needs helper logic because it is composed from multiple sources.
+Reuse systems.
 
 ---
 
-## 18. Why keep progress separate from access grants?
+## 18. Why separate progress from access?
 
 ### Decision
 
-Do not tie historical progress deletion or rewriting to access-grant switching.
-
-### Why
-
-Students may move between trial, full, and Volna access, or between Foundation and Higher, without the platform losing their older work history.
-
-### Benefits
-
-- safer admin operations
-- reversible access changes
-- variant-aware progress history remains intact
-- less risk of destructive state changes
-
-### Tradeoff
-
-Admin pages need clearer visibility into active access, inactive access history, and per-variant progress.
+Keep independent.
 
 ---
 
-## 19. Why use contextual admin navigation for content?
+## 19. Why contextual admin navigation?
 
 ### Decision
 
-Use context-first navigation for admin content management instead of flat global tabs.
-
-### Why
-
-Content entities such as variants, modules, and lessons make more sense when seen inside their parent course and variant context.
-
-### Benefits
-
-- clearer mental model
-- safer editing and ordering
-- better fit for reusable but hierarchically presented content
-- easier future extension to lesson authoring
-
-### Tradeoff
-
-Deep route nesting is more complex than a flat admin table approach.
+Hierarchy-based navigation.
 
 ---
 
-## 20. Why add reusable admin feedback and confirmation components?
+## 20. Why visit-based section progression? (UPDATED)
 
 ### Decision
 
-Use shared admin feedback banners and confirmation buttons rather than hand-rolling action messaging on every page.
+Track lesson progress via **section visits**.
 
 ### Why
 
-Operational admin tooling needs consistent success/error visibility and safer destructive actions.
+- avoids friction
+- reflects real behaviour
 
 ### Benefits
 
-- more consistent admin UX
-- lower duplication
-- safer remove/deactivate flows
-- easier to extend across the CMS
+- smooth UX
+- simple logic
+- aligns with DB tracking
 
 ### Tradeoff
 
-Slightly more component infrastructure for internal tooling.
+- not true mastery tracking
+
+### Future
+
+- quizzes
+- checkpoints
+- analytics
 
 ---
 
-## 21. Why keep content partly file-driven and partly DB-driven for now?
+## 21. Why introduce section-based lesson architecture?
 
 ### Decision
 
-Lesson structure remains partly file-driven while reusable interactive content is database-driven.
+Add **Lesson → Section → Block** hierarchy.
 
 ### Why
 
-The platform needs both:
-
-- stable structured lesson content
-- reusable admin-manageable interactive content
+- long lessons needed structure
+- improves pacing
+- enables step UX
 
 ### Benefits
 
-- lessons remain easy to version in code
-- question content remains reusable and manageable
-- avoids forcing everything into one model too early
+- scalable lessons
+- better UX
+- foundation for advanced flows
 
 ### Tradeoff
 
-The overall content architecture is hybrid, which is more complex than a single-system approach.
+- added complexity
 
 ---
 
-## 22. Why avoid premature restructuring of `lib/`?
+## 22. Why move lesson system to DB-driven architecture?
 
 ### Decision
 
-Keep helper structure stable during active feature development.
+Remove hardcoded lesson templates and move fully to DB.
 
 ### Why
 
-The project is still evolving quickly, and large structural refactors would create churn without immediate product benefit.
+- no-code lesson creation
+- scalability
 
 ### Benefits
 
-- faster feature iteration
-- fewer broken imports
-- lower implementation risk
+- CMS-driven content
+- reusable structures
 
 ### Tradeoff
 
-A future domain-based refactor may still make sense once systems stabilise.
+- requires strong schema design
 
 ---
 
-## 23. Why prioritise architecture before advanced features?
+## 23. Why build a full lesson builder CMS?
 
 ### Decision
 
-Focus on reusable foundations before adding features such as AI marking, speaking workflows, or deeper analytics.
+Introduce admin lesson builder.
 
 ### Why
 
-The long-term value of the platform depends more on solid structure than on adding impressive but unstable features too early.
+- manual coding lessons is not scalable
 
 ### Benefits
 
-- easier extension later
-- less rework
-- better long-term maintainability
+- drag & drop authoring
+- section + block editing
+- cross-section movement
 
 ### Tradeoff
 
-Some eye-catching features arrive later, but on a stronger foundation.
+- more complex admin UI
 
 ---
 
-## 24. Why should the next major step be database-driven lesson authoring?
+## 24. Why remove hardcoded presets/templates?
 
 ### Decision
 
-The next major content evolution should be moving lesson authoring and lesson blocks into the database and admin CMS.
+Delete static preset files.
 
 ### Why
 
-The current hybrid model works for platform foundations, but real course production should not require code changes for each new lesson.
+- duplicated logic
+- limited flexibility
 
 ### Benefits
 
-- non-code lesson creation
-- easier content scaling
-- reusable lesson blocks
-- stronger alignment with the question-set authoring model
-- cleaner path to modern step-based lesson UX
+- single source of truth (DB)
+- cleaner architecture
 
-### Tradeoff
+---
 
-This will require careful schema design, block rendering contracts, and admin authoring UX before large-scale content writing begins.
-
-## 20. Why use visit-based section progression instead of completion buttons?
+## 25. Why use position-based ordering instead of nested structures?
 
 ### Decision
 
-Track lesson progress through **section visits**, not explicit "complete section" actions.
+Use numeric position fields.
 
 ### Why
 
-Requiring users to manually complete each section introduces friction and does not reflect real learning behaviour.
-
-A user who has opened and read a section has meaningfully progressed, even without clicking a button.
+- simpler DB queries
+- easier reordering
 
 ### Benefits
 
-- smoother UX (no repetitive actions)
-- more natural progression
-- better engagement
-- avoids fake completion clicks
-- simpler mental model for students
+- predictable ordering
+- no tree complexity
 
 ### Tradeoff
 
-Visit tracking does not guarantee understanding or mastery.
+- requires careful updates on reorder
 
-### Mitigation
+---
 
-- lesson completion remains manual
-- future additions can include:
-  - quizzes per section
-  - checkpoints
-  - required interactions
+## 26. Why prioritise architecture before features?
 
-### Future evolution
+### Decision
 
-This system is designed to evolve into:
+Build strong foundations first.
 
-- true section completion (optional)
-- adaptive unlocking
-- engagement analytics
+### Why
+
+- prevents rework
+
+### Benefits
+
+- scalable system
+- easier future features
+
+---
+
+## 27. Next architectural direction
+
+- autosave builder
+- richer blocks
+- analytics
+- speaking system
+- payments integration
