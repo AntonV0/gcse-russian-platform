@@ -22,7 +22,7 @@ import {
   getLessonBlockGroupLabel,
   getLessonBlockLabel,
   getLessonBlockPreview,
-} from "@/lib/lesson-blocks";
+} from "@/lib/lessons/lesson-blocks";
 
 export default function LessonSectionEditor(props: {
   section: LessonSection | null;

@@ -14,7 +14,7 @@ import {
   tokenizeSentenceBuilderText,
   validateSentenceBuilderAnswer,
   validateTextAnswer,
-} from "@/lib/question-engine";
+} from "@/lib/questions/question-engine";
 import { submitQuestionAttemptAction } from "@/app/actions/questions/question-actions";
 
 type TranslationDirection = "to_russian" | "to_english";

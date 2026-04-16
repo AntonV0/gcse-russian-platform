@@ -7,7 +7,7 @@ import { createLessonSectionTemplateAction } from "@/app/actions/admin/admin-les
 import {
   getLessonSectionTemplatePresetsDb,
   getLessonSectionTemplatesDb,
-} from "@/lib/lesson-template-helpers-db";
+} from "@/lib/lessons/lesson-template-helpers-db";
 
 function CreateSectionTemplateCard() {
   return (

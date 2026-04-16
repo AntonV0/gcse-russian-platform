@@ -1,6 +1,6 @@
 import PageHeader from "@/components/layout/page-header";
 import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
-import { getQuestionSetBySlugDb } from "@/lib/question-helpers-db";
+import { getQuestionSetBySlugDb } from "@/lib/questions/question-helpers-db";
 
 type QuestionSetPageProps = {
   params: Promise<{

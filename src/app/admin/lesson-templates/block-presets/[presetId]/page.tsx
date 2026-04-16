@@ -11,13 +11,13 @@ import {
   updateLessonBlockPresetAction,
   updateLessonBlockPresetBlockAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
-import { getLessonBlockPresetDetailDb } from "@/lib/lesson-template-helpers-db";
+import { getLessonBlockPresetDetailDb } from "@/lib/lessons/lesson-template-helpers-db";
 import {
   getLessonBlockAccentClass,
   getLessonBlockGroupLabel,
   getLessonBlockLabel,
   getLessonBlockPreview,
-} from "@/lib/lesson-blocks";
+} from "@/lib/lessons/lesson-blocks";
 
 const templateBlockTypes = [
   "header",

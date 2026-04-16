@@ -11,7 +11,7 @@ import {
   updateLessonTemplateAction,
   updateLessonTemplateSectionAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
-import { getLessonTemplateDetailDb } from "@/lib/lesson-template-helpers-db";
+import { getLessonTemplateDetailDb } from "@/lib/lessons/lesson-template-helpers-db";
 
 export default async function AdminLessonTemplateDetailPage({
   params,

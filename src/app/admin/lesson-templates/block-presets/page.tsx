@@ -7,7 +7,7 @@ import { createLessonBlockPresetAction } from "@/app/actions/admin/admin-lesson-
 import {
   getLessonBlockPresetBlocksDb,
   getLessonBlockPresetsDb,
-} from "@/lib/lesson-template-helpers-db";
+} from "@/lib/lessons/lesson-template-helpers-db";
 
 function CreatePresetCard() {
   return (

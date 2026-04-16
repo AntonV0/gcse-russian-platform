@@ -1,4 +1,4 @@
-import { loadRuntimeQuestionSetBySlugDb } from "@/lib/question-helpers-db";
+import { loadRuntimeQuestionSetBySlugDb } from "@/lib/questions/question-helpers-db";
 import QuestionRenderer from "@/components/questions/question-renderer";
 
 type QuestionSetBlockProps = {

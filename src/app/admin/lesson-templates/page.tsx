@@ -4,7 +4,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import AppIcon from "@/components/ui/app-icon";
 import { appIcons } from "@/lib/shared/icons";
-import { getLessonTemplateOverviewDb } from "@/lib/lesson-template-helpers-db";
+import { getLessonTemplateOverviewDb } from "@/lib/lessons/lesson-template-helpers-db";
 import SectionCard from "@/components/ui/section-card";
 
 function StatCard({ label, value }: { label: string; value: number }) {

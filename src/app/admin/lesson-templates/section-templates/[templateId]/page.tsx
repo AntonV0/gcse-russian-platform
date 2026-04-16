@@ -10,7 +10,7 @@ import {
   reorderLessonSectionTemplatePresetsAction,
   updateLessonSectionTemplateAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
-import { getLessonSectionTemplateDetailDb } from "@/lib/lesson-template-helpers-db";
+import { getLessonSectionTemplateDetailDb } from "@/lib/lessons/lesson-template-helpers-db";
 
 export default async function AdminLessonSectionTemplateDetailPage({
   params,
