@@ -103,6 +103,7 @@ export const appIcons = {
   up: ChevronUp,
   down: ChevronDown,
   uiLab: WandSparkles,
+  layers: Layers,
 
   chevronRight: ChevronRight,
   chevronDown: ChevronDown,
