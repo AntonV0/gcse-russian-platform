@@ -42,13 +42,13 @@ const productionPatterns = [
     title: "Platform header",
     description:
       "Shared site header with active states, theme toggle, account metadata, and mobile menu.",
-    icon: appIcons.navigation ?? appIcons.menu,
+    icon: appIcons.header,
   },
   {
     title: "Admin sidebar",
     description:
       "Reusable admin navigation pattern with grouped sections and nested UI Lab links.",
-    icon: appIcons.dashboard,
+    icon: appIcons.navigation,
   },
   {
     title: "Shared primitives",
