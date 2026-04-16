@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentCourseVariantAccessGrantDb } from "@/lib/access-helpers-db";
+import { getCurrentCourseVariantAccessGrantDb } from "@/lib/access/access-helpers-db";
 
 export async function getCurrentUser() {
   const supabase = await createClient();

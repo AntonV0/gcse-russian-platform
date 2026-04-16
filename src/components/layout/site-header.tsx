@@ -6,8 +6,8 @@ import { useMemo, useState } from "react";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
-import { appIcons } from "@/lib/icons";
-import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/routes";
+import { appIcons } from "@/lib/shared/icons";
+import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/access/routes";
 
 type SiteHeaderProps = {
   user: {

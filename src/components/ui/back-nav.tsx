@@ -1,5 +1,5 @@
 import Button from "@/components/ui/button";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 type Item = {
   href: string;

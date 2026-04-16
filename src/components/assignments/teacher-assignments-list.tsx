@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import DashboardCard from "@/components/ui/dashboard-card";
 import StatusBadge from "@/components/ui/status-badge";
-import { getDueDateClass, getDueDateStatus } from "@/lib/assignment-status";
-import type { TeacherAssignmentListItem } from "@/lib/assignment-helpers-db";
+import { getDueDateClass, getDueDateStatus } from "@/lib/assignments/assignment-status";
+import type { TeacherAssignmentListItem } from "@/lib/assignments/assignment-helpers-db";
 
 type TeacherFilterValue = "all" | "pending_review" | "reviewed" | "no_submissions";
 type TeacherSortValue = "priority" | "due_date" | "newest" | "most_submissions";

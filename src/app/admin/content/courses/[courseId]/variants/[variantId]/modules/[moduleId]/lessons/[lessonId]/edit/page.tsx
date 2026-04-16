@@ -5,13 +5,13 @@ import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import Select from "@/components/ui/select";
 import CheckboxField from "@/components/ui/checkbox-field";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 import {
   getCourseByIdDb,
   getLessonByIdDb,
   getModuleByIdDb,
   getVariantByIdDb,
-} from "@/lib/course-helpers-db";
+} from "@/lib/courses/course-helpers-db";
 import { updateLessonAction } from "@/app/actions/admin-content-actions";
 
 type AdminLessonEditPageProps = {

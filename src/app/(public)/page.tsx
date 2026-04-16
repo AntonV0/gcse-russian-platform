@@ -2,7 +2,7 @@ import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 const platformHighlights = [
   {

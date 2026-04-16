@@ -21,7 +21,7 @@ import {
   usePersistentBoolean,
   BuilderHiddenFields,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
-import { getLessonBlockLabel } from "@/lib/lesson-blocks";
+import { getLessonBlockLabel } from "@/lib/lessons/lesson-blocks";
 
 function getSectionCounts(sections: LessonSection[]) {
   let publishedSections = 0;

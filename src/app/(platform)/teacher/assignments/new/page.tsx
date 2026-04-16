@@ -5,8 +5,8 @@ import {
   getLessonOptionsForGroupDb,
   getQuestionSetOptionsDb,
   getTeacherGroupsDb,
-} from "@/lib/assignment-helpers-db";
-import { isCurrentUserTeacherForAnyGroup } from "@/lib/teacher-auth";
+} from "@/lib/assignments/assignment-helpers-db";
+import { isCurrentUserTeacherForAnyGroup } from "@/lib/auth/teacher-auth";
 
 export default async function NewTeacherAssignmentPage() {
   const isTeacher = await isCurrentUserTeacherForAnyGroup();

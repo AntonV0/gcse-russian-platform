@@ -4,13 +4,13 @@ import Badge from "@/components/ui/badge";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import {
   setTeacherRoleAction,
   switchStudentAccessGrantAction,
 } from "@/app/actions/admin-user-actions";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 type ProfileRow = {
   id: string;

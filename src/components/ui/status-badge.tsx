@@ -1,5 +1,5 @@
 import Badge from "@/components/ui/badge";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 type Status = "not_started" | "submitted" | "reviewed" | "returned";
 

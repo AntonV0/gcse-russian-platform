@@ -8,7 +8,7 @@ import type {
   LessonOption,
   QuestionSetOption,
   TeacherGroupOption,
-} from "@/lib/assignment-helpers-db";
+} from "@/lib/assignments/assignment-helpers-db";
 
 type TeacherAssignmentFormInitialData = {
   groupId: string;

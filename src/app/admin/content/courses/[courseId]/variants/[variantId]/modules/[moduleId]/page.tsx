@@ -6,13 +6,13 @@ import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import Select from "@/components/ui/select";
 import CheckboxField from "@/components/ui/checkbox-field";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 import {
   getCourseByIdDb,
   getLessonsByModuleIdDb,
   getModuleByIdDb,
   getVariantByIdDb,
-} from "@/lib/course-helpers-db";
+} from "@/lib/courses/course-helpers-db";
 import {
   createLessonAction,
   moveLessonAction,

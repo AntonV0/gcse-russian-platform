@@ -3,13 +3,13 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdminAccess } from "@/lib/admin-auth";
-import { resolveSectionKind } from "@/lib/lesson-blocks";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import { resolveSectionKind } from "@/lib/lessons/lesson-blocks";
 import {
   getLessonTemplateInsertDataDb,
   getPresetBlocksForInsertDb,
   getSectionTemplateInsertDataDb,
-} from "@/lib/lesson-template-helpers-db";
+} from "@/lib/lessons/lesson-template-helpers-db";
 import {
   normalizeAudioBlockData,
   normalizeCalloutBlockData,
@@ -22,7 +22,7 @@ import {
   normalizeTextBlockData,
   normalizeVocabularyBlockData,
   normalizeVocabularySetBlockData,
-} from "@/lib/lesson-blocks";
+} from "@/lib/lessons/lesson-blocks";
 
 function getTrimmedString(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();

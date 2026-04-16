@@ -2,9 +2,9 @@ import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { getQuestionSetTemplatesDb } from "@/lib/question-helpers-db";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 
 export default async function AdminQuestionSetTemplatesPage() {
   const canAccess = await requireAdminAccess();

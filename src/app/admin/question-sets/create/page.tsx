@@ -1,4 +1,4 @@
-import { requireAdminAccess } from "@/lib/admin-auth";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import PageHeader from "@/components/layout/page-header";
 import { createQuestionSetAction } from "@/app/actions/admin-question-actions";
 

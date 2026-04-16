@@ -10,11 +10,11 @@ import {
   getAssignmentByIdDb,
   getAssignmentItemsWithDetailsDb,
   getAssignmentSubmissionsForTeacherDb,
-} from "@/lib/assignment-helpers-db";
-import { getLessonPath } from "@/lib/routes";
-import { canCurrentUserReviewAssignment } from "@/lib/teacher-auth";
-import { getSignedStorageUrl } from "@/lib/storage-helpers";
-import { getDueDateClass, getDueDateStatus } from "@/lib/assignment-status";
+} from "@/lib/assignments/assignment-helpers-db";
+import { getLessonPath } from "@/lib/access/routes";
+import { canCurrentUserReviewAssignment } from "@/lib/auth/teacher-auth";
+import { getSignedStorageUrl } from "@/lib/shared/storage-helpers";
+import { getDueDateClass, getDueDateStatus } from "@/lib/assignments/assignment-status";
 
 type Props = {
   params: Promise<{ assignmentId: string }>;

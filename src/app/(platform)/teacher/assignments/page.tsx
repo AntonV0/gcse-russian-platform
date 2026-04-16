@@ -2,8 +2,8 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
 import TeacherAssignmentsList from "@/components/assignments/teacher-assignments-list";
-import { getTeacherAssignmentsDb } from "@/lib/assignment-helpers-db";
-import { isCurrentUserTeacherForAnyGroup } from "@/lib/teacher-auth";
+import { getTeacherAssignmentsDb } from "@/lib/assignments/assignment-helpers-db";
+import { isCurrentUserTeacherForAnyGroup } from "@/lib/auth/teacher-auth";
 
 export default async function TeacherAssignmentsPage() {
   const isTeacher = await isCurrentUserTeacherForAnyGroup();

@@ -2,14 +2,14 @@ import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
-import { appIcons } from "@/lib/icons";
+import { appIcons } from "@/lib/shared/icons";
 import { getLessonBuilderTemplateOptionsDb } from "@/lib/lesson-template-helpers-db";
 import {
   getCourseByIdDb,
   getLessonByIdDb,
   getModuleByIdDb,
   getVariantByIdDb,
-} from "@/lib/course-helpers-db";
+} from "@/lib/courses/course-helpers-db";
 import { getLessonSectionsWithBlocksDb } from "@/lib/lesson-admin-helpers-db";
 import { unpublishLessonAction } from "@/app/actions/admin-content-actions";
 

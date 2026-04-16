@@ -1,9 +1,9 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { getStudentAssignmentsWithDetailsDb } from "@/lib/assignment-helpers-db";
+import { getStudentAssignmentsWithDetailsDb } from "@/lib/assignments/assignment-helpers-db";
 import StatusBadge from "@/components/ui/status-badge";
-import { getDueDateClass, getDueDateStatus } from "@/lib/assignment-status";
+import { getDueDateClass, getDueDateStatus } from "@/lib/assignments/assignment-status";
 
 function formatDueDate(value: string | null) {
   if (!value) return "No due date";

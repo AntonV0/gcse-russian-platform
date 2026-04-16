@@ -1,5 +1,5 @@
 import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
-import { loadVocabularySetBySlugDb } from "@/lib/vocabulary-helpers-db";
+import { loadVocabularySetBySlugDb } from "@/lib/vocabulary/vocabulary-helpers-db";
 
 type VocabularySetBlockProps = {
   title?: string;

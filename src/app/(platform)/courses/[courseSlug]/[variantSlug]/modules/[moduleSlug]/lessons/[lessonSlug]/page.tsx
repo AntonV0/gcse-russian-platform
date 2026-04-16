@@ -1,6 +1,6 @@
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
-import { loadLessonPageData } from "@/lib/course-helpers-db";
-import { canUserAccessLesson } from "@/lib/access";
+import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
+import { canUserAccessLesson } from "@/lib/access/access";
 import { loadLessonContentByLessonIdDb } from "@/lib/lesson-content-helpers-db";
 import Link from "next/link";
 

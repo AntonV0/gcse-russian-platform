@@ -1,4 +1,4 @@
-import { getCurrentProfile } from "@/lib/auth";
+import { getCurrentProfile } from "@/lib/auth/auth";
 
 export async function requireAdminAccess() {
   const profile = await getCurrentProfile();
