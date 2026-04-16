@@ -58,6 +58,8 @@ flowchart TD
 
   LB --> TXT[Text / Notes / Vocabulary]
   LB --> AUD[Audio]
+  LB --> IMG[Image]
+  LB --> CALLOUT[Callout / Exam tip]
   LB --> QSB[Question set block]
 
   QSB --> QE[Question engine]
@@ -79,9 +81,10 @@ flowchart TD
 
   A --> CMS[Admin CMS]
   CMS --> CONTENT[Courses / Variants / Modules / Lessons]
+  CMS --> BUILDER[Lesson Builder (sections + blocks)]
   CMS --> QS[Question sets]
   CMS --> QQ[Questions]
-  CMS --> TMP[Templates]
+  CMS --> TMP[DB Templates]
   CMS --> USERS[Students / Teachers]
   CMS --> GROUPS[Teaching groups]
   CMS --> ACCESS[Access grants + roles]
@@ -117,6 +120,7 @@ Main concerns:
 - student assignment views
 - teacher review views
 - admin authoring views
+- **lesson builder UI (NEW)**
 
 ### Application logic layer
 
@@ -131,6 +135,7 @@ Main concerns:
 - question transformation and rendering support
 - admin CMS orchestration
 - lesson step unlocking and section visit tracking
+- **lesson builder actions (NEW)**
 
 ### Data layer
 
@@ -152,449 +157,140 @@ Supabase provides:
 - Module
 - Lesson
 
-### Content management architecture
+### Lesson architecture (UPDATED)
 
-Content is now administered through a contextual admin CMS.
-
-The navigation flow is:
-
-- Course list
-- Course detail
-- Variant detail
-- Module detail
-- Lesson detail
-
-This preserves parent-child context while still allowing reuse and future expansion.
-
-### Lesson architecture
-
-Lessons are block-based rather than page-specific.
-
-That means a lesson is composed from reusable block types such as:
-
-- text
-- note
-- vocabulary
-- audio
-- question set block
-
-This keeps layout logic reusable and allows lesson content to grow without rewriting page structure.
-
-### Section-based lesson flow
-
-Lessons now also support a **section-based step system** on top of the block renderer.
-
-This adds a second structural layer:
+Lessons now use a **two-layer structure**:
 
 - Lesson
 - Section
 - Block
 
-Sections are used for:
+### Section-based lesson flow
 
-- breaking long lessons into steps
-- pacing the student experience
-- step-based navigation
+Sections enable:
+
+- step-based learning
 - progressive unlocking
-- visited-section tracking
+- structured pacing
+- better UX for long lessons
 
-### Current student lesson behaviour
+### Block system (EXPANDED)
 
-- lessons open on a current section
-- first visit to a section is recorded in the database
-- visiting a section unlocks the next section
-- previously visited sections remain accessible
-- students cannot skip arbitrarily ahead beyond the allowed progression
-- manual lesson completion still exists separately from section visits
+Blocks now include:
 
-### Question architecture
+- text
+- note
+- vocabulary
+- audio
+- image
+- callout
+- exam tip
+- header / subheader / divider
+- question set
 
-Questions are database-driven and metadata-driven.
+### Key architectural shift
 
-The engine is built so one rendering system can support many behaviours, rather than one custom component per question variation.
-
-This supports:
-
-- multiple choice
-- short answer
-- translation
-- selection-based workflows
-- listening rules
-- sentence-builder style interactions
+- ❌ Removed hardcoded lesson templates
+- ❌ Removed hardcoded block presets
+- ✅ All lesson content is DB-driven
+- ✅ Templates resolved via DB helpers
 
 ---
 
-## 5. Assignment architecture
+## 5. Lesson Builder Architecture (NEW)
 
-The assignment system now works as a full teacher-student workflow.
+The lesson builder is now a **core CMS system**.
 
-### Assignment entities
+### Capabilities
 
-- `assignments`
-- `assignment_items`
-- `assignment_submissions`
+- Section CRUD
+- Block CRUD
+- Ordering via position fields
+- Drag-and-drop UI
+- Cross-section block movement
+- Inspector-based editing
+- Publish/unpublish state
 
-### Assignment item types
+### Key design decisions
 
-- lesson
-- question set
-- custom task
-
-### Current workflow
-
-Teachers can:
-
-- create assignments
-- edit assignments
-- order assignment items
-- review submissions
-- save marks and feedback
-- reopen reviewed submissions
-- filter and sort review queues
-
-Students can:
-
-- view assignments
-- follow ordered items
-- submit text and optional files
-- get locked after review
-- see review results
-- see per-item progress
-
-### Important implementation detail
-
-Teacher-facing assignment status is **derived from submission data**, not trusted from an assignment-level label alone.
-
-That enables states such as:
-
-- no submissions
-- pending review
-- reviewed
-
-This is more useful operationally than a flat assignment status field.
+- Builder writes directly to DB tables
+- UI reflects DB state (no intermediate abstraction)
+- Position-based ordering avoids complex tree structures
+- No dependency on static presets
 
 ---
 
 ## 6. Progress architecture
 
-Progress currently exists in more than one place because different kinds of work need different tracking.
-
 ### Lesson progress
 
-Stored in `lesson_progress`.
+- lesson_progress → completion
 
-Used for:
+### Section progress (NEW)
 
-- completed lesson state
-- assignment lesson item progress
+- lesson_section_progress → visitation
 
-### Lesson section progress
+Tracks:
 
-Stored in `lesson_section_progress`.
+- first_visited_at
+- last_visited_at
+- visit_count
 
-Used for:
+### Key design decision
 
-- first-visit tracking per section
-- revisit timestamps and visit count
-- lesson step unlocking
-- honest visited-section progress UI
-
-Tracked fields include:
-
-- `first_visited_at`
-- `last_visited_at`
-- `visit_count`
-
-### Question progress
-
-Stored through:
-
-- `question_attempts`
-- `question_progress`
-
-Used for:
-
-- question activity
-- score history
-- question-set started state
-- assignment question set progress
-
-### Assignment progress
-
-Assignment progress is currently assembled from the underlying learning systems rather than stored as a single separate progress record.
-
-That means:
-
-- lesson items use lesson completion
-- question set items use question activity
-- custom tasks remain teacher-defined work without automatic completion tracking
-
-### Access switching and progress
-
-Progress is intentionally separate from access grants.
-
-This means changing a student's active access does not need to delete or rewrite historical progress, which is especially important for variant-aware learning paths.
-
-### Key progress design decision
-
-Section progression is currently **visit-based**, not explicit section-completion-button based.
-
-That decision was made to avoid:
-
-- repetitive click-heavy UX
-- fake completion actions
-- unnecessary friction in long lessons
-
-This keeps lesson flow smoother while still creating real, DB-backed progress state.
+Progression is **visit-based**, not completion-button based.
 
 ---
 
-## 7. Admin content and operations system
-
-The platform now has two distinct admin surfaces under one CMS direction.
-
-### Content CMS
-
-Supports:
-
-- course CRUD
-- variant CRUD
-- module CRUD
-- lesson CRUD shell
-- reordering for variants, modules, and lessons
-- contextual navigation and dedicated edit pages
-- public-view shortcuts
-
-### Operational admin tools
-
-Supports:
-
-- question set and question management
-- student account views
-- teacher account views
-- teaching group creation and editing
-- teaching group membership management
-- access-grant switching
-- teacher-role toggling
-- dashboard summary widgets
-- success/error banners and destructive-action confirmations
-
-### Lesson authoring status
-
-Lesson content architecture has moved forward during this phase, but it is still in a **hybrid state**.
-
-Current state:
-
-- lesson progression and section progress are DB-backed
-- student lesson step flow is DB-aware
-- lesson block rendering is reusable
-- lesson content authoring is **not yet fully CMS-driven in the same way as question sets**
-
-This is an important architectural boundary because the next major step is to make lessons fully database-authored through admin tools.
-
----
-
-## 8. Access and permission architecture
-
-### Role handling
-
-- admin visibility uses `profiles.is_admin`
-- teacher role uses `profiles.is_teacher`
-- teaching-group membership role uses `teaching_group_members.member_role`
-- student access is default authenticated access
-
-### Access modes
-
-Student experience is additionally shaped by product/access rules such as:
-
-- trial
-- full
-- volna
-
-### Security model
-
-Security is enforced through a combination of:
-
-- route-level checks
-- helper-level permission-aware queries
-- Row Level Security policies in Supabase
-
-This is why some helper functions include admin-aware logic even when route access is already gated.
-
-### Important admin security detail
-
-Recent admin CMS work required explicit admin RLS support for:
-
-- profiles
-- user_access_grants
-- teaching_groups
-- teaching_group_members
-
-This made role switching, access switching, and teaching-group management behave as true admin workflows rather than read-only views.
-
----
-
-## 9. Database relationships
+## 7. Database relationships (UPDATED)
 
 ```mermaid
 erDiagram
 
-  COURSES ||--o{ COURSE_VARIANTS : has
-  COURSE_VARIANTS ||--o{ MODULES : has
-  MODULES ||--o{ LESSONS : has
   LESSONS ||--o{ LESSON_SECTIONS : has
+  LESSON_SECTIONS ||--o{ LESSON_BLOCKS : has
   LESSON_SECTIONS ||--o{ LESSON_SECTION_PROGRESS : tracked_in
-
-  COURSES ||--o{ PRODUCTS : linked_to
-  COURSE_VARIANTS ||--o{ PRODUCTS : linked_to
-  PRODUCTS ||--o{ USER_ACCESS_GRANTS : grants
-
-  QUESTION_SETS ||--o{ QUESTIONS : contains
-  QUESTIONS ||--o{ QUESTION_OPTIONS : has
-  QUESTIONS ||--o{ QUESTION_ACCEPTED_ANSWERS : has
-  QUESTIONS ||--o{ QUESTION_ATTEMPTS : logs
-  QUESTIONS ||--o{ QUESTION_PROGRESS : tracked_in
-
-  LESSONS ||--o{ LESSON_PROGRESS : tracked_in
-
-  TEACHING_GROUPS ||--o{ TEACHING_GROUP_MEMBERS : has
-  TEACHING_GROUPS ||--o{ ASSIGNMENTS : receives
-
-  ASSIGNMENTS ||--o{ ASSIGNMENT_ITEMS : contains
-  ASSIGNMENTS ||--o{ ASSIGNMENT_SUBMISSIONS : receives
-
-  LESSONS ||--o{ ASSIGNMENT_ITEMS : may_reference
-  QUESTION_SETS ||--o{ ASSIGNMENT_ITEMS : may_reference
-
-  PROFILES ||--o{ ASSIGNMENTS : creates
-  PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : submits
-  PROFILES ||--o{ ASSIGNMENT_SUBMISSIONS : reviews
-  PROFILES ||--o{ TEACHING_GROUP_MEMBERS : belongs_to
-  AUTH_USERS ||--o{ LESSON_PROGRESS : has
-  AUTH_USERS ||--o{ LESSON_SECTION_PROGRESS : has
 ```
 
-### Important lesson-progress distinction
+---
 
-There are now **two separate lesson progress layers**:
+## 8. Architectural changes in this phase
 
-1. `lesson_progress`
-   - lesson-level completion
-   - manual completion state
-   - used by assignment lesson items
+### Major upgrades
 
-2. `lesson_section_progress`
-   - section-level visitation
-   - step unlocking
-   - visited-section UX state
+- Section-based lesson system
+- DB-backed progression tracking
+- Full lesson builder CMS
+- DB-driven templates
 
-This separation is intentional and avoids overloading one table with two different concepts.
+### Major removals
+
+- Hardcoded lesson presets
+- Static template files
+
+### Improvements
+
+- Cleaner architecture
+- Scalable lesson system
+- CMS-driven content
 
 ---
 
-## 10. Representative file structure
+## 9. Architectural strengths
 
-This is intentionally representative rather than exhaustive.
-
-```text
-src/
-  app/
-    (platform)/
-      dashboard/
-      courses/
-      assignments/
-      teacher/
-      question-sets/
-    admin/
-      content/
-      question-sets/
-      students/
-      teachers/
-      teaching-groups/
-    actions/
-
-  components/
-    admin/
-    assignments/
-    layout/
-    lesson-blocks/
-    questions/
-    ui/
-
-  lib/
-    access.ts
-    access-helpers-db.ts
-    admin-user-helpers-db.ts
-    assignment-helpers-db.ts
-    assignment-progress.ts
-    auth.ts
-    course-helpers-db.ts
-    dashboard-helpers.ts
-    progress.ts
-    question-engine.ts
-    question-helpers-db.ts
-    question-progress.ts
-    routes.ts
-    storage-helpers.ts
-    teacher-auth.ts
-    supabase/
-
-  types/
-```
-
-### Files made more important by this phase
-
-The following architectural areas now matter more because of the lesson-section system:
-
-- `src/lib/progress.ts`
-- student lesson page template / section navigation components
-- lesson rendering helpers
-- future lesson authoring helpers
-- future lesson-section-aware admin authoring flows
+- Fully DB-driven content system
+- Strong separation of concerns
+- Reusable lesson + question engines
+- Scalable CMS
+- Clean progression model
 
 ---
 
-## 11. Tech stack
+## 10. Next architectural steps
 
-- Next.js (App Router)
-- React
-- TypeScript
-- Tailwind CSS
-- Supabase
-- Server Actions
-
----
-
-## 12. Current architectural strengths
-
-The platform now has several strong foundations:
-
-- one shared system for multiple student experiences
-- reusable lesson renderer
-- reusable metadata-driven question engine
-- real teacher assignment workflow
-- admin CMS for both content and operational workflows
-- security model aligned across route checks, helpers, and RLS
-- assignment UX that reflects operational review state rather than raw record status
-- teacher-role and access-grant systems that are explicit rather than inferred ad hoc
-- **section-based lesson progression with DB-backed visit tracking**
-- **clean separation between lesson completion and section visitation**
-
----
-
-## 13. Likely next architectural evolutions
-
-The current architecture is strong enough to support future additions such as:
-
-- database-driven lesson authoring
-- lesson block management from admin
-- section-based or step-based lesson flow UX
-- payments and billing-driven access
-- speaking workflows
-- richer analytics
-- deeper progress summaries
-- broader admin content operations
-- full DB-driven lesson content authoring
-- section-level quizzes/checkpoints
-- richer lesson engagement analytics
-- future true section-completion logic, if needed
+- autosave in builder
+- richer block types
+- section-level validation/quizzes
+- analytics
+- payments integration
+- speaking system
