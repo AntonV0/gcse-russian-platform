@@ -51,10 +51,9 @@ const landingLinks = [
 
 export default function Home() {
   return (
-    <main className="app-page py-10 md:py-14">
+    <div className="py-8 md:py-12">
       <section className="app-surface-brand app-section-padding-lg overflow-hidden">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.95fr)] lg:items-start">
-          {/* Hero content */}
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.92fr)] lg:items-start">
           <div className="space-y-6">
             <div className="space-y-3">
               <Badge tone="info" icon={appIcons.info}>
@@ -94,7 +93,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right-side product summary */}
           <div className="app-card app-section-padding">
             <div className="mb-4 flex items-start justify-between gap-4">
               <div className="min-w-0">
@@ -106,7 +104,7 @@ export default function Home() {
 
               <AppIcon
                 icon={appIcons.uiLab}
-                size={22}
+                size={18}
                 className="mt-0.5 shrink-0 app-brand-text"
               />
             </div>
@@ -140,13 +138,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Main navigation cards for the app shell */}
       <section className="mt-8 grid gap-4 md:grid-cols-3">
         {landingLinks.map((item) => (
           <Link
             key={item.title}
             href={item.href}
-            className="app-card app-card-hover app-section-padding block cursor-pointer transition hover:-translate-y-1"
+            className="app-card app-card-hover app-section-padding block cursor-pointer transition"
           >
             <div className="mb-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -154,13 +151,17 @@ export default function Home() {
                 <h2 className="app-section-title">{item.title}</h2>
               </div>
 
-              <AppIcon icon={appIcons.next} size={16} className="app-text-soft" />
+              <AppIcon
+                icon={appIcons.next}
+                size={16}
+                className="app-text-soft app-card-link-arrow"
+              />
             </div>
 
             <p className="app-text-muted text-sm">{item.description}</p>
           </Link>
         ))}
       </section>
-    </main>
+    </div>
   );
 }

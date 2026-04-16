@@ -9,7 +9,7 @@
   --background-soft-red: #fff2f2;
 
   --text-primary: #102033;
-  --text-secondary: #4b5d73;
+  --text-secondary: #526377;
   --text-muted: #6f8095;
   --text-inverse: #ffffff;
 
@@ -17,8 +17,8 @@
   --border-strong: #c3d0de;
 
   /* ========= Brand colours ========= */
-  --brand-blue: #2f6fed;
-  --brand-blue-hover: #235bd0;
+  --brand-blue: #2563eb;
+  --brand-blue-hover: #1d4ed8;
   --brand-blue-soft: #eaf2ff;
 
   --brand-red: #d94b52;
@@ -37,11 +37,11 @@
   --danger: #c23b3b;
   --danger-soft: #fff1f1;
 
-  --info: #2f6fed;
+  --info: #2563eb;
   --info-soft: #edf4ff;
 
   /* ========= Layout ========= */
-  --page-max-width: 1280px;
+  --page-max-width: 1360px;
   --page-padding-x: 1rem;
   --page-padding-y: 1rem;
 
@@ -73,13 +73,13 @@
   /* ========= Gradients ========= */
   --gradient-brand-soft: linear-gradient(
     135deg,
-    rgba(47, 111, 237, 0.08) 0%,
+    rgba(37, 99, 235, 0.08) 0%,
     rgba(255, 255, 255, 1) 45%,
     rgba(217, 75, 82, 0.06) 100%
   );
   --gradient-blue-soft: linear-gradient(
     180deg,
-    rgba(47, 111, 237, 0.08) 0%,
+    rgba(37, 99, 235, 0.08) 0%,
     rgba(255, 255, 255, 1) 100%
   );
   --gradient-red-soft: linear-gradient(
@@ -220,7 +220,7 @@ main {
 }
 
 ::selection {
-  background: rgba(47, 111, 237, 0.22);
+  background: rgba(37, 99, 235, 0.22);
   color: var(--text-primary);
 }
 
@@ -282,7 +282,7 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--brand-blue);
-  box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.14);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
 }
 
 textarea {
@@ -290,6 +290,7 @@ textarea {
 }
 
 .app-page {
+  width: 100%;
   max-width: var(--page-max-width);
   margin: 0 auto;
 }
@@ -358,7 +359,7 @@ textarea {
 }
 
 .app-card-hover:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   border-color: var(--border-strong);
   box-shadow: var(--shadow-md);
 }
@@ -368,13 +369,23 @@ textarea {
 }
 
 .app-section-padding-lg {
-  padding: 1.5rem;
+  padding: 1.35rem;
+}
+
+@media (min-width: 768px) {
+  .app-section-padding {
+    padding: 1.5rem;
+  }
+
+  .app-section-padding-lg {
+    padding: 1.4rem 1.5rem;
+  }
 }
 
 .app-title {
   font-size: clamp(2.15rem, 3vw, 3.2rem);
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
   color: var(--text-primary);
   line-height: 1.05;
 }
@@ -427,6 +438,7 @@ textarea {
 }
 
 .app-nav-link {
+  position: relative;
   color: var(--text-secondary);
   transition:
     color var(--transition-fast),
@@ -437,9 +449,28 @@ textarea {
   color: var(--brand-blue);
 }
 
+.app-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 2px;
+  width: 0;
+  background: var(--brand-blue);
+  transition: width 0.2s ease;
+}
+
+.app-nav-link:hover::after {
+  width: 100%;
+}
+
 .app-nav-link-active {
   color: var(--brand-blue);
   font-weight: 600;
+}
+
+.app-nav-link-active::after {
+  width: 100%;
 }
 
 .app-interactive {
@@ -465,7 +496,7 @@ textarea {
 
 .app-focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.14);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
   border-color: var(--brand-blue);
 }
 
@@ -512,14 +543,14 @@ textarea {
 }
 
 .app-btn-accent {
-  background: var(--brand-red);
-  color: var(--text-inverse);
-  border-color: var(--brand-red);
+  background: var(--brand-red-soft);
+  color: var(--brand-red);
+  border: 1px solid rgba(217, 75, 82, 0.25);
 }
 
 .app-btn-accent:hover {
-  background: var(--brand-red-hover);
-  border-color: var(--brand-red-hover);
+  background: rgba(217, 75, 82, 0.12);
+  border-color: rgba(217, 75, 82, 0.4);
 }
 
 .app-pill {
@@ -555,7 +586,7 @@ textarea {
 .app-pill-info {
   background: var(--info-soft);
   color: var(--info);
-  border-color: rgba(47, 111, 237, 0.18);
+  border-color: rgba(37, 99, 235, 0.18);
 }
 
 .app-pill-muted {
@@ -653,6 +684,18 @@ textarea {
   gap: 1rem;
 }
 
+.app-card-link-arrow {
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.app-card-hover:hover .app-card-link-arrow {
+  color: var(--brand-blue);
+  transform: translateX(2px);
+}
+
 @media (min-width: 640px) {
   :root {
     --page-padding-x: 1.25rem;
@@ -660,20 +703,9 @@ textarea {
   }
 }
 
-@media (min-width: 768px) {
-  :root {
-    --page-padding-x: 1.5rem;
-    --page-padding-y: 1.5rem;
-  }
-
-  .app-section-padding {
-    padding: 1.5rem;
-  }
-}
-
 @media (min-width: 1280px) {
   :root {
-    --page-padding-x: 2rem;
+    --page-padding-x: 1.5rem;
     --page-padding-y: 1.75rem;
   }
 }
