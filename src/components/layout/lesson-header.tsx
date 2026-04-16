@@ -17,10 +17,7 @@ export default function LessonHeader({
 }: LessonHeaderProps) {
   return (
     <div className="mb-8 app-header-block">
-      <Link
-        href={backHref}
-        className="mb-4 inline-block text-sm text-gray-500 hover:text-black"
-      >
+      <Link href={backHref} className="app-nav-link inline-flex w-fit text-sm">
         ← {backLabel}
       </Link>
 
@@ -28,7 +25,9 @@ export default function LessonHeader({
 
       <h1 className="app-title">{lessonTitle}</h1>
 
-      {lessonDescription ? <p className="app-subtitle">{lessonDescription}</p> : null}
+      {lessonDescription ? (
+        <p className="app-subtitle max-w-3xl">{lessonDescription}</p>
+      ) : null}
     </div>
   );
 }

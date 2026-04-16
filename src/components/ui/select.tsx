@@ -4,11 +4,7 @@ export default function Select({ className, children, ...props }: SelectProps) {
   return (
     <select
       {...props}
-      className={[
-        "w-full rounded-xl border px-3 py-2 text-sm text-gray-900 outline-none transition",
-        "focus:border-black",
-        className,
-      ]
+      className={["app-focus-ring rounded-xl px-3 py-2 text-sm", className]
         .filter(Boolean)
         .join(" ")}
     >

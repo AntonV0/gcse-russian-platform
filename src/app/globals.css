@@ -87,34 +87,34 @@
     rgba(217, 75, 82, 0.08) 0%,
     rgba(255, 255, 255, 1) 100%
   );
+}
 
-  /* ========= Dark mode ========= */
-  [data-theme="dark"] {
-    --background: #0f172a;
-    --background-elevated: #111827;
-    --background-muted: #1f2937;
-    --background-soft-blue: #172554;
-    --background-soft-red: #3f1d1d;
+/* ========= Dark mode ========= */
+[data-theme="dark"] {
+  --background: #0f172a;
+  --background-elevated: #111827;
+  --background-muted: #1f2937;
+  --background-soft-blue: #172554;
+  --background-soft-red: #3f1d1d;
 
-    --text-primary: #e5e7eb;
-    --text-secondary: #9ca3af;
-    --text-muted: #6b7280;
-    --text-inverse: #0f172a;
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #0f172a;
 
-    --border: #2a3647;
-    --border-strong: #3a4a5f;
+  --border: #2a3647;
+  --border-strong: #3a4a5f;
 
-    --brand-blue: #4f8cff;
-    --brand-blue-hover: #3a73e0;
+  --brand-blue: #4f8cff;
+  --brand-blue-hover: #3a73e0;
 
-    --brand-red: #ef5a61;
-    --brand-red-hover: #d6454c;
+  --brand-red: #ef5a61;
+  --brand-red-hover: #d6454c;
 
-    --success: #22c55e;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #4f8cff;
-  }
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #4f8cff;
 }
 
 html {
@@ -219,13 +219,11 @@ main {
   padding: var(--page-padding-y) var(--page-padding-x);
 }
 
-/* ========= Selection ========= */
 ::selection {
   background: rgba(47, 111, 237, 0.22);
   color: var(--text-primary);
 }
 
-/* ========= Scrollbars ========= */
 * {
   scrollbar-width: thin;
   scrollbar-color: #b9c6d6 transparent;
@@ -253,7 +251,6 @@ main {
   background-clip: padding-box;
 }
 
-/* ========= Form baseline ========= */
 input,
 textarea,
 select {
@@ -292,7 +289,6 @@ textarea {
   resize: vertical;
 }
 
-/* ========= Reusable utility classes ========= */
 .app-page {
   max-width: var(--page-max-width);
   margin: 0 auto;
@@ -415,7 +411,17 @@ textarea {
   background: var(--gradient-red-soft);
 }
 
-/* ========= Interaction helpers ========= */
+.app-nav-link {
+  color: var(--text-secondary);
+  transition:
+    color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.app-nav-link:hover {
+  color: var(--brand-blue);
+}
+
 .app-interactive {
   transition:
     transform var(--transition-fast),
@@ -443,7 +449,6 @@ textarea {
   border-color: var(--brand-blue);
 }
 
-/* ========= Generic button-like utility classes ========= */
 .app-btn-base {
   display: inline-flex;
   align-items: center;
@@ -497,7 +502,6 @@ textarea {
   border-color: var(--brand-red-hover);
 }
 
-/* ========= Semantic pill helpers ========= */
 .app-pill {
   display: inline-flex;
   align-items: center;
@@ -540,7 +544,6 @@ textarea {
   border-color: var(--border);
 }
 
-/* ========= Header / section polish ========= */
 .app-header-block {
   display: flex;
   flex-direction: column;
@@ -553,18 +556,6 @@ textarea {
   gap: 0.5rem;
 }
 
-.app-nav-link {
-  color: var(--text-secondary);
-  transition:
-    color var(--transition-fast),
-    opacity var(--transition-fast);
-}
-
-.app-nav-link:hover {
-  color: var(--brand-blue);
-}
-
-/* ========= Tablet / desktop spacing ========= */
 @media (min-width: 640px) {
   :root {
     --page-padding-x: 1.25rem;
@@ -590,7 +581,6 @@ textarea {
   }
 }
 
-/* ========= Reduced motion ========= */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
