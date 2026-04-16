@@ -7,6 +7,7 @@ import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { appIcons } from "@/lib/icons";
 import AllIconsBrowser from "@/components/admin/all-icons-browser";
+import SectionCard from "@/components/ui/section-card";
 
 const iconPreviewGroups = [
   {
@@ -73,26 +74,6 @@ const iconPreviewGroups = [
     ] as const,
   },
 ];
-
-function SectionCard({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border bg-white p-5 shadow-sm">
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold text-black">{title}</h2>
-        {description ? <p className="mt-1 text-sm text-gray-600">{description}</p> : null}
-      </div>
-      {children}
-    </section>
-  );
-}
 
 function ButtonPreview({
   label,

@@ -7,6 +7,7 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import { appIcons } from "@/lib/icons";
 import { getCourseByIdDb } from "@/lib/course-helpers-db";
 import { updateCourseAction } from "@/app/actions/admin-content-actions";
+import BackNav from "@/components/ui/back-nav";
 
 type AdminCourseEditPageProps = {
   params: Promise<{
@@ -25,19 +26,15 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
 
   return (
     <main className="space-y-6">
-      <div className="flex flex-wrap gap-2">
-        <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
-          Back to content
-        </Button>
-
-        <Button
-          href={`/admin/content/courses/${course.id}`}
-          variant="quiet"
-          icon={appIcons.back}
-        >
-          Back to {course.title}
-        </Button>
-      </div>
+      <BackNav
+        items={[
+          { href: "/admin/content", label: "Back to content" },
+          {
+            href: `/admin/content/courses/${course.id}`,
+            label: `Back to ${course.title}`,
+          },
+        ]}
+      />
 
       <PageHeader
         title={`Edit ${course.title}`}

@@ -12,32 +12,13 @@ import {
   createVariantAction,
   moveVariantAction,
 } from "@/app/actions/admin-content-actions";
+import SectionCard from "@/components/ui/section-card";
 
 type AdminCourseDetailPageProps = {
   params: Promise<{
     courseId: string;
   }>;
 };
-
-function SectionCard({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border bg-white shadow-sm">
-      <div className="border-b px-5 py-4">
-        <h2 className="font-semibold text-gray-900">{title}</h2>
-        {description ? <p className="mt-1 text-sm text-gray-600">{description}</p> : null}
-      </div>
-      <div className="p-5">{children}</div>
-    </section>
-  );
-}
 
 export default async function AdminCourseDetailPage({
   params,

@@ -10,26 +10,7 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import { getCoursesDb } from "@/lib/course-helpers-db";
 import { createCourseAction } from "@/app/actions/admin-content-actions";
 import { appIcons } from "@/lib/icons";
-
-function SectionCard({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border bg-white shadow-sm">
-      <div className="border-b px-4 py-4">
-        <h2 className="font-semibold text-gray-900">{title}</h2>
-        {description ? <p className="mt-1 text-sm text-gray-600">{description}</p> : null}
-      </div>
-      <div className="p-4">{children}</div>
-    </section>
-  );
-}
+import SectionCard from "@/components/ui/section-card";
 
 export default async function AdminContentPage() {
   const courses = await getCoursesDb();
