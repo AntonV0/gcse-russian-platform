@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
 
@@ -215,17 +215,16 @@ export function MiniStatPill({
 }
 
 export function usePersistentBoolean(key: string, defaultValue: boolean) {
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState<boolean>(() => {
+    if (typeof window === "undefined") {
+      return defaultValue;
+    }
 
-  useEffect(() => {
     const stored = window.localStorage.getItem(key);
-    if (stored === "true") setValue(true);
-    else if (stored === "false") setValue(false);
-  }, [key]);
-
-  useEffect(() => {
-    window.localStorage.setItem(key, String(value));
-  }, [key, value]);
+    if (stored === "true") return true;
+    if (stored === "false") return false;
+    return defaultValue;
+  });
 
   return [value, setValue] as const;
 }
