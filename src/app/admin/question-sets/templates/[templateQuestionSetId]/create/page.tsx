@@ -2,7 +2,7 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { getQuestionSetByIdDb } from "@/lib/question-helpers-db";
+import { getQuestionSetByIdDb } from "@/lib/questions/question-helpers-db";
 import { createQuestionSetFromTemplateAction } from "@/app/actions/admin/admin-question-actions";
 
 type CreateFromTemplatePageProps = {

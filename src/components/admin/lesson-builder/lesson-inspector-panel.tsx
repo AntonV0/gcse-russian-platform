@@ -30,7 +30,7 @@ import {
   getLessonBlockGroupLabel,
   getLessonBlockLabel,
   getLessonBlockPreview,
-} from "@/lib/lesson-blocks";
+} from "@/lib/lessons/lesson-blocks";
 
 export default function LessonInspectorPanel(props: {
   section: LessonSection | null;

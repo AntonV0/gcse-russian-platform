@@ -1,6 +1,6 @@
 "use server";
 
-import { recordQuestionAttempt } from "@/lib/question-progress";
+import { recordQuestionAttempt } from "@/lib/questions/question-progress";
 
 type SubmitQuestionAttemptInput = {
   questionId: string;

@@ -5,7 +5,7 @@ import MultipleChoiceBlock from "@/components/questions/multiple-choice-block";
 import {
   type RuntimeMultipleChoiceQuestion,
   validateMultipleChoiceAnswer,
-} from "@/lib/question-engine";
+} from "@/lib/questions/question-engine";
 import { submitQuestionAttemptAction } from "@/app/actions/questions/question-actions";
 
 type TrackedMultipleChoiceBlockProps = {

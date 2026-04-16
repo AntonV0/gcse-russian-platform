@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { mapDbBlockToLessonBlock, resolveSectionKind } from "@/lib/lesson-blocks";
+import { mapDbBlockToLessonBlock, resolveSectionKind } from "@/lib/lessons/lesson-blocks";
 import type { LessonSection } from "@/types/lesson";
 
 export type DbLessonSection = {

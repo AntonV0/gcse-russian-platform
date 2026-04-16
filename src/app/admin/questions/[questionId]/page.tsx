@@ -7,7 +7,7 @@ import {
   getQuestionByIdDb,
   getQuestionOptionsByQuestionIdDb,
   getQuestionSetByIdDb,
-} from "@/lib/question-helpers-db";
+} from "@/lib/questions/question-helpers-db";
 import {
   deleteQuestionAction,
   duplicateQuestionAction,

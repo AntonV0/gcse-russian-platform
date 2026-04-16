@@ -3,7 +3,7 @@ import {
   buildRuntimeQuestionSet,
   type RuntimeQuestion,
   type RuntimeQuestionSet,
-} from "@/lib/question-engine";
+} from "@/lib/questions/question-engine";
 
 export type DbQuestionSet = {
   id: string;

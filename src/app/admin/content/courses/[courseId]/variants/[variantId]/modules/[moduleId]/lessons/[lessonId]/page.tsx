@@ -3,14 +3,14 @@ import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
 import { appIcons } from "@/lib/shared/icons";
-import { getLessonBuilderTemplateOptionsDb } from "@/lib/lesson-template-helpers-db";
+import { getLessonBuilderTemplateOptionsDb } from "@/lib/lessons/lesson-template-helpers-db";
 import {
   getCourseByIdDb,
   getLessonByIdDb,
   getModuleByIdDb,
   getVariantByIdDb,
 } from "@/lib/courses/course-helpers-db";
-import { getLessonSectionsWithBlocksDb } from "@/lib/lesson-admin-helpers-db";
+import { getLessonSectionsWithBlocksDb } from "@/lib/lessons/lesson-admin-helpers-db";
 import { unpublishLessonAction } from "@/app/actions/admin/admin-content-actions";
 
 type AdminLessonDetailPageProps = {

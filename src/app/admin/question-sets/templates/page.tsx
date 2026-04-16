@@ -3,7 +3,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { getQuestionSetTemplatesDb } from "@/lib/question-helpers-db";
+import { getQuestionSetTemplatesDb } from "@/lib/questions/question-helpers-db";
 import { appIcons } from "@/lib/shared/icons";
 
 export default async function AdminQuestionSetTemplatesPage() {

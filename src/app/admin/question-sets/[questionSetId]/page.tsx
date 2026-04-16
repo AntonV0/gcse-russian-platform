@@ -4,7 +4,7 @@ import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getQuestionSetByIdDb,
   getQuestionsByQuestionSetIdIncludingInactiveDb,
-} from "@/lib/question-helpers-db";
+} from "@/lib/questions/question-helpers-db";
 import Link from "next/link";
 import AdminQuestionForm from "@/components/admin/admin-question-form";
 import {

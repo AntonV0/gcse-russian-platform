@@ -5,7 +5,7 @@ import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { getQuestionSetsDb } from "@/lib/question-helpers-db";
+import { getQuestionSetsDb } from "@/lib/questions/question-helpers-db";
 import { appIcons } from "@/lib/shared/icons";
 
 export default async function AdminQuestionSetsPage() {
