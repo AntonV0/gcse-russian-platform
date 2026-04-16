@@ -57,6 +57,12 @@ export const uiLabPages: UiLabPage[] = [
     status: "in_progress",
   },
   {
+    href: "/admin/ui/layout",
+    label: "Layout",
+    description: "Containers, grids, stacking patterns, and responsive page structure.",
+    status: "in_progress",
+  },
+  {
     href: "/admin/ui/icons",
     label: "Icons",
     description: "Curated app icons and full Lucide browser.",
