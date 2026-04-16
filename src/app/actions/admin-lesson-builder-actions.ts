@@ -22,8 +22,6 @@ import {
   normalizeTextBlockData,
   normalizeVocabularyBlockData,
   normalizeVocabularySetBlockData,
-  requireString,
-  optionalString,
 } from "@/lib/lesson-blocks";
 
 function getTrimmedString(formData: FormData, key: string) {

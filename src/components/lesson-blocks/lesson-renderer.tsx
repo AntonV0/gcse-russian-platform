@@ -6,6 +6,7 @@ import MultipleChoiceBlock from "@/components/questions/multiple-choice-block";
 import ShortAnswerBlock from "@/components/questions/short-answer-block";
 import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
 import type { LessonSection } from "@/types/lesson";
+import Image from "next/image";
 
 type LessonRendererProps = {
   sections: LessonSection[];
@@ -53,11 +54,15 @@ function ImageBlock({
 }) {
   return (
     <figure className="space-y-2">
-      <img
-        src={src}
-        alt={alt ?? caption ?? "Lesson image"}
-        className="max-h-[500px] w-full rounded-xl border object-contain bg-white"
-      />
+      <div className="relative h-[320px] w-full overflow-hidden rounded-xl border bg-white sm:h-[420px] md:h-[500px]">
+        <Image
+          src={src}
+          alt={alt ?? caption ?? "Lesson image"}
+          fill
+          sizes="(max-width: 768px) 100vw, 900px"
+          className="object-contain"
+        />
+      </div>
       {caption ? (
         <figcaption className="text-sm text-gray-600">{caption}</figcaption>
       ) : null}

@@ -40,6 +40,22 @@ function getSectionCounts(sections: LessonSection[]) {
   return { publishedSections, totalBlocks, publishedBlocks };
 }
 
+function getInitialSelectedSectionId(lessonId: string, sections: LessonSection[]) {
+  if (typeof window === "undefined") {
+    return sections[0]?.id ?? null;
+  }
+
+  const storedSectionId = window.localStorage.getItem(
+    getLessonBuilderStorageKey(lessonId, "selected-section-id")
+  );
+
+  if (storedSectionId && sections.some((section) => section.id === storedSectionId)) {
+    return storedSectionId;
+  }
+
+  return sections[0]?.id ?? null;
+}
+
 export default function AdminLessonBuilderWorkspace({
   lessonId,
   courseId,
@@ -68,7 +84,9 @@ export default function AdminLessonBuilderWorkspace({
     [sections]
   );
 
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [storedSelectedSectionId, setStoredSelectedSectionId] = useState<string | null>(
+    () => getInitialSelectedSectionId(lessonId, sections)
+  );
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [sectionSearch, setSectionSearch] = useState("");
   const [blockSearch, setBlockSearch] = useState("");
@@ -84,45 +102,11 @@ export default function AdminLessonBuilderWorkspace({
   const [draggedBlockContext, setDraggedBlockContext] =
     useState<DraggedBlockContext>(null);
 
-  useEffect(() => {
-    const storedSectionId = window.localStorage.getItem(
-      getLessonBuilderStorageKey(lessonId, "selected-section-id")
-    );
-
-    if (storedSectionId && sections.some((section) => section.id === storedSectionId)) {
-      setSelectedSectionId(storedSectionId);
-      return;
-    }
-
-    setSelectedSectionId(sections[0]?.id ?? null);
-  }, [lessonId, sections]);
-
-  useEffect(() => {
-    if (!selectedSectionId) return;
-
-    window.localStorage.setItem(
-      getLessonBuilderStorageKey(lessonId, "selected-section-id"),
-      selectedSectionId
-    );
-  }, [lessonId, selectedSectionId]);
-
-  useEffect(() => {
-    if (sections.length === 0) {
-      setSelectedSectionId(null);
-      setSelectedBlockId(null);
-      setSectionSearch("");
-      setBlockSearch("");
-      return;
-    }
-
-    const stillExists = sections.some((section) => section.id === selectedSectionId);
-
-    if (!stillExists) {
-      setSelectedSectionId(sections[0].id);
-      setSelectedBlockId(null);
-      setBlockSearch("");
-    }
-  }, [sections, selectedSectionId]);
+  const selectedSectionId =
+    storedSelectedSectionId &&
+    sections.some((section) => section.id === storedSelectedSectionId)
+      ? storedSelectedSectionId
+      : (sections[0]?.id ?? null);
 
   const selectedSection =
     sections.find((section) => section.id === selectedSectionId) ?? null;
@@ -136,6 +120,15 @@ export default function AdminLessonBuilderWorkspace({
   const blockIndex = selectedBlock
     ? (selectedSection?.blocks.findIndex((block) => block.id === selectedBlock.id) ?? -1)
     : -1;
+
+  useEffect(() => {
+    if (!selectedSectionId) return;
+
+    window.localStorage.setItem(
+      getLessonBuilderStorageKey(lessonId, "selected-section-id"),
+      selectedSectionId
+    );
+  }, [lessonId, selectedSectionId]);
 
   return (
     <div className="space-y-6">
@@ -260,7 +253,7 @@ export default function AdminLessonBuilderWorkspace({
               sections={sections}
               selectedSectionId={selectedSectionId}
               onSelectSection={(sectionId) => {
-                setSelectedSectionId(sectionId);
+                setStoredSelectedSectionId(sectionId);
                 setSelectedBlockId(null);
                 setBlockSearch("");
               }}

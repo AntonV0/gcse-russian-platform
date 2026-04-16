@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   createAudioBlockAction,
   createCalloutBlockAction,
@@ -268,6 +268,10 @@ function BlockTypeButton(props: {
   );
 }
 
+function getDefaultComposerSelection(section: LessonSection): NewBlockType | null {
+  return section.blocks.length === 0 ? "text" : null;
+}
+
 export default function AddBlockComposer(props: {
   section: LessonSection;
   routeFields: RouteFields;
@@ -278,13 +282,25 @@ export default function AddBlockComposer(props: {
     blocksCount: number;
   }[];
 }) {
-  const [selectedNewBlockType, setSelectedNewBlockType] = useState<NewBlockType | null>(
-    props.section.blocks.length === 0 ? "text" : null
-  );
+  const [composerState, setComposerState] = useState<{
+    sectionId: string;
+    selectedNewBlockType: NewBlockType | null;
+  }>(() => ({
+    sectionId: props.section.id,
+    selectedNewBlockType: getDefaultComposerSelection(props.section),
+  }));
 
-  useEffect(() => {
-    setSelectedNewBlockType(props.section.blocks.length === 0 ? "text" : null);
-  }, [props.section.id, props.section.blocks.length]);
+  const selectedNewBlockType =
+    composerState.sectionId === props.section.id
+      ? composerState.selectedNewBlockType
+      : getDefaultComposerSelection(props.section);
+
+  function updateSelectedNewBlockType(value: NewBlockType | null) {
+    setComposerState({
+      sectionId: props.section.id,
+      selectedNewBlockType: value,
+    });
+  }
 
   return (
     <div className="space-y-4">
@@ -342,19 +358,19 @@ export default function AddBlockComposer(props: {
               label="Header"
               value="header"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
             <BlockTypeButton
               label="Subheader"
               value="subheader"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
             <BlockTypeButton
               label="Divider"
               value="divider"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
           </div>
         </div>
@@ -366,31 +382,31 @@ export default function AddBlockComposer(props: {
               label="Text"
               value="text"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
             <BlockTypeButton
               label="Note"
               value="note"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
             <BlockTypeButton
               label="Callout"
               value="callout"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
             <BlockTypeButton
               label="Exam tip"
               value="exam-tip"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
             <BlockTypeButton
               label="Vocabulary"
               value="vocabulary"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
           </div>
         </div>
@@ -402,13 +418,13 @@ export default function AddBlockComposer(props: {
               label="Image"
               value="image"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
             <BlockTypeButton
               label="Audio"
               value="audio"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
           </div>
         </div>
@@ -420,13 +436,13 @@ export default function AddBlockComposer(props: {
               label="Question set"
               value="question-set"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
             <BlockTypeButton
               label="Vocabulary set"
               value="vocabulary-set"
               selectedValue={selectedNewBlockType}
-              onSelect={setSelectedNewBlockType}
+              onSelect={updateSelectedNewBlockType}
             />
           </div>
         </div>
@@ -450,7 +466,7 @@ export default function AddBlockComposer(props: {
 
             <button
               type="button"
-              onClick={() => setSelectedNewBlockType(null)}
+              onClick={() => updateSelectedNewBlockType(null)}
               className="rounded-lg border px-3 py-2 text-sm hover:bg-white"
             >
               Clear

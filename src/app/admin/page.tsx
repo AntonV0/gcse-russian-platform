@@ -2,7 +2,6 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Button from "@/components/ui/button";
-import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";

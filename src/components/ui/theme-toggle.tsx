@@ -1,31 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useReducer } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import { appIcons } from "@/lib/icons";
 
+function getCurrentTheme(): "light" | "dark" {
+  if (typeof document === "undefined") {
+    return "light";
+  }
+
+  const current = document.documentElement.getAttribute("data-theme");
+  return current === "dark" ? "dark" : "light";
+}
+
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const current = document.documentElement.getAttribute("data-theme") as
-      | "light"
-      | "dark"
-      | null;
-
-    setTheme(current || "light");
-    setMounted(true);
-  }, []);
+  const [, forceRender] = useReducer((value: number) => value + 1, 0);
+  const theme = getCurrentTheme();
 
   function toggleTheme() {
     const next = theme === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     localStorage.setItem("theme", next);
-    setTheme(next);
+    forceRender();
   }
-
-  if (!mounted) return null;
 
   return (
     <button

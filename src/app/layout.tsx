@@ -1,10 +1,6 @@
 import "./globals.css";
-import Link from "next/link";
 import type { Metadata } from "next";
-import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/routes";
 import { getCurrentUser } from "@/lib/auth";
-import LogoutButton from "@/components/layout/logout-button";
-import ThemeToggle from "@/components/ui/theme-toggle";
 import SiteFooter from "@/components/layout/site-footer";
 import SiteHeader from "@/components/layout/site-header";
 

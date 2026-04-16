@@ -2,6 +2,31 @@
 
 import { createClient } from "@/lib/supabase/server";
 
+type DbLessonSectionRow = {
+  id: string;
+  lesson_id: string;
+  title: string;
+  description: string | null;
+  section_kind: string;
+  position: number;
+  is_published: boolean;
+  settings: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type DbLessonBlockRow = {
+  id: string;
+  lesson_section_id: string;
+  block_type: string;
+  position: number;
+  is_published: boolean;
+  data: Record<string, unknown>;
+  settings: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export async function getLessonSectionsWithBlocksDb(lessonId: string) {
   const supabase = await createClient();
 
@@ -16,7 +41,15 @@ export async function getLessonSectionsWithBlocksDb(lessonId: string) {
     return [];
   }
 
-  const sectionIds = sections.map((s) => s.id);
+  const typedSections = (sections ?? []) as DbLessonSectionRow[];
+  const sectionIds = typedSections.map((section) => section.id);
+
+  if (sectionIds.length === 0) {
+    return typedSections.map((section) => ({
+      ...section,
+      blocks: [] as DbLessonBlockRow[],
+    }));
+  }
 
   const { data: blocks, error: blocksError } = await supabase
     .from("lesson_blocks")
@@ -29,15 +62,16 @@ export async function getLessonSectionsWithBlocksDb(lessonId: string) {
     return [];
   }
 
-  const blocksBySection = new Map<string, any[]>();
+  const typedBlocks = (blocks ?? []) as DbLessonBlockRow[];
+  const blocksBySection = new Map<string, DbLessonBlockRow[]>();
 
-  for (const block of blocks) {
-    const arr = blocksBySection.get(block.lesson_section_id) ?? [];
-    arr.push(block);
-    blocksBySection.set(block.lesson_section_id, arr);
+  for (const block of typedBlocks) {
+    const existing = blocksBySection.get(block.lesson_section_id) ?? [];
+    existing.push(block);
+    blocksBySection.set(block.lesson_section_id, existing);
   }
 
-  return sections.map((section) => ({
+  return typedSections.map((section) => ({
     ...section,
     blocks: blocksBySection.get(section.id) ?? [],
   }));
