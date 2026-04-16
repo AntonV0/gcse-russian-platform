@@ -2,14 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
 import { appIcons } from "@/lib/shared/icons";
+import { uiLabPages } from "@/lib/ui/ui-lab";
 
-function getNavItemClass(isActive: boolean) {
+function getNavItemClass(isActive: boolean, isSubItem = false) {
   return [
-    "flex items-center gap-2 rounded-xl px-3 py-2 transition",
-    isActive ? "bg-gray-100 font-medium text-black" : "text-black hover:bg-gray-100",
+    "flex items-center gap-2 transition",
+    isSubItem ? "rounded-lg px-3 py-2 text-sm" : "rounded-xl px-3 py-2",
+    isActive
+      ? "bg-[var(--background-muted)] font-medium text-[var(--text-primary)]"
+      : "text-[var(--text-primary)] hover:bg-[var(--background-muted)]",
   ].join(" ");
 }
 
@@ -28,9 +33,19 @@ export default function AdminSidebar() {
   const isStudents = pathname.startsWith("/admin/students");
   const isTeachers = pathname.startsWith("/admin/teachers");
 
+  const [isUiOpen, setIsUiOpen] = useState(isUiLab);
+
+  useEffect(() => {
+    if (isUiLab) {
+      setIsUiOpen(true);
+    }
+  }, [isUiLab]);
+
   return (
-    <aside className="flex flex-col border-r bg-white p-4">
-      <div className="mb-6 text-lg font-semibold">Admin Panel</div>
+    <aside className="flex flex-col border-r bg-[var(--background-elevated)] p-4">
+      <div className="mb-6 text-lg font-semibold text-[var(--text-primary)]">
+        Admin Panel
+      </div>
 
       <nav className="flex flex-col gap-1 text-sm">
         <Link href="/admin" className={getNavItemClass(isDashboard)}>
@@ -38,16 +53,39 @@ export default function AdminSidebar() {
           <span>Dashboard</span>
         </Link>
 
-        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
+        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase tracking-wide app-text-soft">
           Design
         </div>
 
-        <Link href="/admin/ui" className={getNavItemClass(isUiLab)}>
+        <button
+          type="button"
+          onClick={() => setIsUiOpen((current) => !current)}
+          className={getNavItemClass(isUiLab)}
+        >
           <AppIcon icon={appIcons.uiLab} size={18} />
-          <span>UI Lab</span>
-        </Link>
+          <span className="flex-1 text-left">UI Lab</span>
+          <AppIcon icon={isUiOpen ? appIcons.down : appIcons.next} size={16} />
+        </button>
 
-        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
+        {isUiOpen ? (
+          <div className="ml-3 mt-1 flex flex-col gap-1 border-l border-[var(--border)] pl-3">
+            {uiLabPages.map((item) => {
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={getNavItemClass(isActive, true)}
+                >
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase tracking-wide app-text-soft">
           Content
         </div>
 
@@ -64,7 +102,7 @@ export default function AdminSidebar() {
           <span>Lesson Templates</span>
         </Link>
 
-        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
+        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase tracking-wide app-text-soft">
           Questions
         </div>
 
@@ -84,7 +122,7 @@ export default function AdminSidebar() {
           <span>Templates</span>
         </Link>
 
-        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
+        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase tracking-wide app-text-soft">
           Teaching
         </div>
 
@@ -98,7 +136,7 @@ export default function AdminSidebar() {
           <span>Teaching Groups</span>
         </Link>
 
-        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase text-gray-400">
+        <div className="mb-1 mt-4 px-3 text-xs font-semibold uppercase tracking-wide app-text-soft">
           Users
         </div>
 
