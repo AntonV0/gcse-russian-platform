@@ -2,7 +2,7 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { createTeachingGroupAction } from "@/app/actions/admin-teaching-group-actions";
+import { createTeachingGroupAction } from "@/app/actions/admin/admin-teaching-group-actions";
 
 type CourseRow = {
   id: string;

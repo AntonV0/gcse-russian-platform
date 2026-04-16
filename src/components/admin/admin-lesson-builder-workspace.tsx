@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { insertLessonTemplateAction } from "@/app/actions/admin-lesson-builder-actions";
+import { insertLessonTemplateAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import LessonInspectorPanel from "@/components/admin/lesson-builder/lesson-inspector-panel";
 import LessonSectionEditor from "@/components/admin/lesson-builder/lesson-section-editor";
 import LessonSectionSidebar from "@/components/admin/lesson-builder/lesson-section-sidebar";

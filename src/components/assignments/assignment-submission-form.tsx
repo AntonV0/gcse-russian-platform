@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { submitAssignmentAction } from "@/app/actions/assignment-actions";
+import { submitAssignmentAction } from "@/app/actions/assignments/assignment-actions";
 import { createClient } from "@/lib/supabase/client";
 
 type AssignmentSubmissionFormProps = {

@@ -11,7 +11,7 @@ import {
   getVariantByIdDb,
 } from "@/lib/courses/course-helpers-db";
 import { getLessonSectionsWithBlocksDb } from "@/lib/lesson-admin-helpers-db";
-import { unpublishLessonAction } from "@/app/actions/admin-content-actions";
+import { unpublishLessonAction } from "@/app/actions/admin/admin-content-actions";
 
 type AdminLessonDetailPageProps = {
   params: Promise<{

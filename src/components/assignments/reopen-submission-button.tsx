@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { reopenAssignmentSubmissionAction } from "@/app/actions/teacher-assignment-actions";
+import { reopenAssignmentSubmissionAction } from "@/app/actions/teacher/teacher-assignment-actions";
 
 type ReopenSubmissionButtonProps = {
   submissionId: string;

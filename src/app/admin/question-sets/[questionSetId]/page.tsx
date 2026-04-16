@@ -17,7 +17,7 @@ import {
   normalizeQuestionPositionsAction,
   toggleQuestionActiveAction,
   updateQuestionSetAction,
-} from "@/app/actions/admin-question-actions";
+} from "@/app/actions/admin/admin-question-actions";
 import { getAssignmentsUsingQuestionSetDb } from "@/lib/assignments/assignment-helpers-db";
 
 type AdminQuestionSetDetailPageProps = {

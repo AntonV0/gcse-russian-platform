@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   setTeacherRoleAction,
   switchStudentAccessGrantAction,
-} from "@/app/actions/admin-user-actions";
+} from "@/app/actions/admin/admin-user-actions";
 import { appIcons } from "@/lib/shared/icons";
 
 type ProfileRow = {

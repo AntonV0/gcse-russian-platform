@@ -12,7 +12,7 @@ import {
   getModuleByIdDb,
   getVariantByIdDb,
 } from "@/lib/courses/course-helpers-db";
-import { updateLessonAction } from "@/app/actions/admin-content-actions";
+import { updateLessonAction } from "@/app/actions/admin/admin-content-actions";
 
 type AdminLessonEditPageProps = {
   params: Promise<{

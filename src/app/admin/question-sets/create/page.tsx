@@ -1,6 +1,6 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import PageHeader from "@/components/layout/page-header";
-import { createQuestionSetAction } from "@/app/actions/admin-question-actions";
+import { createQuestionSetAction } from "@/app/actions/admin/admin-question-actions";
 
 export default async function CreateQuestionSetPage() {
   const canAccess = await requireAdminAccess();
