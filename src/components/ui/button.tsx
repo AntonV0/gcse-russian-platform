@@ -31,19 +31,19 @@ type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 function getVariantClass(variant: ButtonVariant) {
   switch (variant) {
     case "primary":
-      return "border border-black bg-black text-white hover:opacity-90";
+      return "app-btn-primary";
     case "secondary":
-      return "border bg-white text-black hover:bg-gray-50";
+      return "app-btn-secondary";
     case "quiet":
-      return "border border-transparent bg-transparent text-gray-700 hover:bg-gray-100";
+      return "bg-transparent text-[var(--text-secondary)] border border-transparent hover:bg-[var(--background-muted)] hover:text-[var(--brand-blue)]";
     case "success":
-      return "border border-green-200 bg-green-50 text-green-800 hover:bg-green-100";
+      return "border border-transparent bg-[var(--success-soft)] text-[var(--success)] hover:opacity-90";
     case "warning":
-      return "border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100";
+      return "border border-transparent bg-[var(--warning-soft)] text-[var(--warning)] hover:opacity-90";
     case "danger":
-      return "border border-red-200 bg-red-50 text-red-700 hover:bg-red-100";
+      return "border border-transparent bg-[var(--danger-soft)] text-[var(--danger)] hover:opacity-90";
     default:
-      return "border bg-white text-black hover:bg-gray-50";
+      return "app-btn-secondary";
   }
 }
 
@@ -69,7 +69,7 @@ function getClassName({
   className?: string;
 }) {
   return [
-    "inline-flex items-center justify-center gap-2 font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
+    "app-btn-base app-focus-ring",
     getVariantClass(variant),
     getSizeClass(size, iconOnly),
     className,
