@@ -154,6 +154,7 @@ export const appIcons = {
   /* New semantic aliases for UI Lab / future pages */
   navigation: PanelLeft,
   header: PanelsTopLeft,
+  layout: PanelsTopLeft,
   surfaces: Layers,
   forms: SlidersHorizontal,
   feedback: Sparkles,
