@@ -1419,6 +1419,68 @@ export async function reorderBlocksAction(formData: FormData) {
   revalidatePath(redirectPath);
 }
 
+async function getNextLessonBlockPositionInSection(sectionId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_blocks")
+    .select("position")
+    .eq("lesson_section_id", sectionId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error getting next lesson block position in section:", error);
+    throw new Error(`Failed to get next block position: ${error.message}`);
+  }
+
+  return data?.position ? data.position + 1 : 1;
+}
+
+async function normalizeLessonBlockPositionsInSection(sectionId: string) {
+  const supabase = await createClient();
+
+  const { data: blocks, error: loadError } = await supabase
+    .from("lesson_blocks")
+    .select("id")
+    .eq("lesson_section_id", sectionId)
+    .order("position", { ascending: true });
+
+  if (loadError) {
+    console.error("Error loading section blocks for normalization:", loadError);
+    throw new Error(`Failed to normalize section blocks: ${loadError.message}`);
+  }
+
+  for (let index = 0; index < (blocks?.length ?? 0); index += 1) {
+    const block = blocks![index];
+
+    const { error } = await supabase
+      .from("lesson_blocks")
+      .update({ position: -1 * (index + 1) })
+      .eq("id", block.id);
+
+    if (error) {
+      console.error("Error setting temporary lesson block positions:", error);
+      throw new Error(`Failed to normalize section blocks: ${error.message}`);
+    }
+  }
+
+  for (let index = 0; index < (blocks?.length ?? 0); index += 1) {
+    const block = blocks![index];
+
+    const { error } = await supabase
+      .from("lesson_blocks")
+      .update({ position: index + 1 })
+      .eq("id", block.id);
+
+    if (error) {
+      console.error("Error setting final lesson block positions:", error);
+      throw new Error(`Failed to normalize section blocks: ${error.message}`);
+    }
+  }
+}
+
 export async function moveBlockToSectionAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
@@ -1434,36 +1496,29 @@ export async function moveBlockToSectionAction(formData: FormData) {
   }
 
   if (sourceSectionId === targetSectionId) {
+    await revalidateLessonPaths(formData);
     return;
   }
 
   const supabase = await createClient();
 
-  const { data: existingBlock, error: existingBlockError } = await supabase
+  const { data: block, error: blockError } = await supabase
     .from("lesson_blocks")
-    .select("id, lesson_section_id, position")
+    .select("id, lesson_section_id")
     .eq("id", blockId)
     .single();
 
-  if (existingBlockError || !existingBlock) {
-    console.error("Error loading block before moving:", existingBlockError);
+  if (blockError || !block) {
+    console.error("Error loading block before moving:", blockError);
     throw new Error("Block not found");
   }
 
-  const { data: targetBlocks, error: targetBlocksError } = await supabase
-    .from("lesson_blocks")
-    .select("id, position")
-    .eq("lesson_section_id", targetSectionId)
-    .order("position", { ascending: true });
-
-  if (targetBlocksError) {
-    console.error("Error loading target section blocks:", targetBlocksError);
-    throw new Error(`Failed to load target section blocks: ${targetBlocksError.message}`);
+  if (block.lesson_section_id !== sourceSectionId) {
+    throw new Error("Block source section mismatch");
   }
 
-  const nextTargetPosition = (targetBlocks?.length ?? 0) + 1;
+  const nextTargetPosition = await getNextLessonBlockPositionInSection(targetSectionId);
 
-  // Step 1: move the block to the target section at the end
   const { error: moveError } = await supabase
     .from("lesson_blocks")
     .update({
@@ -1474,54 +1529,14 @@ export async function moveBlockToSectionAction(formData: FormData) {
     .eq("lesson_section_id", sourceSectionId);
 
   if (moveError) {
-    console.error("Error moving block to new section:", moveError);
+    console.error("Error moving block to target section:", moveError);
     throw new Error(`Failed to move block: ${moveError.message}`);
   }
 
-  // Step 2: re-normalize source section positions
-  const { data: sourceBlocksAfterMove, error: sourceBlocksError } = await supabase
-    .from("lesson_blocks")
-    .select("id, position")
-    .eq("lesson_section_id", sourceSectionId)
-    .order("position", { ascending: true });
+  await normalizeLessonBlockPositionsInSection(sourceSectionId);
+  await normalizeLessonBlockPositionsInSection(targetSectionId);
 
-  if (sourceBlocksError) {
-    console.error("Error loading source section blocks after move:", sourceBlocksError);
-    throw new Error(
-      `Failed to refresh source section blocks: ${sourceBlocksError.message}`
-    );
-  }
-
-  for (let index = 0; index < (sourceBlocksAfterMove?.length ?? 0); index += 1) {
-    const sourceBlock = sourceBlocksAfterMove![index];
-
-    const { error } = await supabase
-      .from("lesson_blocks")
-      .update({ position: -1 * (index + 1) })
-      .eq("id", sourceBlock.id);
-
-    if (error) {
-      console.error("Error setting temporary source positions:", error);
-      throw new Error(`Failed to normalize source section: ${error.message}`);
-    }
-  }
-
-  for (let index = 0; index < (sourceBlocksAfterMove?.length ?? 0); index += 1) {
-    const sourceBlock = sourceBlocksAfterMove![index];
-
-    const { error } = await supabase
-      .from("lesson_blocks")
-      .update({ position: index + 1 })
-      .eq("id", sourceBlock.id);
-
-    if (error) {
-      console.error("Error setting final source positions:", error);
-      throw new Error(`Failed to normalize source section: ${error.message}`);
-    }
-  }
-
-  const redirectPath = getRouteRedirectPath(formData);
-  revalidatePath(redirectPath);
+  await revalidateLessonPaths(formData);
 }
 
 export async function insertSectionTemplateAction(formData: FormData) {
