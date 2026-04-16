@@ -25,12 +25,36 @@ const platformHighlights = [
   },
 ];
 
+const landingLinks = [
+  {
+    title: "Lessons",
+    description:
+      "Explore structured modules and lesson pathways built around GCSE Russian study.",
+    href: "/courses",
+    icon: appIcons.lessons,
+  },
+  {
+    title: "Practice",
+    description:
+      "Work through vocabulary, translation, listening, and exam-style revision tasks.",
+    href: "/dashboard",
+    icon: appIcons.audio,
+  },
+  {
+    title: "Progress",
+    description:
+      "Track completion, continue where you left off, and keep revision organised.",
+    href: "/dashboard",
+    icon: appIcons.completed,
+  },
+];
+
 export default function Home() {
   return (
-    <main className="app-page py-10 md:py-14">
+    <main className="app-page max-w-6xl py-10 md:py-14">
       <section className="app-surface-brand app-section-padding-lg overflow-hidden">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)] lg:items-center">
-          {/* Hero copy */}
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.95fr)] lg:items-start">
+          {/* Left side: hero content */}
           <div className="space-y-6">
             <div className="space-y-3">
               <Badge tone="info" icon={appIcons.info}>
@@ -47,7 +71,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Main actions */}
             <div className="flex flex-wrap gap-3">
               <Button href="/dashboard" variant="primary" icon={appIcons.dashboard}>
                 Open dashboard
@@ -58,43 +81,53 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Quick value points */}
+            {/* These are more useful for product positioning and SEO than generic tags. */}
             <div className="flex flex-wrap gap-2">
-              <Badge tone="muted" icon={appIcons.learning}>
-                GCSE-focused
+              <Badge tone="muted" icon={appIcons.school}>
+                Edexcel GCSE 1RU0
               </Badge>
-              <Badge tone="muted" icon={appIcons.translation}>
-                Language practice
+              <Badge tone="muted" icon={appIcons.layers}>
+                Foundation + Higher
               </Badge>
-              <Badge tone="muted" icon={appIcons.users}>
-                Student + teacher tools
+              <Badge tone="muted" icon={appIcons.language}>
+                Themes · Grammar · Mocks
               </Badge>
             </div>
           </div>
 
-          {/* Right-side preview panel */}
-          <div className="app-surface app-section-padding app-interactive">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="app-section-title">What this app is for</h2>
-              <AppIcon icon={appIcons.uiLab} size={20} className="app-brand-text" />
+          {/* Right side: product summary panel */}
+          <div className="app-card app-section-padding">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h2 className="app-section-title">What this app is for</h2>
+                <p className="mt-1 text-sm app-text-muted">
+                  A focused GCSE Russian study space for self-study and teacher-led use.
+                </p>
+              </div>
+
+              <AppIcon
+                icon={appIcons.uiLab}
+                size={22}
+                className="mt-0.5 shrink-0 app-brand-text"
+              />
             </div>
 
             <div className="space-y-4">
               {platformHighlights.map((item) => (
                 <div
                   key={item.title}
-                  className="app-surface-muted flex items-start gap-3 p-4"
+                  className="app-card app-card-hover flex items-start gap-4 p-4"
                 >
-                  <div className="mt-0.5 rounded-xl bg-[var(--brand-blue-soft)] p-2">
+                  <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-blue-soft)] ring-1 ring-[color:var(--brand-blue)]/15">
                     <AppIcon
                       icon={item.icon}
-                      size={18}
+                      size={20}
                       className="text-[var(--brand-blue)]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                    <h3 className="text-base font-semibold text-[var(--text-primary)]">
                       {item.title}
                     </h3>
                     <p className="text-sm text-[var(--text-secondary)]">
@@ -108,40 +141,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Secondary section keeps the page from feeling too empty while the public app is still simple. */}
+      {/* Bottom cards now act as real entry points instead of decorative blocks. */}
       <section className="mt-8 grid gap-4 md:grid-cols-3">
-        <div className="app-card app-card-hover app-section-padding">
-          <div className="mb-3 flex items-center gap-2">
-            <AppIcon icon={appIcons.lessons} size={18} className="app-brand-text" />
-            <h2 className="app-section-title">Lessons</h2>
-          </div>
-          <p className="app-text-muted text-sm">
-            Build around modular lessons and guided progression rather than a flat list of
-            resources.
-          </p>
-        </div>
+        {landingLinks.map((item) => (
+          <Link
+            key={item.title}
+            href={item.href}
+            className="app-card app-card-hover app-section-padding block cursor-pointer transition hover:-translate-y-1"
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <AppIcon icon={item.icon} size={18} className="app-brand-text" />
+              <h2 className="app-section-title">{item.title}</h2>
+            </div>
 
-        <div className="app-card app-card-hover app-section-padding">
-          <div className="mb-3 flex items-center gap-2">
-            <AppIcon icon={appIcons.audio} size={18} className="app-brand-text" />
-            <h2 className="app-section-title">Practice</h2>
-          </div>
-          <p className="app-text-muted text-sm">
-            Support multiple exercise types like vocabulary, translation, listening, and
-            question-based revision.
-          </p>
-        </div>
-
-        <div className="app-card app-card-hover app-section-padding">
-          <div className="mb-3 flex items-center gap-2">
-            <AppIcon icon={appIcons.completed} size={18} className="app-brand-text" />
-            <h2 className="app-section-title">Progress</h2>
-          </div>
-          <p className="app-text-muted text-sm">
-            Keep the experience structured for students while still supporting admin and
-            teacher workflows behind the scenes.
-          </p>
-        </div>
+            <p className="app-text-muted text-sm">{item.description}</p>
+          </Link>
+        ))}
       </section>
     </main>
   );
