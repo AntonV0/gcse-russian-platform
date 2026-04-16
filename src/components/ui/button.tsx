@@ -136,7 +136,18 @@ export default function Button(props: ButtonProps) {
     );
   }
 
-  const { ...buttonProps } = props as ButtonAsButtonProps & { href?: never };
+  const {
+    variant: _variant,
+    size: _size,
+    icon: _icon,
+    iconPosition: _iconPosition,
+    iconOnly: _iconOnly,
+    ariaLabel: _ariaLabel,
+    children: _children,
+    href: _href,
+    className: _className,
+    ...buttonProps
+  } = props as ButtonAsButtonProps & { href?: never };
 
   return (
     <button
