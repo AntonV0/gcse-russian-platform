@@ -161,21 +161,17 @@ export default function TranslationBlock({
         ) : null
       }
     >
-      {(sourceLanguageLabel || targetLanguageLabel) && (
-        <div className="flex flex-wrap gap-2 text-xs font-medium text-gray-600">
+      {sourceLanguageLabel || targetLanguageLabel ? (
+        <div className="flex flex-wrap gap-2">
           {sourceLanguageLabel ? (
-            <span className="rounded-full bg-gray-100 px-3 py-1">
-              Source: {sourceLanguageLabel}
-            </span>
+            <span className="app-pill app-pill-muted">Source: {sourceLanguageLabel}</span>
           ) : null}
 
           {targetLanguageLabel ? (
-            <span className="rounded-full bg-gray-100 px-3 py-1">
-              Target: {targetLanguageLabel}
-            </span>
+            <span className="app-pill app-pill-muted">Target: {targetLanguageLabel}</span>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       <div className="space-y-4">
         <input
@@ -184,12 +180,12 @@ export default function TranslationBlock({
           onChange={(event) => handleChange(event.target.value)}
           disabled={resolvedHasSubmitted || isSubmitting}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
+          className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3 outline-none transition focus:border-[var(--brand-blue)] focus:shadow-[0_0_0_4px_rgba(37,99,235,0.12)]"
         />
 
         {submitLocked ? (
-          <p className="text-sm text-amber-700">
-            Listen to the audio fully before submitting your answer.
+          <p className="rounded-xl border border-yellow-200 bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+            Listen to the audio fully before submitting your translation.
           </p>
         ) : null}
 
@@ -199,7 +195,7 @@ export default function TranslationBlock({
           disabled={
             !resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked
           }
-          className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           {resolvedHasSubmitted
             ? "Submitted"

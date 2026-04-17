@@ -3,11 +3,13 @@
 import QuestionCard from "@/components/questions/question-card";
 import QuestionFeedback from "@/components/questions/question-feedback";
 
-export type SelectionGroup = {
+type SelectionGroup = {
   id: string;
   label?: string;
   options: string[];
 };
+
+type SelectionBasedDisplayMode = "grouped" | "inline_gaps";
 
 type SelectionBasedBlockProps = {
   question: string;
@@ -19,7 +21,7 @@ type SelectionBasedBlockProps = {
   audioHideNativeControls?: boolean;
   onAudioPlaybackCompleted?: () => void;
   groups: SelectionGroup[];
-  selectedOptions: Record<string, string>;
+  selectedOptions: Record<string, string | undefined>;
   explanation?: string;
   hasSubmitted?: boolean;
   isCorrect?: boolean;
@@ -32,12 +34,12 @@ type SelectionBasedBlockProps = {
   feedbackAcceptedAnswerTexts?: string[];
   sourceLanguageLabel?: string;
   targetLanguageLabel?: string;
-  displayMode?: "grouped" | "inline_gaps";
+  displayMode?: SelectionBasedDisplayMode;
 };
 
 export default function SelectionBasedBlock({
   question,
-  instruction = "Select the correct Russian forms",
+  instruction,
   audioUrl = null,
   audioMaxPlays,
   audioListeningMode = false,
@@ -60,21 +62,23 @@ export default function SelectionBasedBlock({
   targetLanguageLabel,
   displayMode = "grouped",
 }: SelectionBasedBlockProps) {
-  const completedGroupCount = groups.filter(
-    (group) => typeof selectedOptions[group.id] === "string"
-  ).length;
-
   const canSubmit =
-    completedGroupCount === groups.length &&
-    groups.length > 0 &&
     !hasSubmitted &&
-    !isSubmitting;
+    !isSubmitting &&
+    groups.every((group) => {
+      const value = selectedOptions[group.id];
+      return typeof value === "string" && value.length > 0;
+    });
 
-  const canReset = completedGroupCount > 0 && !hasSubmitted && !isSubmitting;
+  const canReset =
+    !isSubmitting &&
+    Object.values(selectedOptions).some(
+      (value) => typeof value === "string" && value.length > 0
+    );
 
   return (
     <QuestionCard
-      heading="Selection Task"
+      heading="Selection"
       instruction={instruction}
       prompt={question}
       audioUrl={audioUrl}
@@ -95,53 +99,27 @@ export default function SelectionBasedBlock({
         ) : null
       }
     >
-      {(sourceLanguageLabel || targetLanguageLabel) && (
-        <div className="flex flex-wrap gap-2 text-xs font-medium text-gray-600">
+      {sourceLanguageLabel || targetLanguageLabel ? (
+        <div className="flex flex-wrap gap-2">
           {sourceLanguageLabel ? (
-            <span className="rounded-full bg-gray-100 px-3 py-1">
-              Source: {sourceLanguageLabel}
-            </span>
+            <span className="app-pill app-pill-muted">Source: {sourceLanguageLabel}</span>
           ) : null}
 
           {targetLanguageLabel ? (
-            <span className="rounded-full bg-gray-100 px-3 py-1">
-              Target: {targetLanguageLabel}
-            </span>
+            <span className="app-pill app-pill-muted">Target: {targetLanguageLabel}</span>
           ) : null}
         </div>
-      )}
-
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-        <p className="mb-2 text-sm font-medium text-gray-700">Your answer</p>
-        <div className="flex min-h-12 flex-wrap gap-2">
-          {groups.length > 0 ? (
-            groups.map((group) => (
-              <span
-                key={group.id}
-                className={`rounded-full px-3 py-1.5 text-sm ${
-                  selectedOptions[group.id]
-                    ? "bg-black text-white"
-                    : "bg-white text-gray-500 ring-1 ring-gray-300"
-                }`}
-              >
-                {selectedOptions[group.id] ?? "…"}
-              </span>
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">No selection groups configured.</p>
-          )}
-        </div>
-      </div>
+      ) : null}
 
       {displayMode === "inline_gaps" ? (
-        <div className="rounded-lg border border-gray-200 p-4">
-          <p className="mb-3 text-sm font-medium text-gray-700">Choose each gap</p>
-          <div className="flex flex-wrap gap-4">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
+          <div className="flex flex-wrap items-center gap-4">
             {groups.map((group, index) => (
               <div key={group.id} className="space-y-2">
-                <p className="text-xs font-medium text-gray-600">
+                <p className="text-sm font-medium text-[var(--text-secondary)]">
                   {group.label ?? `Gap ${index + 1}`}
                 </p>
+
                 <div className="flex flex-wrap gap-2">
                   {group.options.map((option) => {
                     const isSelected = selectedOptions[group.id] === option;
@@ -152,11 +130,15 @@ export default function SelectionBasedBlock({
                         type="button"
                         onClick={() => onSelectOption(group.id, option)}
                         disabled={hasSubmitted || isSubmitting}
-                        className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                        className={[
+                          "rounded-full border px-3 py-1.5 text-sm transition",
                           isSelected
-                            ? "border-black bg-black text-white"
-                            : "border-gray-300 bg-white hover:bg-gray-50"
-                        } disabled:opacity-60`}
+                            ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
+                            : "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]",
+                          hasSubmitted || isSubmitting
+                            ? "cursor-default"
+                            : "cursor-pointer",
+                        ].join(" ")}
                       >
                         {option}
                       </button>
@@ -170,8 +152,11 @@ export default function SelectionBasedBlock({
       ) : (
         <div className="space-y-4">
           {groups.map((group, index) => (
-            <div key={group.id} className="rounded-lg border border-gray-200 p-4">
-              <p className="mb-3 text-sm font-medium text-gray-700">
+            <div
+              key={group.id}
+              className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+            >
+              <p className="mb-3 text-sm font-medium text-[var(--text-secondary)]">
                 {group.label ?? `Choose option ${index + 1}`}
               </p>
 
@@ -185,11 +170,15 @@ export default function SelectionBasedBlock({
                       type="button"
                       onClick={() => onSelectOption(group.id, option)}
                       disabled={hasSubmitted || isSubmitting}
-                      className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                      className={[
+                        "rounded-full border px-3 py-1.5 text-sm transition",
                         isSelected
-                          ? "border-black bg-black text-white"
-                          : "border-gray-300 bg-white hover:bg-gray-50"
-                      } disabled:opacity-60`}
+                          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
+                          : "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]",
+                        hasSubmitted || isSubmitting
+                          ? "cursor-default"
+                          : "cursor-pointer",
+                      ].join(" ")}
                     >
                       {option}
                     </button>
@@ -206,7 +195,7 @@ export default function SelectionBasedBlock({
           type="button"
           onClick={onSubmit}
           disabled={!canSubmit}
-          className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           {hasSubmitted ? "Submitted" : isSubmitting ? "Saving..." : "Check answer"}
         </button>
@@ -215,7 +204,7 @@ export default function SelectionBasedBlock({
           type="button"
           onClick={onReset}
           disabled={!canReset}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="app-btn-base app-btn-secondary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           Reset
         </button>
