@@ -86,25 +86,28 @@ function StepMetaBar({
   visitedPercent: number;
 }) {
   return (
-    <div className="rounded-2xl border bg-white px-4 py-4 shadow-sm">
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="app-card app-section-padding">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
               Step {currentStepNumber} of {totalSteps} ·{" "}
               {sectionKind.replaceAll("_", " ")}
             </div>
+
             {sectionDescription ? (
-              <p className="mt-1 text-sm text-gray-600">{sectionDescription}</p>
+              <p className="mt-1 text-sm app-text-muted">{sectionDescription}</p>
             ) : null}
           </div>
 
-          <div className="text-sm text-gray-500">Visited progress: {visitedPercent}%</div>
+          <div className="text-sm app-text-muted">
+            Visited progress: {visitedPercent}%
+          </div>
         </div>
 
-        <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+        <div className="h-2 overflow-hidden rounded-full bg-[var(--background-muted)]">
           <div
-            className="h-full rounded-full bg-black transition-all"
+            className="h-full rounded-full bg-[var(--brand-blue)] transition-all"
             style={{ width: `${visitedPercent}%` }}
           />
         </div>
@@ -133,12 +136,12 @@ function StepTracker({
   lessonSlug: string;
 }) {
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
+    <div className="app-card app-section-padding">
       <div className="mb-4">
-        <p className="text-sm font-semibold text-gray-900">
+        <p className="text-sm font-semibold text-[var(--text-primary)]">
           Section {currentStepIndex + 1} of {sections.length}
         </p>
-        <p className="text-sm text-gray-600">
+        <p className="mt-1 text-sm app-text-muted">
           Visited sections stay available. The next new section unlocks as you go.
         </p>
       </div>
@@ -151,12 +154,12 @@ function StepTracker({
           const isUnlocked = index <= allowedMaxIndex;
 
           const className = isActive
-            ? "border-black bg-black text-white"
+            ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
             : isVisited
               ? "border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
               : isUnlocked
-                ? "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-                : "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed";
+                ? "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:bg-[var(--background-muted)]"
+                : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)] cursor-not-allowed";
 
           if (!isUnlocked) {
             return (
@@ -196,12 +199,20 @@ function StepTracker({
           const isUnlocked = index <= allowedMaxIndex;
 
           const className = isActive
-            ? "border-black bg-black text-white"
+            ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
             : isVisited
               ? "border-green-200 bg-green-50 text-green-900 hover:bg-green-100"
               : isUnlocked
-                ? "border-gray-200 bg-white hover:bg-gray-50"
-                : "border-gray-200 bg-gray-50 text-gray-400";
+                ? "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]"
+                : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]";
+
+          const descriptionClass = isActive
+            ? "text-blue-100"
+            : isVisited
+              ? "text-green-700"
+              : isUnlocked
+                ? "text-[var(--text-muted)]"
+                : "text-[var(--text-muted)]";
 
           const content = (
             <>
@@ -221,17 +232,7 @@ function StepTracker({
               <div className="text-sm font-medium">{section.title}</div>
 
               {section.description ? (
-                <div
-                  className={`mt-1 line-clamp-2 text-xs ${
-                    isActive
-                      ? "text-gray-200"
-                      : isVisited
-                        ? "text-green-700"
-                        : isUnlocked
-                          ? "text-gray-500"
-                          : "text-gray-400"
-                  }`}
-                >
+                <div className={`mt-1 line-clamp-2 text-xs ${descriptionClass}`}>
                   {section.description}
                 </div>
               ) : null}
@@ -311,11 +312,11 @@ function SectionPager({
     : null;
 
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
+    <div className="app-card app-section-padding">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-semibold text-gray-900">Section navigation</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="font-semibold text-[var(--text-primary)]">Section navigation</h2>
+          <p className="mt-1 text-sm app-text-muted">
             Move forward step by step, and revisit sections you have already opened.
           </p>
         </div>
@@ -324,12 +325,12 @@ function SectionPager({
           {previousHref ? (
             <Link
               href={previousHref}
-              className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50"
+              className="app-btn-base app-btn-secondary rounded-lg px-4 py-2 text-sm"
             >
               ← Previous section
             </Link>
           ) : (
-            <span className="rounded-lg border px-4 py-2 text-sm text-gray-400">
+            <span className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
               ← Previous section
             </span>
           )}
@@ -337,12 +338,12 @@ function SectionPager({
           {nextHref ? (
             <Link
               href={nextHref}
-              className="rounded-lg bg-black px-4 py-2 text-sm text-white hover:opacity-90"
+              className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm"
             >
               Next section →
             </Link>
           ) : (
-            <span className="rounded-lg border px-4 py-2 text-sm text-gray-400">
+            <span className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
               Next section →
             </span>
           )}
@@ -372,20 +373,22 @@ function LessonCompletionPanel({
   allVisited: boolean;
 }) {
   return (
-    <div className="space-y-4 rounded-2xl border bg-white p-5 shadow-sm">
+    <div className="app-card p-5 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">Finish lesson</h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+          Finish lesson
+        </h2>
+        <p className="mt-1 text-sm app-text-muted">
           Lesson completion stays manual, but section visit progress is tracked
           automatically.
         </p>
       </div>
 
-      <div className="rounded-xl border bg-gray-50 p-4 text-sm">
-        <div className="font-medium text-gray-900">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
+        <div className="font-medium text-[var(--text-primary)]">
           Visited sections: {visitedCount} / {totalSections}
         </div>
-        <div className="mt-1 text-gray-600">
+        <div className="mt-1 app-text-muted">
           {allVisited
             ? "You have visited every section in this lesson."
             : "Visit all sections before marking the lesson complete for the best learning flow."}
@@ -471,7 +474,26 @@ export default async function LessonPageTemplate({
         lessonDescription={lesson.summary ?? ""}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <section className="app-surface-brand app-section-padding">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap gap-2">
+            <span className="app-pill app-pill-info">{course.title}</span>
+            <span className="app-pill app-pill-muted">{module.title}</span>
+            <span className="app-pill app-pill-muted">
+              Step {currentStepNumber} of {sections.length}
+            </span>
+          </div>
+
+          <div>
+            <h2 className="app-section-title text-lg">{currentSection.title}</h2>
+            {currentSection.description ? (
+              <p className="mt-1 text-sm app-text-muted">{currentSection.description}</p>
+            ) : null}
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-6">
           <StepMetaBar
             currentStepNumber={currentStepNumber}
@@ -481,7 +503,9 @@ export default async function LessonPageTemplate({
             visitedPercent={progressSummary.percent}
           />
 
-          <LessonRenderer sections={[currentSection]} lessonId={lesson.id} />
+          <div className="app-card app-section-padding">
+            <LessonRenderer sections={[currentSection]} lessonId={lesson.id} />
+          </div>
 
           <SectionPager
             currentStepIndex={effectiveStepIndex}
