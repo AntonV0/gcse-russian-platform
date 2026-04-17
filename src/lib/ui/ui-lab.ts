@@ -63,6 +63,12 @@ export const uiLabPages: UiLabPage[] = [
     status: "in_progress",
   },
   {
+    href: "/admin/ui/tables",
+    label: "Tables",
+    description: "Table layouts, toolbars, row actions, statuses, and empty states.",
+    status: "in_progress",
+  },
+  {
     href: "/admin/ui/icons",
     label: "Icons",
     description: "Curated app icons and full Lucide browser.",
