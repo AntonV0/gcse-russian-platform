@@ -106,7 +106,7 @@ export default function MultipleChoiceBlock({
       }
     >
       <div className="space-y-3">
-        {options.map((option) => {
+        {options.map((option, index) => {
           const isSelected = resolvedSelectedOptionId === option.id;
 
           return (
@@ -115,15 +115,22 @@ export default function MultipleChoiceBlock({
               type="button"
               onClick={() => handleSelect(option.id)}
               disabled={resolvedHasSubmitted || isSubmitting}
-              className={`w-full rounded-lg border px-4 py-3 text-left transition ${
+              className={[
+                "w-full rounded-xl border px-4 py-3 text-left transition",
                 isSelected
-                  ? "border-black bg-gray-100"
-                  : "border-gray-200 bg-white hover:bg-gray-50"
-              } ${
-                resolvedHasSubmitted || isSubmitting ? "cursor-default" : "cursor-pointer"
-              }`}
+                  ? "border-[var(--brand-blue)] bg-[var(--brand-blue-soft)] text-[var(--text-primary)]"
+                  : "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]",
+                resolvedHasSubmitted || isSubmitting
+                  ? "cursor-default"
+                  : "cursor-pointer",
+              ].join(" ")}
             >
-              {option.text}
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-semibold">
+                  {String.fromCharCode(65 + index)}
+                </span>
+                <span>{option.text}</span>
+              </div>
             </button>
           );
         })}
@@ -134,7 +141,7 @@ export default function MultipleChoiceBlock({
           type="button"
           onClick={handleSubmit}
           disabled={!resolvedSelectedOptionId || resolvedHasSubmitted || isSubmitting}
-          className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           {resolvedHasSubmitted
             ? "Submitted"
