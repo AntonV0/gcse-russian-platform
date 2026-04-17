@@ -122,11 +122,11 @@ export default function ShortAnswerBlock({
           onChange={(event) => handleChange(event.target.value)}
           disabled={resolvedHasSubmitted || isSubmitting}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
+          className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3 outline-none transition focus:border-[var(--brand-blue)] focus:shadow-[0_0_0_4px_rgba(37,99,235,0.12)]"
         />
 
         {submitLocked ? (
-          <p className="text-sm text-amber-700">
+          <p className="rounded-xl border border-yellow-200 bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
             Listen to the audio fully before submitting your answer.
           </p>
         ) : null}
@@ -137,7 +137,7 @@ export default function ShortAnswerBlock({
           disabled={
             !resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked
           }
-          className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           {resolvedHasSubmitted
             ? "Submitted"

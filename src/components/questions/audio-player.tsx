@@ -85,13 +85,11 @@ export default function AudioPlayer({
     listeningMode || effectiveMaxPlays !== undefined || hideNativeControls;
 
   return (
-    <div className="rounded-lg border bg-gray-50 p-3">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
       {listeningMode || effectiveMaxPlays !== undefined ? (
-        <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-gray-600">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs app-text-muted">
           {listeningMode ? (
-            <span className="rounded-full bg-gray-200 px-2 py-1 font-medium">
-              Listening task
-            </span>
+            <span className="app-pill app-pill-muted">Listening task</span>
           ) : null}
 
           {effectiveMaxPlays !== undefined ? (
@@ -105,7 +103,7 @@ export default function AudioPlayer({
       ) : null}
 
       {showLockedState ? (
-        <div className="rounded border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
+        <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
           Playback limit reached for this listening task.
         </div>
       ) : (
@@ -126,7 +124,7 @@ export default function AudioPlayer({
               type="button"
               onClick={handlePlayClick}
               disabled={remainingPlays === 0}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="app-btn-base app-btn-secondary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             >
               Play audio
             </button>
