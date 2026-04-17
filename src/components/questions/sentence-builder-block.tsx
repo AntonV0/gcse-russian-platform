@@ -12,13 +12,13 @@ type SentenceBuilderBlockProps = {
   audioAutoPlay?: boolean;
   audioHideNativeControls?: boolean;
   onAudioPlaybackCompleted?: () => void;
-  availableTokens: string[];
-  selectedTokens: string[];
+  availableTokens?: string[];
+  selectedTokens?: string[];
   explanation?: string;
   hasSubmitted?: boolean;
   isCorrect?: boolean;
   isSubmitting?: boolean;
-  onAddToken: (index: number) => void;
+  onAddToken: (token: string, index: number) => void;
   onRemoveToken: (index: number) => void;
   onReset: () => void;
   onSubmit: () => void;
@@ -31,15 +31,15 @@ type SentenceBuilderBlockProps = {
 
 export default function SentenceBuilderBlock({
   question,
-  instruction = "Build the Russian sentence",
+  instruction = "Build the correct sentence",
   audioUrl = null,
   audioMaxPlays,
   audioListeningMode = false,
   audioAutoPlay = false,
   audioHideNativeControls = false,
   onAudioPlaybackCompleted,
-  availableTokens,
-  selectedTokens,
+  availableTokens = [],
+  selectedTokens = [],
   explanation,
   hasSubmitted = false,
   isCorrect = false,
@@ -54,12 +54,15 @@ export default function SentenceBuilderBlock({
   sourceLanguageLabel,
   targetLanguageLabel,
 }: SentenceBuilderBlockProps) {
-  const canSubmit = selectedTokens.length > 0 && !hasSubmitted && !isSubmitting;
-  const canReset = selectedTokens.length > 0 && !hasSubmitted && !isSubmitting;
+  const safeAvailableTokens = Array.isArray(availableTokens) ? availableTokens : [];
+  const safeSelectedTokens = Array.isArray(selectedTokens) ? selectedTokens : [];
+
+  const canSubmit = !hasSubmitted && !isSubmitting && safeSelectedTokens.length > 0;
+  const canReset = !isSubmitting && safeSelectedTokens.length > 0;
 
   return (
     <QuestionCard
-      heading="Sentence Builder"
+      heading="Sentence builder"
       instruction={instruction}
       prompt={question}
       audioUrl={audioUrl}
@@ -80,84 +83,86 @@ export default function SentenceBuilderBlock({
         ) : null
       }
     >
-      {(sourceLanguageLabel || targetLanguageLabel) && (
-        <div className="flex flex-wrap gap-2 text-xs font-medium text-gray-600">
+      {sourceLanguageLabel || targetLanguageLabel ? (
+        <div className="flex flex-wrap gap-2">
           {sourceLanguageLabel ? (
-            <span className="rounded-full bg-gray-100 px-3 py-1">
-              Source: {sourceLanguageLabel}
-            </span>
+            <span className="app-pill app-pill-muted">Source: {sourceLanguageLabel}</span>
           ) : null}
 
           {targetLanguageLabel ? (
-            <span className="rounded-full bg-gray-100 px-3 py-1">
-              Target: {targetLanguageLabel}
-            </span>
+            <span className="app-pill app-pill-muted">Target: {targetLanguageLabel}</span>
           ) : null}
         </div>
-      )}
+      ) : null}
 
-      <div className="space-y-4">
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-          <p className="mb-2 text-sm font-medium text-gray-700">Your answer</p>
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-[var(--text-secondary)]">Your sentence</p>
 
-          <div className="flex min-h-16 flex-wrap gap-2">
-            {selectedTokens.length > 0 ? (
-              selectedTokens.map((token, index) => (
-                <button
-                  key={`${token}-${index}`}
-                  type="button"
-                  onClick={() => onRemoveToken(index)}
-                  disabled={hasSubmitted || isSubmitting}
-                  className="rounded-full border border-black bg-black px-3 py-1.5 text-sm text-white disabled:opacity-60"
-                >
-                  {token}
-                </button>
-              ))
-            ) : (
-              <p className="text-sm text-gray-500">
-                Select the Russian words in the correct order.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 p-4">
-          <p className="mb-2 text-sm font-medium text-gray-700">Word bank</p>
-
-          <div className="flex flex-wrap gap-2">
-            {availableTokens.map((token, index) => (
+        <div className="flex min-h-[60px] flex-wrap gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-3">
+          {safeSelectedTokens.length === 0 ? (
+            <span className="text-sm app-text-muted">
+              Select words below to build your answer
+            </span>
+          ) : (
+            safeSelectedTokens.map((token, index) => (
               <button
                 key={`${token}-${index}`}
                 type="button"
-                onClick={() => onAddToken(index)}
+                onClick={() => onRemoveToken(index)}
                 disabled={hasSubmitted || isSubmitting}
-                className="rounded-full border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-60"
+                className="rounded-full border border-[var(--brand-blue)] bg-[var(--brand-blue)] px-3 py-1.5 text-sm text-white transition hover:opacity-90 disabled:cursor-default"
               >
                 {token}
               </button>
-            ))}
-          </div>
+            ))
+          )}
         </div>
+      </div>
 
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={onSubmit}
-            disabled={!canSubmit}
-            className="rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {hasSubmitted ? "Submitted" : isSubmitting ? "Saving..." : "Check answer"}
-          </button>
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-[var(--text-secondary)]">
+          Available words
+        </p>
 
-          <button
-            type="button"
-            onClick={onReset}
-            disabled={!canReset}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Reset
-          </button>
+        <div className="flex flex-wrap gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-3">
+          {safeAvailableTokens.length === 0 ? (
+            <span className="text-sm app-text-muted">
+              No word bank available for this question.
+            </span>
+          ) : (
+            safeAvailableTokens.map((token, index) => (
+              <button
+                key={`${token}-${index}`}
+                type="button"
+                onClick={() => onAddToken(token, index)}
+                disabled={hasSubmitted || isSubmitting}
+                className="rounded-full border border-[var(--border)] bg-[var(--background-muted)] px-3 py-1.5 text-sm transition hover:bg-[var(--background-muted)] disabled:cursor-default"
+              >
+                {token}
+              </button>
+            ))
+          )}
         </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={!canSubmit}
+          className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {hasSubmitted ? "Submitted" : isSubmitting ? "Saving..." : "Check answer"}
+        </button>
+
+        <button
+          type="button"
+          onClick={onReset}
+          disabled={!canReset}
+          className="app-btn-base app-btn-secondary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Reset
+        </button>
       </div>
     </QuestionCard>
   );
