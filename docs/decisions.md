@@ -1,8 +1,14 @@
 # Architecture Decisions
 
-This document records the main technical decisions behind the GCSE Russian Course Platform.
+This document records the main technical decisions behind the GCSE
+Russian Course Platform.
 
-It focuses on decisions that materially shaped the system, not every implementation detail.
+It focuses on decisions that materially shaped the system, not every
+implementation detail.
+
+This version has been **expanded to include lesson builder UX and CMS
+evolution decisions from the latest development phase**, as well as
+**platform UI, dashboard, and account system decisions**.
 
 ---
 
@@ -10,7 +16,8 @@ It focuses on decisions that materially shaped the system, not every implementat
 
 ### Decision
 
-Use a single platform with shared architecture and differentiate student experiences through access rules, permissions, and UI behaviour.
+Use a single platform with shared architecture and differentiate student
+experiences through access rules, permissions, and UI behaviour.
 
 ### Why
 
@@ -20,7 +27,8 @@ The product needs to support multiple student experiences:
 - self-study / full access
 - Volna student
 
-It would be too costly and fragile to maintain separate apps for each one.
+It would be too costly and fragile to maintain separate apps for each
+one.
 
 ### Benefits
 
@@ -121,147 +129,47 @@ Question sets are reusable entities.
 
 Use internal CMS.
 
+### Why
+
+Off-the-shelf CMS tools do not support:
+
+- structured lesson blocks
+- question engine integration
+- assignment workflows
+
 ### Benefits
 
-- safer content management
-- faster workflows
+- full control
+- tailored UX
+- faster iteration
 
 ---
 
-## 7. Why add a template system?
+## 7. Why move lesson system to fully DB-driven architecture? (EXPANDED)
 
 ### Decision
 
-Templates generate reusable content.
-
----
-
-## 8. Why use Supabase with RLS?
-
-### Decision
-
-Use Supabase backend.
-
----
-
-## 9. Why explicit admin role?
-
-### Decision
-
-profiles.is_admin controls admin.
-
----
-
-## 10. Why explicit teacher role?
-
-### Decision
-
-profiles.is_teacher used.
-
----
-
-## 11. Why use server actions?
-
-### Decision
-
-Use server actions for writes.
-
----
-
-## 12. Why derive assignment state?
-
-### Decision
-
-State from submissions.
-
----
-
-## 13. Why separate status from urgency?
-
-### Decision
-
-Separate concerns.
-
----
-
-## 14. Why lock submissions?
-
-### Decision
-
-Lock after review.
-
----
-
-## 15. Why reopen action?
-
-### Decision
-
-Controlled resubmission.
-
----
-
-## 16. Why ordered assignment items?
-
-### Decision
-
-Ordered sequence.
-
----
-
-## 17. Why derived assignment progress?
-
-### Decision
-
-Reuse systems.
-
----
-
-## 18. Why separate progress from access?
-
-### Decision
-
-Keep independent.
-
----
-
-## 19. Why contextual admin navigation?
-
-### Decision
-
-Hierarchy-based navigation.
-
----
-
-## 20. Why visit-based section progression? (UPDATED)
-
-### Decision
-
-Track lesson progress via **section visits**.
+Remove all hardcoded lesson templates and move to DB-driven content.
 
 ### Why
 
-- avoids friction
-- reflects real behaviour
+- lessons must be created without code
+- content must scale rapidly
+- admin users need full control
 
 ### Benefits
 
-- smooth UX
-- simple logic
-- aligns with DB tracking
+- dynamic lesson rendering
+- CMS-driven workflows
+- reusable structures
 
 ### Tradeoff
 
-- not true mastery tracking
-
-### Future
-
-- quizzes
-- checkpoints
-- analytics
+- requires strong schema + validation discipline
 
 ---
 
-## 21. Why introduce section-based lesson architecture?
+## 8. Why introduce section-based lesson architecture?
 
 ### Decision
 
@@ -269,85 +177,89 @@ Add **Lesson → Section → Block** hierarchy.
 
 ### Why
 
-- long lessons needed structure
-- improves pacing
-- enables step UX
+- long lessons became unmanageable
+- need for structured progression
+- foundation for step-based UX
 
 ### Benefits
 
-- scalable lessons
-- better UX
-- foundation for advanced flows
+- improved pacing
+- scalable lesson structure
+- better student experience
 
 ### Tradeoff
 
-- added complexity
+- additional complexity in logic and UI
 
 ---
 
-## 22. Why move lesson system to DB-driven architecture?
+## 9. Why use visit-based progression instead of completion-based?
 
 ### Decision
 
-Remove hardcoded lesson templates and move fully to DB.
+Track progression via **section visits**.
 
 ### Why
 
-- no-code lesson creation
-- scalability
+- avoids friction
+- aligns with real user behaviour
+- simpler UX
 
 ### Benefits
 
-- CMS-driven content
-- reusable structures
+- smooth navigation
+- predictable behaviour
+- easier DB tracking
 
 ### Tradeoff
 
-- requires strong schema design
+- does not measure mastery
 
 ---
 
-## 23. Why build a full lesson builder CMS?
+## 10. Why build a full lesson builder CMS?
 
 ### Decision
 
-Introduce admin lesson builder.
+Introduce a dedicated lesson builder in admin.
 
 ### Why
 
-- manual coding lessons is not scalable
+- manual lesson coding is not scalable
+- content creation must be accessible
 
 ### Benefits
 
-- drag & drop authoring
-- section + block editing
-- cross-section movement
+- visual editing
+- drag-and-drop structure
+- faster iteration
 
 ### Tradeoff
 
-- more complex admin UI
+- complex admin UI
+- requires careful UX design
 
 ---
 
-## 24. Why remove hardcoded presets/templates?
+## 11. Why remove hardcoded presets/templates?
 
 ### Decision
 
-Delete static preset files.
+Delete static preset files and move to DB.
 
 ### Why
 
 - duplicated logic
-- limited flexibility
+- inflexible system
 
 ### Benefits
 
-- single source of truth (DB)
-- cleaner architecture
+- single source of truth
+- dynamic presets
 
 ---
 
-## 25. Why use position-based ordering instead of nested structures?
+## 12. Why use position-based ordering instead of nested structures?
 
 ### Decision
 
@@ -355,21 +267,297 @@ Use numeric position fields.
 
 ### Why
 
-- simpler DB queries
-- easier reordering
+- simpler queries
+- predictable ordering
 
 ### Benefits
 
-- predictable ordering
+- easy drag-and-drop support
 - no tree complexity
 
 ### Tradeoff
 
-- requires careful updates on reorder
+- requires reorder logic
 
 ---
 
-## 26. Why prioritise architecture before features?
+## 13. Why shift lesson builder UX to "creation-first"? (NEW)
+
+### Decision
+
+Redesign builder so **block creation is primary**, not secondary.
+
+### Before
+
+- list-first UI
+- creation hidden below content
+
+### After
+
+- creation at top
+- clear entry point
+
+### Why
+
+- most common action = adding content
+- reduces friction for authors
+
+### Benefits
+
+- faster content creation
+- clearer workflow
+- better onboarding
+
+---
+
+## 14. Why group block types in the composer? (NEW)
+
+### Decision
+
+Group blocks into:
+
+- Structure
+- Teaching
+- Media
+- Practice
+
+### Why
+
+- flat lists do not scale
+- improves discoverability
+
+### Benefits
+
+- faster selection
+- better mental model
+
+---
+
+## 15. Why use selection-driven inline forms? (NEW)
+
+### Decision
+
+Show form only after selecting block type.
+
+### Why
+
+- reduces visual clutter
+- focuses user attention
+
+### Benefits
+
+- cleaner UI
+- guided workflow
+
+---
+
+## 16. Why redesign draggable block list UX? (NEW)
+
+### Decision
+
+Improve block list with:
+
+- stronger selection state
+- better previews
+- clearer actions
+
+### Why
+
+- editing existing blocks was slow
+- scanning content was difficult
+
+### Benefits
+
+- faster navigation
+- better usability
+- clearer structure
+
+---
+
+## 17. Why prioritise UX improvements at this stage?
+
+### Decision
+
+Invest in UX after core architecture is stable.
+
+### Why
+
+- architecture was already solid
+- biggest bottleneck became usability
+
+### Benefits
+
+- higher productivity
+- better content quality
+- scalable authoring system
+
+---
+
+## 18. Why introduce an access-aware sidebar system? (NEW)
+
+### Decision
+
+Build a sidebar that dynamically adapts based on role and access mode.
+
+### Why
+
+- different student types require different navigation
+- avoids confusing users with irrelevant features
+- supports product funnel (trial → full → Volna)
+
+### Benefits
+
+- cleaner UX
+- clearer user journeys
+- scalable navigation system
+
+### Tradeoff
+
+- requires consistent access logic across UI
+
+---
+
+## 19. Why separate UI visibility from backend permissions? (NEW)
+
+### Decision
+
+Introduce a UI-level access layer separate from backend authorization.
+
+### Why
+
+- backend controls access
+- UI controls experience
+
+These are different concerns.
+
+### Benefits
+
+- flexible UI behaviour
+- easier iteration on UX
+- avoids duplication of logic
+
+### Tradeoff
+
+- requires careful coordination between layers
+
+---
+
+## 20. Why introduce a dashboard orchestration layer? (NEW)
+
+### Decision
+
+Use a central dashboard helper to aggregate:
+
+- role
+- track
+- access mode
+- progress
+
+### Why
+
+- dashboard needs combined state
+- avoids duplicating logic in components
+
+### Benefits
+
+- single source of truth for UI decisions
+- cleaner component structure
+- easier future expansion
+
+---
+
+## 21. Why introduce a “next-step” system (V1)? (NEW)
+
+### Decision
+
+Provide dynamic guidance based on:
+
+- access mode
+- track
+- progress
+
+### Why
+
+- users need direction, not just navigation
+- reduces decision friction
+
+### Benefits
+
+- improved engagement
+- clearer onboarding
+- better learning flow
+
+### Tradeoff
+
+- currently simplified (no exact lesson tracking yet)
+
+---
+
+## 22. Why use preset avatars instead of uploads? (NEW)
+
+### Decision
+
+Use `avatar_key` with predefined avatars.
+
+### Why
+
+- target audience includes younger students (12–16)
+- avoids moderation and storage complexity
+- ensures consistent UI
+
+### Benefits
+
+- safe
+- simple
+- scalable
+
+### Tradeoff
+
+- less personalisation than uploads
+
+---
+
+## 23. Why integrate Online Classes into the platform? (NEW)
+
+### Decision
+
+Add Online Classes page as a bridge to Volna School.
+
+### Why
+
+- supports conversion funnel
+- connects self-study users to teacher-led offering
+
+### Benefits
+
+- monetisation pathway
+- unified ecosystem
+
+### Tradeoff
+
+- must hide for Volna users to avoid redundancy
+
+---
+
+## 24. Why fix admin access to bypass restrictions? (NEW)
+
+### Decision
+
+Ensure admins always have full access regardless of track/access state.
+
+### Why
+
+- admin must be able to view all content
+- avoids false restriction bugs
+
+### Benefits
+
+- reliable admin experience
+- easier debugging and content management
+
+---
+
+## 25. Why prioritise architecture before features?
 
 ### Decision
 
@@ -386,10 +574,13 @@ Build strong foundations first.
 
 ---
 
-## 27. Next architectural direction
+## 26. Next architectural direction
 
+- true lesson continuation system
+- module-level progress tracking
 - autosave builder
-- richer blocks
+- inline block insertion
+- richer block system
 - analytics
-- speaking system
+- speaking workflows
 - payments integration
