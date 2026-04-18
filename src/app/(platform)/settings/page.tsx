@@ -1,14 +1,22 @@
+import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
-import PageHeader from "@/components/layout/page-header";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import { updatePassword } from "@/app/actions/auth/auth";
 import { appIcons } from "@/lib/shared/icons";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ success?: string; error?: string }>;
+}) {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
+  const resolvedSearchParams = (await searchParams) ?? {};
 
   if (!user) {
     return (
@@ -35,8 +43,20 @@ export default async function SettingsPage() {
     <main className="space-y-8">
       <PageHeader
         title="Settings"
-        description="Your account settings, security controls, and future preferences."
+        description="Manage your account security and student account preferences."
       />
+
+      {resolvedSearchParams.success ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          Your password was updated successfully.
+        </div>
+      ) : null}
+
+      {resolvedSearchParams.error ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {resolvedSearchParams.error}
+        </div>
+      ) : null}
 
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_320px] xl:items-start">
@@ -51,10 +71,10 @@ export default async function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title">Manage your account</h2>
+              <h2 className="app-title">Security and account settings</h2>
               <p className="app-subtitle max-w-2xl">
-                This page will become the main place for changing your email, updating
-                your password, and managing account preferences safely.
+                Keep account tools simple and clear. Password changes are available now,
+                and email update flow can be added next as a separate auth step.
               </p>
             </div>
 
@@ -91,10 +111,10 @@ export default async function SettingsPage() {
 
               <div>
                 <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                  Security
+                  Display name
                 </div>
                 <div className="font-medium text-[var(--text-primary)]">
-                  Settings foundation ready
+                  {profile?.display_name ?? "Not added yet"}
                 </div>
               </div>
             </div>
@@ -105,7 +125,7 @@ export default async function SettingsPage() {
       <section className="grid gap-4 lg:grid-cols-2">
         <DashboardCard title="Email address">
           <div className="space-y-3">
-            <p>Your current email is the address used for sign-in and account access.</p>
+            <p>Your sign-in email is shown below.</p>
 
             <div className="rounded-xl bg-[var(--background-muted)] p-3">
               <div className="text-sm font-medium text-[var(--text-primary)]">
@@ -114,30 +134,44 @@ export default async function SettingsPage() {
             </div>
 
             <p className="text-sm app-text-muted">
-              Email update controls can be added next once you are happy with the account
-              settings flow.
+              Changing sign-in email should be added as a separate Supabase auth flow,
+              rather than only updating the profile table.
             </p>
           </div>
         </DashboardCard>
 
         <DashboardCard title="Password">
-          <div className="space-y-3">
-            <p>
-              Password change tools can live here as part of the secure account settings
-              flow.
-            </p>
+          <form action={updatePassword} className="space-y-4">
+            <FormField label="New password">
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter new password"
+                minLength={8}
+                required
+              />
+            </FormField>
 
-            <div className="rounded-xl bg-[var(--background-muted)] p-3">
-              <div className="text-sm font-medium text-[var(--text-primary)]">
-                Password management coming next
-              </div>
-            </div>
+            <FormField label="Confirm new password">
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Repeat new password"
+                minLength={8}
+                required
+              />
+            </FormField>
 
             <p className="text-sm app-text-muted">
-              This is intentionally left as a safe placeholder until the write actions are
-              added.
+              Use at least 8 characters for a stronger password.
             </p>
-          </div>
+
+            <Button type="submit" variant="primary" icon={appIcons.save}>
+              Update password
+            </Button>
+          </form>
         </DashboardCard>
       </section>
 
@@ -145,29 +179,29 @@ export default async function SettingsPage() {
         <DashboardCard title="Preferences">
           <div className="space-y-3">
             <p>
-              Future settings can include dashboard preferences, revision options, and
-              account-level choices.
+              Future settings can include personalisation, revision preferences, and
+              dashboard options.
             </p>
 
             <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>• Personalisation options</li>
-              <li>• Theme and interface preferences</li>
-              <li>• Revision-related settings</li>
+              <li>• Revision preferences</li>
+              <li>• Dashboard preferences</li>
+              <li>• Theme and interface options</li>
             </ul>
           </div>
         </DashboardCard>
 
-        <DashboardCard title="Safety and account care">
+        <DashboardCard title="Account design notes">
           <div className="space-y-3">
             <p>
-              Since many students are younger, account features should stay simple,
-              predictable, and easy to understand.
+              This settings area is designed to stay simple and easy to understand for
+              younger students.
             </p>
 
             <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>• Preset avatars instead of image uploads</li>
-              <li>• Clear wording for security changes</li>
-              <li>• Minimal friction for core account tasks</li>
+              <li>• Clear account wording</li>
+              <li>• Minimal friction for key actions</li>
+              <li>• Safer preset profile customisation</li>
             </ul>
           </div>
         </DashboardCard>
