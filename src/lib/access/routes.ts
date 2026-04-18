@@ -31,6 +31,34 @@ export function getCoursesPath() {
   return "/courses";
 }
 
+export function getAssignmentsPath() {
+  return "/assignments";
+}
+
+export function getVocabularyPath() {
+  return "/vocabulary";
+}
+
+export function getGrammarPath() {
+  return "/grammar";
+}
+
+export function getPastPapersPath() {
+  return "/past-papers";
+}
+
+export function getProfilePath() {
+  return "/profile";
+}
+
+export function getSettingsPath() {
+  return "/settings";
+}
+
 export function getAccountPath() {
   return "/account";
+}
+
+export function getOnlineClassesPath() {
+  return "/online-classes";
 }

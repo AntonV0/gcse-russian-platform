@@ -19,6 +19,11 @@ type DashboardGrantRow = {
     | null;
 };
 
+function getProductCodeFromGrant(grant: DashboardGrantRow): string | null {
+  const product = Array.isArray(grant.products) ? grant.products[0] : grant.products;
+  return product?.code ?? null;
+}
+
 export async function getDashboardInfo(): Promise<DashboardInfo> {
   const supabase = await createClient();
   const user = await getCurrentUser();
@@ -81,11 +86,10 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     };
   }
 
-  for (const grant of grants as DashboardGrantRow[]) {
-    const product = Array.isArray(grant.products) ? grant.products[0] : grant.products;
+  const typedGrants = grants as DashboardGrantRow[];
 
-    const code = product?.code;
-
+  // Volna access wins immediately for dashboard role/track display
+  for (const grant of typedGrants) {
     if (grant.access_mode === "volna") {
       return {
         role: "student",
@@ -93,36 +97,29 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
         accessMode: "volna",
       };
     }
+  }
 
-    if (code === "gcse-russian-higher-full") {
+  // Prefer higher if the user owns both higher and foundation
+  for (const grant of typedGrants) {
+    const code = getProductCodeFromGrant(grant);
+
+    if (code === "gcse-russian-higher") {
       return {
         role: "student",
         track: "higher",
-        accessMode: "full",
+        accessMode: grant.access_mode === "trial" ? "trial" : "full",
       };
     }
+  }
 
-    if (code === "gcse-russian-foundation-full") {
+  for (const grant of typedGrants) {
+    const code = getProductCodeFromGrant(grant);
+
+    if (code === "gcse-russian-foundation") {
       return {
         role: "student",
         track: "foundation",
-        accessMode: "full",
-      };
-    }
-
-    if (code === "gcse-russian-higher-trial") {
-      return {
-        role: "student",
-        track: "higher",
-        accessMode: "trial",
-      };
-    }
-
-    if (code === "gcse-russian-foundation-trial") {
-      return {
-        role: "student",
-        track: "foundation",
-        accessMode: "trial",
+        accessMode: grant.access_mode === "trial" ? "trial" : "full",
       };
     }
   }
