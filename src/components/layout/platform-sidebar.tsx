@@ -58,7 +58,13 @@ export default function PlatformSidebar({
 
   const conditionalItems: NavItem[] = [];
 
-  if (role === "student" && accessMode === "volna") {
+  const isStudent = role === "student";
+  const isTeacher = role === "teacher";
+  const isAdmin = role === "admin";
+  const isVolnaStudent = isStudent && accessMode === "volna";
+  const isNonVolnaStudent = isStudent && accessMode !== "volna";
+
+  if (isVolnaStudent || isTeacher || isAdmin) {
     conditionalItems.push({
       label: "Assignments",
       href: getAssignmentsPath(),
@@ -66,7 +72,7 @@ export default function PlatformSidebar({
     });
   }
 
-  if (role === "student" && accessMode !== "volna") {
+  if (isNonVolnaStudent || isTeacher || isAdmin) {
     conditionalItems.push({
       label: "Online Classes",
       href: getOnlineClassesPath(),
@@ -99,7 +105,11 @@ export default function PlatformSidebar({
                   : accessMode === "trial"
                     ? "Trial access"
                     : "Student area"
-              : "Platform area"}
+              : role === "admin"
+                ? "Admin area"
+                : role === "teacher"
+                  ? "Teacher area"
+                  : "Platform area"}
           </div>
         </div>
       </div>
