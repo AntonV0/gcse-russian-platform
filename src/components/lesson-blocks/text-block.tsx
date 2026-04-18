@@ -4,8 +4,12 @@ type TextBlockProps = {
 
 export default function TextBlock({ content }: TextBlockProps) {
   return (
-    <section className="rounded-xl border bg-white p-6 shadow-sm">
-      <p className="leading-7 text-gray-700">{content}</p>
+    <section className="app-card app-section-padding">
+      <div className="prose prose-neutral max-w-none">
+        <p className="whitespace-pre-wrap leading-7 text-[var(--text-secondary)]">
+          {content}
+        </p>
+      </div>
     </section>
   );
 }
