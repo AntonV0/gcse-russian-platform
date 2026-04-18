@@ -1,249 +1,398 @@
 # GCSE Russian Course Platform
 
-A full-stack online learning platform for GCSE Russian students, combining structured courses, interactive lessons, teacher-led assignment workflows, and a growing internal admin CMS.
+A full-stack online learning platform for GCSE Russian students,
+combining structured courses, interactive lessons, teacher-led
+assignment workflows, and a rapidly evolving internal CMS.
 
-Built as a real product for **gcserussian.com** and supporting **Volna Online Russian School**.
+Built as a real product for **gcserussian.com** and supporting **Volna
+Online Russian School**.
 
 ---
 
 ## 🚀 Overview
 
-This platform combines self-study course delivery with teacher-managed homework and review workflows.
+This platform combines:
 
-It currently includes:
+- structured self-study course delivery
+- teacher-managed assignments and review workflows
+- a fully database-driven lesson system
+- a growing CMS for managing all learning content
 
-- Structured course delivery across **Foundation**, **Higher**, and **Volna** learning tracks
-- Student access modes for **trial**, **self-study/full**, and **Volna student** experiences
-- Block-based lesson rendering
-- **Section-based lesson navigation with progressive unlocking (NEW)**
-- **DB-backed section visit tracking (lesson_section_progress) (NEW)**
-- **Database-driven lesson content (sections + blocks) (NEW)**
-- Database-driven question engine with metadata-based behaviour
-- Custom admin tools for question sets, templates, and question authoring
-- Full admin content management for **courses, variants, modules, and lessons**
-- **Full admin lesson builder (sections + blocks, drag/drop, cross-section movement) (NEW)**
-- Admin user management for **students, teachers, and teaching groups**
-- Teacher assignment creation, editing, ordering, review, filtering, sorting, and reopening
-- Student submission workflow with text, file uploads, locking after review, and feedback visibility
-- Per-item assignment progress visibility for lessons and question sets
-- Role-aware dashboards and secure Supabase-backed data access
+It is designed as a **single unified system** that supports multiple
+learning experiences without splitting into separate apps.
 
 ---
 
 ## 🧠 Core Product Model
 
-Two different concepts shape the platform and should not be confused.
+Two independent axes shape the platform:
 
 ### Roles
 
-- **Admin** → system-level oversight and content management
-- **Teacher** → group-based teaching and assignment review
-- **Student** → course participation and homework submission
+- **Admin** → full system control and content management
+- **Teacher** → manages groups, assignments, and student progress
+- **Student** → consumes content and completes work
 
 ### Student access modes
 
-- **Trial** → limited visible content and upgrade path
-- **Self-study / Full** → paid independent learning experience
-- **Volna student** → teacher-linked learning experience with assignments and review workflow
+- **Trial** → restricted access, upgrade-focused
+- **Self-study / Full** → independent paid learning
+- **Volna student** → teacher-linked experience with assignments
 
-The platform uses one shared codebase and data model, with permissions and UI differences driven by access rules rather than separate apps.
+These are handled through:
+
+- permissions
+- access rules
+- UI variation
+
+NOT separate applications.
 
 ---
 
 ## 🧱 Main Systems
 
-### Lesson system
+### Lesson System (DB-Driven)
 
-Lessons are currently rendered from reusable content blocks. Existing lesson rendering supports content such as:
-Lessons are built from reusable content blocks.
-
-#### Structure (UPDATED)
+Lessons now follow a strict hierarchical structure:
 
 - Lesson
-- Sections (steps)
-- Blocks (content)
+- Section
+- Block
 
-#### Behaviour (NEW)
+#### Behaviour
 
-- Lessons are divided into sections
 - Sections unlock progressively
-- First visit to a section is recorded in the database
-- Visiting a section unlocks the next section
-- Users cannot skip ahead beyond allowed progression
+- First visit is recorded (`lesson_section_progress`)
+- Visiting a section unlocks the next
+- Users cannot skip ahead
 - Previously visited sections remain accessible
-- Lesson completion remains a separate manual action
 
-#### Supported content blocks
+#### Supported block types
 
 - text
 - note
 - vocabulary
 - audio
-- question set blocks
-- **header (NEW)**
-- **subheader (NEW)**
-- **divider (NEW)**
-- **callout (NEW)**
-- **exam tip (NEW)**
-- **image (NEW)**
+- image
+- callout
+- exam tip
+- header / subheader / divider
+- question set
 
-This keeps lesson structure consistent and makes new content easier to create.
+---
 
-### 🛠️ Lesson Builder System (NEW)
+## 🛠️ Lesson Builder System (CORE CMS)
 
-The platform now includes a **fully DB-driven lesson builder CMS**.
+The lesson builder has evolved into a **true CMS-style authoring tool**.
 
-Capabilities:
+### Capabilities
 
-- Section-based lesson editing
-- Block-based content editing
-- Drag-and-drop section ordering
-- Drag-and-drop block ordering
-- **Move blocks between sections (NEW)**
-- Block duplication and deletion
-- Section duplication and deletion
-- Inspector panel editing
+- Section CRUD
+- Block CRUD
+- Drag-and-drop ordering
+- Cross-section block movement
+- Block duplication
+- Publish/unpublish states
 - Sidebar navigation
-- Publish/unpublish blocks
+- Inspector editing
 
-Architecture changes:
+### Architectural shift
 
-- ❌ Removed hardcoded templates:
-  - lesson-block-presets.ts
-  - lesson-section-templates.ts
-  - lesson-templates.ts
-- ✅ Replaced with DB-driven template system
-- ✅ Lessons are now fully dynamic from database
+- ❌ Removed hardcoded templates
+- ❌ Removed static preset files
+- ✅ Fully DB-driven content system
+- ✅ Templates resolved dynamically
 
 ---
 
-### Question system
+## ✨ Lesson Builder UX Improvements (THIS UPDATE)
 
-Questions are stored in the database and rendered through structured metadata rather than one-off hardcoded components.
+This phase focused heavily on **authoring experience**, not just
+functionality.
 
-Current supported and planned interaction patterns include:
+### 1. Block Creation Flow (Major Change)
 
-- multiple choice
-- short answer
-- translation
-- selection-based answers
-- sentence builder behaviour
-- listening/audio rules
-- validation rules such as punctuation and whitespace handling
+Before:
 
----
+- add block buried below list
 
-### Admin authoring system
+- unclear workflow
 
-A custom admin CMS now supports both **question authoring** and a growing **platform management layer**.
+Now:
 
-Current admin capabilities include:
-
-- question set CRUD
-- question CRUD
-- option / accepted answer management
-- duplication
-- reordering
-- activation toggles
-- template-based authoring
-- usage visibility for linked assignments
-- content management for:
-  - courses
-  - variants
-  - modules
-  - lessons
-- **lesson builder (sections + blocks editing) (NEW)**
-- contextual content navigation:
-  - `/admin/content`
-  - `/admin/content/courses/[courseId]`
-  - `/admin/content/courses/[courseId]/variants/[variantId]`
-  - `/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]`
-  - `/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]/lessons/[lessonId]`
-- ordering controls for variants, modules, and lessons
-- dedicated edit pages for content entities
-- teaching group creation and editing
-- student, teacher, and teaching group management views
-- student access-grant switching
-- teacher-role management through `profiles.is_teacher`
-- admin feedback banners and confirmation flows for operational actions
+- block creation moved **above block list**
+- clear **"Create new block"** panel
+- improved empty states
+- faster first-block experience
 
 ---
 
-### Assignment system
+### 2. Add Block Composer Redesign
 
-(unchanged — preserved)
+- Block types grouped into logical categories:
+  - Structure
+  - Teaching
+  - Media
+  - Practice
+- Improved:
+  - visual hierarchy
+  - selection clarity
+  - inline form display
+- Presets upgraded:
+  - clearer descriptions
+  - better layout
+  - more usable as starting points
 
 ---
 
-## 🏗️ High-Level Architecture
+### 3. Section Editor Improvements
 
-### Course hierarchy
+- Creation-first layout (not browsing-first)
+- Cleaner metadata editing
+- Better search and filtering
+- Clearer CTAs
+- Improved empty states
 
-- Course
-- Variant
-  - foundation
-  - higher
-  - volna
-- Module
-- Lesson
-- **Section (NEW)**
-- **Block (NEW)**
+---
+
+### 4. Draggable Block List Improvements
+
+- Stronger selected state
+- Cleaner card layout
+- Better scanning of blocks
+- Improved drag-and-drop feedback
+- Clearer action controls:
+  - move
+  - duplicate
+  - publish/unpublish
+
+---
+
+## 🧭 Platform UX & Navigation System (NEW)
+
+This update introduced a more structured and scalable **student platform UI layer**.
+
+### Sidebar system
+
+- Fully role-aware navigation
+- Clean separation between:
+  - main navigation
+  - conditional items
+  - utility section (profile/settings/logout)
+
+#### Conditional navigation behaviour
+
+- **Volna students**
+  - see: Assignments
+  - do NOT see: Online Classes
+
+- **Non-Volna students**
+  - see: Online Classes (CTA into Volna ecosystem)
+  - do NOT see: Assignments
+
+This ensures:
+
+- correct product funnel behaviour
+- no UI confusion between learning modes
+
+---
+
+### Online Classes integration
+
+- Added dedicated **Online Classes page**
+- Acts as a bridge between:
+  - platform users
+  - Volna School website
+- Hidden for Volna students (already enrolled)
+
+---
+
+### Settings positioning
+
+- Settings moved to bottom utility section
+- Visually separated from main navigation
+- Reinforces mental model:
+  - learning vs account management
+
+---
+
+## 👤 Account System Improvements (NEW)
+
+### Profile system
+
+- Added structured profile page
+- Introduced `avatar_key` system:
+  - preset avatars (no uploads)
+  - safer and simpler for younger users (12–16)
+  - scalable for future expansion
+
+### Avatar direction
+
+- mix of:
+  - neutral characters
+  - academic styles
+  - future potential for themed sets
+- supports both:
+  - younger learners
+  - adult learners
+
+---
+
+### Settings system
+
+- Dedicated settings page scaffolded
+- Future-ready for:
+  - email change
+  - password update
+  - account management
+
+---
+
+## 🧠 Dashboard System (NEW)
+
+The dashboard is evolving into a **central learning hub**, not just a landing page.
+
+### Current capabilities
+
+- Role-based rendering:
+  - guest
+  - student
+  - teacher
+  - admin
+
+- Track + access awareness:
+  - Foundation / Higher / Volna
+  - Trial / Full / Volna
+
+---
+
+### New additions in this phase
+
+#### 1. Progress awareness
+
+- Integrated `getCourseProgressSummary`
+- Displays:
+  - completed lessons
+  - contextual progress messaging
+
+#### 2. Next-step system (V1)
+
+Dynamic guidance based on:
+
+- access mode
+- learning track
+- progress state
+
+Examples:
+
+- Trial → explore platform
+- Full → continue learning
+- Volna → open assignments
+
+#### 3. Improved student UX
+
+- clearer learning direction
+- reduced decision friction
+- better onboarding for new users
+
+---
+
+### Important architectural note
+
+This version intentionally:
+
+- ❌ does NOT compute exact “next lesson”
+- ❌ does NOT depend on complex progression logic
+- ✅ stays lightweight and safe
+
+This prepares for a future:
+
+> **true lesson continuation system (Duolingo-style progression)**
+
+---
+
+## 🧠 Product Direction
+
+The platform is moving toward:
+
+- a **Notion-style lesson editor**
+- fully DB-driven content
+- modular learning system
+- scalable course/product structure
+- intelligent student progression
 
 ---
 
 ## 📊 Progress Tracking
 
-### Main tables
+### Tables
 
 - lesson_progress
-- **lesson_section_progress (NEW)**
+- lesson_section_progress
 - question_progress
 - question_attempts
 
-### Section progress behaviour
+### Section tracking
 
-- first visit is recorded in DB
-- visit unlocks next section
-- revisits tracked
-- UI reflects visited sections
+- first visit recorded
+- visit count tracked
+- progression unlock logic
 
 ---
 
-## 🗄️ Database Overview (UPDATED)
+## 🗄️ Database Overview
 
-### Core learning content
+Core content:
 
 - courses
 - course_variants
 - modules
 - lessons
-- **lesson_sections (NEW)**
-- **lesson_blocks (NEW)**
+- lesson_sections
+- lesson_blocks
 
 ---
 
-## 🧹 Technical Cleanup (NEW)
+## 🧹 Technical Cleanup
 
-- Removed legacy hardcoded template files
-- Fixed empty questionSetSlug issues
-- Cleaned ESLint errors
-- Fixed React effect misuse (setState in useEffect)
-- Improved image handling (next/image)
+- removed legacy template files
+- fixed slug issues
+- cleaned ESLint errors
+- improved React patterns
+- improved image handling
 
 ---
 
 ## 🛣️ Next Areas for Expansion
 
-- database-driven lesson authoring improvements
-- richer lesson block library
-- lesson UX improvements (carousel / steps)
-- payments integration
+### Dashboard
+
+- true “continue lesson” system
+- module-level progress tracking
+- personalised recommendations
+
+### Builder UX
+
+- inline "+ add block between blocks"
+- faster workflows
+- autosave
+
+### Content
+
+- more block types
+- richer media support
+- reusable templates
+
+### Platform
+
+- payments
+- analytics
 - speaking workflows
-- analytics dashboards
+- exam simulation features
 
 ---
 
 ## 👤 Author
 
-**Anton Vlasenko**  
+Anton Vlasenko  
 Director — Volna Online Russian School

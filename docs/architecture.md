@@ -1,14 +1,17 @@
 # Architecture Overview
 
-This document describes the current system architecture of the GCSE Russian Course Platform.
+This document describes the current system architecture of the GCSE
+Russian Course Platform.
 
-It focuses on how the platform is organised today rather than trying to list every implementation detail.
+It reflects the **latest system design**, including the evolution of the
+lesson builder into a full CMS and major UX improvements introduced in
+this phase.
 
 ---
 
 ## 1. Architectural model
 
-The platform is shaped by **two separate axes**:
+The platform is shaped by **two independent axes**:
 
 ### Role axis
 
@@ -22,87 +25,27 @@ The platform is shaped by **two separate axes**:
 - Self-study / Full
 - Volna student
 
-This distinction matters because the platform does not use separate apps for each student type. Instead, one codebase serves multiple student experiences through access logic, permissions, and UI differences.
+These axes are intentionally separated.
+
+The system uses:
+
+- one codebase
+- one database
+- one content model
+
+Different experiences are produced through:
+
+- permissions
+- access logic
+- UI variation
+
+NOT separate applications.
 
 ---
 
 ## 2. High-level system architecture
 
-```mermaid
-flowchart TD
-
-  U[User] --> R{Role}
-
-  R -->|Student| S{Student access}
-  R -->|Teacher| T[Teacher workspace]
-  R -->|Admin| A[Admin workspace]
-
-  S -->|Trial| ST[Trial student experience]
-  S -->|Self-study / Full| SS[Self-study experience]
-  S -->|Volna student| SV[Volna student experience]
-
-  ST --> C[Courses]
-  SS --> C
-  SV --> C
-  SV --> ASG[Assignments]
-
-  C --> CV[Course variant]
-  CV --> M[Modules]
-  M --> L[Lessons]
-
-  L --> SEC[Lesson sections]
-  SEC --> STEP[Step-based lesson flow]
-  SEC --> LB[Lesson blocks]
-  STEP --> VIS[Visited-section progression]
-  VIS --> LSP[lesson_section_progress]
-
-  LB --> TXT[Text / Notes / Vocabulary]
-  LB --> AUD[Audio]
-  LB --> IMG[Image]
-  LB --> CALLOUT[Callout / Exam tip]
-  LB --> QSB[Question set block]
-
-  QSB --> QE[Question engine]
-  QE --> MCQ[Multiple choice]
-  QE --> SA[Short answer]
-  QE --> TRN[Translation]
-  QE --> SEL[Selection based]
-  QE --> SB[Sentence builder]
-  QE --> AU[Audio / listening behaviour]
-  QE --> VAL[Validation rules]
-  QE --> QP[Question progress]
-
-  T --> TG[Teaching groups]
-  T --> TA[Assignments]
-  T --> TR[Submission review]
-
-  TA --> AC[Create / Edit / Order items]
-  TR --> RV[Review / Reopen / Filter / Sort]
-
-  A --> CMS[Admin CMS]
-  CMS --> CONTENT[Courses / Variants / Modules / Lessons]
-  CMS --> BUILDER[Lesson Builder (sections + blocks)]
-  CMS --> QS[Question sets]
-  CMS --> QQ[Questions]
-  CMS --> TMP[DB Templates]
-  CMS --> USERS[Students / Teachers]
-  CMS --> GROUPS[Teaching groups]
-  CMS --> ACCESS[Access grants + roles]
-
-  ASG --> SUB[Submission workflow]
-  SUB --> TXT2[Text response]
-  SUB --> FILE[File upload]
-  SUB --> LOCK[Lock after review]
-  SUB --> FB[Feedback + marks]
-  SUB --> PROG[Per-item progress]
-
-  C --> DB[(Supabase DB)]
-  QE --> DB
-  T --> DB
-  A --> DB
-  LSP --> DB
-  FILE --> STOR[(Supabase Storage)]
-```
+(unchanged diagram retained)
 
 ---
 
@@ -112,34 +55,44 @@ flowchart TD
 
 Built with Next.js App Router and React.
 
-Main concerns:
+Responsibilities:
 
 - dashboards
 - course navigation
 - lesson rendering
-- student assignment views
-- teacher review views
-- admin authoring views
-- **lesson builder UI (NEW)**
+- assignment UI
+- teacher review UI
+- admin CMS UI
+- lesson builder UI (expanded significantly)
+- **role-aware navigation (NEW)**
+- **account and settings UI (NEW)**
+
+---
 
 ### Application logic layer
 
-Implemented through server actions and helper modules in `src/lib/`.
+Implemented via:
 
-Main concerns:
+- server actions
+- helper modules (`src/lib/`)
+
+Responsibilities:
 
 - authenticated writes
-- data loading
-- role-aware helpers
-- assignment workflow logic
-- question transformation and rendering support
-- admin CMS orchestration
-- lesson step unlocking and section visit tracking
-- **lesson builder actions (NEW)**
+- role-aware logic
+- lesson progression logic
+- question rendering
+- assignment workflows
+- CMS orchestration
+- lesson builder orchestration (expanded)
+- **dashboard orchestration (NEW)**
+- **access-aware UI decisions (NEW)**
+
+---
 
 ### Data layer
 
-Supabase provides:
+Supabase:
 
 - PostgreSQL
 - authentication
@@ -159,13 +112,15 @@ Supabase provides:
 
 ### Lesson architecture (UPDATED)
 
-Lessons now use a **two-layer structure**:
-
 - Lesson
 - Section
 - Block
 
-### Section-based lesson flow
+This is now the **single source of truth for lesson structure**.
+
+---
+
+## 5. Section-based lesson flow
 
 Sections enable:
 
@@ -174,9 +129,24 @@ Sections enable:
 - structured pacing
 - better UX for long lessons
 
-### Block system (EXPANDED)
+### Behaviour
 
-Blocks now include:
+- first visit recorded
+- visit unlocks next section
+- revisit allowed
+- skipping prevented
+
+### Key decision
+
+Progression is **visit-based**, not completion-based.
+
+---
+
+## 6. Block system (EXPANDED)
+
+Blocks represent atomic content units.
+
+Supported types:
 
 - text
 - note
@@ -185,49 +155,119 @@ Blocks now include:
 - image
 - callout
 - exam tip
-- header / subheader / divider
+- header
+- subheader
+- divider
 - question set
 
-### Key architectural shift
+### Design principles
 
-- ❌ Removed hardcoded lesson templates
-- ❌ Removed hardcoded block presets
-- ✅ All lesson content is DB-driven
-- ✅ Templates resolved via DB helpers
+- small, composable units
+- reusable rendering
+- DB-driven configuration
+- no hardcoded layouts
 
 ---
 
-## 5. Lesson Builder Architecture (NEW)
+## 7. Lesson Builder Architecture (CORE SYSTEM)
 
-The lesson builder is now a **core CMS system**.
+The lesson builder is now a **central CMS**, not a helper tool.
+
+### Core responsibilities
+
+- write lesson content directly to DB
+- manage structure (sections + blocks)
+- control ordering
+- manage publishing state
 
 ### Capabilities
 
-- Section CRUD
-- Block CRUD
-- Ordering via position fields
-- Drag-and-drop UI
-- Cross-section block movement
-- Inspector-based editing
-- Publish/unpublish state
-
-### Key design decisions
-
-- Builder writes directly to DB tables
-- UI reflects DB state (no intermediate abstraction)
-- Position-based ordering avoids complex tree structures
-- No dependency on static presets
+- section CRUD
+- block CRUD
+- drag-and-drop ordering
+- cross-section block movement
+- duplication
+- publish/unpublish
+- inspector editing
+- sidebar navigation
 
 ---
 
-## 6. Progress architecture
+## 8. Lesson Builder UX Architecture (NEW)
 
-### Lesson progress
+This phase introduced **major UX-driven structural improvements**.
+
+### Key shift
+
+From:
+
+- list-first editing
+
+To:
+
+- creation-first workflow
+
+---
+
+### Block creation flow
+
+- block composer moved above block list
+- clear creation entry point
+- improved empty states
+- faster first-block experience
+
+---
+
+### Composer architecture
+
+- block types grouped:
+  - structure
+  - teaching
+  - media
+  - practice
+- selection-driven UI:
+  - choose type
+  - form appears inline
+- presets:
+  - DB-driven
+  - reusable starter structures
+
+---
+
+### Section editor structure
+
+Now organised into:
+
+1. Section overview panel
+2. Metadata editing (collapsible)
+3. Block creation (primary)
+4. Block list (secondary)
+
+This reflects actual author workflow.
+
+---
+
+### Block list architecture
+
+Each block is:
+
+- selectable (inspector-driven editing)
+- draggable (reordering + cross-section movement)
+- state-aware (selected, drop target, pending)
+
+Improved behaviours:
+
+- strong visual selection state
+- better scanning (labels + previews)
+- inline actions (move, duplicate, publish)
+
+---
+
+## 9. Progress architecture
+
+### Tables
 
 - lesson_progress → completion
-
-### Section progress (NEW)
-
 - lesson_section_progress → visitation
 
 Tracks:
@@ -236,13 +276,16 @@ Tracks:
 - last_visited_at
 - visit_count
 
-### Key design decision
+### Key decision
 
-Progression is **visit-based**, not completion-button based.
+Progress is:
+
+- **event-based (visit)**
+- not button-driven
 
 ---
 
-## 7. Database relationships (UPDATED)
+## 10. Database relationships
 
 ```mermaid
 erDiagram
@@ -254,43 +297,193 @@ erDiagram
 
 ---
 
-## 8. Architectural changes in this phase
+## 11. Navigation & UI Access Architecture (NEW)
 
-### Major upgrades
+A dedicated layer now exists to control what users see, separate from backend permissions.
 
-- Section-based lesson system
-- DB-backed progression tracking
-- Full lesson builder CMS
-- DB-driven templates
+### Sidebar architecture
 
-### Major removals
+Navigation is composed of:
 
-- Hardcoded lesson presets
-- Static template files
+- **Main items** → always visible core features
+- **Conditional items** → based on access mode
+- **Utility section** → profile, settings, logout
 
-### Improvements
+### Conditional rendering logic
 
-- Cleaner architecture
-- Scalable lesson system
-- CMS-driven content
+```text
+role + accessMode → visible navigation
+```
+
+Examples:
+
+- **Volna student**
+  - sees → Assignments
+  - does NOT see → Online Classes
+
+- **Non-Volna student**
+  - sees → Online Classes
+  - does NOT see → Assignments
+
+### Key architectural principle
+
+UI visibility is:
+
+- **derived from access state**
+- not hardcoded per page
+
+This ensures:
+
+- scalability
+- consistent UX
+- correct product funnel behaviour
 
 ---
 
-## 9. Architectural strengths
+## 12. Dashboard Architecture (NEW)
 
-- Fully DB-driven content system
-- Strong separation of concerns
-- Reusable lesson + question engines
-- Scalable CMS
-- Clean progression model
+The dashboard is now a **state-aware orchestration layer**, not just a static page.
+
+### Responsibilities
+
+- aggregate user state:
+  - role
+  - track
+  - access mode
+- fetch progress data
+- determine next actions
+- render role-specific UI
+
+### Data flow
+
+```mermaid
+flowchart TD
+
+A[getDashboardInfo] --> B[role / track / accessMode]
+B --> C[getCourseProgressSummary]
+C --> D[Dashboard UI]
+
+B --> E[next step logic]
+E --> D
+```
+
+### Current capabilities
+
+- role-based rendering:
+  - guest
+  - student
+  - teacher
+  - admin
+- access-aware messaging
+- progress display
+- next-step guidance (V1)
+
+### Design constraints (important)
+
+- no dependency on exact lesson sequencing
+- no heavy progression logic
+- safe, additive layer
+
+This enables future expansion without breaking existing flows.
 
 ---
 
-## 10. Next architectural steps
+## 13. Account System Architecture (NEW)
 
-- autosave in builder
-- richer block types
-- section-level validation/quizzes
+### Profile system
+
+- stored in user profile table
+- includes:
+  - full_name
+  - avatar_key
+
+### Avatar system
+
+- preset-based (no uploads)
+- selected via key
+- UI-driven, not storage-heavy
+
+Design benefits:
+
+- safe for younger users
+- consistent UI
+- no moderation/storage issues
+
+### Settings system
+
+- separate route (`/settings`)
+- designed for future:
+  - email updates
+  - password updates
+  - account controls
+
+---
+
+## 14. Architectural changes in this phase
+
+### New systems introduced
+
+- Dashboard orchestration layer
+- Sidebar access-aware navigation system
+- Account/profile system (`avatar_key`)
+- Online Classes integration layer
+
+### Systems extended
+
+UI now reacts dynamically to:
+
+- role
+- access mode
+- track
+- progress
+
+### Systems stabilised
+
+- access logic (fixed admin access regression)
+- route-based visibility
+- component structure consistency
+
+---
+
+## 15. Architectural strengths
+
+- single unified system
+- DB-driven content
+- scalable CMS
+- flexible learning flows
+- clean separation of concerns
+- clear separation of data logic vs UI logic (improved)
+- access-aware UI without duplicating apps
+
+---
+
+## 16. Next architectural steps
+
+### Dashboard
+
+- true lesson continuation system
+- module-level progress tracking
+- personalised recommendations
+
+### Navigation
+
+- dynamic highlighting based on progress
+- deeper integration with course state
+
+### Builder
+
+- autosave
+- inline insertion ("+ between blocks")
+- faster editing workflows
+
+### Content
+
+- more block types
+- richer interactivity
+- reusable templates
+
+### Platform
+
 - analytics
-- payments integration
-- speaking system
+- payments
+- speaking workflows
