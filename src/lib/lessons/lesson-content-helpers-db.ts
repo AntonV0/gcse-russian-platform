@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { mapDbBlockToLessonBlock, resolveSectionKind } from "@/lib/lessons/lesson-blocks";
 import type { LessonSection } from "@/types/lesson";
 
-export type DbLessonSection = {
+type DbLessonSection = {
   id: string;
   lesson_id: string;
   title: string;
@@ -10,7 +10,10 @@ export type DbLessonSection = {
   section_kind: string;
   position: number;
   is_published: boolean;
-  settings: Record<string, unknown>;
+  track_visibility: "shared" | "foundation_only" | "higher_only";
+  delivery_visibility: "all" | "self_study_only" | "volna_only";
+  canonical_section_key: string | null;
+  settings: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
 };
@@ -92,6 +95,9 @@ export async function loadLessonContentByLessonIdDb(
       description: section.description ?? undefined,
       sectionKind: resolveSectionKind(section.section_kind),
       position: section.position,
+      trackVisibility: section.track_visibility,
+      deliveryVisibility: section.delivery_visibility,
+      canonicalSectionKey: section.canonical_section_key,
       blocks: (blocksBySectionId.get(section.id) ?? []).map(mapDbBlockToLessonBlock),
     })),
   };

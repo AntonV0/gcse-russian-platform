@@ -100,3 +100,7 @@ export const SECTION_KIND_OPTIONS = [
   "listening_practice",
   "summary",
 ] as const;
+
+export type LessonSectionTrackVisibility = "shared" | "foundation_only" | "higher_only";
+
+export type LessonSectionDeliveryVisibility = "all" | "self_study_only" | "volna_only";

@@ -32,11 +32,13 @@ export function Badge({
       : tone === "warning"
         ? "border-amber-200 bg-amber-50 text-amber-700"
         : tone === "muted"
-          ? "border-gray-200 bg-gray-50 text-gray-600"
-          : "border-blue-200 bg-blue-50 text-blue-700";
+          ? "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]"
+          : "border-blue-200 bg-[var(--info-soft)] text-[var(--info)]";
 
   return (
-    <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${classes}`}>
+    <span
+      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${classes}`}
+    >
       {children}
     </span>
   );
@@ -44,9 +46,9 @@ export function Badge({
 
 export function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl border bg-white p-4 shadow-sm">
-      <div className="text-xs uppercase tracking-wide text-gray-500">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-gray-900">{value}</div>
+    <div className="app-card p-4">
+      <div className="text-xs uppercase tracking-wide app-text-soft">{label}</div>
+      <div className="mt-1 text-lg font-semibold text-[var(--text-primary)]">{value}</div>
     </div>
   );
 }
@@ -61,12 +63,15 @@ export function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border bg-white shadow-sm">
-      <div className="border-b px-4 py-4">
-        <h3 className="font-semibold text-gray-900">{title}</h3>
-        {description ? <p className="mt-1 text-sm text-gray-600">{description}</p> : null}
+    <section className="app-card">
+      <div className="border-b border-[var(--border)] px-5 py-4">
+        <h3 className="font-semibold text-[var(--text-primary)]">{title}</h3>
+        {description ? (
+          <p className="mt-1 text-sm app-text-muted">{description}</p>
+        ) : null}
       </div>
-      <div className="p-4">{children}</div>
+
+      <div className="p-5">{children}</div>
     </section>
   );
 }
@@ -103,10 +108,10 @@ export function DragHandle({
 }) {
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-lg border px-2 py-1 text-[11px] ${
+      className={`inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-[11px] ${
         tone === "active"
-          ? "border-blue-300 bg-blue-50 text-blue-700"
-          : "border-gray-200 bg-gray-50 text-gray-500"
+          ? "border-blue-300 bg-[var(--info-soft)] text-[var(--info)]"
+          : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]"
       }`}
       aria-hidden="true"
     >
@@ -129,8 +134,10 @@ export function ToolbarButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg border px-3 py-2 text-sm transition ${
-        isActive ? "border-black bg-black text-white" : "bg-white hover:bg-gray-50"
+      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+        isActive
+          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
+          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:bg-[var(--background-muted)]"
       }`}
     >
       {children}
@@ -166,7 +173,7 @@ export function PendingStatusText({
   const { pending } = useFormStatus();
 
   return (
-    <div className="text-xs text-gray-500">
+    <div className="text-xs app-text-soft">
       {pending ? pendingText : (idleText ?? "")}
     </div>
   );
@@ -186,15 +193,16 @@ export function CompactDisclosure({
   return (
     <details
       open={defaultOpen}
-      className="rounded-2xl border bg-white shadow-sm [&_summary::-webkit-details-marker]:hidden"
+      className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] shadow-sm [&_summary::-webkit-details-marker]:hidden"
     >
-      <summary className="cursor-pointer select-none px-4 py-4 hover:bg-gray-50">
-        <div className="font-semibold text-gray-900">{title}</div>
+      <summary className="cursor-pointer select-none px-5 py-4 transition hover:bg-[var(--background-muted)]">
+        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
         {description ? (
-          <div className="mt-1 text-sm text-gray-600">{description}</div>
+          <div className="mt-1 text-sm app-text-muted">{description}</div>
         ) : null}
       </summary>
-      <div className="border-t p-4">{children}</div>
+
+      <div className="border-t border-[var(--border)] p-5">{children}</div>
     </details>
   );
 }
@@ -207,8 +215,8 @@ export function MiniStatPill({
   value: string | number;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border bg-gray-50 px-2.5 py-1 text-xs text-gray-700">
-      <span className="font-medium">{value}</span>
+    <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--background-muted)] px-2.5 py-1 text-xs text-[var(--text-secondary)]">
+      <span className="font-medium text-[var(--text-primary)]">{value}</span>
       <span>{label}</span>
     </span>
   );
