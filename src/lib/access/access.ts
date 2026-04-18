@@ -1,4 +1,4 @@
-import { getCurrentCourseAccess } from "@/lib/auth/auth";
+import { getCurrentCourseAccess, getCurrentProfile } from "@/lib/auth/auth";
 import { getLessonAccessMetaDb } from "@/lib/courses/course-helpers-db";
 
 export type LessonAccessState = "accessible" | "locked";
@@ -9,6 +9,16 @@ export async function getLessonAccessState(
   moduleSlug: string,
   lessonSlug: string
 ): Promise<LessonAccessState> {
+  const profile = await getCurrentProfile();
+
+  if (profile?.is_admin) {
+    return "accessible";
+  }
+
+  if (profile?.is_teacher) {
+    return "accessible";
+  }
+
   const lesson = await getLessonAccessMetaDb(
     courseSlug,
     variantSlug,

@@ -45,8 +45,8 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
   if (profile?.is_admin) {
     return {
       role: "admin",
-      track: null,
-      accessMode: null,
+      track: "volna",
+      accessMode: "volna",
     };
   }
 
@@ -88,7 +88,6 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
 
   const typedGrants = grants as DashboardGrantRow[];
 
-  // Volna access wins immediately for dashboard role/track display
   for (const grant of typedGrants) {
     if (grant.access_mode === "volna") {
       return {
@@ -99,7 +98,6 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     }
   }
 
-  // Prefer higher if the user owns both higher and foundation
   for (const grant of typedGrants) {
     const code = getProductCodeFromGrant(grant);
 
