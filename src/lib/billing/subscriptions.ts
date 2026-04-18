@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type DbSubscription = {
   id: string;
@@ -41,7 +41,7 @@ export function isSubscriptionActiveStatus(status: string): boolean {
 export async function getSubscriptionByIdDb(
   subscriptionId: string
 ): Promise<DbSubscription | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("subscriptions")
@@ -63,7 +63,7 @@ export async function getSubscriptionByIdDb(
 export async function getSubscriptionByProviderSubscriptionIdDb(
   providerSubscriptionId: string
 ): Promise<DbSubscription | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("subscriptions")
@@ -86,7 +86,7 @@ export async function getUserProductSubscriptionsDb(
   userId: string,
   productId: string
 ): Promise<DbSubscription[]> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("subscriptions")
@@ -115,10 +115,6 @@ export async function getLatestUserProductSubscriptionDb(
   return subscriptions[0] ?? null;
 }
 
-/**
- * Finds a subscription row to update, preferring provider subscription id.
- * Falls back to latest user/product subscription if no provider id is supplied.
- */
 async function findSubscriptionForUpsert(
   input: UpsertSubscriptionInput
 ): Promise<DbSubscription | null> {
@@ -135,16 +131,10 @@ async function findSubscriptionForUpsert(
   return getLatestUserProductSubscriptionDb(input.userId, input.productId);
 }
 
-/**
- * Creates or updates a subscription row for the given user/product/provider data.
- *
- * This keeps subscription lifecycle separate from access grants. Webhooks can
- * call this first, then grant/revoke access using billing/grants.ts.
- */
 export async function upsertSubscriptionDb(
   input: UpsertSubscriptionInput
 ): Promise<DbSubscription | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const existing = await findSubscriptionForUpsert(input);
 
@@ -199,15 +189,11 @@ export async function upsertSubscriptionDb(
   return data as DbSubscription;
 }
 
-/**
- * Marks a subscription as canceled/ended.
- * Use when a provider signals hard cancellation or deletion.
- */
 export async function cancelSubscriptionByProviderSubscriptionIdDb(
   providerSubscriptionId: string,
   canceledAt?: Date | string | null
 ): Promise<DbSubscription | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("subscriptions")
@@ -236,7 +222,7 @@ export async function cancelSubscriptionByProviderSubscriptionIdDb(
 export async function getActiveUserSubscriptionsDb(
   userId: string
 ): Promise<DbSubscription[]> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("subscriptions")

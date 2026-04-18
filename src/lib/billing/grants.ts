@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type GrantAccessMode = "trial" | "full" | "volna";
 export type GrantSource = "stripe" | "admin" | "manual" | "migration";
@@ -45,14 +45,11 @@ function isGrantCurrentlyValid(grant: DbUserAccessGrant, now = new Date()): bool
   return true;
 }
 
-/**
- * Returns all grants for a specific user/product pair, newest first.
- */
 export async function getUserProductGrantsDb(
   userId: string,
   productId: string
 ): Promise<DbUserAccessGrant[]> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("user_access_grants")
@@ -73,18 +70,12 @@ export async function getUserProductGrantsDb(
   return (data ?? []) as DbUserAccessGrant[];
 }
 
-/**
- * Returns the single active-and-currently-valid grant for a user/product pair.
- * If multiple valid active grants somehow exist, the newest one wins.
- */
 export async function getActiveUserProductGrantDb(
   userId: string,
   productId: string
 ): Promise<DbUserAccessGrant | null> {
   const grants = await getUserProductGrantsDb(userId, productId);
-
   const validActiveGrant = grants.find((grant) => isGrantCurrentlyValid(grant));
-
   return validActiveGrant ?? null;
 }
 
@@ -96,15 +87,11 @@ export async function hasActiveUserProductGrantDb(
   return grant !== null;
 }
 
-/**
- * Deactivates all currently active grants for a user/product pair.
- * This enforces the "one active grant per product per user" rule.
- */
 export async function deactivateActiveUserProductGrantsDb(
   userId: string,
   productId: string
 ): Promise<{ success: boolean; deactivatedCount: number }> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const activeGrants = await getUserProductGrantsDb(userId, productId);
   const activeIds = activeGrants
@@ -134,17 +121,10 @@ export async function deactivateActiveUserProductGrantsDb(
   return { success: true, deactivatedCount: activeIds.length };
 }
 
-/**
- * Creates a fresh grant after deactivating any existing active grants
- * for the same user/product pair.
- *
- * This preserves history while ensuring only one active grant exists
- * per product per user.
- */
 export async function grantProductAccessDb(
   input: GrantProductAccessInput
 ): Promise<DbUserAccessGrant | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const startsAt = toIsoOrNull(input.startsAt);
   const endsAt = toIsoOrNull(input.endsAt);
@@ -186,14 +166,10 @@ export async function grantProductAccessDb(
   return data as DbUserAccessGrant;
 }
 
-/**
- * Ends a grant immediately by setting it inactive.
- * Use this for manual revocation or hard cancellation flows.
- */
 export async function deactivateGrantByIdDb(
   grantId: string
 ): Promise<DbUserAccessGrant | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("user_access_grants")
@@ -213,15 +189,11 @@ export async function deactivateGrantByIdDb(
   return data as DbUserAccessGrant;
 }
 
-/**
- * Useful for subscription-ending-at-period-end flows:
- * keep the grant active, but update its end date.
- */
 export async function setGrantEndDateDb(
   grantId: string,
   endsAt: Date | string | null
 ): Promise<DbUserAccessGrant | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("user_access_grants")
@@ -240,34 +212,4 @@ export async function setGrantEndDateDb(
   }
 
   return data as DbUserAccessGrant;
-}
-
-/**
- * Returns all currently valid active grants for a user.
- * Helpful for future account/billing UI.
- */
-export async function getActiveUserGrantsDb(
-  userId: string
-): Promise<DbUserAccessGrant[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("user_access_grants")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching active user grants:", {
-      userId,
-      error,
-    });
-    return [];
-  }
-
-  const grants = (data ?? []) as DbUserAccessGrant[];
-  const now = new Date();
-
-  return grants.filter((grant) => isGrantCurrentlyValid(grant, now));
 }
