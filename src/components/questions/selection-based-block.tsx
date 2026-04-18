@@ -3,7 +3,7 @@
 import QuestionCard from "@/components/questions/question-card";
 import QuestionFeedback from "@/components/questions/question-feedback";
 
-type SelectionGroup = {
+export type SelectionGroup = {
   id: string;
   label?: string;
   options: string[];
