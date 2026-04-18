@@ -12,13 +12,13 @@ type SentenceBuilderBlockProps = {
   audioAutoPlay?: boolean;
   audioHideNativeControls?: boolean;
   onAudioPlaybackCompleted?: () => void;
-  availableTokens?: string[];
-  selectedTokens?: string[];
+  availableTokens: string[];
+  selectedTokens: string[];
   explanation?: string;
   hasSubmitted?: boolean;
   isCorrect?: boolean;
   isSubmitting?: boolean;
-  onAddToken: (token: string, index: number) => void;
+  onAddToken: (index: number) => void;
   onRemoveToken: (index: number) => void;
   onReset: () => void;
   onSubmit: () => void;
@@ -31,15 +31,15 @@ type SentenceBuilderBlockProps = {
 
 export default function SentenceBuilderBlock({
   question,
-  instruction = "Build the correct sentence",
+  instruction = "Build the Russian sentence",
   audioUrl = null,
   audioMaxPlays,
   audioListeningMode = false,
   audioAutoPlay = false,
   audioHideNativeControls = false,
   onAudioPlaybackCompleted,
-  availableTokens = [],
-  selectedTokens = [],
+  availableTokens,
+  selectedTokens,
   explanation,
   hasSubmitted = false,
   isCorrect = false,
@@ -57,8 +57,8 @@ export default function SentenceBuilderBlock({
   const safeAvailableTokens = Array.isArray(availableTokens) ? availableTokens : [];
   const safeSelectedTokens = Array.isArray(selectedTokens) ? selectedTokens : [];
 
-  const canSubmit = !hasSubmitted && !isSubmitting && safeSelectedTokens.length > 0;
-  const canReset = !isSubmitting && safeSelectedTokens.length > 0;
+  const canSubmit = safeSelectedTokens.length > 0 && !hasSubmitted && !isSubmitting;
+  const canReset = safeSelectedTokens.length > 0 && !hasSubmitted && !isSubmitting;
 
   return (
     <QuestionCard
@@ -83,7 +83,7 @@ export default function SentenceBuilderBlock({
         ) : null
       }
     >
-      {sourceLanguageLabel || targetLanguageLabel ? (
+      {(sourceLanguageLabel || targetLanguageLabel) && (
         <div className="flex flex-wrap gap-2">
           {sourceLanguageLabel ? (
             <span className="app-pill app-pill-muted">Source: {sourceLanguageLabel}</span>
@@ -93,17 +93,13 @@ export default function SentenceBuilderBlock({
             <span className="app-pill app-pill-muted">Target: {targetLanguageLabel}</span>
           ) : null}
         </div>
-      ) : null}
+      )}
 
       <div className="space-y-2">
         <p className="text-sm font-medium text-[var(--text-secondary)]">Your sentence</p>
 
         <div className="flex min-h-[60px] flex-wrap gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-3">
-          {safeSelectedTokens.length === 0 ? (
-            <span className="text-sm app-text-muted">
-              Select words below to build your answer
-            </span>
-          ) : (
+          {safeSelectedTokens.length > 0 ? (
             safeSelectedTokens.map((token, index) => (
               <button
                 key={`${token}-${index}`}
@@ -115,6 +111,10 @@ export default function SentenceBuilderBlock({
                 {token}
               </button>
             ))
+          ) : (
+            <span className="text-sm app-text-muted">
+              Select words below to build your answer
+            </span>
           )}
         </div>
       </div>
@@ -125,22 +125,22 @@ export default function SentenceBuilderBlock({
         </p>
 
         <div className="flex flex-wrap gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-3">
-          {safeAvailableTokens.length === 0 ? (
-            <span className="text-sm app-text-muted">
-              No word bank available for this question.
-            </span>
-          ) : (
+          {safeAvailableTokens.length > 0 ? (
             safeAvailableTokens.map((token, index) => (
               <button
                 key={`${token}-${index}`}
                 type="button"
-                onClick={() => onAddToken(token, index)}
+                onClick={() => onAddToken(index)}
                 disabled={hasSubmitted || isSubmitting}
                 className="rounded-full border border-[var(--border)] bg-[var(--background-muted)] px-3 py-1.5 text-sm transition hover:bg-[var(--background-muted)] disabled:cursor-default"
               >
                 {token}
               </button>
             ))
+          ) : (
+            <span className="text-sm app-text-muted">
+              No word bank available for this question.
+            </span>
           )}
         </div>
       </div>
