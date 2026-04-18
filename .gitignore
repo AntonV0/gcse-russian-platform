@@ -64,3 +64,6 @@ next-env.d.ts
 
 # agents
 .agents/
+
+# docs
+docs/spec-private/
