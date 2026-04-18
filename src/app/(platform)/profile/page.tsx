@@ -1,49 +1,59 @@
+import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
-import PageHeader from "@/components/layout/page-header";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import { updateStudentProfile } from "@/app/actions/auth/auth";
 import { appIcons } from "@/lib/shared/icons";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 
 const presetAvatars = [
-  { id: "snow-fox", emoji: "🦊", label: "Snow Fox" },
-  { id: "polar-bear", emoji: "🐻‍❄️", label: "Polar Bear" },
-  { id: "owl", emoji: "🦉", label: "Owl" },
-  { id: "wolf", emoji: "🐺", label: "Wolf" },
-  { id: "penguin", emoji: "🐧", label: "Penguin" },
-  { id: "tiger", emoji: "🐯", label: "Tiger" },
-  { id: "cat", emoji: "🐱", label: "Cat" },
-  { id: "dog", emoji: "🐶", label: "Dog" },
+  { key: "snow-fox", emoji: "🦊", label: "Snow Fox", russian: "Снежная лиса" },
+  { key: "owl", emoji: "🦉", label: "Owl", russian: "Сова" },
+  { key: "wolf", emoji: "🐺", label: "Wolf", russian: "Волк" },
+  { key: "tiger", emoji: "🐯", label: "Tiger", russian: "Тигр" },
+  { key: "cat", emoji: "🐱", label: "Cat", russian: "Кот" },
+  { key: "dog", emoji: "🐶", label: "Dog", russian: "Собака" },
+  { key: "bear", emoji: "🐻", label: "Bear", russian: "Медведь" },
+  { key: "penguin", emoji: "🐧", label: "Penguin", russian: "Пингвин" },
+  { key: "rabbit", emoji: "🐰", label: "Rabbit", russian: "Кролик" },
+  { key: "hedgehog", emoji: "🦔", label: "Hedgehog", russian: "Ёж" },
+  { key: "frog", emoji: "🐸", label: "Frog", russian: "Лягушка" },
+  { key: "whale", emoji: "🐋", label: "Whale", russian: "Кит" },
+
+  { key: "star", emoji: "⭐", label: "Star", russian: "Звезда" },
+  { key: "moon", emoji: "🌙", label: "Moon", russian: "Луна" },
+  { key: "sun", emoji: "☀️", label: "Sun", russian: "Солнце" },
+  { key: "book", emoji: "📘", label: "Book", russian: "Книга" },
+  { key: "globe", emoji: "🌍", label: "Globe", russian: "Мир" },
+  { key: "mountain", emoji: "⛰️", label: "Mountain", russian: "Гора" },
+  { key: "wave", emoji: "🌊", label: "Wave", russian: "Волна" },
+  { key: "sparkles", emoji: "✨", label: "Sparkles", russian: "Искры" },
+  { key: "compass", emoji: "🧭", label: "Compass", russian: "Компас" },
+  { key: "crown", emoji: "👑", label: "Crown", russian: "Корона" },
 ];
 
-function getInitials(name: string | null | undefined, email: string | null | undefined) {
-  if (name && name.trim()) {
-    return name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() ?? "")
-      .join("");
-  }
-
-  if (email) {
-    return email.slice(0, 2).toUpperCase();
-  }
-
-  return "ST";
+function getAvatarEmoji(avatarKey: string | null | undefined) {
+  return presetAvatars.find((avatar) => avatar.key === avatarKey)?.emoji ?? "🎓";
 }
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ success?: string; error?: string }>;
+}) {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
+  const resolvedSearchParams = (await searchParams) ?? {};
 
   if (!user) {
     return (
       <main className="space-y-6">
         <PageHeader
           title="Profile"
-          description="View your account details and personalise your student profile."
+          description="View and personalise your student profile."
         />
 
         <EmptyState
@@ -59,26 +69,40 @@ export default async function ProfilePage() {
     );
   }
 
-  const fullName = profile?.full_name ?? null;
-  const initials = getInitials(fullName, user.email);
+  const currentAvatarKey =
+    "avatar_key" in (profile ?? {}) && typeof profile?.avatar_key === "string"
+      ? profile.avatar_key
+      : null;
 
   return (
     <main className="space-y-8">
       <PageHeader
         title="Profile"
-        description="Your student profile, account summary, and future personalisation settings."
+        description="Update your display details and choose a preset avatar."
       />
+
+      {resolvedSearchParams.success ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          Your profile was updated successfully.
+        </div>
+      ) : null}
+
+      {resolvedSearchParams.error ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {resolvedSearchParams.error}
+        </div>
+      ) : null}
 
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-center">
           <div className="flex flex-col items-center gap-4 text-center">
-            <div className="flex h-28 w-28 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-2xl font-semibold text-[var(--brand-blue)] shadow-[var(--shadow-sm)]">
-              {initials}
+            <div className="flex h-28 w-28 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-5xl shadow-[var(--shadow-sm)]">
+              <span aria-hidden="true">{getAvatarEmoji(currentAvatarKey)}</span>
             </div>
 
             <div className="space-y-1">
               <div className="text-lg font-semibold text-[var(--text-primary)]">
-                {fullName ?? "Student"}
+                {profile?.display_name ?? profile?.full_name ?? "Student"}
               </div>
               <div className="text-sm app-text-muted">{user.email}</div>
             </div>
@@ -90,15 +114,15 @@ export default async function ProfilePage() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <h2 className="app-title">Your profile area</h2>
+              <h2 className="app-title">Personalise your profile</h2>
               <p className="app-subtitle max-w-2xl">
-                This page will become the main place for choosing a preset avatar,
-                updating your display details, and personalising your student account.
+                Choose a preset avatar and update the name shown around your student area.
+                Preset avatars are a safer fit for younger learners than image uploads.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button href="/settings" variant="primary" icon={appIcons.settings}>
+              <Button href="/settings" variant="secondary" icon={appIcons.settings}>
                 Open settings
               </Button>
 
@@ -110,90 +134,137 @@ export default async function ProfilePage() {
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <DashboardCard title="Profile details">
-          <div className="space-y-3">
-            <div>
-              <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                Full name
-              </div>
-              <div className="font-medium text-[var(--text-primary)]">
-                {fullName ?? "Not added yet"}
-              </div>
+      <form action={updateStudentProfile} className="space-y-6">
+        <section className="grid gap-4 lg:grid-cols-2">
+          <DashboardCard title="Profile details">
+            <div className="space-y-4">
+              <FormField label="Full name">
+                <Input
+                  id="fullName"
+                  name="fullName"
+                  defaultValue={profile?.full_name ?? ""}
+                  placeholder="Enter full name"
+                />
+              </FormField>
+
+              <FormField label="Display name">
+                <Input
+                  id="displayName"
+                  name="displayName"
+                  defaultValue={profile?.display_name ?? ""}
+                  placeholder="Enter display name"
+                />
+              </FormField>
+
+              <FormField label="Email">
+                <Input id="email" name="email" defaultValue={user.email ?? ""} disabled />
+              </FormField>
+
+              <p className="text-sm app-text-muted">
+                Email sign-in changes live in Settings. This field is shown here for
+                reference only.
+              </p>
             </div>
+          </DashboardCard>
 
-            <div>
-              <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                Email
-              </div>
-              <div className="font-medium text-[var(--text-primary)]">
-                {user.email ?? "No email"}
-              </div>
-            </div>
+          <DashboardCard title="Selected avatar">
+            <div className="flex h-full flex-col justify-between gap-4">
+              <div className="space-y-3">
+                <div className="rounded-2xl bg-[var(--background-muted)] p-4">
+                  <div className="mb-2 text-xs font-medium uppercase tracking-wide app-text-soft">
+                    Current choice
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--background-elevated)] text-3xl">
+                      <span aria-hidden="true">{getAvatarEmoji(currentAvatarKey)}</span>
+                    </div>
 
-            <div>
-              <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                Profile status
-              </div>
-              <div className="font-medium text-[var(--text-primary)]">
-                Ready for customisation
-              </div>
-            </div>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="What comes next">
-          <div className="space-y-3">
-            <p>
-              The next account milestone can add editable profile fields, preset avatar
-              saving, and account security actions once the profile schema is confirmed.
-            </p>
-
-            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>• Preset avatar selection</li>
-              <li>• Display name / username editing</li>
-              <li>• Email update flow</li>
-              <li>• Password change tools</li>
-            </ul>
-          </div>
-        </DashboardCard>
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-            Preset avatars
-          </h2>
-          <p className="mt-1 text-sm app-text-muted">
-            A safe preset avatar system is a better fit for younger students than free
-            image uploads.
-          </p>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {presetAvatars.map((avatar) => (
-            <div
-              key={avatar.id}
-              className="app-card flex flex-col items-center gap-3 p-5 text-center"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--background-muted)] text-3xl">
-                <span aria-hidden="true">{avatar.emoji}</span>
-              </div>
-
-              <div>
-                <div className="font-medium text-[var(--text-primary)]">
-                  {avatar.label}
+                    <div>
+                      <div className="font-medium text-[var(--text-primary)]">
+                        {presetAvatars.find((avatar) => avatar.key === currentAvatarKey)
+                          ?.label ?? "Default student avatar"}
+                      </div>
+                      <div className="text-sm app-text-muted">
+                        {presetAvatars.find((avatar) => avatar.key === currentAvatarKey)
+                          ?.russian ?? "Студент"}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="mt-1 text-xs app-text-soft">Preset avatar option</div>
+
+                <p className="text-sm app-text-muted">
+                  Pick an avatar that feels fun and easy to recognise inside the platform.
+                </p>
               </div>
 
-              <Button type="button" variant="secondary" icon={appIcons.user}>
-                Choose later
-              </Button>
+              <div className="pt-2">
+                <Button type="submit" variant="primary" icon={appIcons.save}>
+                  Save profile
+                </Button>
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
+          </DashboardCard>
+        </section>
+
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+              Preset avatars
+            </h2>
+            <p className="mt-1 text-sm app-text-muted">
+              Choose from preset avatars with a little Russian included.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {presetAvatars.map((avatar) => {
+              const isSelected = currentAvatarKey === avatar.key;
+
+              return (
+                <label
+                  key={avatar.key}
+                  className={[
+                    "app-card flex cursor-pointer flex-col items-center gap-3 p-5 text-center transition",
+                    isSelected
+                      ? "ring-2 ring-[var(--brand-blue)]"
+                      : "hover:-translate-y-0.5",
+                  ].join(" ")}
+                >
+                  <input
+                    type="radio"
+                    name="avatarKey"
+                    value={avatar.key}
+                    defaultChecked={isSelected}
+                    className="sr-only"
+                  />
+
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--background-muted)] text-3xl">
+                    <span aria-hidden="true">{avatar.emoji}</span>
+                  </div>
+
+                  <div>
+                    <div className="font-medium text-[var(--text-primary)]">
+                      {avatar.label}
+                    </div>
+                    <div className="mt-1 text-sm app-text-muted">{avatar.russian}</div>
+                  </div>
+
+                  <span
+                    className={[
+                      "rounded-full px-3 py-1 text-xs font-medium",
+                      isSelected
+                        ? "bg-[var(--brand-blue-soft)] text-[var(--brand-blue)]"
+                        : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
+                    ].join(" ")}
+                  >
+                    {isSelected ? "Selected" : "Choose"}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </section>
+      </form>
     </main>
   );
 }
