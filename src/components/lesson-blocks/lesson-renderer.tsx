@@ -8,10 +8,39 @@ import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
 import type { LessonSection } from "@/types/lesson";
 import Image from "next/image";
 
+type LessonRendererTrack = "foundation" | "higher";
+type LessonRendererDelivery = "self_study" | "volna";
+
 type LessonRendererProps = {
   sections: LessonSection[];
   lessonId?: string | null;
+  userTrack?: LessonRendererTrack;
+  userDelivery?: LessonRendererDelivery;
 };
+
+function isSectionVisible(
+  section: LessonSection,
+  userTrack: LessonRendererTrack,
+  userDelivery: LessonRendererDelivery
+) {
+  if (section.trackVisibility === "foundation_only" && userTrack !== "foundation") {
+    return false;
+  }
+
+  if (section.trackVisibility === "higher_only" && userTrack !== "higher") {
+    return false;
+  }
+
+  if (section.deliveryVisibility === "self_study_only" && userDelivery !== "self_study") {
+    return false;
+  }
+
+  if (section.deliveryVisibility === "volna_only" && userDelivery !== "volna") {
+    return false;
+  }
+
+  return true;
+}
 
 function HeaderBlock({ content }: { content: string }) {
   return (
@@ -123,10 +152,16 @@ function AudioBlock({
 export default function LessonRenderer({
   sections,
   lessonId = null,
+  userTrack = "foundation",
+  userDelivery = "self_study",
 }: LessonRendererProps) {
+  const visibleSections = sections.filter((section) =>
+    isSectionVisible(section, userTrack, userDelivery)
+  );
+
   return (
     <div className="space-y-8">
-      {sections.map((section) => (
+      {visibleSections.map((section) => (
         <section
           key={section.id}
           className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/60 p-4 md:p-6"

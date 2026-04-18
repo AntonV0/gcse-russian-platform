@@ -257,9 +257,9 @@ export async function createSectionAction(formData: FormData) {
   const title = getTrimmedString(formData, "title");
   const description = getTrimmedString(formData, "description");
   const sectionKind = getTrimmedString(formData, "sectionKind") || "content";
-  const trackVisibility = getTrackVisibility(formData);
-  const deliveryVisibility = getDeliveryVisibility(formData);
-  const canonicalSectionKey = getCanonicalSectionKey(formData);
+  const trackVisibility = formData.get("trackVisibility") as string;
+  const deliveryVisibility = formData.get("deliveryVisibility") as string;
+  const canonicalSectionKey = formData.get("canonicalSectionKey") as string;
 
   if (!lessonId || !title) {
     throw new Error("Missing required fields");
@@ -277,7 +277,7 @@ export async function createSectionAction(formData: FormData) {
     is_published: true,
     track_visibility: trackVisibility,
     delivery_visibility: deliveryVisibility,
-    canonical_section_key: canonicalSectionKey,
+    canonical_section_key: canonicalSectionKey || null,
     settings: {},
   });
 
@@ -324,8 +324,8 @@ export async function duplicateSectionAction(formData: FormData) {
       section_kind: section.section_kind,
       position: nextSectionPosition,
       is_published: false,
-      track_visibility: section.track_visibility,
-      delivery_visibility: section.delivery_visibility,
+      track_visibility: section.track_visibility ?? "shared",
+      delivery_visibility: section.delivery_visibility ?? "all",
       canonical_section_key: section.canonical_section_key,
       settings: section.settings ?? {},
     })

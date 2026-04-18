@@ -21,6 +21,10 @@ export type LessonBuilderTemplateOptions = {
   }[];
 };
 
+export type LessonSectionTrackVisibility = "shared" | "foundation_only" | "higher_only";
+
+export type LessonSectionDeliveryVisibility = "all" | "self_study_only" | "volna_only";
+
 export type AdminLessonBuilderProps = {
   lessonId: string;
   courseId: string;
@@ -37,6 +41,9 @@ export type AdminLessonBuilderProps = {
     section_kind: string;
     position: number;
     is_published: boolean;
+    track_visibility: LessonSectionTrackVisibility;
+    delivery_visibility: LessonSectionDeliveryVisibility;
+    canonical_section_key: string | null;
     blocks: {
       id: string;
       block_type: string;
@@ -100,7 +107,3 @@ export const SECTION_KIND_OPTIONS = [
   "listening_practice",
   "summary",
 ] as const;
-
-export type LessonSectionTrackVisibility = "shared" | "foundation_only" | "higher_only";
-
-export type LessonSectionDeliveryVisibility = "all" | "self_study_only" | "volna_only";

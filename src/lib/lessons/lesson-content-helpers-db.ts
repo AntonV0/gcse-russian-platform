@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { mapDbBlockToLessonBlock, resolveSectionKind } from "@/lib/lessons/lesson-blocks";
 import type { LessonSection } from "@/types/lesson";
 
-type DbLessonSection = {
+export type DbLessonSection = {
   id: string;
   lesson_id: string;
   title: string;
@@ -13,7 +13,7 @@ type DbLessonSection = {
   track_visibility: "shared" | "foundation_only" | "higher_only";
   delivery_visibility: "all" | "self_study_only" | "volna_only";
   canonical_section_key: string | null;
-  settings: Record<string, unknown> | null;
+  settings: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 };
