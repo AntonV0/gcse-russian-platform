@@ -99,6 +99,7 @@ export default function AdminLessonBuilderWorkspace({
     getLessonBuilderStorageKey(lessonId, "inspector-open"),
     true
   );
+
   const [draggedBlockContext, setDraggedBlockContext] =
     useState<DraggedBlockContext>(null);
 
@@ -110,6 +111,7 @@ export default function AdminLessonBuilderWorkspace({
 
   const selectedSection =
     sections.find((section) => section.id === selectedSectionId) ?? null;
+
   const selectedBlock =
     selectedSection?.blocks.find((block) => block.id === selectedBlockId) ?? null;
 
@@ -130,9 +132,55 @@ export default function AdminLessonBuilderWorkspace({
     );
   }, [lessonId, selectedSectionId]);
 
+  useEffect(() => {
+    if (!selectedSection) {
+      setSelectedBlockId(null);
+      return;
+    }
+
+    if (
+      selectedBlockId &&
+      !selectedSection.blocks.some((block) => block.id === selectedBlockId)
+    ) {
+      setSelectedBlockId(null);
+    }
+  }, [selectedSection, selectedBlockId]);
+
+  function handleSelectSection(sectionId: string) {
+    setStoredSelectedSectionId(sectionId);
+    setSelectedBlockId(null);
+    setBlockSearch("");
+  }
+
+  function handleSelectBlock(blockId: string | null) {
+    setSelectedBlockId(blockId);
+  }
+
+  function handleJumpToAddBlock() {
+    document
+      .getElementById("add-block-composer")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  const layoutClass = (() => {
+    if (isSidebarOpen && isInspectorOpen) {
+      return "2xl:grid-cols-[340px_minmax(0,1fr)_340px] xl:grid-cols-[320px_minmax(0,1fr)_320px]";
+    }
+
+    if (isSidebarOpen && !isInspectorOpen) {
+      return "xl:grid-cols-[340px_minmax(0,1fr)]";
+    }
+
+    if (!isSidebarOpen && isInspectorOpen) {
+      return "xl:grid-cols-[minmax(0,1fr)_340px]";
+    }
+
+    return "xl:grid-cols-[minmax(0,1fr)]";
+  })();
+
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
         <StatCard label="Sections" value={sections.length} />
         <StatCard label="Blocks" value={totalBlocks} />
         <StatCard label="Published sections" value={publishedSections} />
@@ -143,7 +191,7 @@ export default function AdminLessonBuilderWorkspace({
         title="Lesson templates"
         description="Create several structured sections at once for faster lesson setup."
       >
-        <div className="grid gap-3 lg:grid-cols-2">
+        <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
           {templateOptions.lessonTemplates.length === 0 ? (
             <div className="rounded-xl border border-dashed bg-white px-4 py-8 text-sm text-gray-500">
               No DB lesson templates found yet.
@@ -183,11 +231,12 @@ export default function AdminLessonBuilderWorkspace({
       </Panel>
 
       <section className="sticky top-4 z-10 rounded-2xl border bg-white/95 p-3 shadow-sm backdrop-blur">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0">
             <div className="text-sm font-medium text-gray-900">
               {selectedSection ? `Editing: ${selectedSection.title}` : "Lesson builder"}
             </div>
+
             <div className="text-xs text-gray-500">
               {selectedSection
                 ? `${selectedSection.blocks.length} block(s)${
@@ -223,109 +272,83 @@ export default function AdminLessonBuilderWorkspace({
               Clear block selection
             </ToolbarButton>
 
-            <ToolbarButton
-              onClick={() => {
-                document
-                  .getElementById("add-block-composer")
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-            >
+            <ToolbarButton onClick={handleJumpToAddBlock}>
               Jump to add block
             </ToolbarButton>
           </div>
         </div>
       </section>
 
-      <section
-        className={`grid gap-6 ${
-          isSidebarOpen && isInspectorOpen
-            ? "xl:grid-cols-[260px_minmax(0,1fr)] 2xl:grid-cols-[260px_minmax(0,1fr)_320px]"
-            : isSidebarOpen
-              ? "xl:grid-cols-[260px_minmax(0,1fr)]"
-              : isInspectorOpen
-                ? "2xl:grid-cols-[minmax(0,1fr)_320px]"
-                : "grid-cols-1"
-        }`}
-      >
+      <section className={`grid items-start gap-6 ${layoutClass}`}>
         {isSidebarOpen ? (
-          <aside className="space-y-6 xl:sticky xl:top-24 xl:self-start">
-            <LessonSectionSidebar
-              sections={sections}
-              selectedSectionId={selectedSectionId}
-              onSelectSection={(sectionId) => {
-                setStoredSelectedSectionId(sectionId);
-                setSelectedBlockId(null);
-                setBlockSearch("");
-              }}
-              routeFields={routeFields}
-              sectionSearch={sectionSearch}
-              onSectionSearchChange={setSectionSearch}
-              draggedBlockContext={draggedBlockContext}
-              onBlockDropComplete={() => {
-                setDraggedBlockContext(null);
-                setSelectedBlockId(null);
-              }}
-              sectionTemplateOptions={templateOptions.sectionTemplates}
-            />
+          <aside className="min-w-0 xl:sticky xl:top-24 xl:self-start">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-sm">
+              <div className="mb-3">
+                <p className="text-xs uppercase tracking-wide app-text-soft">Sections</p>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  Lesson structure
+                </h3>
+              </div>
+
+              <LessonSectionSidebar
+                sections={sections}
+                selectedSectionId={selectedSectionId}
+                onSelectSection={handleSelectSection}
+                routeFields={routeFields}
+                sectionSearch={sectionSearch}
+                onSectionSearchChange={setSectionSearch}
+                draggedBlockContext={draggedBlockContext}
+                onBlockDropComplete={() => setDraggedBlockContext(null)}
+                sectionTemplateOptions={templateOptions.sectionTemplates}
+              />
+            </div>
           </aside>
         ) : null}
 
-        <div className="min-w-0">
-          <LessonSectionEditor
-            section={selectedSection}
-            routeFields={routeFields}
-            selectedBlockId={selectedBlockId}
-            onSelectBlock={(blockId) => {
-              setSelectedBlockId(blockId);
-              if (blockId) {
-                setIsInspectorOpen(true);
-              }
-            }}
-            blockSearch={blockSearch}
-            onBlockSearchChange={setBlockSearch}
-            onJumpToAddBlock={() => {
-              document
-                .getElementById("add-block-composer")
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-            onBlockDragStart={(payload) => {
-              setDraggedBlockContext(payload);
-            }}
-            onBlockDragEnd={() => {
-              setDraggedBlockContext(null);
-            }}
-            templateOptions={templateOptions}
-          />
+        <div className="min-w-0 space-y-6">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/30 p-4 md:p-5 xl:p-6">
+            <div className="mb-4">
+              <p className="text-xs uppercase tracking-wide app-text-soft">Builder</p>
+              <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+                Lesson content
+              </h2>
+            </div>
+
+            <LessonSectionEditor
+              section={selectedSection}
+              routeFields={routeFields}
+              selectedBlockId={selectedBlockId}
+              onSelectBlock={handleSelectBlock}
+              blockSearch={blockSearch}
+              onBlockSearchChange={setBlockSearch}
+              onJumpToAddBlock={handleJumpToAddBlock}
+              onBlockDragStart={(payload) => setDraggedBlockContext(payload)}
+              onBlockDragEnd={() => setDraggedBlockContext(null)}
+              templateOptions={templateOptions}
+            />
+          </div>
         </div>
 
         {isInspectorOpen ? (
-          <aside className="space-y-6 2xl:sticky 2xl:top-24 2xl:self-start">
-            <LessonInspectorPanel
-              section={selectedSection}
-              block={selectedBlock}
-              sections={sections}
-              routeFields={routeFields}
-              sectionIndex={sectionIndex}
-              totalSections={sections.length}
-              blockIndex={blockIndex}
-            />
-
-            <Panel title="Authoring notes">
-              <div className="grid gap-3 text-sm text-gray-600">
-                <div className="rounded-xl border bg-gray-50 p-3">
-                  Create the section outline before writing detailed content.
-                </div>
-                <div className="rounded-xl border bg-gray-50 p-3">
-                  Duplicate sections or blocks when lessons follow a repeated structure.
-                </div>
-                <div className="rounded-xl border bg-gray-50 p-3">
-                  Keep copied content as draft until checked on the public lesson page.
-                </div>
-                <div className="rounded-xl border bg-gray-50 p-3">
-                  Select a block to edit it in the inspector.
-                </div>
+          <aside className="min-w-0 xl:sticky xl:top-24 xl:self-start">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-sm">
+              <div className="mb-3">
+                <p className="text-xs uppercase tracking-wide app-text-soft">Inspector</p>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  Settings
+                </h3>
               </div>
-            </Panel>
+
+              <LessonInspectorPanel
+                section={selectedSection}
+                block={selectedBlock}
+                sections={sections}
+                routeFields={routeFields}
+                sectionIndex={sectionIndex}
+                totalSections={sections.length}
+                blockIndex={blockIndex}
+              />
+            </div>
           </aside>
         ) : null}
       </section>
