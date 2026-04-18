@@ -27,18 +27,18 @@ const platformHighlights = [
 
 const landingLinks = [
   {
+    title: "Pricing",
+    description:
+      "Choose Foundation or Higher access and start the real Stripe checkout flow.",
+    href: "/pricing",
+    icon: appIcons.courses,
+  },
+  {
     title: "Lessons",
     description:
       "Follow structured modules covering themes, grammar, and vocabulary step by step.",
     href: "/courses",
     icon: appIcons.lessons,
-  },
-  {
-    title: "Practice",
-    description:
-      "Work through translation, listening, and exam-style tasks to reinforce learning.",
-    href: "/dashboard",
-    icon: appIcons.audio,
   },
   {
     title: "Progress",
@@ -72,10 +72,8 @@ const audience = [
 export default function Home() {
   return (
     <div className="py-8 md:py-12">
-      {/* HERO */}
       <section className="app-surface-brand app-section-padding-lg overflow-hidden">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.92fr)] lg:items-start">
-          {/* LEFT */}
           <div className="space-y-6">
             <div className="space-y-3">
               <Badge tone="info" icon={appIcons.info}>
@@ -94,11 +92,11 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button href="/dashboard" variant="primary" icon={appIcons.dashboard}>
-                Open dashboard
+              <Button href="/pricing" variant="primary" icon={appIcons.courses}>
+                View pricing
               </Button>
 
-              <Button href="/courses" variant="secondary" icon={appIcons.courses}>
+              <Button href="/courses" variant="secondary" icon={appIcons.lessons}>
                 Browse courses
               </Button>
             </div>
@@ -116,7 +114,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* RIGHT PANEL */}
           <div className="app-card app-section-padding">
             <div className="mb-4 flex items-start justify-between gap-4">
               <div className="min-w-0">
@@ -162,7 +159,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PRIMARY NAV CARDS */}
       <section className="mt-8 grid gap-4 md:grid-cols-3">
         {landingLinks.map((item) => (
           <Link
@@ -188,7 +184,6 @@ export default function Home() {
         ))}
       </section>
 
-      {/* WHO IT'S FOR */}
       <section className="mt-10">
         <div className="mb-4">
           <h2 className="app-section-title text-lg">Who this platform is for</h2>
