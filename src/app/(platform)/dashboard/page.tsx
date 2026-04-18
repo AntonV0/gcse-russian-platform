@@ -87,6 +87,87 @@ function getStudentSecondaryAction(accessMode: "trial" | "full" | "volna" | null
   };
 }
 
+function getProgressMessage(
+  accessMode: "trial" | "full" | "volna" | null,
+  completedLessons: number
+) {
+  if (accessMode === "trial") {
+    return "You are currently exploring the platform with trial access. Use this time to sample lessons, resources, and the overall learning experience.";
+  }
+
+  if (accessMode === "volna") {
+    if (completedLessons === 0) {
+      return "Your learning is guided through lessons and assignments. Start with your assigned work and lesson content.";
+    }
+
+    return "Your learning is guided through lessons and assignments. Keep following your teacher-led path and build steady progress.";
+  }
+
+  if (completedLessons === 0) {
+    return "Start your first lesson to begin building progress on your current course path.";
+  }
+
+  return "Keep going — steady lesson progress builds stronger confidence for GCSE Russian.";
+}
+
+function getNextStep(
+  track: "foundation" | "higher" | "volna" | null,
+  accessMode: "trial" | "full" | "volna" | null,
+  completedLessons: number
+) {
+  if (accessMode === "volna") {
+    return {
+      title: "Continue your guided work",
+      description:
+        "Open your assignments and continue through the lesson content linked to your teacher-led learning.",
+      href: "/assignments",
+      label: "Open assignments",
+      icon: appIcons.assignments,
+    };
+  }
+
+  if (accessMode === "trial") {
+    return {
+      title: "Explore the platform",
+      description:
+        "Browse lessons, vocabulary, grammar, and past papers to see how the full learning experience is structured.",
+      href: "/courses",
+      label: "Explore lessons",
+      icon: appIcons.courses,
+    };
+  }
+
+  if (track && completedLessons > 0) {
+    return {
+      title: "Keep your momentum going",
+      description:
+        "Continue your current course path and keep building progress through lessons and revision resources.",
+      href: "/courses",
+      label: "Continue learning",
+      icon: appIcons.next,
+    };
+  }
+
+  if (track) {
+    return {
+      title: "Start your course path",
+      description:
+        "Begin working through your lessons and use the platform as your main GCSE Russian study hub.",
+      href: "/courses",
+      label: "Start learning",
+      icon: appIcons.courses,
+    };
+  }
+
+  return {
+    title: "Get started",
+    description: "Browse available course content and begin exploring the platform.",
+    href: "/courses",
+    label: "Browse courses",
+    icon: appIcons.courses,
+  };
+}
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
@@ -100,6 +181,11 @@ export default async function DashboardPage() {
   const welcomeName = profile?.full_name ? `, ${profile.full_name}` : "";
   const primaryAction = getStudentPrimaryAction(dashboard.track, dashboard.accessMode);
   const secondaryAction = getStudentSecondaryAction(dashboard.accessMode);
+  const nextStep = getNextStep(
+    dashboard.track,
+    dashboard.accessMode,
+    progressSummary.completedLessons
+  );
 
   return (
     <main className="space-y-8">
@@ -227,6 +313,33 @@ export default async function DashboardPage() {
                 </div>
               </DashboardCard>
             </div>
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-2">
+            <DashboardCard title="Your progress">
+              <div className="space-y-3">
+                <div className="text-2xl font-semibold text-[var(--text-primary)]">
+                  {progressSummary.completedLessons} lessons completed
+                </div>
+
+                <p className="text-sm app-text-muted">
+                  {getProgressMessage(
+                    dashboard.accessMode,
+                    progressSummary.completedLessons
+                  )}
+                </p>
+              </div>
+            </DashboardCard>
+
+            <DashboardCard title={nextStep.title}>
+              <div className="space-y-3">
+                <p>{nextStep.description}</p>
+
+                <Button href={nextStep.href} variant="secondary" icon={nextStep.icon}>
+                  {nextStep.label}
+                </Button>
+              </div>
+            </DashboardCard>
           </section>
 
           <section className="grid gap-4 md:grid-cols-3">
