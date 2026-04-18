@@ -447,6 +447,32 @@ export default function LessonSectionSidebar(props: {
             />
           </div>
 
+          <select
+            name="trackVisibility"
+            defaultValue="shared"
+            className="w-full rounded-xl border px-3 py-2 text-sm"
+          >
+            <option value="shared">Shared</option>
+            <option value="foundation_only">Foundation only</option>
+            <option value="higher_only">Higher only</option>
+          </select>
+
+          <select
+            name="deliveryVisibility"
+            defaultValue="all"
+            className="w-full rounded-xl border px-3 py-2 text-sm"
+          >
+            <option value="all">All delivery modes</option>
+            <option value="self_study_only">Self-study only</option>
+            <option value="volna_only">Volna only</option>
+          </select>
+
+          <input
+            name="canonicalSectionKey"
+            placeholder="Shared progress key (optional)"
+            className="w-full rounded-xl border px-3 py-2 text-sm"
+          />
+
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-900">
               Section kind
