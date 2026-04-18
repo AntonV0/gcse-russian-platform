@@ -49,6 +49,7 @@ import {
   Search,
   Settings,
   SquarePen,
+  Star,
   Sun,
   Trash2,
   Type,
@@ -106,6 +107,7 @@ export const appIcons = {
   down: ChevronDown,
   uiLab: WandSparkles,
   layers: Layers,
+  star: Star,
 
   chevronRight: ChevronRight,
   chevronDown: ChevronDown,
@@ -228,6 +230,7 @@ export const curatedLucideIconNames = new Set<string>([
   "PanelLeft",
   "PanelsTopLeft",
   "Sparkles",
+  "Star",
 ]);
 
 export type AppIconKey = keyof typeof appIcons;

@@ -1,10 +1,12 @@
 "use client";
 
-import { useReducer } from "react";
+import { useEffect, useState } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import { appIcons } from "@/lib/shared/icons";
 
-function getCurrentTheme(): "light" | "dark" {
+type ThemeMode = "light" | "dark";
+
+function readCurrentTheme(): ThemeMode {
   if (typeof document === "undefined") {
     return "light";
   }
@@ -14,14 +16,19 @@ function getCurrentTheme(): "light" | "dark" {
 }
 
 export default function ThemeToggle() {
-  const [, forceRender] = useReducer((value: number) => value + 1, 0);
-  const theme = getCurrentTheme();
+  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>("light");
+
+  useEffect(() => {
+    setTheme(readCurrentTheme());
+    setMounted(true);
+  }, []);
 
   function toggleTheme() {
-    const next = theme === "dark" ? "light" : "dark";
+    const next: ThemeMode = theme === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     localStorage.setItem("theme", next);
-    forceRender();
+    setTheme(next);
   }
 
   return (
@@ -33,7 +40,7 @@ export default function ThemeToggle() {
       title="Toggle theme"
     >
       <AppIcon
-        icon={theme === "dark" ? appIcons.sun : appIcons.moon}
+        icon={mounted ? (theme === "dark" ? appIcons.sun : appIcons.moon) : appIcons.moon}
         size={17}
         className="app-icon-button-icon"
       />
