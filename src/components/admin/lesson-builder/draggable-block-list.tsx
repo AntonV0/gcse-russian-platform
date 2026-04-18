@@ -70,7 +70,7 @@ export default function DraggableBlockList(props: {
   return (
     <div className="space-y-3">
       {isPending ? (
-        <div className="rounded-xl border bg-blue-50 px-3 py-2 text-sm text-blue-700">
+        <div className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
           Saving block order...
         </div>
       ) : null}
@@ -116,55 +116,60 @@ export default function DraggableBlockList(props: {
               setDropTargetBlockId(null);
               props.onBlockDragEnd();
             }}
-            className={`rounded-xl border transition-shadow transition-colors ${
-              isSelected ? "border-black bg-gray-50" : "bg-white"
-            } ${isDropTarget ? "ring-2 ring-blue-300 shadow-md" : ""} ${
-              isPending ? "opacity-70" : ""
-            }`}
+            className={[
+              "overflow-hidden rounded-2xl border transition",
+              isSelected
+                ? "border-[var(--brand-blue)] bg-[var(--brand-blue-soft)]/40 shadow-sm"
+                : "border-[var(--border)] bg-[var(--background-elevated)] hover:border-[var(--brand-blue)]/40 hover:shadow-sm",
+              isDropTarget ? "ring-2 ring-blue-300 shadow-md" : "",
+              isPending ? "opacity-70" : "",
+            ].join(" ")}
           >
             <button
               type="button"
               onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
               className="w-full px-4 py-4 text-left"
             >
-              <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                <div className="min-w-0 space-y-2">
-                  <DragHandle
-                    label="Drag block"
-                    tone={isDropTarget ? "active" : "default"}
-                  />
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                  <div className="min-w-0 space-y-2">
+                    <DragHandle
+                      label="Drag block"
+                      tone={isDropTarget ? "active" : "default"}
+                    />
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span
-                      className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
-                        block.block_type
-                      )}`}
-                    >
-                      {getLessonBlockGroupLabel(block.block_type)}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
+                          block.block_type
+                        )}`}
+                      >
+                        {getLessonBlockGroupLabel(block.block_type)}
+                      </span>
 
-                    <span className="font-medium text-gray-900">
-                      {getLessonBlockLabel(block.block_type)}
-                    </span>
+                      <span className="font-medium text-[var(--text-primary)]">
+                        {getLessonBlockLabel(block.block_type)}
+                      </span>
 
-                    <Badge tone={block.is_published ? "success" : "warning"}>
-                      {block.is_published ? "Published" : "Draft"}
-                    </Badge>
+                      <Badge tone={block.is_published ? "success" : "warning"}>
+                        {block.is_published ? "Published" : "Draft"}
+                      </Badge>
 
-                    <Badge tone="muted">Position {block.position}</Badge>
+                      <Badge tone="muted">Position {block.position}</Badge>
 
-                    {isSelected ? <Badge tone="default">Selected</Badge> : null}
-                  </div>
+                      {isSelected ? <Badge tone="default">Selected</Badge> : null}
+                    </div>
 
-                  <div className="text-sm text-gray-600 line-clamp-2 break-words">
-                    {getLessonBlockPreview(block)}
+                    <div className="line-clamp-2 break-words text-sm app-text-muted">
+                      {getLessonBlockPreview(block)}
+                    </div>
                   </div>
                 </div>
               </div>
             </button>
 
             {isSelected ? (
-              <div className="border-t px-3 py-3">
+              <div className="border-t border-[var(--border)] bg-[var(--background-elevated)]/80 px-3 py-3">
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                   <form action={moveBlockAction}>
                     <BuilderHiddenFields {...props.routeFields} />
@@ -174,7 +179,7 @@ export default function DraggableBlockList(props: {
                     <button
                       type="submit"
                       disabled={blockIndex === 0 || isPending}
-                      className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-2 text-xs transition hover:bg-[var(--background-muted)] disabled:opacity-50"
                     >
                       Move up
                     </button>
@@ -190,7 +195,7 @@ export default function DraggableBlockList(props: {
                       disabled={
                         blockIndex === props.section.blocks.length - 1 || isPending
                       }
-                      className="w-full rounded-lg border px-2 py-2 text-xs disabled:opacity-50 hover:bg-white"
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-2 text-xs transition hover:bg-[var(--background-muted)] disabled:opacity-50"
                     >
                       Move down
                     </button>
@@ -203,7 +208,7 @@ export default function DraggableBlockList(props: {
                     <button
                       type="submit"
                       disabled={isPending}
-                      className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-2 text-xs transition hover:bg-[var(--background-muted)] disabled:opacity-50"
                     >
                       Duplicate
                     </button>
@@ -220,7 +225,7 @@ export default function DraggableBlockList(props: {
                     <button
                       type="submit"
                       disabled={isPending}
-                      className="w-full rounded-lg border px-2 py-2 text-xs hover:bg-white"
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-2 text-xs transition hover:bg-[var(--background-muted)] disabled:opacity-50"
                     >
                       {block.is_published ? "Unpublish" : "Publish"}
                     </button>
