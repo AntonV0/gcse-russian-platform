@@ -17,23 +17,42 @@ export default async function QuestionSetBlock({
 
   if (!questionSet) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
         Question set not found: {questionSetSlug}
       </div>
     );
   }
 
   return (
-    <section className="space-y-4">
-      {title ? <h2 className="text-xl font-semibold">{title}</h2> : null}
+    <section className="app-card app-section-padding space-y-5">
+      <div className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+          <span className="app-pill app-pill-info">Question set</span>
+          <span className="app-pill app-pill-muted">
+            {questions.length} question{questions.length === 1 ? "" : "s"}
+          </span>
+        </div>
 
-      {questionSet.instructions ? (
-        <p className="text-sm text-gray-600">{questionSet.instructions}</p>
-      ) : null}
+        {title ? (
+          <h2 className="text-2xl font-semibold text-[var(--text-primary)]">{title}</h2>
+        ) : null}
 
-      {questions.map((question) => (
-        <QuestionRenderer key={question.id} question={question} lessonId={lessonId} />
-      ))}
+        {questionSet.instructions ? (
+          <p className="text-sm app-text-muted">{questionSet.instructions}</p>
+        ) : null}
+      </div>
+
+      <div className="space-y-5">
+        {questions.map((question, index) => (
+          <div key={question.id} className="space-y-3">
+            <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
+              Question {index + 1}
+            </div>
+
+            <QuestionRenderer question={question} lessonId={lessonId} />
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
