@@ -151,6 +151,19 @@ export default function LessonSectionEditor(props: {
         </form>
       </CompactDisclosure>
 
+      <div id="add-block-composer">
+        <Panel
+          title="Create a new block"
+          description="Choose a block type, then fill in the form. This is the main place to add new lesson content."
+        >
+          <AddBlockComposer
+            section={section}
+            routeFields={props.routeFields}
+            blockPresetOptions={props.templateOptions.blockPresets}
+          />
+        </Panel>
+      </div>
+
       <Panel title="Blocks" description="Select a block to edit it in the inspector.">
         <div className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -171,7 +184,7 @@ export default function LessonSectionEditor(props: {
                 onClick={props.onJumpToAddBlock}
                 className="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50"
               >
-                Add block
+                Jump to block creator
               </button>
             </div>
           </div>
@@ -183,7 +196,14 @@ export default function LessonSectionEditor(props: {
 
           {section.blocks.length === 0 ? (
             <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
-              No blocks in this section yet.
+              <div className="mb-2">No blocks in this section yet.</div>
+              <button
+                type="button"
+                onClick={props.onJumpToAddBlock}
+                className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+              >
+                Create your first block
+              </button>
             </div>
           ) : filteredBlocks.length === 0 ? (
             <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
@@ -202,19 +222,6 @@ export default function LessonSectionEditor(props: {
           )}
         </div>
       </Panel>
-
-      <div id="add-block-composer">
-        <Panel
-          title="Add block"
-          description="Choose a block type, then fill in the form."
-        >
-          <AddBlockComposer
-            section={section}
-            routeFields={props.routeFields}
-            blockPresetOptions={props.templateOptions.blockPresets}
-          />
-        </Panel>
-      </div>
     </div>
   );
 }

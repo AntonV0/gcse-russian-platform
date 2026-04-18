@@ -37,22 +37,22 @@ function AddSimpleTextBlockForm(props: {
   buttonLabel: string;
 }) {
   return (
-    <form action={props.action} className="space-y-2">
+    <form action={props.action} className="space-y-3">
       <BuilderHiddenFields {...props.routeFields} />
       <input type="hidden" name="sectionId" value={props.sectionId} />
       <textarea
         name="content"
         required
-        rows={3}
+        rows={4}
         placeholder={props.placeholder}
         defaultValue={props.defaultValue}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={props.buttonLabel}
           pendingLabel="Adding block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
         />
         <PendingStatusText pendingText="Saving new block..." />
       </div>
@@ -71,28 +71,28 @@ function AddTitledContentBlockForm(props: {
   defaultContent?: string;
 }) {
   return (
-    <form action={props.action} className="space-y-2">
+    <form action={props.action} className="space-y-3">
       <BuilderHiddenFields {...props.routeFields} />
       <input type="hidden" name="sectionId" value={props.sectionId} />
       <input
         name="title"
         placeholder={props.titlePlaceholder}
         defaultValue={props.defaultTitle}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <textarea
         name="content"
         required
-        rows={4}
+        rows={5}
         placeholder={props.contentPlaceholder}
         defaultValue={props.defaultContent}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={props.buttonLabel}
           pendingLabel="Adding block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
         />
         <PendingStatusText pendingText="Saving new block..." />
       </div>
@@ -109,25 +109,25 @@ function AddSlugBlockForm(props: {
   slugPlaceholder: string;
 }) {
   return (
-    <form action={props.action} className="space-y-2">
+    <form action={props.action} className="space-y-3">
       <BuilderHiddenFields {...props.routeFields} />
       <input type="hidden" name="sectionId" value={props.sectionId} />
       <input
         name="title"
         placeholder="Optional heading"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <input
         name={props.slugFieldName}
         required
         placeholder={props.slugPlaceholder}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={props.buttonLabel}
           pendingLabel="Adding block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
         />
         <PendingStatusText pendingText="Saving linked practice block..." />
       </div>
@@ -137,30 +137,30 @@ function AddSlugBlockForm(props: {
 
 function AddImageBlockForm(props: { sectionId: string; routeFields: RouteFields }) {
   return (
-    <form action={createImageBlockAction} className="space-y-2">
+    <form action={createImageBlockAction} className="space-y-3">
       <BuilderHiddenFields {...props.routeFields} />
       <input type="hidden" name="sectionId" value={props.sectionId} />
       <input
         name="src"
         required
         placeholder="https://..."
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <input
         name="alt"
         placeholder="Alt text"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <input
         name="caption"
         placeholder="Optional caption"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel="Add image block"
           pendingLabel="Adding image block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
         />
         <PendingStatusText pendingText="Saving image block..." />
       </div>
@@ -170,26 +170,26 @@ function AddImageBlockForm(props: { sectionId: string; routeFields: RouteFields 
 
 function AddAudioBlockForm(props: { sectionId: string; routeFields: RouteFields }) {
   return (
-    <form action={createAudioBlockAction} className="space-y-2">
+    <form action={createAudioBlockAction} className="space-y-3">
       <BuilderHiddenFields {...props.routeFields} />
       <input type="hidden" name="sectionId" value={props.sectionId} />
       <input
         name="title"
         placeholder="Optional title"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <input
         name="src"
         required
         placeholder="https://..."
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <input
         name="caption"
         placeholder="Optional caption"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
-      <label className="flex items-center gap-2 text-sm">
+      <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
         <input type="checkbox" name="autoPlay" value="true" />
         Auto play
       </label>
@@ -197,7 +197,7 @@ function AddAudioBlockForm(props: { sectionId: string; routeFields: RouteFields 
         <PendingSubmitButton
           idleLabel="Add audio block"
           pendingLabel="Adding audio block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
         />
         <PendingStatusText pendingText="Saving audio block..." />
       </div>
@@ -212,7 +212,7 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
   };
 
   return (
-    <form action={createVocabularyBlockAction} className="space-y-2">
+    <form action={createVocabularyBlockAction} className="space-y-3">
       <BuilderHiddenFields {...props.routeFields} />
       <input type="hidden" name="sectionId" value={props.sectionId} />
       <input
@@ -220,7 +220,7 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
         required
         placeholder="Key vocabulary"
         defaultValue={defaults.title ?? ""}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
       />
       <textarea
         name="items"
@@ -230,16 +230,16 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
           .map((item) => `${item.russian} | ${item.english}`)
           .join("\n")}
         placeholder={`дом | house\nшкола | school`}
-        className="w-full rounded-xl border px-3 py-2 font-mono text-sm"
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 font-mono text-sm"
       />
-      <p className="text-xs text-gray-500">
+      <p className="text-xs app-text-soft">
         Use one item per line in the format: russian | english
       </p>
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel="Add vocabulary block"
           pendingLabel="Adding vocabulary block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
         />
         <PendingStatusText pendingText="Saving vocabulary block..." />
       </div>
@@ -259,8 +259,10 @@ function BlockTypeButton(props: {
     <button
       type="button"
       onClick={() => props.onSelect(props.value)}
-      className={`rounded-xl border px-3 py-2 text-sm transition ${
-        isSelected ? "border-black bg-black text-white" : "bg-white hover:bg-gray-50"
+      className={`rounded-xl border px-3 py-2 text-sm text-left transition ${
+        isSelected
+          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
+          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:bg-[var(--background-muted)]"
       }`}
     >
       {props.label}
@@ -303,163 +305,184 @@ export default function AddBlockComposer(props: {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4">
-        <div className="rounded-2xl border bg-white p-4">
-          <div className="mb-3">
-            <div className="font-medium text-gray-900">Quick presets</div>
-            <div className="text-sm text-gray-500">
-              Insert a ready-made starter structure for this section.
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+        <div className="mb-4">
+          <div className="font-semibold text-[var(--text-primary)]">Quick presets</div>
+          <div className="text-sm app-text-muted">
+            Insert a ready-made starter structure for this section.
+          </div>
+        </div>
+
+        <div className="grid gap-3">
+          {props.blockPresetOptions.length === 0 ? (
+            <div className="rounded-xl border border-dashed px-4 py-6 text-sm app-text-muted">
+              No DB block presets found yet.
+            </div>
+          ) : (
+            props.blockPresetOptions.map((preset) => (
+              <form
+                key={preset.id}
+                action={insertBlockPresetAction}
+                className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/50 p-4"
+              >
+                <BuilderHiddenFields {...props.routeFields} />
+                <input type="hidden" name="sectionId" value={props.section.id} />
+                <input type="hidden" name="presetId" value={preset.id} />
+
+                <div className="mb-3">
+                  <div className="font-medium text-[var(--text-primary)]">
+                    {preset.label}
+                  </div>
+                  <div className="text-sm app-text-muted">{preset.description}</div>
+                  <div className="mt-2 text-xs app-text-soft">
+                    {preset.blocksCount} block{preset.blocksCount === 1 ? "" : "s"}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <PendingSubmitButton
+                    idleLabel="Insert preset"
+                    pendingLabel="Inserting preset..."
+                    className="app-btn-base app-btn-secondary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+                  />
+                  <PendingStatusText pendingText="Adding starter blocks to this section..." />
+                </div>
+              </form>
+            ))
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+        <div className="mb-4">
+          <div className="font-semibold text-[var(--text-primary)]">
+            Choose a block type
+          </div>
+          <div className="text-sm app-text-muted">
+            Pick a block below, then fill in the form underneath.
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <div className="mb-2 text-xs font-medium uppercase tracking-wide app-text-soft">
+              Structure
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <BlockTypeButton
+                label="Header"
+                value="header"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+              <BlockTypeButton
+                label="Subheader"
+                value="subheader"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+              <BlockTypeButton
+                label="Divider"
+                value="divider"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
             </div>
           </div>
 
-          <div className="grid gap-3">
-            {props.blockPresetOptions.length === 0 ? (
-              <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
-                No DB block presets found yet.
-              </div>
-            ) : (
-              props.blockPresetOptions.map((preset) => (
-                <form
-                  key={preset.id}
-                  action={insertBlockPresetAction}
-                  className="rounded-xl border p-3"
-                >
-                  <BuilderHiddenFields {...props.routeFields} />
-                  <input type="hidden" name="sectionId" value={props.section.id} />
-                  <input type="hidden" name="presetId" value={preset.id} />
-
-                  <div className="mb-2">
-                    <div className="font-medium text-gray-900">{preset.label}</div>
-                    <div className="text-sm text-gray-500">{preset.description}</div>
-                    <div className="mt-2 text-xs text-gray-500">
-                      {preset.blocksCount} block{preset.blocksCount === 1 ? "" : "s"}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <PendingSubmitButton
-                      idleLabel="Insert preset"
-                      pendingLabel="Inserting preset..."
-                      className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
-                    />
-                    <PendingStatusText pendingText="Adding starter blocks to this section..." />
-                  </div>
-                </form>
-              ))
-            )}
+          <div>
+            <div className="mb-2 text-xs font-medium uppercase tracking-wide app-text-soft">
+              Teaching
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <BlockTypeButton
+                label="Text"
+                value="text"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+              <BlockTypeButton
+                label="Note"
+                value="note"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+              <BlockTypeButton
+                label="Callout"
+                value="callout"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+              <BlockTypeButton
+                label="Exam tip"
+                value="exam-tip"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+              <BlockTypeButton
+                label="Vocabulary"
+                value="vocabulary"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <div className="mb-2 text-sm font-medium text-gray-900">Structure</div>
-          <div className="flex flex-wrap gap-2">
-            <BlockTypeButton
-              label="Header"
-              value="header"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-            <BlockTypeButton
-              label="Subheader"
-              value="subheader"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-            <BlockTypeButton
-              label="Divider"
-              value="divider"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
+          <div>
+            <div className="mb-2 text-xs font-medium uppercase tracking-wide app-text-soft">
+              Media
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <BlockTypeButton
+                label="Image"
+                value="image"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+              <BlockTypeButton
+                label="Audio"
+                value="audio"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <div className="mb-2 text-sm font-medium text-gray-900">Teaching</div>
-          <div className="flex flex-wrap gap-2">
-            <BlockTypeButton
-              label="Text"
-              value="text"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-            <BlockTypeButton
-              label="Note"
-              value="note"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-            <BlockTypeButton
-              label="Callout"
-              value="callout"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-            <BlockTypeButton
-              label="Exam tip"
-              value="exam-tip"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-            <BlockTypeButton
-              label="Vocabulary"
-              value="vocabulary"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="mb-2 text-sm font-medium text-gray-900">Media</div>
-          <div className="flex flex-wrap gap-2">
-            <BlockTypeButton
-              label="Image"
-              value="image"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-            <BlockTypeButton
-              label="Audio"
-              value="audio"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="mb-2 text-sm font-medium text-gray-900">Practice</div>
-          <div className="flex flex-wrap gap-2">
-            <BlockTypeButton
-              label="Question set"
-              value="question-set"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
-            <BlockTypeButton
-              label="Vocabulary set"
-              value="vocabulary-set"
-              selectedValue={selectedNewBlockType}
-              onSelect={updateSelectedNewBlockType}
-            />
+          <div>
+            <div className="mb-2 text-xs font-medium uppercase tracking-wide app-text-soft">
+              Practice
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <BlockTypeButton
+                label="Question set"
+                value="question-set"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+              <BlockTypeButton
+                label="Vocabulary set"
+                value="vocabulary-set"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {!selectedNewBlockType ? (
-        <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
+        <div className="rounded-xl border border-dashed px-4 py-8 text-sm app-text-muted">
           Choose a block type above to add it to this section.
         </div>
       ) : (
-        <div className="rounded-2xl border bg-gray-50 p-4">
-          <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/50 p-4">
+          <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <div className="font-medium text-gray-900">
+              <div className="font-semibold text-[var(--text-primary)]">
                 New {getLessonBlockLabel(selectedNewBlockType)}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm app-text-muted">
                 Fill in the details for this new block.
               </div>
             </div>
@@ -467,7 +490,7 @@ export default function AddBlockComposer(props: {
             <button
               type="button"
               onClick={() => updateSelectedNewBlockType(null)}
-              className="rounded-lg border px-3 py-2 text-sm hover:bg-white"
+              className="app-btn-base app-btn-secondary rounded-lg px-3 py-2 text-sm"
             >
               Clear
             </button>
@@ -499,12 +522,11 @@ export default function AddBlockComposer(props: {
             <form action={createDividerBlockAction} className="space-y-2">
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="sectionId" value={props.section.id} />
-              <button
-                type="submit"
-                className="rounded-lg border px-3 py-2 text-sm hover:bg-white"
-              >
-                Add divider block
-              </button>
+              <PendingSubmitButton
+                idleLabel="Add divider block"
+                pendingLabel="Adding divider block..."
+                className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+              />
             </form>
           )}
 
