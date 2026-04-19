@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { appIcons } from "@/lib/shared/icons";
+import type { AppIconKey } from "@/lib/shared/icons";
 import { uiLabPages } from "@/lib/ui/ui-lab";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
@@ -31,30 +31,36 @@ function getStatusLabel(status: "complete" | "in_progress" | "planned") {
   }
 }
 
-const productionPatterns = [
+type ProductionPattern = {
+  title: string;
+  description: string;
+  icon: AppIconKey;
+};
+
+const productionPatterns: ProductionPattern[] = [
   {
     title: "Homepage hero",
     description:
       "Branded premium landing section with GCSE-specific messaging and audience-focused structure.",
-    icon: appIcons.home,
+    icon: "home",
   },
   {
     title: "Platform header",
     description:
       "Shared site header with active states, theme toggle, account metadata, and mobile menu.",
-    icon: appIcons.header,
+    icon: "header",
   },
   {
     title: "Admin sidebar",
     description:
       "Reusable admin navigation pattern with grouped sections and nested UI Lab links.",
-    icon: appIcons.navigation,
+    icon: "navigation",
   },
   {
     title: "Shared primitives",
     description:
       "Buttons, badges, cards, typography, inputs, and icons are now shaping most screens.",
-    icon: appIcons.component,
+    icon: "component",
   },
 ];
 

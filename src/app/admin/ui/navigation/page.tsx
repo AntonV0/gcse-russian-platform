@@ -1,12 +1,28 @@
 import Link from "next/link";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { appIcons } from "@/lib/shared/icons";
+import type { AppIconKey } from "@/lib/shared/icons";
 import { uiLabPages } from "@/lib/ui/ui-lab";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
 import BackNav from "@/components/ui/back-nav";
 import Badge from "@/components/ui/badge";
+
+type SidebarTopLink = {
+  label: string;
+  icon: AppIconKey;
+  active: boolean;
+};
+
+type SidebarSectionLink = {
+  label: string;
+  icon: AppIconKey;
+};
+
+type SidebarSectionGroup = {
+  title: string;
+  links: SidebarSectionLink[];
+};
 
 function DemoSiteHeader() {
   const navItems = [
@@ -82,26 +98,28 @@ function DemoSiteHeader() {
 }
 
 function DemoAdminSidebar() {
-  const topLinks = [{ label: "Dashboard", icon: appIcons.dashboard, active: false }];
+  const topLinks: SidebarTopLink[] = [
+    { label: "Dashboard", icon: "dashboard", active: false },
+  ];
 
   const uiLinks = uiLabPages.map((item) => ({
     label: item.label,
     active: item.href === "/admin/ui/navigation",
   }));
 
-  const sectionGroups = [
+  const sectionGroups: SidebarSectionGroup[] = [
     {
       title: "Content",
       links: [
-        { label: "Courses / Modules / Lessons", icon: appIcons.courses },
-        { label: "Lesson Templates", icon: appIcons.file },
+        { label: "Courses / Modules / Lessons", icon: "courses" },
+        { label: "Lesson Templates", icon: "file" },
       ],
     },
     {
       title: "Questions",
       links: [
-        { label: "Question Sets", icon: appIcons.help },
-        { label: "Templates", icon: appIcons.file },
+        { label: "Question Sets", icon: "help" },
+        { label: "Templates", icon: "file" },
       ],
     },
   ];
