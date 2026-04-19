@@ -7,6 +7,7 @@ export type DbUserAccessGrant = {
   id: string;
   user_id: string;
   product_id: string;
+  price_id: string | null;
   access_mode: string;
   source: string;
   starts_at: string | null;
@@ -19,6 +20,7 @@ export type DbUserAccessGrant = {
 export type GrantProductAccessInput = {
   userId: string;
   productId: string;
+  priceId?: string | null;
   accessMode: GrantAccessMode;
   source: GrantSource;
   startsAt?: Date | string | null;
@@ -141,6 +143,7 @@ export async function grantProductAccessDb(
   const insertPayload = {
     user_id: input.userId,
     product_id: input.productId,
+    price_id: input.priceId ?? null,
     access_mode: input.accessMode,
     source: input.source,
     starts_at: startsAt,
