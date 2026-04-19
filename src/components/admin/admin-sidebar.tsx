@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
-import { appIcons } from "@/lib/shared/icons";
 import { uiLabPages } from "@/lib/ui/ui-lab";
 
 function getNavItemClass(isActive: boolean, isSubItem = false) {
@@ -33,13 +32,8 @@ export default function AdminSidebar() {
   const isStudents = pathname.startsWith("/admin/students");
   const isTeachers = pathname.startsWith("/admin/teachers");
 
-  const [isUiOpen, setIsUiOpen] = useState(isUiLab);
-
-  useEffect(() => {
-    if (isUiLab) {
-      setIsUiOpen(true);
-    }
-  }, [isUiLab]);
+  const [isUiOpen, setIsUiOpen] = useState(false);
+  const showUiSection = isUiLab || isUiOpen;
 
   return (
     <aside className="flex flex-col border-r bg-[var(--background-elevated)] p-4">
@@ -64,10 +58,10 @@ export default function AdminSidebar() {
         >
           <AppIcon icon="uiLab" size={18} />
           <span className="flex-1 text-left">UI Lab</span>
-          <AppIcon icon={isUiOpen ? appIcons.down : appIcons.next} size={16} />
+          <AppIcon icon={showUiSection ? "down" : "next"} size={16} />
         </button>
 
-        {isUiOpen ? (
+        {showUiSection ? (
           <div className="ml-3 mt-1 flex flex-col gap-1 border-l border-[var(--border)] pl-3">
             {uiLabPages.map((item) => {
               const isActive = pathname === item.href;

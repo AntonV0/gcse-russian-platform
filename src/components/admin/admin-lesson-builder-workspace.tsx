@@ -113,7 +113,9 @@ export default function AdminLessonBuilderWorkspace({
     sections.find((section) => section.id === selectedSectionId) ?? null;
 
   const selectedBlock =
-    selectedSection?.blocks.find((block) => block.id === selectedBlockId) ?? null;
+    selectedSection && selectedBlockId
+      ? (selectedSection.blocks.find((block) => block.id === selectedBlockId) ?? null)
+      : null;
 
   const sectionIndex = selectedSection
     ? sections.findIndex((section) => section.id === selectedSection.id)
@@ -131,20 +133,6 @@ export default function AdminLessonBuilderWorkspace({
       selectedSectionId
     );
   }, [lessonId, selectedSectionId]);
-
-  useEffect(() => {
-    if (!selectedSection) {
-      setSelectedBlockId(null);
-      return;
-    }
-
-    if (
-      selectedBlockId &&
-      !selectedSection.blocks.some((block) => block.id === selectedBlockId)
-    ) {
-      setSelectedBlockId(null);
-    }
-  }, [selectedSection, selectedBlockId]);
 
   function handleSelectSection(sectionId: string) {
     setStoredSelectedSectionId(sectionId);
@@ -317,7 +305,7 @@ export default function AdminLessonBuilderWorkspace({
             <LessonSectionEditor
               section={selectedSection}
               routeFields={routeFields}
-              selectedBlockId={selectedBlockId}
+              selectedBlockId={selectedBlock?.id ?? null}
               onSelectBlock={handleSelectBlock}
               blockSearch={blockSearch}
               onBlockSearchChange={setBlockSearch}

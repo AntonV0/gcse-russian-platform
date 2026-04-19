@@ -28,6 +28,8 @@ type ButtonAsLinkProps = BaseProps & {
 
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+
 function getVariantClass(variant: ButtonVariant) {
   switch (variant) {
     case "primary":
@@ -81,6 +83,7 @@ function getClassName({
   className?: string;
 }) {
   return [
+    "ui-debug",
     "app-btn-base app-focus-ring inline-flex items-center justify-center gap-2 transition",
     getVariantClass(variant),
     getSizeClass(size, iconOnly),
@@ -108,6 +111,10 @@ function ButtonInner({
 
   return (
     <>
+      {SHOW_UI_DEBUG ? (
+        <span className="ui-debug-label">Button · components/ui/button.tsx</span>
+      ) : null}
+
       {icon && iconPosition === "left" ? <AppIcon icon={icon} size={18} /> : null}
       {children ? <span>{children}</span> : null}
       {icon && iconPosition === "right" ? <AppIcon icon={icon} size={18} /> : null}

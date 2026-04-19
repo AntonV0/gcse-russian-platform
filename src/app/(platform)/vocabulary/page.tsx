@@ -3,7 +3,6 @@ import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { appIcons } from "@/lib/shared/icons";
 import { getCurrentUser } from "@/lib/auth/auth";
 
 const vocabularyThemes = [

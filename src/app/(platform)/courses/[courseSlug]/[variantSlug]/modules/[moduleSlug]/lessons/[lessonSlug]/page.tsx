@@ -1,8 +1,6 @@
-import Link from "next/link";
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import { appIcons } from "@/lib/shared/icons";
 import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import { canUserAccessLesson } from "@/lib/access/access";
 import { loadLessonContentByLessonIdDb } from "@/lib/lessons/lesson-content-helpers-db";

@@ -4,7 +4,6 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
-import { appIcons } from "@/lib/shared/icons";
 import {
   getCurrentCourseAccess,
   getCurrentProfile,

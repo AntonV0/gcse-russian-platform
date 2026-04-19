@@ -4,7 +4,6 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
-import { appIcons } from "@/lib/shared/icons";
 import { loadModulePageData } from "@/lib/courses/course-helpers-db";
 import { getVariantPath, getLessonPath } from "@/lib/access/routes";
 import { getModuleProgress } from "@/lib/progress/progress-module";
