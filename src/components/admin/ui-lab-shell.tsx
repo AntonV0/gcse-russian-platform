@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
+import Card, { CardBody } from "@/components/ui/card";
 import { uiLabPages, type UiLabStatus } from "@/lib/ui/ui-lab";
 
 function getStatusTone(status: UiLabStatus): "success" | "warning" | "muted" {
@@ -44,46 +45,49 @@ export default function UiLabShell({
     <main className="space-y-8">
       <PageHeader title={title} description={description} />
 
-      <section className="app-card app-section-padding space-y-4">
-        <div>
-          <h2 className="app-section-title">UI Lab sections</h2>
-          <p className="mt-1 text-sm app-text-muted">
-            Browse the internal design system by category and track what is finished,
-            still being refined, or not yet built.
-          </p>
-        </div>
+      <Card className="app-section-padding">
+        <CardBody className="space-y-4 p-0">
+          <div>
+            <h2 className="app-section-title">UI Lab sections</h2>
+            <p className="mt-1 text-sm app-text-muted">
+              Browse the internal design system by category and track what is finished,
+              still being refined, or not yet built.
+            </p>
+          </div>
 
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {uiLabPages.map((item) => {
-            const isActive = currentPath === item.href;
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {uiLabPages.map((item) => {
+              const isActive = currentPath === item.href;
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={[
-                  "app-card app-card-hover block p-4",
-                  isActive ? "ring-2 ring-[var(--brand-blue)]/20" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div className="font-semibold text-[var(--text-primary)]">
-                    {item.label}
-                  </div>
+              return (
+                <Link key={item.href} href={item.href} className="block">
+                  <Card
+                    interactive
+                    className={[
+                      "h-full p-4",
+                      isActive ? "ring-2 ring-[var(--brand-blue)]/20" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div className="font-semibold text-[var(--text-primary)]">
+                        {item.label}
+                      </div>
 
-                  <Badge tone={getStatusTone(item.status)}>
-                    {getStatusLabel(item.status)}
-                  </Badge>
-                </div>
+                      <Badge tone={getStatusTone(item.status)}>
+                        {getStatusLabel(item.status)}
+                      </Badge>
+                    </div>
 
-                <p className="text-sm app-text-muted">{item.description}</p>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+                    <p className="text-sm app-text-muted">{item.description}</p>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        </CardBody>
+      </Card>
 
       {children}
     </main>

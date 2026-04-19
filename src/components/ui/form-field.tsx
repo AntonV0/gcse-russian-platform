@@ -2,14 +2,31 @@ type FormFieldProps = {
   label: string;
   children: React.ReactNode;
   hint?: string;
+  className?: string;
+  labelClassName?: string;
 };
 
-export default function FormField({ label, children, hint }: FormFieldProps) {
+export default function FormField({
+  label,
+  children,
+  hint,
+  className,
+  labelClassName,
+}: FormFieldProps) {
   return (
-    <div>
-      <label className="mb-1.5 block text-sm font-medium text-gray-900">{label}</label>
+    <div className={["space-y-1.5", className].filter(Boolean).join(" ")}>
+      <label
+        className={[
+          "block text-sm font-medium text-[var(--text-primary)]",
+          labelClassName,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {label}
+      </label>
       {children}
-      {hint ? <p className="mt-1 text-xs text-gray-500">{hint}</p> : null}
+      {hint ? <p className="text-xs app-text-soft">{hint}</p> : null}
     </div>
   );
 }

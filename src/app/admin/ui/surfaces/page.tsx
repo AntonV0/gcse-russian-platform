@@ -5,6 +5,7 @@ import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import Card, { CardBody } from "@/components/ui/card";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 
@@ -33,12 +34,14 @@ function SurfaceExample({
 
 function SpacingBlock({ title, className }: { title: string; className: string }) {
   return (
-    <div className={`app-card ${className}`}>
-      <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-      <p className="mt-2 text-sm app-text-muted">
-        Use this to compare how dense or spacious a layout feels.
-      </p>
-    </div>
+    <Card className={className}>
+      <CardBody>
+        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+        <p className="mt-2 text-sm app-text-muted">
+          Use this to compare how dense or spacious a layout feels.
+        </p>
+      </CardBody>
+    </Card>
   );
 }
 
@@ -181,35 +184,51 @@ export default async function AdminUiSurfacesPage() {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <div className="app-card p-4">
-              <div className="font-semibold">Summary card</div>
-              <p className="mt-2 text-sm app-text-muted">
-                Repeated cards should stay visually lighter than hero or brand sections.
-              </p>
-            </div>
+            <Card>
+              <CardBody>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Summary card
+                </div>
+                <p className="mt-2 text-sm app-text-muted">
+                  Repeated cards should stay visually lighter than hero or brand sections.
+                </p>
+              </CardBody>
+            </Card>
 
-            <div className="app-card p-4">
-              <div className="font-semibold">Summary card</div>
-              <p className="mt-2 text-sm app-text-muted">
-                This helps the eye understand hierarchy quickly.
-              </p>
-            </div>
+            <Card>
+              <CardBody>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Summary card
+                </div>
+                <p className="mt-2 text-sm app-text-muted">
+                  This helps the eye understand hierarchy quickly.
+                </p>
+              </CardBody>
+            </Card>
 
-            <div className="app-card p-4">
-              <div className="font-semibold">Summary card</div>
-              <p className="mt-2 text-sm app-text-muted">
-                Keep these compact and easy to scan.
-              </p>
-            </div>
+            <Card>
+              <CardBody>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Summary card
+                </div>
+                <p className="mt-2 text-sm app-text-muted">
+                  Keep these compact and easy to scan.
+                </p>
+              </CardBody>
+            </Card>
           </div>
 
-          <div className="app-card app-section-padding">
-            <div className="mb-3 font-semibold">Supporting content block</div>
-            <p className="text-sm app-text-muted">
-              Large supporting sections should usually sit below summary cards and use
-              neutral surfaces unless there is a strong reason to elevate or brand them.
-            </p>
-          </div>
+          <Card className="app-section-padding">
+            <CardBody className="p-0">
+              <div className="mb-3 font-semibold text-[var(--text-primary)]">
+                Supporting content block
+              </div>
+              <p className="text-sm app-text-muted">
+                Large supporting sections should usually sit below summary cards and use
+                neutral surfaces unless there is a strong reason to elevate or brand them.
+              </p>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -218,88 +237,64 @@ export default async function AdminUiSurfacesPage() {
         description="These are the rules that will keep future pages visually consistent."
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon={appIcons.component} size={16} className="app-brand-text" />
-              <div className="font-semibold">Use app-card by default</div>
-            </div>
-            <p className="text-sm app-text-muted">
-              Most repeated blocks should start with app-card unless they clearly need a
-              different level of emphasis.
-            </p>
-          </div>
+          <Card>
+            <CardBody>
+              <div className="mb-2 flex items-center gap-2">
+                <AppIcon icon={appIcons.component} size={16} className="app-brand-text" />
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Use app-card by default
+                </div>
+              </div>
+              <p className="text-sm app-text-muted">
+                Most repeated blocks should start with app-card unless they clearly need a
+                different level of emphasis.
+              </p>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon={appIcons.warning} size={16} className="app-brand-text" />
-              <div className="font-semibold">Use branded surfaces sparingly</div>
-            </div>
-            <p className="text-sm app-text-muted">
-              Branded surfaces lose impact if they appear too often.
-            </p>
-          </div>
+          <Card>
+            <CardBody>
+              <div className="mb-2 flex items-center gap-2">
+                <AppIcon icon={appIcons.warning} size={16} className="app-brand-text" />
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Use branded surfaces sparingly
+                </div>
+              </div>
+              <p className="text-sm app-text-muted">
+                Branded surfaces lose impact if they appear too often.
+              </p>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon={appIcons.forms} size={16} className="app-brand-text" />
-              <div className="font-semibold">Match surface to density</div>
-            </div>
-            <p className="text-sm app-text-muted">
-              Dense form or inspector content often benefits from panel-like grouping
-              rather than decorative styling.
-            </p>
-          </div>
+          <Card>
+            <CardBody>
+              <div className="mb-2 flex items-center gap-2">
+                <AppIcon icon={appIcons.forms} size={16} className="app-brand-text" />
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Match surface to density
+                </div>
+              </div>
+              <p className="text-sm app-text-muted">
+                Dense form or inspector content often benefits from panel-like grouping
+                rather than decorative styling.
+              </p>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon={appIcons.idea} size={16} className="app-brand-text" />
-              <div className="font-semibold">Prefer hierarchy over effects</div>
-            </div>
-            <p className="text-sm app-text-muted">
-              Use spacing, heading structure, and surface choice before adding more visual
-              flair.
-            </p>
-          </div>
-        </div>
-      </UiLabSection>
-
-      <UiLabSection
-        title="Readiness"
-        description="A quick summary of which surface patterns already feel stable and which still need refinement."
-      >
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Badge tone="success">Strong already</Badge>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Cards and summary blocks</p>
-              <p>Hero / branded surface pattern</p>
-              <p>Standard spacing rhythm</p>
-            </div>
-          </div>
-
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Badge tone="warning">Needs refinement</Badge>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Dense admin page layouts</p>
-              <p>Inspector-style panels</p>
-              <p>Surface choice in builder screens</p>
-            </div>
-          </div>
-
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Badge tone="muted">Future additions</Badge>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Modal/dialog surfaces</p>
-              <p>Table container patterns</p>
-              <p>Mobile-specific spacing comparisons</p>
-            </div>
-          </div>
+          <Card>
+            <CardBody>
+              <div className="mb-2 flex items-center gap-2">
+                <AppIcon icon={appIcons.idea} size={16} className="app-brand-text" />
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Prefer hierarchy over effects
+                </div>
+              </div>
+              <p className="text-sm app-text-muted">
+                Use spacing, heading structure, and surface choice before adding more
+                visual flair.
+              </p>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
     </UiLabShell>
