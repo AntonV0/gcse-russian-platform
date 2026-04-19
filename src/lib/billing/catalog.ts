@@ -84,7 +84,7 @@ export async function getActiveProductByCodeDb(
     .select("*")
     .eq("code", productCode)
     .eq("is_active", true)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error("Error fetching active product by code:", {
@@ -94,7 +94,7 @@ export async function getActiveProductByCodeDb(
     return null;
   }
 
-  return data as DbProduct;
+  return (data as DbProduct | null) ?? null;
 }
 
 export async function getProductByIdDb(productId: string): Promise<DbProduct | null> {
