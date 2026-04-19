@@ -69,6 +69,29 @@ function revalidateLessonSectionTemplatePaths() {
   revalidatePath("/admin/lesson-templates/section-templates");
 }
 
+function getVariantVisibility(formData: FormData) {
+  const value = getTrimmedString(formData, "variantVisibility");
+
+  if (
+    value === "shared" ||
+    value === "foundation_only" ||
+    value === "higher_only" ||
+    value === "volna_only"
+  ) {
+    return value;
+  }
+
+  return "shared";
+}
+
+function getCanonicalSectionKey(formData: FormData) {
+  const value = getTrimmedString(formData, "canonicalSectionKey")
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+  return value || null;
+}
+
 function revalidateLessonTemplateEntityPaths() {
   revalidatePath("/admin/lesson-templates");
   revalidatePath("/admin/lesson-templates/lesson-templates");
@@ -92,14 +115,6 @@ function getDeliveryVisibility(formData: FormData) {
   }
 
   return "all";
-}
-
-function getCanonicalSectionKey(formData: FormData) {
-  const value = getTrimmedString(formData, "canonicalSectionKey")
-    .toLowerCase()
-    .replace(/\s+/g, "-");
-
-  return value || null;
 }
 
 async function revalidateLessonPaths(formData: FormData) {
@@ -257,9 +272,8 @@ export async function createSectionAction(formData: FormData) {
   const title = getTrimmedString(formData, "title");
   const description = getTrimmedString(formData, "description");
   const sectionKind = getTrimmedString(formData, "sectionKind") || "content";
-  const trackVisibility = formData.get("trackVisibility") as string;
-  const deliveryVisibility = formData.get("deliveryVisibility") as string;
-  const canonicalSectionKey = formData.get("canonicalSectionKey") as string;
+  const variantVisibility = getVariantVisibility(formData);
+  const canonicalSectionKey = getCanonicalSectionKey(formData);
 
   if (!lessonId || !title) {
     throw new Error("Missing required fields");
@@ -275,9 +289,8 @@ export async function createSectionAction(formData: FormData) {
     section_kind: sectionKind,
     position: nextPosition,
     is_published: true,
-    track_visibility: trackVisibility,
-    delivery_visibility: deliveryVisibility,
-    canonical_section_key: canonicalSectionKey || null,
+    variant_visibility: variantVisibility,
+    canonical_section_key: canonicalSectionKey,
     settings: {},
   });
 
@@ -324,8 +337,7 @@ export async function duplicateSectionAction(formData: FormData) {
       section_kind: section.section_kind,
       position: nextSectionPosition,
       is_published: false,
-      track_visibility: section.track_visibility ?? "shared",
-      delivery_visibility: section.delivery_visibility ?? "all",
+      variant_visibility: section.variant_visibility ?? "shared",
       canonical_section_key: section.canonical_section_key,
       settings: section.settings ?? {},
     })
@@ -379,8 +391,7 @@ export async function updateSectionAction(formData: FormData) {
   const title = getTrimmedString(formData, "title");
   const description = getTrimmedString(formData, "description");
   const sectionKind = getTrimmedString(formData, "sectionKind") || "content";
-  const trackVisibility = getTrackVisibility(formData);
-  const deliveryVisibility = getDeliveryVisibility(formData);
+  const variantVisibility = getVariantVisibility(formData);
   const canonicalSectionKey = getCanonicalSectionKey(formData);
 
   if (!sectionId || !title) {
@@ -395,8 +406,7 @@ export async function updateSectionAction(formData: FormData) {
       title,
       description: description || null,
       section_kind: sectionKind,
-      track_visibility: trackVisibility,
-      delivery_visibility: deliveryVisibility,
+      variant_visibility: variantVisibility,
       canonical_section_key: canonicalSectionKey,
     })
     .eq("id", sectionId);

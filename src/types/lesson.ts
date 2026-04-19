@@ -117,9 +117,11 @@ export type LessonBlock =
   | MultipleChoiceLessonBlock
   | ShortAnswerLessonBlock;
 
-export type LessonSectionTrackVisibility = "shared" | "foundation_only" | "higher_only";
-
-export type LessonSectionDeliveryVisibility = "all" | "self_study_only" | "volna_only";
+export type LessonSectionVariantVisibility =
+  | "shared"
+  | "foundation_only"
+  | "higher_only"
+  | "volna_only";
 
 export type LessonSection = {
   id: string;
@@ -127,8 +129,7 @@ export type LessonSection = {
   description?: string;
   sectionKind: LessonSectionKind;
   position: number;
-  trackVisibility: LessonSectionTrackVisibility;
-  deliveryVisibility: LessonSectionDeliveryVisibility;
+  variantVisibility: LessonSectionVariantVisibility;
   canonicalSectionKey?: string | null;
   blocks: LessonBlock[];
 };

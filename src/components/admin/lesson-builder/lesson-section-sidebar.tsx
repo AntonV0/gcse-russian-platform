@@ -26,6 +26,19 @@ import {
   PendingSubmitButton,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 
+const VARIANT_VISIBILITY_OPTIONS = [
+  { value: "shared", label: "Shared" },
+  { value: "foundation_only", label: "Foundation only" },
+  { value: "higher_only", label: "Higher only" },
+  { value: "volna_only", label: "Volna only" },
+] as const;
+
+function formatVariantVisibility(value: LessonSection["variant_visibility"]) {
+  return (
+    VARIANT_VISIBILITY_OPTIONS.find((option) => option.value === value)?.label ?? value
+  );
+}
+
 export default function LessonSectionSidebar(props: {
   sections: LessonSection[];
   selectedSectionId: string | null;
@@ -58,7 +71,10 @@ export default function LessonSectionSidebar(props: {
     return (
       section.title.toLowerCase().includes(normalizedQuery) ||
       section.section_kind.toLowerCase().includes(normalizedQuery) ||
-      String(section.position).includes(normalizedQuery)
+      String(section.position).includes(normalizedQuery) ||
+      formatVariantVisibility(section.variant_visibility)
+        .toLowerCase()
+        .includes(normalizedQuery)
     );
   });
 
@@ -246,6 +262,16 @@ export default function LessonSectionSidebar(props: {
                         >
                           {section.is_published ? "Published" : "Draft"}
                         </span>
+
+                        <span
+                          className={`rounded-full border px-2.5 py-1 text-[11px] ${
+                            isSelected
+                              ? "border-white/20 bg-white/10 text-white"
+                              : "border-gray-200 bg-gray-50 text-gray-700"
+                          }`}
+                        >
+                          {formatVariantVisibility(section.variant_visibility)}
+                        </span>
                       </div>
 
                       <div className="font-medium">
@@ -265,6 +291,14 @@ export default function LessonSectionSidebar(props: {
                           {publishedBlockCount}/{section.blocks.length} block(s) published
                         </span>
                       </div>
+
+                      {section.canonical_section_key ? (
+                        <div
+                          className={`mt-2 text-[11px] ${isSelected ? "text-gray-200" : "text-gray-500"}`}
+                        >
+                          Shared key: {section.canonical_section_key}
+                        </div>
+                      ) : null}
 
                       {isBlockDropTarget ? (
                         <div
@@ -447,32 +481,6 @@ export default function LessonSectionSidebar(props: {
             />
           </div>
 
-          <select
-            name="trackVisibility"
-            defaultValue="shared"
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          >
-            <option value="shared">Shared</option>
-            <option value="foundation_only">Foundation only</option>
-            <option value="higher_only">Higher only</option>
-          </select>
-
-          <select
-            name="deliveryVisibility"
-            defaultValue="all"
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          >
-            <option value="all">All delivery modes</option>
-            <option value="self_study_only">Self-study only</option>
-            <option value="volna_only">Volna only</option>
-          </select>
-
-          <input
-            name="canonicalSectionKey"
-            placeholder="Shared progress key (optional)"
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-900">
               Section kind
@@ -488,6 +496,34 @@ export default function LessonSectionSidebar(props: {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-900">
+              Variant visibility
+            </label>
+            <select
+              name="variantVisibility"
+              defaultValue="shared"
+              className="w-full rounded-xl border px-3 py-2 text-sm"
+            >
+              {VARIANT_VISIBILITY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-900">
+              Canonical section key
+            </label>
+            <input
+              name="canonicalSectionKey"
+              placeholder="Optional shared progress key"
+              className="w-full rounded-xl border px-3 py-2 text-sm"
+            />
           </div>
 
           <div className="space-y-2">
