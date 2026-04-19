@@ -35,7 +35,7 @@ function PlanCard({
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">{title}</h2>
 
           {isHighlight ? (
-            <Badge tone="info" icon={appIcons.star}>
+            <Badge tone="info" icon="star">
               Best for exam prep
             </Badge>
           ) : null}
@@ -68,7 +68,7 @@ export default function PricingPage() {
       <section className="app-surface-brand app-section-padding-lg">
         <div className="mx-auto max-w-6xl space-y-8">
           <div className="space-y-4 text-center">
-            <Badge tone="info" icon={appIcons.info}>
+            <Badge tone="info" icon="info">
               Pricing
             </Badge>
 
@@ -167,7 +167,7 @@ export default function PricingPage() {
                 href="/"
                 className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
               >
-                <AppIcon icon={appIcons.next} size={14} />
+                <AppIcon icon="next" size={14} />
                 Back to homepage
               </Link>
             </div>

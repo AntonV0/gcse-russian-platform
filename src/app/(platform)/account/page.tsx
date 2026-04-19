@@ -70,11 +70,11 @@ export default async function AccountPage() {
           description="Log in to view your account overview and settings."
           action={
             <div className="flex flex-wrap gap-3">
-              <Button href="/login" variant="primary" icon={appIcons.user}>
+              <Button href="/login" variant="primary" icon="user">
                 Log in
               </Button>
 
-              <Button href="/signup" variant="secondary" icon={appIcons.create}>
+              <Button href="/signup" variant="secondary" icon="create">
                 Sign up
               </Button>
             </div>
@@ -95,15 +95,15 @@ export default async function AccountPage() {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_320px] xl:items-start">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon={appIcons.user}>
+              <Badge tone="info" icon="user">
                 Account overview
               </Badge>
 
-              <Badge tone="muted" icon={appIcons.layers}>
+              <Badge tone="muted" icon="layers">
                 {getTrackLabel(dashboard.track)}
               </Badge>
 
-              <Badge tone="muted" icon={appIcons.userCheck}>
+              <Badge tone="muted" icon="userCheck">
                 {formatAccessLabel(dashboard.accessMode)}
               </Badge>
             </div>
@@ -116,15 +116,15 @@ export default async function AccountPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button href="/profile" variant="primary" icon={appIcons.user}>
+              <Button href="/profile" variant="primary" icon="user">
                 Open profile
               </Button>
 
-              <Button href="/settings" variant="secondary" icon={appIcons.settings}>
+              <Button href="/settings" variant="secondary" icon="settings">
                 Open settings
               </Button>
 
-              <Button href="/dashboard" variant="secondary" icon={appIcons.dashboard}>
+              <Button href="/dashboard" variant="secondary" icon="dashboard">
                 Back to dashboard
               </Button>
             </div>

@@ -50,13 +50,13 @@ export default async function VariantPage({ params }: VariantPageProps) {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
           <div className="space-y-5">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon={appIcons.school}>
+              <Badge tone="info" icon="school">
                 {course.title}
               </Badge>
-              <Badge tone={getVariantTone(variant.slug)} icon={appIcons.layers}>
+              <Badge tone={getVariantTone(variant.slug)} icon="layers">
                 {getVariantLabel(variant.slug)}
               </Badge>
-              <Badge tone="muted" icon={appIcons.modules}>
+              <Badge tone="muted" icon="modules">
                 {modules.length} module{modules.length === 1 ? "" : "s"}
               </Badge>
             </div>
@@ -74,17 +74,13 @@ export default async function VariantPage({ params }: VariantPageProps) {
                 <Button
                   href={getModulePath(course.slug, variant.slug, primaryModule.slug)}
                   variant="primary"
-                  icon={appIcons.next}
+                  icon="next"
                 >
                   Continue to {primaryModule.title}
                 </Button>
               ) : null}
 
-              <Button
-                href={getCoursePath(course.slug)}
-                variant="secondary"
-                icon={appIcons.back}
-              >
+              <Button href={getCoursePath(course.slug)} variant="secondary" icon="back">
                 Back to {course.title}
               </Button>
             </div>
@@ -126,11 +122,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
           title="No modules available yet"
           description="This learning path does not have any visible modules right now."
           action={
-            <Button
-              href={getCoursePath(course.slug)}
-              variant="secondary"
-              icon={appIcons.back}
-            >
+            <Button href={getCoursePath(course.slug)} variant="secondary" icon="back">
               Back to {course.title}
             </Button>
           }
@@ -146,7 +138,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
               <DashboardCard className="h-full transition hover:-translate-y-0.5">
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge tone="muted" icon={appIcons.modules}>
+                    <Badge tone="muted" icon="modules">
                       Module {index + 1}
                     </Badge>
 

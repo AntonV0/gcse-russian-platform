@@ -56,16 +56,16 @@ export default async function OnlineClassesPage() {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_320px] xl:items-start">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon={appIcons.school}>
+              <Badge tone="info" icon="school">
                 Live online tuition
               </Badge>
 
-              <Badge tone="muted" icon={appIcons.courses}>
+              <Badge tone="muted" icon="courses">
                 GCSE Russian
               </Badge>
 
               {user ? (
-                <Badge tone="muted" icon={appIcons.userCheck}>
+                <Badge tone="muted" icon="userCheck">
                   {isVolnaStudent ? "Volna student" : "Student account"}
                 </Badge>
               ) : null}
@@ -80,19 +80,15 @@ export default async function OnlineClassesPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button
-                href="https://volnaschool.com"
-                variant="primary"
-                icon={appIcons.school}
-              >
+              <Button href="https://volnaschool.com" variant="primary" icon="school">
                 Visit Volna School
               </Button>
 
-              <Button href="/dashboard" variant="secondary" icon={appIcons.dashboard}>
+              <Button href="/dashboard" variant="secondary" icon="dashboard">
                 Back to dashboard
               </Button>
 
-              <Button href="/courses" variant="secondary" icon={appIcons.courses}>
+              <Button href="/courses" variant="secondary" icon="courses">
                 Browse courses
               </Button>
             </div>

@@ -58,10 +58,10 @@ export default async function VocabularyPage() {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_320px] xl:items-start">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon={appIcons.language}>
+              <Badge tone="info" icon="language">
                 Vocabulary hub
               </Badge>
-              <Badge tone="muted" icon={appIcons.school}>
+              <Badge tone="muted" icon="school">
                 GCSE Russian
               </Badge>
             </div>
@@ -75,11 +75,11 @@ export default async function VocabularyPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button href="/courses" variant="primary" icon={appIcons.courses}>
+              <Button href="/courses" variant="primary" icon="courses">
                 Back to courses
               </Button>
 
-              <Button href="/dashboard" variant="secondary" icon={appIcons.dashboard}>
+              <Button href="/dashboard" variant="secondary" icon="dashboard">
                 Dashboard
               </Button>
             </div>

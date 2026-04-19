@@ -49,13 +49,13 @@ export default async function CoursePage({ params }: CoursePageProps) {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
           <div className="space-y-5">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon={appIcons.school}>
+              <Badge tone="info" icon="school">
                 GCSE Russian
               </Badge>
-              <Badge tone="muted" icon={appIcons.layers}>
+              <Badge tone="muted" icon="layers">
                 Foundation + Higher
               </Badge>
-              <Badge tone="muted" icon={appIcons.language}>
+              <Badge tone="muted" icon="language">
                 Structured course journey
               </Badge>
             </div>
@@ -73,13 +73,13 @@ export default async function CoursePage({ params }: CoursePageProps) {
                 <Button
                   href={getVariantPath(course.slug, primaryVariant.slug)}
                   variant="primary"
-                  icon={appIcons.next}
+                  icon="next"
                 >
                   Continue to {primaryVariant.title}
                 </Button>
               ) : null}
 
-              <Button href={getCoursesPath()} variant="secondary" icon={appIcons.back}>
+              <Button href={getCoursesPath()} variant="secondary" icon="back">
                 Back to courses
               </Button>
             </div>
@@ -121,7 +121,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
           title="No learning paths available yet"
           description="This course has no visible variants at the moment."
           action={
-            <Button href={getCoursesPath()} variant="secondary" icon={appIcons.back}>
+            <Button href={getCoursesPath()} variant="secondary" icon="back">
               Back to courses
             </Button>
           }
@@ -137,7 +137,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
               <DashboardCard className="h-full transition hover:-translate-y-0.5">
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge tone={getVariantTone(variant.slug)} icon={appIcons.layers}>
+                    <Badge tone={getVariantTone(variant.slug)} icon="layers">
                       {getVariantLabel(variant.slug)}
                     </Badge>
 

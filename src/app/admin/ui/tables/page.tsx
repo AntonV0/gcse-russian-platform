@@ -45,7 +45,7 @@ const demoRows: DemoRow[] = [
 function StatusBadge({ status }: { status: DemoRow["status"] }) {
   if (status === "published") {
     return (
-      <Badge tone="info" icon={appIcons.preview}>
+      <Badge tone="info" icon="preview">
         Published
       </Badge>
     );
@@ -53,14 +53,14 @@ function StatusBadge({ status }: { status: DemoRow["status"] }) {
 
   if (status === "in_progress") {
     return (
-      <Badge tone="warning" icon={appIcons.pending}>
+      <Badge tone="warning" icon="pending">
         In progress
       </Badge>
     );
   }
 
   return (
-    <Badge tone="muted" icon={appIcons.file}>
+    <Badge tone="muted" icon="file">
       Draft
     </Badge>
   );
@@ -105,10 +105,10 @@ function DemoToolbar() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button variant="secondary" icon={appIcons.filter}>
+        <Button variant="secondary" icon="filter">
           Filters
         </Button>
-        <Button variant="primary" icon={appIcons.create}>
+        <Button variant="primary" icon="create">
           Add new
         </Button>
       </div>
@@ -162,10 +162,10 @@ function StandardTable() {
                 <td className="px-5 py-4 app-text-muted">{row.updated}</td>
                 <td className="px-5 py-4">
                   <div className="flex flex-wrap gap-2">
-                    <Button variant="secondary" size="sm" icon={appIcons.edit}>
+                    <Button variant="secondary" size="sm" icon="edit">
                       Edit
                     </Button>
-                    <Button variant="quiet" size="sm" icon={appIcons.next}>
+                    <Button variant="quiet" size="sm" icon="next">
                       Open
                     </Button>
                   </div>
@@ -230,9 +230,9 @@ function TableEmptyState() {
         <EmptyState
           title="No rows yet"
           description="Create your first item to populate this table and begin managing data here."
-          icon={appIcons.list}
+          icon="list"
           action={
-            <Button variant="primary" icon={appIcons.create}>
+            <Button variant="primary" icon="create">
               Add first item
             </Button>
           }
@@ -258,7 +258,7 @@ function TableRules() {
         <Card key={rule}>
           <CardBody className="p-4">
             <div className="flex items-start gap-3">
-              <AppIcon icon={appIcons.list} size={16} className="mt-0.5 app-brand-text" />
+              <AppIcon icon="list" size={16} className="mt-0.5 app-brand-text" />
               <div className="text-sm app-text-muted">{rule}</div>
             </div>
           </CardBody>

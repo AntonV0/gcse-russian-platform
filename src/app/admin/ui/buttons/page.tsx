@@ -2,7 +2,6 @@ import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import Button from "@/components/ui/button";
-import { appIcons } from "@/lib/shared/icons";
 
 export default async function AdminUiButtonsPage() {
   const canAccess = await requireAdminAccess();
@@ -23,7 +22,7 @@ export default async function AdminUiButtonsPage() {
       >
         <div className="flex flex-wrap gap-3">
           <Button variant="primary">Primary</Button>
-          <Button variant="primary" icon={appIcons.dashboard}>
+          <Button variant="primary" icon="dashboard">
             With icon
           </Button>
           <Button variant="primary" disabled>
@@ -38,11 +37,11 @@ export default async function AdminUiButtonsPage() {
       >
         <div className="flex flex-wrap gap-3">
           <Button variant="secondary">Secondary</Button>
-          <Button variant="secondary" icon={appIcons.back}>
+          <Button variant="secondary" icon="back">
             Back
           </Button>
           <Button variant="quiet">Quiet</Button>
-          <Button variant="quiet" icon={appIcons.edit}>
+          <Button variant="quiet" icon="edit">
             Quiet with icon
           </Button>
         </div>
@@ -53,13 +52,13 @@ export default async function AdminUiButtonsPage() {
         description="Reserve these for clearly meaningful states or destructive operations."
       >
         <div className="flex flex-wrap gap-3">
-          <Button variant="success" icon={appIcons.completed}>
+          <Button variant="success" icon="completed">
             Success
           </Button>
-          <Button variant="warning" icon={appIcons.pending}>
+          <Button variant="warning" icon="pending">
             In progress
           </Button>
-          <Button variant="danger" icon={appIcons.userX}>
+          <Button variant="danger" icon="userX">
             Destructive
           </Button>
         </div>
@@ -79,16 +78,11 @@ export default async function AdminUiButtonsPage() {
           <Button
             variant="secondary"
             size="sm"
-            icon={appIcons.search}
+            icon="search"
             iconOnly
             ariaLabel="Search"
           />
-          <Button
-            variant="secondary"
-            icon={appIcons.settings}
-            iconOnly
-            ariaLabel="Settings"
-          />
+          <Button variant="secondary" icon="settings" iconOnly ariaLabel="Settings" />
         </div>
       </UiLabSection>
     </UiLabShell>

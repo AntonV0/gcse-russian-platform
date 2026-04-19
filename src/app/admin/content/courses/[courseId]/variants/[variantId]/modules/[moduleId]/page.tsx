@@ -53,22 +53,18 @@ export default async function AdminModuleDetailPage({
   return (
     <main className="space-y-6">
       <div className="flex flex-wrap gap-2">
-        <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
+        <Button href="/admin/content" variant="quiet" icon="back">
           Back to content
         </Button>
 
-        <Button
-          href={`/admin/content/courses/${course.id}`}
-          variant="quiet"
-          icon={appIcons.back}
-        >
+        <Button href={`/admin/content/courses/${course.id}`} variant="quiet" icon="back">
           Back to {course.title}
         </Button>
 
         <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
           variant="quiet"
-          icon={appIcons.back}
+          icon="back"
         >
           Back to {variant.title}
         </Button>
@@ -99,10 +95,7 @@ export default async function AdminModuleDetailPage({
             </div>
 
             <div className="flex flex-wrap gap-2 pt-1">
-              <Badge
-                tone={module.is_published ? "info" : "muted"}
-                icon={appIcons.preview}
-              >
+              <Badge tone={module.is_published ? "info" : "muted"} icon="preview">
                 {module.is_published ? "Published" : "Draft"}
               </Badge>
             </div>
@@ -120,7 +113,7 @@ export default async function AdminModuleDetailPage({
             <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
               variant="secondary"
-              icon={appIcons.edit}
+              icon="edit"
             >
               Edit module
             </Button>
@@ -128,7 +121,7 @@ export default async function AdminModuleDetailPage({
             <Button
               href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}`}
               variant="secondary"
-              icon={appIcons.preview}
+              icon="preview"
             >
               Open public module
             </Button>
@@ -189,7 +182,7 @@ export default async function AdminModuleDetailPage({
               <CheckboxField name="availableInVolna" label="Available in Volna" />
             </div>
 
-            <Button type="submit" variant="primary" icon={appIcons.create}>
+            <Button type="submit" variant="primary" icon="create">
               Create lesson
             </Button>
           </form>
@@ -211,7 +204,7 @@ export default async function AdminModuleDetailPage({
             <input type="hidden" name="courseId" value={course.id} />
             <input type="hidden" name="variantId" value={variant.id} />
             <input type="hidden" name="moduleId" value={module.id} />
-            <Button type="submit" variant="danger" icon={appIcons.delete}>
+            <Button type="submit" variant="danger" icon="delete">
               Unpublish module
             </Button>
           </form>
@@ -240,28 +233,25 @@ export default async function AdminModuleDetailPage({
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                    <Badge
-                      tone={lesson.is_published ? "info" : "muted"}
-                      icon={appIcons.preview}
-                    >
+                    <Badge tone={lesson.is_published ? "info" : "muted"} icon="preview">
                       {lesson.is_published ? "Published" : "Draft"}
                     </Badge>
 
                     <Badge
                       tone={lesson.is_trial_visible ? "success" : "muted"}
-                      icon={appIcons.help}
+                      icon="help"
                     >
                       {lesson.is_trial_visible ? "Trial" : "No Trial"}
                     </Badge>
 
                     <Badge
                       tone={lesson.available_in_volna ? "success" : "muted"}
-                      icon={appIcons.users}
+                      icon="users"
                     >
                       {lesson.available_in_volna ? "Volna" : "No Volna"}
                     </Badge>
 
-                    <Badge tone="muted" icon={appIcons.file}>
+                    <Badge tone="muted" icon="file">
                       {lesson.content_source}
                     </Badge>
                   </div>
@@ -280,7 +270,7 @@ export default async function AdminModuleDetailPage({
                         size="sm"
                         variant="secondary"
                         disabled={index === 0}
-                        icon={appIcons.up}
+                        icon="up"
                         iconOnly
                         ariaLabel="Move lesson up"
                       />
@@ -297,7 +287,7 @@ export default async function AdminModuleDetailPage({
                         size="sm"
                         variant="secondary"
                         disabled={index === lessons.length - 1}
-                        icon={appIcons.down}
+                        icon="down"
                         iconOnly
                         ariaLabel="Move lesson down"
                       />
@@ -309,7 +299,7 @@ export default async function AdminModuleDetailPage({
                       href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
                       size="sm"
                       variant="secondary"
-                      icon={appIcons.edit}
+                      icon="edit"
                     >
                       Edit
                     </Button>
@@ -318,7 +308,7 @@ export default async function AdminModuleDetailPage({
                       href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
                       size="sm"
                       variant="secondary"
-                      icon={appIcons.preview}
+                      icon="preview"
                     >
                       Open
                     </Button>

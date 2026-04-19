@@ -10,7 +10,7 @@ export default function SiteFooter() {
           <div className="space-y-2">
             <div className="app-brand-lockup">
               <span className="app-brand-mark">
-                <AppIcon icon={appIcons.school} size={17} className="app-brand-text" />
+                <AppIcon icon="school" size={17} className="app-brand-text" />
               </span>
 
               <span className="font-semibold text-[var(--text-primary)]">

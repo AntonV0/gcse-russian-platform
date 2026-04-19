@@ -56,13 +56,13 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
             <div className="space-y-5">
               <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon={appIcons.school}>
+                <Badge tone="info" icon="school">
                   {course.title}
                 </Badge>
-                <Badge tone="muted" icon={appIcons.layers}>
+                <Badge tone="muted" icon="layers">
                   {getVariantLabel(variantSlug)}
                 </Badge>
-                <Badge tone="warning" icon={appIcons.locked}>
+                <Badge tone="warning" icon="locked">
                   Locked lesson
                 </Badge>
               </div>
@@ -79,12 +79,12 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
                 <Button
                   href={getVariantPath(courseSlug, variantSlug)}
                   variant="primary"
-                  icon={appIcons.back}
+                  icon="back"
                 >
                   Back to module path
                 </Button>
 
-                <Button href="/courses" variant="secondary" icon={appIcons.courses}>
+                <Button href="/courses" variant="secondary" icon="courses">
                   Browse courses
                 </Button>
               </div>

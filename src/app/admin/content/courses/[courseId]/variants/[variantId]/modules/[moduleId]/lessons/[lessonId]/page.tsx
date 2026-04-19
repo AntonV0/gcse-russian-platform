@@ -108,7 +108,7 @@ export default async function AdminLessonDetailPage({
             <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
               variant="secondary"
-              icon={appIcons.edit}
+              icon="edit"
             >
               Edit lesson metadata
             </Button>
@@ -116,7 +116,7 @@ export default async function AdminLessonDetailPage({
             <Button
               href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
               variant="secondary"
-              icon={appIcons.preview}
+              icon="preview"
             >
               Open public lesson
             </Button>

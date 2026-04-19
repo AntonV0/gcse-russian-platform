@@ -23,7 +23,7 @@ export default async function AdminContentPage() {
           description="Manage courses, variants, modules, and lessons."
         />
 
-        <Button href="/admin/ui" variant="secondary" icon={appIcons.uiLab}>
+        <Button href="/admin/ui" variant="secondary" icon="uiLab">
           Open UI Lab
         </Button>
       </div>
@@ -48,35 +48,31 @@ export default async function AdminContentPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <AppIcon
-                          icon={appIcons.courses}
-                          size={18}
-                          className="text-gray-700"
-                        />
+                        <AppIcon icon="courses" size={18} className="text-gray-700" />
                         <div className="font-medium text-gray-900">{course.title}</div>
                       </div>
 
                       <div className="mt-2 flex flex-wrap gap-2">
-                        <Badge tone="muted" icon={appIcons.file}>
+                        <Badge tone="muted" icon="file">
                           {course.slug}
                         </Badge>
 
                         {course.is_active ? (
-                          <Badge tone="success" icon={appIcons.completed}>
+                          <Badge tone="success" icon="completed">
                             Active
                           </Badge>
                         ) : (
-                          <Badge tone="warning" icon={appIcons.pending}>
+                          <Badge tone="warning" icon="pending">
                             Inactive
                           </Badge>
                         )}
 
                         {course.is_published ? (
-                          <Badge tone="info" icon={appIcons.preview}>
+                          <Badge tone="info" icon="preview">
                             Published
                           </Badge>
                         ) : (
-                          <Badge tone="muted" icon={appIcons.help}>
+                          <Badge tone="muted" icon="help">
                             Unpublished
                           </Badge>
                         )}
@@ -89,7 +85,7 @@ export default async function AdminContentPage() {
 
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <span>Open</span>
-                      <AppIcon icon={appIcons.next} size={16} />
+                      <AppIcon icon="next" size={16} />
                     </div>
                   </div>
                 </Link>
@@ -120,7 +116,7 @@ export default async function AdminContentPage() {
               <CheckboxField name="isPublished" label="Published" />
             </div>
 
-            <Button type="submit" variant="primary" icon={appIcons.create}>
+            <Button type="submit" variant="primary" icon="create">
               Create course
             </Button>
           </form>

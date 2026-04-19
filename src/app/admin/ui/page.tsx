@@ -101,7 +101,7 @@ export default async function AdminUiOverviewPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <div className="app-card p-4">
             <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon={appIcons.completed} size={18} className="app-brand-text" />
+              <AppIcon icon="completed" size={18} className="app-brand-text" />
               <div className="font-semibold">Complete</div>
             </div>
             <div className="text-2xl font-bold">{completeCount}</div>
@@ -112,7 +112,7 @@ export default async function AdminUiOverviewPage() {
 
           <div className="app-card p-4">
             <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon={appIcons.pending} size={18} className="app-brand-text" />
+              <AppIcon icon="pending" size={18} className="app-brand-text" />
               <div className="font-semibold">In progress</div>
             </div>
             <div className="text-2xl font-bold">{inProgressCount}</div>
@@ -123,7 +123,7 @@ export default async function AdminUiOverviewPage() {
 
           <div className="app-card p-4">
             <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon={appIcons.help} size={18} className="app-brand-text" />
+              <AppIcon icon="help" size={18} className="app-brand-text" />
               <div className="font-semibold">Planned</div>
             </div>
             <div className="text-2xl font-bold">{plannedCount}</div>
@@ -158,7 +158,7 @@ export default async function AdminUiOverviewPage() {
 
               <div className="flex items-center gap-2 text-sm app-brand-text">
                 <span>Open section</span>
-                <AppIcon icon={appIcons.next} size={14} />
+                <AppIcon icon="next" size={14} />
               </div>
             </Link>
           ))}
@@ -191,11 +191,7 @@ export default async function AdminUiOverviewPage() {
           {refinementAreas.map((item) => (
             <div key={item} className="app-card p-4">
               <div className="flex items-start gap-3">
-                <AppIcon
-                  icon={appIcons.warning}
-                  size={16}
-                  className="mt-0.5 app-brand-text"
-                />
+                <AppIcon icon="warning" size={16} className="mt-0.5 app-brand-text" />
                 <div className="text-sm app-text-muted">{item}</div>
               </div>
             </div>
@@ -211,11 +207,7 @@ export default async function AdminUiOverviewPage() {
           {designPrinciples.map((item) => (
             <div key={item} className="app-card p-4">
               <div className="flex items-start gap-3">
-                <AppIcon
-                  icon={appIcons.idea}
-                  size={16}
-                  className="mt-0.5 app-brand-text"
-                />
+                <AppIcon icon="idea" size={16} className="mt-0.5 app-brand-text" />
                 <div className="text-sm app-text-muted">{item}</div>
               </div>
             </div>

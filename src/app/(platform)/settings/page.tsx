@@ -30,7 +30,7 @@ export default async function SettingsPage({
           title="You are not signed in"
           description="Log in to access your account settings."
           action={
-            <Button href="/login" variant="primary" icon={appIcons.user}>
+            <Button href="/login" variant="primary" icon="user">
               Log in
             </Button>
           }
@@ -62,10 +62,10 @@ export default async function SettingsPage({
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_320px] xl:items-start">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon={appIcons.settings}>
+              <Badge tone="info" icon="settings">
                 Account settings
               </Badge>
-              <Badge tone="muted" icon={appIcons.user}>
+              <Badge tone="muted" icon="user">
                 Student area
               </Badge>
             </div>
@@ -79,11 +79,11 @@ export default async function SettingsPage({
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button href="/profile" variant="secondary" icon={appIcons.user}>
+              <Button href="/profile" variant="secondary" icon="user">
                 View profile
               </Button>
 
-              <Button href="/dashboard" variant="secondary" icon={appIcons.dashboard}>
+              <Button href="/dashboard" variant="secondary" icon="dashboard">
                 Back to dashboard
               </Button>
             </div>
@@ -168,7 +168,7 @@ export default async function SettingsPage({
               Use at least 8 characters for a stronger password.
             </p>
 
-            <Button type="submit" variant="primary" icon={appIcons.save}>
+            <Button type="submit" variant="primary" icon="save">
               Update password
             </Button>
           </form>

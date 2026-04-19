@@ -72,7 +72,7 @@ export default async function AdminLessonBlockPresetsPage() {
           description="Reusable starter block groups for lesson authoring."
         />
 
-        <Button href="/admin/lesson-templates" variant="secondary" icon={appIcons.back}>
+        <Button href="/admin/lesson-templates" variant="secondary" icon="back">
           Back
         </Button>
       </div>
@@ -96,21 +96,21 @@ export default async function AdminLessonBlockPresetsPage() {
                   <div className="font-medium text-gray-900">{preset.title}</div>
 
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge tone="muted" icon={appIcons.file}>
+                    <Badge tone="muted" icon="file">
                       {preset.slug}
                     </Badge>
 
                     {preset.is_active ? (
-                      <Badge tone="success" icon={appIcons.completed}>
+                      <Badge tone="success" icon="completed">
                         Active
                       </Badge>
                     ) : (
-                      <Badge tone="warning" icon={appIcons.pending}>
+                      <Badge tone="warning" icon="pending">
                         Inactive
                       </Badge>
                     )}
 
-                    <Badge tone="muted" icon={appIcons.help}>
+                    <Badge tone="muted" icon="help">
                       {blockCountByPresetId.get(preset.id) ?? 0} block(s)
                     </Badge>
                   </div>

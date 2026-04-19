@@ -73,13 +73,13 @@ export default async function ModulePage({ params }: ModulePageProps) {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)] xl:items-start">
           <div className="space-y-5">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon={appIcons.school}>
+              <Badge tone="info" icon="school">
                 {course.title}
               </Badge>
-              <Badge tone="muted" icon={appIcons.modules}>
+              <Badge tone="muted" icon="modules">
                 {totalLessons} lesson{totalLessons === 1 ? "" : "s"}
               </Badge>
-              <Badge tone="success" icon={appIcons.completed}>
+              <Badge tone="success" icon="completed">
                 {completedCount} completed
               </Badge>
             </div>
@@ -102,7 +102,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     firstAccessibleIncompleteLesson.slug
                   )}
                   variant="primary"
-                  icon={appIcons.next}
+                  icon="next"
                 >
                   Continue lesson
                 </Button>
@@ -111,7 +111,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
               <Button
                 href={getVariantPath(course.slug, variantSlug)}
                 variant="secondary"
-                icon={appIcons.back}
+                icon="back"
               >
                 Back to path
               </Button>
@@ -168,7 +168,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
             <Button
               href={getVariantPath(course.slug, variantSlug)}
               variant="secondary"
-              icon={appIcons.back}
+              icon="back"
             >
               Back to path
             </Button>
@@ -187,24 +187,24 @@ export default async function ModulePage({ params }: ModulePageProps) {
               <DashboardCard className="h-full transition hover:-translate-y-0.5">
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge tone="muted" icon={appIcons.lesson}>
+                    <Badge tone="muted" icon="lesson">
                       Lesson {index + 1}
                     </Badge>
 
                     {isCompleted ? (
-                      <Badge tone="success" icon={appIcons.completed}>
+                      <Badge tone="success" icon="completed">
                         Completed
                       </Badge>
                     ) : isNextLesson ? (
-                      <Badge tone="info" icon={appIcons.next}>
+                      <Badge tone="info" icon="next">
                         Continue here
                       </Badge>
                     ) : canAccessLesson ? (
-                      <Badge tone="muted" icon={appIcons.pending}>
+                      <Badge tone="muted" icon="pending">
                         Available
                       </Badge>
                     ) : (
-                      <Badge tone="warning" icon={appIcons.locked}>
+                      <Badge tone="warning" icon="locked">
                         Locked
                       </Badge>
                     )}

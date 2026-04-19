@@ -23,7 +23,7 @@ export default async function AdminQuestionSetTemplatesPage() {
       />
 
       <div className="mb-6">
-        <Button href="/admin/question-sets" variant="secondary" icon={appIcons.back}>
+        <Button href="/admin/question-sets" variant="secondary" icon="back">
           Back to question sets
         </Button>
       </div>
@@ -38,12 +38,12 @@ export default async function AdminQuestionSetTemplatesPage() {
             <DashboardCard key={template.id} title={template.title}>
               <div className="space-y-3 text-sm text-gray-700">
                 <div className="flex flex-wrap gap-2">
-                  <Badge tone="muted" icon={appIcons.file}>
+                  <Badge tone="muted" icon="file">
                     {template.slug}
                   </Badge>
 
                   {template.template_type ? (
-                    <Badge tone="info" icon={appIcons.settings}>
+                    <Badge tone="info" icon="settings">
                       {template.template_type}
                     </Badge>
                   ) : null}
@@ -56,7 +56,7 @@ export default async function AdminQuestionSetTemplatesPage() {
                     href={`/admin/question-sets/${template.id}`}
                     variant="secondary"
                     size="sm"
-                    icon={appIcons.preview}
+                    icon="preview"
                   >
                     Open template
                   </Button>
@@ -65,7 +65,7 @@ export default async function AdminQuestionSetTemplatesPage() {
                     href={`/admin/question-sets/templates/${template.id}/create`}
                     variant="secondary"
                     size="sm"
-                    icon={appIcons.write}
+                    icon="write"
                   >
                     Create from template
                   </Button>

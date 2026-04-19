@@ -6,7 +6,7 @@ type InlineActionsProps = {
 export default function InlineActions({ children, className }: InlineActionsProps) {
   return (
     <div
-      className={["flex flex-wrap items-center gap-2", className]
+      className={["flex flex-wrap items-center gap-2 sm:gap-3", className]
         .filter(Boolean)
         .join(" ")}
     >

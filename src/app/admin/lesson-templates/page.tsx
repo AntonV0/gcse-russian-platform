@@ -27,7 +27,7 @@ export default async function AdminLessonTemplatesPage() {
           description="Manage reusable block presets, section templates, and full lesson templates."
         />
 
-        <Button href="/admin/content" variant="secondary" icon={appIcons.courses}>
+        <Button href="/admin/content" variant="secondary" icon="courses">
           Back to content
         </Button>
       </div>
@@ -44,7 +44,7 @@ export default async function AdminLessonTemplatesPage() {
           className="rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50"
         >
           <div className="flex items-center gap-2">
-            <AppIcon icon={appIcons.file} size={18} className="text-gray-700" />
+            <AppIcon icon="file" size={18} className="text-gray-700" />
             <div className="font-semibold text-gray-900">Block Presets</div>
           </div>
           <p className="mt-2 text-sm text-gray-600">
@@ -52,7 +52,7 @@ export default async function AdminLessonTemplatesPage() {
             practice.
           </p>
           <div className="mt-3">
-            <Badge tone="muted" icon={appIcons.help}>
+            <Badge tone="muted" icon="help">
               {overview.counts.presetBlocks} preset block rows
             </Badge>
           </div>
@@ -63,14 +63,14 @@ export default async function AdminLessonTemplatesPage() {
           className="rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50"
         >
           <div className="flex items-center gap-2">
-            <AppIcon icon={appIcons.file} size={18} className="text-gray-700" />
+            <AppIcon icon="file" size={18} className="text-gray-700" />
             <div className="font-semibold text-gray-900">Section Templates</div>
           </div>
           <p className="mt-2 text-sm text-gray-600">
             Reusable section blueprints that compose one or more block presets.
           </p>
           <div className="mt-3">
-            <Badge tone="muted" icon={appIcons.help}>
+            <Badge tone="muted" icon="help">
               {overview.counts.sectionTemplatePresetLinks} preset links
             </Badge>
           </div>
@@ -81,14 +81,14 @@ export default async function AdminLessonTemplatesPage() {
           className="rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50"
         >
           <div className="flex items-center gap-2">
-            <AppIcon icon={appIcons.file} size={18} className="text-gray-700" />
+            <AppIcon icon="file" size={18} className="text-gray-700" />
             <div className="font-semibold text-gray-900">Lesson Templates</div>
           </div>
           <p className="mt-2 text-sm text-gray-600">
             Full lesson scaffolds built from ordered section templates.
           </p>
           <div className="mt-3">
-            <Badge tone="muted" icon={appIcons.help}>
+            <Badge tone="muted" icon="help">
               {overview.counts.lessonTemplateSections} template section rows
             </Badge>
           </div>

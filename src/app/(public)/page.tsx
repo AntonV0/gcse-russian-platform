@@ -76,7 +76,7 @@ export default function Home() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.92fr)] lg:items-start">
           <div className="space-y-6">
             <div className="space-y-3">
-              <Badge tone="info" icon={appIcons.info}>
+              <Badge tone="info" icon="info">
                 Private development build
               </Badge>
 
@@ -92,23 +92,23 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button href="/pricing" variant="primary" icon={appIcons.courses}>
+              <Button href="/pricing" variant="primary" icon="courses">
                 View pricing
               </Button>
 
-              <Button href="/courses" variant="secondary" icon={appIcons.lessons}>
+              <Button href="/courses" variant="secondary" icon="lessons">
                 Browse courses
               </Button>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Badge tone="muted" icon={appIcons.school}>
+              <Badge tone="muted" icon="school">
                 Edexcel GCSE 1RU0
               </Badge>
-              <Badge tone="muted" icon={appIcons.layers}>
+              <Badge tone="muted" icon="layers">
                 Foundation + Higher
               </Badge>
-              <Badge tone="muted" icon={appIcons.language}>
+              <Badge tone="muted" icon="language">
                 Themes · Grammar · Mocks
               </Badge>
             </div>
@@ -124,7 +124,7 @@ export default function Home() {
               </div>
 
               <AppIcon
-                icon={appIcons.uiLab}
+                icon="uiLab"
                 size={18}
                 className="mt-0.5 shrink-0 app-brand-text"
               />
@@ -173,7 +173,7 @@ export default function Home() {
               </div>
 
               <AppIcon
-                icon={appIcons.next}
+                icon="next"
                 size={16}
                 className="app-text-soft app-card-link-arrow"
               />

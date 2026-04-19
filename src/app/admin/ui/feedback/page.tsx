@@ -6,6 +6,7 @@ import Badge from "@/components/ui/badge";
 import EmptyState from "@/components/ui/empty-state";
 import Button from "@/components/ui/button";
 import AppIcon from "@/components/ui/app-icon";
+import Card, { CardBody } from "@/components/ui/card";
 
 function FeedbackBanner({
   tone,
@@ -42,13 +43,13 @@ function FeedbackBanner({
   const style = styles[tone];
 
   return (
-    <div className={`rounded-xl border p-4 ${style.wrapper}`}>
+    <div className={`rounded-2xl border px-4 py-4 ${style.wrapper}`}>
       <div className="flex items-start gap-3">
         <div className="mt-0.5">
           <AppIcon icon={style.icon} size={18} />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <div className="font-semibold">{title}</div>
           <p className="mt-1 text-sm opacity-90">{description}</p>
         </div>
@@ -65,18 +66,20 @@ function StatusSummaryCard({
 }: {
   title: string;
   description: string;
-  badgeTone: "info" | "success" | "warning" | "danger" | "muted";
+  badgeTone: "default" | "info" | "success" | "warning" | "danger" | "muted";
   badgeLabel: string;
 }) {
   return (
-    <div className="app-card p-4">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-        <Badge tone={badgeTone}>{badgeLabel}</Badge>
-      </div>
+    <Card>
+      <CardBody className="p-4">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+          <Badge tone={badgeTone}>{badgeLabel}</Badge>
+        </div>
 
-      <p className="text-sm app-text-muted">{description}</p>
-    </div>
+        <p className="text-sm app-text-muted">{description}</p>
+      </CardBody>
+    </Card>
   );
 }
 
@@ -97,112 +100,79 @@ export default async function AdminUiFeedbackPage() {
         title="Status badges"
         description="Use badges for compact states, visibility, and metadata. Keep labels short and consistent."
       >
-        <div className="flex flex-wrap gap-2">
-          <Badge tone="muted" icon={appIcons.file}>
+        <div className="flex flex-wrap gap-3">
+          <Badge tone="muted" icon="file">
             Draft
           </Badge>
-          <Badge tone="info" icon={appIcons.preview}>
+          <Badge tone="info" icon="preview">
             Published
           </Badge>
-          <Badge tone="success" icon={appIcons.completed}>
+          <Badge tone="success" icon="completed">
             Complete
           </Badge>
-          <Badge tone="warning" icon={appIcons.pending}>
+          <Badge tone="warning" icon="pending">
             In progress
           </Badge>
-          <Badge tone="danger" icon={appIcons.alert}>
-            Action needed
+          <Badge tone="danger" icon="warning">
+            Needs attention
+          </Badge>
+          <Badge tone="default" icon="info">
+            Selected
           </Badge>
         </div>
       </UiLabSection>
 
       <UiLabSection
-        title="Feedback banners"
-        description="Use banners for important page-level feedback after actions such as save, publish, validation, or review workflows."
+        title="Banner patterns"
+        description="Use banners for page-level feedback, save results, warnings, or important next-step guidance."
       >
-        <div className="space-y-3">
+        <div className="space-y-4">
           <FeedbackBanner
             tone="info"
-            title="Draft updated"
-            description="Your content changes were saved successfully and are visible in the admin workspace."
+            title="Informational update"
+            description="This lesson is visible to Higher students only and includes shared sections linked by canonical key."
           />
-
           <FeedbackBanner
             tone="success"
-            title="Lesson published"
-            description="The lesson is now available to students with the correct access permissions."
+            title="Changes saved"
+            description="Your course settings were updated successfully and are now available across the platform."
           />
-
           <FeedbackBanner
             tone="warning"
-            title="Some sections still need review"
-            description="One or more lesson sections are incomplete or still in draft state."
+            title="Still in progress"
+            description="Some lesson sections are still unpublished, so students will not see them yet."
           />
-
           <FeedbackBanner
             tone="danger"
-            title="Publishing failed"
-            description="Please check required fields and try again before publishing this item."
-          />
-        </div>
-      </UiLabSection>
-
-      <UiLabSection
-        title="Summary cards with feedback states"
-        description="These are useful for dashboards, admin overviews, and progress summaries."
-      >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatusSummaryCard
-            title="Course status"
-            description="This course is visible and active for learners."
-            badgeTone="success"
-            badgeLabel="Published"
-          />
-
-          <StatusSummaryCard
-            title="Lesson builder"
-            description="This lesson is still being edited and needs final checks."
-            badgeTone="warning"
-            badgeLabel="In progress"
-          />
-
-          <StatusSummaryCard
-            title="Assignments"
-            description="A teacher review action is required before students can continue."
-            badgeTone="danger"
-            badgeLabel="Attention"
-          />
-
-          <StatusSummaryCard
-            title="Resources"
-            description="Additional support materials can be added later."
-            badgeTone="muted"
-            badgeLabel="Optional"
+            title="Action needed"
+            description="A required field is missing. Review the section metadata before publishing."
           />
         </div>
       </UiLabSection>
 
       <UiLabSection
         title="Empty states"
-        description="Empty states should be helpful, calm, and action-oriented rather than feeling like dead ends."
+        description="Empty states should explain what is missing, why it matters, and what the next useful action is."
       >
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           <EmptyState
-            title="No lessons yet"
-            description="Create your first lesson to start building out this module."
+            title="No modules yet"
+            description="Create your first module to start structuring this course variant."
+            icon="courses"
             action={
-              <Button variant="primary" icon={appIcons.create}>
-                Add lesson
+              <Button variant="primary" icon="create">
+                Add module
               </Button>
             }
           />
 
           <EmptyState
-            title="No results match your filters"
-            description="Try adjusting your filters or search terms to broaden the results."
+            title="No assignments to review"
+            description="Once students submit work, it will appear here for marking and feedback."
+            icon="assignments"
             action={
-              <Button variant="secondary" icon={appIcons.refresh}>
-                Reset filters
+              <Button variant="secondary" icon="search">
+                View submissions
               </Button>
             }
           />
@@ -210,96 +180,87 @@ export default async function AdminUiFeedbackPage() {
       </UiLabSection>
 
       <UiLabSection
-        title="Action confirmation patterns"
-        description="Destructive and important actions should feel intentional, not alarming by default."
+        title="Status summary cards"
+        description="Use these when a page needs more context than a badge alone can provide."
       >
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="app-card p-5 space-y-4">
-            <div>
-              <h3 className="font-semibold text-[var(--text-primary)]">Publish flow</h3>
-              <p className="mt-1 text-sm app-text-muted">
-                Example of a safe action with clear confirmation messaging.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm app-text-muted">
-              This lesson is ready to publish. Students with access will be able to open
-              it once you continue.
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button variant="primary" icon={appIcons.preview}>
-                Publish lesson
-              </Button>
-              <Button variant="secondary" icon={appIcons.back}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-
-          <div className="app-card p-5 space-y-4">
-            <div>
-              <h3 className="font-semibold text-[var(--text-primary)]">Delete flow</h3>
-              <p className="mt-1 text-sm app-text-muted">
-                Example of a destructive action that still stays readable and controlled.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-[color:rgba(194,59,59,0.18)] bg-[var(--danger-soft)] p-4 text-sm text-[var(--danger)]">
-              Deleting this lesson will remove it from this module and may affect linked
-              progress and admin workflows.
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button variant="danger" icon={appIcons.delete}>
-                Delete lesson
-              </Button>
-              <Button variant="secondary" icon={appIcons.back}>
-                Keep lesson
-              </Button>
-            </div>
-          </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <StatusSummaryCard
+            title="Publishing"
+            description="Use when content is ready for students."
+            badgeTone="info"
+            badgeLabel="Published"
+          />
+          <StatusSummaryCard
+            title="Progress"
+            description="Use when work is still being built or reviewed."
+            badgeTone="warning"
+            badgeLabel="In progress"
+          />
+          <StatusSummaryCard
+            title="Completion"
+            description="Use when a workflow or task is fully done."
+            badgeTone="success"
+            badgeLabel="Complete"
+          />
+          <StatusSummaryCard
+            title="Attention"
+            description="Use sparingly for problems that block progress."
+            badgeTone="danger"
+            badgeLabel="Required"
+          />
         </div>
       </UiLabSection>
 
       <UiLabSection
-        title="Readiness"
-        description="A quick summary of where feedback patterns feel strong and where future refinement would help."
+        title="Guidance"
+        description="These rules keep feedback patterns consistent across admin and platform pages."
       >
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon={appIcons.completed} size={18} className="app-brand-text" />
-              <div className="font-semibold">Strong already</div>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Status badges</p>
-              <p>Basic action states</p>
-              <p>Neutral empty-state structure</p>
-            </div>
-          </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-2 font-semibold text-[var(--text-primary)]">
+                Prefer badges for compact state
+              </div>
+              <p className="text-sm app-text-muted">
+                Use badges inside cards, tables, and list items where space is limited.
+              </p>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-2">
-              <Badge tone="warning">Needs refinement</Badge>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Standardized feedback banners</p>
-              <p>Helper text consistency</p>
-              <p>Admin confirmation copy patterns</p>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-2 font-semibold text-[var(--text-primary)]">
+                Use banners for page-level messaging
+              </div>
+              <p className="text-sm app-text-muted">
+                Save results, warnings, and important guidance should be easier to notice
+                than a badge.
+              </p>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-2">
-              <Badge tone="muted">Future additions</Badge>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Toast notifications</p>
-              <p>Inline validation summaries</p>
-              <p>Autosave / sync state indicators</p>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-2 font-semibold text-[var(--text-primary)]">
+                Empty states need a next action
+              </div>
+              <p className="text-sm app-text-muted">
+                Avoid dead ends. Give users a clear first step wherever possible.
+              </p>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-2 font-semibold text-[var(--text-primary)]">
+                Reserve danger for real blockers
+              </div>
+              <p className="text-sm app-text-muted">
+                Overusing destructive colour weakens hierarchy and makes interfaces feel
+                noisy.
+              </p>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
     </UiLabShell>

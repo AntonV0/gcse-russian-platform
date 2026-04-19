@@ -97,7 +97,7 @@ export default async function AdminLessonSectionTemplatesPage() {
           description="Reusable section blueprints built from ordered block presets."
         />
 
-        <Button href="/admin/lesson-templates" variant="secondary" icon={appIcons.back}>
+        <Button href="/admin/lesson-templates" variant="secondary" icon="back">
           Back
         </Button>
       </div>
@@ -121,24 +121,24 @@ export default async function AdminLessonSectionTemplatesPage() {
                   <div className="font-medium text-gray-900">{template.title}</div>
 
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge tone="muted" icon={appIcons.file}>
+                    <Badge tone="muted" icon="file">
                       {template.slug}
                     </Badge>
 
-                    <Badge tone="muted" icon={appIcons.help}>
+                    <Badge tone="muted" icon="help">
                       {template.default_section_kind}
                     </Badge>
 
-                    <Badge tone="muted" icon={appIcons.help}>
+                    <Badge tone="muted" icon="help">
                       {presetCountByTemplateId.get(template.id) ?? 0} preset(s)
                     </Badge>
 
                     {template.is_active ? (
-                      <Badge tone="success" icon={appIcons.completed}>
+                      <Badge tone="success" icon="completed">
                         Active
                       </Badge>
                     ) : (
-                      <Badge tone="warning" icon={appIcons.pending}>
+                      <Badge tone="warning" icon="pending">
                         Inactive
                       </Badge>
                     )}

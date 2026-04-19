@@ -19,13 +19,13 @@ export default async function CoursesPage() {
       <section className="app-surface-brand app-section-padding-lg">
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <Badge tone="info" icon={appIcons.school}>
+            <Badge tone="info" icon="school">
               GCSE Russian
             </Badge>
-            <Badge tone="muted" icon={appIcons.layers}>
+            <Badge tone="muted" icon="layers">
               Foundation & Higher
             </Badge>
-            <Badge tone="muted" icon={appIcons.audio}>
+            <Badge tone="muted" icon="audio">
               Lessons · Practice · Progress
             </Badge>
           </div>

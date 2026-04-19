@@ -126,7 +126,7 @@ export default async function AdminTeachingGroupsPage() {
           description="View groups, teacher assignment, and membership structure."
         />
 
-        <Button href="/admin/teaching-groups/new" variant="primary" icon={appIcons.write}>
+        <Button href="/admin/teaching-groups/new" variant="primary" icon="write">
           New teaching group
         </Button>
       </div>
@@ -188,13 +188,13 @@ export default async function AdminTeachingGroupsPage() {
                       </Badge>
 
                       {linkedCourse ? (
-                        <Badge tone="muted" icon={appIcons.courses}>
+                        <Badge tone="muted" icon="courses">
                           {linkedCourse.title}
                         </Badge>
                       ) : null}
 
                       {linkedVariant ? (
-                        <Badge tone="muted" icon={appIcons.file}>
+                        <Badge tone="muted" icon="file">
                           {linkedVariant.title}
                         </Badge>
                       ) : null}
@@ -206,7 +206,7 @@ export default async function AdminTeachingGroupsPage() {
                       href={`/admin/teaching-groups/${group.id}/edit`}
                       variant="secondary"
                       size="sm"
-                      icon={appIcons.edit}
+                      icon="edit"
                     >
                       Edit
                     </Button>
@@ -215,7 +215,7 @@ export default async function AdminTeachingGroupsPage() {
                       href={`/admin/teaching-groups/${group.id}`}
                       variant="secondary"
                       size="sm"
-                      icon={appIcons.preview}
+                      icon="preview"
                     >
                       Open
                     </Button>
