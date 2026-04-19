@@ -3,9 +3,12 @@
 This document describes the current system architecture of the GCSE
 Russian Course Platform.
 
-It reflects the **latest system design**, including the evolution of the
-lesson builder into a full CMS and major UX improvements introduced in
-this phase.
+It reflects the **latest system design**, including:
+
+- the evolution of the lesson builder into a full CMS
+- variant-aware content delivery
+- shared section architecture
+- major UX improvements introduced in this phase
 
 ---
 
@@ -63,9 +66,9 @@ Responsibilities:
 - assignment UI
 - teacher review UI
 - admin CMS UI
-- lesson builder UI (expanded significantly)
-- **role-aware navigation (NEW)**
-- **account and settings UI (NEW)**
+- lesson builder UI
+- role-aware navigation
+- account and settings UI
 
 ---
 
@@ -84,9 +87,9 @@ Responsibilities:
 - question rendering
 - assignment workflows
 - CMS orchestration
-- lesson builder orchestration (expanded)
-- **dashboard orchestration (NEW)**
-- **access-aware UI decisions (NEW)**
+- lesson builder orchestration
+- dashboard orchestration
+- access-aware UI decisions
 
 ---
 
@@ -116,7 +119,7 @@ Supabase:
 - Section
 - Block
 
-This is now the **single source of truth for lesson structure**.
+This is the **single source of truth for lesson structure**.
 
 ---
 
@@ -142,7 +145,7 @@ Progression is **visit-based**, not completion-based.
 
 ---
 
-## 6. Block system (EXPANDED)
+## 6. Block system
 
 Blocks represent atomic content units.
 
@@ -169,16 +172,111 @@ Supported types:
 
 ---
 
-## 7. Lesson Builder Architecture (CORE SYSTEM)
+## 7. Variant-Based Content Architecture (NEW)
 
-The lesson builder is now a **central CMS**, not a helper tool.
+The system now treats **variants as first-class citizens**.
 
-### Core responsibilities
+Examples of variants:
+
+- foundation
+- higher
+- volna
+
+### Section-level visibility
+
+Each section includes:
+
+- `variant_visibility`
+
+Values:
+
+- `shared`
+- `foundation_only`
+- `higher_only`
+- `volna_only`
+
+### Rendering behaviour
+
+The lesson renderer filters sections using:
+
+(section.variant_visibility, active_variant)
+
+Rules:
+
+- shared → visible everywhere
+- foundation_only → only foundation
+- higher_only → only higher
+- volna_only → only volna
+
+### Architectural impact
+
+This replaces:
+
+- ❌ track visibility
+- ❌ delivery visibility
+
+Benefits:
+
+- simpler mental model
+- aligned with real product structure
+- easier future expansion
+
+---
+
+## 8. Shared Section Architecture (NEW)
+
+Sections now support:
+
+- `canonical_section_key`
+
+### Purpose
+
+Allows logically identical sections to exist across variants.
+
+### Example
+
+food-vocabulary-core
+
+This same key can exist in:
+
+- foundation lesson
+- higher lesson
+- volna lesson
+
+Each instance can still:
+
+- have different blocks
+- be positioned differently
+- evolve independently
+
+### Why this matters
+
+Enables future features:
+
+- cross-variant progress syncing
+- content reuse
+- analytics across equivalent sections
+
+### Current state
+
+- stored in DB
+- editable in CMS
+- not yet used in progression logic
+
+---
+
+## 9. Lesson Builder Architecture (CORE SYSTEM)
+
+The lesson builder is now a **central CMS**.
+
+### Responsibilities
 
 - write lesson content directly to DB
-- manage structure (sections + blocks)
+- manage sections + blocks
 - control ordering
 - manage publishing state
+- control variant visibility
+- manage canonical keys
 
 ### Capabilities
 
@@ -193,9 +291,7 @@ The lesson builder is now a **central CMS**, not a helper tool.
 
 ---
 
-## 8. Lesson Builder UX Architecture (NEW)
-
-This phase introduced **major UX-driven structural improvements**.
+## 10. Lesson Builder UX Architecture
 
 ### Key shift
 
@@ -211,8 +307,8 @@ To:
 
 ### Block creation flow
 
-- block composer moved above block list
-- clear creation entry point
+- composer above block list
+- clear entry point
 - improved empty states
 - faster first-block experience
 
@@ -220,55 +316,31 @@ To:
 
 ### Composer architecture
 
-- block types grouped:
+- grouped block types:
   - structure
   - teaching
   - media
   - practice
-- selection-driven UI:
-  - choose type
-  - form appears inline
-- presets:
-  - DB-driven
-  - reusable starter structures
+- inline form rendering
+- preset support (DB-driven)
 
 ---
 
 ### Section editor structure
 
-Now organised into:
-
-1. Section overview panel
-2. Metadata editing (collapsible)
-3. Block creation (primary)
-4. Block list (secondary)
-
-This reflects actual author workflow.
+1. Section overview
+2. Metadata editing
+3. Block creation
+4. Block list
 
 ---
 
-### Block list architecture
-
-Each block is:
-
-- selectable (inspector-driven editing)
-- draggable (reordering + cross-section movement)
-- state-aware (selected, drop target, pending)
-
-Improved behaviours:
-
-- strong visual selection state
-- better scanning (labels + previews)
-- inline actions (move, duplicate, publish)
-
----
-
-## 9. Progress architecture
+## 11. Progress architecture
 
 ### Tables
 
-- lesson_progress → completion
-- lesson_section_progress → visitation
+- lesson_progress
+- lesson_section_progress
 
 Tracks:
 
@@ -276,214 +348,55 @@ Tracks:
 - last_visited_at
 - visit_count
 
-### Key decision
+---
 
-Progress is:
+## 12. Database relationships
 
-- **event-based (visit)**
-- not button-driven
+LESSONS → LESSON_SECTIONS → LESSON_BLOCKS
 
 ---
 
-## 10. Database relationships
+## 13. Navigation & UI Access Architecture
 
-```mermaid
-erDiagram
-
-  LESSONS ||--o{ LESSON_SECTIONS : has
-  LESSON_SECTIONS ||--o{ LESSON_BLOCKS : has
-  LESSON_SECTIONS ||--o{ LESSON_SECTION_PROGRESS : tracked_in
-```
+UI visibility is derived from role + access mode.
 
 ---
 
-## 11. Navigation & UI Access Architecture (NEW)
+## 14. Dashboard Architecture
 
-A dedicated layer now exists to control what users see, separate from backend permissions.
-
-### Sidebar architecture
-
-Navigation is composed of:
-
-- **Main items** → always visible core features
-- **Conditional items** → based on access mode
-- **Utility section** → profile, settings, logout
-
-### Conditional rendering logic
-
-```text
-role + accessMode → visible navigation
-```
-
-Examples:
-
-- **Volna student**
-  - sees → Assignments
-  - does NOT see → Online Classes
-
-- **Non-Volna student**
-  - sees → Online Classes
-  - does NOT see → Assignments
-
-### Key architectural principle
-
-UI visibility is:
-
-- **derived from access state**
-- not hardcoded per page
-
-This ensures:
-
-- scalability
-- consistent UX
-- correct product funnel behaviour
+Aggregates role, variant, and progress to determine next actions.
 
 ---
 
-## 12. Dashboard Architecture (NEW)
+## 15. Account System Architecture
 
-The dashboard is now a **state-aware orchestration layer**, not just a static page.
-
-### Responsibilities
-
-- aggregate user state:
-  - role
-  - track
-  - access mode
-- fetch progress data
-- determine next actions
-- render role-specific UI
-
-### Data flow
-
-```mermaid
-flowchart TD
-
-A[getDashboardInfo] --> B[role / track / accessMode]
-B --> C[getCourseProgressSummary]
-C --> D[Dashboard UI]
-
-B --> E[next step logic]
-E --> D
-```
-
-### Current capabilities
-
-- role-based rendering:
-  - guest
-  - student
-  - teacher
-  - admin
-- access-aware messaging
-- progress display
-- next-step guidance (V1)
-
-### Design constraints (important)
-
-- no dependency on exact lesson sequencing
-- no heavy progression logic
-- safe, additive layer
-
-This enables future expansion without breaking existing flows.
+Includes profile, avatar system, and settings page.
 
 ---
 
-## 13. Account System Architecture (NEW)
+## 16. Architectural changes in this phase
 
-### Profile system
+Added:
 
-- stored in user profile table
-- includes:
-  - full_name
-  - avatar_key
+- variant visibility system
+- canonical section system
 
-### Avatar system
+Removed:
 
-- preset-based (no uploads)
-- selected via key
-- UI-driven, not storage-heavy
-
-Design benefits:
-
-- safe for younger users
-- consistent UI
-- no moderation/storage issues
-
-### Settings system
-
-- separate route (`/settings`)
-- designed for future:
-  - email updates
-  - password updates
-  - account controls
+- track/delivery visibility
 
 ---
 
-## 14. Architectural changes in this phase
+## 17. Architectural strengths
 
-### New systems introduced
-
-- Dashboard orchestration layer
-- Sidebar access-aware navigation system
-- Account/profile system (`avatar_key`)
-- Online Classes integration layer
-
-### Systems extended
-
-UI now reacts dynamically to:
-
-- role
-- access mode
-- track
-- progress
-
-### Systems stabilised
-
-- access logic (fixed admin access regression)
-- route-based visibility
-- component structure consistency
-
----
-
-## 15. Architectural strengths
-
-- single unified system
-- DB-driven content
+- unified platform
+- DB-driven
 - scalable CMS
-- flexible learning flows
-- clean separation of concerns
-- clear separation of data logic vs UI logic (improved)
-- access-aware UI without duplicating apps
 
 ---
 
-## 16. Next architectural steps
+## 18. Next architectural steps
 
-### Dashboard
-
-- true lesson continuation system
-- module-level progress tracking
-- personalised recommendations
-
-### Navigation
-
-- dynamic highlighting based on progress
-- deeper integration with course state
-
-### Builder
-
-- autosave
-- inline insertion ("+ between blocks")
-- faster editing workflows
-
-### Content
-
-- more block types
-- richer interactivity
-- reusable templates
-
-### Platform
-
-- analytics
-- payments
-- speaking workflows
+- progress syncing
+- dashboard improvements
+- builder UX upgrades
