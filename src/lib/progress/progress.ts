@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { syncFoundationSectionProgressToHigherSameLesson } from "@/lib/progress/cross-variant-sync";
 
 export async function getLessonProgress(
   courseSlug: string,
@@ -153,7 +154,14 @@ export async function markLessonSectionVisited(lessonId: string, sectionId: stri
 
     if (insertError) {
       console.error("Error inserting lesson section visit:", insertError);
+      return;
     }
+
+    await syncFoundationSectionProgressToHigherSameLesson({
+      userId: user.id,
+      lessonId,
+      sectionId,
+    });
 
     return;
   }
@@ -169,5 +177,12 @@ export async function markLessonSectionVisited(lessonId: string, sectionId: stri
 
   if (updateError) {
     console.error("Error updating lesson section visit:", updateError);
+    return;
   }
+
+  await syncFoundationSectionProgressToHigherSameLesson({
+    userId: user.id,
+    lessonId,
+    sectionId,
+  });
 }
