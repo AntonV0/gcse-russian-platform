@@ -2,44 +2,41 @@ import TextBlock from "@/components/lesson-blocks/text-block";
 import NoteBlock from "@/components/lesson-blocks/note-block";
 import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
 import VocabularySetBlock from "@/components/lesson-blocks/vocabulary-set-block";
+import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
 import MultipleChoiceBlock from "@/components/questions/multiple-choice-block";
 import ShortAnswerBlock from "@/components/questions/short-answer-block";
-import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
 import type { LessonSection } from "@/types/lesson";
 import Image from "next/image";
 
-type LessonRendererTrack = "foundation" | "higher";
-type LessonRendererDelivery = "self_study" | "volna";
+type LessonRendererVariant = "foundation" | "higher" | "volna";
 
 type LessonRendererProps = {
   sections: LessonSection[];
   lessonId?: string | null;
-  userTrack?: LessonRendererTrack;
-  userDelivery?: LessonRendererDelivery;
+  currentVariant?: LessonRendererVariant;
 };
 
-function isSectionVisible(
-  section: LessonSection,
-  userTrack: LessonRendererTrack,
-  userDelivery: LessonRendererDelivery
-) {
-  if (section.trackVisibility === "foundation_only" && userTrack !== "foundation") {
-    return false;
+function isSectionVisible(section: LessonSection, currentVariant: LessonRendererVariant) {
+  if (section.variantVisibility === "shared") {
+    return true;
   }
 
-  if (section.trackVisibility === "higher_only" && userTrack !== "higher") {
-    return false;
+  if (
+    section.variantVisibility === "foundation_only" &&
+    currentVariant === "foundation"
+  ) {
+    return true;
   }
 
-  if (section.deliveryVisibility === "self_study_only" && userDelivery !== "self_study") {
-    return false;
+  if (section.variantVisibility === "higher_only" && currentVariant === "higher") {
+    return true;
   }
 
-  if (section.deliveryVisibility === "volna_only" && userDelivery !== "volna") {
-    return false;
+  if (section.variantVisibility === "volna_only" && currentVariant === "volna") {
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 function HeaderBlock({ content }: { content: string }) {
@@ -152,11 +149,10 @@ function AudioBlock({
 export default function LessonRenderer({
   sections,
   lessonId = null,
-  userTrack = "foundation",
-  userDelivery = "self_study",
+  currentVariant = "foundation",
 }: LessonRendererProps) {
   const visibleSections = sections.filter((section) =>
-    isSectionVisible(section, userTrack, userDelivery)
+    isSectionVisible(section, currentVariant)
   );
 
   return (
