@@ -4,6 +4,7 @@ export type DbSubscription = {
   id: string;
   user_id: string;
   product_id: string;
+  price_id: string | null;
   provider: string;
   provider_customer_id: string | null;
   provider_subscription_id: string | null;
@@ -19,6 +20,7 @@ export type DbSubscription = {
 export type UpsertSubscriptionInput = {
   userId: string;
   productId: string;
+  priceId?: string | null;
   provider?: string;
   providerCustomerId?: string | null;
   providerSubscriptionId?: string | null;
@@ -141,6 +143,7 @@ export async function upsertSubscriptionDb(
   const payload = {
     user_id: input.userId,
     product_id: input.productId,
+    price_id: input.priceId ?? null,
     provider: input.provider ?? "stripe",
     provider_customer_id: input.providerCustomerId ?? null,
     provider_subscription_id: input.providerSubscriptionId ?? null,

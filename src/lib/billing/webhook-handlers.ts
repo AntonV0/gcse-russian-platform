@@ -8,12 +8,21 @@ function fromUnixTimestamp(value?: number | null): string | null {
   return new Date(value * 1000).toISOString();
 }
 
+function getMetadataValue(
+  metadata: Stripe.Metadata | null | undefined,
+  snakeKey: string,
+  camelKey: string
+): string | null {
+  if (!metadata) return null;
+  return metadata[snakeKey] ?? metadata[camelKey] ?? null;
+}
+
 export async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session
 ): Promise<void> {
-  const userId = session.metadata?.user_id;
-  const productId = session.metadata?.product_id;
-  const priceId = session.metadata?.price_id;
+  const userId = getMetadataValue(session.metadata, "user_id", "userId");
+  const productId = getMetadataValue(session.metadata, "product_id", "productId");
+  const priceId = getMetadataValue(session.metadata, "price_id", "priceId");
 
   if (!userId || !productId || !priceId) {
     console.error("Stripe webhook missing required checkout metadata:", {
@@ -44,6 +53,7 @@ export async function handleCheckoutSessionCompleted(
     await upsertSubscriptionDb({
       userId,
       productId,
+      priceId,
       provider: "stripe",
       providerCustomerId: typeof session.customer === "string" ? session.customer : null,
       providerSubscriptionId: subscription.id,
@@ -57,6 +67,7 @@ export async function handleCheckoutSessionCompleted(
     await grantProductAccessDb({
       userId,
       productId,
+      priceId,
       accessMode: "full",
       source: "stripe",
       startsAt: fromUnixTimestamp(subscriptionItem?.current_period_start),
@@ -70,6 +81,7 @@ export async function handleCheckoutSessionCompleted(
     await grantProductAccessDb({
       userId,
       productId,
+      priceId,
       accessMode: "full",
       source: "stripe",
       startsAt: new Date().toISOString(),
