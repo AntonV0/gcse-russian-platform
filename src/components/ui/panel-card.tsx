@@ -1,3 +1,5 @@
+import Card, { CardBody, CardHeader } from "@/components/ui/card";
+
 type PanelCardProps = {
   title?: string;
   description?: string;
@@ -14,23 +16,15 @@ export default function PanelCard({
   contentClassName,
 }: PanelCardProps) {
   return (
-    <section
-      className={["rounded-2xl border bg-white shadow-sm", className]
-        .filter(Boolean)
-        .join(" ")}
-    >
+    <Card className={className}>
       {title || description ? (
-        <div className="border-b px-5 py-4">
-          {title ? <h2 className="font-semibold text-gray-900">{title}</h2> : null}
-          {description ? (
-            <p className="mt-1 text-sm text-gray-600">{description}</p>
-          ) : null}
-        </div>
+        <CardHeader>
+          {title ? <h2 className="app-card-title">{title}</h2> : null}
+          {description ? <p className="app-card-desc">{description}</p> : null}
+        </CardHeader>
       ) : null}
 
-      <div className={["p-5", contentClassName].filter(Boolean).join(" ")}>
-        {children}
-      </div>
-    </section>
+      <CardBody className={contentClassName}>{children}</CardBody>
+    </Card>
   );
 }

@@ -1,3 +1,5 @@
+import Card, { CardBody } from "@/components/ui/card";
+
 type UiLabSectionProps = {
   title: string;
   description?: string;
@@ -10,15 +12,17 @@ export default function UiLabSection({
   children,
 }: UiLabSectionProps) {
   return (
-    <section className="app-card app-section-padding space-y-4">
-      <div>
-        <h2 className="app-section-title">{title}</h2>
-        {description ? (
-          <p className="mt-1 text-sm app-text-muted">{description}</p>
-        ) : null}
-      </div>
+    <Card className="app-section-padding">
+      <CardBody className="space-y-4 p-0">
+        <div>
+          <h2 className="app-section-title">{title}</h2>
+          {description ? (
+            <p className="mt-1 text-sm app-text-muted">{description}</p>
+          ) : null}
+        </div>
 
-      {children}
-    </section>
+        {children}
+      </CardBody>
+    </Card>
   );
 }

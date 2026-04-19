@@ -1,18 +1,28 @@
+import Card, { CardBody, CardHeader } from "@/components/ui/card";
+
 type Props = {
   title: string;
   description?: string;
   children: React.ReactNode;
+  className?: string;
+  contentClassName?: string;
 };
 
-export default function SectionCard({ title, description, children }: Props) {
+export default function SectionCard({
+  title,
+  description,
+  children,
+  className,
+  contentClassName,
+}: Props) {
   return (
-    <section className="app-card">
-      <div className="app-card-header">
+    <Card className={className}>
+      <CardHeader>
         <h2 className="app-card-title">{title}</h2>
-        {description && <p className="app-card-desc">{description}</p>}
-      </div>
+        {description ? <p className="app-card-desc">{description}</p> : null}
+      </CardHeader>
 
-      <div className="app-card-body">{children}</div>
-    </section>
+      <CardBody className={contentClassName}>{children}</CardBody>
+    </Card>
   );
 }

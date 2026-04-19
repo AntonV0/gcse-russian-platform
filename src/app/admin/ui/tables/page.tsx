@@ -5,6 +5,7 @@ import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import Card, { CardBody, CardHeader } from "@/components/ui/card";
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
@@ -75,13 +76,13 @@ function TableShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="app-card overflow-hidden">
-      <div className="border-b border-[var(--border)] px-5 py-4">
+    <Card className="overflow-hidden">
+      <CardHeader>
         <div className="font-semibold text-[var(--text-primary)]">{title}</div>
         <p className="mt-1 text-sm app-text-muted">{description}</p>
-      </div>
+      </CardHeader>
       <div>{children}</div>
-    </div>
+    </Card>
   );
 }
 
@@ -229,6 +230,7 @@ function TableEmptyState() {
         <EmptyState
           title="No rows yet"
           description="Create your first item to populate this table and begin managing data here."
+          icon={appIcons.list}
           action={
             <Button variant="primary" icon={appIcons.create}>
               Add first item
@@ -253,12 +255,14 @@ function TableRules() {
   return (
     <div className="grid gap-3 lg:grid-cols-2">
       {rules.map((rule) => (
-        <div key={rule} className="app-card p-4">
-          <div className="flex items-start gap-3">
-            <AppIcon icon={appIcons.list} size={16} className="mt-0.5 app-brand-text" />
-            <div className="text-sm app-text-muted">{rule}</div>
-          </div>
-        </div>
+        <Card key={rule}>
+          <CardBody className="p-4">
+            <div className="flex items-start gap-3">
+              <AppIcon icon={appIcons.list} size={16} className="mt-0.5 app-brand-text" />
+              <div className="text-sm app-text-muted">{rule}</div>
+            </div>
+          </CardBody>
+        </Card>
       ))}
     </div>
   );
@@ -310,38 +314,44 @@ export default async function AdminUiTablesPage() {
         description="A quick summary of which table patterns already feel stable and which still need refinement."
       >
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Badge tone="success">Strong already</Badge>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Standard admin table direction</p>
-              <p>Toolbar + action layout</p>
-              <p>Status badge usage</p>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Badge tone="success">Strong already</Badge>
+              </div>
+              <div className="space-y-1 text-sm app-text-muted">
+                <p>Standard admin table direction</p>
+                <p>Toolbar + action layout</p>
+                <p>Status badge usage</p>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Badge tone="warning">Needs refinement</Badge>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Sorting interactions</p>
-              <p>Bulk row actions</p>
-              <p>Mobile-friendly row density</p>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Badge tone="warning">Needs refinement</Badge>
+              </div>
+              <div className="space-y-1 text-sm app-text-muted">
+                <p>Sorting interactions</p>
+                <p>Bulk row actions</p>
+                <p>Mobile-friendly row density</p>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Badge tone="muted">Future additions</Badge>
-            </div>
-            <div className="space-y-1 text-sm app-text-muted">
-              <p>Sticky headers</p>
-              <p>Selectable rows</p>
-              <p>Pagination and result counts</p>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Badge tone="muted">Future additions</Badge>
+              </div>
+              <div className="space-y-1 text-sm app-text-muted">
+                <p>Sticky headers</p>
+                <p>Selectable rows</p>
+                <p>Pagination and result counts</p>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
     </UiLabShell>

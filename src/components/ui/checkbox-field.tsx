@@ -12,9 +12,15 @@ export default function CheckboxField({
   defaultChecked,
 }: CheckboxFieldProps) {
   return (
-    <label className="flex items-center gap-2 text-sm text-gray-700">
-      <input type="checkbox" name={name} value={value} defaultChecked={defaultChecked} />
-      {label}
+    <label className="flex items-start gap-3 text-sm text-[var(--text-primary)]">
+      <input
+        type="checkbox"
+        name={name}
+        value={value}
+        defaultChecked={defaultChecked}
+        className="mt-0.5 h-4 w-4 rounded border-[var(--border)] text-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+      />
+      <span>{label}</span>
     </label>
   );
 }

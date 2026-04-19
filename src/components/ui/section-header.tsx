@@ -21,8 +21,10 @@ export default function SectionHeader({
         .join(" ")}
     >
       <div className="min-w-0">
-        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-        {description ? <p className="mt-1 text-sm text-gray-600">{description}</p> : null}
+        <h2 className="app-section-title text-lg">{title}</h2>
+        {description ? (
+          <p className="mt-1 text-sm app-text-muted">{description}</p>
+        ) : null}
       </div>
 
       {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}

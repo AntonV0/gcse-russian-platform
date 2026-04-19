@@ -6,8 +6,9 @@ type InfoRowProps = {
 
 export default function InfoRow({ label, value, className }: InfoRowProps) {
   return (
-    <div className={className}>
-      <span className="font-medium">{label}:</span> {value}
+    <div className={["text-sm", className].filter(Boolean).join(" ")}>
+      <span className="font-medium text-[var(--text-primary)]">{label}:</span>{" "}
+      <span className="app-text-muted">{value}</span>
     </div>
   );
 }
