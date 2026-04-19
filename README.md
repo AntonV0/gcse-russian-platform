@@ -81,6 +81,86 @@ Lessons now follow a strict hierarchical structure:
 
 ---
 
+## 🧬 Variant-Based Content System (NEW)
+
+The lesson system now supports **variant-aware content delivery**.
+
+### Key concept
+
+Each section has a:
+
+- `variant_visibility`
+
+Values:
+
+- `shared`
+- `foundation_only`
+- `higher_only`
+- `volna_only`
+
+### Behaviour
+
+- **Shared sections** appear in all variants
+- **Variant-specific sections** only appear in their respective variant
+- The renderer filters sections based on the active variant:
+  - foundation
+  - higher
+  - volna
+
+This replaces the previous:
+
+- ❌ track visibility
+- ❌ delivery visibility
+
+### Why this matters
+
+- aligns with real product structure (variants are first-class)
+- removes artificial separation between track and delivery
+- simplifies mental model across backend + UI
+
+---
+
+## ♻️ Shared Section Architecture (NEW)
+
+To support future content reuse, sections now include:
+
+- `canonical_section_key`
+
+### Purpose
+
+- allows logically identical sections to exist across variants
+- enables **shared progress tracking (future)**
+- enables **content reuse without duplication constraints**
+
+### Example
+
+food-vocabulary-core
+
+This same key can exist in:
+
+- foundation lesson
+- higher lesson
+- volna lesson
+
+Each instance can still:
+
+- have different blocks
+- be positioned differently
+- evolve independently
+
+### Important note
+
+This is currently:
+
+- ✅ stored
+- ✅ editable in CMS
+
+But not yet used for:
+
+- cross-variant progress syncing (future feature)
+
+---
+
 ## 🛠️ Lesson Builder System (CORE CMS)
 
 The lesson builder has evolved into a **true CMS-style authoring tool**.
@@ -95,13 +175,17 @@ The lesson builder has evolved into a **true CMS-style authoring tool**.
 - Publish/unpublish states
 - Sidebar navigation
 - Inspector editing
+- **Variant visibility control (NEW)**
+- **Canonical section key editing (NEW)**
 
 ### Architectural shift
 
 - ❌ Removed hardcoded templates
 - ❌ Removed static preset files
+- ❌ Removed track/delivery visibility system
 - ✅ Fully DB-driven content system
 - ✅ Templates resolved dynamically
+- ✅ Variant-aware content system
 
 ---
 
@@ -115,7 +199,6 @@ functionality.
 Before:
 
 - add block buried below list
-
 - unclear workflow
 
 Now:
@@ -149,6 +232,9 @@ Now:
 
 - Creation-first layout (not browsing-first)
 - Cleaner metadata editing
+- Added:
+  - variant visibility selector
+  - canonical section key field
 - Better search and filtering
 - Clearer CTAs
 - Improved empty states
@@ -226,16 +312,6 @@ This ensures:
   - safer and simpler for younger users (12–16)
   - scalable for future expansion
 
-### Avatar direction
-
-- mix of:
-  - neutral characters
-  - academic styles
-  - future potential for themed sets
-- supports both:
-  - younger learners
-  - adult learners
-
 ---
 
 ### Settings system
@@ -260,8 +336,7 @@ The dashboard is evolving into a **central learning hub**, not just a landing pa
   - teacher
   - admin
 
-- Track + access awareness:
-  - Foundation / Higher / Volna
+- Access-aware behaviour:
   - Trial / Full / Volna
 
 ---
@@ -280,7 +355,7 @@ The dashboard is evolving into a **central learning hub**, not just a landing pa
 Dynamic guidance based on:
 
 - access mode
-- learning track
+- variant
 - progress state
 
 Examples:
@@ -288,12 +363,6 @@ Examples:
 - Trial → explore platform
 - Full → continue learning
 - Volna → open assignments
-
-#### 3. Improved student UX
-
-- clearer learning direction
-- reduced decision friction
-- better onboarding for new users
 
 ---
 
@@ -305,10 +374,6 @@ This version intentionally:
 - ❌ does NOT depend on complex progression logic
 - ✅ stays lightweight and safe
 
-This prepares for a future:
-
-> **true lesson continuation system (Duolingo-style progression)**
-
 ---
 
 ## 🧠 Product Direction
@@ -318,7 +383,7 @@ The platform is moving toward:
 - a **Notion-style lesson editor**
 - fully DB-driven content
 - modular learning system
-- scalable course/product structure
+- variant-aware course structure
 - intelligent student progression
 
 ---
@@ -356,6 +421,7 @@ Core content:
 ## 🧹 Technical Cleanup
 
 - removed legacy template files
+- removed track/delivery visibility system
 - fixed slug issues
 - cleaned ESLint errors
 - improved React patterns
