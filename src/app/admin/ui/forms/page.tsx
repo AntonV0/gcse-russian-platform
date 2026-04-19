@@ -14,15 +14,18 @@ import { appIcons } from "@/lib/shared/icons";
 function DemoBasicFields() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <FormField label="Course title">
+      <FormField
+        label="Course title"
+        hint="Use the public-facing name students should see."
+      >
         <Input placeholder="GCSE Russian" />
       </FormField>
 
-      <FormField label="Slug">
+      <FormField label="Slug" hint="Lowercase words with hyphens only.">
         <Input placeholder="gcse-russian" />
       </FormField>
 
-      <FormField label="Variant">
+      <FormField label="Variant" hint="Choose the version this content belongs to.">
         <Select defaultValue="higher">
           <option value="foundation">Foundation</option>
           <option value="higher">Higher</option>
@@ -30,7 +33,7 @@ function DemoBasicFields() {
         </Select>
       </FormField>
 
-      <FormField label="Teacher note">
+      <FormField label="Teacher note" hint="Optional internal-only note for staff.">
         <Input placeholder="Optional note for internal use" />
       </FormField>
     </div>
@@ -40,14 +43,20 @@ function DemoBasicFields() {
 function DemoLongText() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <FormField label="Short description">
+      <FormField
+        label="Short description"
+        hint="This usually appears on overview pages and preview cards."
+      >
         <Textarea
           rows={4}
           placeholder="Write a short summary that appears in previews and overview cards."
         />
       </FormField>
 
-      <FormField label="Internal guidance">
+      <FormField
+        label="Internal guidance"
+        hint="Useful for drafting notes and admin-only reminders."
+      >
         <Textarea
           rows={4}
           placeholder="Use this for admin-only notes, reminders, or drafting guidance."
@@ -117,10 +126,7 @@ function DemoValidationStates() {
           <div className="font-semibold text-[var(--text-primary)]">
             Error state example
           </div>
-          <input
-            defaultValue="Bad Slug!"
-            className="w-full rounded-xl border border-[var(--danger)] bg-white px-3 py-2 text-sm text-[var(--text-primary)] outline-none"
-          />
+          <Input aria-invalid="true" defaultValue="Bad Slug!" />
           <p className="text-sm text-[var(--danger)]">
             Slug must use lowercase letters, numbers, and hyphens only.
           </p>
@@ -144,7 +150,7 @@ function DemoFormLayouts() {
 
           <DemoBasicFields />
 
-          <FormField label="Description">
+          <FormField label="Description" hint="Keep this concise and student-facing.">
             <Textarea
               rows={5}
               placeholder="This form layout works well when editing one main entity at a time."
@@ -173,10 +179,10 @@ function DemoFormLayouts() {
 
           <CheckboxField name="publishedSidebar" label="Published" defaultChecked />
           <CheckboxField name="lockedSidebar" label="Locked" />
-          <FormField label="Position">
+          <FormField label="Position" hint="Use a simple numeric order value.">
             <Input placeholder="1" />
           </FormField>
-          <FormField label="Kind">
+          <FormField label="Kind" hint="Keep option labels short and scannable.">
             <Select defaultValue="content">
               <option value="content">content</option>
               <option value="practice">practice</option>
