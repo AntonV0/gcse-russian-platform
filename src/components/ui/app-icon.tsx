@@ -1,8 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { AlertCircle } from "lucide-react";
-import { appIcons } from "@/lib/shared/icons";
+import { appIcons, type AppIconKey } from "@/lib/shared/icons";
 
-export type AppIconKey = keyof typeof appIcons;
 export type AppIconValue = AppIconKey | LucideIcon;
 
 type AppIconProps = {
