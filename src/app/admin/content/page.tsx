@@ -9,7 +9,6 @@ import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
 import { getCoursesDb } from "@/lib/courses/course-helpers-db";
 import { createCourseAction } from "@/app/actions/admin/admin-content-actions";
-import { appIcons } from "@/lib/shared/icons";
 import SectionCard from "@/components/ui/section-card";
 
 export default async function AdminContentPage() {

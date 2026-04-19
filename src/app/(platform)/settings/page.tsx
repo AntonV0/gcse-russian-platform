@@ -6,7 +6,6 @@ import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import { updatePassword } from "@/app/actions/auth/auth";
-import { appIcons } from "@/lib/shared/icons";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 
 export default async function SettingsPage({

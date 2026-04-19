@@ -2,7 +2,6 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
-import { appIcons } from "@/lib/shared/icons";
 import { getCoursesDb } from "@/lib/courses/course-helpers-db";
 
 export default async function CoursesPage() {
