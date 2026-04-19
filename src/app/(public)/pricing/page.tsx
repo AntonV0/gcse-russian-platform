@@ -2,7 +2,18 @@ import Link from "next/link";
 import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
 import CheckoutButton from "@/components/billing/checkout-button";
-import { appIcons } from "@/lib/shared/icons";
+import { getCurrentUser } from "@/lib/auth/auth";
+import {
+  BILLING_TYPES,
+  INTERVAL_UNITS,
+  PRODUCT_CODES,
+  getActivePricesForProductDb,
+  getActiveProductByCodeDb,
+  getUpgradeProductCode,
+  getUserGcseRussianPurchaseStateDb,
+  matchPriceByBillingShape,
+  type DbPrice,
+} from "@/lib/billing/catalog";
 
 type PlanCardProps = {
   title: string;
@@ -11,6 +22,11 @@ type PlanCardProps = {
   features: string[];
   tone?: "default" | "highlight";
   children: React.ReactNode;
+};
+
+type PlanPricing = {
+  monthly: DbPrice | null;
+  lifetime: DbPrice | null;
 };
 
 function PlanCard({
@@ -62,7 +78,108 @@ function PlanCard({
   );
 }
 
-export default function PricingPage() {
+function formatPriceLabel(price: DbPrice | null): string | null {
+  if (!price) return null;
+
+  const formattedAmount = `£${price.amount_gbp}`;
+
+  if (price.billing_type === BILLING_TYPES.SUBSCRIPTION) {
+    if (price.interval_unit === INTERVAL_UNITS.MONTH) {
+      return `${formattedAmount}/month`;
+    }
+
+    if (price.interval_unit === INTERVAL_UNITS.YEAR) {
+      return `${formattedAmount}/year`;
+    }
+  }
+
+  return formattedAmount;
+}
+
+function getFromPriceLabel(pricing: PlanPricing): string {
+  const labels = [
+    formatPriceLabel(pricing.monthly),
+    formatPriceLabel(pricing.lifetime),
+  ].filter(Boolean) as string[];
+
+  if (labels.length === 0) {
+    return "Pricing unavailable";
+  }
+
+  return `From ${labels[0]}`;
+}
+
+async function getPlanPricing(productCode: string): Promise<PlanPricing> {
+  const product = await getActiveProductByCodeDb(productCode);
+
+  if (!product) {
+    return {
+      monthly: null,
+      lifetime: null,
+    };
+  }
+
+  const prices = await getActivePricesForProductDb(product.id);
+
+  return {
+    monthly: matchPriceByBillingShape(
+      prices,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH
+    ),
+    lifetime: matchPriceByBillingShape(prices, BILLING_TYPES.ONE_TIME, null),
+  };
+}
+
+function OwnedButton({ label }: { label: string }) {
+  return (
+    <button
+      type="button"
+      disabled
+      className="inline-flex w-full items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)] px-4 py-2.5 text-sm font-semibold text-[var(--text-secondary)] opacity-80"
+    >
+      {label}
+    </button>
+  );
+}
+
+export default async function PricingPage() {
+  const user = await getCurrentUser();
+
+  const [foundationPricing, higherPricing, higherUpgradePricing, purchaseState] =
+    await Promise.all([
+      getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION),
+      getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER),
+      getPlanPricing(getUpgradeProductCode(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER)),
+      user
+        ? getUserGcseRussianPurchaseStateDb(user.id)
+        : Promise.resolve({
+            canBuyFoundation: true,
+            canBuyHigher: true,
+            canUpgradeToHigher: false,
+          }),
+    ]);
+
+  const foundationMonthlyLabel =
+    formatPriceLabel(foundationPricing.monthly) ?? "Monthly unavailable";
+  const foundationLifetimeLabel =
+    formatPriceLabel(foundationPricing.lifetime) ?? "Lifetime unavailable";
+
+  const higherMonthlyStandardLabel =
+    formatPriceLabel(higherPricing.monthly) ?? "Monthly unavailable";
+  const higherLifetimeStandardLabel =
+    formatPriceLabel(higherPricing.lifetime) ?? "Lifetime unavailable";
+
+  const higherMonthlyUpgradeLabel =
+    formatPriceLabel(higherUpgradePricing.monthly) ?? higherMonthlyStandardLabel;
+  const higherLifetimeUpgradeLabel =
+    formatPriceLabel(higherUpgradePricing.lifetime) ?? higherLifetimeStandardLabel;
+
+  const foundationPriceLabel = getFromPriceLabel(foundationPricing);
+  const higherPriceLabel = purchaseState.canUpgradeToHigher
+    ? `Upgrade from ${higherMonthlyUpgradeLabel}`
+    : getFromPriceLabel(higherPricing);
+
   return (
     <div className="py-8 md:py-12">
       <section className="app-surface-brand app-section-padding-lg">
@@ -86,7 +203,7 @@ export default function PricingPage() {
             <PlanCard
               title="Foundation"
               subtitle="Beginner-friendly structured GCSE Russian learning"
-              priceLabel="From £49"
+              priceLabel={foundationPriceLabel}
               features={[
                 "Full Foundation course access",
                 "Structured lessons and exercises",
@@ -96,32 +213,39 @@ export default function PricingPage() {
               ]}
             >
               <div className="space-y-3">
-                <CheckoutButton
-                  productCode="gcse-russian-foundation"
-                  billingType="subscription"
-                  intervalUnit="month"
-                >
-                  Buy Foundation Monthly (£49)
-                </CheckoutButton>
+                {purchaseState.canBuyFoundation ? (
+                  <>
+                    <CheckoutButton
+                      productCode="gcse-russian-foundation"
+                      billingType="subscription"
+                      intervalUnit="month"
+                    >
+                      Buy Foundation Monthly ({foundationMonthlyLabel})
+                    </CheckoutButton>
 
-                <CheckoutButton
-                  productCode="gcse-russian-foundation"
-                  billingType="one_time"
-                >
-                  Buy Foundation Lifetime (£299)
-                </CheckoutButton>
+                    <CheckoutButton
+                      productCode="gcse-russian-foundation"
+                      billingType="one_time"
+                    >
+                      Buy Foundation Lifetime ({foundationLifetimeLabel})
+                    </CheckoutButton>
+                  </>
+                ) : (
+                  <>
+                    <OwnedButton label="Foundation already owned" />
 
-                <p className="text-xs text-[var(--text-secondary)]">
-                  3-month Foundation plans can be added to the UI next if you want, but
-                  monthly is enough to test the full Stripe flow properly.
-                </p>
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      Your account already has active Foundation access.
+                    </p>
+                  </>
+                )}
               </div>
             </PlanCard>
 
             <PlanCard
               title="Higher"
               subtitle="Advanced GCSE Russian preparation for stronger students"
-              priceLabel="From £59"
+              priceLabel={higherPriceLabel}
               tone="highlight"
               features={[
                 "Full Higher course access",
@@ -133,22 +257,61 @@ export default function PricingPage() {
               ]}
             >
               <div className="space-y-3">
-                <CheckoutButton
-                  productCode="gcse-russian-higher"
-                  billingType="subscription"
-                  intervalUnit="month"
-                >
-                  Buy Higher Monthly (£59)
-                </CheckoutButton>
+                {!purchaseState.canBuyHigher ? (
+                  <>
+                    <OwnedButton label="Higher already owned" />
 
-                <CheckoutButton productCode="gcse-russian-higher" billingType="one_time">
-                  Buy Higher Lifetime (£399)
-                </CheckoutButton>
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      Your account already has active Higher access.
+                    </p>
+                  </>
+                ) : purchaseState.canUpgradeToHigher ? (
+                  <>
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      isUpgrade
+                    >
+                      Upgrade to Higher Monthly ({higherMonthlyUpgradeLabel})
+                    </CheckoutButton>
 
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Upgrade pricing can be added after the main checkout + webhook flow is
-                  fully working.
-                </p>
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="one_time"
+                      isUpgrade
+                    >
+                      Upgrade to Higher Lifetime ({higherLifetimeUpgradeLabel})
+                    </CheckoutButton>
+
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      You already have Foundation access, so these buttons use your
+                      discounted Higher upgrade pricing.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="subscription"
+                      intervalUnit="month"
+                    >
+                      Buy Higher Monthly ({higherMonthlyStandardLabel})
+                    </CheckoutButton>
+
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="one_time"
+                    >
+                      Buy Higher Lifetime ({higherLifetimeStandardLabel})
+                    </CheckoutButton>
+
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      Buy Higher directly if you want the full advanced course from the
+                      start.
+                    </p>
+                  </>
+                )}
               </div>
             </PlanCard>
           </div>
