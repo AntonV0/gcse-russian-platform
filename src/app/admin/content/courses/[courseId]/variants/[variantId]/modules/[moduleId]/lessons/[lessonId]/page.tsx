@@ -2,7 +2,6 @@ import BackNav from "@/components/ui/back-nav";
 import Button from "@/components/ui/button";
 import PageHeader from "@/components/layout/page-header";
 import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
-import { appIcons } from "@/lib/shared/icons";
 import {
   getCourseByIdDb,
   getVariantByIdDb,

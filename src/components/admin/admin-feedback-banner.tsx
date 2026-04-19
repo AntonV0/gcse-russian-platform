@@ -1,5 +1,4 @@
 import AppIcon from "@/components/ui/app-icon";
-import { appIcons } from "@/lib/shared/icons";
 
 type AdminFeedbackBannerProps = {
   success?: string;

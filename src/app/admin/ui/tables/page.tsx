@@ -1,5 +1,4 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { appIcons } from "@/lib/shared/icons";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";

@@ -10,7 +10,6 @@ import {
   setTeacherRoleAction,
   switchStudentAccessGrantAction,
 } from "@/app/actions/admin/admin-user-actions";
-import { appIcons } from "@/lib/shared/icons";
 
 type ProfileRow = {
   id: string;

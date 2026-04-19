@@ -105,10 +105,6 @@ function ButtonInner({
   iconPosition?: "left" | "right";
   iconOnly?: boolean;
 }) {
-  if (iconOnly && icon) {
-    return <AppIcon icon={icon} size={18} />;
-  }
-
   return (
     <>
       {SHOW_UI_DEBUG ? (
@@ -116,8 +112,9 @@ function ButtonInner({
       ) : null}
 
       {icon && iconPosition === "left" ? <AppIcon icon={icon} size={18} /> : null}
-      {children ? <span>{children}</span> : null}
+      {iconOnly ? null : children ? <span>{children}</span> : null}
       {icon && iconPosition === "right" ? <AppIcon icon={icon} size={18} /> : null}
+      {iconOnly && icon ? <AppIcon icon={icon} size={18} /> : null}
     </>
   );
 }
@@ -142,11 +139,9 @@ export default function Button(props: ButtonProps) {
   });
 
   if ("href" in props && props.href) {
-    const { href } = props;
-
     return (
       <Link
-        href={href}
+        href={props.href}
         className={mergedClassName}
         aria-label={ariaLabel}
         title={ariaLabel}
@@ -158,18 +153,7 @@ export default function Button(props: ButtonProps) {
     );
   }
 
-  const {
-    href: _href,
-    variant: _variant,
-    size: _size,
-    className: _className,
-    icon: _icon,
-    iconPosition: _iconPosition,
-    iconOnly: _iconOnly,
-    ariaLabel: _ariaLabel,
-    children: _children,
-    ...buttonProps
-  } = props as ButtonAsButtonProps;
+  const buttonProps = props as ButtonAsButtonProps;
 
   return (
     <button

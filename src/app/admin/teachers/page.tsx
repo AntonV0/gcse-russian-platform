@@ -6,7 +6,6 @@ import Input from "@/components/ui/input";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { setTeacherRoleAction } from "@/app/actions/admin/admin-user-actions";
-import { appIcons } from "@/lib/shared/icons";
 
 type ProfileRow = {
   id: string;

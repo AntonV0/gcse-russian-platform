@@ -97,26 +97,6 @@ function revalidateLessonTemplateEntityPaths() {
   revalidatePath("/admin/lesson-templates/lesson-templates");
 }
 
-function getTrackVisibility(formData: FormData) {
-  const value = getTrimmedString(formData, "trackVisibility");
-
-  if (value === "shared" || value === "foundation_only" || value === "higher_only") {
-    return value;
-  }
-
-  return "shared";
-}
-
-function getDeliveryVisibility(formData: FormData) {
-  const value = getTrimmedString(formData, "deliveryVisibility");
-
-  if (value === "all" || value === "self_study_only" || value === "volna_only") {
-    return value;
-  }
-
-  return "all";
-}
-
 async function revalidateLessonPaths(formData: FormData) {
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");

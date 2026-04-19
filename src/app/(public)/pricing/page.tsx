@@ -26,6 +26,7 @@ type PlanCardProps = {
 
 type PlanPricing = {
   monthly: DbPrice | null;
+  threeMonth: DbPrice | null;
   lifetime: DbPrice | null;
 };
 
@@ -85,11 +86,23 @@ function formatPriceLabel(price: DbPrice | null): string | null {
 
   if (price.billing_type === BILLING_TYPES.SUBSCRIPTION) {
     if (price.interval_unit === INTERVAL_UNITS.MONTH) {
-      return `${formattedAmount}/month`;
+      const count = price.interval_count ?? 1;
+
+      if (count === 1) {
+        return `${formattedAmount}/month`;
+      }
+
+      return `${formattedAmount}/${count} months`;
     }
 
     if (price.interval_unit === INTERVAL_UNITS.YEAR) {
-      return `${formattedAmount}/year`;
+      const count = price.interval_count ?? 1;
+
+      if (count === 1) {
+        return `${formattedAmount}/year`;
+      }
+
+      return `${formattedAmount}/${count} years`;
     }
   }
 
@@ -99,6 +112,7 @@ function formatPriceLabel(price: DbPrice | null): string | null {
 function getFromPriceLabel(pricing: PlanPricing): string {
   const labels = [
     formatPriceLabel(pricing.monthly),
+    formatPriceLabel(pricing.threeMonth),
     formatPriceLabel(pricing.lifetime),
   ].filter(Boolean) as string[];
 
@@ -115,6 +129,7 @@ async function getPlanPricing(productCode: string): Promise<PlanPricing> {
   if (!product) {
     return {
       monthly: null,
+      threeMonth: null,
       lifetime: null,
     };
   }
@@ -125,9 +140,16 @@ async function getPlanPricing(productCode: string): Promise<PlanPricing> {
     monthly: matchPriceByBillingShape(
       prices,
       BILLING_TYPES.SUBSCRIPTION,
-      INTERVAL_UNITS.MONTH
+      INTERVAL_UNITS.MONTH,
+      1
     ),
-    lifetime: matchPriceByBillingShape(prices, BILLING_TYPES.ONE_TIME, null),
+    threeMonth: matchPriceByBillingShape(
+      prices,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      3
+    ),
+    lifetime: matchPriceByBillingShape(prices, BILLING_TYPES.ONE_TIME, null, null),
   };
 }
 
@@ -162,16 +184,22 @@ export default async function PricingPage() {
 
   const foundationMonthlyLabel =
     formatPriceLabel(foundationPricing.monthly) ?? "Monthly unavailable";
+  const foundationThreeMonthLabel =
+    formatPriceLabel(foundationPricing.threeMonth) ?? "3-month unavailable";
   const foundationLifetimeLabel =
     formatPriceLabel(foundationPricing.lifetime) ?? "Lifetime unavailable";
 
   const higherMonthlyStandardLabel =
     formatPriceLabel(higherPricing.monthly) ?? "Monthly unavailable";
+  const higherThreeMonthStandardLabel =
+    formatPriceLabel(higherPricing.threeMonth) ?? "3-month unavailable";
   const higherLifetimeStandardLabel =
     formatPriceLabel(higherPricing.lifetime) ?? "Lifetime unavailable";
 
   const higherMonthlyUpgradeLabel =
     formatPriceLabel(higherUpgradePricing.monthly) ?? higherMonthlyStandardLabel;
+  const higherThreeMonthUpgradeLabel =
+    formatPriceLabel(higherUpgradePricing.threeMonth) ?? higherThreeMonthStandardLabel;
   const higherLifetimeUpgradeLabel =
     formatPriceLabel(higherUpgradePricing.lifetime) ?? higherLifetimeStandardLabel;
 
@@ -192,9 +220,8 @@ export default async function PricingPage() {
             <div className="space-y-3">
               <h1 className="app-title">Choose your GCSE Russian course access</h1>
               <p className="mx-auto max-w-3xl app-subtitle">
-                Start with Foundation or go straight to Higher. All plans use Stripe
-                checkout. Higher includes more advanced content and is designed for
-                students aiming for the top grades.
+                Start with Foundation or go straight to Higher. Higher includes more
+                advanced content and is designed for students aiming for the top grades.
               </p>
             </div>
           </div>
@@ -219,8 +246,18 @@ export default async function PricingPage() {
                       productCode="gcse-russian-foundation"
                       billingType="subscription"
                       intervalUnit="month"
+                      intervalCount={1}
                     >
                       Buy Foundation Monthly ({foundationMonthlyLabel})
+                    </CheckoutButton>
+
+                    <CheckoutButton
+                      productCode="gcse-russian-foundation"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      intervalCount={3}
+                    >
+                      Buy Foundation 3 Months ({foundationThreeMonthLabel})
                     </CheckoutButton>
 
                     <CheckoutButton
@@ -271,9 +308,20 @@ export default async function PricingPage() {
                       productCode="gcse-russian-higher"
                       billingType="subscription"
                       intervalUnit="month"
+                      intervalCount={1}
                       isUpgrade
                     >
                       Upgrade to Higher Monthly ({higherMonthlyUpgradeLabel})
+                    </CheckoutButton>
+
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      intervalCount={3}
+                      isUpgrade
+                    >
+                      Upgrade to Higher 3 Months ({higherThreeMonthUpgradeLabel})
                     </CheckoutButton>
 
                     <CheckoutButton
@@ -285,8 +333,8 @@ export default async function PricingPage() {
                     </CheckoutButton>
 
                     <p className="text-xs text-[var(--text-secondary)]">
-                      You already have Foundation access, so these buttons use your
-                      discounted Higher upgrade pricing.
+                      Upgrade pricing depends on your active Foundation plan and is not
+                      cumulative across repeated subscription renewals.
                     </p>
                   </>
                 ) : (
@@ -295,8 +343,18 @@ export default async function PricingPage() {
                       productCode="gcse-russian-higher"
                       billingType="subscription"
                       intervalUnit="month"
+                      intervalCount={1}
                     >
                       Buy Higher Monthly ({higherMonthlyStandardLabel})
+                    </CheckoutButton>
+
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      intervalCount={3}
+                    >
+                      Buy Higher 3 Months ({higherThreeMonthStandardLabel})
                     </CheckoutButton>
 
                     <CheckoutButton
@@ -322,7 +380,7 @@ export default async function PricingPage() {
             </p>
             <p className="mt-2">
               You can also study through Volna School with live lessons and teacher
-              support. That flow can stay separate from Stripe.
+              support. That flow stays separate from Stripe.
             </p>
 
             <div className="mt-4">

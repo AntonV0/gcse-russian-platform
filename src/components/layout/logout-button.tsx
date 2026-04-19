@@ -2,7 +2,6 @@
 
 import { signOut } from "@/app/actions/auth/auth";
 import Button from "@/components/ui/button";
-import { appIcons } from "@/lib/shared/icons";
 
 export default function LogoutButton() {
   return (

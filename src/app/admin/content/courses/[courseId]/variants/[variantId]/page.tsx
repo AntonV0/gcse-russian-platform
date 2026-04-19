@@ -5,7 +5,6 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
-import { appIcons } from "@/lib/shared/icons";
 import {
   getCourseByIdDb,
   getModulesByVariantIdDb,
@@ -76,7 +75,7 @@ export default async function AdminVariantDetailPage({
             <div className="flex flex-wrap gap-2 pt-1">
               <Badge
                 tone={variant.is_active ? "success" : "warning"}
-                icon={variant.is_active ? appIcons.completed : appIcons.pending}
+                icon={variant.is_active ? "completed" : "pending"}
               >
                 {variant.is_active ? "Active" : "Inactive"}
               </Badge>
