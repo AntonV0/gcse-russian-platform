@@ -14,7 +14,7 @@ export default function FormField({
   labelClassName,
 }: FormFieldProps) {
   return (
-    <div className={["space-y-1.5", className].filter(Boolean).join(" ")}>
+    <div className={["space-y-2", className].filter(Boolean).join(" ")}>
       <label
         className={[
           "block text-sm font-medium text-[var(--text-primary)]",
@@ -25,8 +25,10 @@ export default function FormField({
       >
         {label}
       </label>
+
       {children}
-      {hint ? <p className="text-xs app-text-soft">{hint}</p> : null}
+
+      {hint ? <p className="text-xs leading-5 app-text-soft">{hint}</p> : null}
     </div>
   );
 }
