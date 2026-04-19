@@ -25,11 +25,7 @@ export default async function AdminQuestionSetsPage() {
           description="Manage reusable question sets for lessons and assignments."
         />
 
-        <Button
-          href="/admin/question-sets/create"
-          variant="primary"
-          icon={appIcons.write}
-        >
+        <Button href="/admin/question-sets/create" variant="primary" icon="write">
           Create question set
         </Button>
       </div>
@@ -50,7 +46,7 @@ export default async function AdminQuestionSetsPage() {
                 <DashboardCard title={questionSet.title}>
                   <div className="space-y-3">
                     <div className="flex flex-wrap gap-2">
-                      <Badge tone="muted" icon={appIcons.file}>
+                      <Badge tone="muted" icon="file">
                         {questionSet.slug}
                       </Badge>
                     </div>
@@ -64,7 +60,7 @@ export default async function AdminQuestionSetsPage() {
                     ) : null}
 
                     <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <AppIcon icon={appIcons.preview} size={16} />
+                      <AppIcon icon="preview" size={16} />
                       <span>Open question set</span>
                     </div>
                   </div>

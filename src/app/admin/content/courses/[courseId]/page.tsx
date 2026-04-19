@@ -39,7 +39,7 @@ export default async function AdminCourseDetailPage({
 
   return (
     <main className="space-y-6">
-      <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
+      <Button href="/admin/content" variant="quiet" icon="back">
         Back to content
       </Button>
 
@@ -59,17 +59,11 @@ export default async function AdminCourseDetailPage({
             </div>
 
             <div className="flex flex-wrap gap-2 pt-1">
-              <Badge
-                tone={course.is_active ? "success" : "warning"}
-                icon={appIcons.completed}
-              >
+              <Badge tone={course.is_active ? "success" : "warning"} icon="completed">
                 {course.is_active ? "Active" : "Inactive"}
               </Badge>
 
-              <Badge
-                tone={course.is_published ? "info" : "muted"}
-                icon={appIcons.preview}
-              >
+              <Badge tone={course.is_published ? "info" : "muted"} icon="preview">
                 {course.is_published ? "Published" : "Draft"}
               </Badge>
             </div>
@@ -87,16 +81,12 @@ export default async function AdminCourseDetailPage({
             <Button
               href={`/admin/content/courses/${course.id}/edit`}
               variant="secondary"
-              icon={appIcons.edit}
+              icon="edit"
             >
               Edit course
             </Button>
 
-            <Button
-              href={`/courses/${course.slug}`}
-              variant="secondary"
-              icon={appIcons.preview}
-            >
+            <Button href={`/courses/${course.slug}`} variant="secondary" icon="preview">
               Open public course
             </Button>
           </div>
@@ -129,7 +119,7 @@ export default async function AdminCourseDetailPage({
               <CheckboxField name="isPublished" label="Published" />
             </div>
 
-            <Button type="submit" variant="primary" icon={appIcons.create}>
+            <Button type="submit" variant="primary" icon="create">
               Create variant
             </Button>
           </form>
@@ -165,10 +155,7 @@ export default async function AdminCourseDetailPage({
                       {variant.is_active ? "Active" : "Inactive"}
                     </Badge>
 
-                    <Badge
-                      tone={variant.is_published ? "info" : "muted"}
-                      icon={appIcons.preview}
-                    >
+                    <Badge tone={variant.is_published ? "info" : "muted"} icon="preview">
                       {variant.is_published ? "Published" : "Draft"}
                     </Badge>
                   </div>
@@ -185,7 +172,7 @@ export default async function AdminCourseDetailPage({
                         size="sm"
                         variant="secondary"
                         disabled={index === 0}
-                        icon={appIcons.up}
+                        icon="up"
                         iconOnly
                         ariaLabel="Move variant up"
                       />
@@ -200,7 +187,7 @@ export default async function AdminCourseDetailPage({
                         size="sm"
                         variant="secondary"
                         disabled={index === variants.length - 1}
-                        icon={appIcons.down}
+                        icon="down"
                         iconOnly
                         ariaLabel="Move variant down"
                       />
@@ -212,7 +199,7 @@ export default async function AdminCourseDetailPage({
                       href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
                       size="sm"
                       variant="secondary"
-                      icon={appIcons.edit}
+                      icon="edit"
                     >
                       Edit
                     </Button>
@@ -221,7 +208,7 @@ export default async function AdminCourseDetailPage({
                       href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
                       size="sm"
                       variant="secondary"
-                      icon={appIcons.preview}
+                      icon="preview"
                     >
                       Open
                     </Button>

@@ -42,10 +42,10 @@ export default async function AdminUiComponentsPage() {
               description="Manage modules, lesson counts, and ordering for this variant."
               actions={
                 <InlineActions>
-                  <Button variant="secondary" icon={appIcons.filter}>
+                  <Button variant="secondary" icon="filter">
                     Filter
                   </Button>
-                  <Button variant="primary" icon={appIcons.create}>
+                  <Button variant="primary" icon="create">
                     Add module
                   </Button>
                 </InlineActions>
@@ -77,10 +77,10 @@ export default async function AdminUiComponentsPage() {
                 Reusable for student-facing summaries and admin overviews.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon={appIcons.preview}>
+                <Badge tone="info" icon="preview">
                   Published
                 </Badge>
-                <Badge tone="muted" icon={appIcons.file}>
+                <Badge tone="muted" icon="file">
                   8 lessons
                 </Badge>
               </div>
@@ -93,10 +93,10 @@ export default async function AdminUiComponentsPage() {
                 Good for dense summaries with strong hierarchy and compact metadata.
               </p>
               <InlineActions>
-                <Button variant="secondary" size="sm" icon={appIcons.search}>
+                <Button variant="secondary" size="sm" icon="search">
                   Review
                 </Button>
-                <Button variant="primary" size="sm" icon={appIcons.create}>
+                <Button variant="primary" size="sm" icon="create">
                   New assignment
                 </Button>
               </InlineActions>
@@ -110,20 +110,20 @@ export default async function AdminUiComponentsPage() {
             subtitle="Foundation / Overview module"
             badges={
               <>
-                <Badge tone="info" icon={appIcons.preview}>
+                <Badge tone="info" icon="preview">
                   Published
                 </Badge>
-                <Badge tone="muted" icon={appIcons.file}>
+                <Badge tone="muted" icon="file">
                   4 sections
                 </Badge>
               </>
             }
             actions={
               <InlineActions>
-                <Button variant="secondary" size="sm" icon={appIcons.edit}>
+                <Button variant="secondary" size="sm" icon="edit">
                   Edit
                 </Button>
-                <Button variant="quiet" size="sm" icon={appIcons.next}>
+                <Button variant="quiet" size="sm" icon="next">
                   Open
                 </Button>
               </InlineActions>
@@ -135,20 +135,20 @@ export default async function AdminUiComponentsPage() {
             subtitle="Higher / Theme-based lesson"
             badges={
               <>
-                <Badge tone="warning" icon={appIcons.pending}>
+                <Badge tone="warning" icon="pending">
                   Draft
                 </Badge>
-                <Badge tone="muted" icon={appIcons.file}>
+                <Badge tone="muted" icon="file">
                   6 blocks
                 </Badge>
               </>
             }
             actions={
               <InlineActions>
-                <Button variant="secondary" size="sm" icon={appIcons.edit}>
+                <Button variant="secondary" size="sm" icon="edit">
                   Edit
                 </Button>
-                <Button variant="danger" size="sm" icon={appIcons.delete}>
+                <Button variant="danger" size="sm" icon="delete">
                   Delete
                 </Button>
               </InlineActions>
@@ -175,10 +175,10 @@ export default async function AdminUiComponentsPage() {
 
               <div className="pt-2">
                 <InlineActions>
-                  <Button variant="secondary" icon={appIcons.edit}>
+                  <Button variant="secondary" icon="edit">
                     Edit
                   </Button>
-                  <Button variant="primary" icon={appIcons.next}>
+                  <Button variant="primary" icon="next">
                     Open course
                   </Button>
                 </InlineActions>
@@ -253,10 +253,10 @@ export default async function AdminUiComponentsPage() {
             </div>
 
             <InlineActions>
-              <Button variant="primary" icon={appIcons.completed}>
+              <Button variant="primary" icon="completed">
                 Save changes
               </Button>
-              <Button variant="secondary" icon={appIcons.back}>
+              <Button variant="secondary" icon="back">
                 Cancel
               </Button>
             </InlineActions>
@@ -287,7 +287,7 @@ export default async function AdminUiComponentsPage() {
               </Select>
             </FormField>
 
-            <Button variant="secondary" icon={appIcons.save}>
+            <Button variant="secondary" icon="save">
               Update panel
             </Button>
           </div>
@@ -303,7 +303,7 @@ export default async function AdminUiComponentsPage() {
             title="No lessons yet"
             description="Create your first lesson to start building out this module."
             action={
-              <Button variant="primary" icon={appIcons.create}>
+              <Button variant="primary" icon="create">
                 Add lesson
               </Button>
             }
@@ -313,7 +313,7 @@ export default async function AdminUiComponentsPage() {
             title="No results match your filters"
             description="Try broadening your search or resetting the active filters."
             action={
-              <Button variant="secondary" icon={appIcons.refresh}>
+              <Button variant="secondary" icon="refresh">
                 Reset filters
               </Button>
             }

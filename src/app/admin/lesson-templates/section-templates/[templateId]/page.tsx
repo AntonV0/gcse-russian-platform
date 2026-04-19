@@ -43,7 +43,7 @@ export default async function AdminLessonSectionTemplateDetailPage({
           <Button
             href="/admin/lesson-templates/section-templates"
             variant="secondary"
-            icon={appIcons.back}
+            icon="back"
           >
             Back
           </Button>
@@ -52,20 +52,20 @@ export default async function AdminLessonSectionTemplateDetailPage({
 
       <section className="rounded-2xl border bg-white p-4 shadow-sm">
         <div className="mb-4 flex flex-wrap gap-2">
-          <Badge tone="muted" icon={appIcons.file}>
+          <Badge tone="muted" icon="file">
             {detail.template.slug}
           </Badge>
 
-          <Badge tone="muted" icon={appIcons.help}>
+          <Badge tone="muted" icon="help">
             {detail.template.default_section_kind}
           </Badge>
 
           {detail.template.is_active ? (
-            <Badge tone="success" icon={appIcons.completed}>
+            <Badge tone="success" icon="completed">
               Active
             </Badge>
           ) : (
-            <Badge tone="warning" icon={appIcons.pending}>
+            <Badge tone="warning" icon="pending">
               Inactive
             </Badge>
           )}
@@ -273,22 +273,22 @@ export default async function AdminLessonSectionTemplateDetailPage({
                       </div>
 
                       <div className="mt-2 flex flex-wrap gap-2">
-                        <Badge tone="muted" icon={appIcons.help}>
+                        <Badge tone="muted" icon="help">
                           Position {link.position}
                         </Badge>
 
                         {preset ? (
-                          <Badge tone="muted" icon={appIcons.file}>
+                          <Badge tone="muted" icon="file">
                             {preset.slug}
                           </Badge>
                         ) : null}
 
                         {preset?.is_active ? (
-                          <Badge tone="success" icon={appIcons.completed}>
+                          <Badge tone="success" icon="completed">
                             Active
                           </Badge>
                         ) : (
-                          <Badge tone="warning" icon={appIcons.pending}>
+                          <Badge tone="warning" icon="pending">
                             Inactive
                           </Badge>
                         )}

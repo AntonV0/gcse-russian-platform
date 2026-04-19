@@ -98,7 +98,7 @@ export default function PlatformSidebar({
       <div className="mb-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-3 py-3">
         <div className="flex items-center gap-3">
           <span className="app-brand-mark ring-1 ring-[var(--border)]">
-            <AppIcon icon={appIcons.school} size={18} className="app-brand-text" />
+            <AppIcon icon="school" size={18} className="app-brand-text" />
           </span>
 
           <div className="min-w-0">

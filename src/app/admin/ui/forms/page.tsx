@@ -158,10 +158,10 @@ function DemoFormLayouts() {
           </FormField>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <Button variant="primary" icon={appIcons.completed}>
+            <Button variant="primary" icon="completed">
               Save changes
             </Button>
-            <Button variant="secondary" icon={appIcons.back}>
+            <Button variant="secondary" icon="back">
               Cancel
             </Button>
           </div>

@@ -60,7 +60,7 @@ export default async function ProfilePage({
           title="You are not signed in"
           description="Log in to access your student profile."
           action={
-            <Button href="/login" variant="primary" icon={appIcons.user}>
+            <Button href="/login" variant="primary" icon="user">
               Log in
             </Button>
           }
@@ -107,7 +107,7 @@ export default async function ProfilePage({
               <div className="text-sm app-text-muted">{user.email}</div>
             </div>
 
-            <Badge tone="info" icon={appIcons.user}>
+            <Badge tone="info" icon="user">
               Student profile
             </Badge>
           </div>
@@ -122,11 +122,11 @@ export default async function ProfilePage({
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button href="/settings" variant="secondary" icon={appIcons.settings}>
+              <Button href="/settings" variant="secondary" icon="settings">
                 Open settings
               </Button>
 
-              <Button href="/dashboard" variant="secondary" icon={appIcons.dashboard}>
+              <Button href="/dashboard" variant="secondary" icon="dashboard">
                 Back to dashboard
               </Button>
             </div>
@@ -198,7 +198,7 @@ export default async function ProfilePage({
               </div>
 
               <div className="pt-2">
-                <Button type="submit" variant="primary" icon={appIcons.save}>
+                <Button type="submit" variant="primary" icon="save">
                   Save profile
                 </Button>
               </div>

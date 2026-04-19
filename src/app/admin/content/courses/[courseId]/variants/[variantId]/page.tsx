@@ -43,15 +43,11 @@ export default async function AdminVariantDetailPage({
   return (
     <main className="space-y-6">
       <div className="flex flex-wrap gap-2">
-        <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
+        <Button href="/admin/content" variant="quiet" icon="back">
           Back to content
         </Button>
 
-        <Button
-          href={`/admin/content/courses/${course.id}`}
-          variant="quiet"
-          icon={appIcons.back}
-        >
+        <Button href={`/admin/content/courses/${course.id}`} variant="quiet" icon="back">
           Back to {course.title}
         </Button>
       </div>
@@ -85,10 +81,7 @@ export default async function AdminVariantDetailPage({
                 {variant.is_active ? "Active" : "Inactive"}
               </Badge>
 
-              <Badge
-                tone={variant.is_published ? "info" : "muted"}
-                icon={appIcons.preview}
-              >
+              <Badge tone={variant.is_published ? "info" : "muted"} icon="preview">
                 {variant.is_published ? "Published" : "Draft"}
               </Badge>
             </div>
@@ -106,7 +99,7 @@ export default async function AdminVariantDetailPage({
             <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
               variant="secondary"
-              icon={appIcons.edit}
+              icon="edit"
             >
               Edit variant
             </Button>
@@ -114,7 +107,7 @@ export default async function AdminVariantDetailPage({
             <Button
               href={`/courses/${course.slug}/${variant.slug}`}
               variant="secondary"
-              icon={appIcons.preview}
+              icon="preview"
             >
               Open public variant
             </Button>
@@ -146,7 +139,7 @@ export default async function AdminVariantDetailPage({
 
             <CheckboxField name="isPublished" label="Published" />
 
-            <Button type="submit" variant="primary" icon={appIcons.create}>
+            <Button type="submit" variant="primary" icon="create">
               Create module
             </Button>
           </form>
@@ -167,7 +160,7 @@ export default async function AdminVariantDetailPage({
           <form action={archiveVariantAction}>
             <input type="hidden" name="courseId" value={course.id} />
             <input type="hidden" name="variantId" value={variant.id} />
-            <Button type="submit" variant="danger" icon={appIcons.delete}>
+            <Button type="submit" variant="danger" icon="delete">
               Archive variant
             </Button>
           </form>
@@ -196,10 +189,7 @@ export default async function AdminVariantDetailPage({
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <Badge
-                      tone={module.is_published ? "info" : "muted"}
-                      icon={appIcons.preview}
-                    >
+                    <Badge tone={module.is_published ? "info" : "muted"} icon="preview">
                       {module.is_published ? "Published" : "Draft"}
                     </Badge>
                   </div>
@@ -217,7 +207,7 @@ export default async function AdminVariantDetailPage({
                         size="sm"
                         variant="secondary"
                         disabled={index === 0}
-                        icon={appIcons.up}
+                        icon="up"
                         iconOnly
                         ariaLabel="Move module up"
                       />
@@ -233,7 +223,7 @@ export default async function AdminVariantDetailPage({
                         size="sm"
                         variant="secondary"
                         disabled={index === modules.length - 1}
-                        icon={appIcons.down}
+                        icon="down"
                         iconOnly
                         ariaLabel="Move module down"
                       />
@@ -245,7 +235,7 @@ export default async function AdminVariantDetailPage({
                       href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
                       size="sm"
                       variant="secondary"
-                      icon={appIcons.edit}
+                      icon="edit"
                     >
                       Edit
                     </Button>
@@ -254,7 +244,7 @@ export default async function AdminVariantDetailPage({
                       href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
                       size="sm"
                       variant="secondary"
-                      icon={appIcons.preview}
+                      icon="preview"
                     >
                       Open
                     </Button>

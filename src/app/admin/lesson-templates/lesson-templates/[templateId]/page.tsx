@@ -45,7 +45,7 @@ export default async function AdminLessonTemplateDetailPage({
           <Button
             href="/admin/lesson-templates/lesson-templates"
             variant="secondary"
-            icon={appIcons.back}
+            icon="back"
           >
             Back
           </Button>
@@ -54,16 +54,16 @@ export default async function AdminLessonTemplateDetailPage({
 
       <section className="rounded-2xl border bg-white p-4 shadow-sm">
         <div className="mb-4 flex flex-wrap gap-2">
-          <Badge tone="muted" icon={appIcons.file}>
+          <Badge tone="muted" icon="file">
             {detail.template.slug}
           </Badge>
 
           {detail.template.is_active ? (
-            <Badge tone="success" icon={appIcons.completed}>
+            <Badge tone="success" icon="completed">
               Active
             </Badge>
           ) : (
-            <Badge tone="warning" icon={appIcons.pending}>
+            <Badge tone="warning" icon="pending">
               Inactive
             </Badge>
           )}
@@ -250,16 +250,16 @@ export default async function AdminLessonTemplateDetailPage({
               return (
                 <section key={section.id} className="rounded-xl border p-4">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
-                    <Badge tone="muted" icon={appIcons.help}>
+                    <Badge tone="muted" icon="help">
                       Position {section.position}
                     </Badge>
 
                     {baseTemplate ? (
                       <>
-                        <Badge tone="muted" icon={appIcons.file}>
+                        <Badge tone="muted" icon="file">
                           {baseTemplate.title}
                         </Badge>
-                        <Badge tone="muted" icon={appIcons.help}>
+                        <Badge tone="muted" icon="help">
                           {baseTemplate.slug}
                         </Badge>
                       </>

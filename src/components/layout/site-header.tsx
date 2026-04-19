@@ -50,7 +50,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="app-brand-lockup shrink-0" onClick={closeMobileMenu}>
             <span className="app-brand-mark ring-1 ring-[var(--border)]">
-              <AppIcon icon={appIcons.school} size={18} className="app-brand-text" />
+              <AppIcon icon="school" size={18} className="app-brand-text" />
             </span>
 
             <span className="text-lg font-semibold tracking-tight app-brand-text">

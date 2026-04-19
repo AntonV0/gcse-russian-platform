@@ -150,7 +150,7 @@ export default function AllIconsBrowser() {
                 type="button"
                 size="sm"
                 variant="secondary"
-                icon={appIcons.back}
+                icon="back"
                 disabled={page === 1}
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
               >
@@ -161,7 +161,7 @@ export default function AllIconsBrowser() {
                 type="button"
                 size="sm"
                 variant="secondary"
-                icon={appIcons.next}
+                icon="next"
                 disabled={page === totalPages}
                 onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
               >

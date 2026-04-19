@@ -106,16 +106,16 @@ export default async function AdminUiSurfacesPage() {
               </p>
 
               <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon={appIcons.preview}>
+                <Badge tone="info" icon="preview">
                   Published
                 </Badge>
-                <Badge tone="muted" icon={appIcons.file}>
+                <Badge tone="muted" icon="file">
                   8 items
                 </Badge>
               </div>
 
               <div className="pt-2">
-                <Button variant="secondary" icon={appIcons.edit}>
+                <Button variant="secondary" icon="edit">
                   Edit panel
                 </Button>
               </div>
@@ -133,10 +133,10 @@ export default async function AdminUiSurfacesPage() {
               </p>
 
               <div className="flex flex-wrap gap-3">
-                <Button variant="primary" icon={appIcons.create}>
+                <Button variant="primary" icon="create">
                   Primary action
                 </Button>
-                <Button variant="secondary" icon={appIcons.back}>
+                <Button variant="secondary" icon="back">
                   Secondary action
                 </Button>
               </div>
@@ -170,7 +170,7 @@ export default async function AdminUiSurfacesPage() {
           <div className="app-surface-brand app-section-padding-lg">
             <div className="max-w-2xl">
               <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon={appIcons.surfaces} size={18} className="app-brand-text" />
+                <AppIcon icon="surfaces" size={18} className="app-brand-text" />
                 <div className="font-semibold text-[var(--text-primary)]">
                   Branded top section
                 </div>
@@ -240,7 +240,7 @@ export default async function AdminUiSurfacesPage() {
           <Card>
             <CardBody>
               <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon={appIcons.component} size={16} className="app-brand-text" />
+                <AppIcon icon="component" size={16} className="app-brand-text" />
                 <div className="font-semibold text-[var(--text-primary)]">
                   Use app-card by default
                 </div>
@@ -255,7 +255,7 @@ export default async function AdminUiSurfacesPage() {
           <Card>
             <CardBody>
               <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon={appIcons.warning} size={16} className="app-brand-text" />
+                <AppIcon icon="warning" size={16} className="app-brand-text" />
                 <div className="font-semibold text-[var(--text-primary)]">
                   Use branded surfaces sparingly
                 </div>
@@ -269,7 +269,7 @@ export default async function AdminUiSurfacesPage() {
           <Card>
             <CardBody>
               <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon={appIcons.forms} size={16} className="app-brand-text" />
+                <AppIcon icon="forms" size={16} className="app-brand-text" />
                 <div className="font-semibold text-[var(--text-primary)]">
                   Match surface to density
                 </div>
@@ -284,7 +284,7 @@ export default async function AdminUiSurfacesPage() {
           <Card>
             <CardBody>
               <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon={appIcons.idea} size={16} className="app-brand-text" />
+                <AppIcon icon="idea" size={16} className="app-brand-text" />
                 <div className="font-semibold text-[var(--text-primary)]">
                   Prefer hierarchy over effects
                 </div>

@@ -72,7 +72,7 @@ export default async function AdminLessonTemplatesListPage() {
           description="Full lesson scaffolds built from ordered section templates."
         />
 
-        <Button href="/admin/lesson-templates" variant="secondary" icon={appIcons.back}>
+        <Button href="/admin/lesson-templates" variant="secondary" icon="back">
           Back
         </Button>
       </div>
@@ -96,20 +96,20 @@ export default async function AdminLessonTemplatesListPage() {
                   <div className="font-medium text-gray-900">{template.title}</div>
 
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge tone="muted" icon={appIcons.file}>
+                    <Badge tone="muted" icon="file">
                       {template.slug}
                     </Badge>
 
-                    <Badge tone="muted" icon={appIcons.help}>
+                    <Badge tone="muted" icon="help">
                       {sectionCountByTemplateId.get(template.id) ?? 0} section(s)
                     </Badge>
 
                     {template.is_active ? (
-                      <Badge tone="success" icon={appIcons.completed}>
+                      <Badge tone="success" icon="completed">
                         Active
                       </Badge>
                     ) : (
-                      <Badge tone="warning" icon={appIcons.pending}>
+                      <Badge tone="warning" icon="pending">
                         Inactive
                       </Badge>
                     )}

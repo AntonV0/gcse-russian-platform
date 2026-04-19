@@ -257,10 +257,6 @@ export async function syncFoundationSectionProgressToHigherSameLesson({
   const typedTargetSections = (targetSections ?? []) as LessonSectionMetaRow[];
 
   for (const targetSection of typedTargetSections) {
-    if (targetSection.id === sectionId) {
-      continue;
-    }
-
     await touchLessonSectionProgress(userId, typedTargetLesson.id, targetSection.id);
   }
 }

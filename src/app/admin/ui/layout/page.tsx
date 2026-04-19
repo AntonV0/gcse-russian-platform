@@ -107,10 +107,10 @@ function StackDemo() {
           description="Top-level page section with title, context, and actions."
           actions={
             <div className="flex flex-wrap gap-3">
-              <Button variant="secondary" icon={appIcons.filter}>
+              <Button variant="secondary" icon="filter">
                 Filter
               </Button>
-              <Button variant="primary" icon={appIcons.create}>
+              <Button variant="primary" icon="create">
                 Add item
               </Button>
             </div>
@@ -166,7 +166,7 @@ function ResponsiveRules() {
       {rules.map((rule) => (
         <div key={rule} className="app-card p-4">
           <div className="flex items-start gap-3">
-            <AppIcon icon={appIcons.layout} size={16} className="mt-0.5 app-brand-text" />
+            <AppIcon icon="layout" size={16} className="mt-0.5 app-brand-text" />
             <div className="text-sm app-text-muted">{rule}</div>
           </div>
         </div>

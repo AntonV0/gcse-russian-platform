@@ -436,11 +436,11 @@ export default async function AdminStudentsPage({
           </FormField>
 
           <div className="flex items-end gap-2">
-            <Button type="submit" variant="primary" icon={appIcons.filter}>
+            <Button type="submit" variant="primary" icon="filter">
               Apply
             </Button>
 
-            <Button href="/admin/students" variant="secondary" icon={appIcons.back}>
+            <Button href="/admin/students" variant="secondary" icon="back">
               Reset
             </Button>
           </div>
@@ -478,16 +478,16 @@ export default async function AdminStudentsPage({
                     </div>
 
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                      <Badge tone="info" icon={appIcons.user}>
+                      <Badge tone="info" icon="user">
                         {student.accessLabel}
                       </Badge>
 
-                      <Badge tone="success" icon={appIcons.completed}>
+                      <Badge tone="success" icon="completed">
                         Active
                       </Badge>
 
                       {student.groupNames.map((groupName) => (
-                        <Badge key={groupName} tone="muted" icon={appIcons.users}>
+                        <Badge key={groupName} tone="muted" icon="users">
                           {groupName}
                         </Badge>
                       ))}
@@ -545,7 +545,7 @@ export default async function AdminStudentsPage({
                         href={`/admin/students/${student.id}`}
                         variant="secondary"
                         size="sm"
-                        icon={appIcons.preview}
+                        icon="preview"
                       >
                         View
                       </Button>
@@ -581,16 +581,16 @@ export default async function AdminStudentsPage({
                     </div>
 
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                      <Badge tone="muted" icon={appIcons.user}>
+                      <Badge tone="muted" icon="user">
                         {student.accessLabel}
                       </Badge>
 
-                      <Badge tone="warning" icon={appIcons.pending}>
+                      <Badge tone="warning" icon="pending">
                         Inactive
                       </Badge>
 
                       {student.groupNames.map((groupName) => (
-                        <Badge key={groupName} tone="muted" icon={appIcons.users}>
+                        <Badge key={groupName} tone="muted" icon="users">
                           {groupName}
                         </Badge>
                       ))}
@@ -648,7 +648,7 @@ export default async function AdminStudentsPage({
                         href={`/admin/students/${student.id}`}
                         variant="secondary"
                         size="sm"
-                        icon={appIcons.preview}
+                        icon="preview"
                       >
                         View
                       </Button>

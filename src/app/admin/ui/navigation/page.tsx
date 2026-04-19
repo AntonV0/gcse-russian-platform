@@ -22,7 +22,7 @@ function DemoSiteHeader() {
         <div className="flex items-center justify-between gap-3">
           <div className="app-brand-lockup shrink-0">
             <span className="app-brand-mark ring-1 ring-[var(--border)]">
-              <AppIcon icon={appIcons.school} size={18} className="app-brand-text" />
+              <AppIcon icon="school" size={18} className="app-brand-text" />
             </span>
 
             <span className="text-lg font-semibold tracking-tight app-brand-text">
@@ -48,7 +48,7 @@ function DemoSiteHeader() {
             <div className="mx-1 h-5 w-px bg-[var(--border)]" />
 
             <button type="button" className="app-icon-button">
-              <AppIcon icon={appIcons.moon} size={17} className="app-icon-button-icon" />
+              <AppIcon icon="moon" size={17} className="app-icon-button-icon" />
             </button>
 
             <span className="max-w-[220px] truncate text-sm text-[color:var(--text-muted)]/85">
@@ -56,18 +56,18 @@ function DemoSiteHeader() {
             </span>
 
             <div className="app-btn-base app-btn-accent rounded-lg px-3 py-2 text-sm">
-              <AppIcon icon={appIcons.userX} size={16} />
+              <AppIcon icon="userX" size={16} />
               Log out
             </div>
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
             <button type="button" className="app-icon-button">
-              <AppIcon icon={appIcons.moon} size={17} className="app-icon-button-icon" />
+              <AppIcon icon="moon" size={17} className="app-icon-button-icon" />
             </button>
 
             <button type="button" className="app-icon-button">
-              <AppIcon icon={appIcons.menu} size={18} className="app-icon-button-icon" />
+              <AppIcon icon="menu" size={18} className="app-icon-button-icon" />
             </button>
           </div>
         </div>
@@ -128,9 +128,9 @@ function DemoAdminSidebar() {
         </div>
 
         <div className="flex items-center gap-2 rounded-xl bg-[var(--background-muted)] px-3 py-2 font-medium text-[var(--text-primary)]">
-          <AppIcon icon={appIcons.uiLab} size={18} />
+          <AppIcon icon="uiLab" size={18} />
           <span className="flex-1">UI Lab</span>
-          <AppIcon icon={appIcons.down} size={16} />
+          <AppIcon icon="down" size={16} />
         </div>
 
         <div className="ml-3 mt-1 flex flex-col gap-1 border-l border-[var(--border)] pl-3">

@@ -1,5 +1,4 @@
 import Badge from "@/components/ui/badge";
-import { appIcons } from "@/lib/shared/icons";
 
 type Status = "not_started" | "submitted" | "reviewed" | "returned";
 
@@ -9,25 +8,25 @@ function getStatusConfig(status: Status) {
       return {
         label: "Submitted",
         tone: "warning" as const,
-        icon: appIcons.pending,
+        icon: "pending" as const,
       };
     case "reviewed":
       return {
         label: "Reviewed",
         tone: "success" as const,
-        icon: appIcons.completed,
+        icon: "completed" as const,
       };
     case "returned":
       return {
         label: "Returned",
         tone: "info" as const,
-        icon: appIcons.next,
+        icon: "next" as const,
       };
     default:
       return {
         label: "Not started",
         tone: "muted" as const,
-        icon: appIcons.help,
+        icon: "help" as const,
       };
   }
 }

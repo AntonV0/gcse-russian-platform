@@ -96,7 +96,7 @@ export default async function AdminPage() {
           description="Internal content, users, and teaching management tools."
         />
 
-        <Button href="/admin/ui" variant="secondary" icon={appIcons.uiLab}>
+        <Button href="/admin/ui" variant="secondary" icon="uiLab">
           Open UI Lab
         </Button>
       </div>
@@ -118,7 +118,7 @@ export default async function AdminPage() {
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="UI Lab">
               <div className="flex items-start gap-3">
-                <AppIcon icon={appIcons.uiLab} className="mt-0.5 text-gray-700" />
+                <AppIcon icon="uiLab" className="mt-0.5 text-gray-700" />
                 <div>
                   Preview buttons, cards, badges, and Lucide icons before using them in
                   the platform.
@@ -132,7 +132,7 @@ export default async function AdminPage() {
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Content">
               <div className="flex items-start gap-3">
-                <AppIcon icon={appIcons.courses} className="mt-0.5 text-gray-700" />
+                <AppIcon icon="courses" className="mt-0.5 text-gray-700" />
                 <div>Manage courses, variants, modules, and lessons.</div>
               </div>
             </DashboardCard>
@@ -143,7 +143,7 @@ export default async function AdminPage() {
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Question Sets">
               <div className="flex items-start gap-3">
-                <AppIcon icon={appIcons.help} className="mt-0.5 text-gray-700" />
+                <AppIcon icon="help" className="mt-0.5 text-gray-700" />
                 <div>Create and manage reusable question sets.</div>
               </div>
             </DashboardCard>
@@ -154,7 +154,7 @@ export default async function AdminPage() {
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Templates">
               <div className="flex items-start gap-3">
-                <AppIcon icon={appIcons.file} className="mt-0.5 text-gray-700" />
+                <AppIcon icon="file" className="mt-0.5 text-gray-700" />
                 <div>Manage reusable question set templates.</div>
               </div>
             </DashboardCard>
@@ -165,7 +165,7 @@ export default async function AdminPage() {
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Assignments">
               <div className="flex items-start gap-3">
-                <AppIcon icon={appIcons.assignments} className="mt-0.5 text-gray-700" />
+                <AppIcon icon="assignments" className="mt-0.5 text-gray-700" />
                 <div>Review and manage teacher assignments.</div>
               </div>
             </DashboardCard>
@@ -176,7 +176,7 @@ export default async function AdminPage() {
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Teaching Groups">
               <div className="flex items-start gap-3">
-                <AppIcon icon={appIcons.users} className="mt-0.5 text-gray-700" />
+                <AppIcon icon="users" className="mt-0.5 text-gray-700" />
                 <div>View teaching groups, membership, and structure.</div>
               </div>
             </DashboardCard>
@@ -187,7 +187,7 @@ export default async function AdminPage() {
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Students">
               <div className="flex items-start gap-3">
-                <AppIcon icon={appIcons.user} className="mt-0.5 text-gray-700" />
+                <AppIcon icon="user" className="mt-0.5 text-gray-700" />
                 <div>View student accounts and access groupings.</div>
               </div>
             </DashboardCard>
@@ -198,7 +198,7 @@ export default async function AdminPage() {
           <div className="transition hover:-translate-y-0.5">
             <DashboardCard title="Teachers">
               <div className="flex items-start gap-3">
-                <AppIcon icon={appIcons.users} className="mt-0.5 text-gray-700" />
+                <AppIcon icon="users" className="mt-0.5 text-gray-700" />
                 <div>View admin and teaching accounts.</div>
               </div>
             </DashboardCard>

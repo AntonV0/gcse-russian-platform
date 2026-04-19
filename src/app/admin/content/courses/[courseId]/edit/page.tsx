@@ -78,14 +78,14 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
           />
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <Button type="submit" variant="primary" icon={appIcons.completed}>
+            <Button type="submit" variant="primary" icon="completed">
               Save course
             </Button>
 
             <Button
               href={`/admin/content/courses/${course.id}`}
               variant="secondary"
-              icon={appIcons.back}
+              icon="back"
             >
               Cancel
             </Button>

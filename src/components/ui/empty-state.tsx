@@ -1,12 +1,11 @@
-import AppIcon from "@/components/ui/app-icon";
-import type { LucideIcon } from "lucide-react";
+import AppIcon, { type AppIconValue } from "@/components/ui/app-icon";
 
 type EmptyStateProps = {
   title: string;
   description?: string;
   action?: React.ReactNode;
   className?: string;
-  icon?: LucideIcon;
+  icon?: AppIconValue;
 };
 
 export default function EmptyState({

@@ -262,7 +262,7 @@ export default async function AdminLessonBlockPresetDetailPage({
           <Button
             href="/admin/lesson-templates/block-presets"
             variant="secondary"
-            icon={appIcons.back}
+            icon="back"
           >
             Back
           </Button>
@@ -271,21 +271,21 @@ export default async function AdminLessonBlockPresetDetailPage({
 
       <section className="rounded-2xl border bg-white p-4 shadow-sm">
         <div className="mb-4 flex flex-wrap gap-2">
-          <Badge tone="muted" icon={appIcons.file}>
+          <Badge tone="muted" icon="file">
             {detail.preset.slug}
           </Badge>
 
           {detail.preset.is_active ? (
-            <Badge tone="success" icon={appIcons.completed}>
+            <Badge tone="success" icon="completed">
               Active
             </Badge>
           ) : (
-            <Badge tone="warning" icon={appIcons.pending}>
+            <Badge tone="warning" icon="pending">
               Inactive
             </Badge>
           )}
 
-          <Badge tone="muted" icon={appIcons.help}>
+          <Badge tone="muted" icon="help">
             {detail.blocks.length} block(s)
           </Badge>
         </div>
@@ -455,16 +455,16 @@ export default async function AdminLessonBlockPresetDetailPage({
                     {getLessonBlockLabel(block.block_type)}
                   </span>
 
-                  <Badge tone="muted" icon={appIcons.help}>
+                  <Badge tone="muted" icon="help">
                     Position {block.position}
                   </Badge>
 
                   {block.is_active ? (
-                    <Badge tone="success" icon={appIcons.completed}>
+                    <Badge tone="success" icon="completed">
                       Active
                     </Badge>
                   ) : (
-                    <Badge tone="warning" icon={appIcons.pending}>
+                    <Badge tone="warning" icon="pending">
                       Inactive
                     </Badge>
                   )}

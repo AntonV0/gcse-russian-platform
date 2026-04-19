@@ -44,13 +44,13 @@ export default function AdminFeedbackBanner({
   return (
     <>
       {success ? (
-        <FeedbackMessage tone="success" icon={appIcons.completed}>
+        <FeedbackMessage tone="success" icon="completed">
           {success}
         </FeedbackMessage>
       ) : null}
 
       {error ? (
-        <FeedbackMessage tone="danger" icon={appIcons.warning}>
+        <FeedbackMessage tone="danger" icon="warning">
           {error}
         </FeedbackMessage>
       ) : null}

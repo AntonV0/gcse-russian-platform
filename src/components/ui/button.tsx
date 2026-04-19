@@ -1,6 +1,5 @@
 import Link from "next/link";
-import AppIcon from "@/components/ui/app-icon";
-import type { LucideIcon } from "lucide-react";
+import AppIcon, { type AppIconKey } from "@/components/ui/app-icon";
 
 type ButtonVariant = "primary" | "secondary" | "quiet" | "success" | "warning" | "danger";
 
@@ -11,7 +10,7 @@ type BaseProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
   className?: string;
-  icon?: LucideIcon;
+  icon?: AppIconKey;
   iconPosition?: "left" | "right";
   iconOnly?: boolean;
   ariaLabel?: string;
@@ -35,13 +34,25 @@ function getVariantClass(variant: ButtonVariant) {
     case "secondary":
       return "app-btn-secondary";
     case "quiet":
-      return "bg-transparent text-[var(--text-secondary)] border border-transparent hover:bg-[var(--background-muted)] hover:text-[var(--brand-blue)]";
+      return [
+        "border border-transparent bg-transparent",
+        "text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--brand-blue)]",
+      ].join(" ");
     case "success":
-      return "border border-transparent bg-[var(--success-soft)] text-[var(--success)] hover:opacity-90";
+      return [
+        "border border-transparent",
+        "bg-[var(--success-soft)] text-[var(--success-strong)] hover:opacity-90",
+      ].join(" ");
     case "warning":
-      return "border border-transparent bg-[var(--warning-soft)] text-[var(--warning)] hover:opacity-90";
+      return [
+        "border border-transparent",
+        "bg-[var(--warning-soft)] text-[var(--warning-strong)] hover:opacity-90",
+      ].join(" ");
     case "danger":
-      return "border border-transparent bg-[var(--danger-soft)] text-[var(--danger)] hover:opacity-90";
+      return [
+        "border border-transparent",
+        "bg-[var(--danger-soft)] text-[var(--danger-strong)] hover:opacity-90",
+      ].join(" ");
     default:
       return "app-btn-secondary";
   }
@@ -69,9 +80,10 @@ function getClassName({
   className?: string;
 }) {
   return [
-    "app-btn-base app-focus-ring",
+    "app-btn-base app-focus-ring inline-flex items-center justify-center gap-2 transition",
     getVariantClass(variant),
     getSizeClass(size, iconOnly),
+    iconOnly ? "shrink-0" : "",
     className,
   ]
     .filter(Boolean)
@@ -85,7 +97,7 @@ function ButtonInner({
   iconOnly = false,
 }: {
   children?: React.ReactNode;
-  icon?: LucideIcon;
+  icon?: AppIconKey;
   iconPosition?: "left" | "right";
   iconOnly?: boolean;
 }) {
@@ -122,9 +134,11 @@ export default function Button(props: ButtonProps) {
   });
 
   if ("href" in props && props.href) {
+    const { href } = props;
+
     return (
       <Link
-        href={props.href}
+        href={href}
         className={mergedClassName}
         aria-label={ariaLabel}
         title={ariaLabel}
@@ -137,17 +151,17 @@ export default function Button(props: ButtonProps) {
   }
 
   const {
+    href: _href,
     variant: _variant,
     size: _size,
+    className: _className,
     icon: _icon,
     iconPosition: _iconPosition,
     iconOnly: _iconOnly,
     ariaLabel: _ariaLabel,
     children: _children,
-    href: _href,
-    className: _className,
     ...buttonProps
-  } = props as ButtonAsButtonProps & { href?: never };
+  } = props as ButtonAsButtonProps;
 
   return (
     <button

@@ -48,22 +48,18 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
   return (
     <main className="space-y-6">
       <div className="flex flex-wrap gap-2">
-        <Button href="/admin/content" variant="quiet" icon={appIcons.back}>
+        <Button href="/admin/content" variant="quiet" icon="back">
           Back to content
         </Button>
 
-        <Button
-          href={`/admin/content/courses/${course.id}`}
-          variant="quiet"
-          icon={appIcons.back}
-        >
+        <Button href={`/admin/content/courses/${course.id}`} variant="quiet" icon="back">
           Back to {course.title}
         </Button>
 
         <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
           variant="quiet"
-          icon={appIcons.back}
+          icon="back"
         >
           Back to {variant.title}
         </Button>
@@ -71,7 +67,7 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
         <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
           variant="quiet"
-          icon={appIcons.back}
+          icon="back"
         >
           Back to {module.title}
         </Button>
@@ -79,7 +75,7 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
         <Button
           href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
           variant="quiet"
-          icon={appIcons.back}
+          icon="back"
         >
           Back to {lesson.title}
         </Button>
@@ -166,14 +162,14 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
           />
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <Button type="submit" variant="primary" icon={appIcons.completed}>
+            <Button type="submit" variant="primary" icon="completed">
               Save lesson
             </Button>
 
             <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
               variant="secondary"
-              icon={appIcons.back}
+              icon="back"
             >
               Cancel
             </Button>

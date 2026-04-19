@@ -50,10 +50,10 @@ export default function GrammarPage() {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_320px] xl:items-start">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon={appIcons.lessonContent}>
+              <Badge tone="info" icon="lessonContent">
                 Grammar hub
               </Badge>
-              <Badge tone="muted" icon={appIcons.school}>
+              <Badge tone="muted" icon="school">
                 GCSE Russian
               </Badge>
             </div>
@@ -67,11 +67,11 @@ export default function GrammarPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button href="/dashboard" variant="primary" icon={appIcons.dashboard}>
+              <Button href="/dashboard" variant="primary" icon="dashboard">
                 Dashboard
               </Button>
 
-              <Button href="/courses" variant="secondary" icon={appIcons.courses}>
+              <Button href="/courses" variant="secondary" icon="courses">
                 Courses
               </Button>
             </div>

@@ -4,7 +4,6 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
-import { appIcons } from "@/lib/shared/icons";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -52,7 +51,7 @@ function getStudentPrimaryAction(
     return {
       href: "/assignments",
       label: "Open assignments",
-      icon: appIcons.assignments,
+      icon: "assignments" as const,
     };
   }
 
@@ -60,14 +59,14 @@ function getStudentPrimaryAction(
     return {
       href: "/courses",
       label: "Continue learning",
-      icon: appIcons.next,
+      icon: "next" as const,
     };
   }
 
   return {
     href: "/courses",
     label: "Browse courses",
-    icon: appIcons.courses,
+    icon: "courses" as const,
   };
 }
 
@@ -76,14 +75,14 @@ function getStudentSecondaryAction(accessMode: "trial" | "full" | "volna" | null
     return {
       href: "/courses",
       label: "Open lessons",
-      icon: appIcons.courses,
+      icon: "courses" as const,
     };
   }
 
   return {
     href: "/online-classes",
     label: "Explore online classes",
-    icon: appIcons.school,
+    icon: "school" as const,
   };
 }
 
@@ -122,7 +121,7 @@ function getNextStep(
         "Open your assignments and continue through the lesson content linked to your teacher-led learning.",
       href: "/assignments",
       label: "Open assignments",
-      icon: appIcons.assignments,
+      icon: "assignments" as const,
     };
   }
 
@@ -133,7 +132,7 @@ function getNextStep(
         "Browse lessons, vocabulary, grammar, and past papers to see how the full learning experience is structured.",
       href: "/courses",
       label: "Explore lessons",
-      icon: appIcons.courses,
+      icon: "courses" as const,
     };
   }
 
@@ -144,7 +143,7 @@ function getNextStep(
         "Continue your current course path and keep building progress through lessons and revision resources.",
       href: "/courses",
       label: "Continue learning",
-      icon: appIcons.next,
+      icon: "next" as const,
     };
   }
 
@@ -155,7 +154,7 @@ function getNextStep(
         "Begin working through your lessons and use the platform as your main GCSE Russian study hub.",
       href: "/courses",
       label: "Start learning",
-      icon: appIcons.courses,
+      icon: "courses" as const,
     };
   }
 
@@ -164,7 +163,7 @@ function getNextStep(
     description: "Browse available course content and begin exploring the platform.",
     href: "/courses",
     label: "Browse courses",
-    icon: appIcons.courses,
+    icon: "courses" as const,
   };
 }
 
@@ -204,10 +203,10 @@ export default async function DashboardPage() {
           description="Log in to view your dashboard, learning progress, and course access."
           action={
             <div className="flex flex-wrap gap-3">
-              <Button href="/login" variant="primary" icon={appIcons.user}>
+              <Button href="/login" variant="primary" icon="user">
                 Log in
               </Button>
-              <Button href="/signup" variant="secondary" icon={appIcons.create}>
+              <Button href="/signup" variant="secondary" icon="create">
                 Sign up
               </Button>
             </div>
@@ -222,15 +221,15 @@ export default async function DashboardPage() {
               <div className="space-y-5">
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-2">
-                    <Badge tone="info" icon={appIcons.school}>
+                    <Badge tone="info" icon="school">
                       GCSE Russian
                     </Badge>
 
-                    <Badge tone="muted" icon={appIcons.layers}>
+                    <Badge tone="muted" icon="layers">
                       {getTrackLabel(dashboard.track)}
                     </Badge>
 
-                    <Badge tone="muted" icon={appIcons.userCheck}>
+                    <Badge tone="muted" icon="userCheck">
                       {getAccessLabel(dashboard.accessMode)}
                     </Badge>
                   </div>
@@ -260,7 +259,7 @@ export default async function DashboardPage() {
                     {secondaryAction.label}
                   </Button>
 
-                  <Button href="/profile" variant="secondary" icon={appIcons.user}>
+                  <Button href="/profile" variant="secondary" icon="user">
                     View profile
                   </Button>
                 </div>
@@ -479,41 +478,33 @@ export default async function DashboardPage() {
 
             <DashboardCard title="Quick actions">
               <div className="flex flex-col gap-3">
-                <Button href="/courses" variant="secondary" icon={appIcons.courses}>
+                <Button href="/courses" variant="secondary" icon="courses">
                   Browse courses
                 </Button>
 
-                <Button href="/vocabulary" variant="secondary" icon={appIcons.language}>
+                <Button href="/vocabulary" variant="secondary" icon="language">
                   Vocabulary
                 </Button>
 
-                <Button href="/grammar" variant="secondary" icon={appIcons.lessonContent}>
+                <Button href="/grammar" variant="secondary" icon="lessonContent">
                   Grammar
                 </Button>
 
-                <Button href="/past-papers" variant="secondary" icon={appIcons.file}>
+                <Button href="/past-papers" variant="secondary" icon="file">
                   Past papers
                 </Button>
 
                 {dashboard.accessMode === "volna" ? (
-                  <Button
-                    href="/assignments"
-                    variant="secondary"
-                    icon={appIcons.assignments}
-                  >
+                  <Button href="/assignments" variant="secondary" icon="assignments">
                     Open assignments
                   </Button>
                 ) : (
-                  <Button
-                    href="/online-classes"
-                    variant="secondary"
-                    icon={appIcons.school}
-                  >
+                  <Button href="/online-classes" variant="secondary" icon="school">
                     Online classes
                   </Button>
                 )}
 
-                <Button href="/settings" variant="secondary" icon={appIcons.settings}>
+                <Button href="/settings" variant="secondary" icon="settings">
                   Settings
                 </Button>
               </div>
@@ -527,10 +518,10 @@ export default async function DashboardPage() {
           <section className="app-surface-brand app-section-padding-lg">
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon={appIcons.users}>
+                <Badge tone="info" icon="users">
                   Teacher workspace
                 </Badge>
-                <Badge tone="muted" icon={appIcons.school}>
+                <Badge tone="muted" icon="school">
                   Volna
                 </Badge>
               </div>
@@ -544,19 +535,11 @@ export default async function DashboardPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button
-                  href="/teacher/assignments"
-                  variant="primary"
-                  icon={appIcons.assignments}
-                >
+                <Button href="/teacher/assignments" variant="primary" icon="assignments">
                   Open assignments
                 </Button>
 
-                <Button
-                  href="/teacher/assignments/new"
-                  variant="secondary"
-                  icon={appIcons.create}
-                >
+                <Button href="/teacher/assignments/new" variant="secondary" icon="create">
                   Create assignment
                 </Button>
               </div>
@@ -612,7 +595,7 @@ export default async function DashboardPage() {
           <section className="app-surface-brand app-section-padding-lg">
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon={appIcons.dashboard}>
+                <Badge tone="info" icon="dashboard">
                   Admin workspace
                 </Badge>
               </div>
@@ -626,19 +609,15 @@ export default async function DashboardPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button href="/admin" variant="primary" icon={appIcons.dashboard}>
+                <Button href="/admin" variant="primary" icon="dashboard">
                   Open admin
                 </Button>
 
-                <Button href="/admin/content" variant="secondary" icon={appIcons.courses}>
+                <Button href="/admin/content" variant="secondary" icon="courses">
                   Content
                 </Button>
 
-                <Button
-                  href="/admin/question-sets"
-                  variant="secondary"
-                  icon={appIcons.question}
-                >
+                <Button href="/admin/question-sets" variant="secondary" icon="question">
                   Question sets
                 </Button>
               </div>

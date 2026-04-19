@@ -172,11 +172,11 @@ export default async function AdminTeachersPage({
           </FormField>
 
           <div className="flex items-end gap-2">
-            <Button type="submit" variant="primary" icon={appIcons.filter}>
+            <Button type="submit" variant="primary" icon="filter">
               Apply
             </Button>
 
-            <Button href="/admin/teachers" variant="secondary" icon={appIcons.back}>
+            <Button href="/admin/teachers" variant="secondary" icon="back">
               Reset
             </Button>
           </div>
@@ -208,13 +208,13 @@ export default async function AdminTeachersPage({
 
                   <div className="mt-2 flex flex-wrap gap-2 text-xs">
                     {teacher.roles.map((role) => (
-                      <Badge key={role} tone="info" icon={appIcons.users}>
+                      <Badge key={role} tone="info" icon="users">
                         {formatRole(role)}
                       </Badge>
                     ))}
 
                     {teacher.groupNames.map((groupName) => (
-                      <Badge key={groupName} tone="muted" icon={appIcons.users}>
+                      <Badge key={groupName} tone="muted" icon="users">
                         {groupName}
                       </Badge>
                     ))}
@@ -241,7 +241,7 @@ export default async function AdminTeachersPage({
                     href={`/admin/teachers/${teacher.id}`}
                     variant="secondary"
                     size="sm"
-                    icon={appIcons.preview}
+                    icon="preview"
                   >
                     View
                   </Button>
