@@ -1,7 +1,39 @@
+import AppIcon from "@/components/ui/app-icon";
+import { appIcons } from "@/lib/shared/icons";
+
 type AdminFeedbackBannerProps = {
   success?: string;
   error?: string;
 };
+
+function FeedbackMessage({
+  tone,
+  icon,
+  children,
+}: {
+  tone: "success" | "danger";
+  icon: React.ComponentProps<typeof AppIcon>["icon"];
+  children: React.ReactNode;
+}) {
+  const toneClasses =
+    tone === "success"
+      ? "border-[var(--success-border)] bg-[var(--success-soft)] text-[var(--success-strong)]"
+      : "border-[var(--danger-border)] bg-[var(--danger-soft)] text-[var(--danger-strong)]";
+
+  return (
+    <div
+      className={[
+        "mb-4 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-sm",
+        toneClasses,
+      ].join(" ")}
+    >
+      <span className="mt-0.5 shrink-0">
+        <AppIcon icon={icon} size={16} />
+      </span>
+      <div className="min-w-0">{children}</div>
+    </div>
+  );
+}
 
 export default function AdminFeedbackBanner({
   success,
@@ -12,15 +44,15 @@ export default function AdminFeedbackBanner({
   return (
     <>
       {success ? (
-        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+        <FeedbackMessage tone="success" icon={appIcons.completed}>
           {success}
-        </div>
+        </FeedbackMessage>
       ) : null}
 
       {error ? (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <FeedbackMessage tone="danger" icon={appIcons.warning}>
           {error}
-        </div>
+        </FeedbackMessage>
       ) : null}
     </>
   );
