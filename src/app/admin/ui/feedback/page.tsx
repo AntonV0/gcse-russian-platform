@@ -21,22 +21,22 @@ function FeedbackBanner({
     info: {
       wrapper:
         "border-[color:rgba(37,99,235,0.18)] bg-[var(--info-soft)] text-[var(--info)]",
-      icon: appIcons.info,
+      icon: "info",
     },
     success: {
       wrapper:
         "border-[color:rgba(31,138,76,0.18)] bg-[var(--success-soft)] text-[var(--success)]",
-      icon: appIcons.completed,
+      icon: "completed",
     },
     warning: {
       wrapper:
         "border-[color:rgba(183,121,31,0.18)] bg-[var(--warning-soft)] text-[var(--warning)]",
-      icon: appIcons.warning,
+      icon: "warning",
     },
     danger: {
       wrapper:
         "border-[color:rgba(194,59,59,0.18)] bg-[var(--danger-soft)] text-[var(--danger)]",
-      icon: appIcons.alert,
+      icon: "alert",
     },
   } as const;
 

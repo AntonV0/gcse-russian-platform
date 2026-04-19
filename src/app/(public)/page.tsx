@@ -2,70 +2,89 @@ import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
-import { appIcons } from "@/lib/shared/icons";
+import type { AppIconKey } from "@/lib/shared/icons";
 
-const platformHighlights = [
+type HighlightItem = {
+  title: string;
+  description: string;
+  icon: AppIconKey;
+};
+
+type LandingLinkItem = {
+  title: string;
+  description: string;
+  href: string;
+  icon: AppIconKey;
+};
+
+type AudienceItem = {
+  title: string;
+  description: string;
+  icon: AppIconKey;
+};
+
+const platformHighlights: HighlightItem[] = [
   {
     title: "Structured learning",
     description:
       "Clear lesson pathways across topics, designed specifically for GCSE Russian progression.",
-    icon: appIcons.lessons,
+    icon: "lessons",
   },
   {
     title: "Exam-focused practice",
     description:
       "Translation, listening, vocabulary, and exam-style tasks aligned with Edexcel 1RU0.",
-    icon: appIcons.question,
+    icon: "question",
   },
   {
     title: "Track progress",
     description:
       "See what you’ve completed, what’s next, and stay organised throughout your revision.",
-    icon: appIcons.completed,
+    icon: "completed",
   },
 ];
 
-const landingLinks = [
+const landingLinks: LandingLinkItem[] = [
   {
     title: "Pricing",
     description:
       "Choose Foundation or Higher access and start the real Stripe checkout flow.",
     href: "/pricing",
-    icon: appIcons.courses,
+    icon: "courses",
   },
   {
     title: "Lessons",
     description:
       "Follow structured modules covering themes, grammar, and vocabulary step by step.",
     href: "/courses",
-    icon: appIcons.lessons,
+    icon: "lessons",
   },
   {
     title: "Progress",
     description: "Track completion and continue your learning without losing your place.",
     href: "/dashboard",
-    icon: appIcons.completed,
+    icon: "completed",
   },
 ];
 
-const audience = [
+const audience: AudienceItem[] = [
   {
     title: "Students",
     description:
       "Ideal for GCSE Russian students who want a clear structure for revision and learning.",
-    icon: appIcons.school,
+    icon: "school",
   },
   {
     title: "Parents",
     description:
       "A reliable, structured platform to support your child’s GCSE Russian preparation.",
-    icon: appIcons.user,
+    icon: "user",
   },
   {
     title: "Volna students",
     description:
       "Integrated with teacher-led learning, assignments, and feedback workflows.",
-    icon: appIcons.dashboard,
+    icon: "dashboard",
   },
 ];
 
