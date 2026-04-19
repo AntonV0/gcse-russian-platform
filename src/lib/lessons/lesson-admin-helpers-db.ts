@@ -10,8 +10,7 @@ type DbLessonSectionRow = {
   section_kind: string;
   position: number;
   is_published: boolean;
-  track_visibility: "shared" | "foundation_only" | "higher_only";
-  delivery_visibility: "all" | "self_study_only" | "volna_only";
+  variant_visibility: "shared" | "foundation_only" | "higher_only" | "volna_only";
   canonical_section_key: string | null;
   settings: Record<string, unknown> | null;
   created_at: string;

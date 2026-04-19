@@ -10,8 +10,7 @@ export type DbLessonSection = {
   section_kind: string;
   position: number;
   is_published: boolean;
-  track_visibility: "shared" | "foundation_only" | "higher_only";
-  delivery_visibility: "all" | "self_study_only" | "volna_only";
+  variant_visibility: "shared" | "foundation_only" | "higher_only" | "volna_only";
   canonical_section_key: string | null;
   settings: Record<string, unknown>;
   created_at: string;
@@ -95,8 +94,7 @@ export async function loadLessonContentByLessonIdDb(
       description: section.description ?? undefined,
       sectionKind: resolveSectionKind(section.section_kind),
       position: section.position,
-      trackVisibility: section.track_visibility,
-      deliveryVisibility: section.delivery_visibility,
+      variantVisibility: section.variant_visibility,
       canonicalSectionKey: section.canonical_section_key,
       blocks: (blocksBySectionId.get(section.id) ?? []).map(mapDbBlockToLessonBlock),
     })),

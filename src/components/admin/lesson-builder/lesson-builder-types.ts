@@ -21,9 +21,11 @@ export type LessonBuilderTemplateOptions = {
   }[];
 };
 
-export type LessonSectionTrackVisibility = "shared" | "foundation_only" | "higher_only";
-
-export type LessonSectionDeliveryVisibility = "all" | "self_study_only" | "volna_only";
+export type LessonSectionVariantVisibility =
+  | "shared"
+  | "foundation_only"
+  | "higher_only"
+  | "volna_only";
 
 export type AdminLessonBuilderProps = {
   lessonId: string;
@@ -41,8 +43,7 @@ export type AdminLessonBuilderProps = {
     section_kind: string;
     position: number;
     is_published: boolean;
-    track_visibility: LessonSectionTrackVisibility;
-    delivery_visibility: LessonSectionDeliveryVisibility;
+    variant_visibility: LessonSectionVariantVisibility;
     canonical_section_key: string | null;
     blocks: {
       id: string;

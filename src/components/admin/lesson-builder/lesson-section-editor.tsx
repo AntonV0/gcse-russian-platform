@@ -24,6 +24,19 @@ import {
   getLessonBlockPreview,
 } from "@/lib/lessons/lesson-blocks";
 
+const VARIANT_VISIBILITY_OPTIONS = [
+  { value: "shared", label: "Shared" },
+  { value: "foundation_only", label: "Foundation only" },
+  { value: "higher_only", label: "Higher only" },
+  { value: "volna_only", label: "Volna only" },
+] as const;
+
+function formatVariantVisibility(value: LessonSection["variant_visibility"]) {
+  return (
+    VARIANT_VISIBILITY_OPTIONS.find((option) => option.value === value)?.label ?? value
+  );
+}
+
 export default function LessonSectionEditor(props: {
   section: LessonSection | null;
   routeFields: RouteFields;
@@ -82,6 +95,9 @@ export default function LessonSectionEditor(props: {
             </Badge>
             <Badge tone="muted">{section.section_kind}</Badge>
             <Badge tone="default">{section.blocks.length} block(s)</Badge>
+            <Badge tone="muted">
+              {formatVariantVisibility(section.variant_visibility)}
+            </Badge>
           </div>
 
           {section.description ? (
@@ -89,6 +105,24 @@ export default function LessonSectionEditor(props: {
           ) : (
             <p className="text-sm text-gray-400">No section description yet.</p>
           )}
+
+          <div className="rounded-xl border px-3 py-3 text-sm">
+            <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              Variant visibility
+            </div>
+            <div className="mt-1 text-gray-700">
+              {formatVariantVisibility(section.variant_visibility)}
+            </div>
+          </div>
+
+          <div className="rounded-xl border px-3 py-3 text-sm">
+            <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              Canonical section key
+            </div>
+            <div className="mt-1 text-gray-700">
+              {section.canonical_section_key || "Not set"}
+            </div>
+          </div>
 
           {section.blocks.length > 0 ? (
             <div className="flex flex-wrap gap-2">
@@ -108,7 +142,7 @@ export default function LessonSectionEditor(props: {
 
       <CompactDisclosure
         title="Edit section metadata"
-        description="Update section title, description, and section kind."
+        description="Update section title, description, section kind, visibility, and shared progress key."
         defaultOpen={section.blocks.length === 0}
       >
         <form action={updateSectionAction} className="space-y-3">
@@ -139,6 +173,25 @@ export default function LessonSectionEditor(props: {
               </option>
             ))}
           </select>
+
+          <select
+            name="variantVisibility"
+            defaultValue={section.variant_visibility}
+            className="w-full rounded-xl border px-3 py-2 text-sm"
+          >
+            {VARIANT_VISIBILITY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          <input
+            name="canonicalSectionKey"
+            defaultValue={section.canonical_section_key ?? ""}
+            className="w-full rounded-xl border px-3 py-2 text-sm"
+            placeholder="e.g. food-drink-core-vocab"
+          />
 
           <div className="space-y-2">
             <PendingSubmitButton
