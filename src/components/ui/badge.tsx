@@ -1,4 +1,5 @@
-import AppIcon, { type AppIconKey } from "@/components/ui/app-icon";
+import AppIcon from "@/components/ui/app-icon";
+import type { AppIconKey } from "@/lib/shared/icons";
 
 type BadgeTone = "default" | "muted" | "info" | "success" | "warning" | "danger";
 

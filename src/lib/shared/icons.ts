@@ -19,11 +19,13 @@ import {
   ChevronUp,
   CircleHelp,
   ClipboardList,
+  Clock,
   Component,
   Eye,
   EyeOff,
   FileText,
   Filter,
+  Folder,
   FolderOpen,
   GraduationCap,
   Headphones,
@@ -40,6 +42,8 @@ import {
   Mic,
   Moon,
   Palette,
+  PanelLeft,
+  PanelsTopLeft,
   PenSquare,
   Pencil,
   Plus,
@@ -48,6 +52,8 @@ import {
   School,
   Search,
   Settings,
+  SlidersHorizontal,
+  Sparkles,
   SquarePen,
   Star,
   Sun,
@@ -61,12 +67,6 @@ import {
   Volume2,
   WandSparkles,
   X,
-  Clock,
-  SlidersHorizontal,
-  Folder,
-  PanelLeft,
-  PanelsTopLeft,
-  Sparkles,
 } from "lucide-react";
 
 export const appIcons = {
@@ -153,7 +153,6 @@ export const appIcons = {
   text: Type,
   pencil: Pencil,
 
-  /* New semantic aliases for UI Lab / future pages */
   navigation: PanelLeft,
   header: PanelsTopLeft,
   layout: PanelsTopLeft,
@@ -161,6 +160,8 @@ export const appIcons = {
   forms: SlidersHorizontal,
   feedback: Sparkles,
 } as const;
+
+export type AppIconKey = keyof typeof appIcons;
 
 export const curatedLucideIconNames = new Set<string>([
   "House",
@@ -232,5 +233,3 @@ export const curatedLucideIconNames = new Set<string>([
   "Sparkles",
   "Star",
 ]);
-
-export type AppIconKey = keyof typeof appIcons;
