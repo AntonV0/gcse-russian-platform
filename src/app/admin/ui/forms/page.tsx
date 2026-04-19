@@ -9,7 +9,6 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import Card, { CardBody } from "@/components/ui/card";
-import { appIcons } from "@/lib/shared/icons";
 
 function DemoBasicFields() {
   return (

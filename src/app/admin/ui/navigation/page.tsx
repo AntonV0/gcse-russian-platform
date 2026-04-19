@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import type { AppIconKey } from "@/lib/shared/icons";
 import { uiLabPages } from "@/lib/ui/ui-lab";
