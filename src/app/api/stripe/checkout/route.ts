@@ -13,6 +13,7 @@ type CheckoutRequestBody = {
   productCode: string;
   billingType: string;
   intervalUnit?: SupportedIntervalUnit | null;
+  intervalCount?: number | null;
   isUpgrade?: boolean;
   successPath?: string;
   cancelPath?: string;
@@ -38,6 +39,11 @@ function isSupportedIntervalUnit(value: string | null | undefined): boolean {
   );
 }
 
+function isSupportedIntervalCount(value: number | null | undefined): boolean {
+  if (value == null) return true;
+  return Number.isInteger(value) && value > 0;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as CheckoutRequestBody;
@@ -60,6 +66,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid intervalUnit" }, { status: 400 });
     }
 
+    if (!isSupportedIntervalCount(body.intervalCount)) {
+      return NextResponse.json({ error: "Invalid intervalCount" }, { status: 400 });
+    }
+
     const user = await getCurrentUser();
 
     if (!user) {
@@ -71,6 +81,7 @@ export async function POST(req: NextRequest) {
       targetProductCode: body.productCode,
       billingType: body.billingType,
       intervalUnit: body.intervalUnit ?? null,
+      intervalCount: body.intervalCount ?? null,
       isUpgrade: body.isUpgrade ?? false,
     });
 

@@ -60,16 +60,10 @@ export type ResolveCheckoutPriceInput = {
   targetProductCode: string;
   billingType: string;
   intervalUnit?: SupportedIntervalUnit | null;
+  intervalCount?: number | null;
   isUpgrade?: boolean;
 };
 
-/**
- * Product-code convention for upgrade prices.
- *
- * Example:
- * - gcse-russian-higher
- * - gcse-russian-higher-upgrade
- */
 export function getUpgradeProductCode(productCode: string): string {
   return `${productCode}-upgrade`;
 }
@@ -185,13 +179,20 @@ export async function getActivePriceByStripePriceIdDb(
 export function matchPriceByBillingShape(
   prices: DbPrice[],
   billingType: string,
-  intervalUnit?: string | null
+  intervalUnit?: string | null,
+  intervalCount?: number | null
 ): DbPrice | null {
   const matched = prices.find((price) => {
     if (price.billing_type !== billingType) return false;
 
     if (billingType === BILLING_TYPES.SUBSCRIPTION) {
-      return price.interval_unit === (intervalUnit ?? null);
+      const expectedUnit = intervalUnit ?? null;
+      const expectedCount = intervalCount ?? 1;
+
+      return (
+        price.interval_unit === expectedUnit &&
+        (price.interval_count ?? 1) === expectedCount
+      );
     }
 
     return true;
@@ -200,12 +201,6 @@ export function matchPriceByBillingShape(
   return matched ?? null;
 }
 
-/**
- * Version 1 upgrade rule:
- * - Foundation and Higher are separate products.
- * - A user can buy Higher upgrade pricing only if they have active Foundation
- *   access and do not already have active Higher access.
- */
 export async function canUpgradeFoundationToHigherDb(userId: string): Promise<boolean> {
   const foundationProduct = await getActiveProductByCodeDb(
     PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
@@ -224,13 +219,6 @@ export async function canUpgradeFoundationToHigherDb(userId: string): Promise<bo
   return hasFoundation && !hasHigher;
 }
 
-/**
- * Returns the target product a user is entitled to buy at upgrade pricing,
- * if eligible.
- *
- * Current version only supports:
- * foundation -> higher
- */
 export async function resolveUpgradeEligibilityDb(
   userId: string,
   targetProductCode: string
@@ -273,15 +261,55 @@ export async function resolveUpgradeEligibilityDb(
   };
 }
 
+function isAllowedHigherUpgradePath(
+  sourcePrice: DbPrice,
+  targetShape: {
+    billingType: string;
+    intervalUnit?: string | null;
+    intervalCount?: number | null;
+  }
+): boolean {
+  const sourceBillingType = sourcePrice.billing_type;
+  const sourceIntervalUnit = sourcePrice.interval_unit;
+  const sourceIntervalCount = sourcePrice.interval_count ?? 1;
+
+  const targetBillingType = targetShape.billingType;
+  const targetIntervalUnit = targetShape.intervalUnit ?? null;
+  const targetIntervalCount = targetShape.intervalCount ?? 1;
+
+  if (sourceBillingType === BILLING_TYPES.ONE_TIME) {
+    return targetBillingType === BILLING_TYPES.ONE_TIME;
+  }
+
+  if (sourceBillingType === BILLING_TYPES.SUBSCRIPTION) {
+    if (targetBillingType === BILLING_TYPES.ONE_TIME) {
+      return (
+        sourceIntervalUnit === INTERVAL_UNITS.MONTH &&
+        (sourceIntervalCount === 1 || sourceIntervalCount === 3)
+      );
+    }
+
+    if (targetBillingType === BILLING_TYPES.SUBSCRIPTION) {
+      return (
+        sourceIntervalUnit === targetIntervalUnit &&
+        sourceIntervalCount === targetIntervalCount
+      );
+    }
+  }
+
+  return false;
+}
+
 /**
- * Resolves the exact product + price the checkout flow should use.
+ * Upgrade prices are stored on the "<target>-upgrade" product.
  *
- * Standard purchase:
- * - product code stays as requested
+ * They are selected by the requested target shape:
+ * - monthly upgrade -> subscription month x1
+ * - 3 month upgrade -> subscription month x3
+ * - lifetime upgrade -> one_time
  *
- * Upgrade purchase:
- * - price is looked up from "<target-product-code>-upgrade"
- * - grant still gets created for the REAL target product
+ * Eligibility is also checked against the user's active Foundation grant price_id,
+ * so unsupported paths are rejected.
  */
 export async function resolveCheckoutCatalogDb(
   input: ResolveCheckoutPriceInput
@@ -299,11 +327,40 @@ export async function resolveCheckoutCatalogDb(
       input.targetProductCode
     );
 
-    if (!eligibility.eligible) {
-      console.error("User is not eligible for upgrade pricing:", {
+    if (!eligibility.eligible || !eligibility.sourceGrant?.price_id) {
+      console.error("User is not eligible for price-aware upgrade pricing:", {
         userId: input.userId,
         targetProductCode: input.targetProductCode,
+        sourceGrant: eligibility.sourceGrant,
       });
+      return null;
+    }
+
+    const sourcePrice = await getActivePriceByIdDb(eligibility.sourceGrant.price_id);
+
+    if (!sourcePrice) {
+      console.error("Source Foundation price could not be loaded for upgrade:", {
+        userId: input.userId,
+        priceId: eligibility.sourceGrant.price_id,
+      });
+      return null;
+    }
+
+    const requestedShape = {
+      billingType: input.billingType,
+      intervalUnit: input.intervalUnit ?? null,
+      intervalCount: input.intervalCount ?? null,
+    };
+
+    if (!isAllowedHigherUpgradePath(sourcePrice, requestedShape)) {
+      console.error(
+        "Requested upgrade path is not allowed for source Foundation price:",
+        {
+          userId: input.userId,
+          sourcePrice,
+          requestedShape,
+        }
+      );
       return null;
     }
 
@@ -322,7 +379,8 @@ export async function resolveCheckoutCatalogDb(
     const upgradePrice = matchPriceByBillingShape(
       upgradePrices,
       input.billingType,
-      input.intervalUnit
+      input.intervalUnit ?? null,
+      input.intervalCount ?? null
     );
 
     if (!upgradePrice) {
@@ -331,6 +389,7 @@ export async function resolveCheckoutCatalogDb(
         upgradeProductCode,
         billingType: input.billingType,
         intervalUnit: input.intervalUnit ?? null,
+        intervalCount: input.intervalCount ?? null,
       });
       return null;
     }
@@ -346,7 +405,8 @@ export async function resolveCheckoutCatalogDb(
   const standardPrice = matchPriceByBillingShape(
     standardPrices,
     input.billingType,
-    input.intervalUnit
+    input.intervalUnit ?? null,
+    input.intervalCount ?? null
   );
 
   if (!standardPrice) {
@@ -354,6 +414,7 @@ export async function resolveCheckoutCatalogDb(
       targetProductCode: input.targetProductCode,
       billingType: input.billingType,
       intervalUnit: input.intervalUnit ?? null,
+      intervalCount: input.intervalCount ?? null,
     });
     return null;
   }
@@ -365,10 +426,6 @@ export async function resolveCheckoutCatalogDb(
   };
 }
 
-/**
- * Helpful for account pages / pricing UI:
- * gives the user all buyable product states we care about for v1.
- */
 export async function getUserGcseRussianPurchaseStateDb(userId: string): Promise<{
   canBuyFoundation: boolean;
   canBuyHigher: boolean;
