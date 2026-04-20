@@ -6,7 +6,7 @@ import type { LucideIcon } from "lucide-react";
 import AppIcon from "@/components/ui/app-icon";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
-import { appIcons, curatedLucideIconNames } from "@/lib/shared/icons";
+import { curatedLucideIconNames } from "@/lib/shared/icons";
 
 const ICONS_PER_PAGE = 100;
 
@@ -115,7 +115,7 @@ export default function AllIconsBrowser() {
         <Button
           type="button"
           variant="secondary"
-          icon={isOpen ? appIcons.up : appIcons.down}
+          icon={isOpen ? "up" : "down"}
           onClick={() => setIsOpen((current) => !current)}
         >
           {isOpen ? "Hide icon browser" : "Show icon browser"}

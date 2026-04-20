@@ -4,7 +4,6 @@ import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { appIcons } from "@/lib/shared/icons";
 
 type TeachingGroupRow = {
   id: string;
@@ -182,7 +181,7 @@ export default async function AdminTeachingGroupsPage() {
                     <div className="mt-3 flex flex-wrap gap-2 text-xs">
                       <Badge
                         tone={group.is_active ? "success" : "warning"}
-                        icon={group.is_active ? appIcons.completed : appIcons.pending}
+                        icon={group.is_active ? "completed" : "pending"}
                       >
                         {group.is_active ? "Active" : "Inactive"}
                       </Badge>
