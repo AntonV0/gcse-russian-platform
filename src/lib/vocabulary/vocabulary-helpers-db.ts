@@ -63,12 +63,44 @@ export type LoadedVocabularySetDb = {
   items: DbVocabularyItem[];
 };
 
+export type DbVocabularySetListItem = DbVocabularySet & {
+  item_count: number;
+};
+
 export function groupVocabularyItemsBySource(items: DbVocabularyItem[]) {
   return {
     specRequired: items.filter((item) => item.source_type === "spec_required"),
     extended: items.filter((item) => item.source_type === "extended"),
     custom: items.filter((item) => item.source_type === "custom"),
   };
+}
+
+export function getVocabularyListModeLabel(listMode: DbVocabularyListMode) {
+  switch (listMode) {
+    case "spec_only":
+      return "Spec only";
+    case "extended_only":
+      return "Extended only";
+    case "spec_and_extended":
+      return "Spec + extended";
+    case "custom":
+      return "Custom";
+    default:
+      return listMode;
+  }
+}
+
+export function getVocabularyTierLabel(tier: DbVocabularyTier) {
+  switch (tier) {
+    case "foundation":
+      return "Foundation";
+    case "higher":
+      return "Higher";
+    case "both":
+      return "Both tiers";
+    default:
+      return tier;
+  }
 }
 
 export async function getVocabularySetBySlugDb(vocabularySetSlug: string) {
@@ -111,6 +143,25 @@ export async function getVocabularyItemsBySetIdDb(vocabularySetId: string) {
   return (data ?? []) as DbVocabularyItem[];
 }
 
+export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from("vocabulary_items")
+    .select("id", { count: "exact", head: true })
+    .eq("vocabulary_set_id", vocabularySetId);
+
+  if (error) {
+    console.error("Error counting vocabulary items by set id:", {
+      vocabularySetId,
+      error,
+    });
+    return 0;
+  }
+
+  return count ?? 0;
+}
+
 export async function loadVocabularySetBySlugDb(
   vocabularySetSlug: string
 ): Promise<LoadedVocabularySetDb> {
@@ -129,4 +180,58 @@ export async function loadVocabularySetBySlugDb(
     vocabularySet,
     items,
   };
+}
+
+async function attachVocabularyItemCounts(
+  vocabularySets: DbVocabularySet[]
+): Promise<DbVocabularySetListItem[]> {
+  const itemCounts = await Promise.all(
+    vocabularySets.map(async (vocabularySet) => {
+      const itemCount = await getVocabularyItemCountBySetIdDb(vocabularySet.id);
+
+      return {
+        vocabularySetId: vocabularySet.id,
+        itemCount,
+      };
+    })
+  );
+
+  const countMap = new Map(
+    itemCounts.map((item) => [item.vocabularySetId, item.itemCount])
+  );
+
+  return vocabularySets.map((vocabularySet) => ({
+    ...vocabularySet,
+    item_count: countMap.get(vocabularySet.id) ?? 0,
+  }));
+}
+
+export async function getVocabularySetsDb(options?: { publishedOnly?: boolean }) {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("vocabulary_sets")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("title", { ascending: true });
+
+  if (options?.publishedOnly) {
+    query = query.eq("is_published", true);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching vocabulary sets:", {
+      options,
+      error,
+    });
+    return [] as DbVocabularySetListItem[];
+  }
+
+  return attachVocabularyItemCounts((data ?? []) as DbVocabularySet[]);
+}
+
+export async function getPublishedVocabularySetsDb() {
+  return getVocabularySetsDb({ publishedOnly: true });
 }

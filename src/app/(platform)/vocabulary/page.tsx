@@ -4,53 +4,21 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import { getCurrentUser } from "@/lib/auth/auth";
-
-const vocabularyThemes = [
-  {
-    title: "Identity and personal world",
-    description:
-      "Family, friends, daily routine, hobbies, and describing people with confidence.",
-    russian: "Семья, друзья, хобби",
-  },
-  {
-    title: "School and future plans",
-    description:
-      "Subjects, school life, ambitions, work, and useful GCSE-style topic language.",
-    russian: "Школа и планы на будущее",
-  },
-  {
-    title: "Home, town, and region",
-    description:
-      "Useful vocabulary for house, area, transport, places in town, and local life.",
-    russian: "Дом, город и район",
-  },
-  {
-    title: "Travel and holidays",
-    description: "Transport, bookings, tourism, opinions, and practical travel language.",
-    russian: "Путешествия и каникулы",
-  },
-  {
-    title: "Food and healthy living",
-    description:
-      "Meals, shopping, health, routine, and lifestyle-focused topic vocabulary.",
-    russian: "Еда и здоровый образ жизни",
-  },
-  {
-    title: "Technology and media",
-    description:
-      "Phones, internet, media habits, online life, and everyday digital vocabulary.",
-    russian: "Технологии и медиа",
-  },
-];
+import {
+  getPublishedVocabularySetsDb,
+  getVocabularyListModeLabel,
+  getVocabularyTierLabel,
+} from "@/lib/vocabulary/vocabulary-helpers-db";
 
 export default async function VocabularyPage() {
   const user = await getCurrentUser();
+  const vocabularySets = await getPublishedVocabularySetsDb();
 
   return (
     <main className="space-y-8">
       <PageHeader
         title="Vocabulary"
-        description="Build topic-based GCSE Russian vocabulary and revise useful language in manageable sections."
+        description="Revise database-backed GCSE Russian vocabulary sets grouped for lessons, revision, and future study tools."
       />
 
       <section className="app-surface-brand app-section-padding-lg">
@@ -68,8 +36,9 @@ export default async function VocabularyPage() {
             <div className="space-y-2">
               <h2 className="app-title">Grow your word bank</h2>
               <p className="app-subtitle max-w-2xl">
-                This section will become the home for topic vocabulary, revision sets, and
-                future searchable language support across the platform.
+                Browse reusable vocabulary sets from the platform database. This is the
+                first version of the vocabulary area and will later grow into richer
+                study, filtering, and revision tools.
               </p>
             </div>
 
@@ -84,52 +53,104 @@ export default async function VocabularyPage() {
             </div>
           </div>
 
-          <DashboardCard title="How this section will help">
+          <DashboardCard title="What is already live">
             <div className="space-y-3">
               <p>
-                Vocabulary support fits naturally alongside your lessons, practice, and
-                revision. Over time this can connect to course content, topic pages, and
-                exam preparation tools.
+                This page now reads published vocabulary sets from the database instead of
+                using placeholder theme cards.
               </p>
 
               <ul className="space-y-2">
-                <li>• Topic-based revision support</li>
-                <li>• GCSE-relevant word groupings</li>
-                <li>• Russian + English reference structure</li>
-                <li>• Future searchable word lists</li>
+                <li>• Published vocabulary sets</li>
+                <li>• Item counts</li>
+                <li>• Tier labels</li>
+                <li>• List mode labels</li>
               </ul>
             </div>
           </DashboardCard>
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {vocabularyThemes.map((theme) => (
-          <DashboardCard key={theme.title} title={theme.title}>
-            <div className="space-y-3">
-              <p>{theme.description}</p>
-              <div className="rounded-xl bg-[var(--background-muted)] px-3 py-2 text-sm text-[var(--text-primary)]">
-                {theme.russian}
+      {vocabularySets.length === 0 ? (
+        <DashboardCard title="No vocabulary sets published yet">
+          <div className="space-y-3">
+            <p>
+              Once vocabulary sets are created in admin and published, they will appear
+              here for students to browse and revise.
+            </p>
+
+            <Link
+              href="/grammar"
+              className="inline-flex items-center gap-2 font-medium app-brand-text"
+            >
+              Explore grammar
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </DashboardCard>
+      ) : (
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {vocabularySets.map((vocabularySet) => (
+            <DashboardCard key={vocabularySet.id} title={vocabularySet.title}>
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="muted" icon="language">
+                    {getVocabularyListModeLabel(vocabularySet.list_mode)}
+                  </Badge>
+
+                  <Badge tone="muted" icon="school">
+                    {getVocabularyTierLabel(vocabularySet.tier)}
+                  </Badge>
+                </div>
+
+                <p className="text-sm text-[var(--text-secondary)]">
+                  {vocabularySet.description ?? "Vocabulary set ready for student use."}
+                </p>
+
+                <div className="rounded-xl bg-[var(--background-muted)] px-3 py-2 text-sm text-[var(--text-primary)]">
+                  {vocabularySet.item_count} item
+                  {vocabularySet.item_count === 1 ? "" : "s"}
+                </div>
+
+                <div className="grid gap-2 text-sm sm:grid-cols-2">
+                  <div className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2">
+                    <span className="block text-xs font-medium uppercase tracking-wide app-text-soft">
+                      Theme
+                    </span>
+                    <span className="text-[var(--text-primary)]">
+                      {vocabularySet.theme_key ?? "General"}
+                    </span>
+                  </div>
+
+                  <div className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2">
+                    <span className="block text-xs font-medium uppercase tracking-wide app-text-soft">
+                      Topic
+                    </span>
+                    <span className="text-[var(--text-primary)]">
+                      {vocabularySet.topic_key ?? "Mixed"}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </DashboardCard>
-        ))}
-      </section>
+            </DashboardCard>
+          ))}
+        </section>
+      )}
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
         <DashboardCard title="What can come next">
           <div className="space-y-3">
             <p>
-              A strong next step would be to connect this page to real database-backed
-              vocabulary sets so that students can revise by topic, course path, or exam
-              skill.
+              The next vocabulary upgrades can add search, theme/topic filters,
+              required-vs-extended separation, lesson linking, and richer vocab display
+              modes.
             </p>
 
             <ul className="space-y-2">
-              <li>• Topic vocabulary lists</li>
-              <li>• Skill-specific sets</li>
-              <li>• Revision cards and filters</li>
-              <li>• Links into lesson content</li>
+              <li>• Required vs extended vocabulary</li>
+              <li>• Theme and topic filters</li>
+              <li>• Student-friendly display variants</li>
+              <li>• Direct links into lessons</li>
             </ul>
           </div>
         </DashboardCard>
@@ -137,7 +158,8 @@ export default async function VocabularyPage() {
         <DashboardCard title="Keep learning">
           <div className="space-y-3">
             <p>
-              Vocabulary works best when combined with lesson study and regular revision.
+              Vocabulary works best when combined with lesson study, regular practice, and
+              grammar support.
             </p>
 
             <Link
