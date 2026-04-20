@@ -253,6 +253,67 @@ function SidebarInfoCard({
   );
 }
 
+function LibraryToolbar({ totalSets }: { totalSets: number }) {
+  return (
+    <div className="mb-5 flex flex-col gap-4 rounded-[1.4rem] border border-[var(--border)] bg-[var(--background)] px-4 py-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="space-y-1">
+        <div className="text-sm font-semibold text-[var(--text-primary)]">
+          Library overview
+        </div>
+        <p className="text-sm text-[var(--text-secondary)]">
+          {totalSets} set{totalSets === 1 ? "" : "s"} currently available in the
+          vocabulary library.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Button variant="secondary" size="sm" icon="search">
+          Search
+        </Button>
+
+        <Button variant="quiet" size="sm" icon="filter">
+          Filters
+        </Button>
+
+        <Button variant="primary" size="sm" icon="create">
+          New set
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function EmptyLibraryState() {
+  return (
+    <div className="rounded-[1.6rem] border border-dashed border-[var(--border)] bg-[linear-gradient(180deg,var(--background-elevated)_0%,var(--background-muted)_100%)] px-6 py-10">
+      <div className="mx-auto flex max-w-xl flex-col items-center text-center">
+        <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-[1.15rem] bg-[var(--background)] text-[var(--brand-blue)] ring-1 ring-[var(--border)]">
+          <AppIcon icon="language" size={24} />
+        </div>
+
+        <h3 className="text-xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
+          No vocabulary sets yet
+        </h3>
+
+        <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
+          Start by creating your first reusable vocabulary set for lessons, revision, or
+          future searchable student tools.
+        </p>
+
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Button variant="primary" size="sm" icon="create">
+            Create first vocabulary set
+          </Button>
+
+          <Button variant="secondary" size="sm" icon="info">
+            View design notes
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function VocabularySetCard({
   vocabularySet,
 }: {
@@ -479,17 +540,10 @@ export default async function AdminVocabularyPage() {
             </p>
           </div>
 
+          <LibraryToolbar totalSets={totalSets} />
+
           {vocabularySets.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-5 py-8 text-sm text-[var(--text-secondary)]">
-              <div className="space-y-3">
-                <p>No vocabulary sets found yet.</p>
-                <div>
-                  <Button variant="primary" size="sm" icon="create">
-                    Create first vocabulary set
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <EmptyLibraryState />
           ) : (
             <div className="grid gap-4 xl:grid-cols-2">
               {vocabularySets.map((vocabularySet) => (
