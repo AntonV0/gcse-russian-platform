@@ -44,6 +44,7 @@
   --page-max-width: 1360px;
   --page-padding-x: 1rem;
   --page-padding-y: 1rem;
+  --site-header-height: 73px;
 
   /* ========= Radius ========= */
   --radius-xs: 0.4rem;
@@ -925,7 +926,7 @@ textarea {
   position: absolute;
   top: -0.38rem;
   right: -0.38rem;
-  z-index: 60;
+  z-index: 120;
   display: inline-flex;
   align-items: flex-start;
   justify-content: flex-end;

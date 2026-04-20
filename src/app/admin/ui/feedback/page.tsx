@@ -271,28 +271,113 @@ export default async function AdminUiFeedbackPage() {
         title="Empty states"
         description="Empty states should explain what is missing, why it matters, and what the next useful action is."
       >
-        <div className="grid gap-4 xl:grid-cols-2">
-          <EmptyState
-            title="No modules yet"
-            description="Create your first module to start structuring this course variant."
-            icon="courses"
-            action={
-              <Button variant="primary" icon="create">
-                Add module
-              </Button>
-            }
-          />
+        <div className="space-y-6">
+          <div className="grid gap-4 xl:grid-cols-2">
+            <EmptyState
+              title="No modules yet"
+              description="Create your first module to start structuring this course variant."
+              icon="courses"
+              action={
+                <Button variant="primary" icon="create">
+                  Add module
+                </Button>
+              }
+            />
 
-          <EmptyState
-            title="No assignments to review"
-            description="Once students submit work, it will appear here for marking and feedback."
-            icon="assignments"
-            action={
-              <Button variant="secondary" icon="search">
-                View submissions
-              </Button>
-            }
-          />
+            <EmptyState
+              title="No assignments to review"
+              description="Once students submit work, it will appear here for marking and feedback."
+              icon="assignments"
+              action={
+                <Button variant="secondary" icon="search">
+                  View submissions
+                </Button>
+              }
+            />
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <EmptyState
+              title="No vocabulary matches your search"
+              description="Try a broader keyword, remove one of the active filters, or switch to another theme."
+              icon="search"
+              action={
+                <Button variant="secondary" icon="refresh">
+                  Reset filters
+                </Button>
+              }
+            />
+
+            <EmptyState
+              title="No uploaded work yet"
+              description="Students can upload speaking recordings, written answers, and revision tasks here."
+              icon="upload"
+              action={
+                <Button variant="soft" icon="next" iconPosition="right">
+                  View upload guide
+                </Button>
+              }
+            />
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-3">
+            <EmptyState
+              title="Start your first lesson"
+              description="There is no progress yet. Open a lesson to begin building your revision streak."
+              icon="next"
+              action={
+                <Button variant="primary" icon="create">
+                  Begin revision
+                </Button>
+              }
+            />
+
+            <EmptyState
+              title="Higher tier content locked"
+              description="This section is available only to Higher students or users with upgraded access."
+              icon="lock"
+              action={
+                <Button variant="accent" icon="next" iconPosition="right">
+                  Unlock access
+                </Button>
+              }
+            />
+
+            <EmptyState
+              title="Could not load submissions"
+              description="Something went wrong while loading this area. Try refreshing or come back in a moment."
+              icon="alert"
+              action={
+                <Button variant="secondary" icon="refresh">
+                  Retry
+                </Button>
+              }
+            />
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <EmptyState
+              title="No mock exams scheduled"
+              description="Create a mock exam window to give students a timed practice session and markable submission flow."
+              icon="calendar"
+              action={
+                <Button variant="primary" icon="create">
+                  Schedule mock exam
+                </Button>
+              }
+            />
+
+            <EmptyState
+              title="No messages yet"
+              description="Teacher notes, feedback updates, and revision reminders will appear here once the course is active."
+              icon="chat"
+              action={
+                <Button variant="quiet" icon="info">
+                  How messaging works
+                </Button>
+              }
+            />
+          </div>
         </div>
       </UiLabSection>
 
