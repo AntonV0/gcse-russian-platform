@@ -31,6 +31,63 @@ export default async function AdminUiComponentsPage() {
       currentPath="/admin/ui/components"
     >
       <UiLabSection
+        title="Shared component inspection"
+        description="Use this area to verify which elements are coming from shared UI primitives and to test the dev marker behaviour in realistic grouped layouts."
+      >
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)]">
+          <div className="app-card p-5 space-y-4">
+            <div className="space-y-1">
+              <div className="app-label">Marker test cluster</div>
+              <p className="text-sm app-text-muted">
+                Buttons and badges should now expose a subtle dev-only corner marker that
+                can be opened without covering the component itself. This section keeps
+                them together so shared primitives are easy to inspect side by side.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button variant="primary" icon="create">
+                Primary action
+              </Button>
+              <Button variant="secondary" icon="edit">
+                Secondary action
+              </Button>
+              <Button variant="quiet" icon="search">
+                Quiet action
+              </Button>
+              <Button variant="secondary" icon="settings" iconOnly ariaLabel="Settings" />
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Badge tone="info" icon="preview">
+                Shared badge
+              </Badge>
+              <Badge tone="success" icon="completed">
+                Stable pattern
+              </Badge>
+              <Badge tone="warning" icon="pending">
+                Still refining
+              </Badge>
+              <Badge tone="muted" icon="file">
+                Reusable primitive
+              </Badge>
+            </div>
+          </div>
+
+          <div className="app-card p-5 space-y-3">
+            <div className="app-label">Why this matters</div>
+            <div className="space-y-2 text-sm app-text-muted">
+              <p>Helps distinguish shared components from one-off page markup.</p>
+              <p>Makes reuse gaps easier to spot during admin UI refinement.</p>
+              <p>
+                Gives the UI Lab a stronger role as the internal design reference area.
+              </p>
+            </div>
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
         title="Page and section headers"
         description="Use shared header patterns so pages keep a consistent hierarchy and action placement."
       >
