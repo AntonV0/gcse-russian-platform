@@ -10,6 +10,7 @@ import SectionCard from "@/components/ui/section-card";
 import LessonSurfaceCard from "@/components/ui/lesson-surface-card";
 import PracticeSurfaceCard from "@/components/ui/practice-surface-card";
 import LockedContentCard from "@/components/ui/locked-content-card";
+import AssessmentSurfaceCard from "@/components/ui/assessment-surface-card";
 
 function SurfaceExample({
   title,
@@ -240,31 +241,14 @@ export default async function AdminUiSurfacesPage() {
         description="These examples are still page-level references for now, but they help define what should become reusable components later."
       >
         <div className="grid gap-4 xl:grid-cols-2">
-          <SemanticSurfaceExample
-            eyebrow="Assessment"
+          <AssessmentSurfaceCard
             title="Quiz or mock exam surface"
-            className="app-surface-muted p-5"
-            badges={
-              <>
-                <Badge tone="danger" icon="warning">
-                  Timed
-                </Badge>
-                <Badge tone="muted" icon="file">
-                  12 questions
-                </Badge>
-              </>
-            }
             description="Assessment wrappers should feel self-contained and serious, but not as promotional as a branded surface."
-            actions={
-              <>
-                <Button variant="accent" icon="create">
-                  Start mock exam
-                </Button>
-                <Button variant="secondary" icon="preview">
-                  View instructions
-                </Button>
-              </>
-            }
+            typeLabel="Mock exam"
+            metaLabel="12 questions"
+            urgencyLabel="Timed"
+            primaryActionLabel="Start mock exam"
+            secondaryActionLabel="View instructions"
           />
 
           <SemanticSurfaceExample
