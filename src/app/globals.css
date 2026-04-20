@@ -1107,3 +1107,95 @@ textarea {
     width: min(16rem, calc(100vw - 1.5rem));
   }
 }
+
+/* ========= Badge theme fixes ========= */
+
+.app-badge-default,
+.app-badge-info,
+.app-badge-success,
+.app-badge-warning,
+.app-badge-danger,
+.app-badge-muted {
+  border-radius: 999px;
+}
+
+.app-badge-default *,
+.app-badge-info *,
+.app-badge-success *,
+.app-badge-warning *,
+.app-badge-danger *,
+.app-badge-muted * {
+  color: inherit;
+}
+
+[data-theme="dark"] .app-badge-muted {
+  border-color: rgba(118, 167, 255, 0.12);
+  background: rgba(20, 35, 61, 0.92);
+  color: var(--text-secondary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+[data-theme="dark"] .app-badge-default {
+  border-color: rgba(118, 167, 255, 0.18);
+  background: linear-gradient(
+    135deg,
+    rgba(79, 140, 255, 0.22) 0%,
+    rgba(24, 43, 72, 0.98) 100%
+  );
+  color: #dbeafe;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 8px 18px rgba(79, 140, 255, 0.12);
+}
+
+[data-theme="dark"] .app-badge-info {
+  border-color: rgba(118, 167, 255, 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(79, 140, 255, 0.24) 0%,
+    rgba(23, 42, 70, 0.98) 100%
+  );
+  color: #bfdbfe;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 8px 18px rgba(79, 140, 255, 0.12);
+}
+
+[data-theme="dark"] .app-badge-success {
+  border-color: rgba(34, 197, 94, 0.22);
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.18) 0%,
+    rgba(16, 46, 31, 0.96) 100%
+  );
+  color: #bbf7d0;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 8px 18px rgba(34, 197, 94, 0.10);
+}
+
+[data-theme="dark"] .app-badge-warning {
+  border-color: rgba(245, 158, 11, 0.24);
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.18) 0%,
+    rgba(61, 38, 10, 0.96) 100%
+  );
+  color: #fde68a;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 8px 18px rgba(245, 158, 11, 0.10);
+}
+
+[data-theme="dark"] .app-badge-danger {
+  border-color: rgba(239, 68, 68, 0.22);
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.18) 0%,
+    rgba(66, 22, 28, 0.96) 100%
+  );
+  color: #fecaca;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 8px 18px rgba(239, 68, 68, 0.10);
+}
