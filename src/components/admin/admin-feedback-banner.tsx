@@ -14,14 +14,9 @@ export default function AdminFeedbackBanner({
   }
 
   return (
-    <>
-      {success ? (
-        <FeedbackBanner tone="success" description={success} className="mb-4" />
-      ) : null}
-
-      {error ? (
-        <FeedbackBanner tone="danger" description={error} className="mb-4" />
-      ) : null}
-    </>
+    <div className="space-y-3">
+      {success ? <FeedbackBanner tone="success" description={success} /> : null}
+      {error ? <FeedbackBanner tone="danger" description={error} /> : null}
+    </div>
   );
 }

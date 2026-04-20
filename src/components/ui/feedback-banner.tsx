@@ -23,12 +23,10 @@ function getToneConfig(tone: FeedbackBannerTone) {
       return {
         icon: "completed" as const,
         wrapperClass: [
-          "border-[color:rgba(31,138,76,0.18)]",
-          "bg-[var(--success-soft)]",
+          "border-[rgba(31,138,76,0.24)]",
+          "bg-[linear-gradient(135deg,rgba(31,138,76,0.14)_0%,rgba(31,138,76,0.05)_100%)]",
           "text-[var(--success)]",
-          "[data-theme='dark']:&:border-[rgba(34,197,94,0.22)]",
-          "[data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(34,197,94,0.18)_0%,rgba(16,46,31,0.96)_100%)]",
-          "[data-theme='dark']:&:text-[#86efac]",
+          "shadow-[0_10px_24px_rgba(31,138,76,0.08)]",
         ].join(" "),
       };
 
@@ -36,12 +34,10 @@ function getToneConfig(tone: FeedbackBannerTone) {
       return {
         icon: "warning" as const,
         wrapperClass: [
-          "border-[color:rgba(183,121,31,0.18)]",
-          "bg-[var(--warning-soft)]",
+          "border-[rgba(183,121,31,0.26)]",
+          "bg-[linear-gradient(135deg,rgba(183,121,31,0.14)_0%,rgba(183,121,31,0.05)_100%)]",
           "text-[var(--warning)]",
-          "[data-theme='dark']:&:border-[rgba(245,158,11,0.24)]",
-          "[data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(245,158,11,0.18)_0%,rgba(61,38,10,0.96)_100%)]",
-          "[data-theme='dark']:&:text-[#fbbf24]",
+          "shadow-[0_10px_24px_rgba(183,121,31,0.08)]",
         ].join(" "),
       };
 
@@ -49,12 +45,10 @@ function getToneConfig(tone: FeedbackBannerTone) {
       return {
         icon: "alert" as const,
         wrapperClass: [
-          "border-[color:rgba(194,59,59,0.18)]",
-          "bg-[var(--danger-soft)]",
+          "border-[rgba(194,59,59,0.24)]",
+          "bg-[linear-gradient(135deg,rgba(194,59,59,0.14)_0%,rgba(194,59,59,0.05)_100%)]",
           "text-[var(--danger)]",
-          "[data-theme='dark']:&:border-[rgba(239,68,68,0.22)]",
-          "[data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(239,68,68,0.18)_0%,rgba(66,22,28,0.96)_100%)]",
-          "[data-theme='dark']:&:text-[#fca5a5]",
+          "shadow-[0_10px_24px_rgba(194,59,59,0.08)]",
         ].join(" "),
       };
 
@@ -63,12 +57,10 @@ function getToneConfig(tone: FeedbackBannerTone) {
       return {
         icon: "info" as const,
         wrapperClass: [
-          "border-[color:rgba(37,99,235,0.18)]",
-          "bg-[var(--info-soft)]",
+          "border-[rgba(37,99,235,0.22)]",
+          "bg-[linear-gradient(135deg,rgba(37,99,235,0.14)_0%,rgba(37,99,235,0.05)_100%)]",
           "text-[var(--info)]",
-          "[data-theme='dark']:&:border-[rgba(118,167,255,0.2)]",
-          "[data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(118,167,255,0.22)_0%,rgba(23,42,70,0.98)_100%)]",
-          "[data-theme='dark']:&:text-[#dce9ff]",
+          "shadow-[0_10px_24px_rgba(37,99,235,0.08)]",
         ].join(" "),
       };
   }
@@ -86,16 +78,7 @@ export default function FeedbackBanner({
   const resolvedIcon = icon ?? defaultIcon;
 
   return (
-    <div
-      className={[
-        "dev-marker-host",
-        "relative rounded-2xl border px-4 py-4 shadow-[0_8px_20px_rgba(16,32,51,0.05)]",
-        wrapperClass,
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
+    <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="FeedbackBanner"
@@ -103,25 +86,35 @@ export default function FeedbackBanner({
         />
       ) : null}
 
-      <div className="flex items-start gap-3">
-        <div className="mt-0.5 shrink-0">
-          <AppIcon icon={resolvedIcon} size={18} />
-        </div>
+      <div
+        className={[
+          "relative overflow-hidden rounded-[1.6rem] border px-5 py-4",
+          "backdrop-blur-[1px]",
+          wrapperClass,
+        ].join(" ")}
+      >
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_100%)]" />
 
-        <div className="min-w-0">
-          {title ? <div className="font-semibold">{title}</div> : null}
+        <div className="relative flex items-start gap-3">
+          <div className="mt-0.5 shrink-0">
+            <AppIcon icon={resolvedIcon} size={18} />
+          </div>
 
-          {description ? (
-            <p className={title ? "mt-1 text-sm opacity-90" : "text-sm opacity-90"}>
-              {description}
-            </p>
-          ) : null}
+          <div className="min-w-0">
+            {title ? (
+              <div className="font-semibold tracking-[-0.01em]">{title}</div>
+            ) : null}
 
-          {children ? (
-            <div className={title || description ? "mt-2 text-sm opacity-95" : "text-sm"}>
-              {children}
-            </div>
-          ) : null}
+            {description ? (
+              <p className={[title ? "mt-1" : "", "text-sm leading-6"].join(" ")}>
+                {description}
+              </p>
+            ) : null}
+
+            {children ? (
+              <div className={title || description ? "mt-3" : ""}>{children}</div>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
