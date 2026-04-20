@@ -4,61 +4,9 @@ import UiLabSection from "@/components/admin/ui-lab-section";
 import Badge from "@/components/ui/badge";
 import EmptyState from "@/components/ui/empty-state";
 import Button from "@/components/ui/button";
-import AppIcon from "@/components/ui/app-icon";
 import Card, { CardBody } from "@/components/ui/card";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 import StatusBadge from "@/components/ui/status-badge";
-
-function FeedbackBanner({
-  tone,
-  title,
-  description,
-}: {
-  tone: "info" | "success" | "warning" | "danger";
-  title: string;
-  description: string;
-}) {
-  const styles = {
-    info: {
-      wrapper:
-        "border-[color:rgba(37,99,235,0.18)] bg-[var(--info-soft)] text-[var(--info)] [data-theme='dark']:&:border-[rgba(118,167,255,0.2)] [data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(118,167,255,0.22)_0%,rgba(23,42,70,0.98)_100%)] [data-theme='dark']:&:text-[#dce9ff]",
-      icon: "info",
-    },
-    success: {
-      wrapper:
-        "border-[color:rgba(31,138,76,0.18)] bg-[var(--success-soft)] text-[var(--success)] [data-theme='dark']:&:border-[rgba(34,197,94,0.22)] [data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(34,197,94,0.18)_0%,rgba(16,46,31,0.96)_100%)] [data-theme='dark']:&:text-[#86efac]",
-      icon: "completed",
-    },
-    warning: {
-      wrapper:
-        "border-[color:rgba(183,121,31,0.18)] bg-[var(--warning-soft)] text-[var(--warning)] [data-theme='dark']:&:border-[rgba(245,158,11,0.24)] [data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(245,158,11,0.18)_0%,rgba(61,38,10,0.96)_100%)] [data-theme='dark']:&:text-[#fbbf24]",
-      icon: "warning",
-    },
-    danger: {
-      wrapper:
-        "border-[color:rgba(194,59,59,0.18)] bg-[var(--danger-soft)] text-[var(--danger)] [data-theme='dark']:&:border-[rgba(239,68,68,0.22)] [data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(239,68,68,0.18)_0%,rgba(66,22,28,0.96)_100%)] [data-theme='dark']:&:text-[#fca5a5]",
-      icon: "alert",
-    },
-  } as const;
-
-  const style = styles[tone];
-
-  return (
-    <div
-      className={`rounded-2xl border px-4 py-4 shadow-[0_8px_20px_rgba(16,32,51,0.05)] ${style.wrapper}`}
-    >
-      <div className="flex items-start gap-3">
-        <div className="mt-0.5">
-          <AppIcon icon={style.icon} size={18} />
-        </div>
-
-        <div className="min-w-0">
-          <div className="font-semibold">{title}</div>
-          <p className="mt-1 text-sm opacity-90">{description}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function StatusSummaryCard({
   title,
