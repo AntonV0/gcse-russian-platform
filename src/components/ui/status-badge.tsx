@@ -1,3 +1,6 @@
+"use client";
+
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import Badge from "@/components/ui/badge";
 
 type Status = "not_started" | "submitted" | "reviewed" | "returned";
@@ -31,6 +34,8 @@ function getStatusConfig(status: Status) {
   }
 }
 
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+
 export default function StatusBadge({ status }: { status?: string | null }) {
   const normalized: Status =
     status === "submitted" || status === "reviewed" || status === "returned"
@@ -40,8 +45,17 @@ export default function StatusBadge({ status }: { status?: string | null }) {
   const { label, tone, icon } = getStatusConfig(normalized);
 
   return (
-    <Badge tone={tone} icon={icon}>
-      {label}
-    </Badge>
+    <span className="dev-marker-host inline-flex">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="StatusBadge"
+          filePath="src/components/ui/status-badge.tsx"
+        />
+      ) : null}
+
+      <Badge tone={tone} icon={icon}>
+        {label}
+      </Badge>
+    </span>
   );
 }

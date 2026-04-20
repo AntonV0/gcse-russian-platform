@@ -1,37 +1,15 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
+import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
+import QuestionFeedback from "@/components/questions/question-feedback";
 import Badge from "@/components/ui/badge";
 import EmptyState from "@/components/ui/empty-state";
 import Button from "@/components/ui/button";
 import Card, { CardBody } from "@/components/ui/card";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import StatusBadge from "@/components/ui/status-badge";
-
-function StatusSummaryCard({
-  title,
-  description,
-  badgeTone,
-  badgeLabel,
-}: {
-  title: string;
-  description: string;
-  badgeTone: "default" | "info" | "success" | "warning" | "danger" | "muted";
-  badgeLabel: string;
-}) {
-  return (
-    <Card>
-      <CardBody className="p-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-          <Badge tone={badgeTone}>{badgeLabel}</Badge>
-        </div>
-
-        <p className="text-sm app-text-muted">{description}</p>
-      </CardBody>
-    </Card>
-  );
-}
+import StatusSummaryCard from "@/components/ui/status-summary-card";
 
 export default async function AdminUiFeedbackPage() {
   const canAccess = await requireAdminAccess();
@@ -107,6 +85,64 @@ export default async function AdminUiFeedbackPage() {
               </Badge>
               <Badge tone="success" icon="completed">
                 Marked
+              </Badge>
+            </div>
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="High-emphasis badge usage"
+        description="These examples show where badges should stand out more because they communicate access, urgency, or progression at a glance."
+      >
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Access + availability
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Badge tone="info" icon="preview">
+                Trial access
+              </Badge>
+              <Badge tone="default" icon="courses">
+                Foundation
+              </Badge>
+              <Badge tone="warning" icon="pending">
+                Limited
+              </Badge>
+            </div>
+          </div>
+
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Student progress moments
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Badge tone="success" icon="completed">
+                Marked correct
+              </Badge>
+              <Badge tone="warning" icon="pending">
+                Needs revision
+              </Badge>
+              <Badge tone="danger" icon="warning">
+                Missing work
+              </Badge>
+            </div>
+          </div>
+
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Publishing + workflow
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Badge tone="muted" icon="file">
+                Draft
+              </Badge>
+              <Badge tone="info" icon="preview">
+                Ready to publish
+              </Badge>
+              <Badge tone="success" icon="completed">
+                Live now
               </Badge>
             </div>
           </div>
@@ -216,6 +252,171 @@ export default async function AdminUiFeedbackPage() {
       </UiLabSection>
 
       <UiLabSection
+        title="Banner patterns with actions"
+        description="Use these when the message should immediately guide the user toward the next step instead of just informing them."
+      >
+        <div className="space-y-4">
+          <FeedbackBanner
+            tone="info"
+            title="Trial lesson available"
+            description="This student can unlock the first lesson now and continue into the guided trial flow."
+          >
+            <div className="mt-3 flex flex-wrap gap-3">
+              <Button variant="soft" icon="next" iconPosition="right">
+                Open trial lesson
+              </Button>
+              <Button variant="secondary" icon="preview">
+                Preview student view
+              </Button>
+            </div>
+          </FeedbackBanner>
+
+          <FeedbackBanner
+            tone="warning"
+            title="Mock exam still incomplete"
+            description="One section has not been submitted yet, so final review cannot be started."
+          >
+            <div className="mt-3 flex flex-wrap gap-3">
+              <Button variant="warning" icon="pending">
+                Review missing section
+              </Button>
+              <Button variant="secondary" icon="back">
+                Back to submissions
+              </Button>
+            </div>
+          </FeedbackBanner>
+
+          <FeedbackBanner
+            tone="danger"
+            title="Access required"
+            description="This block is locked for the current plan and needs an upgraded course path to continue."
+          >
+            <div className="mt-3 flex flex-wrap gap-3">
+              <Button variant="accent" icon="next" iconPosition="right">
+                Unlock full course
+              </Button>
+              <Button variant="secondary" icon="preview">
+                Compare access
+              </Button>
+            </div>
+          </FeedbackBanner>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Admin feedback wrapper"
+        description="Use AdminFeedbackBanner for quick success and error messaging in admin forms, edit screens, and save flows without reassembling banner styles each time."
+      >
+        <div className="grid gap-4 xl:grid-cols-3">
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Success only
+            </div>
+            <AdminFeedbackBanner success="Course settings saved successfully." />
+          </div>
+
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Error only
+            </div>
+            <AdminFeedbackBanner error="A required field is missing before this section can be published." />
+          </div>
+
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Stacked feedback
+            </div>
+            <AdminFeedbackBanner
+              success="Lesson draft saved."
+              error="Audio file upload is still missing."
+            />
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Question feedback states"
+        description="Question feedback is a different pattern from banners. Use it inside exercises and marked interactions to show outcome, correction, and explanation."
+      >
+        <div className="grid gap-4 xl:grid-cols-2">
+          <Card>
+            <CardBody className="space-y-4 p-4">
+              <div>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Correct answer
+                </div>
+                <p className="mt-1 text-sm app-text-muted">
+                  Simple success state after a correct response.
+                </p>
+              </div>
+
+              <QuestionFeedback
+                isCorrect
+                statusLabel="Correct."
+                explanation="Great job — this matches the expected answer and meaning."
+              />
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="space-y-4 p-4">
+              <div>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Incorrect with correction
+                </div>
+                <p className="mt-1 text-sm app-text-muted">
+                  Use when the student needs the expected answer shown clearly.
+                </p>
+              </div>
+
+              <QuestionFeedback
+                isCorrect={false}
+                statusLabel="Not quite."
+                correctAnswerText="Я люблю читать."
+                explanation="The verb and infinitive need to stay together in this phrase."
+              />
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="space-y-4 p-4">
+              <div>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Incorrect with accepted answers
+                </div>
+                <p className="mt-1 text-sm app-text-muted">
+                  Useful when multiple valid phrasings are accepted.
+                </p>
+              </div>
+
+              <QuestionFeedback
+                isCorrect={false}
+                statusLabel="Try again."
+                correctAnswerText="в школе"
+                acceptedAnswerTexts={["в школе", "на уроке"]}
+                explanation="Both answers fit the context here, but your response did not match either accepted form."
+              />
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="space-y-4 p-4">
+              <div>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Minimal correct state
+                </div>
+                <p className="mt-1 text-sm app-text-muted">
+                  A lighter success result when no extra explanation is needed.
+                </p>
+              </div>
+
+              <QuestionFeedback isCorrect statusLabel="Well done." />
+            </CardBody>
+          </Card>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
         title="Empty states"
         description="Empty states should explain what is missing, why it matters, and what the next useful action is."
       >
@@ -225,6 +426,7 @@ export default async function AdminUiFeedbackPage() {
               title="No modules yet"
               description="Create your first module to start structuring this course variant."
               icon="courses"
+              iconTone="brand"
               action={
                 <Button variant="primary" icon="create">
                   Add module
@@ -236,19 +438,19 @@ export default async function AdminUiFeedbackPage() {
               title="No assignments to review"
               description="Once students submit work, it will appear here for marking and feedback."
               icon="assignments"
+              iconTone="inverse"
               action={
                 <Button variant="secondary" icon="search">
                   View submissions
                 </Button>
               }
             />
-          </div>
 
-          <div className="grid gap-4 xl:grid-cols-2">
             <EmptyState
               title="No vocabulary matches your search"
               description="Try a broader keyword, remove one of the active filters, or switch to another theme."
               icon="search"
+              iconTone="inverse"
               action={
                 <Button variant="secondary" icon="refresh">
                   Reset filters
@@ -260,19 +462,19 @@ export default async function AdminUiFeedbackPage() {
               title="No uploaded work yet"
               description="Students can upload speaking recordings, written answers, and revision tasks here."
               icon="upload"
+              iconTone="brand"
               action={
                 <Button variant="soft" icon="next" iconPosition="right">
                   View upload guide
                 </Button>
               }
             />
-          </div>
 
-          <div className="grid gap-4 xl:grid-cols-3">
             <EmptyState
               title="Start your first lesson"
               description="There is no progress yet. Open a lesson to begin building your revision streak."
               icon="next"
+              iconTone="brand"
               action={
                 <Button variant="primary" icon="create">
                   Begin revision
@@ -284,6 +486,7 @@ export default async function AdminUiFeedbackPage() {
               title="Higher tier content locked"
               description="This section is available only to Higher students or users with upgraded access."
               icon="lock"
+              iconTone="inverse"
               action={
                 <Button variant="accent" icon="next" iconPosition="right">
                   Unlock access
@@ -295,19 +498,19 @@ export default async function AdminUiFeedbackPage() {
               title="Could not load submissions"
               description="Something went wrong while loading this area. Try refreshing or come back in a moment."
               icon="alert"
+              iconTone="inverse"
               action={
                 <Button variant="secondary" icon="refresh">
                   Retry
                 </Button>
               }
             />
-          </div>
 
-          <div className="grid gap-4 xl:grid-cols-2">
             <EmptyState
               title="No mock exams scheduled"
               description="Create a mock exam window to give students a timed practice session and markable submission flow."
               icon="calendar"
+              iconTone="brand"
               action={
                 <Button variant="primary" icon="create">
                   Schedule mock exam
@@ -319,8 +522,9 @@ export default async function AdminUiFeedbackPage() {
               title="No messages yet"
               description="Teacher notes, feedback updates, and revision reminders will appear here once the course is active."
               icon="chat"
+              iconTone="inverse"
               action={
-                <Button variant="quiet" icon="info">
+                <Button variant="secondary" icon="info">
                   How messaging works
                 </Button>
               }
@@ -358,6 +562,65 @@ export default async function AdminUiFeedbackPage() {
             badgeTone="danger"
             badgeLabel="Required"
           />
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Feedback journeys"
+        description="These grouped examples combine banners, badges, and buttons into realistic flows that can be reused across admin and student-facing pages."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="app-card p-5">
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <Badge tone="warning" icon="pending">
+                Waiting on submission
+              </Badge>
+              <Badge tone="info" icon="preview">
+                Higher
+              </Badge>
+            </div>
+
+            <FeedbackBanner
+              tone="warning"
+              title="Student action still needed"
+              description="The speaking task has been opened, but the audio response has not been uploaded yet."
+            >
+              <div className="mt-3 flex flex-wrap gap-3">
+                <Button variant="warning" icon="pending">
+                  Review task status
+                </Button>
+                <Button variant="secondary" icon="chat">
+                  Message student
+                </Button>
+              </div>
+            </FeedbackBanner>
+          </div>
+
+          <div className="app-card p-5">
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <Badge tone="success" icon="completed">
+                Ready to unlock
+              </Badge>
+              <Badge tone="default" icon="courses">
+                Full course
+              </Badge>
+            </div>
+
+            <FeedbackBanner
+              tone="success"
+              title="Revision milestone reached"
+              description="This learner has completed the current review cycle and can move on to the next module."
+            >
+              <div className="mt-3 flex flex-wrap gap-3">
+                <Button variant="soft" icon="next" iconPosition="right">
+                  Open next module
+                </Button>
+                <Button variant="secondary" icon="preview">
+                  View progress
+                </Button>
+              </div>
+            </FeedbackBanner>
+          </div>
         </div>
       </UiLabSection>
 
