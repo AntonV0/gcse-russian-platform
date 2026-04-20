@@ -3,6 +3,8 @@ import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
+import AppIcon from "@/components/ui/app-icon";
+import type { AppIconKey } from "@/lib/shared/icons";
 import type { DbVocabularySetListItem } from "@/lib/vocabulary/vocabulary-helpers-db";
 import {
   getVocabularyListModeLabel,
@@ -180,9 +182,72 @@ function UsageKeyRow({ label, shortLabel }: { label: string; shortLabel: string 
       <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-[var(--background-elevated)] px-2 text-[11px] font-bold text-[var(--text-secondary)] ring-1 ring-[var(--border)]">
         {shortLabel}
       </span>
+
       <div>
         <div className="text-sm font-semibold text-[var(--text-primary)]">{label}</div>
         <p className="text-xs text-[var(--text-secondary)]">Variant usage indicator</p>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({
+  title,
+  value,
+  description,
+  icon,
+}: {
+  title: string;
+  value: number;
+  description: string;
+  icon: AppIconKey;
+}) {
+  return (
+    <DashboardCard className="h-full">
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-3">
+          <div className="text-sm font-semibold text-[var(--text-primary)]">{title}</div>
+
+          <div className="text-4xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
+            {value}
+          </div>
+
+          <p className="max-w-xs text-sm leading-6 text-[var(--text-secondary)]">
+            {description}
+          </p>
+        </div>
+
+        <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--brand-blue)] ring-1 ring-[var(--border)]">
+          <AppIcon icon={icon} size={20} />
+        </div>
+      </div>
+    </DashboardCard>
+  );
+}
+
+function SidebarInfoCard({
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon: AppIconKey;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="app-surface app-section-padding">
+      <div className="space-y-4">
+        <div className="flex items-start gap-3">
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--brand-blue)] ring-1 ring-[var(--border)]">
+            <AppIcon icon={icon} size={18} />
+          </div>
+
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">{title}</h2>
+          </div>
+        </div>
+
+        {children}
       </div>
     </div>
   );
@@ -373,37 +438,33 @@ export default async function AdminVocabularyPage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <DashboardCard title="Vocabulary sets">
-          <p className="text-3xl font-semibold text-[var(--text-primary)]">{totalSets}</p>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Total reusable sets currently stored in the database.
-          </p>
-        </DashboardCard>
+        <StatCard
+          title="Vocabulary sets"
+          value={totalSets}
+          description="Total reusable sets currently stored in the database."
+          icon="language"
+        />
 
-        <DashboardCard title="Published sets">
-          <p className="text-3xl font-semibold text-[var(--text-primary)]">
-            {publishedSets}
-          </p>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Sets currently visible to the student-facing vocabulary experience.
-          </p>
-        </DashboardCard>
+        <StatCard
+          title="Published sets"
+          value={publishedSets}
+          description="Sets currently visible to the student-facing vocabulary experience."
+          icon="success"
+        />
 
-        <DashboardCard title="Draft sets">
-          <p className="text-3xl font-semibold text-[var(--text-primary)]">{draftSets}</p>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Sets still in preparation before student publication.
-          </p>
-        </DashboardCard>
+        <StatCard
+          title="Draft sets"
+          value={draftSets}
+          description="Sets still in preparation before student publication."
+          icon="edit"
+        />
 
-        <DashboardCard title="Lesson usages">
-          <p className="text-3xl font-semibold text-[var(--text-primary)]">
-            {totalOccurrences}
-          </p>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Total lesson-linked vocabulary set occurrences across all variants.
-          </p>
-        </DashboardCard>
+        <StatCard
+          title="Lesson usages"
+          value={totalOccurrences}
+          description="Total lesson-linked vocabulary set occurrences across all variants."
+          icon="list"
+        />
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
@@ -439,73 +500,55 @@ export default async function AdminVocabularyPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="app-surface app-section-padding">
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-                What should come next
-              </h2>
-
-              <div className="space-y-2">
-                {[
-                  "Create vocabulary set forms",
-                  "Add item create, edit, reorder, and delete flows",
-                  "Attach vocabulary sets inside the lesson builder",
-                  "Auto-write usage rows when sets are linked",
-                  "Add a set detail page with usage breakdown",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-start gap-3 rounded-xl bg-[var(--background-muted)] px-3 py-3"
-                  >
-                    <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-[var(--brand-blue)]" />
-                    <span className="text-sm leading-6 text-[var(--text-secondary)]">
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
+          <SidebarInfoCard title="What should come next" icon="next">
+            <div className="space-y-2">
+              {[
+                "Create vocabulary set forms",
+                "Add item create, edit, reorder, and delete flows",
+                "Attach vocabulary sets inside the lesson builder",
+                "Auto-write usage rows when sets are linked",
+                "Add a set detail page with usage breakdown",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="flex items-start gap-3 rounded-xl bg-[var(--background-muted)] px-3 py-3"
+                >
+                  <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-[var(--brand-blue)]" />
+                  <span className="text-sm leading-6 text-[var(--text-secondary)]">
+                    {item}
+                  </span>
+                </div>
+              ))}
             </div>
-          </div>
+          </SidebarInfoCard>
 
-          <div className="app-surface app-section-padding">
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-                Student experience link
-              </h2>
+          <SidebarInfoCard title="Student experience link" icon="preview">
+            <p className="text-sm leading-6 text-[var(--text-secondary)]">
+              Published sets from this library can power the student vocabulary page,
+              lesson vocabulary-set blocks, and future searchable revision tools.
+            </p>
 
-              <p className="text-sm leading-6 text-[var(--text-secondary)]">
-                Published sets from this library can power the student vocabulary page,
-                lesson vocabulary-set blocks, and future searchable revision tools.
-              </p>
+            <Link
+              href="/vocabulary"
+              className="inline-flex items-center gap-2 rounded-xl bg-[var(--background-muted)] px-3 py-2 text-sm font-medium app-brand-text transition hover:bg-[var(--brand-blue-soft)]"
+            >
+              Open student vocabulary page
+              <span aria-hidden="true">→</span>
+            </Link>
+          </SidebarInfoCard>
 
-              <Link
-                href="/vocabulary"
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--background-muted)] px-3 py-2 text-sm font-medium app-brand-text transition hover:bg-[var(--brand-blue-soft)]"
-              >
-                Open student vocabulary page
-                <span aria-hidden="true">→</span>
-              </Link>
+          <SidebarInfoCard title="Usage key" icon="info">
+            <div className="space-y-2">
+              <UsageKeyRow label="Foundation" shortLabel="F" />
+              <UsageKeyRow label="Higher" shortLabel="H" />
+              <UsageKeyRow label="Volna" shortLabel="V" />
             </div>
-          </div>
 
-          <div className="app-surface app-section-padding">
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-                Usage key
-              </h2>
-
-              <div className="space-y-2">
-                <UsageKeyRow label="Foundation" shortLabel="F" />
-                <UsageKeyRow label="Higher" shortLabel="H" />
-                <UsageKeyRow label="Volna" shortLabel="V" />
-              </div>
-
-              <p className="text-sm leading-6 text-[var(--text-secondary)]">
-                These labels show which course variant currently uses a vocabulary set.
-                The number beside each row shows linked usage count.
-              </p>
-            </div>
-          </div>
+            <p className="text-sm leading-6 text-[var(--text-secondary)]">
+              These labels show which course variant currently uses a vocabulary set. The
+              number beside each row shows linked usage count.
+            </p>
+          </SidebarInfoCard>
         </div>
       </section>
     </main>
