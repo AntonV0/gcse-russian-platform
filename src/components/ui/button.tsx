@@ -33,45 +33,84 @@ type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-function getVariantClass(variant: ButtonVariant) {
+function getVariantClass(variant: ButtonVariant, disabled: boolean) {
   switch (variant) {
     case "primary":
-      return "app-btn-primary";
+      return [
+        "border border-[var(--brand-blue)]",
+        "bg-[var(--brand-blue)] text-[var(--text-inverse)]",
+        "shadow-[0_10px_20px_rgba(37,99,235,0.18),0_2px_6px_rgba(37,99,235,0.18)]",
+        disabled
+          ? "opacity-60"
+          : "hover:border-[var(--brand-blue-hover)] hover:bg-[var(--brand-blue-hover)] hover:shadow-[0_14px_28px_rgba(37,99,235,0.22),0_4px_10px_rgba(37,99,235,0.18)]",
+      ].join(" ");
+
     case "secondary":
-      return "app-btn-secondary";
+      return [
+        "border border-[var(--border)]",
+        "bg-[var(--background-elevated)] text-[var(--text-primary)]",
+        "shadow-[0_1px_2px_rgba(16,32,51,0.04)]",
+        disabled
+          ? "opacity-60"
+          : "hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] hover:shadow-[0_8px_18px_rgba(16,32,51,0.08)]",
+      ].join(" ");
+
     case "quiet":
       return [
-        "border border-transparent bg-transparent",
-        "text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--brand-blue)]",
+        "border border-transparent",
+        "bg-transparent text-[var(--text-secondary)]",
+        disabled
+          ? "opacity-55"
+          : "hover:border-[rgba(37,99,235,0.12)] hover:bg-[rgba(37,99,235,0.08)] hover:text-[var(--brand-blue)]",
       ].join(" ");
+
     case "success":
       return [
-        "border border-transparent",
-        "bg-[var(--success-soft)] text-[var(--success)] hover:opacity-90",
+        "border border-[rgba(31,138,76,0.18)]",
+        "bg-[var(--success-soft)] text-[var(--success)]",
+        disabled
+          ? "opacity-60"
+          : "hover:border-[rgba(31,138,76,0.28)] hover:bg-[rgba(31,138,76,0.12)]",
       ].join(" ");
+
     case "warning":
       return [
-        "border border-transparent",
-        "bg-[var(--warning-soft)] text-[var(--warning)] hover:opacity-90",
+        "border border-[rgba(183,121,31,0.18)]",
+        "bg-[var(--warning-soft)] text-[var(--warning)]",
+        disabled
+          ? "opacity-60"
+          : "hover:border-[rgba(183,121,31,0.28)] hover:bg-[rgba(183,121,31,0.12)]",
       ].join(" ");
+
     case "danger":
       return [
-        "border border-transparent",
-        "bg-[var(--danger-soft)] text-[var(--danger)] hover:opacity-90",
+        "border border-[rgba(194,59,59,0.18)]",
+        "bg-[var(--danger-soft)] text-[var(--danger)]",
+        disabled
+          ? "opacity-60"
+          : "hover:border-[rgba(194,59,59,0.28)] hover:bg-[rgba(194,59,59,0.12)]",
       ].join(" ");
+
     default:
-      return "app-btn-secondary";
+      return [
+        "border border-[var(--border)]",
+        "bg-[var(--background-elevated)] text-[var(--text-primary)]",
+      ].join(" ");
   }
 }
 
 function getSizeClass(size: ButtonSize, iconOnly: boolean) {
   if (iconOnly) {
-    return size === "sm" ? "h-9 w-9 rounded-lg" : "h-10 w-10 rounded-xl";
+    return size === "sm" ? "h-9 w-9 rounded-xl p-0" : "h-10 w-10 rounded-xl p-0";
   }
 
   return size === "sm"
-    ? "rounded-lg px-3 py-2 text-sm"
-    : "rounded-xl px-4 py-2.5 text-sm";
+    ? "min-h-9 rounded-xl px-3.5 py-2 text-sm"
+    : "min-h-10 rounded-xl px-4 py-2.5 text-sm";
+}
+
+function getIconSize(size: ButtonSize) {
+  return size === "sm" ? 16 : 18;
 }
 
 function getClassName({
@@ -79,16 +118,24 @@ function getClassName({
   size = "md",
   iconOnly = false,
   className,
+  disabled = false,
 }: {
   variant?: ButtonVariant;
   size?: ButtonSize;
   iconOnly?: boolean;
   className?: string;
+  disabled?: boolean;
 }) {
   return [
     "dev-marker-host",
-    "app-btn-base app-focus-ring inline-flex items-center justify-center gap-2 transition",
-    getVariantClass(variant),
+    "app-focus-ring inline-flex items-center justify-center gap-2 font-semibold leading-none",
+    "select-none whitespace-nowrap",
+    "transition-[transform,background-color,border-color,color,box-shadow,opacity]",
+    "duration-200 ease-out",
+    disabled
+      ? "cursor-not-allowed"
+      : "hover:-translate-y-px active:translate-y-0 active:scale-[0.99]",
+    getVariantClass(variant, disabled),
     getSizeClass(size, iconOnly),
     iconOnly ? "shrink-0" : "",
     className,
@@ -102,12 +149,16 @@ function ButtonInner({
   icon,
   iconPosition = "left",
   iconOnly = false,
+  size = "md",
 }: {
   children?: React.ReactNode;
   icon?: AppIconKey;
   iconPosition?: "left" | "right";
   iconOnly?: boolean;
+  size?: ButtonSize;
 }) {
+  const iconSize = getIconSize(size);
+
   if (iconOnly) {
     return (
       <>
@@ -118,7 +169,7 @@ function ButtonInner({
           />
         ) : null}
 
-        {icon ? <AppIcon icon={icon} size={18} /> : null}
+        {icon ? <AppIcon icon={icon} size={iconSize} /> : null}
       </>
     );
   }
@@ -132,9 +183,9 @@ function ButtonInner({
         />
       ) : null}
 
-      {icon && iconPosition === "left" ? <AppIcon icon={icon} size={18} /> : null}
-      {children ? <span>{children}</span> : null}
-      {icon && iconPosition === "right" ? <AppIcon icon={icon} size={18} /> : null}
+      {icon && iconPosition === "left" ? <AppIcon icon={icon} size={iconSize} /> : null}
+      {children ? <span className="truncate">{children}</span> : null}
+      {icon && iconPosition === "right" ? <AppIcon icon={icon} size={iconSize} /> : null}
     </>
   );
 }
@@ -151,11 +202,14 @@ export default function Button(props: ButtonProps) {
     ariaLabel,
   } = props;
 
+  const disabled = "disabled" in props ? Boolean(props.disabled) : false;
+
   const mergedClassName = getClassName({
     variant,
     size,
     iconOnly,
     className,
+    disabled,
   });
 
   if ("href" in props && props.href) {
@@ -166,7 +220,12 @@ export default function Button(props: ButtonProps) {
         aria-label={ariaLabel}
         title={ariaLabel}
       >
-        <ButtonInner icon={icon} iconPosition={iconPosition} iconOnly={iconOnly}>
+        <ButtonInner
+          icon={icon}
+          iconPosition={iconPosition}
+          iconOnly={iconOnly}
+          size={size}
+        >
           {children}
         </ButtonInner>
       </Link>
@@ -192,7 +251,12 @@ export default function Button(props: ButtonProps) {
       aria-label={ariaLabel}
       title={ariaLabel}
     >
-      <ButtonInner icon={icon} iconPosition={iconPosition} iconOnly={iconOnly}>
+      <ButtonInner
+        icon={icon}
+        iconPosition={iconPosition}
+        iconOnly={iconOnly}
+        size={size}
+      >
         {children}
       </ButtonInner>
     </button>
