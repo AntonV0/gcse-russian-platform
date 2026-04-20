@@ -130,6 +130,164 @@ export default async function AdminUiButtonsPage() {
       </UiLabSection>
 
       <UiLabSection
+        title="Disabled states by hierarchy"
+        description="Disabled buttons should remain readable, clearly inactive, and still preserve the intended action hierarchy."
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button variant="primary" disabled>
+            Save changes
+          </Button>
+          <Button variant="secondary" disabled icon="back">
+            Cancel
+          </Button>
+          <Button variant="quiet" disabled icon="edit">
+            Edit later
+          </Button>
+          <Button variant="success" disabled icon="completed">
+            Completed
+          </Button>
+          <Button variant="warning" disabled icon="pending">
+            Waiting
+          </Button>
+          <Button variant="danger" disabled icon="userX">
+            Delete
+          </Button>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Long labels and content balance"
+        description="Buttons should hold up with more realistic labels used in admin actions, checkout flows, and navigation prompts."
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button variant="primary" icon="completed">
+            Save lesson changes
+          </Button>
+          <Button variant="secondary" icon="next" iconPosition="right">
+            Continue to module overview
+          </Button>
+          <Button variant="danger" icon="delete">
+            Permanently remove selected lesson
+          </Button>
+          <Button variant="quiet" icon="preview">
+            Preview in student view
+          </Button>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Toolbar and dense admin patterns"
+        description="These patterns are useful for list screens, builder toolbars, inspectors, and table action bars."
+      >
+        <div className="flex flex-col gap-4">
+          <div className="app-card p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="secondary" size="sm" icon="filter">
+                Filter
+              </Button>
+              <Button variant="secondary" size="sm" icon="search">
+                Search
+              </Button>
+              <Button variant="secondary" size="sm" icon="settings">
+                Settings
+              </Button>
+              <Button variant="quiet" size="sm" icon="refresh">
+                Refresh
+              </Button>
+              <Button variant="primary" size="sm" icon="create">
+                Add item
+              </Button>
+            </div>
+          </div>
+
+          <div className="app-card p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="secondary" size="sm" icon="back">
+                Back
+              </Button>
+              <Button variant="primary" size="sm" icon="completed">
+                Save
+              </Button>
+              <Button variant="secondary" size="sm" icon="preview">
+                Preview
+              </Button>
+              <Button variant="danger" size="sm" icon="delete">
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Form action rows"
+        description="These are common action combinations for create, edit, and settings forms. The primary action should remain visually clear."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Standard edit form
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="primary" icon="completed">
+                Save changes
+              </Button>
+              <Button variant="secondary" icon="back">
+                Cancel
+              </Button>
+            </div>
+          </div>
+
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Destructive confirmation
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="danger" icon="delete">
+                Delete lesson
+              </Button>
+              <Button variant="secondary">Keep lesson</Button>
+            </div>
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Grouped action hierarchy"
+        description="Useful for content screens where one action is primary, one is supportive, and one is optional or low emphasis."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Content publishing
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="primary" icon="completed">
+                Publish now
+              </Button>
+              <Button variant="secondary" icon="preview">
+                Preview
+              </Button>
+              <Button variant="quiet">Save draft</Button>
+            </div>
+          </div>
+
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Account / membership action row
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="secondary">Manage subscription</Button>
+              <Button variant="primary" icon="next" iconPosition="right">
+                Upgrade plan
+              </Button>
+              <Button variant="quiet">Compare options</Button>
+            </div>
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
         title="Link buttons"
         description="Shared buttons also need to behave cleanly when rendered as links, including with the dev marker enabled."
       >
