@@ -10,6 +10,7 @@ import {
   getCurrentProfile,
   getCurrentUser,
 } from "@/lib/auth/auth";
+import { getCurrentPlanSummaryForUserDb } from "@/lib/billing/account-helpers";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
 function formatRoleLabel(role: string | null | undefined) {
@@ -51,6 +52,11 @@ function getAccountSummaryText(
   return "Your account is ready, and more personalisation and learning tools can be managed from here.";
 }
 
+function formatDate(value: string | null | undefined) {
+  if (!value) return "—";
+  return new Date(value).toLocaleDateString();
+}
+
 export default async function AccountPage() {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
@@ -83,6 +89,8 @@ export default async function AccountPage() {
       </main>
     );
   }
+
+  const currentPlan = await getCurrentPlanSummaryForUserDb(user.id);
 
   return (
     <main className="space-y-8">
@@ -282,6 +290,93 @@ export default async function AccountPage() {
               <li>• Settings for password and future security tools</li>
               <li>• Dashboard for learning progress and quick actions</li>
             </ul>
+          </div>
+        </DashboardCard>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+        <DashboardCard title="Current plan">
+          <div className="space-y-3">
+            {currentPlan.hasPlan ? (
+              <>
+                <div>
+                  <span className="font-medium text-[var(--text-primary)]">Plan:</span>{" "}
+                  {currentPlan.planLabel ?? currentPlan.productName ?? "Unknown plan"}
+                </div>
+
+                <div>
+                  <span className="font-medium text-[var(--text-primary)]">Price:</span>{" "}
+                  {currentPlan.amountLabel ?? "—"}
+                </div>
+
+                <div>
+                  <span className="font-medium text-[var(--text-primary)]">
+                    Access mode:
+                  </span>{" "}
+                  {formatAccessLabel(currentPlan.accessMode)}
+                </div>
+
+                <div>
+                  <span className="font-medium text-[var(--text-primary)]">Source:</span>{" "}
+                  {currentPlan.source ?? "—"}
+                </div>
+
+                <div>
+                  <span className="font-medium text-[var(--text-primary)]">Started:</span>{" "}
+                  {formatDate(currentPlan.startsAt)}
+                </div>
+
+                <div>
+                  <span className="font-medium text-[var(--text-primary)]">
+                    Renews/ends:
+                  </span>{" "}
+                  {formatDate(currentPlan.endsAt)}
+                </div>
+              </>
+            ) : (
+              <p>You do not currently have an active paid course plan on this account.</p>
+            )}
+          </div>
+        </DashboardCard>
+
+        <DashboardCard title="Upgrade status">
+          <div className="space-y-3">
+            {currentPlan.canUpgradeToHigher ? (
+              <>
+                <p>
+                  Your account is currently eligible to upgrade from Foundation to Higher.
+                </p>
+
+                <div>
+                  <span className="font-medium text-[var(--text-primary)]">
+                    Available upgrade pricing:
+                  </span>{" "}
+                  {currentPlan.resolvedUpgradeSummary ?? "Upgrade pricing not resolved"}
+                </div>
+
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-2 font-medium app-brand-text"
+                >
+                  View upgrade options
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <p>
+                  No active Higher upgrade path is currently available for this account.
+                </p>
+
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-2 font-medium app-brand-text"
+                >
+                  View pricing
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </>
+            )}
           </div>
         </DashboardCard>
       </section>
