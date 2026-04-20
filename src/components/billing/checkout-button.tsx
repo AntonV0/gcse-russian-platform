@@ -6,6 +6,7 @@ type CheckoutButtonProps = {
   productCode: string;
   billingType: "subscription" | "one_time";
   intervalUnit?: "month" | "year";
+  intervalCount?: number;
   isUpgrade?: boolean;
   children: React.ReactNode;
 };
@@ -14,6 +15,7 @@ export default function CheckoutButton({
   productCode,
   billingType,
   intervalUnit,
+  intervalCount,
   isUpgrade = false,
   children,
 }: CheckoutButtonProps) {
@@ -34,6 +36,7 @@ export default function CheckoutButton({
           productCode,
           billingType,
           intervalUnit,
+          intervalCount,
           isUpgrade,
           successPath: "/account",
           cancelPath: "/pricing",
