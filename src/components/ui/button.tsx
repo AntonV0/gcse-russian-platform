@@ -153,11 +153,21 @@ export default function Button(props: ButtonProps) {
     );
   }
 
-  const buttonProps = props as ButtonAsButtonProps;
+  const {
+    variant: _variant,
+    size: _size,
+    className: _className,
+    icon: _icon,
+    iconPosition: _iconPosition,
+    iconOnly: _iconOnly,
+    ariaLabel: _ariaLabel,
+    children: _children,
+    ...nativeButtonProps
+  } = props as ButtonAsButtonProps;
 
   return (
     <button
-      {...buttonProps}
+      {...nativeButtonProps}
       className={mergedClassName}
       aria-label={ariaLabel}
       title={ariaLabel}
