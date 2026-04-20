@@ -6,6 +6,7 @@ import EmptyState from "@/components/ui/empty-state";
 import Button from "@/components/ui/button";
 import AppIcon from "@/components/ui/app-icon";
 import Card, { CardBody } from "@/components/ui/card";
+import StatusBadge from "@/components/ui/status-badge";
 
 function FeedbackBanner({
   tone,
@@ -19,22 +20,22 @@ function FeedbackBanner({
   const styles = {
     info: {
       wrapper:
-        "border-[color:rgba(37,99,235,0.18)] bg-[var(--info-soft)] text-[var(--info)]",
+        "border-[color:rgba(37,99,235,0.18)] bg-[var(--info-soft)] text-[var(--info)] [data-theme='dark']:&:border-[rgba(118,167,255,0.2)] [data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(118,167,255,0.22)_0%,rgba(23,42,70,0.98)_100%)] [data-theme='dark']:&:text-[#dce9ff]",
       icon: "info",
     },
     success: {
       wrapper:
-        "border-[color:rgba(31,138,76,0.18)] bg-[var(--success-soft)] text-[var(--success)]",
+        "border-[color:rgba(31,138,76,0.18)] bg-[var(--success-soft)] text-[var(--success)] [data-theme='dark']:&:border-[rgba(34,197,94,0.22)] [data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(34,197,94,0.18)_0%,rgba(16,46,31,0.96)_100%)] [data-theme='dark']:&:text-[#86efac]",
       icon: "completed",
     },
     warning: {
       wrapper:
-        "border-[color:rgba(183,121,31,0.18)] bg-[var(--warning-soft)] text-[var(--warning)]",
+        "border-[color:rgba(183,121,31,0.18)] bg-[var(--warning-soft)] text-[var(--warning)] [data-theme='dark']:&:border-[rgba(245,158,11,0.24)] [data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(245,158,11,0.18)_0%,rgba(61,38,10,0.96)_100%)] [data-theme='dark']:&:text-[#fbbf24]",
       icon: "warning",
     },
     danger: {
       wrapper:
-        "border-[color:rgba(194,59,59,0.18)] bg-[var(--danger-soft)] text-[var(--danger)]",
+        "border-[color:rgba(194,59,59,0.18)] bg-[var(--danger-soft)] text-[var(--danger)] [data-theme='dark']:&:border-[rgba(239,68,68,0.22)] [data-theme='dark']:&:bg-[linear-gradient(135deg,rgba(239,68,68,0.18)_0%,rgba(66,22,28,0.96)_100%)] [data-theme='dark']:&:text-[#fca5a5]",
       icon: "alert",
     },
   } as const;
@@ -42,7 +43,9 @@ function FeedbackBanner({
   const style = styles[tone];
 
   return (
-    <div className={`rounded-2xl border px-4 py-4 ${style.wrapper}`}>
+    <div
+      className={`rounded-2xl border px-4 py-4 shadow-[0_8px_20px_rgba(16,32,51,0.05)] ${style.wrapper}`}
+    >
       <div className="flex items-start gap-3">
         <div className="mt-0.5">
           <AppIcon icon={style.icon} size={18} />
@@ -96,28 +99,143 @@ export default async function AdminUiFeedbackPage() {
       currentPath="/admin/ui/feedback"
     >
       <UiLabSection
-        title="Status badges"
-        description="Use badges for compact states, visibility, and metadata. Keep labels short and consistent."
+        title="Badge hierarchy"
+        description="Use badges for compact state, metadata, and short semantic emphasis. They should feel more polished than plain labels, but less dominant than buttons."
       >
-        <div className="flex flex-wrap gap-3">
-          <Badge tone="muted" icon="file">
-            Draft
-          </Badge>
-          <Badge tone="info" icon="preview">
-            Published
-          </Badge>
-          <Badge tone="success" icon="completed">
-            Complete
-          </Badge>
-          <Badge tone="warning" icon="pending">
-            In progress
-          </Badge>
-          <Badge tone="danger" icon="warning">
-            Needs attention
-          </Badge>
-          <Badge tone="default" icon="info">
-            Selected
-          </Badge>
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Core tones
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Badge tone="muted">Muted</Badge>
+              <Badge tone="default">Default</Badge>
+              <Badge tone="info">Info</Badge>
+              <Badge tone="success">Success</Badge>
+              <Badge tone="warning">Warning</Badge>
+              <Badge tone="danger">Danger</Badge>
+            </div>
+          </div>
+
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              With icons
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Badge tone="muted" icon="file">
+                Draft
+              </Badge>
+              <Badge tone="info" icon="preview">
+                Published
+              </Badge>
+              <Badge tone="success" icon="completed">
+                Complete
+              </Badge>
+              <Badge tone="warning" icon="pending">
+                In progress
+              </Badge>
+              <Badge tone="danger" icon="warning">
+                Needs attention
+              </Badge>
+              <Badge tone="default" icon="info">
+                Selected
+              </Badge>
+            </div>
+          </div>
+
+          <div className="app-card p-4">
+            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+              Real UI labels
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Badge tone="info" icon="preview">
+                Higher only
+              </Badge>
+              <Badge tone="default" icon="courses">
+                Theme 1
+              </Badge>
+              <Badge tone="muted" icon="file">
+                6 blocks
+              </Badge>
+              <Badge tone="success" icon="completed">
+                Marked
+              </Badge>
+            </div>
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Status badge mappings"
+        description="Use StatusBadge where the underlying state is semantic and repeatable, so pages do not have to reimplement label and tone logic."
+      >
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <Card>
+            <CardBody className="space-y-3 p-4">
+              <div className="font-semibold text-[var(--text-primary)]">Not started</div>
+              <StatusBadge status="not_started" />
+              <p className="text-sm app-text-muted">Default state before work begins.</p>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="space-y-3 p-4">
+              <div className="font-semibold text-[var(--text-primary)]">Submitted</div>
+              <StatusBadge status="submitted" />
+              <p className="text-sm app-text-muted">Use for work waiting on review.</p>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="space-y-3 p-4">
+              <div className="font-semibold text-[var(--text-primary)]">Reviewed</div>
+              <StatusBadge status="reviewed" />
+              <p className="text-sm app-text-muted">
+                Use when a marking workflow is done.
+              </p>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="space-y-3 p-4">
+              <div className="font-semibold text-[var(--text-primary)]">Returned</div>
+              <StatusBadge status="returned" />
+              <p className="text-sm app-text-muted">
+                Use when feedback has gone back to the student.
+              </p>
+            </CardBody>
+          </Card>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Badges on darker surfaces"
+        description="This section helps validate contrast when badges sit inside darker cards, dashboards, or high-emphasis surfaces."
+      >
+        <div className="rounded-[1.5rem] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,#0b1a30_0%,#142742_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
+          <div className="mb-3 text-sm font-semibold text-white">
+            Dark-surface badge check
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Badge tone="muted" icon="file">
+              Draft
+            </Badge>
+            <Badge tone="default" icon="info">
+              Selected
+            </Badge>
+            <Badge tone="info" icon="preview">
+              Published
+            </Badge>
+            <Badge tone="success" icon="completed">
+              Complete
+            </Badge>
+            <Badge tone="warning" icon="pending">
+              Waiting
+            </Badge>
+            <Badge tone="danger" icon="warning">
+              Blocked
+            </Badge>
+          </div>
         </div>
       </UiLabSection>
 

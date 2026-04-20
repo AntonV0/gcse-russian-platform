@@ -18,18 +18,59 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 function getToneClass(tone: BadgeTone) {
   switch (tone) {
     case "default":
-      return "app-pill border-[var(--brand-blue)]/15 bg-[var(--brand-blue-soft)] text-[var(--brand-blue)]";
+      return [
+        "app-badge-default",
+        "border border-[rgba(37,99,235,0.14)]",
+        "bg-[linear-gradient(135deg,var(--brand-blue-soft)_0%,var(--background-elevated)_100%)]",
+        "text-[var(--brand-blue)]",
+        "shadow-[0_1px_2px_rgba(37,99,235,0.05),0_8px_18px_rgba(37,99,235,0.08)]",
+      ].join(" ");
+
     case "info":
-      return "app-pill app-pill-info";
+      return [
+        "app-badge-info",
+        "border border-[rgba(37,99,235,0.16)]",
+        "bg-[linear-gradient(135deg,var(--info-soft)_0%,var(--background-elevated)_100%)]",
+        "text-[var(--info)]",
+        "shadow-[0_1px_2px_rgba(37,99,235,0.04),0_6px_14px_rgba(37,99,235,0.08)]",
+      ].join(" ");
+
     case "success":
-      return "app-pill app-pill-success";
+      return [
+        "app-badge-success",
+        "border border-[rgba(31,138,76,0.16)]",
+        "bg-[linear-gradient(135deg,var(--success-soft)_0%,var(--background-elevated)_100%)]",
+        "text-[var(--success)]",
+        "shadow-[0_1px_2px_rgba(31,138,76,0.04),0_6px_14px_rgba(31,138,76,0.08)]",
+      ].join(" ");
+
     case "warning":
-      return "app-pill app-pill-warning";
+      return [
+        "app-badge-warning",
+        "border border-[rgba(183,121,31,0.18)]",
+        "bg-[linear-gradient(135deg,var(--warning-soft)_0%,var(--background-elevated)_100%)]",
+        "text-[var(--warning)]",
+        "shadow-[0_1px_2px_rgba(183,121,31,0.04),0_6px_14px_rgba(183,121,31,0.08)]",
+      ].join(" ");
+
     case "danger":
-      return "app-pill app-pill-danger";
+      return [
+        "app-badge-danger",
+        "border border-[rgba(194,59,59,0.16)]",
+        "bg-[linear-gradient(135deg,var(--danger-soft)_0%,var(--background-elevated)_100%)]",
+        "text-[var(--danger)]",
+        "shadow-[0_1px_2px_rgba(194,59,59,0.04),0_6px_14px_rgba(194,59,59,0.08)]",
+      ].join(" ");
+
     case "muted":
     default:
-      return "app-pill app-pill-muted";
+      return [
+        "app-badge-muted",
+        "border border-[var(--border)]",
+        "bg-[var(--background-muted)]",
+        "text-[var(--text-secondary)]",
+        "shadow-[0_1px_2px_rgba(16,32,51,0.04)]",
+      ].join(" ");
   }
 }
 
@@ -38,8 +79,9 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
     <span
       className={[
         "dev-marker-host",
+        "inline-flex max-w-full items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5",
+        "text-[0.76rem] font-semibold leading-none tracking-[-0.01em]",
         getToneClass(tone),
-        "inline-flex items-center gap-1.5 whitespace-nowrap",
         className,
       ]
         .filter(Boolean)
@@ -52,8 +94,8 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
         />
       ) : null}
 
-      {icon ? <AppIcon icon={icon} size={14} /> : null}
-      <span>{children}</span>
+      {icon ? <AppIcon icon={icon} size={13} /> : null}
+      <span className="truncate">{children}</span>
     </span>
   );
 }
