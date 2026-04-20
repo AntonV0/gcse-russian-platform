@@ -1,10 +1,41 @@
 import { createClient } from "@/lib/supabase/server";
 
+export type DbVocabularyTier = "foundation" | "higher" | "both";
+
+export type DbVocabularyListMode =
+  | "spec_only"
+  | "extended_only"
+  | "spec_and_extended"
+  | "custom";
+
+export type DbVocabularySetType =
+  | "core"
+  | "theme"
+  | "phrase_bank"
+  | "exam_prep"
+  | "lesson_custom";
+
+export type DbVocabularyDisplayVariant = "single_column" | "two_column" | "compact_cards";
+
+export type DbVocabularyItemType = "word" | "phrase";
+
+export type DbVocabularyItemSourceType = "spec_required" | "extended" | "custom";
+
+export type DbVocabularyItemPriority = "core" | "extension";
+
 export type DbVocabularySet = {
   id: string;
   slug: string | null;
   title: string;
   description: string | null;
+  theme_key: string | null;
+  topic_key: string | null;
+  tier: DbVocabularyTier;
+  list_mode: DbVocabularyListMode;
+  set_type: DbVocabularySetType;
+  default_display_variant: DbVocabularyDisplayVariant;
+  is_published: boolean;
+  sort_order: number;
   created_at: string;
   updated_at: string;
 };
@@ -19,10 +50,26 @@ export type DbVocabularyItem = {
   example_en: string | null;
   audio_path: string | null;
   notes: string | null;
+  item_type: DbVocabularyItemType;
+  source_type: DbVocabularyItemSourceType;
+  priority: DbVocabularyItemPriority;
   position: number;
   created_at: string;
   updated_at: string;
 };
+
+export type LoadedVocabularySetDb = {
+  vocabularySet: DbVocabularySet | null;
+  items: DbVocabularyItem[];
+};
+
+export function groupVocabularyItemsBySource(items: DbVocabularyItem[]) {
+  return {
+    specRequired: items.filter((item) => item.source_type === "spec_required"),
+    extended: items.filter((item) => item.source_type === "extended"),
+    custom: items.filter((item) => item.source_type === "custom"),
+  };
+}
 
 export async function getVocabularySetBySlugDb(vocabularySetSlug: string) {
   const supabase = await createClient();
@@ -64,13 +111,15 @@ export async function getVocabularyItemsBySetIdDb(vocabularySetId: string) {
   return (data ?? []) as DbVocabularyItem[];
 }
 
-export async function loadVocabularySetBySlugDb(vocabularySetSlug: string) {
+export async function loadVocabularySetBySlugDb(
+  vocabularySetSlug: string
+): Promise<LoadedVocabularySetDb> {
   const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
 
   if (!vocabularySet) {
     return {
       vocabularySet: null,
-      items: [] as DbVocabularyItem[],
+      items: [],
     };
   }
 

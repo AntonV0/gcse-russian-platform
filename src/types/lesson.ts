@@ -9,6 +9,8 @@ export type LessonSectionKind =
   | "listening_practice"
   | "summary";
 
+export type VocabularyDisplayVariant = "single_column" | "two_column" | "compact_cards";
+
 export type HeaderLessonBlock = {
   type: "header";
   content: string;
@@ -74,6 +76,10 @@ export type VocabularySetLessonBlock = {
   type: "vocabulary-set";
   title?: string;
   vocabularySetSlug: string;
+  displayVariant?: VocabularyDisplayVariant;
+  showNotes?: boolean;
+  showExamples?: boolean;
+  showSourceBadges?: boolean;
 };
 
 export type MultipleChoiceLessonBlock = {
