@@ -1,3 +1,7 @@
+"use client";
+
+import DevComponentMarker from "@/components/ui/dev-component-marker";
+
 type CardProps = {
   children: React.ReactNode;
   className?: string;
@@ -9,13 +13,23 @@ type CardSectionProps = {
   className?: string;
 };
 
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+
 export function Card({ children, className, interactive = false }: CardProps) {
   return (
     <div
-      className={["app-card", interactive ? "app-card-hover" : "", className]
+      className={[
+        "dev-marker-host app-card app-card-shell",
+        interactive ? "app-card-hover" : "",
+        className,
+      ]
         .filter(Boolean)
         .join(" ")}
     >
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker componentName="Card" filePath="src/components/ui/card.tsx" />
+      ) : null}
+
       {children}
     </div>
   );
@@ -24,7 +38,7 @@ export function Card({ children, className, interactive = false }: CardProps) {
 export function CardHeader({ children, className }: CardSectionProps) {
   return (
     <div
-      className={["border-b border-[var(--border)] px-5 py-4", className]
+      className={["app-card-header border-b border-[var(--border)] px-5 py-4", className]
         .filter(Boolean)
         .join(" ")}
     >
@@ -34,13 +48,17 @@ export function CardHeader({ children, className }: CardSectionProps) {
 }
 
 export function CardBody({ children, className }: CardSectionProps) {
-  return <div className={["p-5", className].filter(Boolean).join(" ")}>{children}</div>;
+  return (
+    <div className={["app-card-body p-5", className].filter(Boolean).join(" ")}>
+      {children}
+    </div>
+  );
 }
 
 export function CardFooter({ children, className }: CardSectionProps) {
   return (
     <div
-      className={["border-t border-[var(--border)] px-5 py-4", className]
+      className={["app-card-footer border-t border-[var(--border)] px-5 py-4", className]
         .filter(Boolean)
         .join(" ")}
     >
