@@ -44,7 +44,7 @@
   --page-max-width: 1360px;
   --page-padding-x: 1rem;
   --page-padding-y: 1rem;
-  --site-header-height: 73px;
+  --site-header-height: 65px;
 
   /* ========= Radius ========= */
   --radius-xs: 0.4rem;
@@ -216,7 +216,7 @@ small {
   color: var(--text-muted);
 }
 
-main {
+.app-shell-main {
   padding: var(--page-padding-y) var(--page-padding-x);
 }
 

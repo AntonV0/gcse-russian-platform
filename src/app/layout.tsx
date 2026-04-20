@@ -1,8 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/auth/auth";
-import SiteFooter from "@/components/layout/site-footer";
-import SiteHeader from "@/components/layout/site-header";
+import AppShell from "@/components/layout/app-shell";
 
 export const metadata: Metadata = {
   title: "GCSE Russian Course Platform",
@@ -35,13 +34,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen">
-        <div className="flex min-h-screen flex-col">
-          <SiteHeader user={user} />
-
-          <main className="app-page flex-1">{children}</main>
-
-          <SiteFooter />
-        </div>
+        <AppShell user={user}>{children}</AppShell>
       </body>
     </html>
   );

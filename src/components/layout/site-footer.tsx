@@ -3,7 +3,7 @@ import AppIcon from "@/components/ui/app-icon";
 
 export default function SiteFooter() {
   return (
-    <footer className="mt-14 border-t border-[var(--border)] bg-[var(--background-elevated)]">
+    <footer className="border-t border-[var(--border)] bg-[var(--background-elevated)]">
       <div className="app-page px-6 py-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
