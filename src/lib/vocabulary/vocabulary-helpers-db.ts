@@ -23,6 +23,14 @@ export type DbVocabularyItemSourceType = "spec_required" | "extended" | "custom"
 
 export type DbVocabularyItemPriority = "core" | "extension";
 
+export type DbVocabularyUsageVariant = "foundation" | "higher" | "volna";
+
+export type DbVocabularyUsageType =
+  | "lesson_block"
+  | "lesson_page"
+  | "revision_page"
+  | "other";
+
 export type DbVocabularySet = {
   id: string;
   slug: string | null;
@@ -58,13 +66,43 @@ export type DbVocabularyItem = {
   updated_at: string;
 };
 
+export type DbLessonVocabularySetUsage = {
+  id: string;
+  lesson_id: string;
+  vocabulary_set_id: string;
+  variant: DbVocabularyUsageVariant;
+  usage_type: DbVocabularyUsageType;
+  created_at: string;
+};
+
 export type LoadedVocabularySetDb = {
   vocabularySet: DbVocabularySet | null;
   items: DbVocabularyItem[];
 };
 
+export type DbVocabularySetUsageStats = {
+  totalOccurrences: number;
+  foundationOccurrences: number;
+  higherOccurrences: number;
+  volnaOccurrences: number;
+  usedInFoundation: boolean;
+  usedInHigher: boolean;
+  usedInVolna: boolean;
+};
+
 export type DbVocabularySetListItem = DbVocabularySet & {
   item_count: number;
+  usage_stats: DbVocabularySetUsageStats;
+};
+
+const EMPTY_USAGE_STATS: DbVocabularySetUsageStats = {
+  totalOccurrences: 0,
+  foundationOccurrences: 0,
+  higherOccurrences: 0,
+  volnaOccurrences: 0,
+  usedInFoundation: false,
+  usedInHigher: false,
+  usedInVolna: false,
 };
 
 export function groupVocabularyItemsBySource(items: DbVocabularyItem[]) {
@@ -101,6 +139,42 @@ export function getVocabularyTierLabel(tier: DbVocabularyTier) {
     default:
       return tier;
   }
+}
+
+export function buildVocabularyUsageStats(
+  usages: Pick<DbLessonVocabularySetUsage, "variant">[]
+): DbVocabularySetUsageStats {
+  let foundationOccurrences = 0;
+  let higherOccurrences = 0;
+  let volnaOccurrences = 0;
+
+  for (const usage of usages) {
+    switch (usage.variant) {
+      case "foundation":
+        foundationOccurrences += 1;
+        break;
+      case "higher":
+        higherOccurrences += 1;
+        break;
+      case "volna":
+        volnaOccurrences += 1;
+        break;
+      default:
+        break;
+    }
+  }
+
+  const totalOccurrences = foundationOccurrences + higherOccurrences + volnaOccurrences;
+
+  return {
+    totalOccurrences,
+    foundationOccurrences,
+    higherOccurrences,
+    volnaOccurrences,
+    usedInFoundation: foundationOccurrences > 0,
+    usedInHigher: higherOccurrences > 0,
+    usedInVolna: volnaOccurrences > 0,
+  };
 }
 
 export async function getVocabularySetBySlugDb(vocabularySetSlug: string) {
@@ -162,6 +236,32 @@ export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
   return count ?? 0;
 }
 
+export async function getVocabularySetUsagesBySetIdDb(vocabularySetId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_vocabulary_set_usages")
+    .select("*")
+    .eq("vocabulary_set_id", vocabularySetId);
+
+  if (error) {
+    console.error("Error fetching vocabulary set usages by set id:", {
+      vocabularySetId,
+      error,
+    });
+    return [];
+  }
+
+  return (data ?? []) as DbLessonVocabularySetUsage[];
+}
+
+export async function getVocabularySetUsageStatsBySetIdDb(
+  vocabularySetId: string
+): Promise<DbVocabularySetUsageStats> {
+  const usages = await getVocabularySetUsagesBySetIdDb(vocabularySetId);
+  return buildVocabularyUsageStats(usages);
+}
+
 export async function loadVocabularySetBySlugDb(
   vocabularySetSlug: string
 ): Promise<LoadedVocabularySetDb> {
@@ -182,28 +282,25 @@ export async function loadVocabularySetBySlugDb(
   };
 }
 
-async function attachVocabularyItemCounts(
+async function attachVocabularyCountsAndUsage(
   vocabularySets: DbVocabularySet[]
 ): Promise<DbVocabularySetListItem[]> {
-  const itemCounts = await Promise.all(
+  const enriched = await Promise.all(
     vocabularySets.map(async (vocabularySet) => {
-      const itemCount = await getVocabularyItemCountBySetIdDb(vocabularySet.id);
+      const [itemCount, usageStats] = await Promise.all([
+        getVocabularyItemCountBySetIdDb(vocabularySet.id),
+        getVocabularySetUsageStatsBySetIdDb(vocabularySet.id),
+      ]);
 
       return {
-        vocabularySetId: vocabularySet.id,
-        itemCount,
+        ...vocabularySet,
+        item_count: itemCount,
+        usage_stats: usageStats,
       };
     })
   );
 
-  const countMap = new Map(
-    itemCounts.map((item) => [item.vocabularySetId, item.itemCount])
-  );
-
-  return vocabularySets.map((vocabularySet) => ({
-    ...vocabularySet,
-    item_count: countMap.get(vocabularySet.id) ?? 0,
-  }));
+  return enriched;
 }
 
 export async function getVocabularySetsDb(options?: { publishedOnly?: boolean }) {
@@ -229,7 +326,7 @@ export async function getVocabularySetsDb(options?: { publishedOnly?: boolean })
     return [] as DbVocabularySetListItem[];
   }
 
-  return attachVocabularyItemCounts((data ?? []) as DbVocabularySet[]);
+  return attachVocabularyCountsAndUsage((data ?? []) as DbVocabularySet[]);
 }
 
 export async function getPublishedVocabularySetsDb() {
