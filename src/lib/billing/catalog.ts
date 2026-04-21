@@ -78,6 +78,14 @@ export type ResolveCheckoutPriceInput = {
   isUpgrade?: boolean;
 };
 
+type UpgradeCandidate = {
+  grant: DbUserAccessGrant;
+  product: DbProduct;
+  price: DbPrice;
+  upgradeFlow: UpgradeFlow;
+  upgradeFeeAmountGbp: number;
+};
+
 export function getUpgradeProductCode(productCode: string): string {
   return `${productCode}-upgrade`;
 }
@@ -219,16 +227,44 @@ function getFixedUpgradeFeeAmountGbp(sourcePrice: DbPrice, targetPrice: DbPrice)
   return Math.max(targetPrice.amount_gbp - sourcePrice.amount_gbp, 0);
 }
 
+function isFoundationProductCode(productCode: string): boolean {
+  return productCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION;
+}
+
+function isHigherProductCode(productCode: string): boolean {
+  return productCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER;
+}
+
+function isMonthlySubscriptionPrice(price: DbPrice): boolean {
+  return (
+    price.billing_type === BILLING_TYPES.SUBSCRIPTION &&
+    price.interval_unit === INTERVAL_UNITS.MONTH &&
+    (price.interval_count ?? 1) === 1
+  );
+}
+
+function isThreeMonthSubscriptionPrice(price: DbPrice): boolean {
+  return (
+    price.billing_type === BILLING_TYPES.SUBSCRIPTION &&
+    price.interval_unit === INTERVAL_UNITS.MONTH &&
+    (price.interval_count ?? 1) === 3
+  );
+}
+
+function isLifetimePrice(price: DbPrice): boolean {
+  return price.billing_type === BILLING_TYPES.ONE_TIME;
+}
+
 export function getUpgradeFlowForPath(
   sourceProductCode: string,
   sourcePrice: DbPrice,
   targetProductCode: string,
   targetPrice: DbPrice
 ): UpgradeFlow | null {
-  const sourceIsFoundation = sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION;
-  const sourceIsHigher = sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER;
-  const targetIsFoundation = targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION;
-  const targetIsHigher = targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER;
+  const sourceIsFoundation = isFoundationProductCode(sourceProductCode);
+  const sourceIsHigher = isHigherProductCode(sourceProductCode);
+  const targetIsFoundation = isFoundationProductCode(targetProductCode);
+  const targetIsHigher = isHigherProductCode(targetProductCode);
 
   if (!sourceIsFoundation && !sourceIsHigher) {
     return null;
@@ -238,56 +274,36 @@ export function getUpgradeFlowForPath(
     return null;
   }
 
-  const sourceBillingType = sourcePrice.billing_type;
-  const sourceIntervalUnit = sourcePrice.interval_unit;
-  const sourceIntervalCount = sourcePrice.interval_count ?? 1;
-
-  const targetBillingType = targetPrice.billing_type;
-  const targetIntervalUnit = targetPrice.interval_unit;
-  const targetIntervalCount = targetPrice.interval_count ?? 1;
-
   if (
     sourceIsFoundation &&
-    sourceBillingType === BILLING_TYPES.ONE_TIME &&
+    isLifetimePrice(sourcePrice) &&
     targetIsHigher &&
-    targetBillingType === BILLING_TYPES.ONE_TIME
+    isLifetimePrice(targetPrice)
   ) {
     return "lifetime";
   }
 
   if (
-    sourceBillingType === BILLING_TYPES.SUBSCRIPTION &&
-    sourceIntervalUnit === INTERVAL_UNITS.MONTH &&
-    sourceIntervalCount === 1 &&
-    targetBillingType === BILLING_TYPES.SUBSCRIPTION &&
-    targetIntervalUnit === INTERVAL_UNITS.MONTH &&
-    targetIntervalCount === 1 &&
     sourceIsFoundation &&
-    targetIsHigher
+    isMonthlySubscriptionPrice(sourcePrice) &&
+    targetIsHigher &&
+    isMonthlySubscriptionPrice(targetPrice)
   ) {
     return "same_cadence";
   }
 
   if (
-    sourceBillingType === BILLING_TYPES.SUBSCRIPTION &&
-    sourceIntervalUnit === INTERVAL_UNITS.MONTH &&
-    sourceIntervalCount === 3 &&
-    targetBillingType === BILLING_TYPES.SUBSCRIPTION &&
-    targetIntervalUnit === INTERVAL_UNITS.MONTH &&
-    targetIntervalCount === 3 &&
     sourceIsFoundation &&
-    targetIsHigher
+    isThreeMonthSubscriptionPrice(sourcePrice) &&
+    targetIsHigher &&
+    isThreeMonthSubscriptionPrice(targetPrice)
   ) {
     return "same_cadence";
   }
 
   if (
-    sourceBillingType === BILLING_TYPES.SUBSCRIPTION &&
-    sourceIntervalUnit === INTERVAL_UNITS.MONTH &&
-    sourceIntervalCount === 1 &&
-    targetBillingType === BILLING_TYPES.SUBSCRIPTION &&
-    targetIntervalUnit === INTERVAL_UNITS.MONTH &&
-    targetIntervalCount === 3 &&
+    isMonthlySubscriptionPrice(sourcePrice) &&
+    isThreeMonthSubscriptionPrice(targetPrice) &&
     ((sourceIsFoundation && targetIsFoundation) ||
       (sourceIsHigher && targetIsHigher) ||
       (sourceIsFoundation && targetIsHigher))
@@ -331,6 +347,29 @@ async function getActiveUpgradeableGrantsDb(
   }
 
   return candidates;
+}
+
+function sortUpgradeCandidates(
+  candidates: UpgradeCandidate[],
+  targetProductCode: string
+): UpgradeCandidate[] {
+  return [...candidates].sort((a, b) => {
+    const aSameProduct = a.product.code === targetProductCode ? 1 : 0;
+    const bSameProduct = b.product.code === targetProductCode ? 1 : 0;
+
+    if (aSameProduct !== bSameProduct) {
+      return bSameProduct - aSameProduct;
+    }
+
+    const aHigherFee = a.upgradeFeeAmountGbp;
+    const bHigherFee = b.upgradeFeeAmountGbp;
+
+    if (aHigherFee !== bHigherFee) {
+      return aHigherFee - bHigherFee;
+    }
+
+    return 0;
+  });
 }
 
 export async function resolveUpgradeQuoteDb(
@@ -397,13 +436,7 @@ export async function resolveUpgradeQuoteDb(
         upgradeFeeAmountGbp: getFixedUpgradeFeeAmountGbp(candidate.price, targetPrice),
       };
     })
-    .filter(Boolean) as Array<{
-    grant: DbUserAccessGrant;
-    product: DbProduct;
-    price: DbPrice;
-    upgradeFlow: UpgradeFlow;
-    upgradeFeeAmountGbp: number;
-  }>;
+    .filter(Boolean) as UpgradeCandidate[];
 
   if (validCandidates.length === 0) {
     return {
@@ -418,13 +451,7 @@ export async function resolveUpgradeQuoteDb(
     };
   }
 
-  validCandidates.sort((a, b) => {
-    const aSameProduct = a.product.code === targetProduct.code ? 1 : 0;
-    const bSameProduct = b.product.code === targetProduct.code ? 1 : 0;
-    return bSameProduct - aSameProduct;
-  });
-
-  const selected = validCandidates[0];
+  const selected = sortUpgradeCandidates(validCandidates, targetProduct.code)[0];
 
   return {
     eligible: true,
