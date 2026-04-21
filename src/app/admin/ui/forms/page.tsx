@@ -266,6 +266,210 @@ function DemoDenseInspector() {
   );
 }
 
+function DemoBuilderRows() {
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardBody className="space-y-4">
+          <div>
+            <h3 className="app-card-title">Lesson-builder row pattern</h3>
+            <p className="app-card-desc">
+              Useful for repeatable content rows where structure, order, and status need
+              to be visible at once.
+            </p>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_180px_120px]">
+            <FormField label="Block title">
+              <Input defaultValue="Speaking starter task" />
+            </FormField>
+
+            <FormField label="Type">
+              <Select defaultValue="practice">
+                <option value="content">content</option>
+                <option value="practice">practice</option>
+                <option value="summary">summary</option>
+              </Select>
+            </FormField>
+
+            <FormField label="Order">
+              <Input defaultValue="3" />
+            </FormField>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(240px,0.8fr)]">
+            <CheckboxField
+              name="builderPublished"
+              label="Published"
+              description="Visible once this lesson version is released."
+              defaultChecked
+            />
+
+            <div className="flex flex-wrap items-end gap-3 xl:justify-end">
+              <Button variant="secondary" size="sm" icon="preview">
+                Preview
+              </Button>
+              <Button variant="quiet" size="sm" icon="edit">
+                Duplicate
+              </Button>
+              <Button variant="danger" size="sm" icon="delete">
+                Remove row
+              </Button>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardBody className="space-y-4">
+          <div>
+            <h3 className="app-card-title">Compact table-toolbar filter row</h3>
+            <p className="app-card-desc">
+              A denser version for list screens where filters need to sit above results.
+            </p>
+          </div>
+
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]">
+            <Input placeholder="Search by title or slug" />
+
+            <Select defaultValue="all-variants">
+              <option value="all-variants">All variants</option>
+              <option value="foundation">Foundation</option>
+              <option value="higher">Higher</option>
+              <option value="volna">Volna</option>
+            </Select>
+
+            <Select defaultValue="all-statuses">
+              <option value="all-statuses">All statuses</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="review">Needs review</option>
+            </Select>
+
+            <div className="flex gap-3">
+              <Button variant="secondary" icon="filter">
+                Filter
+              </Button>
+              <Button variant="quiet" icon="refresh">
+                Reset
+              </Button>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+    </div>
+  );
+}
+
+function DemoStateVariants() {
+  return (
+    <div className="grid gap-4 xl:grid-cols-2">
+      <Card>
+        <CardBody className="space-y-4">
+          <div>
+            <h3 className="app-card-title">Disabled and read-only states</h3>
+            <p className="app-card-desc">
+              These help verify that unavailable controls still feel intentional rather
+              than broken.
+            </p>
+          </div>
+
+          <div className="grid gap-4">
+            <FormField
+              label="Read-only slug"
+              hint="Useful when the field is generated elsewhere but still needs to be visible."
+            >
+              <Input value="gcse-russian-higher" readOnly />
+            </FormField>
+
+            <FormField
+              label="Locked variant"
+              hint="Disabled controls should still remain readable."
+            >
+              <Select disabled defaultValue="higher">
+                <option value="foundation">Foundation</option>
+                <option value="higher">Higher</option>
+                <option value="volna">Volna</option>
+              </Select>
+            </FormField>
+
+            <CheckboxField
+              name="disabledPublished"
+              label="Published"
+              description="Temporarily unavailable because release permissions are restricted."
+              disabled
+              defaultChecked
+            />
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardBody className="space-y-4">
+          <div>
+            <h3 className="app-card-title">Action and save states</h3>
+            <p className="app-card-desc">
+              Good forms also need a clear action hierarchy when saving, cancelling, or
+              deleting.
+            </p>
+          </div>
+
+          <div className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/45 p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone="info" icon="save">
+                Draft open
+              </Badge>
+              <Badge tone="warning" icon="pending">
+                Unsaved changes
+              </Badge>
+            </div>
+
+            <p className="text-sm app-text-muted">
+              Use this when the user has made edits but has not saved them yet.
+            </p>
+
+            <div className="flex flex-wrap gap-3 pt-1">
+              <Button variant="primary" icon="completed">
+                Save changes
+              </Button>
+              <Button variant="soft" icon="save">
+                Save draft
+              </Button>
+              <Button variant="secondary" icon="back">
+                Cancel
+              </Button>
+              <Button variant="danger" icon="delete">
+                Delete
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/45 p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone="success" icon="completed">
+                Saved
+              </Badge>
+            </div>
+
+            <p className="text-sm app-text-muted">
+              A quieter state once the save action is complete.
+            </p>
+
+            <div className="flex flex-wrap gap-3 pt-1">
+              <Button variant="primary" disabled icon="pending">
+                Saving...
+              </Button>
+              <Button variant="quiet" icon="preview">
+                Preview
+              </Button>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+    </div>
+  );
+}
+
 function DemoFormLayouts() {
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.85fr)]">
@@ -341,6 +545,157 @@ function DemoFormLayouts() {
   );
 }
 
+function DemoSectionedEditForm() {
+  return (
+    <Card>
+      <CardBody className="space-y-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h3 className="app-card-title">Sectioned content editor</h3>
+            <p className="app-card-desc">
+              A more realistic admin form where content details, access rules, and
+              internal notes are grouped into clear sections.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="info" icon="preview">
+              Higher only
+            </Badge>
+            <Badge tone="warning" icon="pending">
+              Draft
+            </Badge>
+          </div>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.85fr)]">
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/35 p-4">
+              <div className="mb-4">
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Content details
+                </div>
+                <p className="mt-1 text-sm app-text-muted">
+                  Core student-facing information for the lesson or module.
+                </p>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <FormField label="Title" required>
+                  <Input defaultValue="Speaking exam introduction" />
+                </FormField>
+
+                <FormField label="Slug" required success="Valid slug format.">
+                  <Input defaultValue="speaking-exam-introduction" />
+                </FormField>
+              </div>
+
+              <div className="mt-4">
+                <FormField
+                  label="Summary"
+                  hint="Used on preview cards and overview screens."
+                >
+                  <Textarea
+                    rows={4}
+                    defaultValue="A short orientation lesson introducing the structure and expectations of the GCSE Russian speaking exam."
+                  />
+                </FormField>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/35 p-4">
+              <div className="mb-4">
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Internal notes
+                </div>
+                <p className="mt-1 text-sm app-text-muted">
+                  Staff-facing details that help with editing, moderation, or teaching.
+                </p>
+              </div>
+
+              <FormField label="Teacher guidance" hint="Not visible to students.">
+                <Textarea
+                  rows={4}
+                  defaultValue="Use this lesson before the first assessed speaking practice. Follow up with a timed response task."
+                />
+              </FormField>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/35 p-4">
+              <div className="mb-4">
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Visibility and access
+                </div>
+                <p className="mt-1 text-sm app-text-muted">
+                  Controls for release status and learner access.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <FormField label="Variant">
+                  <Select defaultValue="higher">
+                    <option value="foundation">Foundation</option>
+                    <option value="higher">Higher</option>
+                    <option value="volna">Volna</option>
+                  </Select>
+                </FormField>
+
+                <FormField label="Status">
+                  <Select defaultValue="draft">
+                    <option value="draft">Draft</option>
+                    <option value="review">In review</option>
+                    <option value="published">Published</option>
+                  </Select>
+                </FormField>
+
+                <CheckboxField
+                  name="sectionedPublished"
+                  label="Published"
+                  description="Visible once release conditions are met."
+                />
+
+                <CheckboxField
+                  name="sectionedLocked"
+                  label="Locked behind access"
+                  description="Show upgrade or progression gating where relevant."
+                  defaultChecked
+                />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/35 p-4">
+              <div className="mb-4">
+                <div className="font-semibold text-[var(--text-primary)]">Action row</div>
+                <p className="mt-1 text-sm app-text-muted">
+                  Keep the primary action obvious, with supportive and destructive actions
+                  clearly separated.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Button variant="primary" icon="completed">
+                  Save lesson
+                </Button>
+                <Button variant="soft" icon="save">
+                  Save draft
+                </Button>
+                <Button variant="secondary" icon="preview">
+                  Preview
+                </Button>
+                <Button variant="danger" icon="delete">
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
 function DemoDarkSurfaceFormCheck() {
   return (
     <div
@@ -370,6 +725,33 @@ function DemoDarkSurfaceFormCheck() {
             <option value="published">Published</option>
           </Select>
         </FormField>
+
+        <FormField
+          label="Internal guidance"
+          hint="Dark surfaces should still support longer text comfortably."
+        >
+          <Textarea
+            rows={4}
+            placeholder="Add internal guidance for teachers or editors."
+          />
+        </FormField>
+
+        <div className="space-y-3 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] p-4">
+          <div className="text-sm font-semibold text-white">Settings on dark surface</div>
+
+          <CheckboxField
+            name="darkPublished"
+            label="Published"
+            description="Should still feel readable and properly separated."
+            defaultChecked
+          />
+
+          <CheckboxField
+            name="darkLocked"
+            label="Locked"
+            description="Use when access or progression gating applies."
+          />
+        </div>
       </div>
     </div>
   );
@@ -424,10 +806,31 @@ export default async function AdminUiFormsPage() {
       </UiLabSection>
 
       <UiLabSection
+        title="Builder row patterns"
+        description="These patterns help you test repeatable lesson-builder and list-toolbar rows before applying them across real admin screens."
+      >
+        <DemoBuilderRows />
+      </UiLabSection>
+
+      <UiLabSection
         title="Layout examples"
         description="These are the two most common form layouts likely to appear across admin content and builder screens."
       >
         <DemoFormLayouts />
+      </UiLabSection>
+
+      <UiLabSection
+        title="Sectioned real-world form"
+        description="This is a closer representation of a full admin editing screen, where multiple kinds of content and settings need to work together."
+      >
+        <DemoSectionedEditForm />
+      </UiLabSection>
+
+      <UiLabSection
+        title="Disabled, read-only, and save states"
+        description="A polished form system also needs clear inactive, protected, and in-progress states."
+      >
+        <DemoStateVariants />
       </UiLabSection>
 
       <UiLabSection
@@ -438,10 +841,10 @@ export default async function AdminUiFormsPage() {
       </UiLabSection>
 
       <UiLabSection
-        title="Readiness"
-        description="A quick summary of what is already strong and what still needs more refinement."
+        title="Usage guidance"
+        description="These rules help keep the form system consistent as you reuse it across admin pages, builders, and future platform flows."
       >
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <Card>
             <CardBody className="p-4">
               <div className="mb-2 flex items-center gap-2">
@@ -449,14 +852,13 @@ export default async function AdminUiFormsPage() {
                   <AppIcon icon="completed" size={16} />
                 </span>
                 <div className="font-semibold text-[var(--text-primary)]">
-                  Strong already
+                  Reuse shared fields first
                 </div>
               </div>
 
               <div className="space-y-1 text-sm app-text-muted">
-                <p>Inputs and textareas</p>
-                <p>Checkbox fields</p>
-                <p>Basic edit-form layout</p>
+                <p>Keep spacing and labels consistent.</p>
+                <p>Do not rebuild raw field styles page by page.</p>
               </div>
             </CardBody>
           </Card>
@@ -464,13 +866,25 @@ export default async function AdminUiFormsPage() {
           <Card>
             <CardBody className="p-4">
               <div className="mb-2">
-                <Badge tone="warning">Needs refinement</Badge>
+                <Badge tone="warning">Validation matters</Badge>
               </div>
 
               <div className="space-y-1 text-sm app-text-muted">
-                <p>Grouped section wrappers</p>
-                <p>Inline validation density</p>
-                <p>Advanced form flows</p>
+                <p>Helper, success, and error messaging should feel related.</p>
+                <p>Do not mix different validation styles across screens.</p>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-2">
+                <Badge tone="info">Use grouped sections</Badge>
+              </div>
+
+              <div className="space-y-1 text-sm app-text-muted">
+                <p>Large edit pages should separate content, access, and notes.</p>
+                <p>This keeps longer forms easier to scan.</p>
               </div>
             </CardBody>
           </Card>
