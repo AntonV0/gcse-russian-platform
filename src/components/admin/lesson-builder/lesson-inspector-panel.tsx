@@ -14,6 +14,7 @@ import {
 import { BlockEditPanel } from "@/components/admin/lesson-builder/block-editors";
 import type {
   LessonBlock,
+  LessonBuilderVocabularySetOption,
   LessonSection,
   RouteFields,
 } from "@/components/admin/lesson-builder/lesson-builder-types";
@@ -40,6 +41,7 @@ export default function LessonInspectorPanel(props: {
   sectionIndex: number;
   totalSections: number;
   blockIndex: number;
+  vocabularySetOptions: LessonBuilderVocabularySetOption[];
 }) {
   if (!props.section) {
     return (
@@ -85,7 +87,11 @@ export default function LessonInspectorPanel(props: {
           </div>
 
           <div className="rounded-xl border bg-gray-50 p-3">
-            <BlockEditPanel block={props.block} routeFields={props.routeFields} />
+            <BlockEditPanel
+              block={props.block}
+              routeFields={props.routeFields}
+              vocabularySetOptions={props.vocabularySetOptions}
+            />
           </div>
 
           <div className="rounded-xl border bg-white p-3">

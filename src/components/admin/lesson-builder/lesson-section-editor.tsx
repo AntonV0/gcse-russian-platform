@@ -4,6 +4,7 @@ import AddBlockComposer from "@/components/admin/lesson-builder/add-block-compos
 import DraggableBlockList from "@/components/admin/lesson-builder/draggable-block-list";
 import type {
   LessonBuilderTemplateOptions,
+  LessonBuilderVocabularySetOption,
   LessonSection,
   RouteFields,
 } from "@/components/admin/lesson-builder/lesson-builder-types";
@@ -48,6 +49,7 @@ export default function LessonSectionEditor(props: {
   onBlockDragStart: (payload: { blockId: string; sourceSectionId: string }) => void;
   onBlockDragEnd: () => void;
   templateOptions: LessonBuilderTemplateOptions;
+  vocabularySetOptions: LessonBuilderVocabularySetOption[];
 }) {
   if (!props.section) {
     return (
@@ -213,6 +215,7 @@ export default function LessonSectionEditor(props: {
             section={section}
             routeFields={props.routeFields}
             blockPresetOptions={props.templateOptions.blockPresets}
+            vocabularySetOptions={props.vocabularySetOptions}
           />
         </Panel>
       </div>
