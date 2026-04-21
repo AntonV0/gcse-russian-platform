@@ -275,7 +275,7 @@ function LibraryToolbar({ totalSets }: { totalSets: number }) {
           Filters
         </Button>
 
-        <Button variant="primary" size="sm" icon="create">
+        <Button href="/admin/vocabulary/create" variant="primary" size="sm" icon="create">
           New set
         </Button>
       </div>
@@ -301,7 +301,12 @@ function EmptyLibraryState() {
         </p>
 
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Button variant="primary" size="sm" icon="create">
+          <Button
+            href="/admin/vocabulary/create"
+            variant="primary"
+            size="sm"
+            icon="create"
+          >
             Create first vocabulary set
           </Button>
 
@@ -357,15 +362,31 @@ function VocabularySetCard({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" size="sm" icon="preview">
+            <Button
+              variant="secondary"
+              size="sm"
+              icon="preview"
+              disabled
+              ariaLabel="Preview coming soon"
+            >
               Preview
             </Button>
 
-            <Button variant="soft" size="sm" icon="edit">
+            <Button
+              href={`/admin/vocabulary/${vocabularySet.id}/edit`}
+              variant="soft"
+              size="sm"
+              icon="edit"
+            >
               Edit
             </Button>
 
-            <Button variant="quiet" size="sm" icon="list">
+            <Button
+              href={`/admin/vocabulary/${vocabularySet.id}/edit`}
+              variant="quiet"
+              size="sm"
+              icon="list"
+            >
               Items
             </Button>
           </div>
@@ -436,7 +457,13 @@ function VocabularySetCard({
 
       <div className="border-t border-[var(--border)] px-5 py-4">
         <div className="flex flex-wrap gap-2">
-          <Button variant="quiet" size="sm" icon="delete">
+          <Button
+            variant="quiet"
+            size="sm"
+            icon="delete"
+            disabled
+            ariaLabel="Delete coming soon"
+          >
             Delete
           </Button>
         </div>
@@ -491,7 +518,7 @@ export default async function AdminVocabularyPage() {
               Search and filter
             </Button>
 
-            <Button variant="primary" icon="create">
+            <Button href="/admin/vocabulary/create" variant="primary" icon="create">
               Create vocabulary set
             </Button>
           </div>

@@ -95,14 +95,10 @@ export type DbVocabularySetListItem = DbVocabularySet & {
   usage_stats: DbVocabularySetUsageStats;
 };
 
-const EMPTY_USAGE_STATS: DbVocabularySetUsageStats = {
-  totalOccurrences: 0,
-  foundationOccurrences: 0,
-  higherOccurrences: 0,
-  volnaOccurrences: 0,
-  usedInFoundation: false,
-  usedInHigher: false,
-  usedInVolna: false,
+export type LoadedVocabularySetDetailDb = {
+  vocabularySet: DbVocabularySet | null;
+  items: DbVocabularyItem[];
+  usageStats: DbVocabularySetUsageStats;
 };
 
 export function groupVocabularyItemsBySource(items: DbVocabularyItem[]) {
@@ -175,6 +171,26 @@ export function buildVocabularyUsageStats(
     usedInHigher: higherOccurrences > 0,
     usedInVolna: volnaOccurrences > 0,
   };
+}
+
+export async function getVocabularySetByIdDb(vocabularySetId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("vocabulary_sets")
+    .select("*")
+    .eq("id", vocabularySetId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching vocabulary set by id:", {
+      vocabularySetId,
+      error,
+    });
+    return null;
+  }
+
+  return (data as DbVocabularySet | null) ?? null;
 }
 
 export async function getVocabularySetBySlugDb(vocabularySetSlug: string) {
@@ -260,6 +276,39 @@ export async function getVocabularySetUsageStatsBySetIdDb(
 ): Promise<DbVocabularySetUsageStats> {
   const usages = await getVocabularySetUsagesBySetIdDb(vocabularySetId);
   return buildVocabularyUsageStats(usages);
+}
+
+export async function loadVocabularySetByIdDb(
+  vocabularySetId: string
+): Promise<LoadedVocabularySetDetailDb> {
+  const vocabularySet = await getVocabularySetByIdDb(vocabularySetId);
+
+  if (!vocabularySet) {
+    return {
+      vocabularySet: null,
+      items: [],
+      usageStats: {
+        totalOccurrences: 0,
+        foundationOccurrences: 0,
+        higherOccurrences: 0,
+        volnaOccurrences: 0,
+        usedInFoundation: false,
+        usedInHigher: false,
+        usedInVolna: false,
+      },
+    };
+  }
+
+  const [items, usageStats] = await Promise.all([
+    getVocabularyItemsBySetIdDb(vocabularySet.id),
+    getVocabularySetUsageStatsBySetIdDb(vocabularySet.id),
+  ]);
+
+  return {
+    vocabularySet,
+    items,
+    usageStats,
+  };
 }
 
 export async function loadVocabularySetBySlugDb(
