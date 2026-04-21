@@ -1,11 +1,17 @@
 import type Stripe from "stripe";
 import {
   BILLING_TYPES,
+  INTERVAL_UNITS,
   PRODUCT_CODES,
   getActivePriceByIdDb,
+  getProductByIdDb,
+  getUpgradeFlowForPath,
+  matchPriceByBillingShape,
   getActivePricesForProductDb,
   getActiveProductByCodeDb,
-  matchPriceByBillingShape,
+  type DbPrice,
+  type DbProduct,
+  type UpgradeFlow,
 } from "@/lib/billing/catalog";
 import {
   deactivateActiveUserProductGrantsDb,
@@ -14,8 +20,13 @@ import {
 import {
   getActiveUserSubscriptionsDb,
   upsertSubscriptionDb,
+  type DbSubscription,
 } from "@/lib/billing/subscriptions";
-import { getStripeClient, switchStripeSubscriptionToPrice } from "@/lib/billing/stripe";
+import {
+  getStripeClient,
+  switchStripeSubscriptionToPrice,
+  switchStripeSubscriptionToThreeMonthAnchoredFromCurrentStart,
+} from "@/lib/billing/stripe";
 
 function fromUnixTimestamp(value?: number | null): string | null {
   if (!value) return null;
@@ -31,69 +42,102 @@ function getMetadataValue(
   return metadata[snakeKey] ?? metadata[camelKey] ?? null;
 }
 
-async function handleSubscriptionUpgradeCheckoutCompleted(params: {
+async function findSourceSubscriptionForUpgrade(params: {
   userId: string;
-  targetProductId: string;
-  checkoutPriceId: string;
-}): Promise<void> {
-  const higherProduct = await getActiveProductByCodeDb(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER);
-  const foundationProduct = await getActiveProductByCodeDb(
-    PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
-  );
-
-  if (!higherProduct || !foundationProduct) {
-    throw new Error("Missing Foundation/Higher products for subscription upgrade");
-  }
-
-  if (params.targetProductId !== higherProduct.id) {
-    throw new Error("Subscription upgrade target product is not supported");
-  }
-
-  const checkoutPrice = await getActivePriceByIdDb(params.checkoutPriceId);
-
-  if (!checkoutPrice) {
-    throw new Error("Upgrade checkout price not found");
-  }
-
-  if (checkoutPrice.billing_type !== BILLING_TYPES.SUBSCRIPTION) {
-    throw new Error("Upgrade checkout price is not a subscription-shaped upgrade");
-  }
-
+  targetProduct: DbProduct;
+  targetPrice: DbPrice;
+  upgradeFlow: UpgradeFlow;
+}): Promise<{
+  subscription: DbSubscription;
+  sourceProduct: DbProduct;
+  sourcePrice: DbPrice;
+} | null> {
   const activeSubscriptions = await getActiveUserSubscriptionsDb(params.userId);
 
-  const sourceSubscription = activeSubscriptions.find(
-    (subscription) =>
-      subscription.product_id === foundationProduct.id &&
-      !!subscription.provider_subscription_id
-  );
+  const candidates: Array<{
+    subscription: DbSubscription;
+    sourceProduct: DbProduct;
+    sourcePrice: DbPrice;
+  }> = [];
 
-  if (!sourceSubscription?.provider_subscription_id) {
-    throw new Error("No active Foundation subscription found to upgrade");
+  for (const subscription of activeSubscriptions) {
+    if (!subscription.provider_subscription_id || !subscription.price_id) {
+      continue;
+    }
+
+    const [sourceProduct, sourcePrice] = await Promise.all([
+      getProductByIdDb(subscription.product_id),
+      getActivePriceByIdDb(subscription.price_id),
+    ]);
+
+    if (!sourceProduct || !sourcePrice) {
+      continue;
+    }
+
+    const flow = getUpgradeFlowForPath(
+      sourceProduct.code,
+      sourcePrice,
+      params.targetProduct.code,
+      params.targetPrice
+    );
+
+    if (flow !== params.upgradeFlow) {
+      continue;
+    }
+
+    candidates.push({
+      subscription,
+      sourceProduct,
+      sourcePrice,
+    });
   }
 
-  const targetRecurringPrices = await getActivePricesForProductDb(higherProduct.id);
-  const targetRecurringPrice = matchPriceByBillingShape(
-    targetRecurringPrices,
-    BILLING_TYPES.SUBSCRIPTION,
-    checkoutPrice.interval_unit,
-    checkoutPrice.interval_count
-  );
+  if (candidates.length === 0) {
+    return null;
+  }
 
-  if (!targetRecurringPrice?.stripe_price_id) {
-    throw new Error("No matching Higher recurring price found for subscription upgrade");
+  candidates.sort((a, b) => {
+    const aSameProduct = a.sourceProduct.code === params.targetProduct.code ? 1 : 0;
+    const bSameProduct = b.sourceProduct.code === params.targetProduct.code ? 1 : 0;
+    return bSameProduct - aSameProduct;
+  });
+
+  return candidates[0];
+}
+
+async function handleSameCadenceSubscriptionUpgrade(params: {
+  userId: string;
+  targetProduct: DbProduct;
+  targetPrice: DbPrice;
+}): Promise<void> {
+  if (!params.targetPrice.stripe_price_id) {
+    throw new Error(
+      "Target recurring Stripe price id is missing for same-cadence upgrade"
+    );
+  }
+
+  const selectedSource = await findSourceSubscriptionForUpgrade({
+    userId: params.userId,
+    targetProduct: params.targetProduct,
+    targetPrice: params.targetPrice,
+    upgradeFlow: "same_cadence",
+  });
+
+  if (!selectedSource?.subscription.provider_subscription_id) {
+    throw new Error("No active source subscription found for same-cadence upgrade");
   }
 
   const updatedStripeSubscription = await switchStripeSubscriptionToPrice({
-    providerSubscriptionId: sourceSubscription.provider_subscription_id,
-    newStripePriceId: targetRecurringPrice.stripe_price_id,
+    providerSubscriptionId: selectedSource.subscription.provider_subscription_id,
+    newStripePriceId: params.targetPrice.stripe_price_id,
   });
 
   const subscriptionItem = updatedStripeSubscription.items.data[0] ?? null;
 
   await upsertSubscriptionDb({
     userId: params.userId,
-    productId: higherProduct.id,
-    priceId: targetRecurringPrice.id,
+    productId: params.targetProduct.id,
+    priceId: params.targetPrice.id,
     provider: "stripe",
     providerCustomerId:
       typeof updatedStripeSubscription.customer === "string"
@@ -109,28 +153,144 @@ async function handleSubscriptionUpgradeCheckoutCompleted(params: {
 
   await grantProductAccessDb({
     userId: params.userId,
-    productId: higherProduct.id,
-    priceId: targetRecurringPrice.id,
+    productId: params.targetProduct.id,
+    priceId: params.targetPrice.id,
     accessMode: "full",
     source: "stripe",
     startsAt: fromUnixTimestamp(subscriptionItem?.current_period_start),
     endsAt: fromUnixTimestamp(subscriptionItem?.current_period_end),
   });
 
-  const deactivateResult = await deactivateActiveUserProductGrantsDb(
-    params.userId,
-    foundationProduct.id
-  );
+  if (selectedSource.sourceProduct.id !== params.targetProduct.id) {
+    const deactivateResult = await deactivateActiveUserProductGrantsDb(
+      params.userId,
+      selectedSource.sourceProduct.id
+    );
 
-  if (!deactivateResult.success) {
-    console.error(
-      "Failed to deactivate Foundation grant after successful subscription upgrade",
-      {
+    if (!deactivateResult.success) {
+      console.error("Failed to deactivate source grant after same-cadence upgrade", {
         userId: params.userId,
-        foundationProductId: foundationProduct.id,
-      }
+        sourceProductId: selectedSource.sourceProduct.id,
+      });
+    }
+  }
+}
+
+async function handleMonthlyToThreeMonthUpgrade(params: {
+  userId: string;
+  targetProduct: DbProduct;
+  targetPrice: DbPrice;
+}): Promise<void> {
+  if (!params.targetPrice.stripe_price_id) {
+    throw new Error(
+      "Target recurring Stripe price id is missing for monthly-to-3-month upgrade"
     );
   }
+
+  const selectedSource = await findSourceSubscriptionForUpgrade({
+    userId: params.userId,
+    targetProduct: params.targetProduct,
+    targetPrice: params.targetPrice,
+    upgradeFlow: "monthly_to_three_month",
+  });
+
+  if (!selectedSource?.subscription.provider_subscription_id) {
+    throw new Error("No active source subscription found for monthly-to-3-month upgrade");
+  }
+
+  if (!selectedSource.subscription.current_period_start) {
+    throw new Error("Source subscription current period start is missing");
+  }
+
+  const updatedStripeSubscription =
+    await switchStripeSubscriptionToThreeMonthAnchoredFromCurrentStart({
+      providerSubscriptionId: selectedSource.subscription.provider_subscription_id,
+      newStripePriceId: params.targetPrice.stripe_price_id,
+      currentPeriodStartIso: selectedSource.subscription.current_period_start,
+    });
+
+  const currentPeriodStart =
+    selectedSource.subscription.current_period_start ??
+    fromUnixTimestamp(updatedStripeSubscription.items.data[0]?.current_period_start);
+
+  const currentPeriodEnd =
+    updatedStripeSubscription.trial_end != null
+      ? fromUnixTimestamp(updatedStripeSubscription.trial_end)
+      : fromUnixTimestamp(updatedStripeSubscription.items.data[0]?.current_period_end);
+
+  await upsertSubscriptionDb({
+    userId: params.userId,
+    productId: params.targetProduct.id,
+    priceId: params.targetPrice.id,
+    provider: "stripe",
+    providerCustomerId:
+      typeof updatedStripeSubscription.customer === "string"
+        ? updatedStripeSubscription.customer
+        : null,
+    providerSubscriptionId: updatedStripeSubscription.id,
+    status: updatedStripeSubscription.status,
+    currentPeriodStart,
+    currentPeriodEnd,
+    cancelAtPeriodEnd: updatedStripeSubscription.cancel_at_period_end,
+    canceledAt: fromUnixTimestamp(updatedStripeSubscription.canceled_at),
+  });
+
+  await grantProductAccessDb({
+    userId: params.userId,
+    productId: params.targetProduct.id,
+    priceId: params.targetPrice.id,
+    accessMode: "full",
+    source: "stripe",
+    startsAt: currentPeriodStart,
+    endsAt: currentPeriodEnd,
+  });
+
+  if (selectedSource.sourceProduct.id !== params.targetProduct.id) {
+    const deactivateResult = await deactivateActiveUserProductGrantsDb(
+      params.userId,
+      selectedSource.sourceProduct.id
+    );
+
+    if (!deactivateResult.success) {
+      console.error(
+        "Failed to deactivate source grant after monthly-to-3-month upgrade",
+        {
+          userId: params.userId,
+          sourceProductId: selectedSource.sourceProduct.id,
+        }
+      );
+    }
+  }
+}
+
+async function handleLifetimeUpgrade(params: {
+  userId: string;
+  targetProduct: DbProduct;
+  targetPrice: DbPrice;
+}): Promise<void> {
+  const foundationProduct = await getProductByIdDb(params.targetProduct.id);
+  void foundationProduct;
+
+  await grantProductAccessDb({
+    userId: params.userId,
+    productId: params.targetProduct.id,
+    priceId: params.targetPrice.id,
+    accessMode: "full",
+    source: "stripe",
+    startsAt: new Date().toISOString(),
+    endsAt: null,
+  });
+
+  const foundation = await getActivePricesForProductDb(params.targetProduct.id);
+  void foundation;
+}
+
+async function deactivateFoundationIfTargetIsHigher(params: {
+  userId: string;
+  targetProduct: DbProduct;
+}): Promise<void> {
+  const foundationProduct = await getActivePricesForProductDb(params.targetProduct.id);
+  void foundationProduct;
 }
 
 export async function handleCheckoutSessionCompleted(
@@ -144,6 +304,11 @@ export async function handleCheckoutSessionCompleted(
     "purchase_type",
     "purchaseType"
   );
+  const upgradeFlowValue = getMetadataValue(
+    session.metadata,
+    "upgrade_flow",
+    "upgradeFlow"
+  );
 
   if (!userId || !productId || !priceId) {
     console.error("Stripe webhook missing required checkout metadata:", {
@@ -154,79 +319,129 @@ export async function handleCheckoutSessionCompleted(
     throw new Error("Missing checkout metadata");
   }
 
-  const checkoutPrice = await getActivePriceByIdDb(priceId);
+  const [targetProduct, targetPrice] = await Promise.all([
+    getProductByIdDb(productId),
+    getActivePriceByIdDb(priceId),
+  ]);
 
-  if (!checkoutPrice) {
-    throw new Error("Checkout price could not be loaded from metadata");
+  if (!targetProduct || !targetPrice) {
+    throw new Error(
+      "Target product or target price could not be loaded from webhook metadata"
+    );
   }
 
-  if (
-    session.mode === "payment" &&
-    purchaseType === "upgrade" &&
-    checkoutPrice.billing_type === BILLING_TYPES.SUBSCRIPTION
-  ) {
-    await handleSubscriptionUpgradeCheckoutCompleted({
-      userId,
-      targetProductId: productId,
-      checkoutPriceId: priceId,
-    });
+  if (purchaseType === "upgrade") {
+    const upgradeFlow = (upgradeFlowValue || null) as UpgradeFlow | null;
 
-    return;
-  }
-
-  if (session.mode === "subscription") {
-    const stripe = getStripeClient();
-
-    if (!session.subscription) {
-      console.error("Subscription checkout completed without subscription id:", {
-        sessionId: session.id,
-      });
-
-      throw new Error("Missing subscription id");
+    if (!upgradeFlow) {
+      throw new Error("Upgrade checkout missing upgrade flow metadata");
     }
 
-    const subscription = await stripe.subscriptions.retrieve(
-      session.subscription as string
-    );
+    if (upgradeFlow === "same_cadence") {
+      await handleSameCadenceSubscriptionUpgrade({
+        userId,
+        targetProduct,
+        targetPrice,
+      });
+      return;
+    }
 
-    const subscriptionItem = subscription.items.data[0] ?? null;
+    if (upgradeFlow === "monthly_to_three_month") {
+      await handleMonthlyToThreeMonthUpgrade({
+        userId,
+        targetProduct,
+        targetPrice,
+      });
+      return;
+    }
 
-    await upsertSubscriptionDb({
-      userId,
-      productId,
-      priceId,
-      provider: "stripe",
-      providerCustomerId: typeof session.customer === "string" ? session.customer : null,
-      providerSubscriptionId: subscription.id,
-      status: subscription.status,
-      currentPeriodStart: fromUnixTimestamp(subscriptionItem?.current_period_start),
-      currentPeriodEnd: fromUnixTimestamp(subscriptionItem?.current_period_end),
-      cancelAtPeriodEnd: subscription.cancel_at_period_end,
-      canceledAt: fromUnixTimestamp(subscription.canceled_at),
-    });
+    if (upgradeFlow === "lifetime") {
+      await grantProductAccessDb({
+        userId,
+        productId: targetProduct.id,
+        priceId: targetPrice.id,
+        accessMode: "full",
+        source: "stripe",
+        startsAt: new Date().toISOString(),
+        endsAt: null,
+      });
 
-    await grantProductAccessDb({
-      userId,
-      productId,
-      priceId,
-      accessMode: "full",
-      source: "stripe",
-      startsAt: fromUnixTimestamp(subscriptionItem?.current_period_start),
-      endsAt: fromUnixTimestamp(subscriptionItem?.current_period_end),
-    });
+      const foundationProduct = await getActiveProductByCodeDb(
+        PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
+      );
 
-    return;
-  }
+      if (foundationProduct && foundationProduct.id !== targetProduct.id) {
+        const deactivateResult = await deactivateActiveUserProductGrantsDb(
+          userId,
+          foundationProduct.id
+        );
 
-  if (session.mode === "payment") {
-    await grantProductAccessDb({
-      userId,
-      productId,
-      priceId,
-      accessMode: "full",
-      source: "stripe",
-      startsAt: new Date().toISOString(),
-      endsAt: null,
-    });
+        if (!deactivateResult.success) {
+          console.error("Failed to deactivate Foundation grant after lifetime upgrade", {
+            userId,
+            foundationProductId: foundationProduct.id,
+          });
+        }
+      }
+
+      return;
+    }
+
+    if (session.mode === "subscription") {
+      const stripe = getStripeClient();
+
+      if (!session.subscription) {
+        console.error("Subscription checkout completed without subscription id:", {
+          sessionId: session.id,
+        });
+
+        throw new Error("Missing subscription id");
+      }
+
+      const subscription = await stripe.subscriptions.retrieve(
+        session.subscription as string
+      );
+
+      const subscriptionItem = subscription.items.data[0] ?? null;
+
+      await upsertSubscriptionDb({
+        userId,
+        productId,
+        priceId,
+        provider: "stripe",
+        providerCustomerId:
+          typeof session.customer === "string" ? session.customer : null,
+        providerSubscriptionId: subscription.id,
+        status: subscription.status,
+        currentPeriodStart: fromUnixTimestamp(subscriptionItem?.current_period_start),
+        currentPeriodEnd: fromUnixTimestamp(subscriptionItem?.current_period_end),
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        canceledAt: fromUnixTimestamp(subscription.canceled_at),
+      });
+
+      await grantProductAccessDb({
+        userId,
+        productId,
+        priceId,
+        accessMode: "full",
+        source: "stripe",
+        startsAt: fromUnixTimestamp(subscriptionItem?.current_period_start),
+        endsAt: fromUnixTimestamp(subscriptionItem?.current_period_end),
+      });
+
+      return;
+    }
+
+    if (session.mode === "payment") {
+      await grantProductAccessDb({
+        userId,
+        productId,
+        priceId,
+        accessMode: "full",
+        source: "stripe",
+        startsAt: new Date().toISOString(),
+        endsAt: null,
+      });
+    }
   }
 }

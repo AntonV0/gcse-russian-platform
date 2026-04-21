@@ -67,6 +67,7 @@ export type CreateCheckoutSessionInput = {
   productId: string;
   priceId: string;
   purchaseType: "standard" | "upgrade";
+  upgradeFlow?: string | null;
   successPath?: string;
   cancelPath?: string;
   customerEmail?: string | null;
@@ -128,6 +129,7 @@ export async function createStripeCheckoutSession(
       product_id: input.productId,
       price_id: input.priceId,
       purchase_type: input.purchaseType,
+      upgrade_flow: input.upgradeFlow ?? "",
     },
     ...(mode === "subscription"
       ? {
@@ -137,6 +139,7 @@ export async function createStripeCheckoutSession(
               product_id: input.productId,
               price_id: input.priceId,
               purchase_type: input.purchaseType,
+              upgrade_flow: input.upgradeFlow ?? "",
             },
           },
         }
@@ -168,5 +171,46 @@ export async function switchStripeSubscriptionToPrice(params: {
       },
     ],
     proration_behavior: "none",
+  });
+}
+
+function addMonthsToIsoDate(anchorIso: string, monthsToAdd: number): Date {
+  const date = new Date(anchorIso);
+  const result = new Date(date.getTime());
+
+  result.setUTCMonth(result.getUTCMonth() + monthsToAdd);
+
+  return result;
+}
+
+export async function switchStripeSubscriptionToThreeMonthAnchoredFromCurrentStart(params: {
+  providerSubscriptionId: string;
+  newStripePriceId: string;
+  currentPeriodStartIso: string;
+}): Promise<Stripe.Subscription> {
+  const stripe = getStripeClient();
+
+  const existingSubscription = await stripe.subscriptions.retrieve(
+    params.providerSubscriptionId
+  );
+
+  const existingItem = existingSubscription.items.data[0];
+
+  if (!existingItem) {
+    throw new Error("Subscription has no items to update");
+  }
+
+  const targetTrialEnd = addMonthsToIsoDate(params.currentPeriodStartIso, 3);
+  const targetTrialEndUnix = Math.floor(targetTrialEnd.getTime() / 1000);
+
+  return stripe.subscriptions.update(params.providerSubscriptionId, {
+    items: [
+      {
+        id: existingItem.id,
+        price: params.newStripePriceId,
+      },
+    ],
+    proration_behavior: "none",
+    trial_end: targetTrialEndUnix,
   });
 }

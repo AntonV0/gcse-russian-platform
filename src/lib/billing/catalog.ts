@@ -24,23 +24,30 @@ export type DbPrice = {
   interval_count: number | null;
   amount_gbp: number;
   stripe_price_id: string | null;
-  upgrade_source_price_id: string | null;
   is_active: boolean;
   created_at: string;
 };
 
 export type PurchaseType = "standard" | "upgrade";
+export type UpgradeFlow = "same_cadence" | "monthly_to_three_month" | "lifetime";
 
 export type CheckoutCatalogResolution = {
   product: DbProduct;
   price: DbPrice;
   purchaseType: PurchaseType;
+  upgradeFlow?: UpgradeFlow | null;
+  upgradeFeeAmountGbp?: number | null;
 };
 
-export type PlanPricing = {
-  monthly: DbPrice | null;
-  threeMonth: DbPrice | null;
-  lifetime: DbPrice | null;
+export type UpgradeQuoteResolution = {
+  eligible: boolean;
+  sourceGrant: DbUserAccessGrant | null;
+  sourceProduct: DbProduct | null;
+  sourcePrice: DbPrice | null;
+  targetProduct: DbProduct | null;
+  targetPrice: DbPrice | null;
+  upgradeFlow: UpgradeFlow | null;
+  upgradeFeeAmountGbp: number | null;
 };
 
 export const PRODUCT_CODES = {
@@ -187,8 +194,7 @@ export function matchPriceByBillingShape(
   prices: DbPrice[],
   billingType: string,
   intervalUnit?: string | null,
-  intervalCount?: number | null,
-  upgradeSourcePriceId?: string | null
+  intervalCount?: number | null
 ): DbPrice | null {
   const matched = prices.find((price) => {
     if (price.billing_type !== billingType) return false;
@@ -197,26 +203,10 @@ export function matchPriceByBillingShape(
       const expectedUnit = intervalUnit ?? null;
       const expectedCount = intervalCount ?? 1;
 
-      if (
-        price.interval_unit !== expectedUnit ||
-        (price.interval_count ?? 1) !== expectedCount
-      ) {
-        return false;
-      }
-    }
-
-    if (billingType === BILLING_TYPES.ONE_TIME) {
-      if (
-        upgradeSourcePriceId &&
-        price.upgrade_source_price_id !== upgradeSourcePriceId
-      ) {
-        return false;
-      }
-    } else if (
-      upgradeSourcePriceId &&
-      price.upgrade_source_price_id !== upgradeSourcePriceId
-    ) {
-      return false;
+      return (
+        price.interval_unit === expectedUnit &&
+        (price.interval_count ?? 1) === expectedCount
+      );
     }
 
     return true;
@@ -225,234 +215,257 @@ export function matchPriceByBillingShape(
   return matched ?? null;
 }
 
-export async function getPlanPricingDb(productCode: string): Promise<PlanPricing> {
-  const product = await getActiveProductByCodeDb(productCode);
-
-  if (!product) {
-    return {
-      monthly: null,
-      threeMonth: null,
-      lifetime: null,
-    };
-  }
-
-  const prices = await getActivePricesForProductDb(product.id);
-
-  return {
-    monthly: matchPriceByBillingShape(
-      prices,
-      BILLING_TYPES.SUBSCRIPTION,
-      INTERVAL_UNITS.MONTH,
-      1
-    ),
-    threeMonth: matchPriceByBillingShape(
-      prices,
-      BILLING_TYPES.SUBSCRIPTION,
-      INTERVAL_UNITS.MONTH,
-      3
-    ),
-    lifetime: matchPriceByBillingShape(prices, BILLING_TYPES.ONE_TIME, null, null),
-  };
+function getFixedUpgradeFeeAmountGbp(sourcePrice: DbPrice, targetPrice: DbPrice): number {
+  return Math.max(targetPrice.amount_gbp - sourcePrice.amount_gbp, 0);
 }
 
-export async function canUpgradeFoundationToHigherDb(userId: string): Promise<boolean> {
-  const foundationProduct = await getActiveProductByCodeDb(
-    PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
-  );
-  const higherProduct = await getActiveProductByCodeDb(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER);
-
-  if (!foundationProduct || !higherProduct) {
-    return false;
-  }
-
-  const [hasFoundation, hasHigher] = await Promise.all([
-    hasActiveUserProductGrantDb(userId, foundationProduct.id),
-    hasActiveUserProductGrantDb(userId, higherProduct.id),
-  ]);
-
-  return hasFoundation && !hasHigher;
-}
-
-export async function resolveUpgradeEligibilityDb(
-  userId: string,
-  targetProductCode: string
-): Promise<{
-  eligible: boolean;
-  sourceGrant: DbUserAccessGrant | null;
-}> {
-  if (targetProductCode !== PRODUCT_CODES.GCSE_RUSSIAN_HIGHER) {
-    return {
-      eligible: false,
-      sourceGrant: null,
-    };
-  }
-
-  const foundationProduct = await getActiveProductByCodeDb(
-    PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
-  );
-
-  if (!foundationProduct) {
-    return {
-      eligible: false,
-      sourceGrant: null,
-    };
-  }
-
-  const sourceGrant = await getActiveUserProductGrantDb(userId, foundationProduct.id);
-
-  if (!sourceGrant) {
-    return {
-      eligible: false,
-      sourceGrant: null,
-    };
-  }
-
-  const canUpgrade = await canUpgradeFoundationToHigherDb(userId);
-
-  return {
-    eligible: canUpgrade,
-    sourceGrant: canUpgrade ? sourceGrant : null,
-  };
-}
-
-function isAllowedHigherUpgradePath(
+export function getUpgradeFlowForPath(
+  sourceProductCode: string,
   sourcePrice: DbPrice,
-  targetShape: {
-    billingType: string;
-    intervalUnit?: string | null;
-    intervalCount?: number | null;
+  targetProductCode: string,
+  targetPrice: DbPrice
+): UpgradeFlow | null {
+  const sourceIsFoundation = sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION;
+  const sourceIsHigher = sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER;
+  const targetIsFoundation = targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION;
+  const targetIsHigher = targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER;
+
+  if (!sourceIsFoundation && !sourceIsHigher) {
+    return null;
   }
-): boolean {
+
+  if (!targetIsFoundation && !targetIsHigher) {
+    return null;
+  }
+
   const sourceBillingType = sourcePrice.billing_type;
   const sourceIntervalUnit = sourcePrice.interval_unit;
   const sourceIntervalCount = sourcePrice.interval_count ?? 1;
 
-  const targetBillingType = targetShape.billingType;
-  const targetIntervalUnit = targetShape.intervalUnit ?? null;
-  const targetIntervalCount = targetShape.intervalCount ?? 1;
+  const targetBillingType = targetPrice.billing_type;
+  const targetIntervalUnit = targetPrice.interval_unit;
+  const targetIntervalCount = targetPrice.interval_count ?? 1;
 
-  if (sourceBillingType === BILLING_TYPES.ONE_TIME) {
-    return targetBillingType === BILLING_TYPES.ONE_TIME;
+  if (
+    sourceIsFoundation &&
+    sourceBillingType === BILLING_TYPES.ONE_TIME &&
+    targetIsHigher &&
+    targetBillingType === BILLING_TYPES.ONE_TIME
+  ) {
+    return "lifetime";
   }
 
-  if (sourceBillingType === BILLING_TYPES.SUBSCRIPTION) {
-    if (targetBillingType === BILLING_TYPES.ONE_TIME) {
-      return (
-        sourceIntervalUnit === INTERVAL_UNITS.MONTH &&
-        (sourceIntervalCount === 1 || sourceIntervalCount === 3)
-      );
-    }
-
-    if (targetBillingType === BILLING_TYPES.SUBSCRIPTION) {
-      return (
-        sourceIntervalUnit === targetIntervalUnit &&
-        sourceIntervalCount === targetIntervalCount
-      );
-    }
+  if (
+    sourceBillingType === BILLING_TYPES.SUBSCRIPTION &&
+    sourceIntervalUnit === INTERVAL_UNITS.MONTH &&
+    sourceIntervalCount === 1 &&
+    targetBillingType === BILLING_TYPES.SUBSCRIPTION &&
+    targetIntervalUnit === INTERVAL_UNITS.MONTH &&
+    targetIntervalCount === 1 &&
+    sourceIsFoundation &&
+    targetIsHigher
+  ) {
+    return "same_cadence";
   }
 
-  return false;
+  if (
+    sourceBillingType === BILLING_TYPES.SUBSCRIPTION &&
+    sourceIntervalUnit === INTERVAL_UNITS.MONTH &&
+    sourceIntervalCount === 3 &&
+    targetBillingType === BILLING_TYPES.SUBSCRIPTION &&
+    targetIntervalUnit === INTERVAL_UNITS.MONTH &&
+    targetIntervalCount === 3 &&
+    sourceIsFoundation &&
+    targetIsHigher
+  ) {
+    return "same_cadence";
+  }
+
+  if (
+    sourceBillingType === BILLING_TYPES.SUBSCRIPTION &&
+    sourceIntervalUnit === INTERVAL_UNITS.MONTH &&
+    sourceIntervalCount === 1 &&
+    targetBillingType === BILLING_TYPES.SUBSCRIPTION &&
+    targetIntervalUnit === INTERVAL_UNITS.MONTH &&
+    targetIntervalCount === 3 &&
+    ((sourceIsFoundation && targetIsFoundation) ||
+      (sourceIsHigher && targetIsHigher) ||
+      (sourceIsFoundation && targetIsHigher))
+  ) {
+    return "monthly_to_three_month";
+  }
+
+  return null;
 }
 
-export async function getResolvedHigherUpgradePricingForUserDb(
+async function getActiveUpgradeableGrantsDb(
   userId: string
-): Promise<PlanPricing> {
-  const eligibility = await resolveUpgradeEligibilityDb(
-    userId,
-    PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
+): Promise<Array<{ grant: DbUserAccessGrant; product: DbProduct; price: DbPrice }>> {
+  const [foundationProduct, higherProduct] = await Promise.all([
+    getActiveProductByCodeDb(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION),
+    getActiveProductByCodeDb(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER),
+  ]);
+
+  const candidates: Array<{
+    grant: DbUserAccessGrant;
+    product: DbProduct;
+    price: DbPrice;
+  }> = [];
+
+  for (const product of [foundationProduct, higherProduct]) {
+    if (!product) continue;
+
+    const grant = await getActiveUserProductGrantDb(userId, product.id);
+
+    if (!grant?.price_id) {
+      continue;
+    }
+
+    const price = await getActivePriceByIdDb(grant.price_id);
+
+    if (!price) {
+      continue;
+    }
+
+    candidates.push({ grant, product, price });
+  }
+
+  return candidates;
+}
+
+export async function resolveUpgradeQuoteDb(
+  userId: string,
+  targetProductCode: string,
+  billingType: string,
+  intervalUnit?: SupportedIntervalUnit | null,
+  intervalCount?: number | null
+): Promise<UpgradeQuoteResolution> {
+  const targetProduct = await getActiveProductByCodeDb(targetProductCode);
+
+  if (!targetProduct) {
+    return {
+      eligible: false,
+      sourceGrant: null,
+      sourceProduct: null,
+      sourcePrice: null,
+      targetProduct: null,
+      targetPrice: null,
+      upgradeFlow: null,
+      upgradeFeeAmountGbp: null,
+    };
+  }
+
+  const targetPrices = await getActivePricesForProductDb(targetProduct.id);
+  const targetPrice = matchPriceByBillingShape(
+    targetPrices,
+    billingType,
+    intervalUnit ?? null,
+    intervalCount ?? null
   );
 
-  if (!eligibility.eligible || !eligibility.sourceGrant?.price_id) {
+  if (!targetPrice) {
     return {
-      monthly: null,
-      threeMonth: null,
-      lifetime: null,
+      eligible: false,
+      sourceGrant: null,
+      sourceProduct: null,
+      sourcePrice: null,
+      targetProduct,
+      targetPrice: null,
+      upgradeFlow: null,
+      upgradeFeeAmountGbp: null,
     };
   }
 
-  const sourcePriceId = eligibility.sourceGrant.price_id;
-  const upgradeProduct = await getActiveProductByCodeDb(
-    getUpgradeProductCode(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER)
-  );
+  const sourceCandidates = await getActiveUpgradeableGrantsDb(userId);
 
-  if (!upgradeProduct) {
+  const validCandidates = sourceCandidates
+    .map((candidate) => {
+      const upgradeFlow = getUpgradeFlowForPath(
+        candidate.product.code,
+        candidate.price,
+        targetProduct.code,
+        targetPrice
+      );
+
+      if (!upgradeFlow) {
+        return null;
+      }
+
+      return {
+        ...candidate,
+        upgradeFlow,
+        upgradeFeeAmountGbp: getFixedUpgradeFeeAmountGbp(candidate.price, targetPrice),
+      };
+    })
+    .filter(Boolean) as Array<{
+    grant: DbUserAccessGrant;
+    product: DbProduct;
+    price: DbPrice;
+    upgradeFlow: UpgradeFlow;
+    upgradeFeeAmountGbp: number;
+  }>;
+
+  if (validCandidates.length === 0) {
     return {
-      monthly: null,
-      threeMonth: null,
-      lifetime: null,
+      eligible: false,
+      sourceGrant: null,
+      sourceProduct: null,
+      sourcePrice: null,
+      targetProduct,
+      targetPrice,
+      upgradeFlow: null,
+      upgradeFeeAmountGbp: null,
     };
   }
 
-  const sourcePrice = await getActivePriceByIdDb(sourcePriceId);
-
-  if (!sourcePrice) {
-    return {
-      monthly: null,
-      threeMonth: null,
-      lifetime: null,
-    };
-  }
-
-  const prices = await getActivePricesForProductDb(upgradeProduct.id);
-
-  const monthlyAllowed = isAllowedHigherUpgradePath(sourcePrice, {
-    billingType: BILLING_TYPES.SUBSCRIPTION,
-    intervalUnit: INTERVAL_UNITS.MONTH,
-    intervalCount: 1,
+  validCandidates.sort((a, b) => {
+    const aSameProduct = a.product.code === targetProduct.code ? 1 : 0;
+    const bSameProduct = b.product.code === targetProduct.code ? 1 : 0;
+    return bSameProduct - aSameProduct;
   });
 
-  const threeMonthAllowed = isAllowedHigherUpgradePath(sourcePrice, {
-    billingType: BILLING_TYPES.SUBSCRIPTION,
-    intervalUnit: INTERVAL_UNITS.MONTH,
-    intervalCount: 3,
-  });
-
-  const lifetimeAllowed = isAllowedHigherUpgradePath(sourcePrice, {
-    billingType: BILLING_TYPES.ONE_TIME,
-    intervalUnit: null,
-    intervalCount: null,
-  });
+  const selected = validCandidates[0];
 
   return {
-    monthly: monthlyAllowed
-      ? matchPriceByBillingShape(
-          prices,
-          BILLING_TYPES.SUBSCRIPTION,
-          INTERVAL_UNITS.MONTH,
-          1,
-          sourcePriceId
-        )
-      : null,
-    threeMonth: threeMonthAllowed
-      ? matchPriceByBillingShape(
-          prices,
-          BILLING_TYPES.SUBSCRIPTION,
-          INTERVAL_UNITS.MONTH,
-          3,
-          sourcePriceId
-        )
-      : null,
-    lifetime: lifetimeAllowed
-      ? matchPriceByBillingShape(
-          prices,
-          BILLING_TYPES.ONE_TIME,
-          null,
-          null,
-          sourcePriceId
-        )
-      : null,
+    eligible: true,
+    sourceGrant: selected.grant,
+    sourceProduct: selected.product,
+    sourcePrice: selected.price,
+    targetProduct,
+    targetPrice,
+    upgradeFlow: selected.upgradeFlow,
+    upgradeFeeAmountGbp: selected.upgradeFeeAmountGbp,
   };
 }
 
-/**
- * Standard purchase:
- * - product code stays as requested
- *
- * Upgrade purchase:
- * - price is looked up from "<target-product-code>-upgrade"
- * - grant still gets created for the REAL target product
- * - the selected upgrade price must match the user's active Foundation source price_id
- */
+export async function canUpgradeFoundationToHigherDb(userId: string): Promise<boolean> {
+  const [higherMonthly, higherThreeMonth, higherLifetime] = await Promise.all([
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      1
+    ),
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      3
+    ),
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.ONE_TIME,
+      null,
+      null
+    ),
+  ]);
+
+  return higherMonthly.eligible || higherThreeMonth.eligible || higherLifetime.eligible;
+}
+
 export async function resolveCheckoutCatalogDb(
   input: ResolveCheckoutPriceInput
 ): Promise<CheckoutCatalogResolution | null> {
@@ -463,111 +476,52 @@ export async function resolveCheckoutCatalogDb(
     return null;
   }
 
+  const targetPrices = await getActivePricesForProductDb(targetProduct.id);
+  const targetPrice = matchPriceByBillingShape(
+    targetPrices,
+    input.billingType,
+    input.intervalUnit ?? null,
+    input.intervalCount ?? null
+  );
+
+  if (!targetPrice) {
+    console.error("Target price not found for checkout resolution:", input);
+    return null;
+  }
+
   if (input.isUpgrade) {
-    const eligibility = await resolveUpgradeEligibilityDb(
+    const quote = await resolveUpgradeQuoteDb(
       input.userId,
-      input.targetProductCode
-    );
-
-    if (!eligibility.eligible || !eligibility.sourceGrant?.price_id) {
-      console.error("User is not eligible for source-aware upgrade pricing:", {
-        userId: input.userId,
-        targetProductCode: input.targetProductCode,
-        sourceGrant: eligibility.sourceGrant,
-      });
-      return null;
-    }
-
-    const sourcePriceId = eligibility.sourceGrant.price_id;
-    const sourcePrice = await getActivePriceByIdDb(sourcePriceId);
-
-    if (!sourcePrice) {
-      console.error("Source Foundation price could not be loaded for upgrade:", {
-        userId: input.userId,
-        sourcePriceId,
-      });
-      return null;
-    }
-
-    const requestedShape = {
-      billingType: input.billingType,
-      intervalUnit: input.intervalUnit ?? null,
-      intervalCount: input.intervalCount ?? null,
-    };
-
-    if (!isAllowedHigherUpgradePath(sourcePrice, requestedShape)) {
-      console.error(
-        "Requested upgrade path is not allowed for source Foundation price:",
-        {
-          userId: input.userId,
-          sourcePrice,
-          requestedShape,
-        }
-      );
-      return null;
-    }
-
-    const upgradeProductCode = getUpgradeProductCode(input.targetProductCode);
-    const upgradeProduct = await getActiveProductByCodeDb(upgradeProductCode);
-
-    if (!upgradeProduct) {
-      console.error("Upgrade product not found:", {
-        targetProductCode: input.targetProductCode,
-        upgradeProductCode,
-      });
-      return null;
-    }
-
-    const upgradePrices = await getActivePricesForProductDb(upgradeProduct.id);
-    const upgradePrice = matchPriceByBillingShape(
-      upgradePrices,
+      input.targetProductCode,
       input.billingType,
       input.intervalUnit ?? null,
-      input.intervalCount ?? null,
-      sourcePriceId
+      input.intervalCount ?? null
     );
 
-    if (!upgradePrice) {
-      console.error("Source-aware upgrade price not found:", {
-        targetProductCode: input.targetProductCode,
-        upgradeProductCode,
-        billingType: input.billingType,
-        intervalUnit: input.intervalUnit ?? null,
-        intervalCount: input.intervalCount ?? null,
-        sourcePriceId,
+    if (!quote.eligible || !quote.upgradeFlow || quote.upgradeFeeAmountGbp == null) {
+      console.error("User is not eligible for upgrade checkout:", {
+        userId: input.userId,
+        input,
+        quote,
       });
       return null;
     }
 
     return {
       product: targetProduct,
-      price: upgradePrice,
+      price: targetPrice,
       purchaseType: "upgrade",
+      upgradeFlow: quote.upgradeFlow,
+      upgradeFeeAmountGbp: quote.upgradeFeeAmountGbp,
     };
-  }
-
-  const standardPrices = await getActivePricesForProductDb(targetProduct.id);
-  const standardPrice = matchPriceByBillingShape(
-    standardPrices,
-    input.billingType,
-    input.intervalUnit ?? null,
-    input.intervalCount ?? null
-  );
-
-  if (!standardPrice) {
-    console.error("Standard price not found:", {
-      targetProductCode: input.targetProductCode,
-      billingType: input.billingType,
-      intervalUnit: input.intervalUnit ?? null,
-      intervalCount: input.intervalCount ?? null,
-    });
-    return null;
   }
 
   return {
     product: targetProduct,
-    price: standardPrice,
+    price: targetPrice,
     purchaseType: "standard",
+    upgradeFlow: null,
+    upgradeFeeAmountGbp: null,
   };
 }
 
