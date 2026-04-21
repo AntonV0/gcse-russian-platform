@@ -8,6 +8,7 @@ import Card, { CardBody, CardHeader } from "@/components/ui/card";
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
+import Surface from "@/components/ui/surface";
 
 type DemoRow = {
   name: string;
@@ -15,6 +16,7 @@ type DemoRow = {
   status: "published" | "draft" | "in_progress";
   lessons: string;
   updated: string;
+  variant?: "foundation" | "higher" | "volna";
 };
 
 const demoRows: DemoRow[] = [
@@ -24,6 +26,7 @@ const demoRows: DemoRow[] = [
     status: "published",
     lessons: "24",
     updated: "2 hours ago",
+    variant: "foundation",
   },
   {
     name: "Theme 1: Identity and culture",
@@ -31,6 +34,7 @@ const demoRows: DemoRow[] = [
     status: "in_progress",
     lessons: "8",
     updated: "Yesterday",
+    variant: "higher",
   },
   {
     name: "School and daily routine",
@@ -38,6 +42,7 @@ const demoRows: DemoRow[] = [
     status: "draft",
     lessons: "—",
     updated: "3 days ago",
+    variant: "higher",
   },
 ];
 
@@ -65,21 +70,46 @@ function StatusBadge({ status }: { status: DemoRow["status"] }) {
   );
 }
 
+function VariantBadge({ variant }: { variant?: DemoRow["variant"] }) {
+  if (!variant) return null;
+
+  if (variant === "foundation") {
+    return <Badge tone="muted">Foundation</Badge>;
+  }
+
+  if (variant === "volna") {
+    return <Badge tone="success">Volna</Badge>;
+  }
+
+  return <Badge tone="default">Higher</Badge>;
+}
+
 function TableShell({
   title,
   description,
   children,
+  actions,
 }: {
   title: string;
   description: string;
   children: React.ReactNode;
+  actions?: React.ReactNode;
 }) {
   return (
     <Card className="overflow-hidden">
       <CardHeader>
-        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-        <p className="mt-1 text-sm app-text-muted">{description}</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+            <p className="mt-1 text-sm app-text-muted">{description}</p>
+          </div>
+
+          {actions ? (
+            <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
+          ) : null}
+        </div>
       </CardHeader>
+
       <div>{children}</div>
     </Card>
   );
@@ -101,6 +131,15 @@ function DemoToolbar() {
             <option value="progress">In progress</option>
           </Select>
         </div>
+
+        <div className="w-full md:max-w-[180px]">
+          <Select defaultValue="all-variants">
+            <option value="all-variants">All variants</option>
+            <option value="foundation">Foundation</option>
+            <option value="higher">Higher</option>
+            <option value="volna">Volna</option>
+          </Select>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -120,6 +159,12 @@ function StandardTable() {
     <TableShell
       title="Standard admin table"
       description="Best for content management views where filtering, row scanning, and actions matter."
+      actions={
+        <>
+          <Badge tone="info">Default pattern</Badge>
+          <Badge tone="muted">Comfortable density</Badge>
+        </>
+      }
     >
       <DemoToolbar />
 
@@ -148,10 +193,17 @@ function StandardTable() {
             {demoRows.map((row) => (
               <tr
                 key={row.name}
-                className="border-b border-[var(--border)] transition hover:bg-[var(--background-muted)]"
+                className="border-b border-[var(--border)] transition hover:bg-[var(--background-muted)]/65"
               >
                 <td className="px-5 py-4">
-                  <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
+                  <div className="space-y-1">
+                    <div className="font-medium text-[var(--text-primary)]">
+                      {row.name}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <VariantBadge variant={row.variant} />
+                    </div>
+                  </div>
                 </td>
                 <td className="px-5 py-4 app-text-muted">{row.type}</td>
                 <td className="px-5 py-4">
@@ -183,6 +235,7 @@ function DenseTable() {
     <TableShell
       title="Dense table"
       description="Useful when rows are numerous, but should be used carefully to avoid making scanning harder."
+      actions={<Badge tone="warning">Compact pattern</Badge>}
     >
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
@@ -199,12 +252,13 @@ function DenseTable() {
               </th>
             </tr>
           </thead>
+
           <tbody>
             {demoRows.map((row) => (
               <tr key={row.name} className="border-b border-[var(--border)]">
                 <td className="px-4 py-3">
                   <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
-                  <div className="text-xs app-text-soft">{row.type}</div>
+                  <div className="mt-0.5 text-xs app-text-soft">{row.type}</div>
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={row.status} />
@@ -214,6 +268,267 @@ function DenseTable() {
             ))}
           </tbody>
         </table>
+      </div>
+    </TableShell>
+  );
+}
+
+function RowStatePatterns() {
+  return (
+    <div className="grid gap-4 xl:grid-cols-2">
+      <Card>
+        <CardBody className="space-y-4 p-4">
+          <div>
+            <div className="font-semibold text-[var(--text-primary)]">Row states</div>
+            <p className="mt-1 text-sm app-text-muted">
+              Test how rows feel before applying them to lesson, module, and block lists.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">
+                    Default row
+                  </div>
+                  <div className="text-sm app-text-muted">
+                    Calm baseline state for normal scanning.
+                  </div>
+                </div>
+                <StatusBadge status="draft" />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border-strong)] bg-[var(--background-muted)] px-4 py-3 shadow-[0_10px_20px_rgba(16,32,51,0.06)]">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">Hover row</div>
+                  <div className="text-sm app-text-muted">
+                    Slightly elevated to show interactive intent.
+                  </div>
+                </div>
+                <StatusBadge status="in_progress" />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[rgba(37,99,235,0.22)] bg-[rgba(37,99,235,0.08)] px-4 py-3 shadow-[0_10px_20px_rgba(37,99,235,0.08)]">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">
+                    Selected row
+                  </div>
+                  <div className="text-sm app-text-muted">
+                    Use sparingly for bulk actions or active selection.
+                  </div>
+                </div>
+                <StatusBadge status="published" />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3 opacity-60">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">
+                    Disabled row
+                  </div>
+                  <div className="text-sm app-text-muted">
+                    Present but unavailable for interaction.
+                  </div>
+                </div>
+                <StatusBadge status="draft" />
+              </div>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardBody className="space-y-4 p-4">
+          <div>
+            <div className="font-semibold text-[var(--text-primary)]">
+              Inline action visibility
+            </div>
+            <p className="mt-1 text-sm app-text-muted">
+              Not every table needs the same action density.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <Surface variant="muted" className="p-4">
+              <div className="mb-2 text-sm font-semibold text-[var(--text-primary)]">
+                Always-visible actions
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">
+                    Theme 1 module
+                  </div>
+                  <div className="text-sm app-text-muted">
+                    Safer when actions are core to the workflow.
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="secondary" size="sm" icon="edit">
+                    Edit
+                  </Button>
+                  <Button variant="quiet" size="sm" icon="next">
+                    Open
+                  </Button>
+                </div>
+              </div>
+            </Surface>
+
+            <Surface variant="muted" className="p-4">
+              <div className="mb-2 text-sm font-semibold text-[var(--text-primary)]">
+                Compact action group
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">
+                    Speaking practice block
+                  </div>
+                  <div className="text-sm app-text-muted">
+                    Better when rows are more numerous or visually dense.
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon="settings"
+                    iconOnly
+                    ariaLabel="Settings"
+                  />
+                  <Button
+                    variant="quiet"
+                    size="sm"
+                    icon="delete"
+                    iconOnly
+                    ariaLabel="Delete"
+                  />
+                </div>
+              </div>
+            </Surface>
+
+            <Surface variant="muted" className="p-4">
+              <div className="mb-2 text-sm font-semibold text-[var(--text-primary)]">
+                Hover-reveal direction
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">
+                    Builder lesson row
+                  </div>
+                  <div className="text-sm app-text-muted">
+                    Use when scanning matters more than immediate action visibility.
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 opacity-70 transition group-hover:opacity-100">
+                  <Button variant="quiet" size="sm" icon="edit">
+                    Edit
+                  </Button>
+                  <Button variant="quiet" size="sm" icon="next">
+                    Open
+                  </Button>
+                </div>
+              </div>
+            </Surface>
+          </div>
+        </CardBody>
+      </Card>
+    </div>
+  );
+}
+
+function HierarchyListPattern() {
+  return (
+    <TableShell
+      title="Hierarchy and nested list pattern"
+      description="Useful for module → lesson → block structures where content relationships matter more than strict table columns."
+      actions={<Badge tone="info">Core LMS pattern</Badge>}
+    >
+      <div className="space-y-3 p-5">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="font-semibold text-[var(--text-primary)]">
+                Theme 1: Identity and culture
+              </div>
+              <div className="mt-1 text-sm app-text-muted">Module • 8 lessons</div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Badge tone="default">Higher</Badge>
+              <Badge tone="warning">In progress</Badge>
+              <Button variant="secondary" size="sm" icon="edit">
+                Edit
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-3 border-l border-[var(--border)] pl-4">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/35 px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">
+                    School and daily routine
+                  </div>
+                  <div className="mt-1 text-sm app-text-muted">Lesson • 6 blocks</div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="muted">Draft</Badge>
+                  <Button variant="quiet" size="sm" icon="next">
+                    Open
+                  </Button>
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-2 border-l border-[var(--border)] pl-4">
+                <div className="flex items-center justify-between gap-3 rounded-lg bg-[var(--background-elevated)] px-3 py-2">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text-primary)]">
+                      Starter vocabulary
+                    </div>
+                    <div className="text-xs app-text-soft">Block • content</div>
+                  </div>
+
+                  <Badge tone="muted">Text</Badge>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 rounded-lg bg-[var(--background-elevated)] px-3 py-2">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text-primary)]">
+                      Reading practice
+                    </div>
+                    <div className="text-xs app-text-soft">Block • practice</div>
+                  </div>
+
+                  <Badge tone="warning">Review</Badge>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/35 px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-[var(--text-primary)]">
+                    Family and relationships
+                  </div>
+                  <div className="mt-1 text-sm app-text-muted">Lesson • 4 blocks</div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="info">Published</Badge>
+                  <Button variant="quiet" size="sm" icon="next">
+                    Open
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </TableShell>
   );
@@ -230,6 +545,7 @@ function TableEmptyState() {
           title="No rows yet"
           description="Create your first item to populate this table and begin managing data here."
           icon="list"
+          iconTone="brand"
           action={
             <Button variant="primary" icon="create">
               Add first item
@@ -241,24 +557,136 @@ function TableEmptyState() {
   );
 }
 
-function TableRules() {
+function FilteredEmptyState() {
+  return (
+    <TableShell
+      title="Filtered-empty state"
+      description="Use a different empty state when the table has data in general, but the current filters return nothing."
+    >
+      <div className="border-b border-[var(--border)] px-5 py-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge tone="default">Higher</Badge>
+          <Badge tone="warning">Needs review</Badge>
+          <Button variant="quiet" size="sm" icon="refresh">
+            Clear filters
+          </Button>
+        </div>
+      </div>
+
+      <div className="p-5">
+        <EmptyState
+          title="No matching rows"
+          description="Try widening your filters, changing variant, or clearing the current status selection."
+          icon="search"
+          iconTone="warning"
+          action={
+            <Button variant="secondary" icon="refresh">
+              Reset filters
+            </Button>
+          }
+        />
+      </div>
+    </TableShell>
+  );
+}
+
+function DarkSurfaceTableTest() {
+  return (
+    <div
+      data-theme="dark"
+      className="rounded-[1.75rem] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,#0b1a30_0%,#142742_100%)] p-5 shadow-[0_16px_34px_rgba(16,32,51,0.24)]"
+    >
+      <div className="mb-4">
+        <div className="text-sm font-semibold text-white">Dark-surface table check</div>
+        <p className="mt-1 text-sm text-[rgba(255,255,255,0.72)]">
+          Validate contrast and row clarity when tables sit inside stronger emphasis
+          surfaces.
+        </p>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
+        <div className="grid grid-cols-[minmax(0,1.4fr)_180px_160px_auto] gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-3 text-sm font-semibold text-white">
+          <div>Name</div>
+          <div>Status</div>
+          <div>Updated</div>
+          <div>Actions</div>
+        </div>
+
+        {demoRows.slice(0, 2).map((row) => (
+          <div
+            key={row.name}
+            className="grid grid-cols-[minmax(0,1.4fr)_180px_160px_auto] gap-3 border-b border-[rgba(255,255,255,0.06)] px-5 py-4 last:border-b-0"
+          >
+            <div>
+              <div className="font-medium text-white">{row.name}</div>
+              <div className="mt-1 text-sm text-[rgba(255,255,255,0.68)]">{row.type}</div>
+            </div>
+
+            <div>
+              <StatusBadge status={row.status} />
+            </div>
+
+            <div className="text-sm text-[rgba(255,255,255,0.72)]">{row.updated}</div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button variant="secondary" size="sm" icon="edit">
+                Edit
+              </Button>
+              <Button variant="quiet" size="sm" icon="next">
+                Open
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TableGuidance() {
   const rules = [
-    "Use a toolbar above the table when filtering or search is expected.",
-    "Keep row actions compact and predictable.",
-    "Use badges for statuses rather than raw colored text.",
-    "Dense tables should be a deliberate choice, not the default.",
-    "Always provide a useful empty state instead of blank space.",
-    "Tables should be horizontally scrollable on narrow widths rather than crushed.",
+    {
+      icon: "list" as const,
+      title: "Use tables when comparison matters",
+      description:
+        "Tables work best when users need to scan across repeated columns like status, updated time, variant, or action availability.",
+    },
+    {
+      icon: "layers" as const,
+      title: "Use hierarchy lists for structure",
+      description:
+        "Module → lesson → block structures are often clearer as nested rows than as rigid tables.",
+    },
+    {
+      icon: "filter" as const,
+      title: "Pair tables with toolbars",
+      description:
+        "If search, filtering, or creation is expected, put those controls above the table rather than scattering them around the page.",
+    },
+    {
+      icon: "warning" as const,
+      title: "Do not default to dense mode",
+      description:
+        "Compact layouts are useful, but standard density is usually easier to scan and safer for long-term admin use.",
+    },
   ];
 
   return (
-    <div className="grid gap-3 lg:grid-cols-2">
+    <div className="grid gap-4 lg:grid-cols-2">
       {rules.map((rule) => (
-        <Card key={rule}>
+        <Card key={rule.title}>
           <CardBody className="p-4">
             <div className="flex items-start gap-3">
-              <AppIcon icon="list" size={16} className="mt-0.5 app-brand-text" />
-              <div className="text-sm app-text-muted">{rule}</div>
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--brand-blue-soft)] text-[var(--brand-blue)]">
+                <AppIcon icon={rule.icon} size={16} />
+              </span>
+
+              <div>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  {rule.title}
+                </div>
+                <p className="mt-1 text-sm app-text-muted">{rule.description}</p>
+              </div>
             </div>
           </CardBody>
         </Card>
@@ -295,63 +723,41 @@ export default async function AdminUiTablesPage() {
       </UiLabSection>
 
       <UiLabSection
-        title="Empty-state pattern"
-        description="Tables should remain useful even when there is no data to show."
+        title="Row states and action density"
+        description="Before building real admin pages, validate how rows feel when hovered, selected, disabled, or paired with different action strategies."
       >
-        <TableEmptyState />
+        <RowStatePatterns />
       </UiLabSection>
 
       <UiLabSection
-        title="Table usage rules"
-        description="Use these rules to keep real table implementations consistent across admin screens."
+        title="Hierarchy and nested structures"
+        description="Not every data display should become a strict table. This pattern is important for modules, lessons, and block relationships."
       >
-        <TableRules />
+        <HierarchyListPattern />
       </UiLabSection>
 
       <UiLabSection
-        title="Readiness"
-        description="A quick summary of which table patterns already feel stable and which still need refinement."
+        title="Empty and filtered-empty states"
+        description="Tables should remain useful when there is no data or when active filters remove all visible rows."
       >
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <Badge tone="success">Strong already</Badge>
-              </div>
-              <div className="space-y-1 text-sm app-text-muted">
-                <p>Standard admin table direction</p>
-                <p>Toolbar + action layout</p>
-                <p>Status badge usage</p>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <Badge tone="warning">Needs refinement</Badge>
-              </div>
-              <div className="space-y-1 text-sm app-text-muted">
-                <p>Sorting interactions</p>
-                <p>Bulk row actions</p>
-                <p>Mobile-friendly row density</p>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <Badge tone="muted">Future additions</Badge>
-              </div>
-              <div className="space-y-1 text-sm app-text-muted">
-                <p>Sticky headers</p>
-                <p>Selectable rows</p>
-                <p>Pagination and result counts</p>
-              </div>
-            </CardBody>
-          </Card>
+        <div className="grid gap-4 xl:grid-cols-2">
+          <TableEmptyState />
+          <FilteredEmptyState />
         </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Dark-surface contrast check"
+        description="This section helps validate that table structure, badges, and actions still feel readable on stronger emphasis surfaces."
+      >
+        <DarkSurfaceTableTest />
+      </UiLabSection>
+
+      <UiLabSection
+        title="Usage guidance"
+        description="Use these rules to keep real data-display implementations consistent across admin screens."
+      >
+        <TableGuidance />
       </UiLabSection>
     </UiLabShell>
   );
