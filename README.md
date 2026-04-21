@@ -17,6 +17,7 @@ This platform combines:
 - teacher-managed assignments and review workflows
 - a fully database-driven lesson system
 - a growing CMS for managing all learning content
+- a structured internal **UI design system (UI Lab)** for consistent UX across the platform (NEW)
 
 It is designed as a **single unified system** that supports multiple
 learning experiences without splitting into separate apps.
@@ -186,6 +187,89 @@ The lesson builder has evolved into a **true CMS-style authoring tool**.
 - ✅ Fully DB-driven content system
 - ✅ Templates resolved dynamically
 - ✅ Variant-aware content system
+
+---
+
+## 🎨 UI Lab & Design System (NEW)
+
+A dedicated **UI Lab system** has been introduced to standardise and evolve UI patterns across:
+
+- Admin CMS
+- Student platform
+- Teacher workflows
+
+### Purpose
+
+- prevent inconsistent UI patterns
+- design components in isolation before real usage
+- ensure scalability across future features
+
+### UI Lab coverage
+
+Current UI Lab pages include:
+
+- Buttons
+- Surfaces
+- Feedback
+- Tables (NEW)
+- Forms (in progress)
+- Components (in progress)
+- Navigation (planned)
+- Layout (planned)
+- Typography (planned)
+- Icons (planned)
+
+---
+
+### Dev Component Marker System
+
+All shared UI components support a **development-only visual marker**:
+
+- Displays:
+  - component name
+  - file path
+- Helps identify:
+  - reuse opportunities
+  - missing abstractions
+  - inconsistent implementations
+
+This is:
+
+- ✅ enabled in development
+- ❌ removed in production
+
+---
+
+## 📊 Table System & Data Display (NEW)
+
+A reusable table architecture has been introduced to replace raw table markup.
+
+### Components
+
+- `TableShell` → outer structure (title, description, actions)
+- `TableToolbar` → filters, search, actions
+- `DataTable` (NEW abstraction)
+  - header
+  - body
+  - rows
+  - cells
+  - density variants
+
+### Patterns supported
+
+- Standard admin tables (default)
+- Dense tables (compact)
+- Hierarchical list patterns (modules → lessons → blocks)
+- Empty states
+- Filtered-empty states
+- Dark-surface compatibility testing
+
+### Behaviour improvements
+
+- consistent spacing and typography
+- predictable row interactions
+- reusable action patterns
+- improved scanning and readability
 
 ---
 
@@ -385,6 +469,7 @@ The platform is moving toward:
 - modular learning system
 - variant-aware course structure
 - intelligent student progression
+- a unified **design system-driven UI architecture (NEW)**
 
 ---
 
@@ -426,6 +511,7 @@ Core content:
 - cleaned ESLint errors
 - improved React patterns
 - improved image handling
+- replaced raw table markup with reusable table system (NEW)
 
 ---
 
@@ -442,6 +528,13 @@ Core content:
 - inline "+ add block between blocks"
 - faster workflows
 - autosave
+
+### UI System
+
+- complete remaining UI Lab pages
+- expand reusable components
+- align student/admin/teacher UI patterns
+- improve accessibility and responsiveness
 
 ### Content
 
