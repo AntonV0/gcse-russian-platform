@@ -9,10 +9,10 @@ import {
   PRODUCT_CODES,
   getActivePricesForProductDb,
   getActiveProductByCodeDb,
-  getUpgradeProductCode,
-  getUserGcseRussianPurchaseStateDb,
   matchPriceByBillingShape,
+  resolveUpgradeQuoteDb,
   type DbPrice,
+  type UpgradeQuoteResolution,
 } from "@/lib/billing/catalog";
 
 type PlanCardProps = {
@@ -165,22 +165,107 @@ function OwnedButton({ label }: { label: string }) {
   );
 }
 
+function getUpgradeFeeLabel(quote: UpgradeQuoteResolution | null): string | null {
+  if (!quote?.eligible || quote.upgradeFeeAmountGbp == null) {
+    return null;
+  }
+
+  return `£${quote.upgradeFeeAmountGbp}`;
+}
+
+function getUpgradeMessage(
+  quote: UpgradeQuoteResolution | null,
+  targetStandardLabel: string
+): string {
+  if (!quote?.eligible || !quote.upgradeFlow) {
+    return "";
+  }
+
+  if (quote.upgradeFlow === "same_cadence") {
+    return `Pay a fixed upgrade fee now. Your access switches immediately and renews at ${targetStandardLabel} on your existing billing date.`;
+  }
+
+  if (quote.upgradeFlow === "monthly_to_three_month") {
+    return `Pay a fixed upgrade fee now. Your access switches immediately and your new 3-month period keeps your original monthly start date as the anchor.`;
+  }
+
+  if (quote.upgradeFlow === "lifetime") {
+    return "Lifetime upgrade is a one-time payment and activates Higher lifetime access immediately.";
+  }
+
+  return "";
+}
+
 export default async function PricingPage() {
   const user = await getCurrentUser();
 
-  const [foundationPricing, higherPricing, higherUpgradePricing, purchaseState] =
-    await Promise.all([
-      getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION),
-      getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER),
-      getPlanPricing(getUpgradeProductCode(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER)),
-      user
-        ? getUserGcseRussianPurchaseStateDb(user.id)
-        : Promise.resolve({
-            canBuyFoundation: true,
-            canBuyHigher: true,
-            canUpgradeToHigher: false,
-          }),
-    ]);
+  const [
+    foundationPricing,
+    higherPricing,
+    foundationMonthlyToThreeMonthQuote,
+    foundationMonthlyToHigherMonthlyQuote,
+    foundationMonthlyToHigherThreeMonthQuote,
+    foundationThreeMonthToHigherThreeMonthQuote,
+    foundationLifetimeToHigherLifetimeQuote,
+    higherMonthlyToThreeMonthQuote,
+  ] = await Promise.all([
+    getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION),
+    getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER),
+    user
+      ? resolveUpgradeQuoteDb(
+          user.id,
+          PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION,
+          BILLING_TYPES.SUBSCRIPTION,
+          INTERVAL_UNITS.MONTH,
+          3
+        )
+      : Promise.resolve(null),
+    user
+      ? resolveUpgradeQuoteDb(
+          user.id,
+          PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+          BILLING_TYPES.SUBSCRIPTION,
+          INTERVAL_UNITS.MONTH,
+          1
+        )
+      : Promise.resolve(null),
+    user
+      ? resolveUpgradeQuoteDb(
+          user.id,
+          PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+          BILLING_TYPES.SUBSCRIPTION,
+          INTERVAL_UNITS.MONTH,
+          3
+        )
+      : Promise.resolve(null),
+    user
+      ? resolveUpgradeQuoteDb(
+          user.id,
+          PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+          BILLING_TYPES.SUBSCRIPTION,
+          INTERVAL_UNITS.MONTH,
+          3
+        )
+      : Promise.resolve(null),
+    user
+      ? resolveUpgradeQuoteDb(
+          user.id,
+          PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+          BILLING_TYPES.ONE_TIME,
+          null,
+          null
+        )
+      : Promise.resolve(null),
+    user
+      ? resolveUpgradeQuoteDb(
+          user.id,
+          PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+          BILLING_TYPES.SUBSCRIPTION,
+          INTERVAL_UNITS.MONTH,
+          3
+        )
+      : Promise.resolve(null),
+  ]);
 
   const foundationMonthlyLabel =
     formatPriceLabel(foundationPricing.monthly) ?? "Monthly unavailable";
@@ -196,17 +281,66 @@ export default async function PricingPage() {
   const higherLifetimeStandardLabel =
     formatPriceLabel(higherPricing.lifetime) ?? "Lifetime unavailable";
 
-  const higherMonthlyUpgradeLabel =
-    formatPriceLabel(higherUpgradePricing.monthly) ?? higherMonthlyStandardLabel;
-  const higherThreeMonthUpgradeLabel =
-    formatPriceLabel(higherUpgradePricing.threeMonth) ?? higherThreeMonthStandardLabel;
-  const higherLifetimeUpgradeLabel =
-    formatPriceLabel(higherUpgradePricing.lifetime) ?? higherLifetimeStandardLabel;
-
   const foundationPriceLabel = getFromPriceLabel(foundationPricing);
-  const higherPriceLabel = purchaseState.canUpgradeToHigher
-    ? `Upgrade from ${higherMonthlyUpgradeLabel}`
-    : getFromPriceLabel(higherPricing);
+  const higherPriceLabel = getFromPriceLabel(higherPricing);
+
+  const canShowFoundationMonthlyToThreeMonthUpgrade =
+    foundationMonthlyToThreeMonthQuote?.eligible &&
+    foundationMonthlyToThreeMonthQuote.sourceProduct?.code ===
+      PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    foundationMonthlyToThreeMonthQuote.sourcePrice?.billing_type ===
+      BILLING_TYPES.SUBSCRIPTION &&
+    (foundationMonthlyToThreeMonthQuote.sourcePrice?.interval_count ?? 1) === 1;
+
+  const canShowHigherMonthlyToThreeMonthUpgrade =
+    higherMonthlyToThreeMonthQuote?.eligible &&
+    higherMonthlyToThreeMonthQuote.sourceProduct?.code ===
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
+    higherMonthlyToThreeMonthQuote.sourcePrice?.billing_type ===
+      BILLING_TYPES.SUBSCRIPTION &&
+    (higherMonthlyToThreeMonthQuote.sourcePrice?.interval_count ?? 1) === 1;
+
+  const canShowFoundationMonthlyToHigherMonthlyUpgrade =
+    foundationMonthlyToHigherMonthlyQuote?.eligible &&
+    foundationMonthlyToHigherMonthlyQuote.sourceProduct?.code ===
+      PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    foundationMonthlyToHigherMonthlyQuote.upgradeFlow === "same_cadence" &&
+    (foundationMonthlyToHigherMonthlyQuote.sourcePrice?.interval_count ?? 1) === 1;
+
+  const canShowFoundationMonthlyToHigherThreeMonthUpgrade =
+    foundationMonthlyToHigherThreeMonthQuote?.eligible &&
+    foundationMonthlyToHigherThreeMonthQuote.sourceProduct?.code ===
+      PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    foundationMonthlyToHigherThreeMonthQuote.upgradeFlow === "monthly_to_three_month" &&
+    (foundationMonthlyToHigherThreeMonthQuote.sourcePrice?.interval_count ?? 1) === 1;
+
+  const canShowFoundationThreeMonthToHigherThreeMonthUpgrade =
+    foundationThreeMonthToHigherThreeMonthQuote?.eligible &&
+    foundationThreeMonthToHigherThreeMonthQuote.sourceProduct?.code ===
+      PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    foundationThreeMonthToHigherThreeMonthQuote.upgradeFlow === "same_cadence" &&
+    (foundationThreeMonthToHigherThreeMonthQuote.sourcePrice?.interval_count ?? 1) === 3;
+
+  const canShowFoundationLifetimeToHigherLifetimeUpgrade =
+    foundationLifetimeToHigherLifetimeQuote?.eligible &&
+    foundationLifetimeToHigherLifetimeQuote.sourceProduct?.code ===
+      PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    foundationLifetimeToHigherLifetimeQuote.upgradeFlow === "lifetime";
+
+  const foundationOwned =
+    !!user &&
+    !canShowFoundationMonthlyToThreeMonthUpgrade &&
+    !foundationMonthlyToHigherMonthlyQuote?.eligible &&
+    !foundationMonthlyToHigherThreeMonthQuote?.eligible &&
+    !foundationLifetimeToHigherLifetimeQuote?.eligible;
+
+  const higherOwned =
+    !!user &&
+    !canShowFoundationMonthlyToHigherMonthlyUpgrade &&
+    !canShowFoundationMonthlyToHigherThreeMonthUpgrade &&
+    !canShowFoundationThreeMonthToHigherThreeMonthUpgrade &&
+    !canShowFoundationLifetimeToHigherLifetimeUpgrade &&
+    !canShowHigherMonthlyToThreeMonthUpgrade;
 
   return (
     <div className="py-8 md:py-12">
@@ -240,7 +374,7 @@ export default async function PricingPage() {
               ]}
             >
               <div className="space-y-3">
-                {purchaseState.canBuyFoundation ? (
+                {!user ? (
                   <>
                     <CheckoutButton
                       productCode="gcse-russian-foundation"
@@ -267,13 +401,62 @@ export default async function PricingPage() {
                       Buy Foundation Lifetime ({foundationLifetimeLabel})
                     </CheckoutButton>
                   </>
-                ) : (
+                ) : canShowFoundationMonthlyToThreeMonthUpgrade ? (
+                  <>
+                    <OwnedButton label="Foundation Monthly already active" />
+
+                    <CheckoutButton
+                      productCode="gcse-russian-foundation"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      intervalCount={3}
+                      isUpgrade
+                    >
+                      Upgrade to Foundation 3 Months (
+                      {getUpgradeFeeLabel(foundationMonthlyToThreeMonthQuote)})
+                    </CheckoutButton>
+
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      {getUpgradeMessage(
+                        foundationMonthlyToThreeMonthQuote,
+                        foundationThreeMonthLabel
+                      )}
+                    </p>
+                  </>
+                ) : foundationOwned ? (
                   <>
                     <OwnedButton label="Foundation already owned" />
 
                     <p className="text-xs text-[var(--text-secondary)]">
                       Your account already has active Foundation access.
                     </p>
+                  </>
+                ) : (
+                  <>
+                    <CheckoutButton
+                      productCode="gcse-russian-foundation"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      intervalCount={1}
+                    >
+                      Buy Foundation Monthly ({foundationMonthlyLabel})
+                    </CheckoutButton>
+
+                    <CheckoutButton
+                      productCode="gcse-russian-foundation"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      intervalCount={3}
+                    >
+                      Buy Foundation 3 Months ({foundationThreeMonthLabel})
+                    </CheckoutButton>
+
+                    <CheckoutButton
+                      productCode="gcse-russian-foundation"
+                      billingType="one_time"
+                    >
+                      Buy Foundation Lifetime ({foundationLifetimeLabel})
+                    </CheckoutButton>
                   </>
                 )}
               </div>
@@ -294,62 +477,7 @@ export default async function PricingPage() {
               ]}
             >
               <div className="space-y-3">
-                {!purchaseState.canBuyHigher ? (
-                  <>
-                    <OwnedButton label="Higher already owned" />
-
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      Your account already has active Higher access.
-                    </p>
-                  </>
-                ) : purchaseState.canUpgradeToHigher ? (
-                  <>
-                    <CheckoutButton
-                      productCode="gcse-russian-higher"
-                      billingType="subscription"
-                      intervalUnit="month"
-                      intervalCount={1}
-                      isUpgrade
-                    >
-                      Upgrade to Higher Monthly ({higherMonthlyUpgradeLabel})
-                    </CheckoutButton>
-
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      Pay a fixed upgrade fee now. Your access switches immediately, and
-                      your subscription renews at {higherMonthlyStandardLabel} on your
-                      existing billing date.
-                    </p>
-
-                    <CheckoutButton
-                      productCode="gcse-russian-higher"
-                      billingType="subscription"
-                      intervalUnit="month"
-                      intervalCount={3}
-                      isUpgrade
-                    >
-                      Upgrade to Higher 3 Months ({higherThreeMonthUpgradeLabel})
-                    </CheckoutButton>
-
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      Pay a fixed upgrade fee now. Your access switches immediately, and
-                      your subscription renews at {higherThreeMonthStandardLabel} on your
-                      existing billing date.
-                    </p>
-
-                    <CheckoutButton
-                      productCode="gcse-russian-higher"
-                      billingType="one_time"
-                      isUpgrade
-                    >
-                      Upgrade to Higher Lifetime ({higherLifetimeUpgradeLabel})
-                    </CheckoutButton>
-
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      Lifetime upgrade stays a one-time payment and does not depend on how
-                      many days are left in your current cycle.
-                    </p>
-                  </>
-                ) : (
+                {!user ? (
                   <>
                     <CheckoutButton
                       productCode="gcse-russian-higher"
@@ -375,11 +503,126 @@ export default async function PricingPage() {
                     >
                       Buy Higher Lifetime ({higherLifetimeStandardLabel})
                     </CheckoutButton>
+                  </>
+                ) : higherOwned ? (
+                  <>
+                    <OwnedButton label="Higher already owned" />
 
                     <p className="text-xs text-[var(--text-secondary)]">
-                      Buy Higher directly if you want the full advanced course from the
-                      start.
+                      Your account already has active Higher access.
                     </p>
+                  </>
+                ) : (
+                  <>
+                    {canShowFoundationMonthlyToHigherMonthlyUpgrade ? (
+                      <>
+                        <CheckoutButton
+                          productCode="gcse-russian-higher"
+                          billingType="subscription"
+                          intervalUnit="month"
+                          intervalCount={1}
+                          isUpgrade
+                        >
+                          Upgrade to Higher Monthly (
+                          {getUpgradeFeeLabel(foundationMonthlyToHigherMonthlyQuote)})
+                        </CheckoutButton>
+
+                        <p className="text-xs text-[var(--text-secondary)]">
+                          {getUpgradeMessage(
+                            foundationMonthlyToHigherMonthlyQuote,
+                            higherMonthlyStandardLabel
+                          )}
+                        </p>
+                      </>
+                    ) : (
+                      <CheckoutButton
+                        productCode="gcse-russian-higher"
+                        billingType="subscription"
+                        intervalUnit="month"
+                        intervalCount={1}
+                      >
+                        Buy Higher Monthly ({higherMonthlyStandardLabel})
+                      </CheckoutButton>
+                    )}
+
+                    {canShowFoundationMonthlyToHigherThreeMonthUpgrade ||
+                    canShowFoundationThreeMonthToHigherThreeMonthUpgrade ||
+                    canShowHigherMonthlyToThreeMonthUpgrade ? (
+                      <>
+                        <CheckoutButton
+                          productCode="gcse-russian-higher"
+                          billingType="subscription"
+                          intervalUnit="month"
+                          intervalCount={3}
+                          isUpgrade
+                        >
+                          {canShowHigherMonthlyToThreeMonthUpgrade
+                            ? `Upgrade to Higher 3 Months (${getUpgradeFeeLabel(
+                                higherMonthlyToThreeMonthQuote
+                              )})`
+                            : canShowFoundationThreeMonthToHigherThreeMonthUpgrade
+                              ? `Upgrade to Higher 3 Months (${getUpgradeFeeLabel(
+                                  foundationThreeMonthToHigherThreeMonthQuote
+                                )})`
+                              : `Upgrade to Higher 3 Months (${getUpgradeFeeLabel(
+                                  foundationMonthlyToHigherThreeMonthQuote
+                                )})`}
+                        </CheckoutButton>
+
+                        <p className="text-xs text-[var(--text-secondary)]">
+                          {canShowHigherMonthlyToThreeMonthUpgrade
+                            ? getUpgradeMessage(
+                                higherMonthlyToThreeMonthQuote,
+                                higherThreeMonthStandardLabel
+                              )
+                            : canShowFoundationThreeMonthToHigherThreeMonthUpgrade
+                              ? getUpgradeMessage(
+                                  foundationThreeMonthToHigherThreeMonthQuote,
+                                  higherThreeMonthStandardLabel
+                                )
+                              : getUpgradeMessage(
+                                  foundationMonthlyToHigherThreeMonthQuote,
+                                  higherThreeMonthStandardLabel
+                                )}
+                        </p>
+                      </>
+                    ) : (
+                      <CheckoutButton
+                        productCode="gcse-russian-higher"
+                        billingType="subscription"
+                        intervalUnit="month"
+                        intervalCount={3}
+                      >
+                        Buy Higher 3 Months ({higherThreeMonthStandardLabel})
+                      </CheckoutButton>
+                    )}
+
+                    {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
+                      <>
+                        <CheckoutButton
+                          productCode="gcse-russian-higher"
+                          billingType="one_time"
+                          isUpgrade
+                        >
+                          Upgrade to Higher Lifetime (
+                          {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
+                        </CheckoutButton>
+
+                        <p className="text-xs text-[var(--text-secondary)]">
+                          {getUpgradeMessage(
+                            foundationLifetimeToHigherLifetimeQuote,
+                            higherLifetimeStandardLabel
+                          )}
+                        </p>
+                      </>
+                    ) : (
+                      <CheckoutButton
+                        productCode="gcse-russian-higher"
+                        billingType="one_time"
+                      >
+                        Buy Higher Lifetime ({higherLifetimeStandardLabel})
+                      </CheckoutButton>
+                    )}
                   </>
                 )}
               </div>
