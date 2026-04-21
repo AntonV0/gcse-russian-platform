@@ -17,20 +17,22 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export function Card({ children, className, interactive = false }: CardProps) {
   return (
-    <div
-      className={[
-        "dev-marker-host app-card app-card-shell",
-        interactive ? "app-card-hover" : "",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker componentName="Card" filePath="src/components/ui/card.tsx" />
       ) : null}
 
-      {children}
+      <div
+        className={[
+          "app-card app-card-shell",
+          interactive ? "app-card-hover" : "",
+          className,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {children}
+      </div>
     </div>
   );
 }

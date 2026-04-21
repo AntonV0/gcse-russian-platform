@@ -426,7 +426,6 @@ export default async function AdminUiFeedbackPage() {
               title="No modules yet"
               description="Create your first module to start structuring this course variant."
               icon="courses"
-              iconTone="brand"
               action={
                 <Button variant="primary" icon="create">
                   Add module
@@ -438,19 +437,19 @@ export default async function AdminUiFeedbackPage() {
               title="No assignments to review"
               description="Once students submit work, it will appear here for marking and feedback."
               icon="assignments"
-              iconTone="inverse"
               action={
                 <Button variant="secondary" icon="search">
                   View submissions
                 </Button>
               }
             />
+          </div>
 
+          <div className="grid gap-4 xl:grid-cols-2">
             <EmptyState
               title="No vocabulary matches your search"
               description="Try a broader keyword, remove one of the active filters, or switch to another theme."
               icon="search"
-              iconTone="inverse"
               action={
                 <Button variant="secondary" icon="refresh">
                   Reset filters
@@ -462,19 +461,19 @@ export default async function AdminUiFeedbackPage() {
               title="No uploaded work yet"
               description="Students can upload speaking recordings, written answers, and revision tasks here."
               icon="upload"
-              iconTone="brand"
               action={
                 <Button variant="soft" icon="next" iconPosition="right">
                   View upload guide
                 </Button>
               }
             />
+          </div>
 
+          <div className="grid gap-4 xl:grid-cols-3">
             <EmptyState
               title="Start your first lesson"
               description="There is no progress yet. Open a lesson to begin building your revision streak."
               icon="next"
-              iconTone="brand"
               action={
                 <Button variant="primary" icon="create">
                   Begin revision
@@ -486,7 +485,6 @@ export default async function AdminUiFeedbackPage() {
               title="Higher tier content locked"
               description="This section is available only to Higher students or users with upgraded access."
               icon="lock"
-              iconTone="inverse"
               action={
                 <Button variant="accent" icon="next" iconPosition="right">
                   Unlock access
@@ -498,19 +496,19 @@ export default async function AdminUiFeedbackPage() {
               title="Could not load submissions"
               description="Something went wrong while loading this area. Try refreshing or come back in a moment."
               icon="alert"
-              iconTone="inverse"
               action={
                 <Button variant="secondary" icon="refresh">
                   Retry
                 </Button>
               }
             />
+          </div>
 
+          <div className="grid gap-4 xl:grid-cols-2">
             <EmptyState
               title="No mock exams scheduled"
               description="Create a mock exam window to give students a timed practice session and markable submission flow."
               icon="calendar"
-              iconTone="brand"
               action={
                 <Button variant="primary" icon="create">
                   Schedule mock exam
@@ -522,7 +520,6 @@ export default async function AdminUiFeedbackPage() {
               title="No messages yet"
               description="Teacher notes, feedback updates, and revision reminders will appear here once the course is active."
               icon="chat"
-              iconTone="inverse"
               action={
                 <Button variant="secondary" icon="info">
                   How messaging works
