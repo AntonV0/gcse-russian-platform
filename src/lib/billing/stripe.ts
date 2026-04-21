@@ -59,7 +59,10 @@ export function getStripeCheckoutModeFromBillingType(
 }
 
 export type CreateCheckoutSessionInput = {
-  stripePriceId: string;
+  stripePriceId?: string | null;
+  customAmountGbp?: number | null;
+  customLineItemName?: string | null;
+  modeOverride?: StripeCheckoutMode | null;
   userId: string;
   productId: string;
   priceId: string;
@@ -68,6 +71,38 @@ export type CreateCheckoutSessionInput = {
   cancelPath?: string;
   customerEmail?: string | null;
 };
+
+function buildLineItems(input: CreateCheckoutSessionInput) {
+  if (input.stripePriceId) {
+    return [
+      {
+        price: input.stripePriceId,
+        quantity: 1,
+      },
+    ];
+  }
+
+  if (
+    typeof input.customAmountGbp === "number" &&
+    Number.isFinite(input.customAmountGbp) &&
+    input.customAmountGbp > 0
+  ) {
+    return [
+      {
+        price_data: {
+          currency: "gbp",
+          unit_amount: Math.round(input.customAmountGbp * 100),
+          product_data: {
+            name: input.customLineItemName ?? "Upgrade fee",
+          },
+        },
+        quantity: 1,
+      },
+    ];
+  }
+
+  throw new Error("Checkout session requires either stripePriceId or customAmountGbp");
+}
 
 export async function createStripeCheckoutSession(
   input: CreateCheckoutSessionInput,
@@ -79,16 +114,12 @@ export async function createStripeCheckoutSession(
   const successUrl = `${baseUrl}${input.successPath ?? "/account"}?checkout=success`;
   const cancelUrl = `${baseUrl}${input.cancelPath ?? "/account"}?checkout=cancelled`;
 
-  const mode = getStripeCheckoutModeFromBillingType(billingType);
+  const mode = input.modeOverride ?? getStripeCheckoutModeFromBillingType(billingType);
+  const lineItems = buildLineItems(input);
 
   return stripe.checkout.sessions.create({
     mode,
-    line_items: [
-      {
-        price: input.stripePriceId,
-        quantity: 1,
-      },
-    ],
+    line_items: lineItems,
     success_url: successUrl,
     cancel_url: cancelUrl,
     customer_email: input.customerEmail ?? undefined,
@@ -110,5 +141,32 @@ export async function createStripeCheckoutSession(
           },
         }
       : {}),
+  });
+}
+
+export async function switchStripeSubscriptionToPrice(params: {
+  providerSubscriptionId: string;
+  newStripePriceId: string;
+}): Promise<Stripe.Subscription> {
+  const stripe = getStripeClient();
+
+  const existingSubscription = await stripe.subscriptions.retrieve(
+    params.providerSubscriptionId
+  );
+
+  const existingItem = existingSubscription.items.data[0];
+
+  if (!existingItem) {
+    throw new Error("Subscription has no items to update");
+  }
+
+  return stripe.subscriptions.update(params.providerSubscriptionId, {
+    items: [
+      {
+        id: existingItem.id,
+        price: params.newStripePriceId,
+      },
+    ],
+    proration_behavior: "none",
   });
 }

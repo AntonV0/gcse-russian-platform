@@ -92,16 +92,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!resolved.price.stripe_price_id) {
-      return NextResponse.json(
-        { error: "Resolved price is missing Stripe price id" },
-        { status: 400 }
-      );
-    }
+    const isSubscriptionUpgrade =
+      resolved.purchaseType === "upgrade" &&
+      resolved.price.billing_type === BILLING_TYPES.SUBSCRIPTION;
 
     const session = await createStripeCheckoutSession(
       {
-        stripePriceId: resolved.price.stripe_price_id,
+        stripePriceId: isSubscriptionUpgrade ? null : resolved.price.stripe_price_id,
+        customAmountGbp: isSubscriptionUpgrade ? resolved.price.amount_gbp : null,
+        customLineItemName: isSubscriptionUpgrade
+          ? `${resolved.product.name} upgrade fee`
+          : null,
+        modeOverride: isSubscriptionUpgrade ? "payment" : null,
         userId: user.id,
         productId: resolved.product.id,
         priceId: resolved.price.id,

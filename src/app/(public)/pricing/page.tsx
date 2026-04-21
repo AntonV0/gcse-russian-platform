@@ -4,12 +4,15 @@ import AppIcon from "@/components/ui/app-icon";
 import CheckoutButton from "@/components/billing/checkout-button";
 import { getCurrentUser } from "@/lib/auth/auth";
 import {
+  BILLING_TYPES,
+  INTERVAL_UNITS,
   PRODUCT_CODES,
-  getPlanPricingDb,
-  getResolvedHigherUpgradePricingForUserDb,
+  getActivePricesForProductDb,
+  getActiveProductByCodeDb,
+  getUpgradeProductCode,
   getUserGcseRussianPurchaseStateDb,
+  matchPriceByBillingShape,
   type DbPrice,
-  type PlanPricing,
 } from "@/lib/billing/catalog";
 
 type PlanCardProps = {
@@ -19,6 +22,12 @@ type PlanCardProps = {
   features: string[];
   tone?: "default" | "highlight";
   children: React.ReactNode;
+};
+
+type PlanPricing = {
+  monthly: DbPrice | null;
+  threeMonth: DbPrice | null;
+  lifetime: DbPrice | null;
 };
 
 function PlanCard({
@@ -75,40 +84,73 @@ function formatPriceLabel(price: DbPrice | null): string | null {
 
   const formattedAmount = `£${price.amount_gbp}`;
 
-  if (price.billing_type === "subscription") {
-    const count = price.interval_count ?? 1;
-    const unit = price.interval_unit ?? "month";
+  if (price.billing_type === BILLING_TYPES.SUBSCRIPTION) {
+    if (price.interval_unit === INTERVAL_UNITS.MONTH) {
+      const count = price.interval_count ?? 1;
 
-    if (unit === "month" && count === 1) {
-      return `${formattedAmount}/month`;
-    }
+      if (count === 1) {
+        return `${formattedAmount}/month`;
+      }
 
-    if (unit === "month") {
       return `${formattedAmount}/${count} months`;
     }
 
-    if (unit === "year" && count === 1) {
-      return `${formattedAmount}/year`;
-    }
+    if (price.interval_unit === INTERVAL_UNITS.YEAR) {
+      const count = price.interval_count ?? 1;
 
-    return `${formattedAmount}/${count} years`;
+      if (count === 1) {
+        return `${formattedAmount}/year`;
+      }
+
+      return `${formattedAmount}/${count} years`;
+    }
   }
 
   return formattedAmount;
 }
 
-function firstAvailableLabel(pricing: PlanPricing): string | null {
-  return (
-    formatPriceLabel(pricing.monthly) ??
-    formatPriceLabel(pricing.threeMonth) ??
-    formatPriceLabel(pricing.lifetime) ??
-    null
-  );
+function getFromPriceLabel(pricing: PlanPricing): string {
+  const labels = [
+    formatPriceLabel(pricing.monthly),
+    formatPriceLabel(pricing.threeMonth),
+    formatPriceLabel(pricing.lifetime),
+  ].filter(Boolean) as string[];
+
+  if (labels.length === 0) {
+    return "Pricing unavailable";
+  }
+
+  return `From ${labels[0]}`;
 }
 
-function getFromPriceLabel(pricing: PlanPricing): string {
-  const label = firstAvailableLabel(pricing);
-  return label ? `From ${label}` : "Pricing unavailable";
+async function getPlanPricing(productCode: string): Promise<PlanPricing> {
+  const product = await getActiveProductByCodeDb(productCode);
+
+  if (!product) {
+    return {
+      monthly: null,
+      threeMonth: null,
+      lifetime: null,
+    };
+  }
+
+  const prices = await getActivePricesForProductDb(product.id);
+
+  return {
+    monthly: matchPriceByBillingShape(
+      prices,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      1
+    ),
+    threeMonth: matchPriceByBillingShape(
+      prices,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      3
+    ),
+    lifetime: matchPriceByBillingShape(prices, BILLING_TYPES.ONE_TIME, null, null),
+  };
 }
 
 function OwnedButton({ label }: { label: string }) {
@@ -126,23 +168,17 @@ function OwnedButton({ label }: { label: string }) {
 export default async function PricingPage() {
   const user = await getCurrentUser();
 
-  const [foundationPricing, higherPricing, purchaseState, upgradePricing] =
+  const [foundationPricing, higherPricing, higherUpgradePricing, purchaseState] =
     await Promise.all([
-      getPlanPricingDb(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION),
-      getPlanPricingDb(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER),
+      getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION),
+      getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER),
+      getPlanPricing(getUpgradeProductCode(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER)),
       user
         ? getUserGcseRussianPurchaseStateDb(user.id)
         : Promise.resolve({
             canBuyFoundation: true,
             canBuyHigher: true,
             canUpgradeToHigher: false,
-          }),
-      user
-        ? getResolvedHigherUpgradePricingForUserDb(user.id)
-        : Promise.resolve({
-            monthly: null,
-            threeMonth: null,
-            lifetime: null,
           }),
     ]);
 
@@ -160,15 +196,17 @@ export default async function PricingPage() {
   const higherLifetimeStandardLabel =
     formatPriceLabel(higherPricing.lifetime) ?? "Lifetime unavailable";
 
-  const higherMonthlyUpgradeLabel = formatPriceLabel(upgradePricing.monthly);
-  const higherThreeMonthUpgradeLabel = formatPriceLabel(upgradePricing.threeMonth);
-  const higherLifetimeUpgradeLabel = formatPriceLabel(upgradePricing.lifetime);
+  const higherMonthlyUpgradeLabel =
+    formatPriceLabel(higherUpgradePricing.monthly) ?? higherMonthlyStandardLabel;
+  const higherThreeMonthUpgradeLabel =
+    formatPriceLabel(higherUpgradePricing.threeMonth) ?? higherThreeMonthStandardLabel;
+  const higherLifetimeUpgradeLabel =
+    formatPriceLabel(higherUpgradePricing.lifetime) ?? higherLifetimeStandardLabel;
 
   const foundationPriceLabel = getFromPriceLabel(foundationPricing);
-  const higherPriceLabel =
-    purchaseState.canUpgradeToHigher && firstAvailableLabel(upgradePricing)
-      ? `Upgrade from ${firstAvailableLabel(upgradePricing)}`
-      : getFromPriceLabel(higherPricing);
+  const higherPriceLabel = purchaseState.canUpgradeToHigher
+    ? `Upgrade from ${higherMonthlyUpgradeLabel}`
+    : getFromPriceLabel(higherPricing);
 
   return (
     <div className="py-8 md:py-12">
@@ -264,48 +302,51 @@ export default async function PricingPage() {
                       Your account already has active Higher access.
                     </p>
                   </>
-                ) : purchaseState.canUpgradeToHigher &&
-                  (upgradePricing.monthly ||
-                    upgradePricing.threeMonth ||
-                    upgradePricing.lifetime) ? (
+                ) : purchaseState.canUpgradeToHigher ? (
                   <>
-                    {upgradePricing.monthly ? (
-                      <CheckoutButton
-                        productCode="gcse-russian-higher"
-                        billingType="subscription"
-                        intervalUnit="month"
-                        intervalCount={1}
-                        isUpgrade
-                      >
-                        Upgrade to Higher Monthly ({higherMonthlyUpgradeLabel})
-                      </CheckoutButton>
-                    ) : null}
-
-                    {upgradePricing.threeMonth ? (
-                      <CheckoutButton
-                        productCode="gcse-russian-higher"
-                        billingType="subscription"
-                        intervalUnit="month"
-                        intervalCount={3}
-                        isUpgrade
-                      >
-                        Upgrade to Higher 3 Months ({higherThreeMonthUpgradeLabel})
-                      </CheckoutButton>
-                    ) : null}
-
-                    {upgradePricing.lifetime ? (
-                      <CheckoutButton
-                        productCode="gcse-russian-higher"
-                        billingType="one_time"
-                        isUpgrade
-                      >
-                        Upgrade to Higher Lifetime ({higherLifetimeUpgradeLabel})
-                      </CheckoutButton>
-                    ) : null}
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      intervalCount={1}
+                      isUpgrade
+                    >
+                      Upgrade to Higher Monthly ({higherMonthlyUpgradeLabel})
+                    </CheckoutButton>
 
                     <p className="text-xs text-[var(--text-secondary)]">
-                      Upgrade prices are based on your current Foundation plan.
-                      Subscription credit is not cumulative across repeated renewals.
+                      Pay a fixed upgrade fee now. Your access switches immediately, and
+                      your subscription renews at {higherMonthlyStandardLabel} on your
+                      existing billing date.
+                    </p>
+
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="subscription"
+                      intervalUnit="month"
+                      intervalCount={3}
+                      isUpgrade
+                    >
+                      Upgrade to Higher 3 Months ({higherThreeMonthUpgradeLabel})
+                    </CheckoutButton>
+
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      Pay a fixed upgrade fee now. Your access switches immediately, and
+                      your subscription renews at {higherThreeMonthStandardLabel} on your
+                      existing billing date.
+                    </p>
+
+                    <CheckoutButton
+                      productCode="gcse-russian-higher"
+                      billingType="one_time"
+                      isUpgrade
+                    >
+                      Upgrade to Higher Lifetime ({higherLifetimeUpgradeLabel})
+                    </CheckoutButton>
+
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      Lifetime upgrade stays a one-time payment and does not depend on how
+                      many days are left in your current cycle.
                     </p>
                   </>
                 ) : (
