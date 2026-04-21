@@ -12,6 +12,7 @@ This version includes:
 - platform UI and dashboard decisions
 - variant-based content architecture (NEW)
 - shared section system (NEW)
+- UI Lab system and component architecture (NEW)
 
 ---
 
@@ -213,7 +214,120 @@ Use avatar_key instead of uploads.
 
 ---
 
-## 17. Why prioritise architecture first?
+## 17. Why introduce a UI Lab system? (NEW)
+
+### Decision
+
+Build a dedicated UI Lab to design and validate components before using them in production pages.
+
+### Why
+
+- prevents inconsistent UI patterns
+- avoids ad-hoc component creation
+- allows safe iteration on design system
+
+### Benefits
+
+- consistent UI across admin, student, and teacher areas
+- faster future development
+- clearer component boundaries
+
+---
+
+## 18. Why use Dev Component Markers? (NEW)
+
+### Decision
+
+Attach a development-only marker to all shared UI components.
+
+### Why
+
+- makes component usage visible in the UI
+- helps identify duplication and missing abstractions
+
+### Benefits
+
+- enforces reuse
+- improves maintainability
+- accelerates UI refactoring
+
+---
+
+## 19. Why replace raw table markup with a table system? (NEW)
+
+### Decision
+
+Introduce a reusable table architecture:
+
+- TableShell
+- TableToolbar
+- DataTable components
+
+### Why
+
+Raw tables led to:
+
+- duplication
+- inconsistent styling
+- unpredictable behaviour
+
+### Benefits
+
+- consistent structure across admin pages
+- reusable patterns
+- easier future enhancements (sorting, filtering, pagination)
+
+---
+
+## 20. Why treat tables and hierarchy as separate patterns? (NEW)
+
+### Decision
+
+Support both:
+
+- table layouts
+- hierarchical list layouts
+
+### Why
+
+Different data needs different representation:
+
+- tables → comparison
+- hierarchy → structure
+
+### Benefits
+
+- clearer UX
+- better alignment with LMS data (modules → lessons → blocks)
+
+---
+
+## 21. Why introduce structured row interaction patterns? (NEW)
+
+### Decision
+
+Define consistent row states and behaviours:
+
+- default
+- hover
+- selected
+- disabled
+
+### Why
+
+Previously:
+
+- row behaviour varied per page
+
+### Benefits
+
+- predictable UX
+- easier component reuse
+- cleaner interaction model
+
+---
+
+## 22. Why prioritise architecture first?
 
 ### Decision
 
@@ -221,8 +335,10 @@ Build strong foundations before features.
 
 ---
 
-## 18. Next direction
+## 23. Next direction
 
 - cross-variant progress syncing
 - upgrade flows (foundation → higher)
 - smarter dashboard
+- expand UI system across all platform areas
+- continue extracting reusable components

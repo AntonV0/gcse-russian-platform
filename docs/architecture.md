@@ -104,6 +104,53 @@ Supabase:
 
 ---
 
+### UI System Layer (NEW)
+
+A dedicated **UI system layer** has been introduced to standardise
+design patterns across:
+
+- admin CMS
+- student platform
+- teacher interfaces
+
+This layer is developed and validated through the **UI Lab system**.
+
+### Purpose
+
+- prevent UI inconsistency across rapidly evolving features
+- allow isolated development of reusable components
+- ensure scalability as platform complexity increases
+
+### Key characteristics
+
+- component-driven
+- pattern-first (not page-first)
+- validated before real usage
+- shared across all roles and access modes
+
+---
+
+### Dev Component Marker System
+
+All shared UI components include a **development-only marker system**.
+
+### Behaviour
+
+- displays:
+  - component name
+  - file path
+- visible only in development
+
+### Purpose
+
+- identify reuse opportunities
+- expose accidental duplication
+- enforce consistent abstraction boundaries
+
+This is critical for maintaining long-term UI scalability.
+
+---
+
 ## 4. Core content architecture
 
 ### Course hierarchy
@@ -335,7 +382,147 @@ To:
 
 ---
 
-## 11. Progress architecture
+## 11. Data Display Architecture (NEW)
+
+The platform now uses a **structured table system** instead of raw HTML tables.
+
+### Motivation
+
+Previously:
+
+- tables were implemented per-page
+- inconsistent spacing, hierarchy, and behaviour
+- duplication of logic and styling
+
+Now:
+
+- tables are built from reusable components
+- consistent across all admin interfaces
+
+---
+
+### Core components
+
+#### TableShell
+
+Provides:
+
+- title
+- description
+- action area
+- container styling
+
+Acts as the **standard entry point** for all table-based views.
+
+---
+
+#### TableToolbar
+
+Handles:
+
+- search inputs
+- filters
+- bulk actions
+- creation actions
+
+Placed above table content.
+
+---
+
+#### DataTable system
+
+A composable system including:
+
+- header
+- body
+- rows
+- cells
+- density variants
+
+This replaces direct `<table>` usage in application code.
+
+---
+
+### Supported patterns
+
+- standard admin tables (default)
+- dense tables (compact)
+- hierarchical list pattern (modules → lessons → blocks)
+- empty state
+- filtered-empty state
+- dark-surface compatibility
+
+---
+
+### Architectural impact
+
+- removes duplication of table logic
+- standardises interaction patterns
+- improves readability and scanning
+- enables future enhancements (sorting, pagination, selection)
+
+---
+
+## 12. Row Interaction Architecture (NEW)
+
+Row behaviour is now treated as a **first-class UI concern**.
+
+### States
+
+- default
+- hover
+- selected
+- disabled
+
+### Patterns
+
+- inline actions (always visible)
+- compact action groups (icon-only)
+- hover-reveal actions
+
+### Component
+
+- `AdminRow`
+
+Used for:
+
+- table rows
+- list rows
+- hierarchical structures
+
+---
+
+## 13. Hierarchical Content Display Pattern (NEW)
+
+Not all structured data is displayed as tables.
+
+A **hierarchical list pattern** is used for:
+
+- modules
+- lessons
+- blocks
+
+### Characteristics
+
+- nested indentation
+- flexible layout
+- better representation of relationships
+
+### Why this exists
+
+Tables are optimal for:
+
+- comparison
+
+Hierarchy is optimal for:
+
+- structure
+
+The system intentionally supports both.
+
+---
+
+## 12. Progress architecture
 
 ### Tables
 
@@ -350,44 +537,49 @@ Tracks:
 
 ---
 
-## 12. Database relationships
+## 13. Database relationships
 
 LESSONS → LESSON_SECTIONS → LESSON_BLOCKS
 
 ---
 
-## 13. Navigation & UI Access Architecture
+## 14. Navigation & UI Access Architecture
 
 UI visibility is derived from role + access mode.
 
 ---
 
-## 14. Dashboard Architecture
+## 15. Dashboard Architecture
 
 Aggregates role, variant, and progress to determine next actions.
 
 ---
 
-## 15. Account System Architecture
+## 16. Account System Architecture
 
 Includes profile, avatar system, and settings page.
 
 ---
 
-## 16. Architectural changes in this phase
+## 19. Architectural changes in this phase
 
 Added:
 
 - variant visibility system
 - canonical section system
+- UI Lab system
+- reusable table architecture
+- DevComponentMarker system
+- structured row interaction patterns
 
 Removed:
 
 - track/delivery visibility
+- raw table implementations across admin pages
 
 ---
 
-## 17. Architectural strengths
+## 18. Architectural strengths
 
 - unified platform
 - DB-driven
@@ -395,7 +587,7 @@ Removed:
 
 ---
 
-## 18. Next architectural steps
+## 19. Next architectural steps
 
 - progress syncing
 - dashboard improvements
