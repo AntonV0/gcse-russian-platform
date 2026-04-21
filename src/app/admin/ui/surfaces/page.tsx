@@ -11,27 +11,28 @@ import LessonSurfaceCard from "@/components/ui/lesson-surface-card";
 import PracticeSurfaceCard from "@/components/ui/practice-surface-card";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import AssessmentSurfaceCard from "@/components/ui/assessment-surface-card";
+import Surface from "@/components/ui/surface";
 
 function SurfaceExample({
   title,
   description,
-  className,
   label,
+  variant,
 }: {
   title: string;
   description: string;
-  className: string;
   label: string;
+  variant: "default" | "muted" | "brand";
 }) {
   return (
-    <div className={className}>
+    <Surface variant={variant} className="p-5">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="font-semibold text-[var(--text-primary)]">{title}</div>
         <Badge tone="muted">{label}</Badge>
       </div>
 
       <p className="text-sm app-text-muted">{description}</p>
-    </div>
+    </Surface>
   );
 }
 
@@ -53,18 +54,18 @@ function SemanticSurfaceExample({
   title,
   description,
   badges,
-  className,
   actions,
+  surfaceVariant = "default",
 }: {
   eyebrow: string;
   title: string;
   description: string;
   badges?: React.ReactNode;
-  className: string;
   actions?: React.ReactNode;
+  surfaceVariant?: "default" | "muted" | "brand";
 }) {
   return (
-    <div className={className}>
+    <Surface variant={surfaceVariant} className="p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="mb-1 text-xs font-semibold uppercase tracking-[0.08em] app-text-soft">
@@ -79,7 +80,7 @@ function SemanticSurfaceExample({
       <p className="text-sm app-text-muted">{description}</p>
 
       {actions ? <div className="mt-4 flex flex-wrap gap-3">{actions}</div> : null}
-    </div>
+    </Surface>
   );
 }
 
@@ -101,31 +102,38 @@ export default async function AdminUiSurfacesPage() {
         description="These are low-level visual surface weights. They answer how strong a container should feel before a semantic component is built on top of it."
       >
         <div className="grid gap-4 xl:grid-cols-2">
-          <SurfaceExample
-            title="app-card"
-            label="Default"
-            className="app-card p-5"
-            description="Best for modular cards, repeated overview items, dashboard summaries, and most reusable content blocks."
-          />
+          <Card className="p-5">
+            <CardBody className="p-0">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="font-semibold text-[var(--text-primary)]">app-card</div>
+                <Badge tone="muted">Default</Badge>
+              </div>
+
+              <p className="text-sm app-text-muted">
+                Best for modular cards, repeated overview items, dashboard summaries, and
+                most reusable content blocks.
+              </p>
+            </CardBody>
+          </Card>
 
           <SurfaceExample
             title="app-surface"
             label="Elevated"
-            className="app-surface p-5"
+            variant="default"
             description="Use for generic elevated wrappers when the content needs slightly more visual weight than a normal card."
           />
 
           <SurfaceExample
             title="app-surface-brand"
             label="Branded"
-            className="app-surface-brand p-5"
+            variant="brand"
             description="Reserve for hero areas, special highlights, premium flows, or landing moments rather than normal admin content."
           />
 
           <SurfaceExample
             title="app-surface-muted"
             label="Muted"
-            className="app-surface-muted p-5"
+            variant="muted"
             description="Good for supporting containers, internal grouping, and softer contrast areas that should stay visually quiet."
           />
         </div>
@@ -254,7 +262,7 @@ export default async function AdminUiSurfacesPage() {
           <SemanticSurfaceExample
             eyebrow="Progress / momentum"
             title="Revision milestone surface"
-            className="app-surface p-5"
+            surfaceVariant="default"
             badges={
               <>
                 <Badge tone="success" icon="completed">
@@ -361,7 +369,7 @@ export default async function AdminUiSurfacesPage() {
               </CardBody>
             </Card>
 
-            <div className="app-surface-muted p-5">
+            <Surface variant="muted" className="p-5">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="font-semibold text-[var(--text-primary)]">
                   Muted support
@@ -372,9 +380,9 @@ export default async function AdminUiSurfacesPage() {
                 Use this when a section should recede slightly behind more important
                 content.
               </p>
-            </div>
+            </Surface>
 
-            <div className="app-surface-brand p-5">
+            <Surface variant="brand" className="p-5">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="font-semibold text-[var(--text-primary)]">
                   Brand emphasis
@@ -384,7 +392,7 @@ export default async function AdminUiSurfacesPage() {
               <p className="text-sm app-text-muted">
                 Branded surfaces should feel elevated, but still readable in dark mode.
               </p>
-            </div>
+            </Surface>
           </div>
         </div>
       </UiLabSection>
@@ -430,7 +438,7 @@ export default async function AdminUiSurfacesPage() {
                 </CardBody>
               </Card>
 
-              <div className="app-surface-muted p-5">
+              <Surface variant="muted" className="p-5">
                 <div className="mb-3 font-semibold text-[var(--text-primary)]">
                   Supporting grouped content
                 </div>
@@ -438,10 +446,10 @@ export default async function AdminUiSurfacesPage() {
                   Muted surfaces help related support information stay grouped without
                   competing with the main content.
                 </p>
-              </div>
+              </Surface>
             </div>
 
-            <div className="app-surface p-5">
+            <Surface variant="default" className="p-5">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <Badge tone="info" icon="preview">
                   Variant visible
@@ -454,7 +462,7 @@ export default async function AdminUiSurfacesPage() {
                 Elevated wrappers are useful when a section needs one additional layer of
                 emphasis, but should still feel cleaner than a branded surface.
               </p>
-            </div>
+            </Surface>
           </div>
         </SectionCard>
       </UiLabSection>
@@ -464,7 +472,7 @@ export default async function AdminUiSurfacesPage() {
         description="A real page usually combines a hero-like section, summary cards, and supporting blocks. This shows how those layers work together."
       >
         <div className="space-y-4">
-          <div className="app-surface-brand app-section-padding-lg">
+          <Surface variant="brand" padding="lg">
             <div className="max-w-2xl">
               <div className="mb-2 flex items-center gap-2">
                 <AppIcon icon="surfaces" size={18} className="app-brand-text" />
@@ -478,7 +486,7 @@ export default async function AdminUiSurfacesPage() {
                 sections — not for every admin container.
               </p>
             </div>
-          </div>
+          </Surface>
 
           <div className="grid gap-4 lg:grid-cols-3">
             <Card>
