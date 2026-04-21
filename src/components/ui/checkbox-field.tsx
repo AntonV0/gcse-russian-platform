@@ -1,29 +1,58 @@
+"use client";
+
+import DevComponentMarker from "@/components/ui/dev-component-marker";
+
 type CheckboxFieldProps = {
   name: string;
   label: string;
   value?: string;
+  description?: string;
   defaultChecked?: boolean;
+  disabled?: boolean;
+  className?: string;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function CheckboxField({
   name,
   label,
   value = "true",
+  description,
   defaultChecked,
+  disabled = false,
+  className,
 }: CheckboxFieldProps) {
   return (
-    <label className="flex items-start gap-3 rounded-xl border border-transparent px-0.5 py-0.5 text-sm text-[var(--text-primary)] transition">
-      <input
-        type="checkbox"
-        name={name}
-        value={value}
-        defaultChecked={defaultChecked}
-        className={[
-          "app-focus-ring mt-0.5 h-4 w-4 shrink-0 rounded border border-[var(--border)] bg-white text-[var(--brand-blue)] shadow-sm transition",
-          "hover:border-[var(--border-strong)]",
-        ].join(" ")}
-      />
-      <span className="leading-5">{label}</span>
-    </label>
+    <div className={["dev-marker-host", className].filter(Boolean).join(" ")}>
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="CheckboxField"
+          filePath="src/components/ui/checkbox-field.tsx"
+        />
+      ) : null}
+
+      <label
+        className={["app-checkbox-field", disabled ? "app-checkbox-field-disabled" : ""]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <input
+          type="checkbox"
+          name={name}
+          value={value}
+          defaultChecked={defaultChecked}
+          disabled={disabled}
+          className="app-focus-ring app-checkbox-input"
+        />
+
+        <span className="app-checkbox-copy">
+          <span className="app-checkbox-label">{label}</span>
+          {description ? (
+            <span className="app-checkbox-description">{description}</span>
+          ) : null}
+        </span>
+      </label>
+    </div>
   );
 }

@@ -1,20 +1,57 @@
+"use client";
+
+import DevComponentMarker from "@/components/ui/dev-component-marker";
+
 type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement>;
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function Select({ className, children, ...props }: SelectProps) {
   return (
-    <select
-      {...props}
-      className={[
-        "app-focus-ring w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2.5 text-sm text-[var(--text-primary)] shadow-sm transition",
-        "hover:border-[var(--border-strong)]",
-        "disabled:cursor-not-allowed disabled:bg-[var(--background-muted)] disabled:text-[var(--text-soft)] disabled:shadow-none",
-        "aria-[invalid=true]:border-[var(--danger)] aria-[invalid=true]:bg-[var(--danger-soft)]/30",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      {children}
-    </select>
+    <div className="dev-marker-host">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="Select"
+          filePath="src/components/ui/select.tsx"
+        />
+      ) : null}
+
+      <div className="relative">
+        <select
+          {...props}
+          className={[
+            "app-focus-ring app-form-control app-form-select appearance-none pr-11",
+            "[color-scheme:light] [data-theme='dark']:&:[color-scheme:dark]",
+            className,
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {children}
+        </select>
+
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="block"
+          >
+            <path
+              d="M3.5 5.25L7 8.75L10.5 5.25"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </div>
+    </div>
   );
 }
