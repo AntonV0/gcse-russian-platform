@@ -11,13 +11,14 @@ export const uiLabPages: UiLabPage[] = [
   {
     href: "/admin/ui",
     label: "Overview",
-    description: "Design system summary and progress snapshot.",
-    status: "in_progress",
+    description: "Design system summary, usage guidance, and implementation targets.",
+    status: "complete",
   },
   {
     href: "/admin/ui/typography",
     label: "Typography",
-    description: "Headings, body styles, labels, and text hierarchy.",
+    description:
+      "Page hierarchy, body styles, labels, metadata, and readable text patterns.",
     status: "complete",
   },
   {
@@ -29,49 +30,51 @@ export const uiLabPages: UiLabPage[] = [
   {
     href: "/admin/ui/navigation",
     label: "Navigation",
-    description: "Headers, sidebars, back-nav, and navigation states.",
-    status: "in_progress",
+    description:
+      "Headers, sidebars, breadcrumbs, tabs, and access-aware navigation states.",
+    status: "complete",
   },
   {
     href: "/admin/ui/forms",
     label: "Forms",
     description: "Inputs, field groups, validation states, and form layouts.",
-    status: "in_progress",
+    status: "complete",
   },
   {
     href: "/admin/ui/feedback",
     label: "Feedback",
     description: "Badges, banners, alerts, empty states, and status messaging.",
-    status: "in_progress",
+    status: "complete",
   },
   {
     href: "/admin/ui/components",
     label: "Components",
-    description: "Badges, cards, forms, and reusable UI blocks.",
-    status: "in_progress",
+    description:
+      "Reusable compositions for admin, student, teacher, and locked-state UI.",
+    status: "complete",
   },
   {
     href: "/admin/ui/surfaces",
     label: "Surfaces",
     description: "Cards, panels, containers, and spacing examples.",
-    status: "in_progress",
+    status: "complete",
   },
   {
     href: "/admin/ui/layout",
     label: "Layout",
-    description: "Containers, grids, stacking patterns, and responsive page structure.",
-    status: "in_progress",
+    description: "Page shells, grids, density patterns, and responsive structure.",
+    status: "complete",
   },
   {
     href: "/admin/ui/tables",
     label: "Tables",
     description: "Table layouts, toolbars, row actions, statuses, and empty states.",
-    status: "in_progress",
+    status: "complete",
   },
   {
     href: "/admin/ui/icons",
     label: "Icons",
-    description: "Curated app icons and full Lucide browser.",
+    description: "Practical icon usage, sizing rules, and the full Lucide browser.",
     status: "complete",
   },
 ];

@@ -331,12 +331,12 @@ export default function Button(props: ButtonProps) {
     iconOnly: _iconOnly,
     ariaLabel: _ariaLabel,
     children: _children,
-    ...nativeButtonProps
+    ...buttonProps
   } = props as ButtonAsButtonProps;
 
   return (
     <button
-      {...nativeButtonProps}
+      {...buttonProps}
       className={mergedClassName}
       aria-label={ariaLabel}
       title={ariaLabel}
