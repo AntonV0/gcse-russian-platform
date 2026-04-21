@@ -1,14 +1,10 @@
 import type Stripe from "stripe";
 import {
-  BILLING_TYPES,
-  INTERVAL_UNITS,
   PRODUCT_CODES,
   getActivePriceByIdDb,
+  getActiveProductByCodeDb,
   getProductByIdDb,
   getUpgradeFlowForPath,
-  matchPriceByBillingShape,
-  getActivePricesForProductDb,
-  getActiveProductByCodeDb,
   type DbPrice,
   type DbProduct,
   type UpgradeFlow,
@@ -40,6 +36,64 @@ function getMetadataValue(
 ): string | null {
   if (!metadata) return null;
   return metadata[snakeKey] ?? metadata[camelKey] ?? null;
+}
+
+async function syncSubscriptionRecordAndGrant(params: {
+  userId: string;
+  productId: string;
+  priceId: string;
+  subscription: Stripe.Subscription;
+  startsAt: string | null;
+  endsAt: string | null;
+  customerId: string | null;
+}): Promise<void> {
+  await upsertSubscriptionDb({
+    userId: params.userId,
+    productId: params.productId,
+    priceId: params.priceId,
+    provider: "stripe",
+    providerCustomerId: params.customerId,
+    providerSubscriptionId: params.subscription.id,
+    status: params.subscription.status,
+    currentPeriodStart: params.startsAt,
+    currentPeriodEnd: params.endsAt,
+    cancelAtPeriodEnd: params.subscription.cancel_at_period_end,
+    canceledAt: fromUnixTimestamp(params.subscription.canceled_at),
+  });
+
+  await grantProductAccessDb({
+    userId: params.userId,
+    productId: params.productId,
+    priceId: params.priceId,
+    accessMode: "full",
+    source: "stripe",
+    startsAt: params.startsAt,
+    endsAt: params.endsAt,
+  });
+}
+
+async function deactivateSourceGrantIfDifferent(params: {
+  userId: string;
+  sourceProductId: string;
+  targetProductId: string;
+  context: string;
+}): Promise<void> {
+  if (params.sourceProductId === params.targetProductId) {
+    return;
+  }
+
+  const deactivateResult = await deactivateActiveUserProductGrantsDb(
+    params.userId,
+    params.sourceProductId
+  );
+
+  if (!deactivateResult.success) {
+    console.error(`Failed to deactivate source grant after ${params.context}`, {
+      userId: params.userId,
+      sourceProductId: params.sourceProductId,
+      targetProductId: params.targetProductId,
+    });
+  }
 }
 
 async function findSourceSubscriptionForUpgrade(params: {
@@ -133,47 +187,28 @@ async function handleSameCadenceSubscriptionUpgrade(params: {
   });
 
   const subscriptionItem = updatedStripeSubscription.items.data[0] ?? null;
+  const startsAt = fromUnixTimestamp(subscriptionItem?.current_period_start);
+  const endsAt = fromUnixTimestamp(subscriptionItem?.current_period_end);
 
-  await upsertSubscriptionDb({
+  await syncSubscriptionRecordAndGrant({
     userId: params.userId,
     productId: params.targetProduct.id,
     priceId: params.targetPrice.id,
-    provider: "stripe",
-    providerCustomerId:
+    subscription: updatedStripeSubscription,
+    startsAt,
+    endsAt,
+    customerId:
       typeof updatedStripeSubscription.customer === "string"
         ? updatedStripeSubscription.customer
         : null,
-    providerSubscriptionId: updatedStripeSubscription.id,
-    status: updatedStripeSubscription.status,
-    currentPeriodStart: fromUnixTimestamp(subscriptionItem?.current_period_start),
-    currentPeriodEnd: fromUnixTimestamp(subscriptionItem?.current_period_end),
-    cancelAtPeriodEnd: updatedStripeSubscription.cancel_at_period_end,
-    canceledAt: fromUnixTimestamp(updatedStripeSubscription.canceled_at),
   });
 
-  await grantProductAccessDb({
+  await deactivateSourceGrantIfDifferent({
     userId: params.userId,
-    productId: params.targetProduct.id,
-    priceId: params.targetPrice.id,
-    accessMode: "full",
-    source: "stripe",
-    startsAt: fromUnixTimestamp(subscriptionItem?.current_period_start),
-    endsAt: fromUnixTimestamp(subscriptionItem?.current_period_end),
+    sourceProductId: selectedSource.sourceProduct.id,
+    targetProductId: params.targetProduct.id,
+    context: "same-cadence upgrade",
   });
-
-  if (selectedSource.sourceProduct.id !== params.targetProduct.id) {
-    const deactivateResult = await deactivateActiveUserProductGrantsDb(
-      params.userId,
-      selectedSource.sourceProduct.id
-    );
-
-    if (!deactivateResult.success) {
-      console.error("Failed to deactivate source grant after same-cadence upgrade", {
-        userId: params.userId,
-        sourceProductId: selectedSource.sourceProduct.id,
-      });
-    }
-  }
 }
 
 async function handleMonthlyToThreeMonthUpgrade(params: {
@@ -209,58 +244,31 @@ async function handleMonthlyToThreeMonthUpgrade(params: {
       currentPeriodStartIso: selectedSource.subscription.current_period_start,
     });
 
-  const currentPeriodStart =
-    selectedSource.subscription.current_period_start ??
-    fromUnixTimestamp(updatedStripeSubscription.items.data[0]?.current_period_start);
-
-  const currentPeriodEnd =
+  const startsAt = selectedSource.subscription.current_period_start;
+  const endsAt =
     updatedStripeSubscription.trial_end != null
       ? fromUnixTimestamp(updatedStripeSubscription.trial_end)
       : fromUnixTimestamp(updatedStripeSubscription.items.data[0]?.current_period_end);
 
-  await upsertSubscriptionDb({
+  await syncSubscriptionRecordAndGrant({
     userId: params.userId,
     productId: params.targetProduct.id,
     priceId: params.targetPrice.id,
-    provider: "stripe",
-    providerCustomerId:
+    subscription: updatedStripeSubscription,
+    startsAt,
+    endsAt,
+    customerId:
       typeof updatedStripeSubscription.customer === "string"
         ? updatedStripeSubscription.customer
         : null,
-    providerSubscriptionId: updatedStripeSubscription.id,
-    status: updatedStripeSubscription.status,
-    currentPeriodStart,
-    currentPeriodEnd,
-    cancelAtPeriodEnd: updatedStripeSubscription.cancel_at_period_end,
-    canceledAt: fromUnixTimestamp(updatedStripeSubscription.canceled_at),
   });
 
-  await grantProductAccessDb({
+  await deactivateSourceGrantIfDifferent({
     userId: params.userId,
-    productId: params.targetProduct.id,
-    priceId: params.targetPrice.id,
-    accessMode: "full",
-    source: "stripe",
-    startsAt: currentPeriodStart,
-    endsAt: currentPeriodEnd,
+    sourceProductId: selectedSource.sourceProduct.id,
+    targetProductId: params.targetProduct.id,
+    context: "monthly-to-three-month upgrade",
   });
-
-  if (selectedSource.sourceProduct.id !== params.targetProduct.id) {
-    const deactivateResult = await deactivateActiveUserProductGrantsDb(
-      params.userId,
-      selectedSource.sourceProduct.id
-    );
-
-    if (!deactivateResult.success) {
-      console.error(
-        "Failed to deactivate source grant after monthly-to-3-month upgrade",
-        {
-          userId: params.userId,
-          sourceProductId: selectedSource.sourceProduct.id,
-        }
-      );
-    }
-  }
 }
 
 async function handleLifetimeUpgrade(params: {
@@ -268,9 +276,6 @@ async function handleLifetimeUpgrade(params: {
   targetProduct: DbProduct;
   targetPrice: DbPrice;
 }): Promise<void> {
-  const foundationProduct = await getProductByIdDb(params.targetProduct.id);
-  void foundationProduct;
-
   await grantProductAccessDb({
     userId: params.userId,
     productId: params.targetProduct.id,
@@ -281,16 +286,75 @@ async function handleLifetimeUpgrade(params: {
     endsAt: null,
   });
 
-  const foundation = await getActivePricesForProductDb(params.targetProduct.id);
-  void foundation;
+  const foundationProduct = await getActiveProductByCodeDb(
+    PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
+  );
+
+  if (foundationProduct && foundationProduct.id !== params.targetProduct.id) {
+    const deactivateResult = await deactivateActiveUserProductGrantsDb(
+      params.userId,
+      foundationProduct.id
+    );
+
+    if (!deactivateResult.success) {
+      console.error("Failed to deactivate Foundation grant after lifetime upgrade", {
+        userId: params.userId,
+        foundationProductId: foundationProduct.id,
+      });
+    }
+  }
 }
 
-async function deactivateFoundationIfTargetIsHigher(params: {
+async function handleStandardSubscriptionCheckout(params: {
+  session: Stripe.Checkout.Session;
   userId: string;
-  targetProduct: DbProduct;
+  productId: string;
+  priceId: string;
 }): Promise<void> {
-  const foundationProduct = await getActivePricesForProductDb(params.targetProduct.id);
-  void foundationProduct;
+  const stripe = getStripeClient();
+
+  if (!params.session.subscription) {
+    console.error("Subscription checkout completed without subscription id:", {
+      sessionId: params.session.id,
+    });
+
+    throw new Error("Missing subscription id");
+  }
+
+  const subscription = await stripe.subscriptions.retrieve(
+    params.session.subscription as string
+  );
+
+  const subscriptionItem = subscription.items.data[0] ?? null;
+  const startsAt = fromUnixTimestamp(subscriptionItem?.current_period_start);
+  const endsAt = fromUnixTimestamp(subscriptionItem?.current_period_end);
+
+  await syncSubscriptionRecordAndGrant({
+    userId: params.userId,
+    productId: params.productId,
+    priceId: params.priceId,
+    subscription,
+    startsAt,
+    endsAt,
+    customerId:
+      typeof params.session.customer === "string" ? params.session.customer : null,
+  });
+}
+
+async function handleStandardPaymentCheckout(params: {
+  userId: string;
+  productId: string;
+  priceId: string;
+}): Promise<void> {
+  await grantProductAccessDb({
+    userId: params.userId,
+    productId: params.productId,
+    priceId: params.priceId,
+    accessMode: "full",
+    source: "stripe",
+    startsAt: new Date().toISOString(),
+    endsAt: null,
+  });
 }
 
 export async function handleCheckoutSessionCompleted(
@@ -356,92 +420,35 @@ export async function handleCheckoutSessionCompleted(
     }
 
     if (upgradeFlow === "lifetime") {
-      await grantProductAccessDb({
+      await handleLifetimeUpgrade({
         userId,
-        productId: targetProduct.id,
-        priceId: targetPrice.id,
-        accessMode: "full",
-        source: "stripe",
-        startsAt: new Date().toISOString(),
-        endsAt: null,
+        targetProduct,
+        targetPrice,
       });
-
-      const foundationProduct = await getActiveProductByCodeDb(
-        PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
-      );
-
-      if (foundationProduct && foundationProduct.id !== targetProduct.id) {
-        const deactivateResult = await deactivateActiveUserProductGrantsDb(
-          userId,
-          foundationProduct.id
-        );
-
-        if (!deactivateResult.success) {
-          console.error("Failed to deactivate Foundation grant after lifetime upgrade", {
-            userId,
-            foundationProductId: foundationProduct.id,
-          });
-        }
-      }
-
       return;
     }
 
-    if (session.mode === "subscription") {
-      const stripe = getStripeClient();
-
-      if (!session.subscription) {
-        console.error("Subscription checkout completed without subscription id:", {
-          sessionId: session.id,
-        });
-
-        throw new Error("Missing subscription id");
-      }
-
-      const subscription = await stripe.subscriptions.retrieve(
-        session.subscription as string
-      );
-
-      const subscriptionItem = subscription.items.data[0] ?? null;
-
-      await upsertSubscriptionDb({
-        userId,
-        productId,
-        priceId,
-        provider: "stripe",
-        providerCustomerId:
-          typeof session.customer === "string" ? session.customer : null,
-        providerSubscriptionId: subscription.id,
-        status: subscription.status,
-        currentPeriodStart: fromUnixTimestamp(subscriptionItem?.current_period_start),
-        currentPeriodEnd: fromUnixTimestamp(subscriptionItem?.current_period_end),
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        canceledAt: fromUnixTimestamp(subscription.canceled_at),
-      });
-
-      await grantProductAccessDb({
-        userId,
-        productId,
-        priceId,
-        accessMode: "full",
-        source: "stripe",
-        startsAt: fromUnixTimestamp(subscriptionItem?.current_period_start),
-        endsAt: fromUnixTimestamp(subscriptionItem?.current_period_end),
-      });
-
-      return;
-    }
-
-    if (session.mode === "payment") {
-      await grantProductAccessDb({
-        userId,
-        productId,
-        priceId,
-        accessMode: "full",
-        source: "stripe",
-        startsAt: new Date().toISOString(),
-        endsAt: null,
-      });
-    }
+    throw new Error(`Unsupported upgrade flow: ${upgradeFlow}`);
   }
+
+  if (session.mode === "subscription") {
+    await handleStandardSubscriptionCheckout({
+      session,
+      userId,
+      productId,
+      priceId,
+    });
+    return;
+  }
+
+  if (session.mode === "payment") {
+    await handleStandardPaymentCheckout({
+      userId,
+      productId,
+      priceId,
+    });
+    return;
+  }
+
+  throw new Error(`Unsupported checkout session mode: ${session.mode}`);
 }
