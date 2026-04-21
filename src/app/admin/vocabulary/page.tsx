@@ -382,7 +382,7 @@ function VocabularySetCard({
             </Button>
 
             <Button
-              href={`/admin/vocabulary/${vocabularySet.id}/edit`}
+              href={`/admin/vocabulary/${vocabularySet.id}/items`}
               variant="quiet"
               size="sm"
               icon="list"
