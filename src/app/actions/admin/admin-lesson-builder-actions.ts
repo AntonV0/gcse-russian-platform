@@ -23,6 +23,7 @@ import {
   normalizeVocabularyBlockData,
   normalizeVocabularySetBlockData,
 } from "@/lib/lessons/lesson-blocks";
+import { getVocabularySetBySlugDb } from "@/lib/vocabulary/vocabulary-helpers-db";
 
 function getTrimmedString(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -95,6 +96,201 @@ function getCanonicalSectionKey(formData: FormData) {
 function revalidateLessonTemplateEntityPaths() {
   revalidatePath("/admin/lesson-templates");
   revalidatePath("/admin/lesson-templates/lesson-templates");
+}
+
+function resolveVocabularyUsageVariantFromSlug(
+  variantSlug: string
+): "foundation" | "higher" | "volna" | null {
+  const normalized = variantSlug.trim().toLowerCase();
+
+  if (!normalized) return null;
+  if (normalized === "foundation" || normalized.includes("foundation")) {
+    return "foundation";
+  }
+  if (normalized === "higher" || normalized.includes("higher")) {
+    return "higher";
+  }
+  if (normalized === "volna" || normalized.includes("volna")) {
+    return "volna";
+  }
+
+  return null;
+}
+
+async function getVocabularyUsageVariantForLessonSync(formData: FormData) {
+  const variantSlug = getTrimmedString(formData, "variantSlug");
+  const fromSlug = resolveVocabularyUsageVariantFromSlug(variantSlug);
+
+  if (fromSlug) {
+    return fromSlug;
+  }
+
+  const variantId = getTrimmedString(formData, "variantId");
+
+  if (!variantId) {
+    return null;
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("course_variants")
+    .select("slug")
+    .eq("id", variantId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error resolving course variant for vocabulary usage sync:", error);
+    return null;
+  }
+
+  const slug =
+    data && typeof data.slug === "string" ? data.slug.trim().toLowerCase() : "";
+
+  return resolveVocabularyUsageVariantFromSlug(slug);
+}
+
+async function syncLessonVocabularySetUsagesForLesson(params: {
+  lessonId: string;
+  variant: "foundation" | "higher" | "volna";
+}) {
+  const supabase = await createClient();
+
+  const { data: sections, error: sectionsError } = await supabase
+    .from("lesson_sections")
+    .select("id")
+    .eq("lesson_id", params.lessonId);
+
+  if (sectionsError) {
+    console.error(
+      "Error loading lesson sections for vocabulary usage sync:",
+      sectionsError
+    );
+    throw new Error("Failed to sync lesson vocabulary usage");
+  }
+
+  const sectionIds = (sections ?? []).map((section) => section.id as string);
+
+  let vocabularySetIds: string[] = [];
+
+  if (sectionIds.length > 0) {
+    const { data: vocabularySetBlocks, error: blocksError } = await supabase
+      .from("lesson_blocks")
+      .select("data")
+      .in("lesson_section_id", sectionIds)
+      .eq("block_type", "vocabulary-set");
+
+    if (blocksError) {
+      console.error(
+        "Error loading lesson vocabulary-set blocks for usage sync:",
+        blocksError
+      );
+      throw new Error("Failed to sync lesson vocabulary usage");
+    }
+
+    const slugs = Array.from(
+      new Set(
+        (vocabularySetBlocks ?? [])
+          .map((block) => {
+            if (!block || typeof block !== "object") return null;
+            const data =
+              "data" in block && block.data && typeof block.data === "object"
+                ? (block.data as Record<string, unknown>)
+                : null;
+
+            const slug =
+              data && typeof data.vocabularySetSlug === "string"
+                ? data.vocabularySetSlug.trim()
+                : "";
+
+            return slug || null;
+          })
+          .filter((value): value is string => Boolean(value))
+      )
+    );
+
+    if (slugs.length > 0) {
+      const { data: vocabularySets, error: vocabularySetsError } = await supabase
+        .from("vocabulary_sets")
+        .select("id, slug")
+        .in("slug", slugs);
+
+      if (vocabularySetsError) {
+        console.error(
+          "Error loading vocabulary sets for lesson vocabulary usage sync:",
+          vocabularySetsError
+        );
+        throw new Error("Failed to sync lesson vocabulary usage");
+      }
+
+      vocabularySetIds = Array.from(
+        new Set(
+          (vocabularySets ?? [])
+            .map((set) => (typeof set.id === "string" ? set.id : null))
+            .filter((value): value is string => Boolean(value))
+        )
+      );
+    }
+  }
+
+  const { error: deleteError } = await supabase
+    .from("lesson_vocabulary_set_usages")
+    .delete()
+    .eq("lesson_id", params.lessonId)
+    .eq("variant", params.variant)
+    .eq("usage_type", "lesson_block");
+
+  if (deleteError) {
+    console.error(
+      "Error clearing lesson vocabulary usage rows before sync:",
+      deleteError
+    );
+    throw new Error("Failed to sync lesson vocabulary usage");
+  }
+
+  if (vocabularySetIds.length === 0) {
+    return;
+  }
+
+  const rows = vocabularySetIds.map((vocabularySetId) => ({
+    lesson_id: params.lessonId,
+    vocabulary_set_id: vocabularySetId,
+    variant: params.variant,
+    usage_type: "lesson_block" as const,
+  }));
+
+  const { error: insertError } = await supabase
+    .from("lesson_vocabulary_set_usages")
+    .insert(rows);
+
+  if (insertError) {
+    console.error("Error inserting synced lesson vocabulary usage rows:", insertError);
+    throw new Error("Failed to sync lesson vocabulary usage");
+  }
+}
+
+async function syncLessonVocabularySetUsagesFromFormData(formData: FormData) {
+  const lessonId = getTrimmedString(formData, "lessonId");
+
+  if (!lessonId) {
+    return;
+  }
+
+  const variant = await getVocabularyUsageVariantForLessonSync(formData);
+
+  if (!variant) {
+    return;
+  }
+
+  await syncLessonVocabularySetUsagesForLesson({
+    lessonId,
+    variant,
+  });
+}
+
+async function finalizeLessonMutation(formData: FormData) {
+  await syncLessonVocabularySetUsagesFromFormData(formData);
+  await revalidateLessonPaths(formData);
 }
 
 async function revalidateLessonPaths(formData: FormData) {
@@ -183,7 +379,7 @@ async function createSimpleContentBlock(params: {
     throw new Error(`Failed to create ${params.blockType} block`);
   }
 
-  await revalidateLessonPaths(params.formData);
+  await finalizeLessonMutation(params.formData);
 }
 
 async function updateSimpleContentBlock(params: {
@@ -207,7 +403,7 @@ async function updateSimpleContentBlock(params: {
     throw new Error(`Failed to update ${params.blockType} block`);
   }
 
-  await revalidateLessonPaths(params.formData);
+  await finalizeLessonMutation(params.formData);
 }
 
 export async function insertBlockPresetAction(formData: FormData) {
@@ -241,7 +437,7 @@ export async function insertBlockPresetAction(formData: FormData) {
     throw new Error(`Failed to insert preset blocks: ${error.message}`);
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createSectionAction(formData: FormData) {
@@ -279,7 +475,7 @@ export async function createSectionAction(formData: FormData) {
     throw new Error("Failed to create section");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function duplicateSectionAction(formData: FormData) {
@@ -360,7 +556,7 @@ export async function duplicateSectionAction(formData: FormData) {
     }
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateSectionAction(formData: FormData) {
@@ -396,7 +592,7 @@ export async function updateSectionAction(formData: FormData) {
     throw new Error("Failed to update section");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createHeaderBlockAction(formData: FormData) {
@@ -502,7 +698,7 @@ export async function createDividerBlockAction(formData: FormData) {
     throw new Error("Failed to create divider block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createTextBlockAction(formData: FormData) {
@@ -572,7 +768,7 @@ export async function createNoteBlockAction(formData: FormData) {
     throw new Error("Failed to create note block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateNoteBlockAction(formData: FormData) {
@@ -602,7 +798,7 @@ export async function updateNoteBlockAction(formData: FormData) {
     throw new Error("Failed to update note block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createCalloutBlockAction(formData: FormData) {
@@ -715,7 +911,7 @@ export async function createImageBlockAction(formData: FormData) {
     throw new Error("Failed to create image block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateImageBlockAction(formData: FormData) {
@@ -746,7 +942,7 @@ export async function updateImageBlockAction(formData: FormData) {
     throw new Error("Failed to update image block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createAudioBlockAction(formData: FormData) {
@@ -780,7 +976,7 @@ export async function createAudioBlockAction(formData: FormData) {
     throw new Error("Failed to create audio block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateAudioBlockAction(formData: FormData) {
@@ -812,7 +1008,7 @@ export async function updateAudioBlockAction(formData: FormData) {
     throw new Error("Failed to update audio block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createVocabularyBlockAction(formData: FormData) {
@@ -847,7 +1043,7 @@ export async function createVocabularyBlockAction(formData: FormData) {
     throw new Error("Failed to create vocabulary block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateVocabularyBlockAction(formData: FormData) {
@@ -880,7 +1076,7 @@ export async function updateVocabularyBlockAction(formData: FormData) {
     throw new Error("Failed to update vocabulary block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function duplicateBlockAction(formData: FormData) {
@@ -923,7 +1119,7 @@ export async function duplicateBlockAction(formData: FormData) {
     throw new Error("Failed to duplicate block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createQuestionSetBlockAction(formData: FormData) {
@@ -958,7 +1154,7 @@ export async function createQuestionSetBlockAction(formData: FormData) {
     throw new Error("Failed to create question-set block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateQuestionSetBlockAction(formData: FormData) {
@@ -991,7 +1187,7 @@ export async function updateQuestionSetBlockAction(formData: FormData) {
     throw new Error("Failed to update question-set block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createVocabularySetBlockAction(formData: FormData) {
@@ -1004,6 +1200,12 @@ export async function createVocabularySetBlockAction(formData: FormData) {
 
   if (!sectionId || !vocabularySetSlug) {
     throw new Error("Missing required fields");
+  }
+
+  const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
+
+  if (!vocabularySet) {
+    throw new Error("Selected vocabulary set does not exist");
   }
 
   const supabase = await createClient();
@@ -1026,7 +1228,7 @@ export async function createVocabularySetBlockAction(formData: FormData) {
     throw new Error("Failed to create vocabulary-set block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateVocabularySetBlockAction(formData: FormData) {
@@ -1039,6 +1241,12 @@ export async function updateVocabularySetBlockAction(formData: FormData) {
 
   if (!blockId || !vocabularySetSlug) {
     throw new Error("Missing required fields");
+  }
+
+  const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
+
+  if (!vocabularySet) {
+    throw new Error("Selected vocabulary set does not exist");
   }
 
   const supabase = await createClient();
@@ -1059,7 +1267,7 @@ export async function updateVocabularySetBlockAction(formData: FormData) {
     throw new Error("Failed to update vocabulary-set block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function deleteSectionAction(formData: FormData) {
@@ -1081,7 +1289,7 @@ export async function deleteSectionAction(formData: FormData) {
     throw new Error("Failed to delete section");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function deleteBlockAction(formData: FormData) {
@@ -1103,7 +1311,7 @@ export async function deleteBlockAction(formData: FormData) {
     throw new Error("Failed to delete block");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function moveSectionAction(formData: FormData) {
@@ -1144,7 +1352,7 @@ export async function moveSectionAction(formData: FormData) {
   const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
 
   if (targetIndex < 0 || targetIndex >= sections.length) {
-    await revalidateLessonPaths(formData);
+    await finalizeLessonMutation(formData);
   }
 
   const reordered = [...sections];
@@ -1183,7 +1391,7 @@ export async function moveSectionAction(formData: FormData) {
     }
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function moveBlockAction(formData: FormData) {
@@ -1224,7 +1432,7 @@ export async function moveBlockAction(formData: FormData) {
   const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
 
   if (targetIndex < 0 || targetIndex >= blocks.length) {
-    await revalidateLessonPaths(formData);
+    await finalizeLessonMutation(formData);
   }
 
   const reordered = [...blocks];
@@ -1263,7 +1471,7 @@ export async function moveBlockAction(formData: FormData) {
     }
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function toggleSectionPublishedAction(formData: FormData) {
@@ -1295,7 +1503,7 @@ export async function toggleSectionPublishedAction(formData: FormData) {
     throw new Error("Failed to update section state");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function toggleBlockPublishedAction(formData: FormData) {
@@ -1327,7 +1535,7 @@ export async function toggleBlockPublishedAction(formData: FormData) {
     throw new Error("Failed to update block state");
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function reorderSectionsAction(formData: FormData) {
@@ -1354,7 +1562,6 @@ export async function reorderSectionsAction(formData: FormData) {
 
   const supabase = await createClient();
 
-  // Phase 1: move reordered items to temporary negative positions
   for (let index = 0; index < orderedSectionIds.length; index += 1) {
     const sectionId = orderedSectionIds[index];
 
@@ -1370,7 +1577,6 @@ export async function reorderSectionsAction(formData: FormData) {
     }
   }
 
-  // Phase 2: write final positions
   for (let index = 0; index < orderedSectionIds.length; index += 1) {
     const sectionId = orderedSectionIds[index];
 
@@ -1385,6 +1591,8 @@ export async function reorderSectionsAction(formData: FormData) {
       throw new Error(`Failed to reorder sections: ${error.message}`);
     }
   }
+
+  await syncLessonVocabularySetUsagesFromFormData(formData);
 
   const redirectPath = getRouteRedirectPath(formData);
   revalidatePath(redirectPath);
@@ -1414,7 +1622,6 @@ export async function reorderBlocksAction(formData: FormData) {
 
   const supabase = await createClient();
 
-  // Phase 1: temporary negative positions
   for (let index = 0; index < orderedBlockIds.length; index += 1) {
     const blockId = orderedBlockIds[index];
 
@@ -1430,7 +1637,6 @@ export async function reorderBlocksAction(formData: FormData) {
     }
   }
 
-  // Phase 2: final positions
   for (let index = 0; index < orderedBlockIds.length; index += 1) {
     const blockId = orderedBlockIds[index];
 
@@ -1445,6 +1651,8 @@ export async function reorderBlocksAction(formData: FormData) {
       throw new Error(`Failed to reorder blocks: ${error.message}`);
     }
   }
+
+  await syncLessonVocabularySetUsagesFromFormData(formData);
 
   const redirectPath = getRouteRedirectPath(formData);
   revalidatePath(redirectPath);
@@ -1527,7 +1735,7 @@ export async function moveBlockToSectionAction(formData: FormData) {
   }
 
   if (sourceSectionId === targetSectionId) {
-    await revalidateLessonPaths(formData);
+    await finalizeLessonMutation(formData);
     return;
   }
 
@@ -1567,7 +1775,7 @@ export async function moveBlockToSectionAction(formData: FormData) {
   await normalizeLessonBlockPositionsInSection(sourceSectionId);
   await normalizeLessonBlockPositionsInSection(targetSectionId);
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function insertSectionTemplateAction(formData: FormData) {
@@ -1625,7 +1833,7 @@ export async function insertSectionTemplateAction(formData: FormData) {
     }
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function insertLessonTemplateAction(formData: FormData) {
@@ -1692,7 +1900,7 @@ export async function insertLessonTemplateAction(formData: FormData) {
     }
   }
 
-  await revalidateLessonPaths(formData);
+  await finalizeLessonMutation(formData);
 }
 
 export async function createLessonBlockPresetAction(formData: FormData) {

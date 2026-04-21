@@ -1,5 +1,9 @@
 import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
-import { loadVocabularySetBySlugDb } from "@/lib/vocabulary/vocabulary-helpers-db";
+import {
+  getVocabularyListModeLabel,
+  getVocabularyTierLabel,
+  loadVocabularySetBySlugDb,
+} from "@/lib/vocabulary/vocabulary-helpers-db";
 
 type VocabularySetBlockProps = {
   title?: string;
@@ -14,7 +18,7 @@ export default async function VocabularySetBlock({
 
   if (!vocabularySet) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
         Vocabulary set not found: {vocabularySetSlug}
       </div>
     );
@@ -23,6 +27,13 @@ export default async function VocabularySetBlock({
   return (
     <VocabularyBlock
       title={title ?? vocabularySet.title}
+      eyebrow="Vocabulary set"
+      description={vocabularySet.description ?? undefined}
+      meta={[
+        getVocabularyTierLabel(vocabularySet.tier),
+        getVocabularyListModeLabel(vocabularySet.list_mode),
+        vocabularySet.is_published ? "Published set" : "Draft set",
+      ]}
       items={items.map((item) => ({
         russian: item.russian,
         english: item.english,
