@@ -106,7 +106,7 @@ export default async function AdminUiSurfacesPage() {
             <CardBody className="p-0">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="font-semibold text-[var(--text-primary)]">app-card</div>
-                <Badge tone="muted">Default</Badge>
+                <Badge tone="muted">Card primitive</Badge>
               </div>
 
               <p className="text-sm app-text-muted">
@@ -351,7 +351,10 @@ export default async function AdminUiSurfacesPage() {
         title="Surface hierarchy on dark emphasis"
         description="This helps verify that cards and badges still feel layered correctly when placed on stronger dark backgrounds."
       >
-        <div className="space-y-4 rounded-[1.75rem] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,#0b1a30_0%,#142742_100%)] p-5 shadow-[0_16px_34px_rgba(16,32,51,0.24)]">
+        <div
+          data-theme="dark"
+          className="space-y-4 rounded-[1.75rem] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,#0b1a30_0%,#142742_100%)] p-5 shadow-[0_16px_34px_rgba(16,32,51,0.24)]"
+        >
           <div className="text-sm font-semibold text-white">
             Dark-surface hierarchy check
           </div>
@@ -472,7 +475,7 @@ export default async function AdminUiSurfacesPage() {
         description="A real page usually combines a hero-like section, summary cards, and supporting blocks. This shows how those layers work together."
       >
         <div className="space-y-4">
-          <Surface variant="brand" padding="lg">
+          <Surface variant="brand" className="app-section-padding-lg">
             <div className="max-w-2xl">
               <div className="mb-2 flex items-center gap-2">
                 <AppIcon icon="surfaces" size={18} className="app-brand-text" />
