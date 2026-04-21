@@ -2,6 +2,7 @@ import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import Button from "@/components/ui/button";
+import Card, { CardBody } from "@/components/ui/card";
 
 export default async function AdminUiButtonsPage() {
   const canAccess = await requireAdminAccess();
@@ -65,47 +66,53 @@ export default async function AdminUiButtonsPage() {
         description="Use this area to compare how clearly each variant responds on hover. The interaction should feel deliberate, not just slightly lifted."
       >
         <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Main actions
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="primary" icon="completed">
-                Save progress
-              </Button>
-              <Button variant="accent" icon="create">
-                Start challenge
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Main actions
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="primary" icon="completed">
+                  Save progress
+                </Button>
+                <Button variant="accent" icon="create">
+                  Start challenge
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Supporting actions
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="secondary" icon="preview">
-                Preview
-              </Button>
-              <Button variant="soft" icon="next" iconPosition="right">
-                Continue revision
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Supporting actions
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="secondary" icon="preview">
+                  Preview
+                </Button>
+                <Button variant="soft" icon="next" iconPosition="right">
+                  Continue revision
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Low-emphasis actions
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="quiet" icon="edit">
-                Save draft
-              </Button>
-              <Button variant="quiet" icon="file">
-                View notes
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Low-emphasis actions
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="quiet" icon="edit">
+                  Save draft
+                </Button>
+                <Button variant="quiet" icon="file">
+                  View notes
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -114,51 +121,57 @@ export default async function AdminUiButtonsPage() {
         description="These are slightly more expressive motion patterns for teen-facing or momentum-oriented actions. Use them sparingly so the main system still feels polished."
       >
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Slide-forward CTA
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="primary"
-                icon="next"
-                iconPosition="right"
-                className="motion-safe:hover:pr-5 motion-safe:hover:pl-4"
-              >
-                Keep going
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Slide-forward CTA
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="primary"
+                  icon="next"
+                  iconPosition="right"
+                  className="motion-safe:hover:pr-5 motion-safe:hover:pl-4"
+                >
+                  Keep going
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Lift + glow emphasis
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="accent"
-                icon="create"
-                className="motion-safe:hover:scale-[1.02] motion-safe:hover:-rotate-[0.4deg]"
-              >
-                Launch sprint
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Lift + glow emphasis
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="accent"
+                  icon="create"
+                  className="motion-safe:hover:scale-[1.02] motion-safe:hover:-rotate-[0.4deg]"
+                >
+                  Launch sprint
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Calm reveal utility
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="soft"
-                icon="preview"
-                className="motion-safe:hover:translate-x-[2px]"
-              >
-                Reveal next task
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Calm reveal utility
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="soft"
+                  icon="preview"
+                  className="motion-safe:hover:translate-x-[2px]"
+                >
+                  Reveal next task
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -221,47 +234,53 @@ export default async function AdminUiButtonsPage() {
         description="These variants are useful for more energetic student-facing CTAs, progression moments, and upgrade prompts."
       >
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Lesson / learning actions
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="soft" icon="next" iconPosition="right">
-                Start lesson
-              </Button>
-              <Button variant="soft" icon="completed">
-                Mark ready
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Lesson / learning actions
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="soft" icon="next" iconPosition="right">
+                  Start lesson
+                </Button>
+                <Button variant="soft" icon="completed">
+                  Mark ready
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Motivational / highlight actions
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="accent" icon="completed">
-                Unlock next step
-              </Button>
-              <Button variant="accent" icon="create">
-                Join revision sprint
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Motivational / highlight actions
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="accent" icon="completed">
+                  Unlock next step
+                </Button>
+                <Button variant="accent" icon="create">
+                  Join revision sprint
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Hero / strong contrast actions
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="inverse" icon="preview">
-                View course path
-              </Button>
-              <Button variant="inverse" icon="next" iconPosition="right">
-                Explore full access
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Hero / strong contrast actions
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="inverse" icon="preview">
+                  View course path
+                </Button>
+                <Button variant="inverse" icon="next" iconPosition="right">
+                  Explore full access
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -393,67 +412,73 @@ export default async function AdminUiButtonsPage() {
         description="These patterns are useful for list screens, builder toolbars, inspectors, and table action bars."
       >
         <div className="flex flex-col gap-4">
-          <div className="app-card p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <Button variant="secondary" size="sm" icon="filter">
-                Filter
-              </Button>
-              <Button variant="secondary" size="sm" icon="search">
-                Search
-              </Button>
-              <Button variant="secondary" size="sm" icon="settings">
-                Settings
-              </Button>
-              <Button variant="quiet" size="sm" icon="refresh">
-                Refresh
-              </Button>
-              <Button variant="primary" size="sm" icon="create">
-                Add item
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="secondary" size="sm" icon="filter">
+                  Filter
+                </Button>
+                <Button variant="secondary" size="sm" icon="search">
+                  Search
+                </Button>
+                <Button variant="secondary" size="sm" icon="settings">
+                  Settings
+                </Button>
+                <Button variant="quiet" size="sm" icon="refresh">
+                  Refresh
+                </Button>
+                <Button variant="primary" size="sm" icon="create">
+                  Add item
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <Button variant="secondary" size="sm" icon="back">
-                Back
-              </Button>
-              <Button variant="primary" size="sm" icon="completed">
-                Save
-              </Button>
-              <Button variant="secondary" size="sm" icon="preview">
-                Preview
-              </Button>
-              <Button variant="danger" size="sm" icon="delete">
-                Delete
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="secondary" size="sm" icon="back">
+                  Back
+                </Button>
+                <Button variant="primary" size="sm" icon="completed">
+                  Save
+                </Button>
+                <Button variant="secondary" size="sm" icon="preview">
+                  Preview
+                </Button>
+                <Button variant="danger" size="sm" icon="delete">
+                  Delete
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                variant="soft"
-                size="sm"
-                icon="next"
-                iconPosition="right"
-                className="motion-safe:hover:translate-x-[2px]"
-              >
-                Continue
-              </Button>
-              <Button
-                variant="accent"
-                size="sm"
-                icon="create"
-                className="motion-safe:hover:scale-[1.02]"
-              >
-                Launch revision sprint
-              </Button>
-              <Button variant="inverse" size="sm" icon="preview">
-                Open student view
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant="soft"
+                  size="sm"
+                  icon="next"
+                  iconPosition="right"
+                  className="motion-safe:hover:translate-x-[2px]"
+                >
+                  Continue
+                </Button>
+                <Button
+                  variant="accent"
+                  size="sm"
+                  icon="create"
+                  className="motion-safe:hover:scale-[1.02]"
+                >
+                  Launch revision sprint
+                </Button>
+                <Button variant="inverse" size="sm" icon="preview">
+                  Open student view
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -462,31 +487,35 @@ export default async function AdminUiButtonsPage() {
         description="These are common action combinations for create, edit, and settings forms. The primary action should remain visually clear."
       >
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Standard edit form
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="primary" icon="completed">
-                Save changes
-              </Button>
-              <Button variant="secondary" icon="back">
-                Cancel
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Standard edit form
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="primary" icon="completed">
+                  Save changes
+                </Button>
+                <Button variant="secondary" icon="back">
+                  Cancel
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Destructive confirmation
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="danger" icon="delete">
-                Delete lesson
-              </Button>
-              <Button variant="secondary">Keep lesson</Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Destructive confirmation
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="danger" icon="delete">
+                  Delete lesson
+                </Button>
+                <Button variant="secondary">Keep lesson</Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -495,33 +524,37 @@ export default async function AdminUiButtonsPage() {
         description="Useful for content screens where one action is primary, one is supportive, and one is optional or low emphasis."
       >
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Content publishing
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="primary" icon="completed">
-                Publish now
-              </Button>
-              <Button variant="secondary" icon="preview">
-                Preview
-              </Button>
-              <Button variant="quiet">Save draft</Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Content publishing
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="primary" icon="completed">
+                  Publish now
+                </Button>
+                <Button variant="secondary" icon="preview">
+                  Preview
+                </Button>
+                <Button variant="quiet">Save draft</Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Account / membership action row
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="secondary">Manage subscription</Button>
-              <Button variant="primary" icon="next" iconPosition="right">
-                Upgrade plan
-              </Button>
-              <Button variant="quiet">Compare options</Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Account / membership action row
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="secondary">Manage subscription</Button>
+                <Button variant="primary" icon="next" iconPosition="right">
+                  Upgrade plan
+                </Button>
+                <Button variant="quiet">Compare options</Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -530,45 +563,51 @@ export default async function AdminUiButtonsPage() {
         description="These are closer to how buttons could be used in GCSE Russian lessons, revision flows, and sales funnel moments."
       >
         <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Student dashboard
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="soft" icon="next" iconPosition="right">
-                Continue revision
-              </Button>
-              <Button variant="secondary" icon="preview">
-                Open module
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Student dashboard
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="soft" icon="next" iconPosition="right">
+                  Continue revision
+                </Button>
+                <Button variant="secondary" icon="preview">
+                  Open module
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Exam prep CTA
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="accent" icon="create">
-                Start mock exam
-              </Button>
-              <Button variant="quiet" icon="file">
-                View tips
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Exam prep CTA
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="accent" icon="create">
+                  Start mock exam
+                </Button>
+                <Button variant="quiet" icon="file">
+                  View tips
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Upgrade / funnel CTA
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="inverse" icon="next" iconPosition="right">
-                Unlock full course
-              </Button>
-              <Button variant="secondary">See pricing</Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Upgrade / funnel CTA
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="inverse" icon="next" iconPosition="right">
+                  Unlock full course
+                </Button>
+                <Button variant="secondary">See pricing</Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -577,60 +616,66 @@ export default async function AdminUiButtonsPage() {
         description="These combinations are slightly more expressive and motivational, but should still feel polished enough for the platform and parent-facing moments."
       >
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Momentum actions
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="accent"
-                icon="next"
-                iconPosition="right"
-                className="motion-safe:hover:scale-[1.015]"
-              >
-                Keep the streak going
-              </Button>
-              <Button variant="soft" icon="completed">
-                I’m ready
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Momentum actions
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="accent"
+                  icon="next"
+                  iconPosition="right"
+                  className="motion-safe:hover:scale-[1.015]"
+                >
+                  Keep the streak going
+                </Button>
+                <Button variant="soft" icon="completed">
+                  I’m ready
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Revision prompts
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="primary"
-                icon="create"
-                className="motion-safe:hover:-rotate-[0.3deg]"
-              >
-                Start vocab challenge
-              </Button>
-              <Button variant="secondary" icon="file">
-                Review mistakes
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Revision prompts
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="primary"
+                  icon="create"
+                  className="motion-safe:hover:-rotate-[0.3deg]"
+                >
+                  Start vocab challenge
+                </Button>
+                <Button variant="secondary" icon="file">
+                  Review mistakes
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
 
-          <div className="app-card p-4">
-            <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-              Upgrade moments
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="inverse" icon="next" iconPosition="right">
-                See full course path
-              </Button>
-              <Button
-                variant="accent"
-                icon="preview"
-                className="motion-safe:hover:scale-[1.02]"
-              >
-                Unlock premium tools
-              </Button>
-            </div>
-          </div>
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Upgrade moments
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="inverse" icon="next" iconPosition="right">
+                  See full course path
+                </Button>
+                <Button
+                  variant="accent"
+                  icon="preview"
+                  className="motion-safe:hover:scale-[1.02]"
+                >
+                  Unlock premium tools
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
