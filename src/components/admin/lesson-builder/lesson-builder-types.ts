@@ -21,6 +21,15 @@ export type LessonBuilderTemplateOptions = {
   }[];
 };
 
+export type LessonBuilderVocabularySetOption = {
+  id: string;
+  title: string;
+  slug: string;
+  isPublished: boolean;
+  tier: string;
+  listMode: string;
+};
+
 export type LessonSectionVariantVisibility =
   | "shared"
   | "foundation_only"
@@ -54,6 +63,7 @@ export type AdminLessonBuilderProps = {
     }[];
   }[];
   templateOptions: LessonBuilderTemplateOptions;
+  vocabularySetOptions: LessonBuilderVocabularySetOption[];
 };
 
 export type RouteFields = {

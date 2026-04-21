@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   createAudioBlockAction,
   createCalloutBlockAction,
@@ -17,6 +17,7 @@ import {
   insertBlockPresetAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
 import type {
+  LessonBuilderVocabularySetOption,
   LessonSection,
   NewBlockType,
   RouteFields,
@@ -26,7 +27,11 @@ import {
   PendingStatusText,
   PendingSubmitButton,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
-import { getDefaultBlockData, getLessonBlockLabel } from "@/lib/lessons/lesson-blocks";
+import {
+  getDefaultBlockData,
+  getLessonBlockLabel,
+  getLessonBlockPreview,
+} from "@/lib/lessons/lesson-blocks";
 
 function AddSimpleTextBlockForm(props: {
   placeholder: string;
@@ -247,6 +252,103 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
   );
 }
 
+function AddVocabularySetBlockForm(props: {
+  sectionId: string;
+  routeFields: RouteFields;
+  vocabularySetOptions: LessonBuilderVocabularySetOption[];
+}) {
+  const defaultData = getDefaultBlockData("vocabulary-set") as {
+    title?: string;
+    vocabularySetSlug?: string;
+  };
+
+  const [selectedSlug, setSelectedSlug] = useState<string>(
+    props.vocabularySetOptions[0]?.slug ?? String(defaultData.vocabularySetSlug ?? "")
+  );
+
+  const selectedVocabularySet = useMemo(
+    () =>
+      props.vocabularySetOptions.find((option) => option.slug === selectedSlug) ?? null,
+    [props.vocabularySetOptions, selectedSlug]
+  );
+
+  if (props.vocabularySetOptions.length === 0) {
+    return (
+      <div className="space-y-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--background-elevated)] px-4 py-5">
+        <div className="text-sm font-medium text-[var(--text-primary)]">
+          No attachable vocabulary sets yet
+        </div>
+        <p className="text-sm text-[var(--text-secondary)]">
+          Create at least one vocabulary set with a slug before attaching it to a lesson
+          block.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form action={createVocabularySetBlockAction} className="space-y-3">
+      <BuilderHiddenFields {...props.routeFields} />
+      <input type="hidden" name="sectionId" value={props.sectionId} />
+
+      <input
+        name="title"
+        placeholder="Optional heading"
+        defaultValue={String(defaultData.title ?? "")}
+        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+      />
+
+      <div className="space-y-2">
+        <select
+          name="vocabularySetSlug"
+          required
+          value={selectedSlug}
+          onChange={(event) => setSelectedSlug(event.target.value)}
+          className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        >
+          {props.vocabularySetOptions.map((option) => (
+            <option key={option.id} value={option.slug}>
+              {option.title} · {option.slug}
+              {option.isPublished ? "" : " · draft"}
+            </option>
+          ))}
+        </select>
+
+        {selectedVocabularySet ? (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/50 px-3 py-3 text-sm">
+            <div className="font-medium text-[var(--text-primary)]">
+              {selectedVocabularySet.title}
+            </div>
+            <div className="mt-1 text-xs app-text-soft">
+              Slug: {selectedVocabularySet.slug}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
+                {selectedVocabularySet.isPublished ? "Published" : "Draft"}
+              </span>
+              <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
+                Tier: {selectedVocabularySet.tier}
+              </span>
+              <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
+                Mode: {selectedVocabularySet.listMode}
+              </span>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="space-y-2">
+        <PendingSubmitButton
+          idleLabel="Add vocabulary-set block"
+          pendingLabel="Adding vocabulary-set block..."
+          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+        />
+        <PendingStatusText pendingText="Saving linked vocabulary set block..." />
+      </div>
+    </form>
+  );
+}
+
 function BlockTypeButton(props: {
   label: string;
   value: NewBlockType;
@@ -283,6 +385,7 @@ export default function AddBlockComposer(props: {
     description: string;
     blocksCount: number;
   }[];
+  vocabularySetOptions: LessonBuilderVocabularySetOption[];
 }) {
   const [composerState, setComposerState] = useState<{
     sectionId: string;
@@ -613,13 +716,10 @@ export default function AddBlockComposer(props: {
           )}
 
           {selectedNewBlockType === "vocabulary-set" && (
-            <AddSlugBlockForm
+            <AddVocabularySetBlockForm
               sectionId={props.section.id}
               routeFields={props.routeFields}
-              action={createVocabularySetBlockAction}
-              buttonLabel="Add vocabulary-set block"
-              slugFieldName="vocabularySetSlug"
-              slugPlaceholder="vocabulary-set-slug"
+              vocabularySetOptions={props.vocabularySetOptions}
             />
           )}
         </div>
