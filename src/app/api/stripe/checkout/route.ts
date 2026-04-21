@@ -92,22 +92,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const isSubscriptionUpgrade =
+    if (resolved.purchaseType === "standard" && !resolved.price.stripe_price_id) {
+      return NextResponse.json(
+        { error: "Resolved standard price is missing Stripe price id" },
+        { status: 400 }
+      );
+    }
+
+    if (
       resolved.purchaseType === "upgrade" &&
-      resolved.price.billing_type === BILLING_TYPES.SUBSCRIPTION;
+      resolved.price.billing_type === BILLING_TYPES.SUBSCRIPTION &&
+      !resolved.price.stripe_price_id
+    ) {
+      return NextResponse.json(
+        { error: "Target recurring price is missing Stripe price id" },
+        { status: 400 }
+      );
+    }
+
+    const isUpgradeCheckout = resolved.purchaseType === "upgrade";
 
     const session = await createStripeCheckoutSession(
       {
-        stripePriceId: isSubscriptionUpgrade ? null : resolved.price.stripe_price_id,
-        customAmountGbp: isSubscriptionUpgrade ? resolved.price.amount_gbp : null,
-        customLineItemName: isSubscriptionUpgrade
+        stripePriceId: isUpgradeCheckout ? null : resolved.price.stripe_price_id,
+        customAmountGbp: isUpgradeCheckout
+          ? (resolved.upgradeFeeAmountGbp ?? null)
+          : null,
+        customLineItemName: isUpgradeCheckout
           ? `${resolved.product.name} upgrade fee`
           : null,
-        modeOverride: isSubscriptionUpgrade ? "payment" : null,
+        modeOverride: isUpgradeCheckout ? "payment" : null,
         userId: user.id,
         productId: resolved.product.id,
         priceId: resolved.price.id,
         purchaseType: resolved.purchaseType,
+        upgradeFlow: resolved.upgradeFlow ?? null,
         successPath: body.successPath,
         cancelPath: body.cancelPath,
         customerEmail: user.email ?? null,
