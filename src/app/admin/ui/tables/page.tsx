@@ -12,6 +12,17 @@ import Surface from "@/components/ui/surface";
 import TableShell from "@/components/ui/table-shell";
 import TableToolbar from "@/components/ui/table-toolbar";
 import AdminRow from "@/components/ui/admin-row";
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableCompactCell,
+  DataTableCompactHeaderCell,
+  DataTableHead,
+  DataTableHeaderCell,
+  DataTableHeaderRow,
+  DataTableRow,
+} from "@/components/ui/data-table";
 
 type DemoRow = {
   name: string;
@@ -140,64 +151,54 @@ function StandardTable() {
     >
       <DemoToolbar />
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-[var(--border)] bg-[var(--background-muted)] text-left">
-              <th className="px-5 py-3 font-semibold text-[var(--text-primary)]">Name</th>
-              <th className="px-5 py-3 font-semibold text-[var(--text-primary)]">Type</th>
-              <th className="px-5 py-3 font-semibold text-[var(--text-primary)]">
-                Status
-              </th>
-              <th className="px-5 py-3 font-semibold text-[var(--text-primary)]">
-                Lessons
-              </th>
-              <th className="px-5 py-3 font-semibold text-[var(--text-primary)]">
-                Updated
-              </th>
-              <th className="px-5 py-3 font-semibold text-[var(--text-primary)]">
-                Actions
-              </th>
-            </tr>
-          </thead>
+      <DataTable>
+        <DataTableHead>
+          <DataTableHeaderRow>
+            <DataTableHeaderCell>Name</DataTableHeaderCell>
+            <DataTableHeaderCell>Type</DataTableHeaderCell>
+            <DataTableHeaderCell>Status</DataTableHeaderCell>
+            <DataTableHeaderCell>Lessons</DataTableHeaderCell>
+            <DataTableHeaderCell>Updated</DataTableHeaderCell>
+            <DataTableHeaderCell>Actions</DataTableHeaderCell>
+          </DataTableHeaderRow>
+        </DataTableHead>
 
-          <tbody>
-            {demoRows.map((row) => (
-              <tr
-                key={row.name}
-                className="border-b border-[var(--border)] transition hover:bg-[var(--background-muted)]/65"
-              >
-                <td className="px-5 py-4">
-                  <div className="space-y-1">
-                    <div className="font-medium text-[var(--text-primary)]">
-                      {row.name}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <VariantBadge variant={row.variant} />
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-4 app-text-muted">{row.type}</td>
-                <td className="px-5 py-4">
-                  <StatusBadge status={row.status} />
-                </td>
-                <td className="px-5 py-4 app-text-muted">{row.lessons}</td>
-                <td className="px-5 py-4 app-text-muted">{row.updated}</td>
-                <td className="px-5 py-4">
+        <DataTableBody>
+          {demoRows.map((row) => (
+            <DataTableRow key={row.name}>
+              <DataTableCell>
+                <div className="space-y-1">
+                  <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
                   <div className="flex flex-wrap gap-2">
-                    <Button variant="secondary" size="sm" icon="edit">
-                      Edit
-                    </Button>
-                    <Button variant="quiet" size="sm" icon="next">
-                      Open
-                    </Button>
+                    <VariantBadge variant={row.variant} />
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
+              </DataTableCell>
+
+              <DataTableCell className="app-text-muted">{row.type}</DataTableCell>
+
+              <DataTableCell>
+                <StatusBadge status={row.status} />
+              </DataTableCell>
+
+              <DataTableCell className="app-text-muted">{row.lessons}</DataTableCell>
+
+              <DataTableCell className="app-text-muted">{row.updated}</DataTableCell>
+
+              <DataTableCell>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="secondary" size="sm" icon="edit">
+                    Edit
+                  </Button>
+                  <Button variant="quiet" size="sm" icon="next">
+                    Open
+                  </Button>
+                </div>
+              </DataTableCell>
+            </DataTableRow>
+          ))}
+        </DataTableBody>
+      </DataTable>
     </TableShell>
   );
 }
@@ -209,38 +210,34 @@ function DenseTable() {
       description="Useful when rows are numerous, but should be used carefully to avoid making scanning harder."
       actions={<Badge tone="warning">Compact pattern</Badge>}
     >
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-[var(--border)] bg-[var(--background-muted)] text-left">
-              <th className="px-4 py-2.5 font-semibold text-[var(--text-primary)]">
-                Item
-              </th>
-              <th className="px-4 py-2.5 font-semibold text-[var(--text-primary)]">
-                Status
-              </th>
-              <th className="px-4 py-2.5 font-semibold text-[var(--text-primary)]">
-                Updated
-              </th>
-            </tr>
-          </thead>
+      <DataTable>
+        <DataTableHead>
+          <DataTableHeaderRow>
+            <DataTableCompactHeaderCell>Item</DataTableCompactHeaderCell>
+            <DataTableCompactHeaderCell>Status</DataTableCompactHeaderCell>
+            <DataTableCompactHeaderCell>Updated</DataTableCompactHeaderCell>
+          </DataTableHeaderRow>
+        </DataTableHead>
 
-          <tbody>
-            {demoRows.map((row) => (
-              <tr key={row.name} className="border-b border-[var(--border)]">
-                <td className="px-4 py-3">
-                  <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
-                  <div className="mt-0.5 text-xs app-text-soft">{row.type}</div>
-                </td>
-                <td className="px-4 py-3">
-                  <StatusBadge status={row.status} />
-                </td>
-                <td className="px-4 py-3 app-text-muted">{row.updated}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        <DataTableBody>
+          {demoRows.map((row) => (
+            <DataTableRow key={row.name} className="hover:bg-transparent">
+              <DataTableCompactCell>
+                <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
+                <div className="mt-0.5 text-xs app-text-soft">{row.type}</div>
+              </DataTableCompactCell>
+
+              <DataTableCompactCell>
+                <StatusBadge status={row.status} />
+              </DataTableCompactCell>
+
+              <DataTableCompactCell className="app-text-muted">
+                {row.updated}
+              </DataTableCompactCell>
+            </DataTableRow>
+          ))}
+        </DataTableBody>
+      </DataTable>
     </TableShell>
   );
 }
