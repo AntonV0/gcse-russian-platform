@@ -4,11 +4,14 @@ import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import Card, { CardBody, CardHeader } from "@/components/ui/card";
+import Card, { CardBody } from "@/components/ui/card";
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
 import Surface from "@/components/ui/surface";
+import TableShell from "@/components/ui/table-shell";
+import TableToolbar from "@/components/ui/table-toolbar";
+import AdminRow from "@/components/ui/admin-row";
 
 type DemoRow = {
   name: string;
@@ -84,40 +87,9 @@ function VariantBadge({ variant }: { variant?: DemoRow["variant"] }) {
   return <Badge tone="default">Higher</Badge>;
 }
 
-function TableShell({
-  title,
-  description,
-  children,
-  actions,
-}: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-}) {
-  return (
-    <Card className="overflow-hidden">
-      <CardHeader>
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-            <p className="mt-1 text-sm app-text-muted">{description}</p>
-          </div>
-
-          {actions ? (
-            <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
-          ) : null}
-        </div>
-      </CardHeader>
-
-      <div>{children}</div>
-    </Card>
-  );
-}
-
 function DemoToolbar() {
   return (
-    <div className="flex flex-col gap-3 border-b border-[var(--border)] px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+    <TableToolbar>
       <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center">
         <div className="w-full md:max-w-xs">
           <Input placeholder="Search rows..." />
@@ -150,7 +122,7 @@ function DemoToolbar() {
           Add new
         </Button>
       </div>
-    </div>
+    </TableToolbar>
   );
 }
 
@@ -286,59 +258,33 @@ function RowStatePatterns() {
           </div>
 
           <div className="space-y-3">
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">
-                    Default row
-                  </div>
-                  <div className="text-sm app-text-muted">
-                    Calm baseline state for normal scanning.
-                  </div>
-                </div>
-                <StatusBadge status="draft" />
-              </div>
-            </div>
+            <AdminRow
+              title="Default row"
+              description="Calm baseline state for normal scanning."
+              state="default"
+              badges={<StatusBadge status="draft" />}
+            />
 
-            <div className="rounded-2xl border border-[var(--border-strong)] bg-[var(--background-muted)] px-4 py-3 shadow-[0_10px_20px_rgba(16,32,51,0.06)]">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">Hover row</div>
-                  <div className="text-sm app-text-muted">
-                    Slightly elevated to show interactive intent.
-                  </div>
-                </div>
-                <StatusBadge status="in_progress" />
-              </div>
-            </div>
+            <AdminRow
+              title="Hover row"
+              description="Slightly elevated to show interactive intent."
+              state="hover"
+              badges={<StatusBadge status="in_progress" />}
+            />
 
-            <div className="rounded-2xl border border-[rgba(37,99,235,0.22)] bg-[rgba(37,99,235,0.08)] px-4 py-3 shadow-[0_10px_20px_rgba(37,99,235,0.08)]">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">
-                    Selected row
-                  </div>
-                  <div className="text-sm app-text-muted">
-                    Use sparingly for bulk actions or active selection.
-                  </div>
-                </div>
-                <StatusBadge status="published" />
-              </div>
-            </div>
+            <AdminRow
+              title="Selected row"
+              description="Use sparingly for bulk actions or active selection."
+              state="selected"
+              badges={<StatusBadge status="published" />}
+            />
 
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3 opacity-60">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">
-                    Disabled row
-                  </div>
-                  <div className="text-sm app-text-muted">
-                    Present but unavailable for interaction.
-                  </div>
-                </div>
-                <StatusBadge status="draft" />
-              </div>
-            </div>
+            <AdminRow
+              title="Disabled row"
+              description="Present but unavailable for interaction."
+              state="disabled"
+              badges={<StatusBadge status="draft" />}
+            />
           </div>
         </CardBody>
       </Card>
@@ -359,80 +305,75 @@ function RowStatePatterns() {
               <div className="mb-2 text-sm font-semibold text-[var(--text-primary)]">
                 Always-visible actions
               </div>
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">
-                    Theme 1 module
-                  </div>
-                  <div className="text-sm app-text-muted">
-                    Safer when actions are core to the workflow.
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="secondary" size="sm" icon="edit">
-                    Edit
-                  </Button>
-                  <Button variant="quiet" size="sm" icon="next">
-                    Open
-                  </Button>
-                </div>
-              </div>
+
+              <AdminRow
+                title="Theme 1 module"
+                description="Safer when actions are core to the workflow."
+                badges={null}
+                actions={
+                  <>
+                    <Button variant="secondary" size="sm" icon="edit">
+                      Edit
+                    </Button>
+                    <Button variant="quiet" size="sm" icon="next">
+                      Open
+                    </Button>
+                  </>
+                }
+              />
             </Surface>
 
             <Surface variant="muted" className="p-4">
               <div className="mb-2 text-sm font-semibold text-[var(--text-primary)]">
                 Compact action group
               </div>
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">
-                    Speaking practice block
-                  </div>
-                  <div className="text-sm app-text-muted">
-                    Better when rows are more numerous or visually dense.
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    icon="settings"
-                    iconOnly
-                    ariaLabel="Settings"
-                  />
-                  <Button
-                    variant="quiet"
-                    size="sm"
-                    icon="delete"
-                    iconOnly
-                    ariaLabel="Delete"
-                  />
-                </div>
-              </div>
+
+              <AdminRow
+                title="Speaking practice block"
+                description="Better when rows are more numerous or visually dense."
+                compact
+                badges={null}
+                actions={
+                  <>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      icon="settings"
+                      iconOnly
+                      ariaLabel="Settings"
+                    />
+                    <Button
+                      variant="quiet"
+                      size="sm"
+                      icon="delete"
+                      iconOnly
+                      ariaLabel="Delete"
+                    />
+                  </>
+                }
+              />
             </Surface>
 
             <Surface variant="muted" className="p-4">
               <div className="mb-2 text-sm font-semibold text-[var(--text-primary)]">
                 Hover-reveal direction
               </div>
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">
-                    Builder lesson row
-                  </div>
-                  <div className="text-sm app-text-muted">
-                    Use when scanning matters more than immediate action visibility.
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2 opacity-70 transition group-hover:opacity-100">
-                  <Button variant="quiet" size="sm" icon="edit">
-                    Edit
-                  </Button>
-                  <Button variant="quiet" size="sm" icon="next">
-                    Open
-                  </Button>
-                </div>
-              </div>
+
+              <AdminRow
+                title="Builder lesson row"
+                description="Use when scanning matters more than immediate action visibility."
+                badges={null}
+                actions={
+                  <>
+                    <Button variant="quiet" size="sm" icon="edit">
+                      Edit
+                    </Button>
+                    <Button variant="quiet" size="sm" icon="next">
+                      Open
+                    </Button>
+                  </>
+                }
+              />
             </Surface>
           </div>
         </CardBody>
@@ -468,65 +409,51 @@ function HierarchyListPattern() {
           </div>
 
           <div className="mt-4 space-y-3 border-l border-[var(--border)] pl-4">
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/35 px-4 py-3">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">
-                    School and daily routine
-                  </div>
-                  <div className="mt-1 text-sm app-text-muted">Lesson • 6 blocks</div>
-                </div>
+            <AdminRow
+              title="School and daily routine"
+              description="Lesson • 6 blocks"
+              nested
+              badges={<Badge tone="muted">Draft</Badge>}
+              actions={
+                <Button variant="quiet" size="sm" icon="next">
+                  Open
+                </Button>
+              }
+              className="bg-[var(--background-muted)]/35"
+            />
 
-                <div className="flex flex-wrap gap-2">
-                  <Badge tone="muted">Draft</Badge>
-                  <Button variant="quiet" size="sm" icon="next">
-                    Open
-                  </Button>
-                </div>
-              </div>
+            <div className="ml-4 space-y-2 border-l border-[var(--border)] pl-4">
+              <AdminRow
+                title="Starter vocabulary"
+                description="Block • content"
+                nested
+                compact
+                badges={<Badge tone="muted">Text</Badge>}
+                className="bg-[var(--background-elevated)]"
+              />
 
-              <div className="mt-3 space-y-2 border-l border-[var(--border)] pl-4">
-                <div className="flex items-center justify-between gap-3 rounded-lg bg-[var(--background-elevated)] px-3 py-2">
-                  <div>
-                    <div className="text-sm font-medium text-[var(--text-primary)]">
-                      Starter vocabulary
-                    </div>
-                    <div className="text-xs app-text-soft">Block • content</div>
-                  </div>
-
-                  <Badge tone="muted">Text</Badge>
-                </div>
-
-                <div className="flex items-center justify-between gap-3 rounded-lg bg-[var(--background-elevated)] px-3 py-2">
-                  <div>
-                    <div className="text-sm font-medium text-[var(--text-primary)]">
-                      Reading practice
-                    </div>
-                    <div className="text-xs app-text-soft">Block • practice</div>
-                  </div>
-
-                  <Badge tone="warning">Review</Badge>
-                </div>
-              </div>
+              <AdminRow
+                title="Reading practice"
+                description="Block • practice"
+                nested
+                compact
+                badges={<Badge tone="warning">Review</Badge>}
+                className="bg-[var(--background-elevated)]"
+              />
             </div>
 
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/35 px-4 py-3">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <div className="font-medium text-[var(--text-primary)]">
-                    Family and relationships
-                  </div>
-                  <div className="mt-1 text-sm app-text-muted">Lesson • 4 blocks</div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <Badge tone="info">Published</Badge>
-                  <Button variant="quiet" size="sm" icon="next">
-                    Open
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <AdminRow
+              title="Family and relationships"
+              description="Lesson • 4 blocks"
+              nested
+              badges={<Badge tone="info">Published</Badge>}
+              actions={
+                <Button variant="quiet" size="sm" icon="next">
+                  Open
+                </Button>
+              }
+              className="bg-[var(--background-muted)]/35"
+            />
           </div>
         </div>
       </div>
