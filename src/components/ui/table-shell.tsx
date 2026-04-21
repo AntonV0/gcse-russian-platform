@@ -23,10 +23,12 @@ export default function TableShell({
   return (
     <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="TableShell"
-          filePath="src/components/ui/table-shell.tsx"
-        />
+        <div className="absolute right-6 z-[140]">
+          <DevComponentMarker
+            componentName="TableShell"
+            filePath="src/components/ui/table-shell.tsx"
+          />
+        </div>
       ) : null}
 
       <Card className={["overflow-hidden", className].filter(Boolean).join(" ")}>
