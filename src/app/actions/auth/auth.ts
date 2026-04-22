@@ -16,7 +16,7 @@ export async function signUp(formData: FormData) {
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -28,6 +28,30 @@ export async function signUp(formData: FormData) {
 
   if (error) {
     redirect(`/signup?error=${encodeURIComponent(error.message)}`);
+  }
+
+  const userId = data.user?.id;
+
+  if (userId) {
+    const safeFullName = fullName.length > 100 ? fullName.slice(0, 100) : fullName;
+    const safeDisplayName =
+      safeFullName.length > 50 ? safeFullName.slice(0, 50) : safeFullName;
+
+    const { error: profileError } = await supabase.from("profiles").upsert(
+      {
+        id: userId,
+        email,
+        full_name: safeFullName || null,
+        display_name: safeDisplayName || null,
+      },
+      {
+        onConflict: "id",
+      }
+    );
+
+    if (profileError) {
+      redirect(`/signup?error=${encodeURIComponent(profileError.message)}`);
+    }
   }
 
   redirect("/dashboard");

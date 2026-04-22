@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getActiveUserProductGrantDb,
   hasActiveUserProductGrantDb,
@@ -95,7 +95,7 @@ export function getUpgradeProductCode(productCode: string): string {
 export async function getActiveProductByCodeDb(
   productCode: string
 ): Promise<DbProduct | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("products")
@@ -116,7 +116,7 @@ export async function getActiveProductByCodeDb(
 }
 
 export async function getProductByIdDb(productId: string): Promise<DbProduct | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("products")
@@ -136,7 +136,7 @@ export async function getProductByIdDb(productId: string): Promise<DbProduct | n
 }
 
 export async function getActivePricesForProductDb(productId: string): Promise<DbPrice[]> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("prices")
@@ -157,7 +157,7 @@ export async function getActivePricesForProductDb(productId: string): Promise<Db
 }
 
 export async function getActivePriceByIdDb(priceId: string): Promise<DbPrice | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("prices")
@@ -180,7 +180,7 @@ export async function getActivePriceByIdDb(priceId: string): Promise<DbPrice | n
 export async function getActivePriceByStripePriceIdDb(
   stripePriceId: string
 ): Promise<DbPrice | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("prices")
@@ -223,10 +223,6 @@ export function matchPriceByBillingShape(
   });
 
   return matched ?? null;
-}
-
-function getFixedUpgradeFeeAmountGbp(sourcePrice: DbPrice, targetPrice: DbPrice): number {
-  return Math.max(targetPrice.amount_gbp - sourcePrice.amount_gbp, 0);
 }
 
 function isFoundationProductCode(productCode: string): boolean {
@@ -278,9 +274,31 @@ export function getUpgradeFlowForPath(
 
   if (
     sourceIsFoundation &&
-    isLifetimePrice(sourcePrice) &&
     targetIsHigher &&
-    isLifetimePrice(targetPrice)
+    isLifetimePrice(targetPrice) &&
+    (isMonthlySubscriptionPrice(sourcePrice) ||
+      isThreeMonthSubscriptionPrice(sourcePrice) ||
+      isLifetimePrice(sourcePrice))
+  ) {
+    return "lifetime";
+  }
+
+  if (
+    sourceIsFoundation &&
+    targetIsFoundation &&
+    isLifetimePrice(targetPrice) &&
+    (isMonthlySubscriptionPrice(sourcePrice) ||
+      isThreeMonthSubscriptionPrice(sourcePrice))
+  ) {
+    return "lifetime";
+  }
+
+  if (
+    sourceIsHigher &&
+    targetIsHigher &&
+    isLifetimePrice(targetPrice) &&
+    (isMonthlySubscriptionPrice(sourcePrice) ||
+      isThreeMonthSubscriptionPrice(sourcePrice))
   ) {
     return "lifetime";
   }
@@ -371,48 +389,150 @@ function sortUpgradeCandidates(
   });
 }
 
-function matchLifetimeUpgradeCheckoutPrice(
+function findOneTimePriceByAmount(
   upgradePrices: DbPrice[],
-  sourcePrice: DbPrice
+  amountGbp: number
 ): DbPrice | null {
-  if (isMonthlySubscriptionPrice(sourcePrice)) {
-    return (
-      upgradePrices.find(
-        (price) =>
-          price.billing_type === BILLING_TYPES.ONE_TIME && price.amount_gbp === 350
-      ) ?? null
-    );
+  return (
+    upgradePrices.find(
+      (price) =>
+        price.billing_type === BILLING_TYPES.ONE_TIME && price.amount_gbp === amountGbp
+    ) ?? null
+  );
+}
+
+function findThreeMonthSubscriptionPriceByAmount(
+  upgradePrices: DbPrice[],
+  amountGbp: number
+): DbPrice | null {
+  return (
+    upgradePrices.find(
+      (price) =>
+        price.billing_type === BILLING_TYPES.SUBSCRIPTION &&
+        price.interval_unit === INTERVAL_UNITS.MONTH &&
+        (price.interval_count ?? 1) === 3 &&
+        price.amount_gbp === amountGbp
+    ) ?? null
+  );
+}
+
+function matchLifetimeUpgradeCheckoutPrice(params: {
+  upgradePrices: DbPrice[];
+  sourceProductCode: string;
+  targetProductCode: string;
+  sourcePrice: DbPrice;
+}): DbPrice | null {
+  if (
+    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
+  ) {
+    if (isMonthlySubscriptionPrice(params.sourcePrice)) {
+      return findOneTimePriceByAmount(params.upgradePrices, 349);
+    }
+
+    if (isThreeMonthSubscriptionPrice(params.sourcePrice)) {
+      return findOneTimePriceByAmount(params.upgradePrices, 269);
+    }
+
+    if (isLifetimePrice(params.sourcePrice)) {
+      return findOneTimePriceByAmount(params.upgradePrices, 99);
+    }
   }
 
-  if (isThreeMonthSubscriptionPrice(sourcePrice)) {
-    return (
-      upgradePrices.find(
-        (price) =>
-          price.billing_type === BILLING_TYPES.ONE_TIME && price.amount_gbp === 270
-      ) ?? null
-    );
+  if (
+    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
+  ) {
+    if (isMonthlySubscriptionPrice(params.sourcePrice)) {
+      return findOneTimePriceByAmount(params.upgradePrices, 249);
+    }
+
+    if (isThreeMonthSubscriptionPrice(params.sourcePrice)) {
+      return findOneTimePriceByAmount(params.upgradePrices, 169);
+    }
   }
 
-  if (isLifetimePrice(sourcePrice)) {
-    return (
-      upgradePrices.find(
-        (price) =>
-          price.billing_type === BILLING_TYPES.ONE_TIME && price.amount_gbp === 100
-      ) ?? null
-    );
+  if (
+    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
+    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
+  ) {
+    if (isMonthlySubscriptionPrice(params.sourcePrice)) {
+      return findOneTimePriceByAmount(params.upgradePrices, 339);
+    }
+
+    if (isThreeMonthSubscriptionPrice(params.sourcePrice)) {
+      return findOneTimePriceByAmount(params.upgradePrices, 249);
+    }
   }
 
   return null;
 }
 
-function matchUpgradeCheckoutPrice(params: {
+function matchMonthlyToThreeMonthUpgradeCheckoutPrice(params: {
   upgradePrices: DbPrice[];
+  sourceProductCode: string;
+  targetProductCode: string;
+  sourcePrice: DbPrice;
+}): DbPrice | null {
+  if (!isMonthlySubscriptionPrice(params.sourcePrice)) {
+    return null;
+  }
+
+  if (
+    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
+  ) {
+    return findThreeMonthSubscriptionPriceByAmount(params.upgradePrices, 79);
+  }
+
+  if (
+    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
+    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
+  ) {
+    return findThreeMonthSubscriptionPriceByAmount(params.upgradePrices, 89);
+  }
+
+  if (
+    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
+  ) {
+    return findThreeMonthSubscriptionPriceByAmount(params.upgradePrices, 99);
+  }
+
+  return null;
+}
+
+function matchSameCadenceUpgradeCheckoutPrice(params: {
+  upgradePrices: DbPrice[];
+  sourceProductCode: string;
+  targetProductCode: string;
   sourcePrice: DbPrice;
   targetPrice: DbPrice;
-  upgradeFlow: UpgradeFlow;
 }): DbPrice | null {
-  if (params.upgradeFlow === "lifetime") {
-    return matchLifetimeUpgradeCheckoutPrice(params.upgradePrices, params.sourcePrice);
+  if (
+    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
+    isMonthlySubscriptionPrice(params.sourcePrice) &&
+    isMonthlySubscriptionPrice(params.targetPrice)
+  ) {
+    return (
+      params.upgradePrices.find(
+        (price) =>
+          price.billing_type === BILLING_TYPES.SUBSCRIPTION &&
+          price.interval_unit === INTERVAL_UNITS.MONTH &&
+          (price.interval_count ?? 1) === 1 &&
+          price.amount_gbp === 9
+      ) ?? null
+    );
+  }
+
+  if (
+    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
+    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
+    isThreeMonthSubscriptionPrice(params.sourcePrice) &&
+    isThreeMonthSubscriptionPrice(params.targetPrice)
+  ) {
+    return findThreeMonthSubscriptionPriceByAmount(params.upgradePrices, 19);
   }
 
   return matchPriceByBillingShape(
@@ -421,6 +541,45 @@ function matchUpgradeCheckoutPrice(params: {
     params.targetPrice.interval_unit,
     params.targetPrice.interval_count
   );
+}
+
+function matchUpgradeCheckoutPrice(params: {
+  upgradePrices: DbPrice[];
+  sourceProductCode: string;
+  targetProductCode: string;
+  sourcePrice: DbPrice;
+  targetPrice: DbPrice;
+  upgradeFlow: UpgradeFlow;
+}): DbPrice | null {
+  if (params.upgradeFlow === "lifetime") {
+    return matchLifetimeUpgradeCheckoutPrice({
+      upgradePrices: params.upgradePrices,
+      sourceProductCode: params.sourceProductCode,
+      targetProductCode: params.targetProductCode,
+      sourcePrice: params.sourcePrice,
+    });
+  }
+
+  if (params.upgradeFlow === "monthly_to_three_month") {
+    return matchMonthlyToThreeMonthUpgradeCheckoutPrice({
+      upgradePrices: params.upgradePrices,
+      sourceProductCode: params.sourceProductCode,
+      targetProductCode: params.targetProductCode,
+      sourcePrice: params.sourcePrice,
+    });
+  }
+
+  if (params.upgradeFlow === "same_cadence") {
+    return matchSameCadenceUpgradeCheckoutPrice({
+      upgradePrices: params.upgradePrices,
+      sourceProductCode: params.sourceProductCode,
+      targetProductCode: params.targetProductCode,
+      sourcePrice: params.sourcePrice,
+      targetPrice: params.targetPrice,
+    });
+  }
+
+  return null;
 }
 
 export async function resolveUpgradeQuoteDb(
@@ -492,6 +651,8 @@ export async function resolveUpgradeQuoteDb(
 
       const upgradeCheckoutPrice = matchUpgradeCheckoutPrice({
         upgradePrices,
+        sourceProductCode: candidate.product.code,
+        targetProductCode: targetProduct.code,
         sourcePrice: candidate.price,
         targetPrice,
         upgradeFlow,
