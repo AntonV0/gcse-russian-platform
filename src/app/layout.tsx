@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/auth/auth";
 import AppShell from "@/components/layout/app-shell";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
   title: "GCSE Russian Course Platform",
@@ -34,7 +35,9 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen">
-        <AppShell user={user}>{children}</AppShell>
+        <ThemeProvider>
+          <AppShell user={user}>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   );
