@@ -4,6 +4,7 @@ import Button from "@/components/ui/button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
+import ContinueWhereLeftOffPanel from "@/components/admin/continue-where-left-off-panel";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -345,6 +346,8 @@ export default async function AdminPage() {
         </div>
 
         <div className="space-y-3">
+          <ContinueWhereLeftOffPanel />
+
           <PanelCard
             title="Admin guidance"
             description="A simple recommended flow for common admin work."
