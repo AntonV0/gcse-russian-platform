@@ -1,6 +1,6 @@
 "use client";
 
-import Card, { CardBody, CardHeader } from "@/components/ui/card";
+import Card, { CardBody, CardFooter, CardHeader } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type PanelCardTone = "default" | "admin" | "student" | "brand" | "muted";
@@ -9,11 +9,13 @@ type PanelCardDensity = "default" | "compact";
 type PanelCardProps = {
   title?: string;
   description?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   contentClassName?: string;
   headerClassName?: string;
+  footerClassName?: string;
   actions?: React.ReactNode;
+  footer?: React.ReactNode;
   tone?: PanelCardTone;
   density?: PanelCardDensity;
 };
@@ -66,6 +68,7 @@ function getDensityClasses(density: PanelCardDensity) {
       return {
         header: "px-4 py-3.5",
         body: "p-4",
+        footer: "px-4 py-3.5",
       };
 
     case "default":
@@ -73,6 +76,7 @@ function getDensityClasses(density: PanelCardDensity) {
       return {
         header: "px-5 py-4",
         body: "p-5",
+        footer: "px-5 py-4",
       };
   }
 }
@@ -84,12 +88,15 @@ export default function PanelCard({
   className,
   contentClassName,
   headerClassName,
+  footerClassName,
   actions,
+  footer,
   tone = "default",
   density = "default",
 }: PanelCardProps) {
   const toneClasses = getToneClasses(tone);
   const densityClasses = getDensityClasses(density);
+  const hasBody = children !== undefined && children !== null;
 
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
@@ -106,7 +113,7 @@ export default function PanelCard({
             "Course detail side panels",
             "Student guidance/support panels",
           ]}
-          notes="Use this as the default shared container before creating page-local card wrappers. Prefer tone and density props over one-off styling."
+          notes="Use footer for action rows or link rows. When there is no body content, the footer automatically avoids creating a double divider."
         />
       ) : null}
 
@@ -141,13 +148,29 @@ export default function PanelCard({
           </CardHeader>
         ) : null}
 
-        <CardBody
-          className={["app-panel-card-body", densityClasses.body, contentClassName]
-            .filter(Boolean)
-            .join(" ")}
-        >
-          {children}
-        </CardBody>
+        {hasBody ? (
+          <CardBody
+            className={["app-panel-card-body", densityClasses.body, contentClassName]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            {children}
+          </CardBody>
+        ) : null}
+
+        {footer ? (
+          <CardFooter
+            className={[
+              hasBody ? "border-t border-[var(--border)]" : "",
+              densityClasses.footer,
+              footerClassName,
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            {footer}
+          </CardFooter>
+        ) : null}
       </Card>
     </div>
   );
