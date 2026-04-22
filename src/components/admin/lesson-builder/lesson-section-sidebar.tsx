@@ -24,6 +24,12 @@ import {
   Panel,
   PendingStatusText,
   PendingSubmitButton,
+  BUILDER_DASHED_EMPTY_STATE_CLASS,
+  BUILDER_FIELD_CLASS,
+  BUILDER_PRIMARY_BUTTON_CLASS,
+  BUILDER_SECONDARY_BUTTON_CLASS,
+  BUILDER_SELECT_CLASS,
+  buildLessonBuilderRouteFormData,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 
 const VARIANT_VISIBILITY_OPTIONS = [
@@ -96,16 +102,9 @@ export default function LessonSectionSidebar(props: {
     const [moved] = reordered.splice(sourceIndex, 1);
     reordered.splice(targetIndex, 0, moved);
 
-    const formData = new FormData();
-    formData.set("courseId", props.routeFields.courseId);
-    formData.set("variantId", props.routeFields.variantId);
-    formData.set("moduleId", props.routeFields.moduleId);
-    formData.set("lessonId", props.routeFields.lessonId);
-    formData.set("courseSlug", props.routeFields.courseSlug);
-    formData.set("variantSlug", props.routeFields.variantSlug);
-    formData.set("moduleSlug", props.routeFields.moduleSlug);
-    formData.set("lessonSlug", props.routeFields.lessonSlug);
-    formData.set("orderedSectionIds", reordered.map((section) => section.id).join(","));
+    const formData = buildLessonBuilderRouteFormData(props.routeFields, {
+      orderedSectionIds: reordered.map((section) => section.id).join(","),
+    });
 
     startTransition(async () => {
       await reorderSectionsAction(formData);
@@ -116,18 +115,11 @@ export default function LessonSectionSidebar(props: {
     if (!props.draggedBlockContext) return;
     if (props.draggedBlockContext.sourceSectionId === targetSectionId) return;
 
-    const formData = new FormData();
-    formData.set("courseId", props.routeFields.courseId);
-    formData.set("variantId", props.routeFields.variantId);
-    formData.set("moduleId", props.routeFields.moduleId);
-    formData.set("lessonId", props.routeFields.lessonId);
-    formData.set("courseSlug", props.routeFields.courseSlug);
-    formData.set("variantSlug", props.routeFields.variantSlug);
-    formData.set("moduleSlug", props.routeFields.moduleSlug);
-    formData.set("lessonSlug", props.routeFields.lessonSlug);
-    formData.set("blockId", props.draggedBlockContext.blockId);
-    formData.set("sourceSectionId", props.draggedBlockContext.sourceSectionId);
-    formData.set("targetSectionId", targetSectionId);
+    const formData = buildLessonBuilderRouteFormData(props.routeFields, {
+      blockId: props.draggedBlockContext.blockId,
+      sourceSectionId: props.draggedBlockContext.sourceSectionId,
+      targetSectionId,
+    });
 
     startTransition(async () => {
       await moveBlockToSectionAction(formData);
@@ -144,7 +136,7 @@ export default function LessonSectionSidebar(props: {
               value={props.sectionSearch}
               onChange={(event) => props.onSectionSearchChange(event.target.value)}
               placeholder="Search sections..."
-              className="w-full rounded-xl border px-3 py-2 text-sm"
+              className={BUILDER_FIELD_CLASS}
             />
 
             <div className="text-xs text-gray-500">
@@ -155,11 +147,9 @@ export default function LessonSectionSidebar(props: {
           </div>
 
           {props.sections.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
-              No sections yet.
-            </div>
+            <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>No sections yet.</div>
           ) : filteredSections.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
+            <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
               No sections match your search.
             </div>
           ) : (
@@ -413,7 +403,7 @@ export default function LessonSectionSidebar(props: {
       >
         <div className="grid gap-3">
           {props.sectionTemplateOptions.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
+            <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
               No DB section templates found yet.
             </div>
           ) : (
@@ -444,7 +434,7 @@ export default function LessonSectionSidebar(props: {
                   <PendingSubmitButton
                     idleLabel="Insert section template"
                     pendingLabel="Inserting section template..."
-                    className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                    className={BUILDER_SECONDARY_BUTTON_CLASS}
                   />
                   <PendingStatusText pendingText="Creating the section and starter blocks..." />
                 </div>
@@ -466,7 +456,7 @@ export default function LessonSectionSidebar(props: {
               name="title"
               required
               placeholder="Introduction"
-              className="w-full rounded-xl border px-3 py-2 text-sm"
+              className={BUILDER_FIELD_CLASS}
             />
           </div>
 
@@ -477,7 +467,7 @@ export default function LessonSectionSidebar(props: {
             <input
               name="description"
               placeholder="Optional short description"
-              className="w-full rounded-xl border px-3 py-2 text-sm"
+              className={BUILDER_FIELD_CLASS}
             />
           </div>
 
@@ -488,7 +478,7 @@ export default function LessonSectionSidebar(props: {
             <select
               name="sectionKind"
               defaultValue="content"
-              className="w-full rounded-xl border px-3 py-2 text-sm"
+              className={BUILDER_SELECT_CLASS}
             >
               {SECTION_KIND_OPTIONS.map((option) => (
                 <option key={option} value={option}>
@@ -505,7 +495,7 @@ export default function LessonSectionSidebar(props: {
             <select
               name="variantVisibility"
               defaultValue="shared"
-              className="w-full rounded-xl border px-3 py-2 text-sm"
+              className={BUILDER_SELECT_CLASS}
             >
               {VARIANT_VISIBILITY_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -522,7 +512,7 @@ export default function LessonSectionSidebar(props: {
             <input
               name="canonicalSectionKey"
               placeholder="Optional shared progress key"
-              className="w-full rounded-xl border px-3 py-2 text-sm"
+              className={BUILDER_FIELD_CLASS}
             />
           </div>
 

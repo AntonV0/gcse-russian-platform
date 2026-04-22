@@ -16,6 +16,11 @@ import {
   PendingStatusText,
   PendingSubmitButton,
   BuilderHiddenFields,
+  BUILDER_DASHED_EMPTY_STATE_CLASS,
+  BUILDER_FIELD_CLASS,
+  BUILDER_MUTED_INFO_BOX_CLASS,
+  BUILDER_SECONDARY_BUTTON_CLASS,
+  BUILDER_SELECT_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import { updateSectionAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import { SECTION_KIND_OPTIONS } from "@/components/admin/lesson-builder/lesson-builder-types";
@@ -108,7 +113,7 @@ export default function LessonSectionEditor(props: {
             <p className="text-sm text-gray-400">No section description yet.</p>
           )}
 
-          <div className="rounded-xl border px-3 py-3 text-sm">
+          <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
             <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Variant visibility
             </div>
@@ -117,7 +122,7 @@ export default function LessonSectionEditor(props: {
             </div>
           </div>
 
-          <div className="rounded-xl border px-3 py-3 text-sm">
+          <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
             <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Canonical section key
             </div>
@@ -155,19 +160,19 @@ export default function LessonSectionEditor(props: {
             name="title"
             required
             defaultValue={section.title}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
+            className={BUILDER_FIELD_CLASS}
           />
 
           <input
             name="description"
             defaultValue={section.description ?? ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
+            className={BUILDER_FIELD_CLASS}
           />
 
           <select
             name="sectionKind"
             defaultValue={section.section_kind}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
+            className={BUILDER_SELECT_CLASS}
           >
             {SECTION_KIND_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -179,7 +184,7 @@ export default function LessonSectionEditor(props: {
           <select
             name="variantVisibility"
             defaultValue={section.variant_visibility}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
+            className={BUILDER_SELECT_CLASS}
           >
             {VARIANT_VISIBILITY_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -191,7 +196,7 @@ export default function LessonSectionEditor(props: {
           <input
             name="canonicalSectionKey"
             defaultValue={section.canonical_section_key ?? ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
+            className={BUILDER_FIELD_CLASS}
             placeholder="e.g. food-drink-core-vocab"
           />
 
@@ -199,7 +204,7 @@ export default function LessonSectionEditor(props: {
             <PendingSubmitButton
               idleLabel="Save section"
               pendingLabel="Saving section..."
-              className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+              className={BUILDER_SECONDARY_BUTTON_CLASS}
             />
             <PendingStatusText pendingText="Updating section metadata..." />
           </div>
@@ -233,36 +238,36 @@ export default function LessonSectionEditor(props: {
                 value={props.blockSearch}
                 onChange={(event) => props.onBlockSearchChange(event.target.value)}
                 placeholder="Search blocks..."
-                className="w-full rounded-xl border px-3 py-2 text-sm sm:w-64"
+                className={`${BUILDER_FIELD_CLASS} sm:w-64`}
               />
               <button
                 type="button"
                 onClick={props.onJumpToAddBlock}
-                className="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50"
+                className={BUILDER_SECONDARY_BUTTON_CLASS}
               >
                 Jump to block creator
               </button>
             </div>
           </div>
 
-          <div className="rounded-xl border bg-gray-50 px-3 py-3 text-sm text-gray-600">
+          <div className={`${BUILDER_MUTED_INFO_BOX_CLASS} text-gray-600`}>
             Drag a block to reorder it within this section, or drag it onto a section in
             the left sidebar to move it there.
           </div>
 
           {section.blocks.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
+            <div className={`${BUILDER_DASHED_EMPTY_STATE_CLASS} py-8`}>
               <div className="mb-2">No blocks in this section yet.</div>
               <button
                 type="button"
                 onClick={props.onJumpToAddBlock}
-                className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+                className={BUILDER_SECONDARY_BUTTON_CLASS}
               >
                 Create your first block
               </button>
             </div>
           ) : filteredBlocks.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
+            <div className={`${BUILDER_DASHED_EMPTY_STATE_CLASS} py-8`}>
               No blocks match your search.
             </div>
           ) : (

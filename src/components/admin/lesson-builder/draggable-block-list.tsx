@@ -17,6 +17,8 @@ import {
   Badge,
   BuilderHiddenFields,
   DragHandle,
+  buildLessonBuilderRouteFormData,
+  BUILDER_SECONDARY_BUTTON_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import {
   getLessonBlockAccentClass,
@@ -50,17 +52,10 @@ export default function DraggableBlockList(props: {
     const [moved] = reordered.splice(sourceIndex, 1);
     reordered.splice(targetIndex, 0, moved);
 
-    const formData = new FormData();
-    formData.set("courseId", props.routeFields.courseId);
-    formData.set("variantId", props.routeFields.variantId);
-    formData.set("moduleId", props.routeFields.moduleId);
-    formData.set("lessonId", props.routeFields.lessonId);
-    formData.set("courseSlug", props.routeFields.courseSlug);
-    formData.set("variantSlug", props.routeFields.variantSlug);
-    formData.set("moduleSlug", props.routeFields.moduleSlug);
-    formData.set("lessonSlug", props.routeFields.lessonSlug);
-    formData.set("sectionId", props.section.id);
-    formData.set("orderedBlockIds", reordered.map((block) => block.id).join(","));
+    const formData = buildLessonBuilderRouteFormData(props.routeFields, {
+      sectionId: props.section.id,
+      orderedBlockIds: reordered.map((block) => block.id).join(","),
+    });
 
     startTransition(async () => {
       await reorderBlocksAction(formData);
@@ -179,7 +174,7 @@ export default function DraggableBlockList(props: {
                     <button
                       type="submit"
                       disabled={blockIndex === 0 || isPending}
-                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-2 text-xs transition hover:bg-[var(--background-muted)] disabled:opacity-50"
+                      className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
                     >
                       Move up
                     </button>
@@ -195,7 +190,7 @@ export default function DraggableBlockList(props: {
                       disabled={
                         blockIndex === props.section.blocks.length - 1 || isPending
                       }
-                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-2 text-xs transition hover:bg-[var(--background-muted)] disabled:opacity-50"
+                      className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
                     >
                       Move down
                     </button>
@@ -208,7 +203,7 @@ export default function DraggableBlockList(props: {
                     <button
                       type="submit"
                       disabled={isPending}
-                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-2 text-xs transition hover:bg-[var(--background-muted)] disabled:opacity-50"
+                      className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
                     >
                       Duplicate
                     </button>
@@ -225,7 +220,7 @@ export default function DraggableBlockList(props: {
                     <button
                       type="submit"
                       disabled={isPending}
-                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-2 text-xs transition hover:bg-[var(--background-muted)] disabled:opacity-50"
+                      className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
                     >
                       {block.is_published ? "Unpublish" : "Publish"}
                     </button>
