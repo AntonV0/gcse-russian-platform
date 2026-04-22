@@ -4,6 +4,25 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
 
+export const BUILDER_FIELD_CLASS =
+  "w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm";
+
+export const BUILDER_TEXTAREA_CLASS = BUILDER_FIELD_CLASS;
+
+export const BUILDER_SELECT_CLASS = BUILDER_FIELD_CLASS;
+
+export const BUILDER_SECONDARY_BUTTON_CLASS =
+  "rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm transition hover:bg-[var(--background-muted)] disabled:opacity-60";
+
+export const BUILDER_PRIMARY_BUTTON_CLASS =
+  "app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60";
+
+export const BUILDER_DASHED_EMPTY_STATE_CLASS =
+  "rounded-xl border border-dashed border-[var(--border)] px-4 py-6 text-sm app-text-muted";
+
+export const BUILDER_MUTED_INFO_BOX_CLASS =
+  "rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/50 px-3 py-3 text-sm";
+
 export function BuilderHiddenFields(props: RouteFields) {
   return (
     <>
@@ -17,6 +36,30 @@ export function BuilderHiddenFields(props: RouteFields) {
       <input type="hidden" name="lessonSlug" value={props.lessonSlug} />
     </>
   );
+}
+
+export function buildLessonBuilderRouteFormData(
+  routeFields: RouteFields,
+  extraFields?: Record<string, string>
+) {
+  const formData = new FormData();
+
+  formData.set("courseId", routeFields.courseId);
+  formData.set("variantId", routeFields.variantId);
+  formData.set("moduleId", routeFields.moduleId);
+  formData.set("lessonId", routeFields.lessonId);
+  formData.set("courseSlug", routeFields.courseSlug);
+  formData.set("variantSlug", routeFields.variantSlug);
+  formData.set("moduleSlug", routeFields.moduleSlug);
+  formData.set("lessonSlug", routeFields.lessonSlug);
+
+  if (extraFields) {
+    for (const [key, value] of Object.entries(extraFields)) {
+      formData.set(key, value);
+    }
+  }
+
+  return formData;
 }
 
 export function Badge({

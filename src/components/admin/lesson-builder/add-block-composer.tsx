@@ -26,12 +26,15 @@ import {
   BuilderHiddenFields,
   PendingStatusText,
   PendingSubmitButton,
+  BUILDER_DASHED_EMPTY_STATE_CLASS,
+  BUILDER_FIELD_CLASS,
+  BUILDER_MUTED_INFO_BOX_CLASS,
+  BUILDER_PRIMARY_BUTTON_CLASS,
+  BUILDER_SECONDARY_BUTTON_CLASS,
+  BUILDER_SELECT_CLASS,
+  BUILDER_TEXTAREA_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
-import {
-  getDefaultBlockData,
-  getLessonBlockLabel,
-  getLessonBlockPreview,
-} from "@/lib/lessons/lesson-blocks";
+import { getDefaultBlockData, getLessonBlockLabel } from "@/lib/lessons/lesson-blocks";
 
 function AddSimpleTextBlockForm(props: {
   placeholder: string;
@@ -51,13 +54,13 @@ function AddSimpleTextBlockForm(props: {
         rows={4}
         placeholder={props.placeholder}
         defaultValue={props.defaultValue}
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_TEXTAREA_CLASS}
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={props.buttonLabel}
           pendingLabel="Adding block..."
-          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+          className={BUILDER_PRIMARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Saving new block..." />
       </div>
@@ -83,7 +86,7 @@ function AddTitledContentBlockForm(props: {
         name="title"
         placeholder={props.titlePlaceholder}
         defaultValue={props.defaultTitle}
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <textarea
         name="content"
@@ -91,13 +94,13 @@ function AddTitledContentBlockForm(props: {
         rows={5}
         placeholder={props.contentPlaceholder}
         defaultValue={props.defaultContent}
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_TEXTAREA_CLASS}
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={props.buttonLabel}
           pendingLabel="Adding block..."
-          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+          className={BUILDER_PRIMARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Saving new block..." />
       </div>
@@ -120,19 +123,19 @@ function AddSlugBlockForm(props: {
       <input
         name="title"
         placeholder="Optional heading"
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <input
         name={props.slugFieldName}
         required
         placeholder={props.slugPlaceholder}
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={props.buttonLabel}
           pendingLabel="Adding block..."
-          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+          className={BUILDER_PRIMARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Saving linked practice block..." />
       </div>
@@ -149,23 +152,19 @@ function AddImageBlockForm(props: { sectionId: string; routeFields: RouteFields 
         name="src"
         required
         placeholder="https://..."
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
-      <input
-        name="alt"
-        placeholder="Alt text"
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
-      />
+      <input name="alt" placeholder="Alt text" className={BUILDER_FIELD_CLASS} />
       <input
         name="caption"
         placeholder="Optional caption"
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel="Add image block"
           pendingLabel="Adding image block..."
-          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+          className={BUILDER_PRIMARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Saving image block..." />
       </div>
@@ -178,21 +177,17 @@ function AddAudioBlockForm(props: { sectionId: string; routeFields: RouteFields 
     <form action={createAudioBlockAction} className="space-y-3">
       <BuilderHiddenFields {...props.routeFields} />
       <input type="hidden" name="sectionId" value={props.sectionId} />
-      <input
-        name="title"
-        placeholder="Optional title"
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
-      />
+      <input name="title" placeholder="Optional title" className={BUILDER_FIELD_CLASS} />
       <input
         name="src"
         required
         placeholder="https://..."
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <input
         name="caption"
         placeholder="Optional caption"
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
         <input type="checkbox" name="autoPlay" value="true" />
@@ -202,7 +197,7 @@ function AddAudioBlockForm(props: { sectionId: string; routeFields: RouteFields 
         <PendingSubmitButton
           idleLabel="Add audio block"
           pendingLabel="Adding audio block..."
-          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+          className={BUILDER_PRIMARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Saving audio block..." />
       </div>
@@ -225,7 +220,7 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
         required
         placeholder="Key vocabulary"
         defaultValue={defaults.title ?? ""}
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <textarea
         name="items"
@@ -235,7 +230,7 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
           .map((item) => `${item.russian} | ${item.english}`)
           .join("\n")}
         placeholder={`дом | house\nшкола | school`}
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 font-mono text-sm"
+        className={`${BUILDER_TEXTAREA_CLASS} font-mono`}
       />
       <p className="text-xs app-text-soft">
         Use one item per line in the format: russian | english
@@ -244,7 +239,7 @@ function AddVocabularyBlockForm(props: { sectionId: string; routeFields: RouteFi
         <PendingSubmitButton
           idleLabel="Add vocabulary block"
           pendingLabel="Adding vocabulary block..."
-          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+          className={BUILDER_PRIMARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Saving vocabulary block..." />
       </div>
@@ -295,7 +290,7 @@ function AddVocabularySetBlockForm(props: {
         name="title"
         placeholder="Optional heading"
         defaultValue={String(defaultData.title ?? "")}
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
 
       <div className="space-y-2">
@@ -304,7 +299,7 @@ function AddVocabularySetBlockForm(props: {
           required
           value={selectedSlug}
           onChange={(event) => setSelectedSlug(event.target.value)}
-          className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+          className={BUILDER_SELECT_CLASS}
         >
           {props.vocabularySetOptions.map((option) => (
             <option key={option.id} value={option.slug}>
@@ -341,7 +336,7 @@ function AddVocabularySetBlockForm(props: {
         <PendingSubmitButton
           idleLabel="Add vocabulary-set block"
           pendingLabel="Adding vocabulary-set block..."
-          className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+          className={BUILDER_PRIMARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Saving linked vocabulary set block..." />
       </div>
@@ -361,7 +356,7 @@ function BlockTypeButton(props: {
     <button
       type="button"
       onClick={() => props.onSelect(props.value)}
-      className={`rounded-xl border px-3 py-2 text-sm text-left transition ${
+      className={`rounded-xl border px-3 py-2 text-left text-sm transition ${
         isSelected
           ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
           : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:bg-[var(--background-muted)]"
@@ -419,7 +414,7 @@ export default function AddBlockComposer(props: {
 
         <div className="grid gap-3">
           {props.blockPresetOptions.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-4 py-6 text-sm app-text-muted">
+            <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
               No DB block presets found yet.
             </div>
           ) : (
@@ -447,7 +442,7 @@ export default function AddBlockComposer(props: {
                   <PendingSubmitButton
                     idleLabel="Insert preset"
                     pendingLabel="Inserting preset..."
-                    className="app-btn-base app-btn-secondary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+                    className={BUILDER_SECONDARY_BUTTON_CLASS}
                   />
                   <PendingStatusText pendingText="Adding starter blocks to this section..." />
                 </div>
@@ -575,7 +570,7 @@ export default function AddBlockComposer(props: {
       </div>
 
       {!selectedNewBlockType ? (
-        <div className="rounded-xl border border-dashed px-4 py-8 text-sm app-text-muted">
+        <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
           Choose a block type above to add it to this section.
         </div>
       ) : (
@@ -593,7 +588,7 @@ export default function AddBlockComposer(props: {
             <button
               type="button"
               onClick={() => updateSelectedNewBlockType(null)}
-              className="app-btn-base app-btn-secondary rounded-lg px-3 py-2 text-sm"
+              className={BUILDER_SECONDARY_BUTTON_CLASS}
             >
               Clear
             </button>
@@ -628,7 +623,7 @@ export default function AddBlockComposer(props: {
               <PendingSubmitButton
                 idleLabel="Add divider block"
                 pendingLabel="Adding divider block..."
-                className="app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60"
+                className={BUILDER_PRIMARY_BUTTON_CLASS}
               />
             </form>
           )}
