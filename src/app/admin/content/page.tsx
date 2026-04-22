@@ -1,6 +1,6 @@
-import Link from "next/link";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
@@ -37,23 +37,7 @@ export default async function AdminContentPage() {
             </Button>
           </>
         }
-      >
-        <div className="grid gap-3 md:grid-cols-3">
-          <Badge
-            tone="success"
-            icon="completed"
-            className="justify-center md:justify-start"
-          >
-            {courses.length} course{courses.length === 1 ? "" : "s"}
-          </Badge>
-          <Badge tone="info" icon="courses" className="justify-center md:justify-start">
-            Top-level content entries
-          </Badge>
-          <Badge tone="muted" icon="next" className="justify-center md:justify-start">
-            Select a course to manage deeper structure
-          </Badge>
-        </div>
-      </PageIntroPanel>
+      />
 
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
         <div className="space-y-3">
@@ -77,62 +61,53 @@ export default async function AdminContentPage() {
             ) : (
               <div className="space-y-3">
                 {courses.map((course) => (
-                  <Link
+                  <CardListItem
                     key={course.id}
                     href={`/admin/content/courses/${course.id}`}
-                    className="block"
-                  >
-                    <SectionCard
-                      title={course.title}
-                      description={
-                        course.description || "No description added yet for this course."
-                      }
-                      density="compact"
-                      className="transition-transform duration-200 hover:-translate-y-0.5"
-                      headerClassName="min-h-[104px]"
-                      actions={
-                        <div className="flex flex-wrap gap-2">
-                          <Badge tone="muted" icon="file">
-                            {course.slug}
+                    title={course.title}
+                    subtitle={
+                      course.description || "No description added yet for this course."
+                    }
+                    badges={
+                      <>
+                        <Badge tone="muted" icon="file">
+                          {course.slug}
+                        </Badge>
+
+                        {course.is_active ? (
+                          <Badge tone="success" icon="completed">
+                            Active
                           </Badge>
+                        ) : (
+                          <Badge tone="warning" icon="pending">
+                            Inactive
+                          </Badge>
+                        )}
 
-                          {course.is_active ? (
-                            <Badge tone="success" icon="completed">
-                              Active
-                            </Badge>
-                          ) : (
-                            <Badge tone="warning" icon="pending">
-                              Inactive
-                            </Badge>
-                          )}
-
-                          {course.is_published ? (
-                            <Badge tone="info" icon="preview">
-                              Published
-                            </Badge>
-                          ) : (
-                            <Badge tone="muted" icon="help">
-                              Unpublished
-                            </Badge>
-                          )}
-                        </div>
-                      }
-                      footer={
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="text-sm app-text-muted">
-                            Open course structure
-                          </div>
-                          <Button
-                            variant="quiet"
-                            size="sm"
-                            icon="next"
-                            ariaLabel={`Open ${course.title}`}
-                            iconOnly
-                          />
-                        </div>
-                      }
-                    />
-                  </Link>
+                        {course.is_published ? (
+                          <Badge tone="info" icon="preview">
+                            Published
+                          </Badge>
+                        ) : (
+                          <Badge tone="muted" icon="help">
+                            Unpublished
+                          </Badge>
+                        )}
+                      </>
+                    }
+                    actions={
+                      <div className="flex items-center gap-2 text-sm app-text-muted">
+                        <span>Open</span>
+                        <Button
+                          variant="quiet"
+                          size="sm"
+                          icon="next"
+                          ariaLabel={`Open ${course.title}`}
+                          iconOnly
+                        />
+                      </div>
+                    }
+                  />
                 ))}
               </div>
             )}
@@ -186,42 +161,26 @@ export default async function AdminContentPage() {
           </SectionCard>
 
           <SectionCard
-            title="Admin guidance"
-            description="Suggested flow for managing content structure."
+            title="Content flow"
+            description="Courses are the top-level shell for variants, modules, and lessons."
             tone="student"
             density="compact"
           >
             <div className="space-y-3">
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
                 <div className="text-sm font-semibold text-[var(--text-primary)]">
-                  Start with courses
+                  Recommended path
                 </div>
                 <div className="mt-1 text-sm app-text-muted">
-                  Courses are the top-level shell for everything underneath.
+                  Create or open a course first, then manage variants, modules, and
+                  lessons inside that course structure.
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-                <div className="text-sm font-semibold text-[var(--text-primary)]">
-                  Then build deeper structure
-                </div>
-                <div className="mt-1 text-sm app-text-muted">
-                  Open a course to manage variants, modules, and lessons.
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-                <div className="text-sm font-semibold text-[var(--text-primary)]">
-                  Validate UI before custom styling
-                </div>
-                <div className="mt-1 text-sm app-text-muted">
-                  Use the UI Lab when a new content-management pattern starts repeating.
-                </div>
-                <div className="mt-3">
-                  <Button href="/admin/ui" variant="quiet" size="sm" icon="uiLab">
-                    Open UI Lab
-                  </Button>
-                </div>
+              <div className="flex flex-wrap gap-2">
+                <Button href="/admin/ui" variant="quiet" size="sm" icon="uiLab">
+                  Open UI Lab
+                </Button>
               </div>
             </div>
           </SectionCard>
