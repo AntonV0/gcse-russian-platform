@@ -11,6 +11,7 @@ import FormField from "@/components/ui/form-field";
 import InfoRow from "@/components/ui/info-row";
 import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
+import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import SectionHeader from "@/components/ui/section-header";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
@@ -85,6 +86,108 @@ export default async function AdminUiComponentsPage() {
               </p>
             </div>
           </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Page intro panels"
+        description="This is the preferred premium top-of-page pattern for admin overviews, student course screens, and access or upgrade entry points."
+      >
+        <div className="space-y-4">
+          <PageIntroPanel
+            tone="admin"
+            eyebrow="Content management"
+            title="GCSE Russian course"
+            description="Manage variants, modules, lessons, publishing state, and internal structure from one shared content area."
+            badges={
+              <>
+                <Badge tone="info">Admin view</Badge>
+                <Badge tone="muted">3 variants</Badge>
+                <Badge tone="success">Published</Badge>
+              </>
+            }
+            actions={
+              <>
+                <Button variant="secondary" icon="edit">
+                  Edit details
+                </Button>
+                <Button variant="primary" icon="create">
+                  Add module
+                </Button>
+              </>
+            }
+          >
+            <div className="grid gap-3 md:grid-cols-3">
+              <SummaryStatCard
+                title="Modules"
+                value="8"
+                icon="layout"
+                compact
+                description="Structured and visible."
+              />
+              <SummaryStatCard
+                title="Lessons"
+                value="42"
+                icon="lessons"
+                compact
+                description="Across all variants."
+              />
+              <SummaryStatCard
+                title="Draft items"
+                value="5"
+                icon="edit"
+                tone="warning"
+                compact
+                description="Need review before publishing."
+              />
+            </div>
+          </PageIntroPanel>
+
+          <PageIntroPanel
+            tone="student"
+            eyebrow="Continue learning"
+            title="Theme 2: Local area, holiday and travel"
+            description="Build confidence with vocabulary, listening, and exam-style practice through structured lessons and clear next steps."
+            badges={
+              <>
+                <Badge tone="info">Higher tier</Badge>
+                <Badge tone="success">18 lessons completed</Badge>
+              </>
+            }
+            actions={
+              <>
+                <Button variant="secondary" icon="preview">
+                  Review overview
+                </Button>
+                <Button variant="primary" icon="next" iconPosition="right">
+                  Continue lesson
+                </Button>
+              </>
+            }
+          />
+
+          <PageIntroPanel
+            tone="brand"
+            eyebrow="Full access"
+            title="Unlock the complete GCSE Russian experience"
+            description="Get structured lesson paths, progress tracking, premium revision support, and the full higher-tier learning journey."
+            badges={
+              <>
+                <Badge tone="warning">Upgrade available</Badge>
+                <Badge tone="muted">Trial currently active</Badge>
+              </>
+            }
+            actions={
+              <>
+                <Button variant="inverse" icon="next" iconPosition="right">
+                  Unlock full course
+                </Button>
+                <Button variant="secondary" icon="preview">
+                  Compare access
+                </Button>
+              </>
+            }
+          />
         </div>
       </UiLabSection>
 
