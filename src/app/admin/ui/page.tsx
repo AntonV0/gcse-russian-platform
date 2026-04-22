@@ -4,8 +4,10 @@ import type { AppIconKey } from "@/lib/shared/icons";
 import { uiLabPages } from "@/lib/ui/ui-lab";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
-import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
+import Badge from "@/components/ui/badge";
+import Card from "@/components/ui/card";
+import PanelCard from "@/components/ui/panel-card";
 
 function getStatusTone(status: "complete" | "in_progress" | "planned") {
   switch (status) {
@@ -39,35 +41,35 @@ type ProductionPattern = {
 
 const productionPatterns: ProductionPattern[] = [
   {
-    title: "Homepage hero",
+    title: "Homepage and public-facing direction",
     description:
-      "Branded premium landing section with GCSE-specific messaging and audience-focused structure.",
+      "Premium brand presentation, clear hero hierarchy, and parent-friendly structure for first impressions.",
     icon: "home",
   },
   {
-    title: "Platform header",
+    title: "Platform shell and navigation",
     description:
-      "Shared site header with active states, theme toggle, account metadata, and mobile menu.",
-    icon: "header",
-  },
-  {
-    title: "Admin sidebar",
-    description:
-      "Reusable admin navigation pattern with grouped sections and nested UI Lab links.",
+      "Shared top-level navigation, sidebar direction, and access-aware movement across student, admin, and teacher areas.",
     icon: "navigation",
   },
   {
-    title: "Shared primitives",
+    title: "Shared UI primitives",
     description:
-      "Buttons, badges, cards, typography, inputs, and icons are now shaping most screens.",
+      "Buttons, badges, cards, typography, forms, and icon usage now shape most pages before page-specific styling is added.",
     icon: "component",
+  },
+  {
+    title: "Content and dashboard composition",
+    description:
+      "Structured cards, sections, summaries, and denser admin layouts are beginning to feel like one cohesive product.",
+    icon: "layout",
   },
 ];
 
 const refinementAreas = [
   "Validation and inline field errors",
   "Toast-style feedback patterns",
-  "Dense inspector / builder controls",
+  "Dense inspector and builder controls",
   "Dashboard-specific card patterns",
   "Lesson block visual consistency",
   "Mobile navigation refinement",
@@ -79,7 +81,125 @@ const designPrinciples = [
   "Consistent hierarchy before decorative styling",
   "Shared components first, page-specific styling second",
   "Use restrained branding and clear content structure",
+  "Support admin density and student calmness within one system",
 ];
+
+function OverviewHero({
+  completeCount,
+  inProgressCount,
+  plannedCount,
+}: {
+  completeCount: number;
+  inProgressCount: number;
+  plannedCount: number;
+}) {
+  return (
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+      <div className="app-surface-brand border border-[var(--border)] p-6 md:p-7">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge tone="info" icon="uiLab">
+            Internal design system
+          </Badge>
+          <Badge tone="muted">Admin · Student · Teacher</Badge>
+        </div>
+
+        <h2 className="mt-4 app-title max-w-3xl">
+          A working UI reference for the full GCSE Russian platform
+        </h2>
+
+        <p className="mt-4 max-w-2xl app-subtitle">
+          The UI Lab is where shared patterns are tested before they spread into real
+          pages. It should help us build consistent admin tools, calmer student
+          experiences, teacher-facing workflows, and access-aware states without visual
+          drift.
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/admin/ui/navigation"
+            className="app-btn-base app-btn-primary rounded-[var(--radius-md)] px-4 py-2.5 text-sm"
+          >
+            <AppIcon icon="next" size={16} />
+            <span>Open navigation</span>
+          </Link>
+
+          <Link
+            href="/admin/ui/typography"
+            className="app-btn-base app-btn-secondary rounded-[var(--radius-md)] px-4 py-2.5 text-sm"
+          >
+            <AppIcon icon="text" size={16} />
+            <span>Review typography</span>
+          </Link>
+        </div>
+      </div>
+
+      <PanelCard
+        title="Snapshot"
+        description="A quick signal of how mature the current system is."
+        contentClassName="space-y-4"
+      >
+        <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <AppIcon icon="completed" size={18} className="app-brand-text" />
+              <div className="font-semibold text-[var(--text-primary)]">Complete</div>
+            </div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
+              {completeCount}
+            </div>
+            <p className="mt-1 text-sm app-text-muted">Pages ready for direct reuse</p>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <AppIcon icon="pending" size={18} className="app-brand-text" />
+              <div className="font-semibold text-[var(--text-primary)]">In progress</div>
+            </div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
+              {inProgressCount}
+            </div>
+            <p className="mt-1 text-sm app-text-muted">Areas actively being refined</p>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <AppIcon icon="help" size={18} className="app-brand-text" />
+              <div className="font-semibold text-[var(--text-primary)]">Planned</div>
+            </div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
+              {plannedCount}
+            </div>
+            <p className="mt-1 text-sm app-text-muted">
+              Areas to add as the product expands
+            </p>
+          </div>
+        </div>
+      </PanelCard>
+    </div>
+  );
+}
+
+function DemoMiniPreview({
+  icon,
+  title,
+  description,
+}: {
+  icon: AppIconKey;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+      <div className="mb-3 flex items-center gap-2">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--background-muted)] text-[var(--brand-blue)]">
+          <AppIcon icon={icon} size={18} />
+        </span>
+        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+      </div>
+      <p className="text-sm app-text-muted">{description}</p>
+    </div>
+  );
+}
 
 export default async function AdminUiOverviewPage() {
   const canAccess = await requireAdminAccess();
@@ -101,68 +221,43 @@ export default async function AdminUiOverviewPage() {
       currentPath="/admin/ui"
     >
       <UiLabSection
-        title="Progress snapshot"
-        description="A quick view of how complete the current UI system is."
+        title="System overview"
+        description="Use this page as the entry point for the UI Lab and the current design-system status."
       >
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon="completed" size={18} className="app-brand-text" />
-              <div className="font-semibold">Complete</div>
-            </div>
-            <div className="text-2xl font-bold">{completeCount}</div>
-            <p className="mt-1 text-sm app-text-muted">
-              Pages or sections ready for real reuse
-            </p>
-          </div>
-
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon="pending" size={18} className="app-brand-text" />
-              <div className="font-semibold">In progress</div>
-            </div>
-            <div className="text-2xl font-bold">{inProgressCount}</div>
-            <p className="mt-1 text-sm app-text-muted">
-              Areas being refined as the platform grows
-            </p>
-          </div>
-
-          <div className="app-card p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <AppIcon icon="help" size={18} className="app-brand-text" />
-              <div className="font-semibold">Planned</div>
-            </div>
-            <div className="text-2xl font-bold">{plannedCount}</div>
-            <p className="mt-1 text-sm app-text-muted">
-              Areas to build once core screens stabilize
-            </p>
-          </div>
-        </div>
+        <OverviewHero
+          completeCount={completeCount}
+          inProgressCount={inProgressCount}
+          plannedCount={plannedCount}
+        />
       </UiLabSection>
 
       <UiLabSection
-        title="UI completeness matrix"
-        description="Use this as the main checklist for what is production-ready versus still being standardised."
+        title="UI Lab sections"
+        description="Each section should help guide real implementation, not just isolated demos."
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {uiLabPages.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="app-card app-card-hover block p-4"
+              className="app-card app-card-hover block p-5"
             >
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div className="font-semibold text-[var(--text-primary)]">
-                  {item.label}
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="font-semibold text-[var(--text-primary)]">
+                    {item.label}
+                  </div>
+                  <div className="mt-1 text-sm app-text-soft">{item.href}</div>
                 </div>
+
                 <Badge tone={getStatusTone(item.status)}>
                   {getStatusLabel(item.status)}
                 </Badge>
               </div>
 
-              <p className="mb-4 text-sm app-text-muted">{item.description}</p>
+              <p className="mb-5 text-sm leading-6 app-text-muted">{item.description}</p>
 
-              <div className="flex items-center gap-2 text-sm app-brand-text">
+              <div className="flex items-center gap-2 text-sm font-medium app-brand-text">
                 <span>Open section</span>
                 <AppIcon icon="next" size={14} />
               </div>
@@ -172,20 +267,50 @@ export default async function AdminUiOverviewPage() {
       </UiLabSection>
 
       <UiLabSection
-        title="Current production patterns"
-        description="These are the patterns already shaping real pages in the live app shell."
+        title="What this system is already helping us build"
+        description="The UI Lab should support real production implementation across different parts of the platform."
       >
         <div className="grid gap-4 lg:grid-cols-2">
           {productionPatterns.map((item) => (
-            <div key={item.title} className="app-card p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <AppIcon icon={item.icon} size={18} className="app-brand-text" />
-                <div className="font-semibold">{item.title}</div>
+            <PanelCard
+              key={item.title}
+              title={item.title}
+              description={item.description}
+              contentClassName="pt-1"
+            >
+              <div className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--background-elevated)] text-[var(--brand-blue)]">
+                  <AppIcon icon={item.icon} size={18} />
+                </span>
+                <div className="text-sm app-text-muted">
+                  This pattern is already shaping live platform direction.
+                </div>
               </div>
-
-              <p className="text-sm app-text-muted">{item.description}</p>
-            </div>
+            </PanelCard>
           ))}
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Preview of system coverage"
+        description="These categories show the type of product work the UI Lab is intended to support."
+      >
+        <div className="grid gap-4 xl:grid-cols-3">
+          <DemoMiniPreview
+            icon="navigation"
+            title="Admin and CMS patterns"
+            description="Dense, structured interfaces for editing, organising, and managing content without losing clarity."
+          />
+          <DemoMiniPreview
+            icon="learning"
+            title="Student learning patterns"
+            description="Calmer, more readable surfaces for dashboards, lessons, progress, and motivating next-step experiences."
+          />
+          <DemoMiniPreview
+            icon="school"
+            title="Teacher and Volna patterns"
+            description="Task-focused tools for assignments, submissions, feedback, and teacher-linked workflow states."
+          />
         </div>
       </UiLabSection>
 
@@ -195,12 +320,12 @@ export default async function AdminUiOverviewPage() {
       >
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {refinementAreas.map((item) => (
-            <div key={item} className="app-card p-4">
+            <Card key={item} className="p-4">
               <div className="flex items-start gap-3">
                 <AppIcon icon="warning" size={16} className="mt-0.5 app-brand-text" />
                 <div className="text-sm app-text-muted">{item}</div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </UiLabSection>
@@ -209,14 +334,14 @@ export default async function AdminUiOverviewPage() {
         title="Design principles"
         description="Use these rules when making design decisions so the product stays coherent as more pages are added."
       >
-        <div className="grid gap-3 lg:grid-cols-2">
+        <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
           {designPrinciples.map((item) => (
-            <div key={item} className="app-card p-4">
+            <Card key={item} className="p-4">
               <div className="flex items-start gap-3">
                 <AppIcon icon="idea" size={16} className="mt-0.5 app-brand-text" />
                 <div className="text-sm app-text-muted">{item}</div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </UiLabSection>

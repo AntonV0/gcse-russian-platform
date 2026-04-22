@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
@@ -9,11 +9,11 @@ import { uiLabPages } from "@/lib/ui/ui-lab";
 
 function getNavItemClass(isActive: boolean, isSubItem = false) {
   return [
-    "group flex w-full items-center gap-3 text-sm transition-all duration-150",
-    isSubItem ? "pl-6 pr-3 py-2" : "px-3 py-2.5",
+    "group flex w-full items-center gap-3 text-sm leading-5 transition-all duration-150",
+    isSubItem ? "px-3 py-2" : "px-3 py-2.5",
     isActive
-      ? "bg-[var(--background-muted)] text-[var(--text-primary)] font-medium border-l-2 border-[var(--brand-blue)]"
-      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-muted)]/70",
+      ? "border-l-2 border-[var(--brand-blue)] bg-[var(--background-muted)] font-medium text-[var(--text-primary)]"
+      : "text-[var(--text-secondary)] hover:bg-[var(--background-muted)]/70 hover:text-[var(--text-primary)]",
   ].join(" ");
 }
 
@@ -56,6 +56,7 @@ function SidebarSection({
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const isDashboard = pathname === "/admin";
   const isContent = pathname.startsWith("/admin/content");
@@ -70,13 +71,31 @@ export default function AdminSidebar() {
   const isStudents = pathname.startsWith("/admin/students");
   const isTeachers = pathname.startsWith("/admin/teachers");
 
-  const [isUiOpen, setIsUiOpen] = useState(false);
+  const [isUiOpen, setIsUiOpen] = useState(isUiLab);
   const showUiSection = isUiOpen;
 
-  const sortedUiLabPages = useMemo(
-    () => [...uiLabPages].sort((a, b) => a.label.localeCompare(b.label)),
-    []
-  );
+  const sortedUiLabPages = useMemo(() => {
+    const overview = uiLabPages.find((item) => item.href === "/admin/ui");
+    const others = uiLabPages
+      .filter((item) => item.href !== "/admin/ui")
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    return overview ? [overview, ...others] : others;
+  }, []);
+
+  function handleUiLabToggle() {
+    if (!showUiSection) {
+      setIsUiOpen(true);
+
+      if (!isUiLab) {
+        router.push("/admin/ui");
+      }
+
+      return;
+    }
+
+    setIsUiOpen(false);
+  }
 
   return (
     <aside className="flex h-full min-h-0 flex-col bg-[var(--background-elevated)]">
@@ -100,21 +119,32 @@ export default function AdminSidebar() {
           <SidebarSection title="Overview">
             <Link href="/admin" className={getNavItemClass(isDashboard)}>
               <AppIcon icon="dashboard" size={18} />
-              <span className="flex-1">Dashboard</span>
+              <span className="flex-1 text-left">Dashboard</span>
             </Link>
           </SidebarSection>
 
           <SidebarSection title="Design">
             <button
               type="button"
-              onClick={() => setIsUiOpen((current) => !current)}
-              className={`${getNavItemClass(isUiLab)} justify-between`}
+              onClick={handleUiLabToggle}
+              className={[
+                getNavItemClass(isUiLab),
+                "justify-between !text-[var(--text-primary)]",
+              ].join(" ")}
               aria-expanded={showUiSection}
               aria-controls="admin-ui-lab-section"
             >
-              <AppIcon icon="uiLab" size={18} />
-              <span className="flex-1 text-left">UI Lab</span>
-              <AppIcon icon={showUiSection ? "down" : "next"} size={16} />
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <AppIcon icon="uiLab" size={18} />
+                <span className="flex-1 text-left text-sm font-inherit text-[var(--text-primary)]">
+                  UI Lab
+                </span>
+              </div>
+              <AppIcon
+                icon={showUiSection ? "down" : "next"}
+                size={16}
+                className="text-[var(--text-primary)]"
+              />
             </button>
 
             {showUiSection ? (
@@ -132,7 +162,7 @@ export default function AdminSidebar() {
                       className={getNavItemClass(isActive, true)}
                     >
                       <AppIcon icon={getUiLabItemIcon(item.label)} size={16} />
-                      <span className="flex-1">{item.label}</span>
+                      <span className="flex-1 text-left">{item.label}</span>
                     </Link>
                   );
                 })}
@@ -143,7 +173,7 @@ export default function AdminSidebar() {
           <SidebarSection title="Content">
             <Link href="/admin/content" className={getNavItemClass(isContent)}>
               <AppIcon icon="courses" size={18} />
-              <span className="flex-1">Courses / Modules / Lessons</span>
+              <span className="flex-1 text-left">Courses / Modules / Lessons</span>
             </Link>
 
             <Link
@@ -151,12 +181,12 @@ export default function AdminSidebar() {
               className={getNavItemClass(isLessonTemplates)}
             >
               <AppIcon icon="file" size={18} />
-              <span className="flex-1">Lesson Templates</span>
+              <span className="flex-1 text-left">Lesson Templates</span>
             </Link>
 
             <Link href="/admin/vocabulary" className={getNavItemClass(isVocabulary)}>
               <AppIcon icon="language" size={18} />
-              <span className="flex-1">Vocabulary</span>
+              <span className="flex-1 text-left">Vocabulary</span>
             </Link>
           </SidebarSection>
 
@@ -166,7 +196,7 @@ export default function AdminSidebar() {
               className={getNavItemClass(isQuestionSets && !isQuestionTemplates)}
             >
               <AppIcon icon="help" size={18} />
-              <span className="flex-1">Question Sets</span>
+              <span className="flex-1 text-left">Question Sets</span>
             </Link>
 
             <Link
@@ -174,14 +204,14 @@ export default function AdminSidebar() {
               className={getNavItemClass(isQuestionTemplates)}
             >
               <AppIcon icon="file" size={18} />
-              <span className="flex-1">Templates</span>
+              <span className="flex-1 text-left">Templates</span>
             </Link>
           </SidebarSection>
 
           <SidebarSection title="Teaching">
             <Link href="/teacher/assignments" className={getNavItemClass(isAssignments)}>
               <AppIcon icon="assignments" size={18} />
-              <span className="flex-1">Assignments</span>
+              <span className="flex-1 text-left">Assignments</span>
             </Link>
 
             <Link
@@ -189,19 +219,19 @@ export default function AdminSidebar() {
               className={getNavItemClass(isTeachingGroups)}
             >
               <AppIcon icon="users" size={18} />
-              <span className="flex-1">Teaching Groups</span>
+              <span className="flex-1 text-left">Teaching Groups</span>
             </Link>
           </SidebarSection>
 
           <SidebarSection title="Users">
             <Link href="/admin/students" className={getNavItemClass(isStudents)}>
               <AppIcon icon="user" size={18} />
-              <span className="flex-1">Students</span>
+              <span className="flex-1 text-left">Students</span>
             </Link>
 
             <Link href="/admin/teachers" className={getNavItemClass(isTeachers)}>
               <AppIcon icon="users" size={18} />
-              <span className="flex-1">Teachers</span>
+              <span className="flex-1 text-left">Teachers</span>
             </Link>
           </SidebarSection>
         </nav>
