@@ -3,19 +3,6 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import {
-  normalizeAudioBlockData,
-  normalizeCalloutBlockData,
-  normalizeExamTipBlockData,
-  normalizeHeaderBlockData,
-  normalizeImageBlockData,
-  normalizeNoteBlockData,
-  normalizeQuestionSetBlockData,
-  normalizeSubheaderBlockData,
-  normalizeTextBlockData,
-  normalizeVocabularyBlockData,
-  normalizeVocabularySetBlockData,
-} from "@/lib/lessons/lesson-blocks";
 
 export function getTrimmedString(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -410,135 +397,56 @@ export async function normalizeLessonBlockPositionsInSection(sectionId: string) 
   }
 }
 
-export type TemplateBlockType =
-  | "header"
-  | "subheader"
-  | "divider"
-  | "text"
-  | "note"
-  | "callout"
-  | "exam-tip"
-  | "vocabulary"
-  | "image"
-  | "audio"
-  | "question-set"
-  | "vocabulary-set";
-
-export function normalizeTemplateBlockData(
-  blockType: TemplateBlockType,
-  formData: FormData
-): Record<string, unknown> {
-  switch (blockType) {
-    case "header":
-      return normalizeHeaderBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "subheader":
-      return normalizeSubheaderBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "divider":
-      return {};
-
-    case "text":
-      return normalizeTextBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "note":
-      return normalizeNoteBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "callout":
-      return normalizeCalloutBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "exam-tip":
-      return normalizeExamTipBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "image":
-      return normalizeImageBlockData({
-        src: getTrimmedString(formData, "src"),
-        alt: getTrimmedString(formData, "alt"),
-        caption: getTrimmedString(formData, "caption"),
-      });
-
-    case "audio":
-      return normalizeAudioBlockData({
-        title: getTrimmedString(formData, "title"),
-        src: getTrimmedString(formData, "src"),
-        caption: getTrimmedString(formData, "caption"),
-        autoPlay: String(formData.get("autoPlay") || "") === "true",
-      });
-
-    case "vocabulary":
-      return normalizeVocabularyBlockData({
-        title: getTrimmedString(formData, "title"),
-        items: getTrimmedString(formData, "items"),
-      });
-
-    case "question-set":
-      return normalizeQuestionSetBlockData({
-        title: getTrimmedString(formData, "title"),
-        questionSetSlug: getTrimmedString(formData, "questionSetSlug"),
-      });
-
-    case "vocabulary-set":
-      return normalizeVocabularySetBlockData({
-        title: getTrimmedString(formData, "title"),
-        vocabularySetSlug: getTrimmedString(formData, "vocabularySetSlug"),
-      });
-
-    default:
-      throw new Error(`Unsupported template block type: ${blockType}`);
-  }
-}
-
-type ReorderableTable =
-  | "lesson_sections"
-  | "lesson_blocks"
-  | "lesson_block_preset_blocks"
-  | "lesson_section_template_presets"
-  | "lesson_template_sections";
-
-type ReorderTablePositionsParams = {
-  table: ReorderableTable;
+export async function reorderTablePositions(params: {
+  table:
+    | "lesson_sections"
+    | "lesson_blocks"
+    | "lesson_block_preset_blocks"
+    | "lesson_section_template_presets"
+    | "lesson_template_sections";
   orderedIds: string[];
-  idColumn?: string;
-  scope?: Record<string, string>;
+  scope:
+    | { lesson_id: string }
+    | { lesson_section_id: string }
+    | { lesson_block_preset_id: string }
+    | { lesson_section_template_id: string; lesson_block_preset_id_field?: string }
+    | { lesson_template_id: string };
   temporaryPositionMode?: "negative" | "high";
-};
-
-export async function reorderTablePositions(params: ReorderTablePositionsParams) {
-  if (params.orderedIds.length === 0) {
-    throw new Error("No ids provided for reorder");
-  }
-
+}) {
   const supabase = await createClient();
-  const idColumn = params.idColumn ?? "id";
-  const scopeEntries = Object.entries(params.scope ?? {});
-  const temporaryMode = params.temporaryPositionMode ?? "negative";
+  const temporaryPositionMode = params.temporaryPositionMode ?? "negative";
 
   for (let index = 0; index < params.orderedIds.length; index += 1) {
-    const rowId = params.orderedIds[index];
+    const id = params.orderedIds[index];
+    const temporaryPosition =
+      temporaryPositionMode === "high" ? 1000 + index : -1 * (index + 1);
+
     let query = supabase
       .from(params.table)
-      .update({
-        position: temporaryMode === "high" ? 1000 + index : -1 * (index + 1),
-      })
-      .eq(idColumn, rowId);
+      .update({ position: temporaryPosition })
+      .eq("id", id);
 
-    for (const [column, value] of scopeEntries) {
-      query = query.eq(column, value);
+    if ("lesson_id" in params.scope) {
+      query = query.eq("lesson_id", params.scope.lesson_id);
+    }
+
+    if ("lesson_section_id" in params.scope) {
+      query = query.eq("lesson_section_id", params.scope.lesson_section_id);
+    }
+
+    if ("lesson_block_preset_id" in params.scope) {
+      query = query.eq("lesson_block_preset_id", params.scope.lesson_block_preset_id);
+    }
+
+    if ("lesson_section_template_id" in params.scope) {
+      query = query.eq(
+        "lesson_section_template_id",
+        params.scope.lesson_section_template_id
+      );
+    }
+
+    if ("lesson_template_id" in params.scope) {
+      query = query.eq("lesson_template_id", params.scope.lesson_template_id);
     }
 
     const { error } = await query;
@@ -550,14 +458,34 @@ export async function reorderTablePositions(params: ReorderTablePositionsParams)
   }
 
   for (let index = 0; index < params.orderedIds.length; index += 1) {
-    const rowId = params.orderedIds[index];
+    const id = params.orderedIds[index];
+
     let query = supabase
       .from(params.table)
       .update({ position: index + 1 })
-      .eq(idColumn, rowId);
+      .eq("id", id);
 
-    for (const [column, value] of scopeEntries) {
-      query = query.eq(column, value);
+    if ("lesson_id" in params.scope) {
+      query = query.eq("lesson_id", params.scope.lesson_id);
+    }
+
+    if ("lesson_section_id" in params.scope) {
+      query = query.eq("lesson_section_id", params.scope.lesson_section_id);
+    }
+
+    if ("lesson_block_preset_id" in params.scope) {
+      query = query.eq("lesson_block_preset_id", params.scope.lesson_block_preset_id);
+    }
+
+    if ("lesson_section_template_id" in params.scope) {
+      query = query.eq(
+        "lesson_section_template_id",
+        params.scope.lesson_section_template_id
+      );
+    }
+
+    if ("lesson_template_id" in params.scope) {
+      query = query.eq("lesson_template_id", params.scope.lesson_template_id);
     }
 
     const { error } = await query;
