@@ -1,8 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import {
-  getResolvedHigherUpgradePricingForUserDb,
+  BILLING_TYPES,
+  INTERVAL_UNITS,
+  PRODUCT_CODES,
   getUserGcseRussianPurchaseStateDb,
-  type DbPrice,
+  resolveUpgradeQuoteDb,
+  type UpgradeQuoteResolution,
 } from "@/lib/billing/catalog";
 
 type GrantRow = {
@@ -101,24 +104,27 @@ function formatAmountLabel(price: PriceRow | null): string | null {
   return `${base}/${intervalCount} ${intervalUnit}s`;
 }
 
-function buildUpgradeSummary(upgradePricing: {
-  monthly: DbPrice | null;
-  threeMonth: DbPrice | null;
-  lifetime: DbPrice | null;
+function formatUpgradeQuoteSummaryPart(
+  label: string,
+  quote: UpgradeQuoteResolution | null
+): string | null {
+  if (!quote?.eligible || quote.upgradeFeeAmountGbp == null) {
+    return null;
+  }
+
+  return `${label} £${quote.upgradeFeeAmountGbp}`;
+}
+
+function buildUpgradeSummary(params: {
+  monthly: UpgradeQuoteResolution | null;
+  threeMonth: UpgradeQuoteResolution | null;
+  lifetime: UpgradeQuoteResolution | null;
 }): string | null {
-  const parts: string[] = [];
-
-  if (upgradePricing.monthly) {
-    parts.push(`Monthly ${formatAmountLabel(upgradePricing.monthly)}`);
-  }
-
-  if (upgradePricing.threeMonth) {
-    parts.push(`3-month ${formatAmountLabel(upgradePricing.threeMonth)}`);
-  }
-
-  if (upgradePricing.lifetime) {
-    parts.push(`Lifetime ${formatAmountLabel(upgradePricing.lifetime)}`);
-  }
+  const parts = [
+    formatUpgradeQuoteSummaryPart("Monthly", params.monthly),
+    formatUpgradeQuoteSummaryPart("3-month", params.threeMonth),
+    formatUpgradeQuoteSummaryPart("Lifetime", params.lifetime),
+  ].filter(Boolean) as string[];
 
   if (parts.length === 0) {
     return null;
@@ -127,38 +133,18 @@ function buildUpgradeSummary(upgradePricing: {
   return parts.join(" · ");
 }
 
-function getBestCurrentGrant(grants: GrantRow[]): GrantRow | null {
-  const activeGrants = grants.filter((grant) => grant.is_active);
-
-  if (activeGrants.length === 0) {
-    return null;
-  }
-
-  const priorityByProductCode: Record<string, number> = {
-    "gcse-russian-higher": 3,
-    "gcse-russian-foundation": 2,
-  };
-
-  return (
-    [...activeGrants].sort((a, b) => {
-      const aPriority = priorityByProductCode[a.product_id] ?? 0;
-      const bPriority = priorityByProductCode[b.product_id] ?? 0;
-
-      if (aPriority !== bPriority) {
-        return bPriority - aPriority;
-      }
-
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    })[0] ?? null
-  );
-}
-
 export async function getCurrentPlanSummaryForUserDb(
   userId: string
 ): Promise<CurrentPlanSummary> {
   const supabase = await createClient();
 
-  const [{ data: grants }, purchaseState, upgradePricing] = await Promise.all([
+  const [
+    { data: grants },
+    purchaseState,
+    higherMonthlyUpgrade,
+    higherThreeMonthUpgrade,
+    higherLifetimeUpgrade,
+  ] = await Promise.all([
     supabase
       .from("user_access_grants")
       .select(
@@ -168,8 +154,34 @@ export async function getCurrentPlanSummaryForUserDb(
       .eq("is_active", true)
       .order("created_at", { ascending: false }),
     getUserGcseRussianPurchaseStateDb(userId),
-    getResolvedHigherUpgradePricingForUserDb(userId),
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      1
+    ),
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      3
+    ),
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.ONE_TIME,
+      null,
+      null
+    ),
   ]);
+
+  const upgradePricing = {
+    monthly: higherMonthlyUpgrade,
+    threeMonth: higherThreeMonthUpgrade,
+    lifetime: higherLifetimeUpgrade,
+  };
 
   const typedGrants = (grants ?? []) as GrantRow[];
 
