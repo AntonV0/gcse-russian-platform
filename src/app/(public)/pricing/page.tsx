@@ -3,6 +3,7 @@ import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
 import CheckoutButton from "@/components/billing/checkout-button";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { createClient } from "@/lib/supabase/server";
 import {
   BILLING_TYPES,
   INTERVAL_UNITS,
@@ -29,6 +30,10 @@ type PlanPricing = {
   threeMonth: DbPrice | null;
   lifetime: DbPrice | null;
 };
+
+type ActiveGrantProductCode =
+  | typeof PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
+  | typeof PRODUCT_CODES.GCSE_RUSSIAN_HIGHER;
 
 function PlanCard({
   title,
@@ -153,6 +158,46 @@ async function getPlanPricing(productCode: string): Promise<PlanPricing> {
   };
 }
 
+async function getActiveOwnedProductCodesForUser(
+  userId: string
+): Promise<Set<ActiveGrantProductCode>> {
+  const supabase = await createClient();
+
+  const { data: grants, error } = await supabase
+    .from("user_access_grants")
+    .select("product_id")
+    .eq("user_id", userId)
+    .eq("is_active", true);
+
+  if (error || !grants || grants.length === 0) {
+    return new Set();
+  }
+
+  const productIds = [...new Set(grants.map((grant) => grant.product_id))];
+
+  const { data: products, error: productsError } = await supabase
+    .from("products")
+    .select("id, code")
+    .in("id", productIds);
+
+  if (productsError || !products || products.length === 0) {
+    return new Set();
+  }
+
+  const ownedCodes = new Set<ActiveGrantProductCode>();
+
+  for (const product of products) {
+    if (
+      product.code === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION ||
+      product.code === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
+    ) {
+      ownedCodes.add(product.code);
+    }
+  }
+
+  return ownedCodes;
+}
+
 function OwnedButton({ label }: { label: string }) {
   return (
     <button
@@ -202,6 +247,7 @@ export default async function PricingPage() {
   const [
     foundationPricing,
     higherPricing,
+    ownedProductCodes,
     foundationMonthlyToThreeMonthQuote,
     foundationMonthlyToHigherMonthlyQuote,
     foundationMonthlyToHigherThreeMonthQuote,
@@ -211,6 +257,7 @@ export default async function PricingPage() {
   ] = await Promise.all([
     getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION),
     getPlanPricing(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER),
+    user ? getActiveOwnedProductCodesForUser(user.id) : Promise.resolve(new Set()),
     user
       ? resolveUpgradeQuoteDb(
           user.id,
@@ -327,20 +374,8 @@ export default async function PricingPage() {
       PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
     foundationLifetimeToHigherLifetimeQuote.upgradeFlow === "lifetime";
 
-  const foundationOwned =
-    !!user &&
-    !canShowFoundationMonthlyToThreeMonthUpgrade &&
-    !foundationMonthlyToHigherMonthlyQuote?.eligible &&
-    !foundationMonthlyToHigherThreeMonthQuote?.eligible &&
-    !foundationLifetimeToHigherLifetimeQuote?.eligible;
-
-  const higherOwned =
-    !!user &&
-    !canShowFoundationMonthlyToHigherMonthlyUpgrade &&
-    !canShowFoundationMonthlyToHigherThreeMonthUpgrade &&
-    !canShowFoundationThreeMonthToHigherThreeMonthUpgrade &&
-    !canShowFoundationLifetimeToHigherLifetimeUpgrade &&
-    !canShowHigherMonthlyToThreeMonthUpgrade;
+  const foundationOwned = ownedProductCodes.has(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION);
+  const higherOwned = ownedProductCodes.has(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER);
 
   return (
     <div className="py-8 md:py-12">
