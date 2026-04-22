@@ -30,11 +30,28 @@ import {
 } from "@/app/actions/admin/admin-lesson-builder-shared";
 import { revalidatePath } from "next/cache";
 
-async function createSimpleContentBlock(params: {
-  formData: FormData;
+type CreatableLessonBlockType =
+  | "header"
+  | "subheader"
+  | "divider"
+  | "text"
+  | "note"
+  | "callout"
+  | "exam-tip"
+  | "image"
+  | "audio"
+  | "vocabulary"
+  | "question-set"
+  | "vocabulary-set";
+
+type SimpleContentBlockType = "header" | "subheader" | "text" | "callout" | "exam-tip";
+
+async function createBlockRow(params: {
   sectionId: string;
-  blockType: "header" | "subheader" | "text" | "callout" | "exam-tip";
+  blockType: CreatableLessonBlockType;
   data: Record<string, unknown>;
+  isPublished?: boolean;
+  settings?: Record<string, unknown>;
 }) {
   const supabase = await createClient();
   const nextPosition = await getNextBlockPosition(params.sectionId);
@@ -43,23 +60,20 @@ async function createSimpleContentBlock(params: {
     lesson_section_id: params.sectionId,
     block_type: params.blockType,
     position: nextPosition,
-    is_published: true,
+    is_published: params.isPublished ?? true,
     data: params.data,
-    settings: {},
+    settings: params.settings ?? {},
   });
 
   if (error) {
     console.error(`Error creating ${params.blockType} block:`, error);
     throw new Error(`Failed to create ${params.blockType} block`);
   }
-
-  await finalizeLessonMutation(params.formData);
 }
 
-async function updateSimpleContentBlock(params: {
-  formData: FormData;
+async function updateBlockRow(params: {
   blockId: string;
-  blockType: "header" | "subheader" | "text" | "callout" | "exam-tip";
+  blockType: Exclude<CreatableLessonBlockType, "divider">;
   data: Record<string, unknown>;
 }) {
   const supabase = await createClient();
@@ -76,8 +90,78 @@ async function updateSimpleContentBlock(params: {
     console.error(`Error updating ${params.blockType} block:`, error);
     throw new Error(`Failed to update ${params.blockType} block`);
   }
+}
+
+async function createValidatedBlock(params: {
+  formData: FormData;
+  sectionId: string;
+  blockType: Exclude<CreatableLessonBlockType, "divider">;
+  buildData: () => Promise<Record<string, unknown>> | Record<string, unknown>;
+}) {
+  const data = await params.buildData();
+
+  await createBlockRow({
+    sectionId: params.sectionId,
+    blockType: params.blockType,
+    data,
+  });
 
   await finalizeLessonMutation(params.formData);
+}
+
+async function updateValidatedBlock(params: {
+  formData: FormData;
+  blockId: string;
+  blockType: Exclude<CreatableLessonBlockType, "divider">;
+  buildData: () => Promise<Record<string, unknown>> | Record<string, unknown>;
+}) {
+  const data = await params.buildData();
+
+  await updateBlockRow({
+    blockId: params.blockId,
+    blockType: params.blockType,
+    data,
+  });
+
+  await finalizeLessonMutation(params.formData);
+}
+
+async function createSimpleContentBlock(params: {
+  formData: FormData;
+  sectionId: string;
+  blockType: SimpleContentBlockType;
+  data: Record<string, unknown>;
+}) {
+  await createValidatedBlock({
+    formData: params.formData,
+    sectionId: params.sectionId,
+    blockType: params.blockType,
+    buildData: () => params.data,
+  });
+}
+
+async function updateSimpleContentBlock(params: {
+  formData: FormData;
+  blockId: string;
+  blockType: SimpleContentBlockType;
+  data: Record<string, unknown>;
+}) {
+  await updateValidatedBlock({
+    formData: params.formData,
+    blockId: params.blockId,
+    blockType: params.blockType,
+    buildData: () => params.data,
+  });
+}
+
+async function ensureVocabularySetExists(vocabularySetSlug: string) {
+  const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
+
+  if (!vocabularySet) {
+    throw new Error("Selected vocabulary set does not exist");
+  }
+
+  return vocabularySet;
 }
 
 export async function insertBlockPresetAction(formData: FormData) {
@@ -200,22 +284,11 @@ export async function createDividerBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: "divider",
-    position: nextPosition,
-    is_published: true,
+  await createBlockRow({
+    sectionId,
+    blockType: "divider",
     data: {},
-    settings: {},
   });
-
-  if (error) {
-    console.error("Error creating divider block:", error);
-    throw new Error("Failed to create divider block");
-  }
 
   await finalizeLessonMutation(formData);
 }
@@ -270,24 +343,12 @@ export async function createNoteBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: "note",
-    position: nextPosition,
-    is_published: true,
-    data: normalizeNoteBlockData({ title, content }),
-    settings: {},
+  await createValidatedBlock({
+    formData,
+    sectionId,
+    blockType: "note",
+    buildData: () => normalizeNoteBlockData({ title, content }),
   });
-
-  if (error) {
-    console.error("Error creating note block:", error);
-    throw new Error("Failed to create note block");
-  }
-
-  await finalizeLessonMutation(formData);
 }
 
 export async function updateNoteBlockAction(formData: FormData) {
@@ -302,22 +363,12 @@ export async function updateNoteBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_blocks")
-    .update({
-      data: normalizeNoteBlockData({ title, content }),
-    })
-    .eq("id", blockId)
-    .eq("block_type", "note");
-
-  if (error) {
-    console.error("Error updating note block:", error);
-    throw new Error("Failed to update note block");
-  }
-
-  await finalizeLessonMutation(formData);
+  await updateValidatedBlock({
+    formData,
+    blockId,
+    blockType: "note",
+    buildData: () => normalizeNoteBlockData({ title, content }),
+  });
 }
 
 export async function createCalloutBlockAction(formData: FormData) {
@@ -413,24 +464,12 @@ export async function createImageBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: "image",
-    position: nextPosition,
-    is_published: true,
-    data: normalizeImageBlockData({ src, alt, caption }),
-    settings: {},
+  await createValidatedBlock({
+    formData,
+    sectionId,
+    blockType: "image",
+    buildData: () => normalizeImageBlockData({ src, alt, caption }),
   });
-
-  if (error) {
-    console.error("Error creating image block:", error);
-    throw new Error("Failed to create image block");
-  }
-
-  await finalizeLessonMutation(formData);
 }
 
 export async function updateImageBlockAction(formData: FormData) {
@@ -446,22 +485,12 @@ export async function updateImageBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_blocks")
-    .update({
-      data: normalizeImageBlockData({ src, alt, caption }),
-    })
-    .eq("id", blockId)
-    .eq("block_type", "image");
-
-  if (error) {
-    console.error("Error updating image block:", error);
-    throw new Error("Failed to update image block");
-  }
-
-  await finalizeLessonMutation(formData);
+  await updateValidatedBlock({
+    formData,
+    blockId,
+    blockType: "image",
+    buildData: () => normalizeImageBlockData({ src, alt, caption }),
+  });
 }
 
 export async function createAudioBlockAction(formData: FormData) {
@@ -478,24 +507,12 @@ export async function createAudioBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: "audio",
-    position: nextPosition,
-    is_published: true,
-    data: normalizeAudioBlockData({ title, src, caption, autoPlay }),
-    settings: {},
+  await createValidatedBlock({
+    formData,
+    sectionId,
+    blockType: "audio",
+    buildData: () => normalizeAudioBlockData({ title, src, caption, autoPlay }),
   });
-
-  if (error) {
-    console.error("Error creating audio block:", error);
-    throw new Error("Failed to create audio block");
-  }
-
-  await finalizeLessonMutation(formData);
 }
 
 export async function updateAudioBlockAction(formData: FormData) {
@@ -512,22 +529,12 @@ export async function updateAudioBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_blocks")
-    .update({
-      data: normalizeAudioBlockData({ title, src, caption, autoPlay }),
-    })
-    .eq("id", blockId)
-    .eq("block_type", "audio");
-
-  if (error) {
-    console.error("Error updating audio block:", error);
-    throw new Error("Failed to update audio block");
-  }
-
-  await finalizeLessonMutation(formData);
+  await updateValidatedBlock({
+    formData,
+    blockId,
+    blockType: "audio",
+    buildData: () => normalizeAudioBlockData({ title, src, caption, autoPlay }),
+  });
 }
 
 export async function createVocabularyBlockAction(formData: FormData) {
@@ -542,27 +549,16 @@ export async function createVocabularyBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: "vocabulary",
-    position: nextPosition,
-    is_published: true,
-    data: normalizeVocabularyBlockData({
-      title,
-      items: itemsRaw,
-    }),
-    settings: {},
+  await createValidatedBlock({
+    formData,
+    sectionId,
+    blockType: "vocabulary",
+    buildData: () =>
+      normalizeVocabularyBlockData({
+        title,
+        items: itemsRaw,
+      }),
   });
-
-  if (error) {
-    console.error("Error creating vocabulary block:", error);
-    throw new Error("Failed to create vocabulary block");
-  }
-
-  await finalizeLessonMutation(formData);
 }
 
 export async function updateVocabularyBlockAction(formData: FormData) {
@@ -577,25 +573,16 @@ export async function updateVocabularyBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_blocks")
-    .update({
-      data: normalizeVocabularyBlockData({
+  await updateValidatedBlock({
+    formData,
+    blockId,
+    blockType: "vocabulary",
+    buildData: () =>
+      normalizeVocabularyBlockData({
         title,
         items: itemsRaw,
       }),
-    })
-    .eq("id", blockId)
-    .eq("block_type", "vocabulary");
-
-  if (error) {
-    console.error("Error updating vocabulary block:", error);
-    throw new Error("Failed to update vocabulary block");
-  }
-
-  await finalizeLessonMutation(formData);
+  });
 }
 
 export async function duplicateBlockAction(formData: FormData) {
@@ -622,21 +609,13 @@ export async function duplicateBlockAction(formData: FormData) {
     throw new Error("Failed to load block");
   }
 
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error: insertError } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: block.block_type,
-    position: nextPosition,
-    is_published: false,
+  await createBlockRow({
+    sectionId,
+    blockType: block.block_type as CreatableLessonBlockType,
     data: block.data ?? {},
-    settings: block.settings ?? {},
+    isPublished: false,
+    settings: (block.settings ?? {}) as Record<string, unknown>,
   });
-
-  if (insertError) {
-    console.error("Error duplicating block:", insertError);
-    throw new Error("Failed to duplicate block");
-  }
 
   await finalizeLessonMutation(formData);
 }
@@ -653,27 +632,16 @@ export async function createQuestionSetBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: "question-set",
-    position: nextPosition,
-    is_published: true,
-    data: normalizeQuestionSetBlockData({
-      title,
-      questionSetSlug,
-    }),
-    settings: {},
+  await createValidatedBlock({
+    formData,
+    sectionId,
+    blockType: "question-set",
+    buildData: () =>
+      normalizeQuestionSetBlockData({
+        title,
+        questionSetSlug,
+      }),
   });
-
-  if (error) {
-    console.error("Error creating question-set block:", error);
-    throw new Error("Failed to create question-set block");
-  }
-
-  await finalizeLessonMutation(formData);
 }
 
 export async function updateQuestionSetBlockAction(formData: FormData) {
@@ -688,25 +656,16 @@ export async function updateQuestionSetBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_blocks")
-    .update({
-      data: normalizeQuestionSetBlockData({
+  await updateValidatedBlock({
+    formData,
+    blockId,
+    blockType: "question-set",
+    buildData: () =>
+      normalizeQuestionSetBlockData({
         title,
         questionSetSlug,
       }),
-    })
-    .eq("id", blockId)
-    .eq("block_type", "question-set");
-
-  if (error) {
-    console.error("Error updating question-set block:", error);
-    throw new Error("Failed to update question-set block");
-  }
-
-  await finalizeLessonMutation(formData);
+  });
 }
 
 export async function createVocabularySetBlockAction(formData: FormData) {
@@ -721,33 +680,19 @@ export async function createVocabularySetBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
+  await createValidatedBlock({
+    formData,
+    sectionId,
+    blockType: "vocabulary-set",
+    buildData: async () => {
+      await ensureVocabularySetExists(vocabularySetSlug);
 
-  if (!vocabularySet) {
-    throw new Error("Selected vocabulary set does not exist");
-  }
-
-  const supabase = await createClient();
-  const nextPosition = await getNextBlockPosition(sectionId);
-
-  const { error } = await supabase.from("lesson_blocks").insert({
-    lesson_section_id: sectionId,
-    block_type: "vocabulary-set",
-    position: nextPosition,
-    is_published: true,
-    data: normalizeVocabularySetBlockData({
-      title,
-      vocabularySetSlug,
-    }),
-    settings: {},
+      return normalizeVocabularySetBlockData({
+        title,
+        vocabularySetSlug,
+      });
+    },
   });
-
-  if (error) {
-    console.error("Error creating vocabulary-set block:", error);
-    throw new Error("Failed to create vocabulary-set block");
-  }
-
-  await finalizeLessonMutation(formData);
 }
 
 export async function updateVocabularySetBlockAction(formData: FormData) {
@@ -762,31 +707,19 @@ export async function updateVocabularySetBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
+  await updateValidatedBlock({
+    formData,
+    blockId,
+    blockType: "vocabulary-set",
+    buildData: async () => {
+      await ensureVocabularySetExists(vocabularySetSlug);
 
-  if (!vocabularySet) {
-    throw new Error("Selected vocabulary set does not exist");
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_blocks")
-    .update({
-      data: normalizeVocabularySetBlockData({
+      return normalizeVocabularySetBlockData({
         title,
         vocabularySetSlug,
-      }),
-    })
-    .eq("id", blockId)
-    .eq("block_type", "vocabulary-set");
-
-  if (error) {
-    console.error("Error updating vocabulary-set block:", error);
-    throw new Error("Failed to update vocabulary-set block");
-  }
-
-  await finalizeLessonMutation(formData);
+      });
+    },
+  });
 }
 
 export async function deleteBlockAction(formData: FormData) {
