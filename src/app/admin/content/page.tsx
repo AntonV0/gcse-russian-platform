@@ -10,6 +10,7 @@ import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
 import { getCoursesDb } from "@/lib/courses/course-helpers-db";
 import { createCourseAction } from "@/app/actions/admin/admin-content-actions";
+import ExpandableAdminFormPanel from "@/components/admin/expandable-admin-form-panel";
 
 export default async function AdminContentPage() {
   const courses = await getCoursesDb();
@@ -28,14 +29,9 @@ export default async function AdminContentPage() {
           </>
         }
         actions={
-          <>
-            <Button href="/admin/ui" variant="secondary" icon="uiLab">
-              Open UI Lab
-            </Button>
-            <Button href="#add-course" variant="primary" icon="create">
-              Add course
-            </Button>
-          </>
+          <Button href="/admin/ui" variant="secondary" icon="uiLab">
+            Open UI Lab
+          </Button>
         }
       />
 
@@ -96,16 +92,13 @@ export default async function AdminContentPage() {
                       </>
                     }
                     actions={
-                      <div className="flex items-center gap-2 text-sm app-text-muted">
-                        <span>Open</span>
-                        <Button
-                          variant="quiet"
-                          size="sm"
-                          icon="next"
-                          ariaLabel={`Open ${course.title}`}
-                          iconOnly
-                        />
-                      </div>
+                      <Button
+                        variant="quiet"
+                        size="sm"
+                        icon="next"
+                        ariaLabel={`Open ${course.title}`}
+                        iconOnly
+                      />
                     }
                   />
                 ))}
@@ -115,11 +108,14 @@ export default async function AdminContentPage() {
         </div>
 
         <div className="space-y-3">
-          <SectionCard
+          <ExpandableAdminFormPanel
+            id="add-course"
             title="Add course"
             description="Create a new top-level course entry."
-            tone="muted"
-            id="add-course"
+            collapsedDescription="Create a new top-level course entry."
+            openLabel="Hide form"
+            closedLabel="Add course"
+            defaultOpen={courses.length === 0}
           >
             <form action={createCourseAction} className="space-y-4">
               <FormField
@@ -158,32 +154,7 @@ export default async function AdminContentPage() {
                 </Button>
               </div>
             </form>
-          </SectionCard>
-
-          <SectionCard
-            title="Content flow"
-            description="Courses are the top-level shell for variants, modules, and lessons."
-            tone="student"
-            density="compact"
-          >
-            <div className="space-y-3">
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-                <div className="text-sm font-semibold text-[var(--text-primary)]">
-                  Recommended path
-                </div>
-                <div className="mt-1 text-sm app-text-muted">
-                  Create or open a course first, then manage variants, modules, and
-                  lessons inside that course structure.
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Button href="/admin/ui" variant="quiet" size="sm" icon="uiLab">
-                  Open UI Lab
-                </Button>
-              </div>
-            </div>
-          </SectionCard>
+          </ExpandableAdminFormPanel>
         </div>
       </div>
     </main>
