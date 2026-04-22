@@ -1085,6 +1085,10 @@ textarea {
     0 10px 24px rgba(16, 32, 51, 0.14);
 }
 
+.dev-marker-trigger-open {
+  opacity: 1;
+}
+
 .dev-marker-trigger-icon {
   height: 0.72rem;
   width: 0.72rem;
@@ -1147,6 +1151,37 @@ textarea {
   word-break: break-word;
 }
 
+/* container-tier marker polish */
+
+.dev-marker-host:has(.dev-marker-trigger[data-state="open"]) {
+  z-index: 30;
+}
+
+.dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\])::after {
+  content: "";
+  position: absolute;
+  inset: -0.2rem;
+  border-radius: inherit;
+  border: 1px dashed rgba(37, 99, 235, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\]:hover)::after,
+.dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\][data-state="open"])::after {
+  opacity: 1;
+  border-color: rgba(37, 99, 235, 0.24);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.06);
+}
+
+.dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\]) .dev-marker-panel {
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
 [data-theme="dark"] .dev-marker-trigger {
   border-color: rgba(79, 140, 255, 0.3);
   background: rgba(9, 23, 47, 0.98);
@@ -1188,6 +1223,16 @@ textarea {
   border-top-color: rgba(79, 140, 255, 0.18);
   border-left-color: rgba(79, 140, 255, 0.18);
   background: rgba(9, 23, 47, 0.98);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\])::after {
+  border-color: rgba(118, 167, 255, 0.14);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\]:hover)::after,
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\][data-state="open"])::after {
+  border-color: rgba(118, 167, 255, 0.28);
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.08);
 }
 
 @media (max-width: 640px) {
@@ -1269,7 +1314,7 @@ textarea {
   color: #bbf7d0;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.18),
-    0 8px 18px rgba(34, 197, 94, 0.10);
+    0 8px 18px rgba(34, 197, 94, 0.1);
 }
 
 [data-theme="dark"] .app-badge-warning {
@@ -1282,7 +1327,7 @@ textarea {
   color: #fde68a;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.18),
-    0 8px 18px rgba(245, 158, 11, 0.10);
+    0 8px 18px rgba(245, 158, 11, 0.1);
 }
 
 [data-theme="dark"] .app-badge-danger {
@@ -1295,7 +1340,7 @@ textarea {
   color: #fecaca;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.18),
-    0 8px 18px rgba(239, 68, 68, 0.10);
+    0 8px 18px rgba(239, 68, 68, 0.1);
 }
 
 /* ========= Empty state icon tones ========= */
