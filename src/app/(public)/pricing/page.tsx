@@ -637,6 +637,47 @@ export default async function PricingPage() {
                       Buy Foundation Lifetime ({foundationLifetimeLabel})
                     </CheckoutButton>
                   </>
+                ) : planState.higherLifetime ? (
+                  <>
+                    <LockedOption
+                      label="Foundation Monthly unavailable"
+                      message="Foundation plans aren’t needed because you already have Higher lifetime access."
+                    />
+
+                    <LockedOption
+                      label="Foundation 3-Month unavailable"
+                      message="Foundation plans aren’t needed because you already have Higher lifetime access."
+                    />
+
+                    <LockedOption
+                      label="Foundation Lifetime unavailable"
+                      message="Foundation plans aren’t needed because you already have Higher lifetime access."
+                    />
+                  </>
+                ) : planState.higherThreeMonth ? (
+                  <>
+                    <LockedOption
+                      label="Foundation Monthly unavailable"
+                      message="Foundation plans aren’t available while your active Higher 3-month plan is in place."
+                    />
+
+                    <LockedOption
+                      label="Foundation 3-Month unavailable"
+                      message="Foundation plans aren’t available while your active Higher 3-month plan is in place."
+                    />
+
+                    <LockedOption
+                      label="Foundation Lifetime unavailable"
+                      message="Foundation plans aren’t available while your active Higher 3-month plan is in place."
+                    />
+                  </>
+                ) : planState.higherMonthly ? (
+                  <>
+                    <LockedOption
+                      label="Foundation unavailable"
+                      message="Foundation plans aren’t available while you already have active Higher access."
+                    />
+                  </>
                 ) : planState.foundationMonthly ? (
                   <>
                     <OwnedButton label="Foundation Monthly active" />
