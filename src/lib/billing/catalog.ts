@@ -46,6 +46,7 @@ export type UpgradeQuoteResolution = {
   sourcePrice: DbPrice | null;
   targetProduct: DbProduct | null;
   targetPrice: DbPrice | null;
+  upgradeCheckoutPrice: DbPrice | null;
   upgradeFlow: UpgradeFlow | null;
   upgradeFeeAmountGbp: number | null;
 };
@@ -84,6 +85,7 @@ type UpgradeCandidate = {
   price: DbPrice;
   upgradeFlow: UpgradeFlow;
   upgradeFeeAmountGbp: number;
+  upgradeCheckoutPrice: DbPrice;
 };
 
 export function getUpgradeProductCode(productCode: string): string {
@@ -361,15 +363,64 @@ function sortUpgradeCandidates(
       return bSameProduct - aSameProduct;
     }
 
-    const aHigherFee = a.upgradeFeeAmountGbp;
-    const bHigherFee = b.upgradeFeeAmountGbp;
-
-    if (aHigherFee !== bHigherFee) {
-      return aHigherFee - bHigherFee;
+    if (a.upgradeFeeAmountGbp !== b.upgradeFeeAmountGbp) {
+      return a.upgradeFeeAmountGbp - b.upgradeFeeAmountGbp;
     }
 
     return 0;
   });
+}
+
+function matchLifetimeUpgradeCheckoutPrice(
+  upgradePrices: DbPrice[],
+  sourcePrice: DbPrice
+): DbPrice | null {
+  if (isMonthlySubscriptionPrice(sourcePrice)) {
+    return (
+      upgradePrices.find(
+        (price) =>
+          price.billing_type === BILLING_TYPES.ONE_TIME && price.amount_gbp === 350
+      ) ?? null
+    );
+  }
+
+  if (isThreeMonthSubscriptionPrice(sourcePrice)) {
+    return (
+      upgradePrices.find(
+        (price) =>
+          price.billing_type === BILLING_TYPES.ONE_TIME && price.amount_gbp === 270
+      ) ?? null
+    );
+  }
+
+  if (isLifetimePrice(sourcePrice)) {
+    return (
+      upgradePrices.find(
+        (price) =>
+          price.billing_type === BILLING_TYPES.ONE_TIME && price.amount_gbp === 100
+      ) ?? null
+    );
+  }
+
+  return null;
+}
+
+function matchUpgradeCheckoutPrice(params: {
+  upgradePrices: DbPrice[];
+  sourcePrice: DbPrice;
+  targetPrice: DbPrice;
+  upgradeFlow: UpgradeFlow;
+}): DbPrice | null {
+  if (params.upgradeFlow === "lifetime") {
+    return matchLifetimeUpgradeCheckoutPrice(params.upgradePrices, params.sourcePrice);
+  }
+
+  return matchPriceByBillingShape(
+    params.upgradePrices,
+    params.targetPrice.billing_type,
+    params.targetPrice.interval_unit,
+    params.targetPrice.interval_count
+  );
 }
 
 export async function resolveUpgradeQuoteDb(
@@ -389,6 +440,7 @@ export async function resolveUpgradeQuoteDb(
       sourcePrice: null,
       targetProduct: null,
       targetPrice: null,
+      upgradeCheckoutPrice: null,
       upgradeFlow: null,
       upgradeFeeAmountGbp: null,
     };
@@ -410,10 +462,18 @@ export async function resolveUpgradeQuoteDb(
       sourcePrice: null,
       targetProduct,
       targetPrice: null,
+      upgradeCheckoutPrice: null,
       upgradeFlow: null,
       upgradeFeeAmountGbp: null,
     };
   }
+
+  const upgradeProduct = await getActiveProductByCodeDb(
+    getUpgradeProductCode(targetProductCode)
+  );
+  const upgradePrices = upgradeProduct
+    ? await getActivePricesForProductDb(upgradeProduct.id)
+    : [];
 
   const sourceCandidates = await getActiveUpgradeableGrantsDb(userId);
 
@@ -430,10 +490,22 @@ export async function resolveUpgradeQuoteDb(
         return null;
       }
 
+      const upgradeCheckoutPrice = matchUpgradeCheckoutPrice({
+        upgradePrices,
+        sourcePrice: candidate.price,
+        targetPrice,
+        upgradeFlow,
+      });
+
+      if (!upgradeCheckoutPrice) {
+        return null;
+      }
+
       return {
         ...candidate,
         upgradeFlow,
-        upgradeFeeAmountGbp: getFixedUpgradeFeeAmountGbp(candidate.price, targetPrice),
+        upgradeFeeAmountGbp: upgradeCheckoutPrice.amount_gbp,
+        upgradeCheckoutPrice,
       };
     })
     .filter(Boolean) as UpgradeCandidate[];
@@ -446,6 +518,7 @@ export async function resolveUpgradeQuoteDb(
       sourcePrice: null,
       targetProduct,
       targetPrice,
+      upgradeCheckoutPrice: null,
       upgradeFlow: null,
       upgradeFeeAmountGbp: null,
     };
@@ -460,6 +533,7 @@ export async function resolveUpgradeQuoteDb(
     sourcePrice: selected.price,
     targetProduct,
     targetPrice,
+    upgradeCheckoutPrice: selected.upgradeCheckoutPrice,
     upgradeFlow: selected.upgradeFlow,
     upgradeFeeAmountGbp: selected.upgradeFeeAmountGbp,
   };
@@ -525,7 +599,12 @@ export async function resolveCheckoutCatalogDb(
       input.intervalCount ?? null
     );
 
-    if (!quote.eligible || !quote.upgradeFlow || quote.upgradeFeeAmountGbp == null) {
+    if (
+      !quote.eligible ||
+      !quote.upgradeFlow ||
+      quote.upgradeFeeAmountGbp == null ||
+      !quote.upgradeCheckoutPrice
+    ) {
       console.error("User is not eligible for upgrade checkout:", {
         userId: input.userId,
         input,
@@ -536,7 +615,7 @@ export async function resolveCheckoutCatalogDb(
 
     return {
       product: targetProduct,
-      price: targetPrice,
+      price: quote.upgradeCheckoutPrice,
       purchaseType: "upgrade",
       upgradeFlow: quote.upgradeFlow,
       upgradeFeeAmountGbp: quote.upgradeFeeAmountGbp,
