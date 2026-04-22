@@ -65,6 +65,69 @@ function DemoPageHierarchy() {
   );
 }
 
+function DemoHierarchyScale() {
+  return (
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+      <PanelCard
+        title="Hierarchy ladder"
+        description="The jump between levels should feel intentional, not accidental."
+        contentClassName="space-y-4"
+      >
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-5">
+          <div className="app-label">Page label</div>
+          <div className="mt-2 app-title">GCSE Russian platform</div>
+          <p className="mt-3 max-w-2xl app-subtitle">
+            The page title should feel clearly more important than anything beneath it.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
+            <div className="app-section-title">Section title</div>
+            <p className="mt-2 text-sm app-text-muted">
+              This is the main layer for page sections, grouped panels, and dashboard
+              blocks.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
+            <div className="app-card-title">Card title</div>
+            <p className="mt-2 text-sm app-text-muted">
+              Card titles should anchor a local area without competing with section
+              titles.
+            </p>
+          </div>
+        </div>
+      </PanelCard>
+
+      <PanelCard
+        title="What should stay small"
+        description="Labels, helper text, and metadata should guide structure quietly."
+        contentClassName="space-y-3"
+      >
+        <div className="rounded-2xl border border-[var(--border)] p-4">
+          <div className="app-label">Label example</div>
+          <p className="mt-2 text-sm app-text-muted">
+            Useful for framing a section or naming a control.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-[var(--border)] p-4">
+          <div className="text-sm font-medium text-[var(--text-primary)]">
+            Metadata row
+          </div>
+          <p className="mt-1 text-sm app-text-soft">Edited 2 hours ago · Higher tier</p>
+        </div>
+
+        <div className="rounded-2xl border border-[var(--border)] p-4">
+          <div className="app-form-description">Helper copy</div>
+          <p className="mt-2 text-sm app-text-muted">Should explain, not dominate.</p>
+        </div>
+      </PanelCard>
+    </div>
+  );
+}
+
 function DemoTextRoles() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -231,6 +294,199 @@ function DemoToneComparison() {
   );
 }
 
+function DemoFontSystemPreview() {
+  const examples = [
+    {
+      title: "Page title / English",
+      english: "Build confidence before the exam",
+      russian: "Уверенность перед экзаменом",
+      note: "Main headings should feel premium and reassuring, not stiff.",
+      kind: "title",
+    },
+    {
+      title: "Section title / English + Russian",
+      english: "Travel and tourist transactions",
+      russian: "Путешествия и туристические ситуации",
+      note: "Section titles should scan quickly in both languages.",
+      kind: "section",
+    },
+    {
+      title: "Body copy / lesson explanation",
+      english:
+        "Use the target language to describe where you are going, how you will travel, and what you plan to do when you arrive.",
+      russian:
+        "Используй язык, чтобы описать, куда ты едешь, как ты будешь путешествовать и что ты планируешь делать по прибытии.",
+      note: "Body text must stay calm and readable in longer lesson blocks.",
+      kind: "body",
+    },
+    {
+      title: "Input and form language",
+      english: "Lesson title",
+      russian: "Название урока",
+      note: "Forms should feel clean and modern without looking too corporate.",
+      kind: "form",
+    },
+  ] as const;
+
+  return (
+    <div className="space-y-4">
+      <PanelCard
+        title="Live direction now applied"
+        description="The base UI direction is now a warmer humanist sans stack with a neutral sans fallback."
+        contentClassName="space-y-4"
+      >
+        <div className="flex flex-wrap gap-2">
+          <Badge tone="success">Current direction</Badge>
+          <Badge tone="muted">Humanist sans</Badge>
+          <Badge tone="muted">English + Russian safe stack</Badge>
+        </div>
+
+        <p className="text-sm app-text-muted">
+          This is still a system-stack direction, not a final hosted font decision. It
+          lets the product feel warmer right now while keeping performance and
+          implementation simple.
+        </p>
+      </PanelCard>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        {examples.map((example) => (
+          <PanelCard
+            key={example.title}
+            title={example.title}
+            description={example.note}
+            contentClassName="space-y-4"
+          >
+            {example.kind === "title" ? (
+              <div className="space-y-3">
+                <div className="app-label">English</div>
+                <div className="app-title">{example.english}</div>
+
+                <div className="app-label pt-2">Russian</div>
+                <div className="app-title">{example.russian}</div>
+              </div>
+            ) : null}
+
+            {example.kind === "section" ? (
+              <div className="space-y-3">
+                <div>
+                  <div className="app-label">English</div>
+                  <div className="mt-2 app-section-title text-[1.2rem]">
+                    {example.english}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="app-label">Russian</div>
+                  <div className="mt-2 app-section-title text-[1.2rem]">
+                    {example.russian}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {example.kind === "body" ? (
+              <div className="space-y-4">
+                <div>
+                  <div className="app-label">English</div>
+                  <p className="mt-2 text-base leading-7 text-[var(--text-primary)]">
+                    {example.english}
+                  </p>
+                </div>
+
+                <div>
+                  <div className="app-label">Russian</div>
+                  <p className="mt-2 text-base leading-7 text-[var(--text-primary)]">
+                    {example.russian}
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
+            {example.kind === "form" ? (
+              <div className="space-y-4">
+                <FormField
+                  label={example.english}
+                  description="Shown in admin tools, CMS forms, and settings screens."
+                >
+                  <Input placeholder="School and daily routine" />
+                </FormField>
+
+                <FormField
+                  label={example.russian}
+                  description="Показывается в формах, настройках и редакторе контента."
+                >
+                  <Input placeholder="Школа и распорядок дня" />
+                </FormField>
+              </div>
+            ) : null}
+          </PanelCard>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DemoLessonContentTypography() {
+  return (
+    <div className="grid gap-4 xl:grid-cols-3">
+      <PanelCard
+        title="Vocabulary block"
+        description="Lesson content should stay readable in both languages at a glance."
+        contentClassName="space-y-3"
+      >
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+          <div className="app-label">New word</div>
+          <div className="mt-2 text-xl font-semibold text-[var(--text-primary)]">
+            путешествовать
+          </div>
+          <div className="mt-2 text-sm app-text-muted">to travel</div>
+          <p className="mt-3 text-sm leading-6 text-[var(--text-primary)]">
+            Use it when talking about holidays, transport, and future plans.
+          </p>
+        </div>
+      </PanelCard>
+
+      <PanelCard
+        title="Exam tip"
+        description="Short guidance blocks need strong hierarchy and quick scanning."
+        contentClassName="space-y-3"
+      >
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
+          <div className="app-label">Exam tip</div>
+          <div className="mt-2 text-base font-semibold text-[var(--text-primary)]">
+            Include a future time marker
+          </div>
+          <p className="mt-2 text-sm leading-6 app-text-muted">
+            Add words like{" "}
+            <span className="font-medium text-[var(--text-primary)]">завтра</span>,{" "}
+            <span className="font-medium text-[var(--text-primary)]">
+              на следующей неделе
+            </span>
+            , or <span className="font-medium text-[var(--text-primary)]">я буду</span> to
+            make your timeframe clear.
+          </p>
+        </div>
+      </PanelCard>
+
+      <PanelCard
+        title="Translation prompt"
+        description="Prompt and answer areas need calm typography, not visual noise."
+        contentClassName="space-y-3"
+      >
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+          <div className="app-label">Translate into Russian</div>
+          <p className="mt-2 text-base leading-7 text-[var(--text-primary)]">
+            Next summer I am going to travel to Russia with my family.
+          </p>
+          <div className="mt-4 rounded-xl border border-dashed border-[var(--border)] px-3 py-4 text-sm app-text-soft">
+            Student answer area
+          </div>
+        </div>
+      </PanelCard>
+    </div>
+  );
+}
+
 function DemoTypographyRules() {
   const rules = [
     "Page titles should be noticeably stronger than section titles, not just slightly larger.",
@@ -238,10 +494,11 @@ function DemoTypographyRules() {
     "Labels should guide structure, not compete with headings.",
     "Compact admin text can be denser, but should still preserve readable hierarchy.",
     "Student-facing copy can be warmer and more encouraging while staying within the same system.",
+    "Keep one global body font for the product unless there is a very strong reason to split experiences.",
   ];
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {rules.map((rule) => (
         <Card key={rule} className="p-4">
           <p className="text-sm app-text-muted">{rule}</p>
@@ -272,6 +529,13 @@ export default async function AdminUiTypographyPage() {
       </UiLabSection>
 
       <UiLabSection
+        title="Hierarchy scale"
+        description="The spacing and contrast between title levels should feel deliberate across the whole product."
+      >
+        <DemoHierarchyScale />
+      </UiLabSection>
+
+      <UiLabSection
         title="Text roles"
         description="These are the core text layers reused across cards, rows, tables, and support copy."
       >
@@ -290,6 +554,20 @@ export default async function AdminUiTypographyPage() {
         description="The same system should support dense admin tools and calmer student messaging."
       >
         <DemoToneComparison />
+      </UiLabSection>
+
+      <UiLabSection
+        title="Applied font direction"
+        description="The current base direction is now tested against real English and Russian product content."
+      >
+        <DemoFontSystemPreview />
+      </UiLabSection>
+
+      <UiLabSection
+        title="Lesson-content typography"
+        description="Typography should also hold up inside actual study patterns, not just admin UI."
+      >
+        <DemoLessonContentTypography />
       </UiLabSection>
 
       <UiLabSection
