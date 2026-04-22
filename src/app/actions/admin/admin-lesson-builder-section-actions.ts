@@ -8,6 +8,7 @@ import {
   getNextSectionPosition,
   getTrimmedString,
   getVariantVisibility,
+  reorderTablePositions,
 } from "@/app/actions/admin/admin-lesson-builder-shared";
 
 export async function createSectionAction(formData: FormData) {
@@ -233,37 +234,14 @@ export async function moveSectionAction(formData: FormData) {
   const [movedItem] = reordered.splice(currentIndex, 1);
   reordered.splice(targetIndex, 0, movedItem);
 
-  for (let index = 0; index < reordered.length; index += 1) {
-    const section = reordered[index];
-    const temporaryPosition = 1000 + index;
-
-    const { error: tempError } = await supabase
-      .from("lesson_sections")
-      .update({ position: temporaryPosition })
-      .eq("id", section.id)
-      .eq("lesson_id", lessonId);
-
-    if (tempError) {
-      console.error("Error setting temporary section position:", tempError);
-      throw new Error("Failed to reorder sections");
-    }
-  }
-
-  for (let index = 0; index < reordered.length; index += 1) {
-    const section = reordered[index];
-    const finalPosition = index + 1;
-
-    const { error: finalError } = await supabase
-      .from("lesson_sections")
-      .update({ position: finalPosition })
-      .eq("id", section.id)
-      .eq("lesson_id", lessonId);
-
-    if (finalError) {
-      console.error("Error setting final section position:", finalError);
-      throw new Error("Failed to reorder sections");
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_sections",
+    orderedIds: reordered.map((section) => section.id),
+    scope: {
+      lesson_id: lessonId,
+    },
+    temporaryPositionMode: "high",
+  });
 
   await finalizeLessonMutation(formData);
 }
@@ -322,37 +300,13 @@ export async function reorderSectionsAction(formData: FormData) {
     throw new Error("No section ids provided");
   }
 
-  const supabase = await createClient();
-
-  for (let index = 0; index < orderedSectionIds.length; index += 1) {
-    const sectionId = orderedSectionIds[index];
-
-    const { error } = await supabase
-      .from("lesson_sections")
-      .update({ position: -1 * (index + 1) })
-      .eq("id", sectionId)
-      .eq("lesson_id", lessonId);
-
-    if (error) {
-      console.error("Error setting temporary section positions:", error);
-      throw new Error(`Failed to reorder sections: ${error.message}`);
-    }
-  }
-
-  for (let index = 0; index < orderedSectionIds.length; index += 1) {
-    const sectionId = orderedSectionIds[index];
-
-    const { error } = await supabase
-      .from("lesson_sections")
-      .update({ position: index + 1 })
-      .eq("id", sectionId)
-      .eq("lesson_id", lessonId);
-
-    if (error) {
-      console.error("Error setting final section positions:", error);
-      throw new Error(`Failed to reorder sections: ${error.message}`);
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_sections",
+    orderedIds: orderedSectionIds,
+    scope: {
+      lesson_id: lessonId,
+    },
+  });
 
   await finalizeLessonMutation(formData);
 }

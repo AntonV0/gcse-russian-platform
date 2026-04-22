@@ -190,6 +190,77 @@ export async function getNextLessonBlockPositionInSection(sectionId: string) {
   return data?.position ? data.position + 1 : 1;
 }
 
+export async function reorderTablePositions(params: {
+  table:
+    | "lesson_sections"
+    | "lesson_blocks"
+    | "lesson_block_preset_blocks"
+    | "lesson_section_template_presets"
+    | "lesson_template_sections";
+  orderedIds: string[];
+  idColumn?: string;
+  scope: Record<string, string>;
+  temporaryPositionMode?: "negative" | "high";
+}) {
+  const supabase = await createClient();
+  const idColumn = params.idColumn ?? "id";
+  const temporaryPositionMode = params.temporaryPositionMode ?? "negative";
+
+  for (let index = 0; index < params.orderedIds.length; index += 1) {
+    const rowId = params.orderedIds[index];
+    const temporaryPosition =
+      temporaryPositionMode === "high" ? 1000 + index : -1 * (index + 1);
+
+    let query = supabase
+      .from(params.table)
+      .update({ position: temporaryPosition })
+      .eq(idColumn, rowId);
+
+    for (const [column, value] of Object.entries(params.scope)) {
+      query = query.eq(column, value);
+    }
+
+    const { error } = await query;
+
+    if (error) {
+      console.error("Error setting temporary positions:", {
+        table: params.table,
+        idColumn,
+        rowId,
+        scope: params.scope,
+        error,
+      });
+      throw new Error(`Failed to reorder rows: ${error.message}`);
+    }
+  }
+
+  for (let index = 0; index < params.orderedIds.length; index += 1) {
+    const rowId = params.orderedIds[index];
+
+    let query = supabase
+      .from(params.table)
+      .update({ position: index + 1 })
+      .eq(idColumn, rowId);
+
+    for (const [column, value] of Object.entries(params.scope)) {
+      query = query.eq(column, value);
+    }
+
+    const { error } = await query;
+
+    if (error) {
+      console.error("Error setting final positions:", {
+        table: params.table,
+        idColumn,
+        rowId,
+        scope: params.scope,
+        error,
+      });
+      throw new Error(`Failed to reorder rows: ${error.message}`);
+    }
+  }
+}
+
 export async function normalizeLessonBlockPositionsInSection(sectionId: string) {
   const supabase = await createClient();
 
@@ -204,31 +275,11 @@ export async function normalizeLessonBlockPositionsInSection(sectionId: string) 
     throw new Error(`Failed to normalize section blocks: ${loadError.message}`);
   }
 
-  for (let index = 0; index < (blocks?.length ?? 0); index += 1) {
-    const block = blocks![index];
-
-    const { error } = await supabase
-      .from("lesson_blocks")
-      .update({ position: -1 * (index + 1) })
-      .eq("id", block.id);
-
-    if (error) {
-      console.error("Error setting temporary lesson block positions:", error);
-      throw new Error(`Failed to normalize section blocks: ${error.message}`);
-    }
-  }
-
-  for (let index = 0; index < (blocks?.length ?? 0); index += 1) {
-    const block = blocks![index];
-
-    const { error } = await supabase
-      .from("lesson_blocks")
-      .update({ position: index + 1 })
-      .eq("id", block.id);
-
-    if (error) {
-      console.error("Error setting final lesson block positions:", error);
-      throw new Error(`Failed to normalize section blocks: ${error.message}`);
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_blocks",
+    orderedIds: (blocks ?? []).map((block) => block.id as string),
+    scope: {
+      lesson_section_id: sectionId,
+    },
+  });
 }

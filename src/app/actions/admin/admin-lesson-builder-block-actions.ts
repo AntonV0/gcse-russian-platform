@@ -25,6 +25,7 @@ import {
   getRouteRedirectPath,
   getTrimmedString,
   normalizeLessonBlockPositionsInSection,
+  reorderTablePositions,
   syncLessonVocabularySetUsagesFromFormData,
 } from "@/app/actions/admin/admin-lesson-builder-shared";
 import { revalidatePath } from "next/cache";
@@ -856,37 +857,14 @@ export async function moveBlockAction(formData: FormData) {
   const [movedItem] = reordered.splice(currentIndex, 1);
   reordered.splice(targetIndex, 0, movedItem);
 
-  for (let index = 0; index < reordered.length; index += 1) {
-    const block = reordered[index];
-    const temporaryPosition = 1000 + index;
-
-    const { error: tempError } = await supabase
-      .from("lesson_blocks")
-      .update({ position: temporaryPosition })
-      .eq("id", block.id)
-      .eq("lesson_section_id", sectionId);
-
-    if (tempError) {
-      console.error("Error setting temporary block position:", tempError);
-      throw new Error("Failed to reorder blocks");
-    }
-  }
-
-  for (let index = 0; index < reordered.length; index += 1) {
-    const block = reordered[index];
-    const finalPosition = index + 1;
-
-    const { error: finalError } = await supabase
-      .from("lesson_blocks")
-      .update({ position: finalPosition })
-      .eq("id", block.id)
-      .eq("lesson_section_id", sectionId);
-
-    if (finalError) {
-      console.error("Error setting final block position:", finalError);
-      throw new Error("Failed to reorder blocks");
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_blocks",
+    orderedIds: reordered.map((block) => block.id),
+    scope: {
+      lesson_section_id: sectionId,
+    },
+    temporaryPositionMode: "high",
+  });
 
   await finalizeLessonMutation(formData);
 }
@@ -945,37 +923,13 @@ export async function reorderBlocksAction(formData: FormData) {
     throw new Error("No block ids provided");
   }
 
-  const supabase = await createClient();
-
-  for (let index = 0; index < orderedBlockIds.length; index += 1) {
-    const blockId = orderedBlockIds[index];
-
-    const { error } = await supabase
-      .from("lesson_blocks")
-      .update({ position: -1 * (index + 1) })
-      .eq("id", blockId)
-      .eq("lesson_section_id", sectionId);
-
-    if (error) {
-      console.error("Error setting temporary block positions:", error);
-      throw new Error(`Failed to reorder blocks: ${error.message}`);
-    }
-  }
-
-  for (let index = 0; index < orderedBlockIds.length; index += 1) {
-    const blockId = orderedBlockIds[index];
-
-    const { error } = await supabase
-      .from("lesson_blocks")
-      .update({ position: index + 1 })
-      .eq("id", blockId)
-      .eq("lesson_section_id", sectionId);
-
-    if (error) {
-      console.error("Error setting final block positions:", error);
-      throw new Error(`Failed to reorder blocks: ${error.message}`);
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_blocks",
+    orderedIds: orderedBlockIds,
+    scope: {
+      lesson_section_id: sectionId,
+    },
+  });
 
   await syncLessonVocabularySetUsagesFromFormData(formData);
 
