@@ -91,6 +91,16 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
         <DevComponentMarker
           componentName="Badge"
           filePath="src/components/ui/badge.tsx"
+          tier="primitive"
+          componentRole="Shared status and metadata label"
+          bestFor="Short statuses, counts, category labels, and lightweight contextual markers."
+          usageExamples={[
+            "Published / Draft status",
+            "Tier or access labels",
+            "Compact metadata pills",
+            "Small status counters",
+          ]}
+          notes="Use for short labels only. Avoid turning badges into full content containers or overusing many on the same surface."
         />
       ) : null}
 

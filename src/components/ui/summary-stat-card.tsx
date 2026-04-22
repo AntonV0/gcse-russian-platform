@@ -1,7 +1,6 @@
 "use client";
 
 import AppIcon from "@/components/ui/app-icon";
-import Badge from "@/components/ui/badge";
 import Card, { CardBody } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
@@ -83,6 +82,16 @@ export default function SummaryStatCard({
         <DevComponentMarker
           componentName="SummaryStatCard"
           filePath="src/components/ui/summary-stat-card.tsx"
+          tier="container"
+          componentRole="Premium metric and summary card"
+          bestFor="Dashboards, admin overview stats, teacher review queues, student progress summaries, and compact KPI rows."
+          usageExamples={[
+            "Dashboard metrics",
+            "Assignments to review",
+            "Completed lessons count",
+            "Locked content summary",
+          ]}
+          notes="Prefer this over flatter dashboard metric cards when the page needs a strong premium stat pattern."
         />
       ) : null}
 

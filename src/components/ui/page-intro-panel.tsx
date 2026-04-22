@@ -68,6 +68,16 @@ export default function PageIntroPanel({
         <DevComponentMarker
           componentName="PageIntroPanel"
           filePath="src/components/ui/page-intro-panel.tsx"
+          tier="container"
+          componentRole="Premium top-of-page hero and context panel"
+          bestFor="Admin overview pages, student course entry screens, teacher workflow tops, and upgrade or funnel entry points."
+          usageExamples={[
+            "Admin course overview",
+            "Student theme overview",
+            "Full-access upgrade panel",
+            "Teacher assignments dashboard intro",
+          ]}
+          notes="Use this when a page needs stronger context, actions, and premium presence than a simple PageHeader."
         />
       ) : null}
 
