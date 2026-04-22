@@ -30,148 +30,12 @@ import {
 } from "@/app/actions/admin/admin-lesson-builder-shared";
 import { revalidatePath } from "next/cache";
 
-type SimpleContentBlockType = "header" | "subheader" | "text" | "callout" | "exam-tip";
-
-type RegistryBlockType =
-  | SimpleContentBlockType
-  | "note"
-  | "image"
-  | "audio"
-  | "vocabulary"
-  | "question-set"
-  | "vocabulary-set";
-
-type BlockRegistryEntry = {
-  normalize: (formData: FormData) => Record<string, unknown>;
-  validate?: (formData: FormData) => Promise<void>;
-};
-
-const blockRegistry: Record<RegistryBlockType, BlockRegistryEntry> = {
-  header: {
-    normalize(formData) {
-      return normalizeHeaderBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-    },
-  },
-
-  subheader: {
-    normalize(formData) {
-      return normalizeSubheaderBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-    },
-  },
-
-  text: {
-    normalize(formData) {
-      return normalizeTextBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-    },
-  },
-
-  callout: {
-    normalize(formData) {
-      return normalizeCalloutBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-    },
-  },
-
-  "exam-tip": {
-    normalize(formData) {
-      return normalizeExamTipBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-    },
-  },
-
-  note: {
-    normalize(formData) {
-      return normalizeNoteBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-    },
-  },
-
-  image: {
-    normalize(formData) {
-      return normalizeImageBlockData({
-        src: getTrimmedString(formData, "src"),
-        alt: getTrimmedString(formData, "alt"),
-        caption: getTrimmedString(formData, "caption"),
-      });
-    },
-  },
-
-  audio: {
-    normalize(formData) {
-      return normalizeAudioBlockData({
-        title: getTrimmedString(formData, "title"),
-        src: getTrimmedString(formData, "src"),
-        caption: getTrimmedString(formData, "caption"),
-        autoPlay: getBoolean(formData, "autoPlay"),
-      });
-    },
-  },
-
-  vocabulary: {
-    normalize(formData) {
-      return normalizeVocabularyBlockData({
-        title: getTrimmedString(formData, "title"),
-        items: getTrimmedString(formData, "items"),
-      });
-    },
-  },
-
-  "question-set": {
-    normalize(formData) {
-      return normalizeQuestionSetBlockData({
-        title: getTrimmedString(formData, "title"),
-        questionSetSlug: getTrimmedString(formData, "questionSetSlug"),
-      });
-    },
-  },
-
-  "vocabulary-set": {
-    async validate(formData) {
-      const vocabularySetSlug = getTrimmedString(formData, "vocabularySetSlug");
-      const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
-
-      if (!vocabularySet) {
-        throw new Error("Selected vocabulary set does not exist");
-      }
-    },
-    normalize(formData) {
-      return normalizeVocabularySetBlockData({
-        title: getTrimmedString(formData, "title"),
-        vocabularySetSlug: getTrimmedString(formData, "vocabularySetSlug"),
-      });
-    },
-  },
-};
-
-function getBlockRegistryEntry(blockType: RegistryBlockType) {
-  return blockRegistry[blockType];
-}
-
-async function createBlock(params: {
+async function createSimpleContentBlock(params: {
   formData: FormData;
   sectionId: string;
-  blockType: RegistryBlockType;
-  isPublished?: boolean;
+  blockType: "header" | "subheader" | "text" | "callout" | "exam-tip";
+  data: Record<string, unknown>;
 }) {
-  const entry = getBlockRegistryEntry(params.blockType);
-
-  if (entry.validate) {
-    await entry.validate(params.formData);
-  }
-
-  const data = entry.normalize(params.formData);
   const supabase = await createClient();
   const nextPosition = await getNextBlockPosition(params.sectionId);
 
@@ -179,8 +43,8 @@ async function createBlock(params: {
     lesson_section_id: params.sectionId,
     block_type: params.blockType,
     position: nextPosition,
-    is_published: params.isPublished ?? true,
-    data,
+    is_published: true,
+    data: params.data,
     settings: {},
   });
 
@@ -192,24 +56,18 @@ async function createBlock(params: {
   await finalizeLessonMutation(params.formData);
 }
 
-async function updateBlock(params: {
+async function updateSimpleContentBlock(params: {
   formData: FormData;
   blockId: string;
-  blockType: RegistryBlockType;
+  blockType: "header" | "subheader" | "text" | "callout" | "exam-tip";
+  data: Record<string, unknown>;
 }) {
-  const entry = getBlockRegistryEntry(params.blockType);
-
-  if (entry.validate) {
-    await entry.validate(params.formData);
-  }
-
-  const data = entry.normalize(params.formData);
   const supabase = await createClient();
 
   const { error } = await supabase
     .from("lesson_blocks")
     .update({
-      data,
+      data: params.data,
     })
     .eq("id", params.blockId)
     .eq("block_type", params.blockType);
@@ -261,14 +119,17 @@ export async function createHeaderBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const sectionId = getTrimmedString(formData, "sectionId");
-  if (!sectionId || !getTrimmedString(formData, "content")) {
+  const content = getTrimmedString(formData, "content");
+
+  if (!sectionId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
+  await createSimpleContentBlock({
     formData,
     sectionId,
     blockType: "header",
+    data: normalizeHeaderBlockData({ content }),
   });
 }
 
@@ -277,14 +138,17 @@ export async function updateHeaderBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const blockId = getTrimmedString(formData, "blockId");
-  if (!blockId || !getTrimmedString(formData, "content")) {
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
+  await updateSimpleContentBlock({
     formData,
     blockId,
     blockType: "header",
+    data: normalizeHeaderBlockData({ content }),
   });
 }
 
@@ -293,14 +157,17 @@ export async function createSubheaderBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const sectionId = getTrimmedString(formData, "sectionId");
-  if (!sectionId || !getTrimmedString(formData, "content")) {
+  const content = getTrimmedString(formData, "content");
+
+  if (!sectionId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
+  await createSimpleContentBlock({
     formData,
     sectionId,
     blockType: "subheader",
+    data: normalizeSubheaderBlockData({ content }),
   });
 }
 
@@ -309,14 +176,17 @@ export async function updateSubheaderBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const blockId = getTrimmedString(formData, "blockId");
-  if (!blockId || !getTrimmedString(formData, "content")) {
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
+  await updateSimpleContentBlock({
     formData,
     blockId,
     blockType: "subheader",
+    data: normalizeSubheaderBlockData({ content }),
   });
 }
 
@@ -355,14 +225,17 @@ export async function createTextBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const sectionId = getTrimmedString(formData, "sectionId");
-  if (!sectionId || !getTrimmedString(formData, "content")) {
+  const content = getTrimmedString(formData, "content");
+
+  if (!sectionId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
+  await createSimpleContentBlock({
     formData,
     sectionId,
     blockType: "text",
+    data: normalizeTextBlockData({ content }),
   });
 }
 
@@ -371,14 +244,17 @@ export async function updateTextBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const blockId = getTrimmedString(formData, "blockId");
-  if (!blockId || !getTrimmedString(formData, "content")) {
+  const content = getTrimmedString(formData, "content");
+
+  if (!blockId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
+  await updateSimpleContentBlock({
     formData,
     blockId,
     blockType: "text",
+    data: normalizeTextBlockData({ content }),
   });
 }
 
@@ -394,11 +270,24 @@ export async function createNoteBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
-    formData,
-    sectionId,
-    blockType: "note",
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "note",
+    position: nextPosition,
+    is_published: true,
+    data: normalizeNoteBlockData({ title, content }),
+    settings: {},
   });
+
+  if (error) {
+    console.error("Error creating note block:", error);
+    throw new Error("Failed to create note block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateNoteBlockAction(formData: FormData) {
@@ -413,11 +302,22 @@ export async function updateNoteBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
-    formData,
-    blockId,
-    blockType: "note",
-  });
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: normalizeNoteBlockData({ title, content }),
+    })
+    .eq("id", blockId)
+    .eq("block_type", "note");
+
+  if (error) {
+    console.error("Error updating note block:", error);
+    throw new Error("Failed to update note block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function createCalloutBlockAction(formData: FormData) {
@@ -425,16 +325,18 @@ export async function createCalloutBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
   const content = getTrimmedString(formData, "content");
 
   if (!sectionId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
+  await createSimpleContentBlock({
     formData,
     sectionId,
     blockType: "callout",
+    data: normalizeCalloutBlockData({ title, content }),
   });
 }
 
@@ -443,16 +345,18 @@ export async function updateCalloutBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
   const content = getTrimmedString(formData, "content");
 
   if (!blockId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
+  await updateSimpleContentBlock({
     formData,
     blockId,
     blockType: "callout",
+    data: normalizeCalloutBlockData({ title, content }),
   });
 }
 
@@ -461,16 +365,18 @@ export async function createExamTipBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
   const content = getTrimmedString(formData, "content");
 
   if (!sectionId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
+  await createSimpleContentBlock({
     formData,
     sectionId,
     blockType: "exam-tip",
+    data: normalizeExamTipBlockData({ title, content }),
   });
 }
 
@@ -479,16 +385,18 @@ export async function updateExamTipBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
   const content = getTrimmedString(formData, "content");
 
   if (!blockId || !content) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
+  await updateSimpleContentBlock({
     formData,
     blockId,
     blockType: "exam-tip",
+    data: normalizeExamTipBlockData({ title, content }),
   });
 }
 
@@ -498,16 +406,31 @@ export async function createImageBlockAction(formData: FormData) {
 
   const sectionId = getTrimmedString(formData, "sectionId");
   const src = getTrimmedString(formData, "src");
+  const alt = getTrimmedString(formData, "alt");
+  const caption = getTrimmedString(formData, "caption");
 
   if (!sectionId || !src) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
-    formData,
-    sectionId,
-    blockType: "image",
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "image",
+    position: nextPosition,
+    is_published: true,
+    data: normalizeImageBlockData({ src, alt, caption }),
+    settings: {},
   });
+
+  if (error) {
+    console.error("Error creating image block:", error);
+    throw new Error("Failed to create image block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateImageBlockAction(formData: FormData) {
@@ -516,16 +439,29 @@ export async function updateImageBlockAction(formData: FormData) {
 
   const blockId = getTrimmedString(formData, "blockId");
   const src = getTrimmedString(formData, "src");
+  const alt = getTrimmedString(formData, "alt");
+  const caption = getTrimmedString(formData, "caption");
 
   if (!blockId || !src) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
-    formData,
-    blockId,
-    blockType: "image",
-  });
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: normalizeImageBlockData({ src, alt, caption }),
+    })
+    .eq("id", blockId)
+    .eq("block_type", "image");
+
+  if (error) {
+    console.error("Error updating image block:", error);
+    throw new Error("Failed to update image block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function createAudioBlockAction(formData: FormData) {
@@ -533,17 +469,33 @@ export async function createAudioBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
   const src = getTrimmedString(formData, "src");
+  const caption = getTrimmedString(formData, "caption");
+  const autoPlay = getBoolean(formData, "autoPlay");
 
   if (!sectionId || !src) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
-    formData,
-    sectionId,
-    blockType: "audio",
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "audio",
+    position: nextPosition,
+    is_published: true,
+    data: normalizeAudioBlockData({ title, src, caption, autoPlay }),
+    settings: {},
   });
+
+  if (error) {
+    console.error("Error creating audio block:", error);
+    throw new Error("Failed to create audio block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateAudioBlockAction(formData: FormData) {
@@ -551,17 +503,31 @@ export async function updateAudioBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
   const src = getTrimmedString(formData, "src");
+  const caption = getTrimmedString(formData, "caption");
+  const autoPlay = getBoolean(formData, "autoPlay");
 
   if (!blockId || !src) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
-    formData,
-    blockId,
-    blockType: "audio",
-  });
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: normalizeAudioBlockData({ title, src, caption, autoPlay }),
+    })
+    .eq("id", blockId)
+    .eq("block_type", "audio");
+
+  if (error) {
+    console.error("Error updating audio block:", error);
+    throw new Error("Failed to update audio block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function createVocabularyBlockAction(formData: FormData) {
@@ -576,11 +542,27 @@ export async function createVocabularyBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
-    formData,
-    sectionId,
-    blockType: "vocabulary",
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "vocabulary",
+    position: nextPosition,
+    is_published: true,
+    data: normalizeVocabularyBlockData({
+      title,
+      items: itemsRaw,
+    }),
+    settings: {},
   });
+
+  if (error) {
+    console.error("Error creating vocabulary block:", error);
+    throw new Error("Failed to create vocabulary block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateVocabularyBlockAction(formData: FormData) {
@@ -595,11 +577,25 @@ export async function updateVocabularyBlockAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
-    formData,
-    blockId,
-    blockType: "vocabulary",
-  });
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: normalizeVocabularyBlockData({
+        title,
+        items: itemsRaw,
+      }),
+    })
+    .eq("id", blockId)
+    .eq("block_type", "vocabulary");
+
+  if (error) {
+    console.error("Error updating vocabulary block:", error);
+    throw new Error("Failed to update vocabulary block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function duplicateBlockAction(formData: FormData) {
@@ -650,17 +646,34 @@ export async function createQuestionSetBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
   const questionSetSlug = getTrimmedString(formData, "questionSetSlug");
 
   if (!sectionId || !questionSetSlug) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
-    formData,
-    sectionId,
-    blockType: "question-set",
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "question-set",
+    position: nextPosition,
+    is_published: true,
+    data: normalizeQuestionSetBlockData({
+      title,
+      questionSetSlug,
+    }),
+    settings: {},
   });
+
+  if (error) {
+    console.error("Error creating question-set block:", error);
+    throw new Error("Failed to create question-set block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateQuestionSetBlockAction(formData: FormData) {
@@ -668,17 +681,32 @@ export async function updateQuestionSetBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
   const questionSetSlug = getTrimmedString(formData, "questionSetSlug");
 
   if (!blockId || !questionSetSlug) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
-    formData,
-    blockId,
-    blockType: "question-set",
-  });
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: normalizeQuestionSetBlockData({
+        title,
+        questionSetSlug,
+      }),
+    })
+    .eq("id", blockId)
+    .eq("block_type", "question-set");
+
+  if (error) {
+    console.error("Error updating question-set block:", error);
+    throw new Error("Failed to update question-set block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function createVocabularySetBlockAction(formData: FormData) {
@@ -686,17 +714,40 @@ export async function createVocabularySetBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
   const vocabularySetSlug = getTrimmedString(formData, "vocabularySetSlug");
 
   if (!sectionId || !vocabularySetSlug) {
     throw new Error("Missing required fields");
   }
 
-  await createBlock({
-    formData,
-    sectionId,
-    blockType: "vocabulary-set",
+  const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
+
+  if (!vocabularySet) {
+    throw new Error("Selected vocabulary set does not exist");
+  }
+
+  const supabase = await createClient();
+  const nextPosition = await getNextBlockPosition(sectionId);
+
+  const { error } = await supabase.from("lesson_blocks").insert({
+    lesson_section_id: sectionId,
+    block_type: "vocabulary-set",
+    position: nextPosition,
+    is_published: true,
+    data: normalizeVocabularySetBlockData({
+      title,
+      vocabularySetSlug,
+    }),
+    settings: {},
   });
+
+  if (error) {
+    console.error("Error creating vocabulary-set block:", error);
+    throw new Error("Failed to create vocabulary-set block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function updateVocabularySetBlockAction(formData: FormData) {
@@ -704,17 +755,38 @@ export async function updateVocabularySetBlockAction(formData: FormData) {
   if (!canAccess) throw new Error("Unauthorized");
 
   const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
   const vocabularySetSlug = getTrimmedString(formData, "vocabularySetSlug");
 
   if (!blockId || !vocabularySetSlug) {
     throw new Error("Missing required fields");
   }
 
-  await updateBlock({
-    formData,
-    blockId,
-    blockType: "vocabulary-set",
-  });
+  const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
+
+  if (!vocabularySet) {
+    throw new Error("Selected vocabulary set does not exist");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_blocks")
+    .update({
+      data: normalizeVocabularySetBlockData({
+        title,
+        vocabularySetSlug,
+      }),
+    })
+    .eq("id", blockId)
+    .eq("block_type", "vocabulary-set");
+
+  if (error) {
+    console.error("Error updating vocabulary-set block:", error);
+    throw new Error("Failed to update vocabulary-set block");
+  }
+
+  await finalizeLessonMutation(formData);
 }
 
 export async function deleteBlockAction(formData: FormData) {
@@ -787,7 +859,7 @@ export async function moveBlockAction(formData: FormData) {
 
   await reorderTablePositions({
     table: "lesson_blocks",
-    orderedIds: reordered.map((block) => block.id),
+    orderedIds: reordered.map((block) => block.id as string),
     scope: {
       lesson_section_id: sectionId,
     },

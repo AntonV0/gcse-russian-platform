@@ -236,7 +236,7 @@ export async function moveSectionAction(formData: FormData) {
 
   await reorderTablePositions({
     table: "lesson_sections",
-    orderedIds: reordered.map((section) => section.id),
+    orderedIds: reordered.map((section) => section.id as string),
     scope: {
       lesson_id: lessonId,
     },
