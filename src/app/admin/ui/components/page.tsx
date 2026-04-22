@@ -307,6 +307,96 @@ export default async function AdminUiComponentsPage() {
       </UiLabSection>
 
       <UiLabSection
+        title="Premium section / inspector panels"
+        description="This is the preferred container pattern for admin sections, side panels, metadata groups, and calmer student support panels."
+      >
+        <div className="grid gap-4 xl:grid-cols-3">
+          <PanelCard
+            title="Admin section panel"
+            description="Best default for admin editing and grouped page content."
+            tone="admin"
+            actions={
+              <InlineActions>
+                <Button variant="secondary" size="sm" icon="filter">
+                  Filter
+                </Button>
+                <Button variant="primary" size="sm" icon="create">
+                  Add block
+                </Button>
+              </InlineActions>
+            }
+            contentClassName="space-y-3"
+          >
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-medium text-[var(--text-primary)]">
+                Section settings
+              </div>
+              <div className="mt-1 text-sm app-text-muted">
+                Use for durable admin structures where actions and description both
+                matter.
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+              <div className="text-sm font-medium text-[var(--text-primary)]">
+                Publishing controls
+              </div>
+              <div className="mt-1 text-sm app-text-soft">
+                draft · scheduled · published
+              </div>
+            </div>
+          </PanelCard>
+
+          <PanelCard
+            title="Compact inspector panel"
+            description="Preferred for builder sidebars and denser metadata areas."
+            tone="muted"
+            density="compact"
+            actions={
+              <Button variant="quiet" size="sm" icon="settings">
+                Options
+              </Button>
+            }
+            contentClassName="space-y-3"
+          >
+            <InfoRow label="Kind" value="content" />
+            <InfoRow label="Position" value="2" />
+            <InfoRow label="Published" value="Yes" />
+            <InfoRow label="Blocks" value="8" />
+
+            <div className="pt-1 text-sm app-text-muted">
+              Compact density should still feel structured, not cramped.
+            </div>
+          </PanelCard>
+
+          <PanelCard
+            title="Student support panel"
+            description="A softer section card for learning support and motivation."
+            tone="student"
+            contentClassName="space-y-3"
+          >
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-medium text-[var(--text-primary)]">
+                Exam reminder
+              </div>
+              <div className="mt-1 text-sm app-text-muted">
+                Keep your answer in full sentences and include a clear time reference.
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-medium text-[var(--text-primary)]">
+                Suggested next step
+              </div>
+              <div className="mt-1 text-sm app-text-muted">
+                Review the new vocabulary before starting the translation practice.
+              </div>
+            </div>
+          </PanelCard>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
         title="Cards and list items"
         description="These are core patterns for dashboards, overviews, and content index pages."
       >

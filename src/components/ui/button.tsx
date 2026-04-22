@@ -256,6 +256,16 @@ function ButtonInner({
           <DevComponentMarker
             componentName="Button"
             filePath="src/components/ui/button.tsx"
+            tier="primitive"
+            componentRole="Shared action primitive"
+            bestFor="Primary actions, secondary actions, utility controls, links styled as buttons, and icon-only actions with clear meaning."
+            usageExamples={[
+              "Form submit actions",
+              "Toolbar controls",
+              "Header actions",
+              "Card and row actions",
+            ]}
+            notes="Prefer shared variants and sizes over custom page-level button styling. Use iconOnly only for familiar actions."
           />
         ) : null}
 
@@ -270,6 +280,16 @@ function ButtonInner({
         <DevComponentMarker
           componentName="Button"
           filePath="src/components/ui/button.tsx"
+          tier="primitive"
+          componentRole="Shared action primitive"
+          bestFor="Primary actions, secondary actions, utility controls, links styled as buttons, and compact row actions."
+          usageExamples={[
+            "Save and publish actions",
+            "Toolbar filters",
+            "Navigation CTA buttons",
+            "Inline row actions",
+          ]}
+          notes="Prefer shared variants and sizes over page-local button wrappers. Keep labels short and action-led."
         />
       ) : null}
 
