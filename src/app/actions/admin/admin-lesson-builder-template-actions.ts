@@ -26,6 +26,7 @@ import {
   finalizeLessonMutation,
   getNextSectionPosition,
   getTrimmedString,
+  reorderTablePositions,
   revalidateLessonSectionTemplatePaths,
   revalidateLessonTemplateEntityPaths,
   revalidateLessonTemplatePaths,
@@ -502,33 +503,13 @@ export async function deleteLessonBlockPresetBlockAction(formData: FormData) {
     throw new Error(`Failed to normalize preset block order: ${loadError.message}`);
   }
 
-  for (let index = 0; index < (remainingBlocks?.length ?? 0); index += 1) {
-    const row = remainingBlocks![index];
-
-    const { error: tempError } = await supabase
-      .from("lesson_block_preset_blocks")
-      .update({ position: -1 * (index + 1) })
-      .eq("id", row.id);
-
-    if (tempError) {
-      console.error("Error setting temporary preset block positions:", tempError);
-      throw new Error(`Failed to normalize preset block order: ${tempError.message}`);
-    }
-  }
-
-  for (let index = 0; index < (remainingBlocks?.length ?? 0); index += 1) {
-    const row = remainingBlocks![index];
-
-    const { error: finalError } = await supabase
-      .from("lesson_block_preset_blocks")
-      .update({ position: index + 1 })
-      .eq("id", row.id);
-
-    if (finalError) {
-      console.error("Error setting final preset block positions:", finalError);
-      throw new Error(`Failed to normalize preset block order: ${finalError.message}`);
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_block_preset_blocks",
+    orderedIds: (remainingBlocks ?? []).map((row) => row.id as string),
+    scope: {
+      lesson_block_preset_id: presetId,
+    },
+  });
 
   revalidateLessonTemplatePaths();
   revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
@@ -554,37 +535,13 @@ export async function reorderLessonBlockPresetBlocksAction(formData: FormData) {
     throw new Error("No preset block ids provided");
   }
 
-  const supabase = await createClient();
-
-  for (let index = 0; index < orderedPresetBlockIds.length; index += 1) {
-    const presetBlockId = orderedPresetBlockIds[index];
-
-    const { error } = await supabase
-      .from("lesson_block_preset_blocks")
-      .update({ position: -1 * (index + 1) })
-      .eq("id", presetBlockId)
-      .eq("lesson_block_preset_id", presetId);
-
-    if (error) {
-      console.error("Error setting temporary preset block positions:", error);
-      throw new Error(`Failed to reorder preset blocks: ${error.message}`);
-    }
-  }
-
-  for (let index = 0; index < orderedPresetBlockIds.length; index += 1) {
-    const presetBlockId = orderedPresetBlockIds[index];
-
-    const { error } = await supabase
-      .from("lesson_block_preset_blocks")
-      .update({ position: index + 1 })
-      .eq("id", presetBlockId)
-      .eq("lesson_block_preset_id", presetId);
-
-    if (error) {
-      console.error("Error setting final preset block positions:", error);
-      throw new Error(`Failed to reorder preset blocks: ${error.message}`);
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_block_preset_blocks",
+    orderedIds: orderedPresetBlockIds,
+    scope: {
+      lesson_block_preset_id: presetId,
+    },
+  });
 
   revalidateLessonTemplatePaths();
   revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
@@ -760,42 +717,14 @@ export async function removePresetFromLessonSectionTemplateAction(formData: Form
     );
   }
 
-  for (let index = 0; index < (remainingLinks?.length ?? 0); index += 1) {
-    const row = remainingLinks![index];
-
-    const { error: tempError } = await supabase
-      .from("lesson_section_template_presets")
-      .update({ position: -1 * (index + 1) })
-      .eq("lesson_section_template_id", templateId)
-      .eq("lesson_block_preset_id", row.lesson_block_preset_id);
-
-    if (tempError) {
-      console.error(
-        "Error setting temporary section template preset positions:",
-        tempError
-      );
-      throw new Error(
-        `Failed to normalize section template preset order: ${tempError.message}`
-      );
-    }
-  }
-
-  for (let index = 0; index < (remainingLinks?.length ?? 0); index += 1) {
-    const row = remainingLinks![index];
-
-    const { error: finalError } = await supabase
-      .from("lesson_section_template_presets")
-      .update({ position: index + 1 })
-      .eq("lesson_section_template_id", templateId)
-      .eq("lesson_block_preset_id", row.lesson_block_preset_id);
-
-    if (finalError) {
-      console.error("Error setting final section template preset positions:", finalError);
-      throw new Error(
-        `Failed to normalize section template preset order: ${finalError.message}`
-      );
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_section_template_presets",
+    orderedIds: (remainingLinks ?? []).map((row) => row.lesson_block_preset_id as string),
+    idColumn: "lesson_block_preset_id",
+    scope: {
+      lesson_section_template_id: templateId,
+    },
+  });
 
   revalidateLessonSectionTemplatePaths();
   revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
@@ -821,37 +750,14 @@ export async function reorderLessonSectionTemplatePresetsAction(formData: FormDa
     throw new Error("No preset ids provided");
   }
 
-  const supabase = await createClient();
-
-  for (let index = 0; index < orderedPresetIds.length; index += 1) {
-    const presetId = orderedPresetIds[index];
-
-    const { error } = await supabase
-      .from("lesson_section_template_presets")
-      .update({ position: -1 * (index + 1) })
-      .eq("lesson_section_template_id", templateId)
-      .eq("lesson_block_preset_id", presetId);
-
-    if (error) {
-      console.error("Error setting temporary section template preset positions:", error);
-      throw new Error(`Failed to reorder section template presets: ${error.message}`);
-    }
-  }
-
-  for (let index = 0; index < orderedPresetIds.length; index += 1) {
-    const presetId = orderedPresetIds[index];
-
-    const { error } = await supabase
-      .from("lesson_section_template_presets")
-      .update({ position: index + 1 })
-      .eq("lesson_section_template_id", templateId)
-      .eq("lesson_block_preset_id", presetId);
-
-    if (error) {
-      console.error("Error setting final section template preset positions:", error);
-      throw new Error(`Failed to reorder section template presets: ${error.message}`);
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_section_template_presets",
+    orderedIds: orderedPresetIds,
+    idColumn: "lesson_block_preset_id",
+    scope: {
+      lesson_section_template_id: templateId,
+    },
+  });
 
   revalidateLessonSectionTemplatePaths();
   revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
@@ -1055,40 +961,13 @@ export async function removeSectionFromLessonTemplateAction(formData: FormData) 
     );
   }
 
-  for (let index = 0; index < (remainingRows?.length ?? 0); index += 1) {
-    const row = remainingRows![index];
-
-    const { error: tempError } = await supabase
-      .from("lesson_template_sections")
-      .update({ position: -1 * (index + 1) })
-      .eq("id", row.id);
-
-    if (tempError) {
-      console.error(
-        "Error setting temporary lesson template section positions:",
-        tempError
-      );
-      throw new Error(
-        `Failed to normalize lesson template section order: ${tempError.message}`
-      );
-    }
-  }
-
-  for (let index = 0; index < (remainingRows?.length ?? 0); index += 1) {
-    const row = remainingRows![index];
-
-    const { error: finalError } = await supabase
-      .from("lesson_template_sections")
-      .update({ position: index + 1 })
-      .eq("id", row.id);
-
-    if (finalError) {
-      console.error("Error setting final lesson template section positions:", finalError);
-      throw new Error(
-        `Failed to normalize lesson template section order: ${finalError.message}`
-      );
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_template_sections",
+    orderedIds: (remainingRows ?? []).map((row) => row.id as string),
+    scope: {
+      lesson_template_id: templateId,
+    },
+  });
 
   revalidateLessonTemplateEntityPaths();
   revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
@@ -1117,37 +996,13 @@ export async function reorderLessonTemplateSectionsAction(formData: FormData) {
     throw new Error("No lesson template section ids provided");
   }
 
-  const supabase = await createClient();
-
-  for (let index = 0; index < orderedLessonTemplateSectionIds.length; index += 1) {
-    const lessonTemplateSectionId = orderedLessonTemplateSectionIds[index];
-
-    const { error } = await supabase
-      .from("lesson_template_sections")
-      .update({ position: -1 * (index + 1) })
-      .eq("id", lessonTemplateSectionId)
-      .eq("lesson_template_id", templateId);
-
-    if (error) {
-      console.error("Error setting temporary lesson template section positions:", error);
-      throw new Error(`Failed to reorder lesson template sections: ${error.message}`);
-    }
-  }
-
-  for (let index = 0; index < orderedLessonTemplateSectionIds.length; index += 1) {
-    const lessonTemplateSectionId = orderedLessonTemplateSectionIds[index];
-
-    const { error } = await supabase
-      .from("lesson_template_sections")
-      .update({ position: index + 1 })
-      .eq("id", lessonTemplateSectionId)
-      .eq("lesson_template_id", templateId);
-
-    if (error) {
-      console.error("Error setting final lesson template section positions:", error);
-      throw new Error(`Failed to reorder lesson template sections: ${error.message}`);
-    }
-  }
+  await reorderTablePositions({
+    table: "lesson_template_sections",
+    orderedIds: orderedLessonTemplateSectionIds,
+    scope: {
+      lesson_template_id: templateId,
+    },
+  });
 
   revalidateLessonTemplateEntityPaths();
   revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
