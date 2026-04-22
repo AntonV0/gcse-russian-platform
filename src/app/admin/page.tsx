@@ -199,306 +199,306 @@ export default async function AdminPage() {
         </div>
       </PageIntroPanel>
 
-      <section className="grid gap-3 xl:grid-cols-[minmax(0,1.28fr)_minmax(340px,0.72fr)]">
-        <PanelCard
-          title="Management areas"
-          description="Primary admin tools for content and teaching workflows."
-          tone="brand"
-          contentClassName="space-y-4"
-        >
-          <div className="grid gap-4 md:grid-cols-2">
-            {managementCards.map((card) => (
-              <AdminLinkCard key={card.href} {...card} />
-            ))}
-          </div>
-        </PanelCard>
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.28fr)_minmax(340px,0.72fr)] xl:items-start">
+        <div className="space-y-3">
+          <PanelCard
+            title="Management areas"
+            description="Primary admin tools for content and teaching workflows."
+            tone="brand"
+            contentClassName="space-y-4"
+          >
+            <div className="grid gap-4 md:grid-cols-2">
+              {managementCards.map((card) => (
+                <AdminLinkCard key={card.href} {...card} />
+              ))}
+            </div>
+          </PanelCard>
 
-        <PanelCard
-          title="Admin guidance"
-          description="A simple recommended flow for common admin work."
-          tone="muted"
-          density="compact"
-          contentClassName="space-y-3"
-        >
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-            <div className="text-sm font-semibold text-[var(--text-primary)]">
-              Start in content
-            </div>
-            <div className="mt-1 text-sm app-text-muted">
-              Courses, variants, modules, and lessons are the foundation of most admin
-              work.
-            </div>
-            <div className="mt-3">
-              <Button href="/admin/content" variant="soft" size="sm" icon="courses">
-                Manage content
-              </Button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-            <div className="text-sm font-semibold text-[var(--text-primary)]">
-              Then review teaching flow
-            </div>
-            <div className="mt-1 text-sm app-text-muted">
-              Keep assignments and teaching groups aligned with the current content
-              structure.
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Button
-                href="/teacher/assignments"
-                variant="secondary"
-                size="sm"
-                icon="assignments"
+          <PanelCard
+            title="Platform snapshot"
+            description="Grouped overview of content structure and user access."
+            tone="admin"
+            contentClassName="space-y-4"
+          >
+            <div className="grid gap-4 lg:grid-cols-2">
+              <PanelCard
+                title="Content structure"
+                description="Core content totals across the platform."
+                tone="muted"
+                density="compact"
+                contentClassName="space-y-3"
               >
-                Assignments
-              </Button>
-              <Button
-                href="/admin/teaching-groups"
-                variant="secondary"
-                size="sm"
+                <div className="space-y-3">
+                  <SummaryStatCard
+                    title="Courses"
+                    value={courseCount ?? 0}
+                    icon="courses"
+                    tone="brand"
+                    compact
+                    layout="inline"
+                    description="Main course shells."
+                  />
+                  <SummaryStatCard
+                    title="Variants"
+                    value={variantCount ?? 0}
+                    icon="file"
+                    compact
+                    layout="inline"
+                    description="Access variants."
+                  />
+                  <SummaryStatCard
+                    title="Modules"
+                    value={moduleCount ?? 0}
+                    icon="lessonContent"
+                    compact
+                    layout="inline"
+                    description="Structured module sets."
+                  />
+                  <SummaryStatCard
+                    title="Lessons"
+                    value={lessonCount ?? 0}
+                    icon="lessons"
+                    compact
+                    layout="inline"
+                    description="Lesson records available."
+                  />
+                </div>
+              </PanelCard>
+
+              <PanelCard
+                title="Users and access"
+                description="People totals and current access state."
+                tone="muted"
+                density="compact"
+                contentClassName="space-y-3"
+              >
+                <div className="space-y-3">
+                  <SummaryStatCard
+                    title="Students"
+                    value={studentProfiles.length}
+                    icon="user"
+                    compact
+                    layout="inline"
+                    description="All student accounts."
+                  />
+                  <SummaryStatCard
+                    title="Teachers / Admins"
+                    value={teacherProfiles.length}
+                    icon="users"
+                    compact
+                    layout="inline"
+                    description="Elevated accounts."
+                  />
+                  <SummaryStatCard
+                    title="Active students"
+                    value={activeStudents}
+                    icon="completed"
+                    tone="success"
+                    compact
+                    layout="inline"
+                    description="With active access."
+                  />
+                  <SummaryStatCard
+                    title="Inactive students"
+                    value={inactiveStudents}
+                    icon="pending"
+                    tone="warning"
+                    compact
+                    layout="inline"
+                    description="Without active access."
+                  />
+                </div>
+              </PanelCard>
+            </div>
+          </PanelCard>
+
+          <PanelCard
+            title="People and access"
+            description="User visibility and quick links for account-focused admin work."
+            tone="student"
+            contentClassName="space-y-4"
+          >
+            <div className="grid gap-4 md:grid-cols-2">
+              <SummaryStatCard
+                title="Students"
+                value={studentProfiles.length}
+                icon="user"
+                compact
+                description="All student accounts."
+                badge={<Badge tone="success">{activeStudents} active</Badge>}
+              />
+              <SummaryStatCard
+                title="Teachers / Admins"
+                value={teacherProfiles.length}
                 icon="users"
-              >
-                Teaching groups
-              </Button>
+                compact
+                description="Teaching and admin accounts."
+              />
             </div>
-          </div>
 
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-            <div className="text-sm font-semibold text-[var(--text-primary)]">
-              Validate UI patterns before reuse
+            <div className="grid gap-4 md:grid-cols-3">
+              {peopleCards.map((card) => (
+                <AdminLinkCard key={card.href} {...card} />
+              ))}
             </div>
-            <div className="mt-1 text-sm app-text-muted">
-              Use the UI Lab to test shared styling patterns before introducing new
-              one-off UI.
+          </PanelCard>
+        </div>
+
+        <div className="space-y-3">
+          <PanelCard
+            title="Admin guidance"
+            description="A simple recommended flow for common admin work."
+            tone="muted"
+            density="compact"
+            contentClassName="space-y-3"
+          >
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-semibold text-[var(--text-primary)]">
+                Start in content
+              </div>
+              <div className="mt-1 text-sm app-text-muted">
+                Courses, variants, modules, and lessons are the foundation of most admin
+                work.
+              </div>
+              <div className="mt-3">
+                <Button href="/admin/content" variant="soft" size="sm" icon="courses">
+                  Manage content
+                </Button>
+              </div>
             </div>
-            <div className="mt-3">
-              <Button href="/admin/ui" variant="quiet" size="sm" icon="uiLab">
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-semibold text-[var(--text-primary)]">
+                Then review teaching flow
+              </div>
+              <div className="mt-1 text-sm app-text-muted">
+                Keep assignments and teaching groups aligned with the current content
+                structure.
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button
+                  href="/teacher/assignments"
+                  variant="secondary"
+                  size="sm"
+                  icon="assignments"
+                >
+                  Assignments
+                </Button>
+                <Button
+                  href="/admin/teaching-groups"
+                  variant="secondary"
+                  size="sm"
+                  icon="users"
+                >
+                  Teaching groups
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-semibold text-[var(--text-primary)]">
+                Validate UI patterns before reuse
+              </div>
+              <div className="mt-1 text-sm app-text-muted">
+                Use the UI Lab to test shared styling patterns before introducing new
+                one-off UI.
+              </div>
+              <div className="mt-3">
+                <Button href="/admin/ui" variant="quiet" size="sm" icon="uiLab">
+                  Open UI Lab
+                </Button>
+              </div>
+            </div>
+          </PanelCard>
+
+          <PanelCard
+            title="Design system shortcut"
+            description="Shared premium patterns should be validated in the UI Lab before broader reuse."
+            tone="student"
+            density="compact"
+            actions={
+              <Button href="/admin/ui" variant="inverse" icon="next" iconPosition="right">
                 Open UI Lab
               </Button>
-            </div>
-          </div>
-        </PanelCard>
-      </section>
-
-      <section className="grid gap-3 xl:grid-cols-[minmax(0,1.28fr)_minmax(340px,0.72fr)]">
-        <PanelCard
-          title="Platform snapshot"
-          description="Grouped overview of content structure and user access."
-          tone="admin"
-          contentClassName="space-y-4"
-        >
-          <div className="grid gap-4 lg:grid-cols-2">
-            <PanelCard
-              title="Content structure"
-              description="Core content totals across the platform."
-              tone="muted"
-              density="compact"
-              contentClassName="space-y-3"
-            >
-              <div className="space-y-3">
-                <SummaryStatCard
-                  title="Courses"
-                  value={courseCount ?? 0}
-                  icon="courses"
-                  tone="brand"
-                  compact
-                  layout="inline"
-                  description="Main course shells."
-                />
-                <SummaryStatCard
-                  title="Variants"
-                  value={variantCount ?? 0}
-                  icon="file"
-                  compact
-                  layout="inline"
-                  description="Access variants."
-                />
-                <SummaryStatCard
-                  title="Modules"
-                  value={moduleCount ?? 0}
-                  icon="lessonContent"
-                  compact
-                  layout="inline"
-                  description="Structured module sets."
-                />
-                <SummaryStatCard
-                  title="Lessons"
-                  value={lessonCount ?? 0}
-                  icon="lessons"
-                  compact
-                  layout="inline"
-                  description="Lesson records available."
-                />
+            }
+            contentClassName="space-y-3"
+          >
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-semibold text-[var(--text-primary)]">
+                Shared premium blocks
               </div>
-            </PanelCard>
-
-            <PanelCard
-              title="Users and access"
-              description="People totals and current access state."
-              tone="muted"
-              density="compact"
-              contentClassName="space-y-3"
-            >
-              <div className="space-y-3">
-                <SummaryStatCard
-                  title="Students"
-                  value={studentProfiles.length}
-                  icon="user"
-                  compact
-                  layout="inline"
-                  description="All student accounts."
-                />
-                <SummaryStatCard
-                  title="Teachers / Admins"
-                  value={teacherProfiles.length}
-                  icon="users"
-                  compact
-                  layout="inline"
-                  description="Elevated accounts."
-                />
-                <SummaryStatCard
-                  title="Active students"
-                  value={activeStudents}
-                  icon="completed"
-                  tone="success"
-                  compact
-                  layout="inline"
-                  description="With active access."
-                />
-                <SummaryStatCard
-                  title="Inactive students"
-                  value={inactiveStudents}
-                  icon="pending"
-                  tone="warning"
-                  compact
-                  layout="inline"
-                  description="Without active access."
-                />
+              <div className="mt-1 text-sm app-text-muted">
+                Page intro panels, stat cards, premium section panels, badges, buttons,
+                forms, and navigation patterns.
               </div>
-            </PanelCard>
-          </div>
-        </PanelCard>
+            </div>
 
-        <PanelCard
-          title="Design system shortcut"
-          description="Shared premium patterns should be validated in the UI Lab before broader reuse."
-          tone="student"
-          density="compact"
-          actions={
-            <Button href="/admin/ui" variant="inverse" icon="next" iconPosition="right">
-              Open UI Lab
-            </Button>
-          }
-          contentClassName="space-y-3"
-        >
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-            <div className="text-sm font-semibold text-[var(--text-primary)]">
-              Shared premium blocks
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-semibold text-[var(--text-primary)]">
+                Best use
+              </div>
+              <div className="mt-1 text-sm app-text-muted">
+                Validate patterns in the UI Lab first, then reuse them in admin, student,
+                and teacher pages.
+              </div>
             </div>
-            <div className="mt-1 text-sm app-text-muted">
-              Page intro panels, stat cards, premium section panels, badges, buttons,
-              forms, and navigation patterns.
-            </div>
-          </div>
+          </PanelCard>
 
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-            <div className="text-sm font-semibold text-[var(--text-primary)]">
-              Best use
-            </div>
-            <div className="mt-1 text-sm app-text-muted">
-              Validate patterns in the UI Lab first, then reuse them in admin, student,
-              and teacher pages.
-            </div>
-          </div>
-        </PanelCard>
-      </section>
-
-      <section className="grid gap-3 xl:grid-cols-[minmax(0,1.28fr)_minmax(340px,0.72fr)]">
-        <PanelCard
-          title="People and access"
-          description="User visibility and quick links for account-focused admin work."
-          tone="student"
-          contentClassName="space-y-4"
-        >
-          <div className="grid gap-4 md:grid-cols-2">
+          <PanelCard
+            title="Access state"
+            description="Compact signals for account and teaching visibility."
+            tone="muted"
+            density="compact"
+            contentClassName="space-y-3"
+          >
             <SummaryStatCard
-              title="Students"
-              value={studentProfiles.length}
-              icon="user"
-              compact
-              description="All student accounts."
-              badge={<Badge tone="success">{activeStudents} active</Badge>}
-            />
-            <SummaryStatCard
-              title="Teachers / Admins"
-              value={teacherProfiles.length}
+              title="Teaching groups"
+              value={teachingGroupCount ?? 0}
               icon="users"
               compact
-              description="Teaching and admin accounts."
+              layout="inline"
+              description="Current teaching group structures."
             />
-          </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {peopleCards.map((card) => (
-              <AdminLinkCard key={card.href} {...card} />
-            ))}
-          </div>
-        </PanelCard>
+            <SummaryStatCard
+              title="Inactive students"
+              value={inactiveStudents}
+              icon="pending"
+              tone={inactiveStudents > 0 ? "warning" : "success"}
+              compact
+              layout="inline"
+              description={
+                inactiveStudents > 0
+                  ? "Students currently without active access."
+                  : "All student accounts currently have active access."
+              }
+            />
 
-        <PanelCard
-          title="Access state"
-          description="Compact signals for account and teaching visibility."
-          tone="muted"
-          density="compact"
-          contentClassName="space-y-3"
-        >
-          <SummaryStatCard
-            title="Teaching groups"
-            value={teachingGroupCount ?? 0}
-            icon="users"
-            compact
-            layout="inline"
-            description="Current teaching group structures."
-          />
-
-          <SummaryStatCard
-            title="Inactive students"
-            value={inactiveStudents}
-            icon="pending"
-            tone={inactiveStudents > 0 ? "warning" : "success"}
-            compact
-            layout="inline"
-            description={
-              inactiveStudents > 0
-                ? "Students currently without active access."
-                : "All student accounts currently have active access."
-            }
-          />
-
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-            <div className="text-sm font-semibold text-[var(--text-primary)]">
-              Recommended next step
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-sm font-semibold text-[var(--text-primary)]">
+                Recommended next step
+              </div>
+              <div className="mt-1 text-sm app-text-muted">
+                Review student and teaching-group pages when account structure or access
+                state changes.
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button href="/admin/students" variant="secondary" size="sm" icon="user">
+                  View students
+                </Button>
+                <Button
+                  href="/admin/teaching-groups"
+                  variant="secondary"
+                  size="sm"
+                  icon="users"
+                >
+                  Teaching groups
+                </Button>
+              </div>
             </div>
-            <div className="mt-1 text-sm app-text-muted">
-              Review student and teaching-group pages when account structure or access
-              state changes.
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Button href="/admin/students" variant="secondary" size="sm" icon="user">
-                View students
-              </Button>
-              <Button
-                href="/admin/teaching-groups"
-                variant="secondary"
-                size="sm"
-                icon="users"
-              >
-                Teaching groups
-              </Button>
-            </div>
-          </div>
-        </PanelCard>
-      </section>
+          </PanelCard>
+        </div>
+      </div>
     </main>
   );
 }
