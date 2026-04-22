@@ -6,6 +6,7 @@ import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 type SummaryStatCardTone = "default" | "brand" | "success" | "warning" | "danger";
+type SummaryStatCardLayout = "default" | "inline";
 
 type SummaryStatCardProps = {
   title: string;
@@ -15,6 +16,7 @@ type SummaryStatCardProps = {
   badge?: React.ReactNode;
   tone?: SummaryStatCardTone;
   compact?: boolean;
+  layout?: SummaryStatCardLayout;
   className?: string;
 };
 
@@ -68,9 +70,85 @@ export default function SummaryStatCard({
   badge,
   tone = "default",
   compact = false,
+  layout = "default",
   className,
 }: SummaryStatCardProps) {
   const toneClasses = getToneClasses(tone);
+
+  if (layout === "inline") {
+    return (
+      <Card
+        className={["dev-marker-host", toneClasses.card, className]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {SHOW_UI_DEBUG ? (
+          <DevComponentMarker
+            componentName="SummaryStatCard"
+            filePath="src/components/ui/summary-stat-card.tsx"
+            tier="container"
+            componentRole="Premium metric and summary card"
+            bestFor="Dashboards, admin overview stats, teacher review queues, student progress summaries, and compact KPI rows."
+            usageExamples={[
+              "Dashboard metrics",
+              "Assignments to review",
+              "Completed lessons count",
+              "Locked content summary",
+            ]}
+            notes="Use layout='inline' for tighter admin snapshots and overview rows."
+          />
+        ) : null}
+
+        <CardBody className={compact ? "p-3.5" : "p-4"}>
+          <div className="flex items-center gap-3">
+            {icon ? (
+              <span
+                className={[
+                  "flex shrink-0 items-center justify-center rounded-2xl",
+                  compact ? "h-9 w-9" : "h-10 w-10",
+                  toneClasses.iconWrap,
+                ].join(" ")}
+              >
+                <AppIcon icon={icon} size={compact ? 16 : 18} />
+              </span>
+            ) : null}
+
+            <div className="min-w-0 flex flex-1 items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="truncate text-sm font-medium text-[var(--text-primary)]">
+                    {title}
+                  </div>
+
+                  <div
+                    className={[
+                      "shrink-0 font-semibold tracking-[-0.03em]",
+                      compact ? "text-[1.35rem]" : "text-[1.5rem]",
+                      toneClasses.value,
+                    ].join(" ")}
+                  >
+                    {value}
+                  </div>
+
+                  {description ? (
+                    <p className="hidden min-w-0 truncate text-sm app-text-muted lg:block">
+                      {description}
+                    </p>
+                  ) : null}
+                </div>
+
+                {description ? (
+                  <p className="mt-1 text-sm app-text-muted lg:hidden">{description}</p>
+                ) : null}
+              </div>
+
+              {badge ? <div className="shrink-0">{badge}</div> : null}
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+    );
+  }
 
   return (
     <Card
