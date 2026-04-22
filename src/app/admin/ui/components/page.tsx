@@ -13,6 +13,7 @@ import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 import SectionHeader from "@/components/ui/section-header";
+import SummaryStatCard from "@/components/ui/summary-stat-card";
 import Textarea from "@/components/ui/textarea";
 import Select from "@/components/ui/select";
 import CheckboxField from "@/components/ui/checkbox-field";
@@ -119,6 +120,86 @@ export default async function AdminUiComponentsPage() {
               </div>
             </div>
           </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Summary stat cards"
+        description="This is the preferred premium metric pattern for dashboards, admin overviews, review queues, and student progress."
+      >
+        <div className="grid gap-4 xl:grid-cols-3">
+          <SummaryStatCard
+            title="Completed lessons"
+            value="18"
+            icon="completed"
+            tone="brand"
+            description="Across all active modules in the current course."
+            badge={<Badge tone="success">+3 this week</Badge>}
+          />
+
+          <SummaryStatCard
+            title="Submissions to review"
+            value="12"
+            icon="pending"
+            tone="warning"
+            description="Teacher queue for written and speaking assignments."
+            badge={<Badge tone="warning">Needs attention</Badge>}
+          />
+
+          <SummaryStatCard
+            title="Locked higher content"
+            value="24"
+            icon="locked"
+            tone="danger"
+            description="Visible upgrade-aware lessons and premium practice areas."
+            badge={<Badge tone="muted">Trial view</Badge>}
+          />
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+          <PanelCard
+            title="Compact use"
+            description="Use the compact variant for tighter admin overviews or narrower columns."
+            contentClassName="space-y-4"
+          >
+            <div className="grid gap-3 md:grid-cols-2">
+              <SummaryStatCard
+                title="Draft lessons"
+                value="6"
+                icon="edit"
+                tone="default"
+                compact
+                description="Still unpublished."
+              />
+
+              <SummaryStatCard
+                title="Question sets"
+                value="42"
+                icon="help"
+                tone="success"
+                compact
+                description="Available to assign."
+              />
+            </div>
+          </PanelCard>
+
+          <PanelCard
+            title="Pattern guidance"
+            description="Why this should become the shared metric block."
+            contentClassName="space-y-2"
+          >
+            <p className="text-sm app-text-muted">
+              Replaces flatter dashboard-style metric cards with a clearer premium
+              pattern.
+            </p>
+            <p className="text-sm app-text-muted">
+              Supports admin, student, and teacher experiences without changing the design
+              language.
+            </p>
+            <p className="text-sm app-text-muted">
+              Keeps icon, value, description, and status in one predictable structure.
+            </p>
+          </PanelCard>
         </div>
       </UiLabSection>
 
