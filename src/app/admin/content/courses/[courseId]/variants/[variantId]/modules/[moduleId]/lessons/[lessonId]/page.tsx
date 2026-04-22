@@ -1,6 +1,9 @@
 import BackNav from "@/components/ui/back-nav";
+import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import PageHeader from "@/components/layout/page-header";
+import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PanelCard from "@/components/ui/panel-card";
+import SectionCard from "@/components/ui/section-card";
 import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
 import {
   getCourseByIdDb,
@@ -31,15 +34,15 @@ function CompactDisclosure({
   children: React.ReactNode;
 }) {
   return (
-    <details className="rounded-2xl border bg-white shadow-sm">
-      <summary className="cursor-pointer select-none px-5 py-4 font-semibold text-gray-900">
-        {title}
-        {description ? (
-          <div className="mt-1 text-sm text-gray-600">{description}</div>
-        ) : null}
-      </summary>
-      <div className="border-t p-5">{children}</div>
-    </details>
+    <PanelCard
+      title={title}
+      description={description}
+      tone="muted"
+      density="compact"
+      contentClassName="space-y-4"
+    >
+      {children}
+    </PanelCard>
   );
 }
 
@@ -92,40 +95,49 @@ export default async function AdminLessonDetailPage({
     }));
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-3">
       <BackNav
         items={[
-          { href: "/admin/content", label: "Back to content" },
+          { href: "/admin/content", label: "Content" },
           {
             href: `/admin/content/courses/${course.id}`,
-            label: `Back to ${course.title}`,
+            label: course.title,
           },
           {
             href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
-            label: `Back to ${variant.title}`,
+            label: variant.title,
           },
           {
             href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`,
-            label: `Back to ${module.title}`,
+            label: module.title,
           },
         ]}
       />
 
-      <section className="space-y-4">
-        <PageHeader
-          title={lesson.title}
-          description={lesson.summary ?? "Manage lesson details and lesson content."}
-        />
-
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Lesson builder</h2>
-            <p className="text-sm text-gray-600">
-              Build and organise lesson sections and blocks for long-form authoring.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2 text-sm">
+      <PageIntroPanel
+        tone="admin"
+        eyebrow="Lesson"
+        title={lesson.title}
+        description={lesson.summary ?? "Manage lesson details and lesson content."}
+        badges={
+          <>
+            <Badge tone="muted" icon="file">
+              {lesson.slug}
+            </Badge>
+            <Badge tone="muted">{lesson.lesson_type}</Badge>
+            <Badge tone={lesson.is_published ? "info" : "muted"} icon="preview">
+              {lesson.is_published ? "Published" : "Draft"}
+            </Badge>
+            <Badge tone={lesson.is_trial_visible ? "success" : "muted"} icon="help">
+              {lesson.is_trial_visible ? "Trial" : "No Trial"}
+            </Badge>
+            <Badge tone={lesson.available_in_volna ? "success" : "muted"} icon="users">
+              {lesson.available_in_volna ? "Volna" : "No Volna"}
+            </Badge>
+          </>
+        }
+        actions={
+          <>
             <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
               variant="secondary"
@@ -141,81 +153,113 @@ export default async function AdminLessonDetailPage({
             >
               Open public lesson
             </Button>
-          </div>
-        </div>
-      </section>
-
-      <AdminLessonBuilder
-        lessonId={lesson.id}
-        courseId={courseId}
-        variantId={variantId}
-        moduleId={moduleId}
-        lessonSlug={lesson.slug}
-        courseSlug={course.slug}
-        variantSlug={variant.slug}
-        moduleSlug={module.slug}
-        sections={sections}
-        templateOptions={templateOptions}
-        vocabularySetOptions={vocabularySetOptions}
+          </>
+        }
       />
+
+      <SectionCard
+        title="Lesson builder"
+        description="Build and organise lesson sections and blocks for long-form authoring."
+        tone="brand"
+      >
+        <AdminLessonBuilder
+          lessonId={lesson.id}
+          courseId={courseId}
+          variantId={variantId}
+          moduleId={moduleId}
+          lessonSlug={lesson.slug}
+          courseSlug={course.slug}
+          variantSlug={variant.slug}
+          moduleSlug={module.slug}
+          sections={sections}
+          templateOptions={templateOptions}
+          vocabularySetOptions={vocabularySetOptions}
+        />
+      </SectionCard>
 
       <CompactDisclosure
         title="Lesson admin details"
-        description="Metadata, publishing information, content source, and danger zone."
+        description="Metadata, publishing information, content source, and internal lesson settings."
       >
         <div className="grid gap-4 xl:grid-cols-2">
-          <div className="rounded-xl border p-4 text-sm">
-            <div className="space-y-2">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+            <div className="space-y-2 text-sm">
               <div>
-                <span className="font-medium">Title:</span> {lesson.title}
+                <span className="font-medium text-[var(--text-primary)]">Title:</span>{" "}
+                <span className="app-text-muted">{lesson.title}</span>
               </div>
               <div>
-                <span className="font-medium">Slug:</span> {lesson.slug}
+                <span className="font-medium text-[var(--text-primary)]">Slug:</span>{" "}
+                <span className="app-text-muted">{lesson.slug}</span>
               </div>
               <div>
-                <span className="font-medium">Type:</span> {lesson.lesson_type}
+                <span className="font-medium text-[var(--text-primary)]">Type:</span>{" "}
+                <span className="app-text-muted">{lesson.lesson_type}</span>
               </div>
               <div>
-                <span className="font-medium">Content source:</span>{" "}
-                {lesson.content_source}
+                <span className="font-medium text-[var(--text-primary)]">
+                  Content source:
+                </span>{" "}
+                <span className="app-text-muted">{lesson.content_source}</span>
               </div>
               {lesson.content_key ? (
                 <div>
-                  <span className="font-medium">Content key:</span> {lesson.content_key}
+                  <span className="font-medium text-[var(--text-primary)]">
+                    Content key:
+                  </span>{" "}
+                  <span className="app-text-muted">{lesson.content_key}</span>
                 </div>
               ) : null}
               {lesson.summary ? (
                 <div>
-                  <span className="font-medium">Summary:</span> {lesson.summary}
+                  <span className="font-medium text-[var(--text-primary)]">Summary:</span>{" "}
+                  <span className="app-text-muted">{lesson.summary}</span>
                 </div>
               ) : null}
             </div>
           </div>
 
-          <div className="rounded-xl border p-4 text-sm">
-            <div className="space-y-2">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+            <div className="space-y-2 text-sm">
               <div>
-                <span className="font-medium">Published:</span>{" "}
-                {lesson.is_published ? "Yes" : "No"}
+                <span className="font-medium text-[var(--text-primary)]">Published:</span>{" "}
+                <span className="app-text-muted">
+                  {lesson.is_published ? "Yes" : "No"}
+                </span>
               </div>
               <div>
-                <span className="font-medium">Trial visible:</span>{" "}
-                {lesson.is_trial_visible ? "Yes" : "No"}
+                <span className="font-medium text-[var(--text-primary)]">
+                  Trial visible:
+                </span>{" "}
+                <span className="app-text-muted">
+                  {lesson.is_trial_visible ? "Yes" : "No"}
+                </span>
               </div>
               <div>
-                <span className="font-medium">Requires paid access:</span>{" "}
-                {lesson.requires_paid_access ? "Yes" : "No"}
+                <span className="font-medium text-[var(--text-primary)]">
+                  Requires paid access:
+                </span>{" "}
+                <span className="app-text-muted">
+                  {lesson.requires_paid_access ? "Yes" : "No"}
+                </span>
               </div>
               <div>
-                <span className="font-medium">Available in Volna:</span>{" "}
-                {lesson.available_in_volna ? "Yes" : "No"}
+                <span className="font-medium text-[var(--text-primary)]">
+                  Available in Volna:
+                </span>{" "}
+                <span className="app-text-muted">
+                  {lesson.available_in_volna ? "Yes" : "No"}
+                </span>
               </div>
               <div>
-                <span className="font-medium">Estimated minutes:</span>{" "}
-                {lesson.estimated_minutes ?? "—"}
+                <span className="font-medium text-[var(--text-primary)]">
+                  Estimated minutes:
+                </span>{" "}
+                <span className="app-text-muted">{lesson.estimated_minutes ?? "—"}</span>
               </div>
               <div>
-                <span className="font-medium">Position:</span> {lesson.position}
+                <span className="font-medium text-[var(--text-primary)]">Position:</span>{" "}
+                <span className="app-text-muted">{lesson.position}</span>
               </div>
             </div>
           </div>

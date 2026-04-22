@@ -1,21 +1,28 @@
-import PageHeader from "@/components/layout/page-header";
-import Button from "@/components/ui/button";
+import BackNav from "@/components/ui/back-nav";
 import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import PageIntroPanel from "@/components/ui/page-intro-panel";
+import SectionCard from "@/components/ui/section-card";
+import ExpandableAdminFormPanel from "@/components/admin/expandable-admin-form-panel";
+import DangerZone from "@/components/ui/danger-zone";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
+
 import {
   getCourseByIdDb,
   getModulesByVariantIdDb,
   getVariantByIdDb,
 } from "@/lib/courses/course-helpers-db";
+
 import {
   archiveVariantAction,
   createModuleAction,
   moveModuleAction,
 } from "@/app/actions/admin/admin-content-actions";
-import SectionCard from "@/components/ui/section-card";
 
 type AdminVariantDetailPageProps = {
   params: Promise<{
@@ -40,61 +47,40 @@ export default async function AdminVariantDetailPage({
   }
 
   return (
-    <main className="space-y-6">
-      <div className="flex flex-wrap gap-2">
-        <Button href="/admin/content" variant="quiet" icon="back">
-          Back to content
-        </Button>
-
-        <Button href={`/admin/content/courses/${course.id}`} variant="quiet" icon="back">
-          Back to {course.title}
-        </Button>
-      </div>
-
-      <PageHeader
-        title={variant.title}
-        description={variant.description ?? "Manage modules in this variant."}
+    <main className="space-y-3">
+      <BackNav
+        items={[
+          { href: "/admin/content", label: "Content" },
+          {
+            href: `/admin/content/courses/${course.id}`,
+            label: course.title,
+          },
+        ]}
       />
 
-      <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <SectionCard title="Variant details">
-          <div className="space-y-3 text-sm">
-            <div>
-              <span className="font-medium">Course:</span> {course.title}
-            </div>
-            <div>
-              <span className="font-medium">Title:</span> {variant.title}
-            </div>
-            <div>
-              <span className="font-medium">Slug:</span> {variant.slug}
-            </div>
-            <div>
-              <span className="font-medium">Position:</span> {variant.position}
-            </div>
-
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Badge
-                tone={variant.is_active ? "success" : "warning"}
-                icon={variant.is_active ? "completed" : "pending"}
-              >
-                {variant.is_active ? "Active" : "Inactive"}
-              </Badge>
-
-              <Badge tone={variant.is_published ? "info" : "muted"} icon="preview">
-                {variant.is_published ? "Published" : "Draft"}
-              </Badge>
-            </div>
-
-            {variant.description ? (
-              <div>
-                <span className="font-medium">Description:</span> {variant.description}
-              </div>
-            ) : null}
-          </div>
-        </SectionCard>
-
-        <SectionCard title="Actions">
-          <div className="flex flex-col gap-3">
+      <PageIntroPanel
+        tone="admin"
+        eyebrow="Variant"
+        title={variant.title}
+        description={variant.description ?? "Manage modules within this variant."}
+        badges={
+          <>
+            <Badge tone="muted" icon="file">
+              {variant.slug}
+            </Badge>
+            <Badge
+              tone={variant.is_active ? "success" : "warning"}
+              icon={variant.is_active ? "completed" : "pending"}
+            >
+              {variant.is_active ? "Active" : "Inactive"}
+            </Badge>
+            <Badge tone={variant.is_published ? "info" : "muted"} icon="preview">
+              {variant.is_published ? "Published" : "Draft"}
+            </Badge>
+          </>
+        }
+        actions={
+          <>
             <Button
               href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
               variant="secondary"
@@ -102,158 +88,166 @@ export default async function AdminVariantDetailPage({
             >
               Edit variant
             </Button>
-
             <Button
               href={`/courses/${course.slug}/${variant.slug}`}
               variant="secondary"
               icon="preview"
             >
-              Open public variant
+              Open public
             </Button>
-          </div>
-        </SectionCard>
-      </section>
+          </>
+        }
+      />
 
-      <details className="rounded-2xl border bg-white shadow-sm">
-        <summary className="cursor-pointer select-none px-5 py-4 font-semibold text-gray-900">
-          Add Module
-        </summary>
-
-        <div className="border-t p-5">
-          <form action={createModuleAction} className="space-y-4 text-sm">
-            <input type="hidden" name="courseId" value={course.id} />
-            <input type="hidden" name="variantId" value={variant.id} />
-
-            <FormField label="Title">
-              <Input name="title" required />
-            </FormField>
-
-            <FormField label="Slug">
-              <Input name="slug" required />
-            </FormField>
-
-            <FormField label="Description">
-              <Textarea name="description" rows={3} />
-            </FormField>
-
-            <CheckboxField name="isPublished" label="Published" />
-
-            <Button type="submit" variant="primary" icon="create">
-              Create module
-            </Button>
-          </form>
-        </div>
-      </details>
-
-      <section className="rounded-2xl border border-red-200 bg-white shadow-sm">
-        <div className="border-b border-red-200 px-5 py-4 font-semibold text-red-700">
-          Danger zone
-        </div>
-
-        <div className="space-y-3 p-5 text-sm">
-          <p className="text-gray-600">
-            Archiving this variant will make it inactive and unpublished, but it will not
-            hard delete its data.
-          </p>
-
-          <form action={archiveVariantAction}>
-            <input type="hidden" name="courseId" value={course.id} />
-            <input type="hidden" name="variantId" value={variant.id} />
-            <Button type="submit" variant="danger" icon="delete">
-              Archive variant
-            </Button>
-          </form>
-        </div>
-      </section>
-
-      <SectionCard title={`Modules (${modules.length})`}>
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
         <div className="space-y-3">
-          {modules.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
-              No modules found for this variant.
-            </div>
-          ) : (
-            modules.map((module, index) => (
-              <div
-                key={module.id}
-                className="flex items-start justify-between gap-4 rounded-xl border p-4"
-              >
-                <a
-                  href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-                  className="min-w-0 flex-1"
-                >
-                  <div className="font-medium text-gray-900">{module.title}</div>
-                  <div className="mt-1 text-sm text-gray-500">
-                    {module.slug} · Position {module.position}
-                  </div>
+          <SectionCard
+            title={`Modules (${modules.length})`}
+            description="Manage structure and ordering of modules."
+            tone="brand"
+          >
+            {modules.length === 0 ? (
+              <EmptyState
+                icon="lessonContent"
+                title="No modules yet"
+                description="Create your first module to begin structuring this variant."
+              />
+            ) : (
+              <div className="space-y-3">
+                {modules.map((module, index) => (
+                  <CardListItem
+                    key={module.id}
+                    href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
+                    title={module.title}
+                    subtitle={module.description || `Position ${module.position}`}
+                    badges={
+                      <>
+                        <Badge tone="muted" icon="file">
+                          {module.slug}
+                        </Badge>
+                        <Badge tone="muted">Position {module.position}</Badge>
+                        <Badge
+                          tone={module.is_published ? "info" : "muted"}
+                          icon="preview"
+                        >
+                          {module.is_published ? "Published" : "Draft"}
+                        </Badge>
+                      </>
+                    }
+                    actions={
+                      <div className="flex items-start gap-2">
+                        <div className="flex flex-col gap-2">
+                          <form action={moveModuleAction}>
+                            <input type="hidden" name="courseId" value={course.id} />
+                            <input type="hidden" name="variantId" value={variant.id} />
+                            <input type="hidden" name="moduleId" value={module.id} />
+                            <input type="hidden" name="direction" value="up" />
+                            <Button
+                              type="submit"
+                              size="sm"
+                              variant="secondary"
+                              disabled={index === 0}
+                              icon="up"
+                              iconOnly
+                              ariaLabel="Move module up"
+                            />
+                          </form>
 
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Badge tone={module.is_published ? "info" : "muted"} icon="preview">
-                      {module.is_published ? "Published" : "Draft"}
-                    </Badge>
-                  </div>
-                </a>
+                          <form action={moveModuleAction}>
+                            <input type="hidden" name="courseId" value={course.id} />
+                            <input type="hidden" name="variantId" value={variant.id} />
+                            <input type="hidden" name="moduleId" value={module.id} />
+                            <input type="hidden" name="direction" value="down" />
+                            <Button
+                              type="submit"
+                              size="sm"
+                              variant="secondary"
+                              disabled={index === modules.length - 1}
+                              icon="down"
+                              iconOnly
+                              ariaLabel="Move module down"
+                            />
+                          </form>
+                        </div>
 
-                <div className="flex items-start gap-2">
-                  <div className="flex flex-col gap-2">
-                    <form action={moveModuleAction}>
-                      <input type="hidden" name="courseId" value={course.id} />
-                      <input type="hidden" name="variantId" value={variant.id} />
-                      <input type="hidden" name="moduleId" value={module.id} />
-                      <input type="hidden" name="direction" value="up" />
-                      <Button
-                        type="submit"
-                        size="sm"
-                        variant="secondary"
-                        disabled={index === 0}
-                        icon="up"
-                        iconOnly
-                        ariaLabel="Move module up"
-                      />
-                    </form>
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
+                            size="sm"
+                            variant="secondary"
+                            icon="edit"
+                          >
+                            Edit
+                          </Button>
 
-                    <form action={moveModuleAction}>
-                      <input type="hidden" name="courseId" value={course.id} />
-                      <input type="hidden" name="variantId" value={variant.id} />
-                      <input type="hidden" name="moduleId" value={module.id} />
-                      <input type="hidden" name="direction" value="down" />
-                      <Button
-                        type="submit"
-                        size="sm"
-                        variant="secondary"
-                        disabled={index === modules.length - 1}
-                        icon="down"
-                        iconOnly
-                        ariaLabel="Move module down"
-                      />
-                    </form>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
-                      size="sm"
-                      variant="secondary"
-                      icon="edit"
-                    >
-                      Edit
-                    </Button>
-
-                    <Button
-                      href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-                      size="sm"
-                      variant="secondary"
-                      icon="preview"
-                    >
-                      Open
-                    </Button>
-                  </div>
-                </div>
+                          <Button
+                            href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
+                            size="sm"
+                            variant="quiet"
+                            icon="next"
+                            iconPosition="right"
+                          >
+                            Open
+                          </Button>
+                        </div>
+                      </div>
+                    }
+                  />
+                ))}
               </div>
-            ))
-          )}
+            )}
+          </SectionCard>
         </div>
-      </SectionCard>
+
+        <div className="space-y-3">
+          <ExpandableAdminFormPanel
+            id="add-module"
+            title="Add module"
+            description="Create a new module within this variant."
+            collapsedDescription="Create a new module within this variant."
+            closedLabel="Add module"
+            openLabel="Hide form"
+            defaultOpen={modules.length === 0}
+          >
+            <form action={createModuleAction} className="space-y-4">
+              <input type="hidden" name="courseId" value={course.id} />
+              <input type="hidden" name="variantId" value={variant.id} />
+
+              <FormField label="Title">
+                <Input name="title" required />
+              </FormField>
+
+              <FormField label="Slug">
+                <Input name="slug" required />
+              </FormField>
+
+              <FormField label="Description">
+                <Textarea name="description" rows={3} />
+              </FormField>
+
+              <CheckboxField name="isPublished" label="Published" />
+
+              <Button type="submit" variant="primary" icon="create">
+                Create module
+              </Button>
+            </form>
+          </ExpandableAdminFormPanel>
+
+          <DangerZone
+            title="Archive variant"
+            description="Archiving will disable and unpublish this variant without deleting its data."
+            action={
+              <form action={archiveVariantAction}>
+                <input type="hidden" name="courseId" value={course.id} />
+                <input type="hidden" name="variantId" value={variant.id} />
+                <Button type="submit" variant="danger" icon="delete">
+                  Archive variant
+                </Button>
+              </form>
+            }
+          />
+        </div>
+      </div>
     </main>
   );
 }
