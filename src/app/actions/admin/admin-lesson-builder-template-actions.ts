@@ -10,16 +10,120 @@ import {
   getSectionTemplateInsertDataDb,
 } from "@/lib/lessons/lesson-template-helpers-db";
 import {
+  normalizeAudioBlockData,
+  normalizeCalloutBlockData,
+  normalizeExamTipBlockData,
+  normalizeHeaderBlockData,
+  normalizeImageBlockData,
+  normalizeNoteBlockData,
+  normalizeQuestionSetBlockData,
+  normalizeSubheaderBlockData,
+  normalizeTextBlockData,
+  normalizeVocabularyBlockData,
+  normalizeVocabularySetBlockData,
+} from "@/lib/lessons/lesson-blocks";
+import {
   finalizeLessonMutation,
   getNextSectionPosition,
   getTrimmedString,
-  normalizeTemplateBlockData,
+  reorderTablePositions,
   revalidateLessonSectionTemplatePaths,
   revalidateLessonTemplateEntityPaths,
   revalidateLessonTemplatePaths,
-  reorderTablePositions,
-  type TemplateBlockType,
 } from "@/app/actions/admin/admin-lesson-builder-shared";
+
+type TemplateBlockType =
+  | "header"
+  | "subheader"
+  | "divider"
+  | "text"
+  | "note"
+  | "callout"
+  | "exam-tip"
+  | "vocabulary"
+  | "image"
+  | "audio"
+  | "question-set"
+  | "vocabulary-set";
+
+function normalizeTemplateBlockData(
+  blockType: TemplateBlockType,
+  formData: FormData
+): Record<string, unknown> {
+  switch (blockType) {
+    case "header":
+      return normalizeHeaderBlockData({
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "subheader":
+      return normalizeSubheaderBlockData({
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "divider":
+      return {};
+
+    case "text":
+      return normalizeTextBlockData({
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "note":
+      return normalizeNoteBlockData({
+        title: getTrimmedString(formData, "title"),
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "callout":
+      return normalizeCalloutBlockData({
+        title: getTrimmedString(formData, "title"),
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "exam-tip":
+      return normalizeExamTipBlockData({
+        title: getTrimmedString(formData, "title"),
+        content: getTrimmedString(formData, "content"),
+      });
+
+    case "image":
+      return normalizeImageBlockData({
+        src: getTrimmedString(formData, "src"),
+        alt: getTrimmedString(formData, "alt"),
+        caption: getTrimmedString(formData, "caption"),
+      });
+
+    case "audio":
+      return normalizeAudioBlockData({
+        title: getTrimmedString(formData, "title"),
+        src: getTrimmedString(formData, "src"),
+        caption: getTrimmedString(formData, "caption"),
+        autoPlay: String(formData.get("autoPlay") || "") === "true",
+      });
+
+    case "vocabulary":
+      return normalizeVocabularyBlockData({
+        title: getTrimmedString(formData, "title"),
+        items: getTrimmedString(formData, "items"),
+      });
+
+    case "question-set":
+      return normalizeQuestionSetBlockData({
+        title: getTrimmedString(formData, "title"),
+        questionSetSlug: getTrimmedString(formData, "questionSetSlug"),
+      });
+
+    case "vocabulary-set":
+      return normalizeVocabularySetBlockData({
+        title: getTrimmedString(formData, "title"),
+        vocabularySetSlug: getTrimmedString(formData, "vocabularySetSlug"),
+      });
+
+    default:
+      throw new Error(`Unsupported template block type: ${blockType}`);
+  }
+}
 
 async function getNextLessonBlockPresetBlockPosition(presetId: string) {
   const supabase = await createClient();
@@ -602,7 +706,7 @@ export async function removePresetFromLessonSectionTemplateAction(formData: Form
 
   const { data: remainingLinks, error: loadError } = await supabase
     .from("lesson_section_template_presets")
-    .select("lesson_block_preset_id")
+    .select("id")
     .eq("lesson_section_template_id", templateId)
     .order("position", { ascending: true });
 
@@ -615,8 +719,7 @@ export async function removePresetFromLessonSectionTemplateAction(formData: Form
 
   await reorderTablePositions({
     table: "lesson_section_template_presets",
-    orderedIds: (remainingLinks ?? []).map((row) => row.lesson_block_preset_id as string),
-    idColumn: "lesson_block_preset_id",
+    orderedIds: (remainingLinks ?? []).map((row) => row.id as string),
     scope: {
       lesson_section_template_id: templateId,
     },
@@ -649,7 +752,6 @@ export async function reorderLessonSectionTemplatePresetsAction(formData: FormDa
   await reorderTablePositions({
     table: "lesson_section_template_presets",
     orderedIds: orderedPresetIds,
-    idColumn: "lesson_block_preset_id",
     scope: {
       lesson_section_template_id: templateId,
     },
