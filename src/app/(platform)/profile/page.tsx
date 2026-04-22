@@ -52,7 +52,7 @@ export default async function ProfilePage({
       <main className="space-y-6">
         <PageHeader
           title="Profile"
-          description="View and personalise your student profile."
+          description="Update the personal details used around your account area."
         />
 
         <EmptyState
@@ -77,7 +77,7 @@ export default async function ProfilePage({
     <main className="space-y-8">
       <PageHeader
         title="Profile"
-        description="Update your display details and choose a preset avatar."
+        description="Update the personal details used around your account area."
       />
 
       {resolvedSearchParams.success ? (
@@ -106,9 +106,14 @@ export default async function ProfilePage({
               <div className="text-sm app-text-muted">{user.email}</div>
             </div>
 
-            <Badge tone="info" icon="user">
-              Student profile
-            </Badge>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Badge tone="info" icon="user">
+                Profile
+              </Badge>
+              <Badge tone="muted" icon="dashboard">
+                Account area
+              </Badge>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -116,11 +121,16 @@ export default async function ProfilePage({
               <h2 className="app-title">Personalise your profile</h2>
               <p className="app-subtitle max-w-2xl">
                 Choose a preset avatar and update the name shown around your student area.
-                Preset avatars are a safer fit for younger learners than image uploads.
+                Profile is where you manage your personal identity details, while Settings
+                handles security and appearance.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
+              <Button href="/account" variant="secondary" icon="dashboard">
+                Open overview
+              </Button>
+
               <Button href="/settings" variant="secondary" icon="settings">
                 Open settings
               </Button>

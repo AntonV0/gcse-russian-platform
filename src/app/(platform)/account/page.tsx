@@ -68,12 +68,12 @@ export default async function AccountPage() {
       <main className="space-y-8">
         <PageHeader
           title="Account"
-          description="Your account overview, profile details, and settings hub."
+          description="Overview, profile, and settings all live together in your account area."
         />
 
         <EmptyState
           title="You are not signed in"
-          description="Log in to view your account overview and settings."
+          description="Log in to view your account overview and manage your student settings."
           action={
             <div className="flex flex-wrap gap-3">
               <Button href="/login" variant="primary" icon="user">
@@ -96,15 +96,15 @@ export default async function AccountPage() {
     <main className="space-y-8">
       <PageHeader
         title="Account"
-        description="Your account overview, profile details, and settings hub."
+        description="Overview, profile, and settings all live together in your account area."
       />
 
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_320px] xl:items-start">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon="user">
-                Account overview
+              <Badge tone="info" icon="dashboard">
+                Overview
               </Badge>
 
               <Badge tone="muted" icon="layers">
@@ -117,7 +117,7 @@ export default async function AccountPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title">Manage your student account</h2>
+              <h2 className="app-title">Your account overview</h2>
               <p className="app-subtitle max-w-2xl">
                 {getAccountSummaryText(dashboard.track, dashboard.accessMode)}
               </p>
@@ -192,7 +192,8 @@ export default async function AccountPage() {
         <DashboardCard title="Settings">
           <div className="space-y-3">
             <p>
-              Manage your password and future account security settings from one place.
+              Manage your password, appearance, and future account preferences from one
+              place.
             </p>
 
             <Link
@@ -278,17 +279,17 @@ export default async function AccountPage() {
           </div>
         </DashboardCard>
 
-        <DashboardCard title="What this page is for">
+        <DashboardCard title="How this area is organised">
           <div className="space-y-3">
             <p>
-              Account is now your overview page, while Profile and Settings handle the
-              main editable parts of your student account.
+              Account is the overview page for this section, while Profile and Settings
+              handle the main editable parts of your student account.
             </p>
 
             <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+              <li>• Overview for account summary, access, and quick links</li>
               <li>• Profile for names and avatar</li>
-              <li>• Settings for password and future security tools</li>
-              <li>• Dashboard for learning progress and quick actions</li>
+              <li>• Settings for password, appearance, and future preferences</li>
             </ul>
           </div>
         </DashboardCard>

@@ -22,7 +22,7 @@ export default async function SettingsPage({
       <main className="space-y-6">
         <PageHeader
           title="Settings"
-          description="Manage your account settings and security options."
+          description="Manage your account security, appearance, and preferences."
         />
 
         <EmptyState
@@ -42,7 +42,7 @@ export default async function SettingsPage({
     <main className="space-y-8">
       <PageHeader
         title="Settings"
-        description="Manage your account security and student account preferences."
+        description="Manage your account security, appearance, and preferences."
       />
 
       {resolvedSearchParams.success ? (
@@ -62,22 +62,27 @@ export default async function SettingsPage({
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
               <Badge tone="info" icon="settings">
-                Account settings
+                Settings
               </Badge>
-              <Badge tone="muted" icon="user">
-                Student area
+              <Badge tone="muted" icon="dashboard">
+                Account area
               </Badge>
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title">Security and account settings</h2>
+              <h2 className="app-title">Security, appearance, and preferences</h2>
               <p className="app-subtitle max-w-2xl">
-                Keep account tools simple and clear. Password changes are available now,
-                and email update flow can be added next as a separate auth step.
+                Settings is where you manage how your account behaves. Password changes
+                are available now, and appearance and preference tools can grow here
+                without mixing into Profile.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
+              <Button href="/account" variant="secondary" icon="dashboard">
+                Open overview
+              </Button>
+
               <Button href="/profile" variant="secondary" icon="user">
                 View profile
               </Button>
@@ -175,6 +180,21 @@ export default async function SettingsPage({
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
+        <DashboardCard title="Appearance">
+          <div className="space-y-3">
+            <p>
+              Theme and interface preferences belong here. A full Light, Dark, and System
+              theme selector is the next step for this area.
+            </p>
+
+            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+              <li>• Theme mode selector</li>
+              <li>• Interface preferences</li>
+              <li>• Future accessibility options</li>
+            </ul>
+          </div>
+        </DashboardCard>
+
         <DashboardCard title="Preferences">
           <div className="space-y-3">
             <p>
@@ -185,7 +205,24 @@ export default async function SettingsPage({
             <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
               <li>• Revision preferences</li>
               <li>• Dashboard preferences</li>
-              <li>• Theme and interface options</li>
+              <li>• Study experience options</li>
+            </ul>
+          </div>
+        </DashboardCard>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <DashboardCard title="How this area is organised">
+          <div className="space-y-3">
+            <p>
+              Settings controls how your account behaves, while Overview and Profile cover
+              account summary and personal identity details.
+            </p>
+
+            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+              <li>• Overview for account summary and access</li>
+              <li>• Profile for names and avatar</li>
+              <li>• Settings for security, appearance, and preferences</li>
             </ul>
           </div>
         </DashboardCard>
