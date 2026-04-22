@@ -1,32 +1,7 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
-import Badge from "@/components/ui/badge";
 import Card, { CardBody } from "@/components/ui/card";
-import { uiLabPages, type UiLabStatus } from "@/lib/ui/ui-lab";
-
-function getStatusTone(status: UiLabStatus): "success" | "warning" | "muted" {
-  switch (status) {
-    case "complete":
-      return "success";
-    case "in_progress":
-      return "warning";
-    case "planned":
-    default:
-      return "muted";
-  }
-}
-
-function getStatusLabel(status: UiLabStatus) {
-  switch (status) {
-    case "complete":
-      return "Complete";
-    case "in_progress":
-      return "In progress";
-    case "planned":
-    default:
-      return "Planned";
-  }
-}
+import { uiLabPages } from "@/lib/ui/ui-lab";
 
 type UiLabShellProps = {
   title: string;
@@ -45,43 +20,37 @@ export default function UiLabShell({
     <main className="space-y-8">
       <PageHeader title={title} description={description} />
 
-      <Card className="app-section-padding">
-        <CardBody className="space-y-4 p-0">
+      <Card className="px-5 py-4">
+        <CardBody className="space-y-3 p-0">
           <div>
             <h2 className="app-section-title">UI Lab sections</h2>
             <p className="mt-1 text-sm app-text-muted">
-              Browse the internal design system by category and track what is finished,
-              still being refined, or not yet built.
+              Quick navigation across the design system.
             </p>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
             {uiLabPages.map((item) => {
               const isActive = currentPath === item.href;
 
               return (
                 <Link key={item.href} href={item.href} className="block">
-                  <Card
-                    interactive
+                  <div
                     className={[
-                      "h-full p-4",
-                      isActive ? "ring-2 ring-[var(--brand-blue)]/20" : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
+                      "rounded-2xl border px-3.5 py-3 transition",
+                      isActive
+                        ? "border-[rgba(37,99,235,0.24)] bg-[rgba(37,99,235,0.08)] shadow-[0_8px_20px_rgba(37,99,235,0.08)]"
+                        : "border-[var(--border)] bg-[var(--background-elevated)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]",
+                    ].join(" ")}
                   >
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <div className="font-semibold text-[var(--text-primary)]">
-                        {item.label}
-                      </div>
-
-                      <Badge tone={getStatusTone(item.status)}>
-                        {getStatusLabel(item.status)}
-                      </Badge>
+                    <div className="font-medium text-[var(--text-primary)]">
+                      {item.label}
                     </div>
 
-                    <p className="text-sm app-text-muted">{item.description}</p>
-                  </Card>
+                    <p className="mt-1 line-clamp-2 text-xs leading-5 app-text-muted">
+                      {item.description}
+                    </p>
+                  </div>
                 </Link>
               );
             })}
