@@ -46,6 +46,23 @@ type TemplateBlockType =
   | "question-set"
   | "vocabulary-set";
 
+type PositionTableConfig =
+  | {
+      table: "lesson_block_preset_blocks";
+      positionColumnScope: "lesson_block_preset_id";
+      scopeValue: string;
+    }
+  | {
+      table: "lesson_section_template_presets";
+      positionColumnScope: "lesson_section_template_id";
+      scopeValue: string;
+    }
+  | {
+      table: "lesson_template_sections";
+      positionColumnScope: "lesson_template_id";
+      scopeValue: string;
+    };
+
 function normalizeTemplateBlockData(
   blockType: TemplateBlockType,
   formData: FormData
@@ -125,65 +142,246 @@ function normalizeTemplateBlockData(
   }
 }
 
-async function getNextLessonBlockPresetBlockPosition(presetId: string) {
+async function getNextPosition(config: PositionTableConfig) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("lesson_block_preset_blocks")
+    .from(config.table)
     .select("position")
-    .eq("lesson_block_preset_id", presetId)
+    .eq(config.positionColumnScope, config.scopeValue)
     .order("position", { ascending: false })
     .limit(1)
     .maybeSingle();
 
   if (error) {
-    console.error("Error getting next lesson block preset block position:", error);
-    throw new Error(`Failed to get next preset block position: ${error.message}`);
+    console.error(`Error getting next position for ${config.table}:`, error);
+    throw new Error(`Failed to get next position: ${error.message}`);
   }
 
   return data?.position ? data.position + 1 : 1;
 }
 
-async function getNextLessonSectionTemplatePresetPosition(templateId: string) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("lesson_section_template_presets")
-    .select("position")
-    .eq("lesson_section_template_id", templateId)
-    .order("position", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Error getting next lesson section template preset position:", error);
-    throw new Error(
-      `Failed to get next section template preset position: ${error.message}`
-    );
-  }
-
-  return data?.position ? data.position + 1 : 1;
+async function revalidatePresetDetailPath(presetId: string) {
+  revalidateLessonTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
 }
 
-async function getNextLessonTemplateSectionPosition(templateId: string) {
+async function revalidateSectionTemplateDetailPath(templateId: string) {
+  revalidateLessonSectionTemplatePaths();
+  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
+}
+
+async function revalidateLessonTemplateDetailPath(templateId: string) {
+  revalidateLessonTemplateEntityPaths();
+  revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
+}
+
+async function reorderRemainingRows(params: {
+  table:
+    | "lesson_block_preset_blocks"
+    | "lesson_section_template_presets"
+    | "lesson_template_sections";
+  selectIdField: "id";
+  scope:
+    | { lesson_block_preset_id: string }
+    | { lesson_section_template_id: string }
+    | { lesson_template_id: string };
+}) {
   const supabase = await createClient();
+  const [scopeKey, scopeValue] = Object.entries(params.scope)[0] as [string, string];
 
   const { data, error } = await supabase
-    .from("lesson_template_sections")
-    .select("position")
-    .eq("lesson_template_id", templateId)
-    .order("position", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .from(params.table)
+    .select(params.selectIdField)
+    .eq(scopeKey, scopeValue)
+    .order("position", { ascending: true });
 
   if (error) {
-    console.error("Error getting next lesson template section position:", error);
-    throw new Error(
-      `Failed to get next lesson template section position: ${error.message}`
-    );
+    console.error(`Error loading remaining rows from ${params.table}:`, error);
+    throw new Error(`Failed to normalize order: ${error.message}`);
   }
 
-  return data?.position ? data.position + 1 : 1;
+  await reorderTablePositions({
+    table: params.table,
+    orderedIds: (data ?? []).map((row) => row.id as string),
+    scope: params.scope,
+  });
+}
+
+async function insertLessonBlocksForSection(params: {
+  lessonSectionId: string;
+  blocks: {
+    blockType: string;
+    data: Record<string, unknown>;
+  }[];
+}) {
+  if (params.blocks.length === 0) {
+    return;
+  }
+
+  const supabase = await createClient();
+
+  const rows = params.blocks.map((block, index) => ({
+    lesson_section_id: params.lessonSectionId,
+    block_type: block.blockType,
+    position: index + 1,
+    is_published: true,
+    data: block.data,
+    settings: {},
+  }));
+
+  const { error } = await supabase.from("lesson_blocks").insert(rows);
+
+  if (error) {
+    console.error("Error inserting lesson template blocks:", error);
+    throw new Error(`Failed to insert lesson template blocks: ${error.message}`);
+  }
+}
+
+async function createLessonBlockPresetEntity(params: {
+  title: string;
+  slug: string;
+  description: string;
+}) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("lesson_block_presets").insert({
+    title: params.title,
+    slug: params.slug,
+    description: params.description || null,
+    is_active: true,
+  });
+
+  if (error) {
+    console.error("Error creating lesson block preset:", error);
+    throw new Error(`Failed to create block preset: ${error.message}`);
+  }
+}
+
+async function updateLessonBlockPresetEntity(params: {
+  presetId: string;
+  title: string;
+  slug: string;
+  description: string;
+  isActive: boolean;
+}) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_block_presets")
+    .update({
+      title: params.title,
+      slug: params.slug,
+      description: params.description || null,
+      is_active: params.isActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", params.presetId);
+
+  if (error) {
+    console.error("Error updating lesson block preset:", error);
+    throw new Error(`Failed to update block preset: ${error.message}`);
+  }
+}
+
+async function createLessonSectionTemplateEntity(params: {
+  title: string;
+  slug: string;
+  description: string;
+  defaultSectionTitle: string;
+  defaultSectionKind: string;
+}) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("lesson_section_templates").insert({
+    title: params.title,
+    slug: params.slug,
+    description: params.description || null,
+    default_section_title: params.defaultSectionTitle,
+    default_section_kind: params.defaultSectionKind,
+    is_active: true,
+  });
+
+  if (error) {
+    console.error("Error creating lesson section template:", error);
+    throw new Error(`Failed to create section template: ${error.message}`);
+  }
+}
+
+async function updateLessonSectionTemplateEntity(params: {
+  templateId: string;
+  title: string;
+  slug: string;
+  description: string;
+  defaultSectionTitle: string;
+  defaultSectionKind: string;
+  isActive: boolean;
+}) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_section_templates")
+    .update({
+      title: params.title,
+      slug: params.slug,
+      description: params.description || null,
+      default_section_title: params.defaultSectionTitle,
+      default_section_kind: params.defaultSectionKind,
+      is_active: params.isActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", params.templateId);
+
+  if (error) {
+    console.error("Error updating lesson section template:", error);
+    throw new Error(`Failed to update section template: ${error.message}`);
+  }
+}
+
+async function createLessonTemplateEntity(params: {
+  title: string;
+  slug: string;
+  description: string;
+}) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("lesson_templates").insert({
+    title: params.title,
+    slug: params.slug,
+    description: params.description || null,
+    is_active: true,
+  });
+
+  if (error) {
+    console.error("Error creating lesson template:", error);
+    throw new Error(`Failed to create lesson template: ${error.message}`);
+  }
+}
+
+async function updateLessonTemplateEntity(params: {
+  templateId: string;
+  title: string;
+  slug: string;
+  description: string;
+  isActive: boolean;
+}) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("lesson_templates")
+    .update({
+      title: params.title,
+      slug: params.slug,
+      description: params.description || null,
+      is_active: params.isActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", params.templateId);
+
+  if (error) {
+    console.error("Error updating lesson template:", error);
+    throw new Error(`Failed to update lesson template: ${error.message}`);
+  }
 }
 
 export async function insertSectionTemplateAction(formData: FormData) {
@@ -199,7 +397,6 @@ export async function insertSectionTemplateAction(formData: FormData) {
 
   const templateData = await getSectionTemplateInsertDataDb(templateId);
   const supabase = await createClient();
-
   const nextSectionPosition = await getNextSectionPosition(lessonId);
 
   const { data: insertedSection, error: sectionError } = await supabase
@@ -223,23 +420,10 @@ export async function insertSectionTemplateAction(formData: FormData) {
     );
   }
 
-  if (templateData.blocks.length > 0) {
-    const rows = templateData.blocks.map((block, index) => ({
-      lesson_section_id: insertedSection.id,
-      block_type: block.blockType,
-      position: index + 1,
-      is_published: true,
-      data: block.data,
-      settings: {},
-    }));
-
-    const { error: blocksError } = await supabase.from("lesson_blocks").insert(rows);
-
-    if (blocksError) {
-      console.error("Error inserting section template blocks:", blocksError);
-      throw new Error(`Failed to insert section template blocks: ${blocksError.message}`);
-    }
-  }
+  await insertLessonBlocksForSection({
+    lessonSectionId: insertedSection.id,
+    blocks: templateData.blocks,
+  });
 
   await finalizeLessonMutation(formData);
 }
@@ -287,25 +471,10 @@ export async function insertLessonTemplateAction(formData: FormData) {
       );
     }
 
-    if (section.blocks.length > 0) {
-      const rows = section.blocks.map((block, blockIndex) => ({
-        lesson_section_id: insertedSection.id,
-        block_type: block.blockType,
-        position: blockIndex + 1,
-        is_published: true,
-        data: block.data,
-        settings: {},
-      }));
-
-      const { error: blocksError } = await supabase.from("lesson_blocks").insert(rows);
-
-      if (blocksError) {
-        console.error("Error inserting lesson template blocks:", blocksError);
-        throw new Error(
-          `Failed to insert lesson template blocks: ${blocksError.message}`
-        );
-      }
-    }
+    await insertLessonBlocksForSection({
+      lessonSectionId: insertedSection.id,
+      blocks: section.blocks,
+    });
   }
 
   await finalizeLessonMutation(formData);
@@ -323,19 +492,11 @@ export async function createLessonBlockPresetAction(formData: FormData) {
     throw new Error("Title and slug are required");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_block_presets").insert({
+  await createLessonBlockPresetEntity({
     title,
     slug,
-    description: description || null,
-    is_active: true,
+    description,
   });
-
-  if (error) {
-    console.error("Error creating lesson block preset:", error);
-    throw new Error(`Failed to create block preset: ${error.message}`);
-  }
 
   revalidateLessonTemplatePaths();
 }
@@ -354,26 +515,15 @@ export async function updateLessonBlockPresetAction(formData: FormData) {
     throw new Error("Preset id, title, and slug are required");
   }
 
-  const supabase = await createClient();
+  await updateLessonBlockPresetEntity({
+    presetId,
+    title,
+    slug,
+    description,
+    isActive,
+  });
 
-  const { error } = await supabase
-    .from("lesson_block_presets")
-    .update({
-      title,
-      slug,
-      description: description || null,
-      is_active: isActive,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", presetId);
-
-  if (error) {
-    console.error("Error updating lesson block preset:", error);
-    throw new Error(`Failed to update block preset: ${error.message}`);
-  }
-
-  revalidateLessonTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+  await revalidatePresetDetailPath(presetId);
 }
 
 export async function deleteLessonBlockPresetAction(formData: FormData) {
@@ -413,7 +563,12 @@ export async function createLessonBlockPresetBlockAction(formData: FormData) {
   }
 
   const data = normalizeTemplateBlockData(blockType, formData);
-  const position = await getNextLessonBlockPresetBlockPosition(presetId);
+  const position = await getNextPosition({
+    table: "lesson_block_preset_blocks",
+    positionColumnScope: "lesson_block_preset_id",
+    scopeValue: presetId,
+  });
+
   const supabase = await createClient();
 
   const { error } = await supabase.from("lesson_block_preset_blocks").insert({
@@ -429,8 +584,7 @@ export async function createLessonBlockPresetBlockAction(formData: FormData) {
     throw new Error(`Failed to create preset block: ${error.message}`);
   }
 
-  revalidateLessonTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+  await revalidatePresetDetailPath(presetId);
 }
 
 export async function updateLessonBlockPresetBlockAction(formData: FormData) {
@@ -464,8 +618,7 @@ export async function updateLessonBlockPresetBlockAction(formData: FormData) {
     throw new Error(`Failed to update preset block: ${error.message}`);
   }
 
-  revalidateLessonTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+  await revalidatePresetDetailPath(presetId);
 }
 
 export async function deleteLessonBlockPresetBlockAction(formData: FormData) {
@@ -492,27 +645,15 @@ export async function deleteLessonBlockPresetBlockAction(formData: FormData) {
     throw new Error(`Failed to delete preset block: ${error.message}`);
   }
 
-  const { data: remainingBlocks, error: loadError } = await supabase
-    .from("lesson_block_preset_blocks")
-    .select("id")
-    .eq("lesson_block_preset_id", presetId)
-    .order("position", { ascending: true });
-
-  if (loadError) {
-    console.error("Error loading remaining preset blocks:", loadError);
-    throw new Error(`Failed to normalize preset block order: ${loadError.message}`);
-  }
-
-  await reorderTablePositions({
+  await reorderRemainingRows({
     table: "lesson_block_preset_blocks",
-    orderedIds: (remainingBlocks ?? []).map((row) => row.id as string),
+    selectIdField: "id",
     scope: {
       lesson_block_preset_id: presetId,
     },
   });
 
-  revalidateLessonTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+  await revalidatePresetDetailPath(presetId);
 }
 
 export async function reorderLessonBlockPresetBlocksAction(formData: FormData) {
@@ -543,8 +684,7 @@ export async function reorderLessonBlockPresetBlocksAction(formData: FormData) {
     },
   });
 
-  revalidateLessonTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
+  await revalidatePresetDetailPath(presetId);
 }
 
 export async function createLessonSectionTemplateAction(formData: FormData) {
@@ -564,21 +704,14 @@ export async function createLessonSectionTemplateAction(formData: FormData) {
   }
 
   const defaultSectionKind = resolveSectionKind(defaultSectionKindRaw);
-  const supabase = await createClient();
 
-  const { error } = await supabase.from("lesson_section_templates").insert({
+  await createLessonSectionTemplateEntity({
     title,
     slug,
-    description: description || null,
-    default_section_title: defaultSectionTitle,
-    default_section_kind: defaultSectionKind,
-    is_active: true,
+    description,
+    defaultSectionTitle,
+    defaultSectionKind,
   });
-
-  if (error) {
-    console.error("Error creating lesson section template:", error);
-    throw new Error(`Failed to create section template: ${error.message}`);
-  }
 
   revalidateLessonSectionTemplatePaths();
 }
@@ -602,28 +735,18 @@ export async function updateLessonSectionTemplateAction(formData: FormData) {
   }
 
   const defaultSectionKind = resolveSectionKind(defaultSectionKindRaw);
-  const supabase = await createClient();
 
-  const { error } = await supabase
-    .from("lesson_section_templates")
-    .update({
-      title,
-      slug,
-      description: description || null,
-      default_section_title: defaultSectionTitle,
-      default_section_kind: defaultSectionKind,
-      is_active: isActive,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", templateId);
+  await updateLessonSectionTemplateEntity({
+    templateId,
+    title,
+    slug,
+    description,
+    defaultSectionTitle,
+    defaultSectionKind,
+    isActive,
+  });
 
-  if (error) {
-    console.error("Error updating lesson section template:", error);
-    throw new Error(`Failed to update section template: ${error.message}`);
-  }
-
-  revalidateLessonSectionTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
+  await revalidateSectionTemplateDetailPath(templateId);
 }
 
 export async function deleteLessonSectionTemplateAction(formData: FormData) {
@@ -662,7 +785,12 @@ export async function addPresetToLessonSectionTemplateAction(formData: FormData)
     throw new Error("Template id and preset id are required");
   }
 
-  const position = await getNextLessonSectionTemplatePresetPosition(templateId);
+  const position = await getNextPosition({
+    table: "lesson_section_template_presets",
+    positionColumnScope: "lesson_section_template_id",
+    scopeValue: templateId,
+  });
+
   const supabase = await createClient();
 
   const { error } = await supabase.from("lesson_section_template_presets").insert({
@@ -676,8 +804,7 @@ export async function addPresetToLessonSectionTemplateAction(formData: FormData)
     throw new Error(`Failed to add preset to section template: ${error.message}`);
   }
 
-  revalidateLessonSectionTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
+  await revalidateSectionTemplateDetailPath(templateId);
 }
 
 export async function removePresetFromLessonSectionTemplateAction(formData: FormData) {
@@ -704,29 +831,15 @@ export async function removePresetFromLessonSectionTemplateAction(formData: Form
     throw new Error(`Failed to remove preset from section template: ${error.message}`);
   }
 
-  const { data: remainingLinks, error: loadError } = await supabase
-    .from("lesson_section_template_presets")
-    .select("id")
-    .eq("lesson_section_template_id", templateId)
-    .order("position", { ascending: true });
-
-  if (loadError) {
-    console.error("Error loading remaining section template preset links:", loadError);
-    throw new Error(
-      `Failed to normalize section template preset order: ${loadError.message}`
-    );
-  }
-
-  await reorderTablePositions({
+  await reorderRemainingRows({
     table: "lesson_section_template_presets",
-    orderedIds: (remainingLinks ?? []).map((row) => row.id as string),
+    selectIdField: "id",
     scope: {
       lesson_section_template_id: templateId,
     },
   });
 
-  revalidateLessonSectionTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
+  await revalidateSectionTemplateDetailPath(templateId);
 }
 
 export async function reorderLessonSectionTemplatePresetsAction(formData: FormData) {
@@ -757,8 +870,7 @@ export async function reorderLessonSectionTemplatePresetsAction(formData: FormDa
     },
   });
 
-  revalidateLessonSectionTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
+  await revalidateSectionTemplateDetailPath(templateId);
 }
 
 export async function createLessonTemplateAction(formData: FormData) {
@@ -773,19 +885,11 @@ export async function createLessonTemplateAction(formData: FormData) {
     throw new Error("Title and slug are required");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_templates").insert({
+  await createLessonTemplateEntity({
     title,
     slug,
-    description: description || null,
-    is_active: true,
+    description,
   });
-
-  if (error) {
-    console.error("Error creating lesson template:", error);
-    throw new Error(`Failed to create lesson template: ${error.message}`);
-  }
 
   revalidateLessonTemplateEntityPaths();
 }
@@ -804,26 +908,15 @@ export async function updateLessonTemplateAction(formData: FormData) {
     throw new Error("Template id, title, and slug are required");
   }
 
-  const supabase = await createClient();
+  await updateLessonTemplateEntity({
+    templateId,
+    title,
+    slug,
+    description,
+    isActive,
+  });
 
-  const { error } = await supabase
-    .from("lesson_templates")
-    .update({
-      title,
-      slug,
-      description: description || null,
-      is_active: isActive,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", templateId);
-
-  if (error) {
-    console.error("Error updating lesson template:", error);
-    throw new Error(`Failed to update lesson template: ${error.message}`);
-  }
-
-  revalidateLessonTemplateEntityPaths();
-  revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
+  await revalidateLessonTemplateDetailPath(templateId);
 }
 
 export async function deleteLessonTemplateAction(formData: FormData) {
@@ -865,7 +958,12 @@ export async function addSectionToLessonTemplateAction(formData: FormData) {
     ? resolveSectionKind(sectionKindOverrideRaw)
     : null;
 
-  const position = await getNextLessonTemplateSectionPosition(templateId);
+  const position = await getNextPosition({
+    table: "lesson_template_sections",
+    positionColumnScope: "lesson_template_id",
+    scopeValue: templateId,
+  });
+
   const supabase = await createClient();
 
   const { error } = await supabase.from("lesson_template_sections").insert({
@@ -881,8 +979,7 @@ export async function addSectionToLessonTemplateAction(formData: FormData) {
     throw new Error(`Failed to add section to lesson template: ${error.message}`);
   }
 
-  revalidateLessonTemplateEntityPaths();
-  revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
+  await revalidateLessonTemplateDetailPath(templateId);
 }
 
 export async function updateLessonTemplateSectionAction(formData: FormData) {
@@ -918,8 +1015,7 @@ export async function updateLessonTemplateSectionAction(formData: FormData) {
     throw new Error(`Failed to update lesson template section: ${error.message}`);
   }
 
-  revalidateLessonTemplateEntityPaths();
-  revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
+  await revalidateLessonTemplateDetailPath(templateId);
 }
 
 export async function removeSectionFromLessonTemplateAction(formData: FormData) {
@@ -946,29 +1042,15 @@ export async function removeSectionFromLessonTemplateAction(formData: FormData) 
     throw new Error(`Failed to remove section from lesson template: ${error.message}`);
   }
 
-  const { data: remainingRows, error: loadError } = await supabase
-    .from("lesson_template_sections")
-    .select("id")
-    .eq("lesson_template_id", templateId)
-    .order("position", { ascending: true });
-
-  if (loadError) {
-    console.error("Error loading remaining lesson template sections:", loadError);
-    throw new Error(
-      `Failed to normalize lesson template section order: ${loadError.message}`
-    );
-  }
-
-  await reorderTablePositions({
+  await reorderRemainingRows({
     table: "lesson_template_sections",
-    orderedIds: (remainingRows ?? []).map((row) => row.id as string),
+    selectIdField: "id",
     scope: {
       lesson_template_id: templateId,
     },
   });
 
-  revalidateLessonTemplateEntityPaths();
-  revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
+  await revalidateLessonTemplateDetailPath(templateId);
 }
 
 export async function reorderLessonTemplateSectionsAction(formData: FormData) {
@@ -1002,6 +1084,5 @@ export async function reorderLessonTemplateSectionsAction(formData: FormData) {
     },
   });
 
-  revalidateLessonTemplateEntityPaths();
-  revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
+  await revalidateLessonTemplateDetailPath(templateId);
 }
