@@ -132,6 +132,10 @@ body {
   background: var(--background);
   color: var(--text-primary);
   font-family:
+    "Segoe UI",
+    Aptos,
+    "Trebuchet MS",
+    "Noto Sans",
     Inter,
     Arial,
     Helvetica,
