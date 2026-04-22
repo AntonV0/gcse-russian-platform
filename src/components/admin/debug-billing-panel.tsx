@@ -1,7 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import {
-  getResolvedHigherUpgradePricingForUserDb,
+  BILLING_TYPES,
+  INTERVAL_UNITS,
+  PRODUCT_CODES,
   getUserGcseRussianPurchaseStateDb,
+  resolveUpgradeQuoteDb,
 } from "@/lib/billing/catalog";
 
 type DebugBillingPanelProps = {
@@ -28,7 +31,13 @@ function formatDate(value: string | null) {
 export default async function DebugBillingPanel({ userId }: DebugBillingPanelProps) {
   const supabase = await createClient();
 
-  const [{ data: grants }, purchaseState, upgradePricing] = await Promise.all([
+  const [
+    { data: grants },
+    purchaseState,
+    higherMonthlyUpgrade,
+    higherThreeMonthUpgrade,
+    higherLifetimeUpgrade,
+  ] = await Promise.all([
     supabase
       .from("user_access_grants")
       .select(
@@ -37,10 +46,36 @@ export default async function DebugBillingPanel({ userId }: DebugBillingPanelPro
       .eq("user_id", userId)
       .order("created_at", { ascending: false }),
     getUserGcseRussianPurchaseStateDb(userId),
-    getResolvedHigherUpgradePricingForUserDb(userId),
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      1
+    ),
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.SUBSCRIPTION,
+      INTERVAL_UNITS.MONTH,
+      3
+    ),
+    resolveUpgradeQuoteDb(
+      userId,
+      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      BILLING_TYPES.ONE_TIME,
+      null,
+      null
+    ),
   ]);
 
   const typedGrants = (grants ?? []) as GrantRow[];
+
+  const upgradePricing = {
+    monthly: higherMonthlyUpgrade,
+    threeMonth: higherThreeMonthUpgrade,
+    lifetime: higherLifetimeUpgrade,
+  };
 
   return (
     <section className="app-card app-section-padding border border-amber-300 bg-amber-50/70">
