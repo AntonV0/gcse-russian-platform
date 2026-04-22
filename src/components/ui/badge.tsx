@@ -79,8 +79,8 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
     <span
       className={[
         "dev-marker-host",
-        "inline-flex max-w-full items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5",
-        "text-[0.76rem] font-semibold leading-none tracking-[-0.01em]",
+        "inline-flex max-w-full items-center rounded-full px-3 py-1.5",
+        "text-[0.76rem] font-semibold tracking-[-0.01em]",
         getToneClass(tone),
         className,
       ]
@@ -104,8 +104,10 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
         />
       ) : null}
 
-      {icon ? <AppIcon icon={icon} size={13} /> : null}
-      <span className="truncate">{children}</span>
+      <span className="flex min-w-0 items-center gap-1.5 leading-[1.25]">
+        {icon ? <AppIcon icon={icon} size={13} /> : null}
+        <span className="truncate leading-[1.25]">{children}</span>
+      </span>
     </span>
   );
 }
