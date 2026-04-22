@@ -3,6 +3,7 @@ import AppIcon from "@/components/ui/app-icon";
 import LogoutButton from "@/components/layout/logout-button";
 import { appIcons } from "@/lib/shared/icons";
 import {
+  getAccountPath,
   getAssignmentsPath,
   getCoursesPath,
   getDashboardPath,
@@ -89,6 +90,7 @@ export default function PlatformSidebar({
   }
 
   const utilityItems: NavItem[] = [
+    { label: "Overview", href: getAccountPath(), icon: "dashboard" },
     { label: "Profile", href: getProfilePath(), icon: "user" },
     { label: "Settings", href: getSettingsPath(), icon: "settings" },
   ];
