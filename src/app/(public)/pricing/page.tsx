@@ -62,6 +62,37 @@ type PriceRow = {
   interval_count: number | null;
 };
 
+type SubscriptionRow = {
+  product_id: string;
+  price_id: string | null;
+  status: string;
+  current_period_end: string | null;
+  updated_at: string;
+};
+
+type SubscriptionPriceRow = {
+  id: string;
+  amount_gbp: number;
+  billing_type: string;
+  interval_unit: string | null;
+  interval_count: number | null;
+};
+
+type RenewalInfo = {
+  currentPeriodEnd: string | null;
+  amountLabel: string | null;
+};
+
+type ActiveSubscriptionState = {
+  foundation: RenewalInfo | null;
+  higher: RenewalInfo | null;
+};
+
+type UpgradeSavings = {
+  saved: number;
+  percent: number;
+};
+
 function PlanCard({
   title,
   subtitle,
@@ -111,7 +142,7 @@ function PlanCard({
   );
 }
 
-function formatPriceLabel(price: DbPrice | null): string | null {
+function formatPriceLabel(price: DbPrice | SubscriptionPriceRow | null): string | null {
   if (!price) return null;
 
   const formattedAmount = `£${price.amount_gbp}`;
@@ -290,6 +321,79 @@ async function getActivePlanStateForUser(userId: string): Promise<ActivePlanStat
   };
 }
 
+async function getActiveSubscriptionStateForUser(
+  userId: string
+): Promise<ActiveSubscriptionState> {
+  const supabase = await createClient();
+
+  const { data: subscriptions, error } = await supabase
+    .from("subscriptions")
+    .select("product_id, price_id, status, current_period_end, updated_at")
+    .eq("user_id", userId)
+    .in("status", ["active", "trialing"])
+    .order("updated_at", { ascending: false });
+
+  if (error || !subscriptions || subscriptions.length === 0) {
+    return {
+      foundation: null,
+      higher: null,
+    };
+  }
+
+  const typedSubscriptions = subscriptions as SubscriptionRow[];
+  const productIds = [...new Set(typedSubscriptions.map((row) => row.product_id))];
+  const priceIds = [
+    ...new Set(typedSubscriptions.map((row) => row.price_id).filter(Boolean)),
+  ] as string[];
+
+  const [{ data: products }, { data: prices }] = await Promise.all([
+    supabase.from("products").select("id, code").in("id", productIds),
+    priceIds.length > 0
+      ? supabase
+          .from("prices")
+          .select("id, amount_gbp, billing_type, interval_unit, interval_count")
+          .in("id", priceIds)
+      : Promise.resolve({ data: [] as SubscriptionPriceRow[] | null }),
+  ]);
+
+  const productMap = new Map<string, ProductRow>(
+    ((products ?? []) as ProductRow[]).map((product) => [product.id, product])
+  );
+
+  const priceMap = new Map<string, SubscriptionPriceRow>(
+    ((prices ?? []) as SubscriptionPriceRow[]).map((price) => [price.id, price])
+  );
+
+  let foundation: RenewalInfo | null = null;
+  let higher: RenewalInfo | null = null;
+
+  for (const subscription of typedSubscriptions) {
+    const product = productMap.get(subscription.product_id);
+    const price = subscription.price_id ? priceMap.get(subscription.price_id) : null;
+
+    if (!product || !price) continue;
+    if (price.billing_type !== BILLING_TYPES.SUBSCRIPTION) continue;
+
+    const renewalInfo: RenewalInfo = {
+      currentPeriodEnd: subscription.current_period_end,
+      amountLabel: formatPriceLabel(price),
+    };
+
+    if (product.code === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION && foundation === null) {
+      foundation = renewalInfo;
+    }
+
+    if (product.code === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER && higher === null) {
+      higher = renewalInfo;
+    }
+  }
+
+  return {
+    foundation,
+    higher,
+  };
+}
+
 function OwnedButton({ label }: { label: string }) {
   return (
     <button
@@ -318,12 +422,109 @@ function LockedOption({ label, message }: { label: string; message: string }) {
   );
 }
 
+function DiscountBadge({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full bg-[rgba(37,99,235,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand-blue)]">
+      {label}
+    </span>
+  );
+}
+
+function DiscountBadgeRow({ savings }: { savings: UpgradeSavings | null }) {
+  if (!savings) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <DiscountBadge label="Current student discount" />
+      <DiscountBadge label={`Save ${savings.percent}%`} />
+    </div>
+  );
+}
+
 function getUpgradeFeeLabel(quote: UpgradeQuoteResolution | null): string | null {
   if (!quote?.eligible || quote.upgradeFeeAmountGbp == null) {
     return null;
   }
 
   return `£${quote.upgradeFeeAmountGbp}`;
+}
+
+function getUpgradeSavings(
+  quote: UpgradeQuoteResolution | null,
+  targetPrice: DbPrice | null
+): UpgradeSavings | null {
+  if (!quote?.eligible || !targetPrice || quote.upgradeFeeAmountGbp == null) {
+    return null;
+  }
+
+  const standard = targetPrice.amount_gbp;
+  const upgrade = quote.upgradeFeeAmountGbp;
+
+  if (standard <= upgrade) {
+    return null;
+  }
+
+  const saved = standard - upgrade;
+  const percent = Math.round((saved / standard) * 100);
+
+  return { saved, percent };
+}
+
+function formatRenewalDate(value: string | null): string | null {
+  if (!value) return null;
+
+  return new Date(value).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function RenewalMessage({ renewal }: { renewal: RenewalInfo | null }) {
+  if (!renewal?.currentPeriodEnd || !renewal.amountLabel) {
+    return null;
+  }
+
+  const formattedDate = formatRenewalDate(renewal.currentPeriodEnd);
+
+  if (!formattedDate) {
+    return null;
+  }
+
+  return (
+    <p className="text-xs text-[var(--text-secondary)]">
+      Renews on {formattedDate} at {renewal.amountLabel}
+    </p>
+  );
+}
+
+function UpgradeOffer({
+  quote,
+  targetPrice,
+  targetStandardLabel,
+  children,
+}: {
+  quote: UpgradeQuoteResolution | null;
+  targetPrice: DbPrice | null;
+  targetStandardLabel: string;
+  children: React.ReactNode;
+}) {
+  const savings = getUpgradeSavings(quote, targetPrice);
+
+  return (
+    <>
+      <DiscountBadgeRow savings={savings} />
+      {children}
+      {savings ? (
+        <p className="text-xs text-[var(--text-secondary)]">
+          Save £{savings.saved} compared to full price
+        </p>
+      ) : null}
+      <p className="text-xs text-[var(--text-secondary)]">
+        {getUpgradeMessage(quote, targetStandardLabel)}
+      </p>
+    </>
+  );
 }
 
 function getUpgradeMessage(
@@ -360,6 +561,7 @@ export default async function PricingPage() {
     foundationPricing,
     higherPricing,
     planState,
+    activeSubscriptions,
     foundationMonthlyToThreeMonthQuote,
     foundationMonthlyToFoundationLifetimeQuote,
     foundationThreeMonthToFoundationLifetimeQuote,
@@ -383,6 +585,12 @@ export default async function PricingPage() {
           higherMonthly: false,
           higherThreeMonth: false,
           higherLifetime: false,
+        }),
+    user
+      ? getActiveSubscriptionStateForUser(user.id)
+      : Promise.resolve({
+          foundation: null,
+          higher: null,
         }),
     user
       ? resolveUpgradeQuoteDb(
@@ -681,9 +889,14 @@ export default async function PricingPage() {
                 ) : planState.foundationMonthly ? (
                   <>
                     <OwnedButton label="Foundation Monthly active" />
+                    <RenewalMessage renewal={activeSubscriptions.foundation} />
 
                     {canShowFoundationMonthlyToThreeMonthUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationMonthlyToThreeMonthQuote}
+                        targetPrice={foundationPricing.threeMonth}
+                        targetStandardLabel={foundationThreeMonthLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-foundation"
                           billingType="subscription"
@@ -694,18 +907,15 @@ export default async function PricingPage() {
                           Upgrade to Foundation 3 Months (
                           {getUpgradeFeeLabel(foundationMonthlyToThreeMonthQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationMonthlyToThreeMonthQuote,
-                            foundationThreeMonthLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
 
                     {canShowFoundationMonthlyToFoundationLifetimeUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationMonthlyToFoundationLifetimeQuote}
+                        targetPrice={foundationPricing.lifetime}
+                        targetStandardLabel={foundationLifetimeLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-foundation"
                           billingType="one_time"
@@ -715,14 +925,7 @@ export default async function PricingPage() {
                           {getUpgradeFeeLabel(foundationMonthlyToFoundationLifetimeQuote)}
                           )
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationMonthlyToFoundationLifetimeQuote,
-                            foundationLifetimeLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
                   </>
                 ) : planState.foundationThreeMonth ? (
@@ -733,9 +936,14 @@ export default async function PricingPage() {
                     />
 
                     <OwnedButton label="Foundation 3-Month active" />
+                    <RenewalMessage renewal={activeSubscriptions.foundation} />
 
                     {canShowFoundationThreeMonthToFoundationLifetimeUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationThreeMonthToFoundationLifetimeQuote}
+                        targetPrice={foundationPricing.lifetime}
+                        targetStandardLabel={foundationLifetimeLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-foundation"
                           billingType="one_time"
@@ -747,14 +955,7 @@ export default async function PricingPage() {
                           )}
                           )
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationThreeMonthToFoundationLifetimeQuote,
-                            foundationLifetimeLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
                   </>
                 ) : planState.foundationLifetime ? (
@@ -882,9 +1083,14 @@ export default async function PricingPage() {
                     />
 
                     <OwnedButton label="Higher 3-Month active" />
+                    <RenewalMessage renewal={activeSubscriptions.higher} />
 
                     {canShowHigherThreeMonthToHigherLifetimeUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={higherThreeMonthToHigherLifetimeQuote}
+                        targetPrice={higherPricing.lifetime}
+                        targetStandardLabel={higherLifetimeStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="one_time"
@@ -893,22 +1099,20 @@ export default async function PricingPage() {
                           Upgrade to Higher Lifetime (
                           {getUpgradeFeeLabel(higherThreeMonthToHigherLifetimeQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            higherThreeMonthToHigherLifetimeQuote,
-                            higherLifetimeStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
                   </>
                 ) : planState.higherMonthly ? (
                   <>
                     <OwnedButton label="Higher Monthly active" />
+                    <RenewalMessage renewal={activeSubscriptions.higher} />
 
                     {canShowHigherMonthlyToThreeMonthUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={higherMonthlyToThreeMonthQuote}
+                        targetPrice={higherPricing.threeMonth}
+                        targetStandardLabel={higherThreeMonthStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="subscription"
@@ -919,18 +1123,15 @@ export default async function PricingPage() {
                           Upgrade to Higher 3 Months (
                           {getUpgradeFeeLabel(higherMonthlyToThreeMonthQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            higherMonthlyToThreeMonthQuote,
-                            higherThreeMonthStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
 
                     {canShowHigherMonthlyToHigherLifetimeUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={higherMonthlyToHigherLifetimeQuote}
+                        targetPrice={higherPricing.lifetime}
+                        targetStandardLabel={higherLifetimeStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="one_time"
@@ -939,14 +1140,7 @@ export default async function PricingPage() {
                           Upgrade to Higher Lifetime (
                           {getUpgradeFeeLabel(higherMonthlyToHigherLifetimeQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            higherMonthlyToHigherLifetimeQuote,
-                            higherLifetimeStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
                   </>
                 ) : planState.foundationLifetime ? (
@@ -962,7 +1156,11 @@ export default async function PricingPage() {
                     />
 
                     {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationLifetimeToHigherLifetimeQuote}
+                        targetPrice={higherPricing.lifetime}
+                        targetStandardLabel={higherLifetimeStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="one_time"
@@ -971,14 +1169,7 @@ export default async function PricingPage() {
                           Upgrade to Higher Lifetime (
                           {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationLifetimeToHigherLifetimeQuote,
-                            higherLifetimeStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
                   </>
                 ) : planState.foundationThreeMonth ? (
@@ -989,7 +1180,11 @@ export default async function PricingPage() {
                     />
 
                     {canShowFoundationThreeMonthToHigherThreeMonthUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationThreeMonthToHigherThreeMonthQuote}
+                        targetPrice={higherPricing.threeMonth}
+                        targetStandardLabel={higherThreeMonthStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="subscription"
@@ -1003,18 +1198,15 @@ export default async function PricingPage() {
                           )}
                           )
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationThreeMonthToHigherThreeMonthQuote,
-                            higherThreeMonthStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
 
                     {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationLifetimeToHigherLifetimeQuote}
+                        targetPrice={higherPricing.lifetime}
+                        targetStandardLabel={higherLifetimeStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="one_time"
@@ -1023,22 +1215,20 @@ export default async function PricingPage() {
                           Upgrade to Higher Lifetime (
                           {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationLifetimeToHigherLifetimeQuote,
-                            higherLifetimeStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
                   </>
                 ) : planState.foundationMonthly ? (
                   <>
                     <OwnedButton label="Foundation Monthly active" />
+                    <RenewalMessage renewal={activeSubscriptions.foundation} />
 
                     {canShowFoundationMonthlyToHigherMonthlyUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationMonthlyToHigherMonthlyQuote}
+                        targetPrice={higherPricing.monthly}
+                        targetStandardLabel={higherMonthlyStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="subscription"
@@ -1049,18 +1239,15 @@ export default async function PricingPage() {
                           Upgrade to Higher Monthly (
                           {getUpgradeFeeLabel(foundationMonthlyToHigherMonthlyQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationMonthlyToHigherMonthlyQuote,
-                            higherMonthlyStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
 
                     {canShowFoundationMonthlyToHigherThreeMonthUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationMonthlyToHigherThreeMonthQuote}
+                        targetPrice={higherPricing.threeMonth}
+                        targetStandardLabel={higherThreeMonthStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="subscription"
@@ -1071,18 +1258,15 @@ export default async function PricingPage() {
                           Upgrade to Higher 3 Months (
                           {getUpgradeFeeLabel(foundationMonthlyToHigherThreeMonthQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationMonthlyToHigherThreeMonthQuote,
-                            higherThreeMonthStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
 
                     {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-                      <>
+                      <UpgradeOffer
+                        quote={foundationLifetimeToHigherLifetimeQuote}
+                        targetPrice={higherPricing.lifetime}
+                        targetStandardLabel={higherLifetimeStandardLabel}
+                      >
                         <CheckoutButton
                           productCode="gcse-russian-higher"
                           billingType="one_time"
@@ -1091,14 +1275,7 @@ export default async function PricingPage() {
                           Upgrade to Higher Lifetime (
                           {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
                         </CheckoutButton>
-
-                        <p className="text-xs text-[var(--text-secondary)]">
-                          {getUpgradeMessage(
-                            foundationLifetimeToHigherLifetimeQuote,
-                            higherLifetimeStandardLabel
-                          )}
-                        </p>
-                      </>
+                      </UpgradeOffer>
                     ) : null}
                   </>
                 ) : higherOwned ? (
