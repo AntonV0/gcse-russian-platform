@@ -9,14 +9,19 @@
 @import "../styles/forms.css";
 @import "../styles/dev-markers.css";
 
-/* Smooth theme transitions */
-html.theme-transition *,
-html.theme-transition *::before,
-html.theme-transition *::after {
+/* Smooth theme transitions — lightweight */
+html.theme-transition body,
+html.theme-transition .app-card,
+html.theme-transition .app-surface-brand,
+html.theme-transition .app-shell-main,
+html.theme-transition .app-icon-button,
+html.theme-transition .app-btn-base,
+html.theme-transition .app-btn-surface-fix,
+html.theme-transition .app-nav-link,
+html.theme-transition .app-brand-mark,
+html.theme-transition .app-form-control {
   transition:
-    background-color 0.4s ease,
-    color 0.4s ease,
-    border-color 0.4s ease,
-    fill 0.4s ease,
-    stroke 0.4s ease;
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
