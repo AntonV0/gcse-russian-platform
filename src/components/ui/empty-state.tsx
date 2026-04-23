@@ -54,14 +54,24 @@ export default function EmptyState({
         <DevComponentMarker
           componentName="EmptyState"
           filePath="src/components/ui/empty-state.tsx"
+          tier="semantic"
+          componentRole="Empty, locked, or no-results state"
+          bestFor="No content yet, filtered no-results, locked sections, missing submissions, and first-step prompts."
+          usageExamples={[
+            "No lessons yet",
+            "No matching vocabulary rows",
+            "No assignments to review",
+            "Higher tier content locked",
+          ]}
+          notes="Use when the user needs orientation and a next action. Keep copy short; avoid using empty states as normal page decoration."
         />
       ) : null}
 
       <div
         className={[
-          "relative overflow-hidden rounded-[1.75rem] border border-dashed border-[var(--border)]",
+          "relative overflow-hidden rounded-[1.5rem] border border-dashed border-[var(--border)]",
           "bg-[linear-gradient(180deg,var(--background-elevated)_0%,var(--background-muted)_100%)]",
-          "px-6 py-9 text-center shadow-[0_10px_24px_rgba(16,32,51,0.05)]",
+          "px-5 py-8 text-center shadow-[0_10px_24px_rgba(16,32,51,0.05)] sm:px-6 sm:py-9",
         ].join(" ")}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(37,99,235,0.06)_0%,rgba(37,99,235,0)_100%)]" />
@@ -75,7 +85,7 @@ export default function EmptyState({
         ) : null}
 
         <div className="relative mx-auto max-w-[32rem]">
-          <div className="text-[1.15rem] font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
+          <div className="text-[1.08rem] font-semibold tracking-[-0.02em] text-[var(--text-primary)] sm:text-[1.15rem]">
             {title}
           </div>
 

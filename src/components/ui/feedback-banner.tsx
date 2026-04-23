@@ -22,46 +22,30 @@ function getToneConfig(tone: FeedbackBannerTone) {
     case "success":
       return {
         icon: "completed" as const,
-        wrapperClass: [
-          "border-[rgba(31,138,76,0.24)]",
-          "bg-[linear-gradient(135deg,rgba(31,138,76,0.14)_0%,rgba(31,138,76,0.05)_100%)]",
-          "text-[var(--success)]",
-          "shadow-[0_10px_24px_rgba(31,138,76,0.08)]",
-        ].join(" "),
+        wrapperClass:
+          "border-[rgba(31,138,76,0.24)] bg-[linear-gradient(135deg,rgba(31,138,76,0.14)_0%,rgba(31,138,76,0.05)_100%)] text-[var(--success)] shadow-[0_10px_24px_rgba(31,138,76,0.08)]",
       };
 
     case "warning":
       return {
         icon: "warning" as const,
-        wrapperClass: [
-          "border-[rgba(183,121,31,0.26)]",
-          "bg-[linear-gradient(135deg,rgba(183,121,31,0.14)_0%,rgba(183,121,31,0.05)_100%)]",
-          "text-[var(--warning)]",
-          "shadow-[0_10px_24px_rgba(183,121,31,0.08)]",
-        ].join(" "),
+        wrapperClass:
+          "border-[rgba(183,121,31,0.26)] bg-[linear-gradient(135deg,rgba(183,121,31,0.14)_0%,rgba(183,121,31,0.05)_100%)] text-[var(--warning)] shadow-[0_10px_24px_rgba(183,121,31,0.08)]",
       };
 
     case "danger":
       return {
         icon: "alert" as const,
-        wrapperClass: [
-          "border-[rgba(194,59,59,0.24)]",
-          "bg-[linear-gradient(135deg,rgba(194,59,59,0.14)_0%,rgba(194,59,59,0.05)_100%)]",
-          "text-[var(--danger)]",
-          "shadow-[0_10px_24px_rgba(194,59,59,0.08)]",
-        ].join(" "),
+        wrapperClass:
+          "border-[rgba(194,59,59,0.24)] bg-[linear-gradient(135deg,rgba(194,59,59,0.14)_0%,rgba(194,59,59,0.05)_100%)] text-[var(--danger)] shadow-[0_10px_24px_rgba(194,59,59,0.08)]",
       };
 
     case "info":
     default:
       return {
         icon: "info" as const,
-        wrapperClass: [
-          "border-[rgba(37,99,235,0.22)]",
-          "bg-[linear-gradient(135deg,rgba(37,99,235,0.14)_0%,rgba(37,99,235,0.05)_100%)]",
-          "text-[var(--info)]",
-          "shadow-[0_10px_24px_rgba(37,99,235,0.08)]",
-        ].join(" "),
+        wrapperClass:
+          "border-[rgba(37,99,235,0.22)] bg-[linear-gradient(135deg,rgba(37,99,235,0.14)_0%,rgba(37,99,235,0.05)_100%)] text-[var(--info)] shadow-[0_10px_24px_rgba(37,99,235,0.08)]",
       };
   }
 }
@@ -83,26 +67,38 @@ export default function FeedbackBanner({
         <DevComponentMarker
           componentName="FeedbackBanner"
           filePath="src/components/ui/feedback-banner.tsx"
+          tier="semantic"
+          componentRole="Semantic feedback and guidance banner"
+          bestFor="Important page-level messages, action outcomes, validation summaries, warnings, and admin/student guidance."
+          usageExamples={[
+            "Saved successfully banner",
+            "Access required warning",
+            "Mock exam still incomplete notice",
+            "Teacher feedback or admin guidance",
+          ]}
+          notes="Use for messages that need more weight than inline helper text. Avoid using it for tiny field-level errors or decorative callouts."
         />
       ) : null}
 
       <div
         className={[
-          "relative overflow-hidden rounded-[1.6rem] border px-5 py-4",
+          "relative overflow-hidden rounded-[1.35rem] border px-4 py-3.5 sm:px-5 sm:py-4",
           "backdrop-blur-[1px]",
           wrapperClass,
         ].join(" ")}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_100%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_100%)]" />
 
         <div className="relative flex items-start gap-3">
-          <div className="mt-0.5 shrink-0">
-            <AppIcon icon={resolvedIcon} size={18} />
+          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-current/10">
+            <AppIcon icon={resolvedIcon} size={17} />
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {title ? (
-              <div className="font-semibold tracking-[-0.01em]">{title}</div>
+              <div className="font-semibold tracking-[-0.01em] text-[var(--text-primary)]">
+                {title}
+              </div>
             ) : null}
 
             {description ? (
