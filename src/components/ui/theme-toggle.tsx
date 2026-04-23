@@ -4,15 +4,20 @@ import AppIcon from "@/components/ui/app-icon";
 import { useTheme } from "@/components/providers/theme-provider";
 
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, themePreference } = useTheme();
+
+  const title =
+    themePreference === "system"
+      ? "Toggle theme (currently following system)"
+      : "Toggle theme";
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
       className="app-icon-button app-focus-ring"
-      aria-label="Toggle theme"
-      title="Toggle theme"
+      aria-label={title}
+      title={title}
     >
       {theme ? (
         <AppIcon

@@ -1,3 +1,4 @@
+import ThemeModeSelector from "@/components/settings/theme-mode-selector";
 import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -181,18 +182,7 @@ export default async function SettingsPage({
 
       <section className="grid gap-4 lg:grid-cols-2">
         <DashboardCard title="Appearance">
-          <div className="space-y-3">
-            <p>
-              Theme and interface preferences belong here. A full Light, Dark, and System
-              theme selector is the next step for this area.
-            </p>
-
-            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>• Theme mode selector</li>
-              <li>• Interface preferences</li>
-              <li>• Future accessibility options</li>
-            </ul>
-          </div>
+          <ThemeModeSelector />
         </DashboardCard>
 
         <DashboardCard title="Preferences">

@@ -10,10 +10,12 @@ import {
 } from "react";
 
 export type ThemeMode = "light" | "dark";
+export type ThemePreference = ThemeMode | "system";
 
 type ThemeContextValue = {
   theme: ThemeMode | null;
-  setTheme: (theme: ThemeMode) => void;
+  themePreference: ThemePreference | null;
+  setThemePreference: (preference: ThemePreference) => void;
   toggleTheme: () => void;
 };
 
@@ -25,9 +27,9 @@ function getSystemTheme(): ThemeMode {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function readStoredTheme(): ThemeMode | null {
+function readStoredThemePreference(): ThemePreference | null {
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
-  return stored === "dark" || stored === "light" ? stored : null;
+  return stored === "light" || stored === "dark" || stored === "system" ? stored : null;
 }
 
 function readResolvedTheme(): ThemeMode {
@@ -35,18 +37,28 @@ function readResolvedTheme(): ThemeMode {
   return current === "dark" ? "dark" : "light";
 }
 
-function applyTheme(theme: ThemeMode) {
+function resolveTheme(preference: ThemePreference | null): ThemeMode {
+  if (preference === "light" || preference === "dark") {
+    return preference;
+  }
+
+  return getSystemTheme();
+}
+
+function applyTheme(theme: ThemeMode, animate = true) {
   const root = document.documentElement;
 
-  // enable transitions
-  root.classList.add("theme-transition");
+  if (animate) {
+    root.classList.add("theme-transition");
+  }
 
   root.setAttribute("data-theme", theme);
 
-  // disable transitions after change
-  window.setTimeout(() => {
-    root.classList.remove("theme-transition");
-  }, 300);
+  if (animate) {
+    window.setTimeout(() => {
+      root.classList.remove("theme-transition");
+    }, 300);
+  }
 }
 
 type ThemeProviderProps = {
@@ -55,52 +67,71 @@ type ThemeProviderProps = {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<ThemeMode | null>(null);
+  const [themePreference, setThemePreferenceState] = useState<ThemePreference | null>(
+    null
+  );
 
-  const setTheme = useCallback((nextTheme: ThemeMode) => {
-    applyTheme(nextTheme);
-    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-    setThemeState(nextTheme);
+  const setThemePreference = useCallback((nextPreference: ThemePreference) => {
+    const resolvedTheme = resolveTheme(nextPreference);
+
+    localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
+    applyTheme(resolvedTheme);
+    setThemePreferenceState(nextPreference);
+    setThemeState(resolvedTheme);
   }, []);
 
   const toggleTheme = useCallback(() => {
-    const current = theme ?? readResolvedTheme();
-    const nextTheme: ThemeMode = current === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-  }, [setTheme, theme]);
+    const currentResolvedTheme = theme ?? readResolvedTheme();
+    const nextTheme: ThemeMode = currentResolvedTheme === "dark" ? "light" : "dark";
+
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    applyTheme(nextTheme);
+    setThemePreferenceState(nextTheme);
+    setThemeState(nextTheme);
+  }, [theme]);
 
   useEffect(() => {
-    const storedTheme = readStoredTheme();
-    const resolvedTheme = storedTheme ?? readResolvedTheme();
+    const storedPreference = readStoredThemePreference();
+    const initialPreference: ThemePreference = storedPreference ?? "system";
+    const initialResolvedTheme = resolveTheme(initialPreference);
 
-    applyTheme(resolvedTheme);
-    setThemeState(resolvedTheme);
+    applyTheme(initialResolvedTheme, false);
+    setThemePreferenceState(initialPreference);
+    setThemeState(initialResolvedTheme);
 
     function handleStorage(event: StorageEvent) {
       if (event.key !== THEME_STORAGE_KEY) {
         return;
       }
 
-      const nextStoredTheme =
-        event.newValue === "dark" || event.newValue === "light" ? event.newValue : null;
+      const nextPreference =
+        event.newValue === "light" ||
+        event.newValue === "dark" ||
+        event.newValue === "system"
+          ? event.newValue
+          : "system";
 
-      const nextTheme = nextStoredTheme ?? getSystemTheme();
+      const nextResolvedTheme = resolveTheme(nextPreference);
 
-      applyTheme(nextTheme);
-      setThemeState(nextTheme);
+      applyTheme(nextResolvedTheme);
+      setThemePreferenceState(nextPreference);
+      setThemeState(nextResolvedTheme);
     }
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     function handleSystemThemeChange() {
-      const storedTheme = readStoredTheme();
+      const storedPreference = readStoredThemePreference() ?? "system";
 
-      if (storedTheme) {
+      if (storedPreference !== "system") {
         return;
       }
 
-      const nextTheme = mediaQuery.matches ? "dark" : "light";
-      applyTheme(nextTheme);
-      setThemeState(nextTheme);
+      const nextResolvedTheme: ThemeMode = mediaQuery.matches ? "dark" : "light";
+
+      applyTheme(nextResolvedTheme);
+      setThemePreferenceState("system");
+      setThemeState(nextResolvedTheme);
     }
 
     mediaQuery.addEventListener("change", handleSystemThemeChange);
@@ -115,10 +146,11 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
-      setTheme,
+      themePreference,
+      setThemePreference,
       toggleTheme,
     }),
-    [theme, setTheme, toggleTheme]
+    [theme, themePreference, setThemePreference, toggleTheme]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
