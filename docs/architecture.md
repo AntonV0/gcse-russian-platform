@@ -104,10 +104,9 @@ Supabase:
 
 ---
 
-### UI System Layer (NEW)
+### UI System Layer
 
-A dedicated **UI system layer** has been introduced to standardise
-design patterns across:
+A dedicated **UI system layer** standardises design patterns across:
 
 - admin CMS
 - student platform
@@ -151,7 +150,44 @@ This is critical for maintaining long-term UI scalability.
 
 ---
 
-## 4. Core content architecture
+## 4. Theme Architecture
+
+The theme system is built using:
+
+- `ThemeProvider` (client-side context)
+- CSS variables in `globals.css`
+- `data-theme` attribute on the root `<html>` element
+
+### Theme layers
+
+1. **Theme Preference**
+   - Stored in localStorage
+   - Values: `light`, `dark`, `system`
+
+2. **Resolved Theme**
+   - Final applied theme: `light` or `dark`
+   - Derived from preference + system setting
+
+3. **UI Application**
+   - CSS variables control all colours
+   - Components must not rely on hardcoded colour values
+
+### Behaviour
+
+- System mode listens to `prefers-color-scheme`
+- Changes propagate across tabs via `storage` event
+- Theme transitions are temporarily enabled during theme switch
+
+### Future Extension
+
+The architecture is designed to support:
+
+- accent themes (e.g. blue, green, purple)
+- user-specific theme preferences (DB-backed)
+
+---
+
+## 5. Core content architecture
 
 ### Course hierarchy
 
@@ -160,7 +196,7 @@ This is critical for maintaining long-term UI scalability.
 - Module
 - Lesson
 
-### Lesson architecture (UPDATED)
+### Lesson architecture
 
 - Lesson
 - Section
@@ -170,7 +206,7 @@ This is the **single source of truth for lesson structure**.
 
 ---
 
-## 5. Section-based lesson flow
+## 6. Section-based lesson flow
 
 Sections enable:
 
@@ -192,7 +228,7 @@ Progression is **visit-based**, not completion-based.
 
 ---
 
-## 6. Block system
+## 7. Block system
 
 Blocks represent atomic content units.
 
@@ -219,11 +255,11 @@ Supported types:
 
 ---
 
-## 7. Variant-Based Content Architecture (NEW)
+## 8. Variant-Based Content Architecture
 
-The system now treats **variants as first-class citizens**.
+The system treats **variants as first-class citizens**.
 
-Examples of variants:
+Examples:
 
 - foundation
 - higher
@@ -248,61 +284,38 @@ The lesson renderer filters sections using:
 
 (section.variant_visibility, active_variant)
 
-Rules:
-
-- shared → visible everywhere
-- foundation_only → only foundation
-- higher_only → only higher
-- volna_only → only volna
-
 ### Architectural impact
 
-This replaces:
+Replaces:
 
-- ❌ track visibility
-- ❌ delivery visibility
+- track visibility
+- delivery visibility
 
 Benefits:
 
 - simpler mental model
-- aligned with real product structure
-- easier future expansion
+- aligned with product structure
+- easier expansion
 
 ---
 
-## 8. Shared Section Architecture (NEW)
+## 9. Shared Section Architecture
 
-Sections now support:
+Sections support:
 
 - `canonical_section_key`
 
 ### Purpose
 
-Allows logically identical sections to exist across variants.
-
-### Example
-
-food-vocabulary-core
-
-This same key can exist in:
-
-- foundation lesson
-- higher lesson
-- volna lesson
-
-Each instance can still:
-
-- have different blocks
-- be positioned differently
-- evolve independently
+Allows logically identical sections across variants.
 
 ### Why this matters
 
-Enables future features:
+Enables:
 
 - cross-variant progress syncing
 - content reuse
-- analytics across equivalent sections
+- analytics
 
 ### Current state
 
@@ -312,33 +325,22 @@ Enables future features:
 
 ---
 
-## 9. Lesson Builder Architecture (CORE SYSTEM)
+## 10. Lesson Builder Architecture
 
-The lesson builder is now a **central CMS**.
+The lesson builder is a **central CMS**.
 
 ### Responsibilities
 
-- write lesson content directly to DB
+- write lesson content to DB
 - manage sections + blocks
 - control ordering
-- manage publishing state
+- manage publishing
 - control variant visibility
 - manage canonical keys
 
-### Capabilities
-
-- section CRUD
-- block CRUD
-- drag-and-drop ordering
-- cross-section block movement
-- duplication
-- publish/unpublish
-- inspector editing
-- sidebar navigation
-
 ---
 
-## 10. Lesson Builder UX Architecture
+## 11. Lesson Builder UX Architecture
 
 ### Key shift
 
@@ -352,120 +354,27 @@ To:
 
 ---
 
-### Block creation flow
+## 12. Data Display Architecture
 
-- composer above block list
-- clear entry point
-- improved empty states
-- faster first-block experience
-
----
-
-### Composer architecture
-
-- grouped block types:
-  - structure
-  - teaching
-  - media
-  - practice
-- inline form rendering
-- preset support (DB-driven)
-
----
-
-### Section editor structure
-
-1. Section overview
-2. Metadata editing
-3. Block creation
-4. Block list
-
----
-
-## 11. Data Display Architecture (NEW)
-
-The platform now uses a **structured table system** instead of raw HTML tables.
-
-### Motivation
-
-Previously:
-
-- tables were implemented per-page
-- inconsistent spacing, hierarchy, and behaviour
-- duplication of logic and styling
-
-Now:
-
-- tables are built from reusable components
-- consistent across all admin interfaces
-
----
+The platform uses a **structured table system**.
 
 ### Core components
 
-#### TableShell
+- TableShell
+- TableToolbar
+- DataTable
 
-Provides:
+### Impact
 
-- title
-- description
-- action area
-- container styling
-
-Acts as the **standard entry point** for all table-based views.
-
----
-
-#### TableToolbar
-
-Handles:
-
-- search inputs
-- filters
-- bulk actions
-- creation actions
-
-Placed above table content.
+- removes duplication
+- standardises patterns
+- improves scalability
 
 ---
 
-#### DataTable system
+## 13. Row Interaction Architecture
 
-A composable system including:
-
-- header
-- body
-- rows
-- cells
-- density variants
-
-This replaces direct `<table>` usage in application code.
-
----
-
-### Supported patterns
-
-- standard admin tables (default)
-- dense tables (compact)
-- hierarchical list pattern (modules → lessons → blocks)
-- empty state
-- filtered-empty state
-- dark-surface compatibility
-
----
-
-### Architectural impact
-
-- removes duplication of table logic
-- standardises interaction patterns
-- improves readability and scanning
-- enables future enhancements (sorting, pagination, selection)
-
----
-
-## 12. Row Interaction Architecture (NEW)
-
-Row behaviour is now treated as a **first-class UI concern**.
+Row behaviour is a **first-class concern**.
 
 ### States
 
@@ -474,94 +383,52 @@ Row behaviour is now treated as a **first-class UI concern**.
 - selected
 - disabled
 
-### Patterns
-
-- inline actions (always visible)
-- compact action groups (icon-only)
-- hover-reveal actions
-
-### Component
-
-- `AdminRow`
-
-Used for:
-
-- table rows
-- list rows
-- hierarchical structures
-
 ---
 
-## 13. Hierarchical Content Display Pattern (NEW)
+## 14. Hierarchical Content Display Pattern
 
-Not all structured data is displayed as tables.
-
-A **hierarchical list pattern** is used for:
+Used for:
 
 - modules
 - lessons
 - blocks
 
-### Characteristics
-
-- nested indentation
-- flexible layout
-- better representation of relationships
-
-### Why this exists
-
-Tables are optimal for:
-
-- comparison
-
-Hierarchy is optimal for:
-
-- structure
-
-The system intentionally supports both.
-
 ---
 
-## 12. Progress architecture
+## 15. Progress architecture
 
-### Tables
+Tables:
 
 - lesson_progress
 - lesson_section_progress
 
-Tracks:
-
-- first_visited_at
-- last_visited_at
-- visit_count
-
 ---
 
-## 13. Database relationships
+## 16. Database relationships
 
 LESSONS → LESSON_SECTIONS → LESSON_BLOCKS
 
 ---
 
-## 14. Navigation & UI Access Architecture
+## 17. Navigation & UI Access Architecture
 
 UI visibility is derived from role + access mode.
 
 ---
 
-## 15. Dashboard Architecture
+## 18. Dashboard Architecture
 
-Aggregates role, variant, and progress to determine next actions.
+Aggregates role, variant, and progress.
 
 ---
 
-## 16. Account System Architecture
+## 19. Account System Architecture
 
 Includes profile, avatar system, and settings page.
 
 ---
 
-## 19. Architectural changes in this phase
+## 20. Architectural changes in this phase
 
 Added:
 
@@ -571,15 +438,16 @@ Added:
 - reusable table architecture
 - DevComponentMarker system
 - structured row interaction patterns
+- theme system
 
 Removed:
 
 - track/delivery visibility
-- raw table implementations across admin pages
+- raw table implementations
 
 ---
 
-## 18. Architectural strengths
+## 21. Architectural strengths
 
 - unified platform
 - DB-driven
@@ -587,7 +455,7 @@ Removed:
 
 ---
 
-## 19. Next architectural steps
+## 22. Next architectural steps
 
 - progress syncing
 - dashboard improvements
