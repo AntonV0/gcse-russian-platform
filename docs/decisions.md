@@ -335,10 +335,34 @@ Build strong foundations before features.
 
 ---
 
-## 23. Next direction
+## 23. Theme System Design (2026-XX-XX)
 
-- cross-variant progress syncing
-- upgrade flows (foundation → higher)
-- smarter dashboard
-- expand UI system across all platform areas
-- continue extracting reusable components
+### Decision
+
+Implement a three-mode theme system (Light, Dark, System) using a client-side ThemeProvider and CSS variables.
+
+### Rationale
+
+- Avoid SSR hydration issues
+- Enable system preference syncing
+- Provide consistent UX across pages
+- Prepare for future colour theme extensibility
+
+### Key Choices
+
+- Store preference in localStorage (not DB initially)
+- Use `data-theme` attribute instead of class toggling
+- Separate theme preference from resolved theme
+- Keep header toggle as quick override
+- Use CSS variables instead of hardcoded colours
+
+### Trade-offs
+
+- Requires discipline to avoid hardcoded colours
+- Initial UI may mix token-based and hardcoded values (to be refactored)
+
+### Future Work
+
+- Token cleanup across UI
+- Accent colour themes
+- Persist preferences to user profile

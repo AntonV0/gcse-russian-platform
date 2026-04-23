@@ -460,6 +460,31 @@ This version intentionally:
 
 ---
 
+## 🎨 Theme System
+
+The platform supports a global theme system with three modes:
+
+- Light
+- Dark
+- System (follows OS preference)
+
+Theme state is managed via a client-side `ThemeProvider`, which:
+
+- Stores user preference in localStorage
+- Resolves active theme based on preference + system settings
+- Syncs across tabs
+- Reacts to OS theme changes when in System mode
+
+Theme is applied using the `data-theme` attribute on `<html>`.
+
+Example:
+
+<html data-theme="dark">
+
+All UI colours are implemented using CSS variables to support future extensibility (e.g. accent themes).
+
+---
+
 ## 🧠 Product Direction
 
 The platform is moving toward:
