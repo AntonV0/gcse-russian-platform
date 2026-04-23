@@ -24,8 +24,10 @@ export function Card({ children, className, interactive = false }: CardProps) {
 
       <div
         className={[
-          "app-card app-card-shell",
-          interactive ? "app-card-hover" : "",
+          "app-card app-card-shell overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform]",
+          interactive
+            ? "app-card-hover hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]"
+            : "",
           className,
         ]
           .filter(Boolean)
@@ -40,7 +42,10 @@ export function Card({ children, className, interactive = false }: CardProps) {
 export function CardHeader({ children, className }: CardSectionProps) {
   return (
     <div
-      className={["app-card-header border-b border-[var(--border)] px-5 py-4", className]
+      className={[
+        "app-card-header border-b border-[var(--border-subtle)] px-5 py-4",
+        className,
+      ]
         .filter(Boolean)
         .join(" ")}
     >
@@ -51,7 +56,7 @@ export function CardHeader({ children, className }: CardSectionProps) {
 
 export function CardBody({ children, className }: CardSectionProps) {
   return (
-    <div className={["app-card-body p-5", className].filter(Boolean).join(" ")}>
+    <div className={["app-card-body px-5 py-4", className].filter(Boolean).join(" ")}>
       {children}
     </div>
   );
@@ -60,7 +65,10 @@ export function CardBody({ children, className }: CardSectionProps) {
 export function CardFooter({ children, className }: CardSectionProps) {
   return (
     <div
-      className={["app-card-footer border-t border-[var(--border)] px-5 py-4", className]
+      className={[
+        "app-card-footer border-t border-[var(--border-subtle)] px-5 py-4",
+        className,
+      ]
         .filter(Boolean)
         .join(" ")}
     >

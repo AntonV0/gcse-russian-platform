@@ -26,28 +26,28 @@ function getToneClasses(tone: PanelCardTone) {
   switch (tone) {
     case "brand":
       return {
-        card: "border-[rgba(37,99,235,0.16)] bg-[linear-gradient(135deg,rgba(37,99,235,0.06)_0%,rgba(255,255,255,0.98)_45%,rgba(217,75,82,0.04)_100%)] shadow-[0_14px_32px_rgba(16,32,51,0.08)]",
+        card: "border-[rgba(37,99,235,0.18)] bg-[linear-gradient(135deg,rgba(37,99,235,0.07)_0%,rgba(255,255,255,0.98)_48%,rgba(217,75,82,0.04)_100%)] shadow-[0_16px_34px_rgba(16,32,51,0.08)]",
         header:
-          "border-b-[rgba(37,99,235,0.14)] bg-[linear-gradient(180deg,rgba(37,99,235,0.06)_0%,rgba(37,99,235,0)_100%)]",
+          "border-b-[rgba(37,99,235,0.14)] bg-[linear-gradient(180deg,rgba(37,99,235,0.07)_0%,rgba(37,99,235,0)_100%)]",
       };
 
     case "student":
       return {
-        card: "border-[var(--border)] bg-[linear-gradient(135deg,rgba(37,99,235,0.04)_0%,rgba(255,255,255,0.99)_55%,rgba(217,75,82,0.03)_100%)] shadow-[0_12px_28px_rgba(16,32,51,0.07)]",
+        card: "border-[var(--border-subtle)] bg-[linear-gradient(135deg,rgba(37,99,235,0.05)_0%,rgba(255,255,255,0.99)_56%,rgba(217,75,82,0.03)_100%)] shadow-[0_12px_28px_rgba(16,32,51,0.07)]",
         header:
-          "border-b-[rgba(37,99,235,0.10)] bg-[linear-gradient(180deg,rgba(37,99,235,0.04)_0%,rgba(37,99,235,0)_100%)]",
+          "border-b-[rgba(37,99,235,0.10)] bg-[linear-gradient(180deg,rgba(37,99,235,0.05)_0%,rgba(37,99,235,0)_100%)]",
       };
 
     case "muted":
       return {
-        card: "border-[var(--border)] bg-[var(--background-muted)] shadow-[0_10px_22px_rgba(16,32,51,0.04)]",
+        card: "border-[var(--border-subtle)] bg-[var(--background-muted)] shadow-[0_10px_22px_rgba(16,32,51,0.04)]",
         header:
-          "border-b-[var(--border)] bg-[linear-gradient(180deg,rgba(16,32,51,0.02)_0%,rgba(16,32,51,0)_100%)]",
+          "border-b-[var(--border-subtle)] bg-[linear-gradient(180deg,rgba(16,32,51,0.02)_0%,rgba(16,32,51,0)_100%)]",
       };
 
     case "admin":
       return {
-        card: "border-[var(--border)] bg-[linear-gradient(180deg,rgba(37,99,235,0.03)_0%,var(--background-elevated)_100%)] shadow-[0_12px_28px_rgba(16,32,51,0.06)]",
+        card: "border-[var(--border-subtle)] bg-[linear-gradient(180deg,rgba(37,99,235,0.03)_0%,var(--background-elevated)_100%)] shadow-[0_12px_28px_rgba(16,32,51,0.06)]",
         header:
           "border-b-[rgba(37,99,235,0.12)] bg-[linear-gradient(180deg,rgba(37,99,235,0.05)_0%,rgba(37,99,235,0)_100%)]",
       };
@@ -67,7 +67,7 @@ function getDensityClasses(density: PanelCardDensity) {
     case "compact":
       return {
         header: "px-4 py-3.5",
-        body: "p-4",
+        body: "px-4 py-3.5",
         footer: "px-4 py-3.5",
       };
 
@@ -75,7 +75,7 @@ function getDensityClasses(density: PanelCardDensity) {
     default:
       return {
         header: "px-5 py-4",
-        body: "p-5",
+        body: "px-5 py-4",
         footer: "px-5 py-4",
       };
   }
@@ -97,6 +97,7 @@ export default function PanelCard({
   const toneClasses = getToneClasses(tone);
   const densityClasses = getDensityClasses(density);
   const hasBody = children !== undefined && children !== null;
+  const hasHeader = Boolean(title || description || actions);
 
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
@@ -113,16 +114,16 @@ export default function PanelCard({
             "Course detail side panels",
             "Student guidance/support panels",
           ]}
-          notes="Use footer for action rows or link rows. When there is no body content, the footer automatically avoids creating a double divider."
+          notes="Use footer for action rows or link rows. Keep Card for neutral containers; use PanelCard when you need a structured header/body/footer section."
         />
       ) : null}
 
       <Card
-        className={["app-panel-card overflow-hidden", toneClasses.card]
+        className={["app-panel-card rounded-2xl", toneClasses.card]
           .filter(Boolean)
           .join(" ")}
       >
-        {title || description || actions ? (
+        {hasHeader ? (
           <CardHeader
             className={[
               "app-panel-card-header",
@@ -134,7 +135,7 @@ export default function PanelCard({
               .join(" ")}
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-              <div className="min-w-0">
+              <div className="min-w-0 space-y-1">
                 {title ? <h2 className="app-card-title">{title}</h2> : null}
                 {description ? <p className="app-card-desc">{description}</p> : null}
               </div>
@@ -161,7 +162,8 @@ export default function PanelCard({
         {footer ? (
           <CardFooter
             className={[
-              hasBody ? "border-t border-[var(--border)]" : "",
+              hasBody ? "" : "border-t-0",
+              "app-panel-card-footer",
               densityClasses.footer,
               footerClassName,
             ]
