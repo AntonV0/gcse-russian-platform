@@ -1,8 +1,8 @@
 "use client";
 
-import DevComponentMarker from "@/components/ui/dev-component-marker";
 import Badge from "@/components/ui/badge";
 import Card, { CardBody } from "@/components/ui/card";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type StatusSummaryCardProps = {
   title: string;
@@ -22,22 +22,36 @@ export default function StatusSummaryCard({
   className,
 }: StatusSummaryCardProps) {
   return (
-    <Card className={["dev-marker-host", className].filter(Boolean).join(" ")}>
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="StatusSummaryCard"
           filePath="src/components/ui/status-summary-card.tsx"
+          tier="semantic"
+          componentRole="Compact status summary card"
+          bestFor="Small state explanations, admin readiness cards, review states, progress summaries, and status-led guidance blocks."
+          usageExamples={[
+            "Publishing ready card",
+            "Review required summary",
+            "Student progress status",
+            "Admin readiness checklist item",
+          ]}
+          notes="Use when a short description needs a visible status label. For numeric metrics, use SummaryStatCard. For page-level messages, use FeedbackBanner."
         />
       ) : null}
 
-      <CardBody className="p-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-          <Badge tone={badgeTone}>{badgeLabel}</Badge>
-        </div>
+      <Card className={className}>
+        <CardBody className="p-4">
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0 font-semibold text-[var(--text-primary)]">
+              {title}
+            </div>
+            <Badge tone={badgeTone}>{badgeLabel}</Badge>
+          </div>
 
-        <p className="text-sm app-text-muted">{description}</p>
-      </CardBody>
-    </Card>
+          <p className="text-sm leading-6 app-text-muted">{description}</p>
+        </CardBody>
+      </Card>
+    </div>
   );
 }

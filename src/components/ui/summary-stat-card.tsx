@@ -62,6 +62,27 @@ function getToneClasses(tone: SummaryStatCardTone) {
   }
 }
 
+function SummaryStatMarker() {
+  if (!SHOW_UI_DEBUG) return null;
+
+  return (
+    <DevComponentMarker
+      componentName="SummaryStatCard"
+      filePath="src/components/ui/summary-stat-card.tsx"
+      tier="semantic"
+      componentRole="Premium metric and summary card"
+      bestFor="Dashboards, admin overview stats, teacher review queues, student progress summaries, and compact KPI rows."
+      usageExamples={[
+        "Dashboard metrics",
+        "Assignments to review",
+        "Completed lessons count",
+        "Locked content summary",
+      ]}
+      notes="Use for meaningful numbers and snapshot metrics. Avoid using it for ordinary descriptive content where Card, PanelCard, or InfoRow would be clearer."
+    />
+  );
+}
+
 export default function SummaryStatCard({
   title,
   value,
@@ -77,147 +98,113 @@ export default function SummaryStatCard({
 
   if (layout === "inline") {
     return (
-      <Card
-        className={["dev-marker-host", toneClasses.card, className]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        {SHOW_UI_DEBUG ? (
-          <DevComponentMarker
-            componentName="SummaryStatCard"
-            filePath="src/components/ui/summary-stat-card.tsx"
-            tier="container"
-            componentRole="Premium metric and summary card"
-            bestFor="Dashboards, admin overview stats, teacher review queues, student progress summaries, and compact KPI rows."
-            usageExamples={[
-              "Dashboard metrics",
-              "Assignments to review",
-              "Completed lessons count",
-              "Locked content summary",
-            ]}
-            notes="Use layout='inline' for tighter admin snapshots and overview rows."
-          />
-        ) : null}
+      <div className="dev-marker-host relative">
+        <SummaryStatMarker />
 
-        <CardBody className={compact ? "p-3.5" : "p-4"}>
-          <div className="flex items-center gap-3">
-            {icon ? (
-              <span
-                className={[
-                  "flex shrink-0 items-center justify-center rounded-2xl",
-                  compact ? "h-9 w-9" : "h-10 w-10",
-                  toneClasses.iconWrap,
-                ].join(" ")}
-              >
-                <AppIcon icon={icon} size={compact ? 16 : 18} />
-              </span>
-            ) : null}
+        <Card className={[toneClasses.card, className].filter(Boolean).join(" ")}>
+          <CardBody className={compact ? "px-4 py-3.5" : "p-4"}>
+            <div className="flex items-center gap-3">
+              {icon ? (
+                <span
+                  className={[
+                    "flex shrink-0 items-center justify-center rounded-2xl",
+                    compact ? "h-9 w-9" : "h-10 w-10",
+                    toneClasses.iconWrap,
+                  ].join(" ")}
+                >
+                  <AppIcon icon={icon} size={compact ? 16 : 18} />
+                </span>
+              ) : null}
 
-            <div className="min-w-0 flex flex-1 items-center gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="truncate text-sm font-medium text-[var(--text-primary)]">
-                    {title}
-                  </div>
+              <div className="min-w-0 flex flex-1 items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="truncate text-sm font-medium text-[var(--text-primary)]">
+                      {title}
+                    </div>
 
-                  <div
-                    className={[
-                      "shrink-0 font-semibold tracking-[-0.03em]",
-                      compact ? "text-[1.35rem]" : "text-[1.5rem]",
-                      toneClasses.value,
-                    ].join(" ")}
-                  >
-                    {value}
+                    <div
+                      className={[
+                        "shrink-0 font-semibold tracking-[-0.03em]",
+                        compact ? "text-[1.35rem]" : "text-[1.5rem]",
+                        toneClasses.value,
+                      ].join(" ")}
+                    >
+                      {value}
+                    </div>
+
+                    {description ? (
+                      <p className="hidden min-w-0 truncate text-sm app-text-muted lg:block">
+                        {description}
+                      </p>
+                    ) : null}
                   </div>
 
                   {description ? (
-                    <p className="hidden min-w-0 truncate text-sm app-text-muted lg:block">
-                      {description}
-                    </p>
+                    <p className="mt-1 text-sm app-text-muted lg:hidden">{description}</p>
                   ) : null}
                 </div>
 
-                {description ? (
-                  <p className="mt-1 text-sm app-text-muted lg:hidden">{description}</p>
-                ) : null}
+                {badge ? <div className="shrink-0">{badge}</div> : null}
               </div>
-
-              {badge ? <div className="shrink-0">{badge}</div> : null}
             </div>
-          </div>
-        </CardBody>
-      </Card>
+          </CardBody>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card
-      className={["dev-marker-host", toneClasses.card, className]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="SummaryStatCard"
-          filePath="src/components/ui/summary-stat-card.tsx"
-          tier="container"
-          componentRole="Premium metric and summary card"
-          bestFor="Dashboards, admin overview stats, teacher review queues, student progress summaries, and compact KPI rows."
-          usageExamples={[
-            "Dashboard metrics",
-            "Assignments to review",
-            "Completed lessons count",
-            "Locked content summary",
-          ]}
-          notes="Prefer this over flatter dashboard metric cards when the page needs a strong premium stat pattern."
-        />
-      ) : null}
+    <div className="dev-marker-host relative">
+      <SummaryStatMarker />
 
-      <CardBody className={compact ? "p-4" : "p-5"}>
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-medium text-[var(--text-secondary)]">
-              {title}
+      <Card className={[toneClasses.card, className].filter(Boolean).join(" ")}>
+        <CardBody className={compact ? "p-4" : "p-5"}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-medium text-[var(--text-secondary)]">
+                {title}
+              </div>
+
+              <div
+                className={[
+                  "mt-2 font-semibold tracking-[-0.03em]",
+                  compact ? "text-[1.75rem]" : "text-[2rem]",
+                  toneClasses.value,
+                ].join(" ")}
+              >
+                {value}
+              </div>
             </div>
 
-            <div
-              className={[
-                "mt-2 font-semibold tracking-[-0.03em]",
-                compact ? "text-[1.75rem]" : "text-[2rem]",
-                toneClasses.value,
-              ].join(" ")}
-            >
-              {value}
-            </div>
+            {icon ? (
+              <span
+                className={[
+                  "flex shrink-0 items-center justify-center rounded-2xl",
+                  compact ? "h-10 w-10" : "h-11 w-11",
+                  toneClasses.iconWrap,
+                ].join(" ")}
+              >
+                <AppIcon icon={icon} size={compact ? 18 : 20} />
+              </span>
+            ) : null}
           </div>
 
-          {icon ? (
-            <span
-              className={[
-                "flex shrink-0 items-center justify-center rounded-2xl",
-                compact ? "h-10 w-10" : "h-11 w-11",
-                toneClasses.iconWrap,
-              ].join(" ")}
-            >
-              <AppIcon icon={icon} size={compact ? 18 : 20} />
-            </span>
+          {description || badge ? (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              {description ? (
+                <p className="min-w-0 flex-1 text-sm leading-6 app-text-muted">
+                  {description}
+                </p>
+              ) : (
+                <div />
+              )}
+
+              {badge ? <div className="shrink-0">{badge}</div> : null}
+            </div>
           ) : null}
-        </div>
-
-        {description || badge ? (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            {description ? (
-              <p className="min-w-0 flex-1 text-sm leading-6 app-text-muted">
-                {description}
-              </p>
-            ) : (
-              <div />
-            )}
-
-            {badge ? <div className="shrink-0">{badge}</div> : null}
-          </div>
-        ) : null}
-      </CardBody>
-    </Card>
+        </CardBody>
+      </Card>
+    </div>
   );
 }

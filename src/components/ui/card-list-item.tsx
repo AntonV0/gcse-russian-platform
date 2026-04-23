@@ -28,10 +28,16 @@ function CardListItemContent({
         {icon ? <div className="mt-0.5 shrink-0">{icon}</div> : null}
 
         <div className="min-w-0">
-          <div className="font-medium text-[var(--text-primary)]">{title}</div>
+          <div className="font-semibold leading-6 text-[var(--text-primary)]">
+            {title}
+          </div>
+
           {subtitle ? (
-            <div className="mt-1 text-sm app-text-muted">{subtitle}</div>
+            <div className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+              {subtitle}
+            </div>
           ) : null}
+
           {badges ? <div className="mt-3 flex flex-wrap gap-2">{badges}</div> : null}
         </div>
       </div>
@@ -39,7 +45,7 @@ function CardListItemContent({
   );
 }
 
-function CardListItemInner({
+export default function CardListItem({
   title,
   subtitle,
   badges,
@@ -53,32 +59,43 @@ function CardListItemInner({
   );
 
   return (
-    <Card
-      interactive={Boolean(href)}
-      className={["dev-marker-host", "p-4", className].filter(Boolean).join(" ")}
-    >
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="CardListItem"
           filePath="src/components/ui/card-list-item.tsx"
+          tier="semantic"
+          componentRole="Reusable card-style list row"
+          bestFor="Dashboard lists, course/module rows, assignment entries, compact navigation cards, and rows with optional actions."
+          usageExamples={[
+            "Course overview item",
+            "Assignment list row",
+            "Recent activity card row",
+            "Module or lesson list item",
+          ]}
+          notes="Use for card-based lists where each item needs title, subtitle, badges, and actions. Use AdminRow for denser admin management rows."
         />
       ) : null}
 
-      <div className="flex items-start justify-between gap-4">
-        {href ? (
-          <Link href={href} className="block min-w-0 flex-1">
-            {content}
-          </Link>
-        ) : (
-          content
-        )}
+      <Card
+        interactive={Boolean(href)}
+        className={["p-4", className].filter(Boolean).join(" ")}
+      >
+        <div className="flex items-start justify-between gap-4">
+          {href ? (
+            <Link
+              href={href}
+              className="app-focus-ring -m-2 block min-w-0 flex-1 rounded-xl p-2"
+            >
+              {content}
+            </Link>
+          ) : (
+            content
+          )}
 
-        {actions ? <div className="shrink-0">{actions}</div> : null}
-      </div>
-    </Card>
+          {actions ? <div className="shrink-0">{actions}</div> : null}
+        </div>
+      </Card>
+    </div>
   );
-}
-
-export default function CardListItem(props: CardListItemProps) {
-  return <CardListItemInner {...props} />;
 }

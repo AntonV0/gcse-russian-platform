@@ -19,13 +19,16 @@ function getStateClass(state: NonNullable<AdminRowProps["state"]>) {
   switch (state) {
     case "hover":
       return "border-[var(--border-strong)] bg-[var(--background-muted)] shadow-[0_10px_20px_rgba(16,32,51,0.06)]";
+
     case "selected":
-      return "border-[rgba(37,99,235,0.22)] bg-[rgba(37,99,235,0.08)] shadow-[0_10px_20px_rgba(37,99,235,0.08)]";
+      return "border-[rgba(37,99,235,0.24)] bg-[rgba(37,99,235,0.08)] shadow-[0_10px_20px_rgba(37,99,235,0.08)]";
+
     case "disabled":
-      return "opacity-60";
+      return "border-[var(--border-subtle)] bg-[var(--background-muted)] opacity-60";
+
     case "default":
     default:
-      return "border-[var(--border)] bg-[var(--background-elevated)]";
+      return "border-[var(--border-subtle)] bg-[var(--background-elevated)]";
   }
 }
 
@@ -45,12 +48,22 @@ export default function AdminRow({
         <DevComponentMarker
           componentName="AdminRow"
           filePath="src/components/ui/admin-row.tsx"
+          tier="semantic"
+          componentRole="Dense admin management row"
+          bestFor="Admin tables, draggable lists, nested lesson/module rows, CMS management lists, and rows with inline status/actions."
+          usageExamples={[
+            "Course variant row",
+            "Lesson builder section row",
+            "Question set admin row",
+            "Nested module or block row",
+          ]}
+          notes="Use for admin/CMS rows where scanning and actions matter. Use CardListItem for more spacious student-facing or dashboard list items."
         />
       ) : null}
 
       <div
         className={[
-          "rounded-2xl border",
+          "rounded-2xl border transition-[border-color,background-color,box-shadow,opacity]",
           compact ? "px-3 py-2.5" : "px-4 py-3",
           nested ? "rounded-xl" : "",
           getStateClass(state),
@@ -61,14 +74,19 @@ export default function AdminRow({
       >
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="font-medium text-[var(--text-primary)]">{title}</div>
+            <div className="font-semibold leading-6 text-[var(--text-primary)]">
+              {title}
+            </div>
+
             {description ? (
-              <div className="mt-1 text-sm app-text-muted">{description}</div>
+              <div className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                {description}
+              </div>
             ) : null}
           </div>
 
           {badges || actions ? (
-            <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
               {badges}
               {actions}
             </div>
