@@ -26,7 +26,12 @@ export default async function RootLayout({
   try {
     const stored = localStorage.getItem("theme");
     const system = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const theme = stored || (system ? "dark" : "light");
+    const theme =
+      stored === "light" || stored === "dark"
+        ? stored
+        : system
+          ? "dark"
+          : "light";
     document.documentElement.setAttribute("data-theme", theme);
   } catch (e) {}
 })();
