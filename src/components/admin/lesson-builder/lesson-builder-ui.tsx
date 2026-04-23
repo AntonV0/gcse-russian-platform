@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
-import Card, { CardBody } from "@/components/ui/card";
 import PanelCard from "@/components/ui/panel-card";
-import SummaryStatCard from "@/components/ui/summary-stat-card";
 import BadgePrimitive from "@/components/ui/badge";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
 
@@ -71,7 +69,7 @@ export function Badge({
   tone = "default",
 }: {
   children: React.ReactNode;
-  tone?: "default" | "success" | "muted" | "warning";
+  tone?: "default" | "success" | "muted" | "warning" | "info";
 }) {
   const mappedTone =
     tone === "success"
@@ -80,13 +78,11 @@ export function Badge({
         ? "warning"
         : tone === "muted"
           ? "muted"
-          : "info";
+          : tone === "info"
+            ? "info"
+            : "default";
 
   return <BadgePrimitive tone={mappedTone}>{children}</BadgePrimitive>;
-}
-
-export function StatCard({ label, value }: { label: string; value: string | number }) {
-  return <SummaryStatCard title={label} value={value} compact className="h-full" />;
 }
 
 export function Panel({
@@ -138,20 +134,21 @@ export function DragHandle({
   label,
   tone = "default",
 }: {
-  label: string;
+  label?: string;
   tone?: "default" | "active";
 }) {
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium ${
         tone === "active"
           ? "border-[rgba(37,99,235,0.18)] bg-[var(--info-soft)] text-[var(--info)]"
           : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]"
       }`}
       aria-hidden="true"
+      title={label}
     >
       <span className="tracking-tight">⋮⋮</span>
-      <span>{label}</span>
+      {label ? <span>{label}</span> : null}
     </div>
   );
 }

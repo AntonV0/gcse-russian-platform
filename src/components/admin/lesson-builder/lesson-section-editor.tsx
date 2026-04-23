@@ -24,11 +24,7 @@ import {
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import { updateSectionAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import { SECTION_KIND_OPTIONS } from "@/components/admin/lesson-builder/lesson-builder-types";
-import {
-  getLessonBlockGroupLabel,
-  getLessonBlockLabel,
-  getLessonBlockPreview,
-} from "@/lib/lessons/lesson-blocks";
+import { getLessonBlockLabel, getLessonBlockPreview } from "@/lib/lessons/lesson-blocks";
 
 const VARIANT_VISIBILITY_OPTIONS = [
   { value: "shared", label: "Shared" },
@@ -78,13 +74,8 @@ export default function LessonSectionEditor(props: {
 
     const typeLabel = getLessonBlockLabel(block.block_type).toLowerCase();
     const preview = getLessonBlockPreview(block).toLowerCase();
-    const groupLabel = getLessonBlockGroupLabel(block.block_type).toLowerCase();
 
-    return (
-      typeLabel.includes(normalizedQuery) ||
-      preview.includes(normalizedQuery) ||
-      groupLabel.includes(normalizedQuery)
-    );
+    return typeLabel.includes(normalizedQuery) || preview.includes(normalizedQuery);
   });
 
   const blockTypeCounts = section.blocks.reduce<Record<string, number>>((acc, block) => {
@@ -146,6 +137,79 @@ export default function LessonSectionEditor(props: {
                 ))}
             </div>
           ) : null}
+        </div>
+      </Panel>
+
+      <div id="add-block-composer">
+        <Panel
+          title="Create a new block"
+          description="Choose a block type, then fill in the form. This is the main place to add new lesson content."
+        >
+          <AddBlockComposer
+            section={section}
+            routeFields={props.routeFields}
+            blockPresetOptions={props.templateOptions.blockPresets}
+            vocabularySetOptions={props.vocabularySetOptions}
+          />
+        </Panel>
+      </div>
+
+      <Panel title="Blocks" description="Select a block to edit it in the inspector.">
+        <div className="space-y-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="text-sm app-text-muted">
+              Showing {filteredBlocks.length} of {section.blocks.length} block
+              {section.blocks.length === 1 ? "" : "s"}
+            </div>
+
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                value={props.blockSearch}
+                onChange={(event) => props.onBlockSearchChange(event.target.value)}
+                placeholder="Search blocks..."
+                className={`${BUILDER_FIELD_CLASS} sm:w-64`}
+              />
+              <button
+                type="button"
+                onClick={props.onJumpToAddBlock}
+                className={BUILDER_SECONDARY_BUTTON_CLASS}
+              >
+                Jump to block creator
+              </button>
+            </div>
+          </div>
+
+          <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
+            Drag a block to reorder it within this section, or drag it onto a section in
+            the left sidebar to move it there.
+          </div>
+
+          {section.blocks.length === 0 ? (
+            <div className={`${BUILDER_DASHED_EMPTY_STATE_CLASS} py-8`}>
+              <div className="mb-2">No blocks in this section yet.</div>
+              <button
+                type="button"
+                onClick={props.onJumpToAddBlock}
+                className={BUILDER_SECONDARY_BUTTON_CLASS}
+              >
+                Create your first block
+              </button>
+            </div>
+          ) : filteredBlocks.length === 0 ? (
+            <div className={`${BUILDER_DASHED_EMPTY_STATE_CLASS} py-8`}>
+              No blocks match your search.
+            </div>
+          ) : (
+            <DraggableBlockList
+              section={section}
+              filteredBlocks={filteredBlocks}
+              routeFields={props.routeFields}
+              selectedBlockId={props.selectedBlockId}
+              onSelectBlock={props.onSelectBlock}
+              onBlockDragStart={props.onBlockDragStart}
+              onBlockDragEnd={props.onBlockDragEnd}
+            />
+          )}
         </div>
       </Panel>
 
@@ -212,79 +276,6 @@ export default function LessonSectionEditor(props: {
           </div>
         </form>
       </CompactDisclosure>
-
-      <div id="add-block-composer">
-        <Panel
-          title="Create a new block"
-          description="Choose a block type, then fill in the form. This is the main place to add new lesson content."
-        >
-          <AddBlockComposer
-            section={section}
-            routeFields={props.routeFields}
-            blockPresetOptions={props.templateOptions.blockPresets}
-            vocabularySetOptions={props.vocabularySetOptions}
-          />
-        </Panel>
-      </div>
-
-      <Panel title="Blocks" description="Select a block to edit it in the inspector.">
-        <div className="space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm app-text-muted">
-              Showing {filteredBlocks.length} of {section.blocks.length} block
-              {section.blocks.length === 1 ? "" : "s"}
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                value={props.blockSearch}
-                onChange={(event) => props.onBlockSearchChange(event.target.value)}
-                placeholder="Search blocks..."
-                className={`${BUILDER_FIELD_CLASS} sm:w-64`}
-              />
-              <button
-                type="button"
-                onClick={props.onJumpToAddBlock}
-                className={BUILDER_SECONDARY_BUTTON_CLASS}
-              >
-                Jump to block creator
-              </button>
-            </div>
-          </div>
-
-          <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
-            Drag a block to reorder it within this section, or drag it onto a section in
-            the left sidebar to move it there.
-          </div>
-
-          {section.blocks.length === 0 ? (
-            <div className={`${BUILDER_DASHED_EMPTY_STATE_CLASS} py-8`}>
-              <div className="mb-2">No blocks in this section yet.</div>
-              <button
-                type="button"
-                onClick={props.onJumpToAddBlock}
-                className={BUILDER_SECONDARY_BUTTON_CLASS}
-              >
-                Create your first block
-              </button>
-            </div>
-          ) : filteredBlocks.length === 0 ? (
-            <div className={`${BUILDER_DASHED_EMPTY_STATE_CLASS} py-8`}>
-              No blocks match your search.
-            </div>
-          ) : (
-            <DraggableBlockList
-              section={section}
-              filteredBlocks={filteredBlocks}
-              routeFields={props.routeFields}
-              selectedBlockId={props.selectedBlockId}
-              onSelectBlock={props.onSelectBlock}
-              onBlockDragStart={props.onBlockDragStart}
-              onBlockDragEnd={props.onBlockDragEnd}
-            />
-          )}
-        </div>
-      </Panel>
     </div>
   );
 }
