@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { ChevronDown, ChevronUp, Copy, Eye, EyeOff, GripVertical } from "lucide-react";
 import {
   duplicateBlockAction,
   moveBlockAction,
@@ -16,9 +17,7 @@ import type {
 import {
   Badge,
   BuilderHiddenFields,
-  DragHandle,
   buildLessonBuilderRouteFormData,
-  BUILDER_SECONDARY_BUTTON_CLASS,
   BUILDER_MUTED_INFO_BOX_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import {
@@ -27,6 +26,30 @@ import {
   getLessonBlockLabel,
   getLessonBlockPreview,
 } from "@/lib/lessons/lesson-blocks";
+
+function BlockIconButton({
+  children,
+  ariaLabel,
+  title,
+  disabled,
+}: {
+  children: React.ReactNode;
+  ariaLabel: string;
+  title: string;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="submit"
+      aria-label={ariaLabel}
+      title={title}
+      disabled={disabled}
+      className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] transition-[background-color,border-color,box-shadow] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] disabled:opacity-50"
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function DraggableBlockList(props: {
   section: LessonSection;
@@ -64,7 +87,7 @@ export default function DraggableBlockList(props: {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {isPending ? (
         <div className={BUILDER_MUTED_INFO_BOX_CLASS}>Saving block order...</div>
       ) : null}
@@ -111,122 +134,114 @@ export default function DraggableBlockList(props: {
               props.onBlockDragEnd();
             }}
             className={[
-              "overflow-hidden rounded-[1.25rem] border transition-[border-color,box-shadow,background-color,transform]",
+              "overflow-hidden rounded-[1rem] border transition-[border-color,box-shadow,background-color,transform]",
               isSelected
-                ? "border-[var(--brand-blue)] bg-[linear-gradient(135deg,rgba(37,99,235,0.08)_0%,rgba(255,255,255,0.98)_100%)] shadow-[0_14px_30px_rgba(37,99,235,0.12)]"
-                : "border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]/35 hover:shadow-[0_12px_24px_rgba(16,32,51,0.08)]",
+                ? "border-[var(--brand-blue)] bg-[linear-gradient(135deg,rgba(37,99,235,0.18)_0%,var(--background-elevated)_100%)] shadow-[0_8px_18px_rgba(37,99,235,0.18)]"
+                : "border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]/35 hover:shadow-[0_8px_18px_rgba(16,32,51,0.06)]",
               isDropTarget ? "ring-2 ring-blue-300" : "",
               isPending ? "opacity-70" : "",
             ].join(" ")}
           >
-            <button
-              type="button"
-              onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
-              className="w-full px-4 py-4 text-left"
-            >
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                  <div className="min-w-0 space-y-2">
-                    <DragHandle
-                      label="Drag block"
-                      tone={isDropTarget ? "active" : "default"}
-                    />
+            <div className="flex items-start gap-2 px-3 py-2.5">
+              <button
+                type="button"
+                onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
+                className="min-w-0 flex-1 text-left"
+              >
+                <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+                  <span
+                    className="inline-flex h-5 w-5 items-center justify-center text-[var(--text-muted)]"
+                    aria-hidden="true"
+                  >
+                    <GripVertical size={14} />
+                  </span>
 
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
-                          block.block_type
-                        )}`}
-                      >
-                        {getLessonBlockGroupLabel(block.block_type)}
-                      </span>
+                  <span className="text-sm font-semibold text-[var(--text-primary)]">
+                    {getLessonBlockLabel(block.block_type)}
+                  </span>
 
-                      <span className="font-semibold text-[var(--text-primary)]">
-                        {getLessonBlockLabel(block.block_type)}
-                      </span>
+                  <span
+                    className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold ${getLessonBlockAccentClass(
+                      block.block_type
+                    )}`}
+                  >
+                    {getLessonBlockGroupLabel(block.block_type)}
+                  </span>
 
-                      <Badge tone={block.is_published ? "success" : "warning"}>
-                        {block.is_published ? "Published" : "Draft"}
-                      </Badge>
+                  <Badge tone={block.is_published ? "success" : "warning"}>
+                    {block.is_published ? "Published" : "Draft"}
+                  </Badge>
 
-                      <Badge tone="muted">Position {block.position}</Badge>
+                  <Badge tone="muted">Pos. {block.position}</Badge>
 
-                      {isSelected ? <Badge tone="default">Selected</Badge> : null}
-                    </div>
-
-                    <div className="line-clamp-2 break-words text-sm app-text-muted">
-                      {getLessonBlockPreview(block)}
-                    </div>
-                  </div>
+                  {isSelected ? <Badge tone="default">Selected</Badge> : null}
                 </div>
-              </div>
-            </button>
 
-            {isSelected ? (
-              <div className="border-t border-[var(--border)] bg-[var(--background-elevated)]/80 px-3 py-3">
-                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                  <form action={moveBlockAction}>
-                    <BuilderHiddenFields {...props.routeFields} />
-                    <input type="hidden" name="sectionId" value={props.section.id} />
-                    <input type="hidden" name="blockId" value={block.id} />
-                    <input type="hidden" name="direction" value="up" />
-                    <button
-                      type="submit"
-                      disabled={blockIndex === 0 || isPending}
-                      className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
-                    >
-                      Move up
-                    </button>
-                  </form>
-
-                  <form action={moveBlockAction}>
-                    <BuilderHiddenFields {...props.routeFields} />
-                    <input type="hidden" name="sectionId" value={props.section.id} />
-                    <input type="hidden" name="blockId" value={block.id} />
-                    <input type="hidden" name="direction" value="down" />
-                    <button
-                      type="submit"
-                      disabled={
-                        blockIndex === props.section.blocks.length - 1 || isPending
-                      }
-                      className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
-                    >
-                      Move down
-                    </button>
-                  </form>
-
-                  <form action={duplicateBlockAction}>
-                    <BuilderHiddenFields {...props.routeFields} />
-                    <input type="hidden" name="sectionId" value={props.section.id} />
-                    <input type="hidden" name="blockId" value={block.id} />
-                    <button
-                      type="submit"
-                      disabled={isPending}
-                      className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
-                    >
-                      Duplicate
-                    </button>
-                  </form>
-
-                  <form action={toggleBlockPublishedAction}>
-                    <BuilderHiddenFields {...props.routeFields} />
-                    <input type="hidden" name="blockId" value={block.id} />
-                    <input
-                      type="hidden"
-                      name="nextState"
-                      value={block.is_published ? "draft" : "published"}
-                    />
-                    <button
-                      type="submit"
-                      disabled={isPending}
-                      className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
-                    >
-                      {block.is_published ? "Unpublish" : "Publish"}
-                    </button>
-                  </form>
+                <div className="line-clamp-2 break-words text-sm leading-relaxed app-text-muted">
+                  {getLessonBlockPreview(block)}
                 </div>
+              </button>
+
+              <div className="grid shrink-0 grid-cols-2 gap-1.5 self-start">
+                <form action={duplicateBlockAction}>
+                  <BuilderHiddenFields {...props.routeFields} />
+                  <input type="hidden" name="sectionId" value={props.section.id} />
+                  <input type="hidden" name="blockId" value={block.id} />
+                  <BlockIconButton
+                    ariaLabel="Duplicate block"
+                    title="Duplicate block"
+                    disabled={isPending}
+                  >
+                    <Copy size={13} />
+                  </BlockIconButton>
+                </form>
+
+                <form action={toggleBlockPublishedAction}>
+                  <BuilderHiddenFields {...props.routeFields} />
+                  <input type="hidden" name="blockId" value={block.id} />
+                  <input
+                    type="hidden"
+                    name="nextState"
+                    value={block.is_published ? "draft" : "published"}
+                  />
+                  <BlockIconButton
+                    ariaLabel={block.is_published ? "Unpublish block" : "Publish block"}
+                    title={block.is_published ? "Unpublish block" : "Publish block"}
+                    disabled={isPending}
+                  >
+                    {block.is_published ? <EyeOff size={13} /> : <Eye size={13} />}
+                  </BlockIconButton>
+                </form>
+
+                <form action={moveBlockAction}>
+                  <BuilderHiddenFields {...props.routeFields} />
+                  <input type="hidden" name="sectionId" value={props.section.id} />
+                  <input type="hidden" name="blockId" value={block.id} />
+                  <input type="hidden" name="direction" value="up" />
+                  <BlockIconButton
+                    ariaLabel="Move block up"
+                    title="Move block up"
+                    disabled={blockIndex === 0 || isPending}
+                  >
+                    <ChevronUp size={14} />
+                  </BlockIconButton>
+                </form>
+
+                <form action={moveBlockAction}>
+                  <BuilderHiddenFields {...props.routeFields} />
+                  <input type="hidden" name="sectionId" value={props.section.id} />
+                  <input type="hidden" name="blockId" value={block.id} />
+                  <input type="hidden" name="direction" value="down" />
+                  <BlockIconButton
+                    ariaLabel="Move block down"
+                    title="Move block down"
+                    disabled={blockIndex === props.section.blocks.length - 1 || isPending}
+                  >
+                    <ChevronDown size={14} />
+                  </BlockIconButton>
+                </form>
               </div>
-            ) : null}
+            </div>
           </div>
         );
       })}
