@@ -269,8 +269,8 @@ function AddVocabularySetBlockForm(props: {
 
   if (props.vocabularySetOptions.length === 0) {
     return (
-      <div className="space-y-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--background-elevated)] px-4 py-5">
-        <div className="text-sm font-medium text-[var(--text-primary)]">
+      <div className="space-y-3 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-elevated)] px-4 py-5">
+        <div className="text-sm font-semibold text-[var(--text-primary)]">
           No attachable vocabulary sets yet
         </div>
         <p className="text-sm text-[var(--text-secondary)]">
@@ -310,7 +310,7 @@ function AddVocabularySetBlockForm(props: {
         </select>
 
         {selectedVocabularySet ? (
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/50 px-3 py-3 text-sm">
+          <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
             <div className="font-medium text-[var(--text-primary)]">
               {selectedVocabularySet.title}
             </div>
@@ -356,10 +356,10 @@ function BlockTypeButton(props: {
     <button
       type="button"
       onClick={() => props.onSelect(props.value)}
-      className={`rounded-xl border px-3 py-2 text-left text-sm transition ${
+      className={`rounded-xl border px-3 py-2 text-left text-sm font-medium transition ${
         isSelected
-          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
-          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:bg-[var(--background-muted)]"
+          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white shadow-[0_10px_22px_rgba(37,99,235,0.18)]"
+          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]"
       }`}
     >
       {props.label}
@@ -422,14 +422,14 @@ export default function AddBlockComposer(props: {
               <form
                 key={preset.id}
                 action={insertBlockPresetAction}
-                className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/50 p-4"
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/45 p-4"
               >
                 <BuilderHiddenFields {...props.routeFields} />
                 <input type="hidden" name="sectionId" value={props.section.id} />
                 <input type="hidden" name="presetId" value={preset.id} />
 
                 <div className="mb-3">
-                  <div className="font-medium text-[var(--text-primary)]">
+                  <div className="font-semibold text-[var(--text-primary)]">
                     {preset.label}
                   </div>
                   <div className="text-sm app-text-muted">{preset.description}</div>

@@ -25,6 +25,10 @@ import {
   Panel,
   PendingStatusText,
   PendingSubmitButton,
+  BUILDER_DASHED_EMPTY_STATE_CLASS,
+  BUILDER_MUTED_INFO_BOX_CLASS,
+  BUILDER_SECONDARY_BUTTON_CLASS,
+  BUILDER_SELECT_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import {
   getLessonBlockAccentClass,
@@ -46,9 +50,7 @@ export default function LessonInspectorPanel(props: {
   if (!props.section) {
     return (
       <Panel title="Inspector" description="Select a section to begin editing.">
-        <div className="rounded-xl border border-dashed bg-gray-50 px-4 py-8 text-sm text-gray-500">
-          No section selected yet.
-        </div>
+        <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>No section selected yet.</div>
       </Panel>
     );
   }
@@ -57,7 +59,7 @@ export default function LessonInspectorPanel(props: {
     return (
       <Panel title="Block inspector" description="Edit the selected block.">
         <div className="space-y-4">
-          <div className="rounded-xl border bg-gray-50 p-4">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/45 p-4">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <span
                 className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
@@ -67,7 +69,7 @@ export default function LessonInspectorPanel(props: {
                 {getLessonBlockGroupLabel(props.block.block_type)}
               </span>
 
-              <span className="font-medium text-gray-900">
+              <span className="font-semibold text-[var(--text-primary)]">
                 {getLessonBlockLabel(props.block.block_type)}
               </span>
 
@@ -78,15 +80,16 @@ export default function LessonInspectorPanel(props: {
 
             <div className="space-y-2 text-sm">
               <div>
-                <span className="font-medium">Position:</span> {props.block.position}
+                <span className="font-medium text-[var(--text-primary)]">Position:</span>{" "}
+                <span className="app-text-muted">{props.block.position}</span>
               </div>
-              <div className="rounded-lg bg-white px-3 py-2 text-gray-600 break-words">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-3 break-words app-text-muted">
                 {getLessonBlockPreview(props.block)}
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl border bg-gray-50 p-3">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/35 p-3">
             <BlockEditPanel
               block={props.block}
               routeFields={props.routeFields}
@@ -94,8 +97,8 @@ export default function LessonInspectorPanel(props: {
             />
           </div>
 
-          <div className="rounded-xl border bg-white p-3">
-            <div className="mb-2 text-sm font-medium text-gray-900">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3">
+            <div className="mb-2 text-sm font-semibold text-[var(--text-primary)]">
               Move to another section
             </div>
 
@@ -107,7 +110,7 @@ export default function LessonInspectorPanel(props: {
               <select
                 name="targetSectionId"
                 defaultValue=""
-                className="w-full rounded-xl border px-3 py-2 text-sm"
+                className={BUILDER_SELECT_CLASS}
               >
                 <option value="" disabled>
                   Select target section
@@ -125,7 +128,7 @@ export default function LessonInspectorPanel(props: {
                 <PendingSubmitButton
                   idleLabel="Move block to section"
                   pendingLabel="Moving block..."
-                  className="w-full rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                  className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
                 />
                 <PendingStatusText pendingText="Moving block and reordering sections..." />
               </div>
@@ -141,7 +144,7 @@ export default function LessonInspectorPanel(props: {
               <button
                 type="submit"
                 disabled={props.blockIndex === 0}
-                className="w-full rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
+                className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
               >
                 Move block up
               </button>
@@ -155,7 +158,7 @@ export default function LessonInspectorPanel(props: {
               <button
                 type="submit"
                 disabled={props.blockIndex === props.section.blocks.length - 1}
-                className="w-full rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
+                className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
               >
                 Move block down
               </button>
@@ -167,7 +170,7 @@ export default function LessonInspectorPanel(props: {
               <input type="hidden" name="blockId" value={props.block.id} />
               <button
                 type="submit"
-                className="w-full rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+                className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
               >
                 Duplicate block
               </button>
@@ -183,7 +186,7 @@ export default function LessonInspectorPanel(props: {
               />
               <button
                 type="submit"
-                className="w-full rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+                className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
               >
                 {props.block.is_published ? "Unpublish block" : "Publish block"}
               </button>
@@ -196,7 +199,7 @@ export default function LessonInspectorPanel(props: {
                 confirmMessage={`Delete this ${getLessonBlockLabel(
                   props.block.block_type
                 ).toLowerCase()} block?`}
-                className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+                className="w-full rounded-xl border border-[rgba(194,59,59,0.28)] bg-[var(--danger-soft)] px-3 py-2 text-sm font-medium text-[var(--danger)] hover:border-[rgba(194,59,59,0.42)]"
               >
                 Delete block
               </ConfirmSubmitButton>
@@ -213,33 +216,39 @@ export default function LessonInspectorPanel(props: {
       description="Quick actions for the selected section."
     >
       <div className="space-y-4">
-        <div className="rounded-xl border bg-gray-50 p-4">
+        <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
           <div className="space-y-2 text-sm">
             <div>
-              <span className="font-medium">Section:</span> {props.section.title}
+              <span className="font-medium text-[var(--text-primary)]">Section:</span>{" "}
+              <span className="app-text-muted">{props.section.title}</span>
             </div>
             <div>
-              <span className="font-medium">Kind:</span> {props.section.section_kind}
+              <span className="font-medium text-[var(--text-primary)]">Kind:</span>{" "}
+              <span className="app-text-muted">{props.section.section_kind}</span>
             </div>
             <div>
-              <span className="font-medium">Position:</span> {props.section.position}
+              <span className="font-medium text-[var(--text-primary)]">Position:</span>{" "}
+              <span className="app-text-muted">{props.section.position}</span>
             </div>
             <div>
-              <span className="font-medium">Status:</span>{" "}
-              {props.section.is_published ? "Published" : "Draft"}
+              <span className="font-medium text-[var(--text-primary)]">Status:</span>{" "}
+              <span className="app-text-muted">
+                {props.section.is_published ? "Published" : "Draft"}
+              </span>
             </div>
             <div>
-              <span className="font-medium">Blocks:</span> {props.section.blocks.length}
+              <span className="font-medium text-[var(--text-primary)]">Blocks:</span>{" "}
+              <span className="app-text-muted">{props.section.blocks.length}</span>
             </div>
           </div>
         </div>
 
-        <div className="space-y-2 rounded-xl border border-dashed bg-white px-4 py-4 text-sm text-gray-500">
+        <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
           <div>Select a block in the center column to edit its content here.</div>
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="rounded-lg border px-3 py-2 text-xs text-gray-700 hover:bg-gray-50"
+            className={`mt-3 ${BUILDER_SECONDARY_BUTTON_CLASS}`}
           >
             Back to top
           </button>
@@ -253,7 +262,7 @@ export default function LessonInspectorPanel(props: {
             <button
               type="submit"
               disabled={props.sectionIndex === 0}
-              className="w-full rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
+              className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
             >
               Move section up
             </button>
@@ -266,7 +275,7 @@ export default function LessonInspectorPanel(props: {
             <button
               type="submit"
               disabled={props.sectionIndex === props.totalSections - 1}
-              className="w-full rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
+              className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
             >
               Move section down
             </button>
@@ -275,10 +284,7 @@ export default function LessonInspectorPanel(props: {
           <form action={duplicateSectionAction}>
             <BuilderHiddenFields {...props.routeFields} />
             <input type="hidden" name="sectionId" value={props.section.id} />
-            <button
-              type="submit"
-              className="w-full rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-            >
+            <button type="submit" className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}>
               Duplicate section
             </button>
           </form>
@@ -291,10 +297,7 @@ export default function LessonInspectorPanel(props: {
               name="nextState"
               value={props.section.is_published ? "draft" : "published"}
             />
-            <button
-              type="submit"
-              className="w-full rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-            >
+            <button type="submit" className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}>
               {props.section.is_published ? "Unpublish section" : "Publish section"}
             </button>
           </form>
@@ -304,7 +307,7 @@ export default function LessonInspectorPanel(props: {
             <input type="hidden" name="sectionId" value={props.section.id} />
             <ConfirmSubmitButton
               confirmMessage={`Delete section "${props.section.title}"? This will remove the section and all blocks inside it.`}
-              className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+              className="w-full rounded-xl border border-[rgba(194,59,59,0.28)] bg-[var(--danger-soft)] px-3 py-2 text-sm font-medium text-[var(--danger)] hover:border-[rgba(194,59,59,0.42)]"
             >
               Delete section
             </ConfirmSubmitButton>

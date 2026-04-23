@@ -20,6 +20,8 @@ import {
   ToolbarButton,
   usePersistentBoolean,
   BuilderHiddenFields,
+  BUILDER_DASHED_EMPTY_STATE_CLASS,
+  BUILDER_SECONDARY_BUTTON_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import { getLessonBlockLabel } from "@/lib/lessons/lesson-blocks";
 
@@ -168,8 +170,8 @@ export default function AdminLessonBuilderWorkspace({
   })();
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+    <div className="space-y-4">
+      <section className="grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
         <StatCard label="Sections" value={sections.length} />
         <StatCard label="Blocks" value={totalBlocks} />
         <StatCard label="Published sections" value={publishedSections} />
@@ -182,7 +184,7 @@ export default function AdminLessonBuilderWorkspace({
       >
         <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
           {templateOptions.lessonTemplates.length === 0 ? (
-            <div className="rounded-xl border border-dashed bg-white px-4 py-8 text-sm text-gray-500">
+            <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
               No DB lesson templates found yet.
             </div>
           ) : (
@@ -190,17 +192,21 @@ export default function AdminLessonBuilderWorkspace({
               <form
                 key={template.id}
                 action={insertLessonTemplateAction}
-                className="rounded-xl border p-4"
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/45 p-4 shadow-[0_1px_2px_rgba(16,32,51,0.04)]"
               >
                 <BuilderHiddenFields {...routeFields} />
                 <input type="hidden" name="templateId" value={template.id} />
 
-                <div className="mb-2">
-                  <div className="font-medium text-gray-900">{template.label}</div>
-                  <div className="text-sm text-gray-500">{template.description}</div>
+                <div className="mb-3">
+                  <div className="font-semibold text-[var(--text-primary)]">
+                    {template.label}
+                  </div>
+                  <div className="mt-1 text-sm app-text-muted">
+                    {template.description}
+                  </div>
                 </div>
 
-                <div className="mb-3 text-xs text-gray-500">
+                <div className="mb-3 text-xs app-text-soft">
                   {template.sectionsCount} section
                   {template.sectionsCount === 1 ? "" : "s"}
                 </div>
@@ -209,7 +215,7 @@ export default function AdminLessonBuilderWorkspace({
                   <PendingSubmitButton
                     idleLabel="Insert lesson template"
                     pendingLabel="Inserting lesson template..."
-                    className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+                    className={BUILDER_SECONDARY_BUTTON_CLASS}
                   />
                   <PendingStatusText pendingText="Creating sections and starter blocks..." />
                 </div>
@@ -219,14 +225,14 @@ export default function AdminLessonBuilderWorkspace({
         </div>
       </Panel>
 
-      <section className="sticky top-4 z-10 rounded-2xl border bg-white/95 p-3 shadow-sm backdrop-blur">
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+      <section className="sticky top-4 z-10 rounded-[1.4rem] border border-[var(--border)] bg-[rgba(255,255,255,0.92)] p-4 shadow-[0_10px_26px_rgba(16,32,51,0.10)] backdrop-blur-md">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0">
-            <div className="text-sm font-medium text-gray-900">
+            <div className="text-sm font-semibold text-[var(--text-primary)]">
               {selectedSection ? `Editing: ${selectedSection.title}` : "Lesson builder"}
             </div>
 
-            <div className="text-xs text-gray-500">
+            <div className="mt-1 text-sm app-text-muted">
               {selectedSection
                 ? `${selectedSection.blocks.length} block(s)${
                     selectedBlock
@@ -268,10 +274,10 @@ export default function AdminLessonBuilderWorkspace({
         </div>
       </section>
 
-      <section className={`grid items-start gap-6 ${layoutClass}`}>
+      <section className={`grid items-start gap-4 ${layoutClass}`}>
         {isSidebarOpen ? (
           <aside className="min-w-0 xl:sticky xl:top-24 xl:self-start">
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-sm">
+            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(37,99,235,0.03)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Sections</p>
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">
@@ -294,11 +300,11 @@ export default function AdminLessonBuilderWorkspace({
           </aside>
         ) : null}
 
-        <div className="min-w-0 space-y-6">
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/30 p-4 md:p-5 xl:p-6">
+        <div className="min-w-0">
+          <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(16,32,51,0.02)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)] md:p-5 xl:p-6">
             <div className="mb-4">
               <p className="text-xs uppercase tracking-wide app-text-soft">Builder</p>
-              <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
                 Lesson content
               </h2>
             </div>
@@ -321,7 +327,7 @@ export default function AdminLessonBuilderWorkspace({
 
         {isInspectorOpen ? (
           <aside className="min-w-0 xl:sticky xl:top-24 xl:self-start">
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-sm">
+            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(37,99,235,0.02)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Inspector</p>
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">

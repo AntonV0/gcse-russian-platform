@@ -2,26 +2,30 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
+import Card, { CardBody } from "@/components/ui/card";
+import PanelCard from "@/components/ui/panel-card";
+import SummaryStatCard from "@/components/ui/summary-stat-card";
+import BadgePrimitive from "@/components/ui/badge";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
 
 export const BUILDER_FIELD_CLASS =
-  "w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm";
+  "w-full rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-3.5 py-2.5 text-sm text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04),0_8px_18px_rgba(16,32,51,0.04)] transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-[var(--text-muted)] hover:border-[var(--border-strong)] focus:border-[var(--brand-blue)] focus:outline-none focus:ring-4 focus:ring-[rgba(37,99,235,0.12)]";
 
 export const BUILDER_TEXTAREA_CLASS = BUILDER_FIELD_CLASS;
 
 export const BUILDER_SELECT_CLASS = BUILDER_FIELD_CLASS;
 
 export const BUILDER_SECONDARY_BUTTON_CLASS =
-  "rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm transition hover:bg-[var(--background-muted)] disabled:opacity-60";
+  "inline-flex items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] transition-[background-color,border-color,box-shadow,transform] duration-200 hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] hover:shadow-[0_10px_20px_rgba(16,32,51,0.06)] disabled:cursor-not-allowed disabled:opacity-60";
 
 export const BUILDER_PRIMARY_BUTTON_CLASS =
-  "app-btn-base app-btn-primary rounded-lg px-3 py-2 text-sm disabled:opacity-60";
+  "app-focus-ring inline-flex items-center justify-center rounded-xl border border-transparent bg-[linear-gradient(135deg,#3b82f6_0%,#2563eb_58%,#1d4ed8_100%)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(37,99,235,0.22),0_3px_8px_rgba(37,99,235,0.12)] transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-[1px] hover:brightness-[1.05] hover:shadow-[0_16px_34px_rgba(37,99,235,0.28),0_5px_12px_rgba(37,99,235,0.16)] disabled:cursor-not-allowed disabled:opacity-60";
 
 export const BUILDER_DASHED_EMPTY_STATE_CLASS =
-  "rounded-xl border border-dashed border-[var(--border)] px-4 py-6 text-sm app-text-muted";
+  "rounded-2xl border border-dashed border-[var(--border)] bg-[linear-gradient(180deg,var(--background-elevated)_0%,var(--background-muted)_100%)] px-4 py-6 text-sm app-text-muted";
 
 export const BUILDER_MUTED_INFO_BOX_CLASS =
-  "rounded-xl border border-[var(--border)] bg-[var(--background-muted)]/50 px-3 py-3 text-sm";
+  "rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-4 py-3 text-sm text-[var(--text-secondary)]";
 
 export function BuilderHiddenFields(props: RouteFields) {
   return (
@@ -69,31 +73,20 @@ export function Badge({
   children: React.ReactNode;
   tone?: "default" | "success" | "muted" | "warning";
 }) {
-  const classes =
+  const mappedTone =
     tone === "success"
-      ? "border-green-200 bg-green-50 text-green-700"
+      ? "success"
       : tone === "warning"
-        ? "border-amber-200 bg-amber-50 text-amber-700"
+        ? "warning"
         : tone === "muted"
-          ? "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]"
-          : "border-blue-200 bg-[var(--info-soft)] text-[var(--info)]";
+          ? "muted"
+          : "info";
 
-  return (
-    <span
-      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${classes}`}
-    >
-      {children}
-    </span>
-  );
+  return <BadgePrimitive tone={mappedTone}>{children}</BadgePrimitive>;
 }
 
 export function StatCard({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="app-card p-4">
-      <div className="text-xs uppercase tracking-wide app-text-soft">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-[var(--text-primary)]">{value}</div>
-    </div>
-  );
+  return <SummaryStatCard title={label} value={value} compact className="h-full" />;
 }
 
 export function Panel({
@@ -106,16 +99,15 @@ export function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="app-card">
-      <div className="border-b border-[var(--border)] px-5 py-4">
-        <h3 className="font-semibold text-[var(--text-primary)]">{title}</h3>
-        {description ? (
-          <p className="mt-1 text-sm app-text-muted">{description}</p>
-        ) : null}
-      </div>
-
-      <div className="p-5">{children}</div>
-    </section>
+    <PanelCard
+      title={title}
+      description={description}
+      tone="default"
+      density="compact"
+      contentClassName="space-y-4"
+    >
+      {children}
+    </PanelCard>
   );
 }
 
@@ -151,9 +143,9 @@ export function DragHandle({
 }) {
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-[11px] ${
+      className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
         tone === "active"
-          ? "border-blue-300 bg-[var(--info-soft)] text-[var(--info)]"
+          ? "border-[rgba(37,99,235,0.18)] bg-[var(--info-soft)] text-[var(--info)]"
           : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]"
       }`}
       aria-hidden="true"
@@ -177,10 +169,10 @@ export function ToolbarButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+      className={`inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition ${
         isActive
-          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
-          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:bg-[var(--background-muted)]"
+          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white shadow-[0_10px_22px_rgba(37,99,235,0.18)]"
+          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]"
       }`}
     >
       {children}
@@ -236,7 +228,7 @@ export function CompactDisclosure({
   return (
     <details
       open={defaultOpen}
-      className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] shadow-sm [&_summary::-webkit-details-marker]:hidden"
+      className="overflow-hidden rounded-[1.25rem] border border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04),0_8px_18px_rgba(16,32,51,0.04)] [&_summary::-webkit-details-marker]:hidden"
     >
       <summary className="cursor-pointer select-none px-5 py-4 transition hover:bg-[var(--background-muted)]">
         <div className="font-semibold text-[var(--text-primary)]">{title}</div>
