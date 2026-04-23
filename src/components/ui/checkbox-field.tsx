@@ -24,11 +24,21 @@ export default function CheckboxField({
   className,
 }: CheckboxFieldProps) {
   return (
-    <div className={["dev-marker-host", className].filter(Boolean).join(" ")}>
+    <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="CheckboxField"
           filePath="src/components/ui/checkbox-field.tsx"
+          tier="semantic"
+          componentRole="Semantic checkbox field"
+          bestFor="Boolean form settings with a readable label and optional explanation."
+          usageExamples={[
+            "Published / visible toggles",
+            "Locked lesson setting",
+            "Admin feature flags",
+            "Assignment option checkboxes",
+          ]}
+          notes="Use CheckboxField for standalone boolean settings. Do not wrap it in FormField unless there is a very specific grouped-form reason."
         />
       ) : null}
 

@@ -36,12 +36,24 @@ export default function FormField({
 
   return (
     <div
-      className={["dev-marker-host app-form-field", className].filter(Boolean).join(" ")}
+      className={["dev-marker-host relative app-form-field", className]
+        .filter(Boolean)
+        .join(" ")}
     >
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="FormField"
           filePath="src/components/ui/form-field.tsx"
+          tier="semantic"
+          componentRole="Semantic form layout wrapper"
+          bestFor="Labelled form controls with description, required state, helper text, validation errors, or success messages."
+          usageExamples={[
+            "Admin edit forms",
+            "Lesson builder field groups",
+            "Course and module metadata forms",
+            "Student profile/settings forms",
+          ]}
+          notes="Use FormField around Input, Textarea, Select, or custom controls. Do not use it for checkbox rows; use CheckboxField for those."
         />
       ) : null}
 
