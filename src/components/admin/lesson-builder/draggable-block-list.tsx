@@ -19,6 +19,7 @@ import {
   DragHandle,
   buildLessonBuilderRouteFormData,
   BUILDER_SECONDARY_BUTTON_CLASS,
+  BUILDER_MUTED_INFO_BOX_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import {
   getLessonBlockAccentClass,
@@ -65,9 +66,7 @@ export default function DraggableBlockList(props: {
   return (
     <div className="space-y-3">
       {isPending ? (
-        <div className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
-          Saving block order...
-        </div>
+        <div className={BUILDER_MUTED_INFO_BOX_CLASS}>Saving block order...</div>
       ) : null}
 
       {props.filteredBlocks.map((block) => {
@@ -112,11 +111,11 @@ export default function DraggableBlockList(props: {
               props.onBlockDragEnd();
             }}
             className={[
-              "overflow-hidden rounded-2xl border transition",
+              "overflow-hidden rounded-[1.25rem] border transition-[border-color,box-shadow,background-color,transform]",
               isSelected
-                ? "border-[var(--brand-blue)] bg-[var(--brand-blue-soft)]/40 shadow-sm"
-                : "border-[var(--border)] bg-[var(--background-elevated)] hover:border-[var(--brand-blue)]/40 hover:shadow-sm",
-              isDropTarget ? "ring-2 ring-blue-300 shadow-md" : "",
+                ? "border-[var(--brand-blue)] bg-[linear-gradient(135deg,rgba(37,99,235,0.08)_0%,rgba(255,255,255,0.98)_100%)] shadow-[0_14px_30px_rgba(37,99,235,0.12)]"
+                : "border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]/35 hover:shadow-[0_12px_24px_rgba(16,32,51,0.08)]",
+              isDropTarget ? "ring-2 ring-blue-300" : "",
               isPending ? "opacity-70" : "",
             ].join(" ")}
           >
@@ -142,7 +141,7 @@ export default function DraggableBlockList(props: {
                         {getLessonBlockGroupLabel(block.block_type)}
                       </span>
 
-                      <span className="font-medium text-[var(--text-primary)]">
+                      <span className="font-semibold text-[var(--text-primary)]">
                         {getLessonBlockLabel(block.block_type)}
                       </span>
 

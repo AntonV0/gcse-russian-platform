@@ -19,6 +19,7 @@ import type {
 } from "@/components/admin/lesson-builder/lesson-builder-types";
 import { SECTION_KIND_OPTIONS } from "@/components/admin/lesson-builder/lesson-builder-types";
 import {
+  Badge,
   BuilderHiddenFields,
   DragHandle,
   Panel,
@@ -139,7 +140,7 @@ export default function LessonSectionSidebar(props: {
               className={BUILDER_FIELD_CLASS}
             />
 
-            <div className="text-xs text-gray-500">
+            <div className="text-xs app-text-soft">
               Showing {filteredSections.length} of {props.sections.length} section
               {props.sections.length === 1 ? "" : "s"}
               {isPending ? " · Saving..." : ""}
@@ -217,11 +218,15 @@ export default function LessonSectionSidebar(props: {
                     setDropTargetSectionId(null);
                     setBlockDropTargetSectionId(null);
                   }}
-                  className={`rounded-2xl border transition-shadow transition-colors ${
-                    isSelected ? "border-black bg-black text-white" : "bg-white"
-                  } ${isSectionDropTarget ? "ring-2 ring-blue-300 shadow-md" : ""} ${
-                    isBlockDropTarget ? "ring-2 ring-green-300 shadow-md" : ""
-                  } ${isPending ? "opacity-70" : ""}`}
+                  className={[
+                    "overflow-hidden rounded-[1.25rem] border transition-[border-color,box-shadow,background-color,transform]",
+                    isSelected
+                      ? "border-[var(--brand-blue)] bg-[linear-gradient(135deg,rgba(37,99,235,0.08)_0%,rgba(255,255,255,0.98)_100%)] shadow-[0_14px_28px_rgba(37,99,235,0.12)]"
+                      : "border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]/35 hover:shadow-[0_12px_24px_rgba(16,32,51,0.08)]",
+                    isSectionDropTarget ? "ring-2 ring-blue-300" : "",
+                    isBlockDropTarget ? "ring-2 ring-green-300" : "",
+                    isPending ? "opacity-70" : "",
+                  ].join(" ")}
                 >
                   <div className="flex items-start justify-between gap-3 px-4 py-4">
                     <button
@@ -241,59 +246,42 @@ export default function LessonSectionSidebar(props: {
                           }
                         />
 
-                        <span
-                          className={`rounded-full border px-2.5 py-1 text-[11px] ${
-                            isSelected
-                              ? "border-white/20 bg-white/10 text-white"
-                              : section.is_published
-                                ? "border-green-200 bg-green-50 text-green-700"
-                                : "border-amber-200 bg-amber-50 text-amber-700"
-                          }`}
-                        >
+                        <Badge tone={section.is_published ? "success" : "warning"}>
                           {section.is_published ? "Published" : "Draft"}
-                        </span>
+                        </Badge>
 
-                        <span
-                          className={`rounded-full border px-2.5 py-1 text-[11px] ${
-                            isSelected
-                              ? "border-white/20 bg-white/10 text-white"
-                              : "border-gray-200 bg-gray-50 text-gray-700"
-                          }`}
-                        >
+                        <Badge tone="muted">
                           {formatVariantVisibility(section.variant_visibility)}
-                        </span>
+                        </Badge>
                       </div>
 
-                      <div className="font-medium">
+                      <div className="font-semibold text-[var(--text-primary)]">
                         {section.position}. {section.title}
                       </div>
 
-                      <div
-                        className={`mt-1 text-xs ${isSelected ? "text-gray-200" : "text-gray-500"}`}
-                      >
+                      <div className="mt-1 text-xs app-text-soft">
                         {section.section_kind}
                       </div>
 
-                      <div
-                        className={`mt-3 text-[11px] ${isSelected ? "text-gray-200" : "text-gray-500"}`}
-                      >
-                        <span className="rounded-full border border-current/20 px-2.5 py-1">
+                      <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+                        <span className="rounded-full border border-[var(--border)] bg-[var(--background-muted)] px-2.5 py-1 text-[var(--text-secondary)]">
                           {publishedBlockCount}/{section.blocks.length} block(s) published
                         </span>
+                        {section.canonical_section_key ? (
+                          <span className="rounded-full border border-[var(--border)] bg-[var(--background-muted)] px-2.5 py-1 text-[var(--text-secondary)]">
+                            Shared key
+                          </span>
+                        ) : null}
                       </div>
 
                       {section.canonical_section_key ? (
-                        <div
-                          className={`mt-2 text-[11px] ${isSelected ? "text-gray-200" : "text-gray-500"}`}
-                        >
-                          Shared key: {section.canonical_section_key}
+                        <div className="mt-2 text-[11px] app-text-soft">
+                          {section.canonical_section_key}
                         </div>
                       ) : null}
 
                       {isBlockDropTarget ? (
-                        <div
-                          className={`mt-2 text-xs font-medium ${isSelected ? "text-green-200" : "text-green-700"}`}
-                        >
+                        <div className="mt-2 text-xs font-medium text-green-700">
                           Drop block here to move it into this section
                         </div>
                       ) : null}
@@ -309,11 +297,7 @@ export default function LessonSectionSidebar(props: {
                           disabled={
                             actualIndex === 0 || isPending || !!props.draggedBlockContext
                           }
-                          className={`flex h-9 w-9 items-center justify-center rounded-lg border text-sm disabled:opacity-50 ${
-                            isSelected
-                              ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
-                              : "bg-white hover:bg-gray-50"
-                          }`}
+                          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:bg-[var(--background-muted)] disabled:opacity-50"
                           aria-label="Move section up"
                           title="Move section up"
                         >
@@ -332,11 +316,7 @@ export default function LessonSectionSidebar(props: {
                             isPending ||
                             !!props.draggedBlockContext
                           }
-                          className={`flex h-9 w-9 items-center justify-center rounded-lg border text-sm disabled:opacity-50 ${
-                            isSelected
-                              ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
-                              : "bg-white hover:bg-gray-50"
-                          }`}
+                          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:bg-[var(--background-muted)] disabled:opacity-50"
                           aria-label="Move section down"
                           title="Move section down"
                         >
@@ -346,11 +326,7 @@ export default function LessonSectionSidebar(props: {
                     </div>
                   </div>
 
-                  <div
-                    className={`border-t px-3 py-3 ${
-                      isSelected ? "border-white/10" : "border-gray-200"
-                    }`}
-                  >
+                  <div className="border-t border-[var(--border)] px-3 py-3">
                     <div className="grid grid-cols-2 gap-2">
                       <form action={duplicateSectionAction}>
                         <BuilderHiddenFields {...props.routeFields} />
@@ -358,11 +334,7 @@ export default function LessonSectionSidebar(props: {
                         <button
                           type="submit"
                           disabled={isPending || !!props.draggedBlockContext}
-                          className={`w-full rounded-lg border px-2 py-2 text-xs ${
-                            isSelected
-                              ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
-                              : "hover:bg-gray-50"
-                          }`}
+                          className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
                         >
                           Duplicate
                         </button>
@@ -379,11 +351,7 @@ export default function LessonSectionSidebar(props: {
                         <button
                           type="submit"
                           disabled={isPending || !!props.draggedBlockContext}
-                          className={`w-full rounded-lg border px-2 py-2 text-xs ${
-                            isSelected
-                              ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
-                              : "hover:bg-gray-50"
-                          }`}
+                          className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS} text-xs`}
                         >
                           {section.is_published ? "Unpublish" : "Publish"}
                         </button>
@@ -411,15 +379,17 @@ export default function LessonSectionSidebar(props: {
               <form
                 key={template.id}
                 action={insertSectionTemplateAction}
-                className="rounded-xl border p-3"
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/45 p-4"
               >
                 <BuilderHiddenFields {...props.routeFields} />
                 <input type="hidden" name="templateId" value={template.id} />
 
                 <div className="mb-2">
-                  <div className="font-medium text-gray-900">{template.label}</div>
-                  <div className="text-sm text-gray-500">{template.description}</div>
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
+                  <div className="font-semibold text-[var(--text-primary)]">
+                    {template.label}
+                  </div>
+                  <div className="text-sm app-text-muted">{template.description}</div>
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs app-text-soft">
                     <span>{template.defaultSectionTitle}</span>
                     <span>·</span>
                     <span>{template.defaultSectionKind}</span>
@@ -449,7 +419,7 @@ export default function LessonSectionSidebar(props: {
           <BuilderHiddenFields {...props.routeFields} />
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-900">
+            <label className="mb-1 block text-sm font-semibold text-[var(--text-primary)]">
               Section title
             </label>
             <input
@@ -461,7 +431,7 @@ export default function LessonSectionSidebar(props: {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-900">
+            <label className="mb-1 block text-sm font-semibold text-[var(--text-primary)]">
               Description
             </label>
             <input
@@ -472,7 +442,7 @@ export default function LessonSectionSidebar(props: {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-900">
+            <label className="mb-1 block text-sm font-semibold text-[var(--text-primary)]">
               Section kind
             </label>
             <select
@@ -489,7 +459,7 @@ export default function LessonSectionSidebar(props: {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-900">
+            <label className="mb-1 block text-sm font-semibold text-[var(--text-primary)]">
               Variant visibility
             </label>
             <select
@@ -506,7 +476,7 @@ export default function LessonSectionSidebar(props: {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-900">
+            <label className="mb-1 block text-sm font-semibold text-[var(--text-primary)]">
               Canonical section key
             </label>
             <input
@@ -520,7 +490,7 @@ export default function LessonSectionSidebar(props: {
             <PendingSubmitButton
               idleLabel="Add section"
               pendingLabel="Adding section..."
-              className="w-full rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
+              className={`w-full ${BUILDER_PRIMARY_BUTTON_CLASS}`}
             />
             <PendingStatusText pendingText="Creating section..." />
           </div>

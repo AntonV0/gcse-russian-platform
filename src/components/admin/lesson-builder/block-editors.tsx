@@ -22,6 +22,11 @@ import {
   BuilderHiddenFields,
   PendingStatusText,
   PendingSubmitButton,
+  BUILDER_FIELD_CLASS,
+  BUILDER_SELECT_CLASS,
+  BUILDER_SECONDARY_BUTTON_CLASS,
+  BUILDER_TEXTAREA_CLASS,
+  BUILDER_MUTED_INFO_BOX_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 
 function stringifyVocabularyItems(items: unknown) {
@@ -55,13 +60,13 @@ function TextLikeEditor(props: {
         required
         rows={3}
         defaultValue={props.defaultValue}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_TEXTAREA_CLASS}
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={`Save ${props.label}`}
           pendingLabel="Saving..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className={BUILDER_SECONDARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Updating block..." />
       </div>
@@ -86,20 +91,20 @@ function TitledContentEditor(props: {
         name="title"
         required={props.titleRequired ?? false}
         defaultValue={props.defaultTitle}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <textarea
         name="content"
         required
         rows={4}
         defaultValue={props.defaultContent}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_TEXTAREA_CLASS}
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={`Save ${props.label}`}
           pendingLabel="Saving..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className={BUILDER_SECONDARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Updating block..." />
       </div>
@@ -124,19 +129,19 @@ function SlugBlockEditor(props: {
         name="title"
         defaultValue={props.defaultTitle}
         placeholder="Optional heading"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <input
         name={props.slugFieldName}
         required
         defaultValue={props.defaultSlug}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel={`Save ${props.label}`}
           pendingLabel="Saving..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className={BUILDER_SECONDARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Updating linked block..." />
       </div>
@@ -160,25 +165,25 @@ function ImageBlockEditor(props: {
         required
         defaultValue={props.defaultSrc}
         placeholder="https://..."
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <input
         name="alt"
         defaultValue={props.defaultAlt}
         placeholder="Alt text"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <input
         name="caption"
         defaultValue={props.defaultCaption}
         placeholder="Optional caption"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel="Save image block"
           pendingLabel="Saving image block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className={BUILDER_SECONDARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Updating image block..." />
       </div>
@@ -202,22 +207,22 @@ function AudioBlockEditor(props: {
         name="title"
         defaultValue={props.defaultTitle}
         placeholder="Optional title"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <input
         name="src"
         required
         defaultValue={props.defaultSrc}
         placeholder="https://..."
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <input
         name="caption"
         defaultValue={props.defaultCaption}
         placeholder="Optional caption"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
-      <label className="flex items-center gap-2 text-sm">
+      <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
         <input
           type="checkbox"
           name="autoPlay"
@@ -230,7 +235,7 @@ function AudioBlockEditor(props: {
         <PendingSubmitButton
           idleLabel="Save audio block"
           pendingLabel="Saving audio block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className={BUILDER_SECONDARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Updating audio block..." />
       </div>
@@ -253,7 +258,7 @@ function VocabularyBlockEditor(props: {
         required
         defaultValue={props.defaultTitle}
         placeholder="Key vocabulary"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
       <textarea
         name="items"
@@ -261,16 +266,16 @@ function VocabularyBlockEditor(props: {
         rows={6}
         defaultValue={stringifyVocabularyItems(props.defaultItems)}
         placeholder={`дом | house\nшкола | school`}
-        className="w-full rounded-xl border px-3 py-2 font-mono text-sm"
+        className={`${BUILDER_TEXTAREA_CLASS} font-mono`}
       />
-      <p className="text-xs text-gray-500">
+      <p className="text-xs app-text-soft">
         Use one item per line in the format: russian | english
       </p>
       <div className="space-y-2">
         <PendingSubmitButton
           idleLabel="Save vocabulary block"
           pendingLabel="Saving vocabulary block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className={BUILDER_SECONDARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Updating vocabulary block..." />
       </div>
@@ -308,7 +313,7 @@ function VocabularySetBlockEditor(props: {
 
   if (props.vocabularySetOptions.length === 0 && !props.defaultSlug) {
     return (
-      <div className="space-y-2 rounded-xl border border-dashed px-4 py-4 text-sm text-gray-500">
+      <div className="space-y-2 rounded-2xl border border-dashed border-[var(--border)] px-4 py-4 text-sm app-text-muted">
         <div>No vocabulary sets with slugs are available yet.</div>
         <div>Create a vocabulary set first, then return to attach it here.</div>
       </div>
@@ -324,7 +329,7 @@ function VocabularySetBlockEditor(props: {
         name="title"
         defaultValue={props.defaultTitle}
         placeholder="Optional heading"
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_FIELD_CLASS}
       />
 
       <select
@@ -332,7 +337,7 @@ function VocabularySetBlockEditor(props: {
         required
         value={selectedValue}
         onChange={(event) => setSelectedValue(event.target.value)}
-        className="w-full rounded-xl border px-3 py-2 text-sm"
+        className={BUILDER_SELECT_CLASS}
       >
         {!hasMatchingOption && props.defaultSlug ? (
           <option value={`__missing__:${props.defaultSlug}`}>
@@ -349,26 +354,28 @@ function VocabularySetBlockEditor(props: {
       </select>
 
       {!hasMatchingOption && props.defaultSlug ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
           The currently linked vocabulary set slug no longer matches an available library
           option. Choose a new set before saving.
         </div>
       ) : null}
 
       {selectedVocabularySet ? (
-        <div className="rounded-xl border bg-gray-50 px-3 py-3 text-sm">
-          <div className="font-medium text-gray-900">{selectedVocabularySet.title}</div>
-          <div className="mt-1 text-xs text-gray-500">
+        <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
+          <div className="font-medium text-[var(--text-primary)]">
+            {selectedVocabularySet.title}
+          </div>
+          <div className="mt-1 text-xs app-text-soft">
             Slug: {selectedVocabularySet.slug}
           </div>
-          <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-600">
-            <span className="rounded-full border bg-white px-2 py-1">
+          <div className="mt-2 flex flex-wrap gap-2 text-xs">
+            <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
               {selectedVocabularySet.isPublished ? "Published" : "Draft"}
             </span>
-            <span className="rounded-full border bg-white px-2 py-1">
+            <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
               Tier: {selectedVocabularySet.tier}
             </span>
-            <span className="rounded-full border bg-white px-2 py-1">
+            <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
               Mode: {selectedVocabularySet.listMode}
             </span>
           </div>
@@ -379,7 +386,7 @@ function VocabularySetBlockEditor(props: {
         <PendingSubmitButton
           idleLabel="Save vocabulary-set block"
           pendingLabel="Saving vocabulary-set block..."
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+          className={BUILDER_SECONDARY_BUTTON_CLASS}
         />
         <PendingStatusText pendingText="Updating linked vocabulary set..." />
       </div>
@@ -574,12 +581,12 @@ export function BlockEditPanel(props: {
 
     case "divider":
       return (
-        <div className="text-sm text-gray-500">Divider blocks do not need editing.</div>
+        <div className="text-sm app-text-muted">Divider blocks do not need editing.</div>
       );
 
     default:
       return (
-        <div className="text-sm text-gray-500">
+        <div className="text-sm app-text-muted">
           Editing is not supported yet for this block type.
         </div>
       );

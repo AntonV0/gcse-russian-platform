@@ -62,8 +62,8 @@ export default function LessonSectionEditor(props: {
         title="Lesson editor"
         description="Select a section from the left to start editing."
       >
-        <div className="space-y-3 rounded-xl border border-dashed px-4 py-10 text-sm text-gray-500">
-          <div>No section selected.</div>
+        <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
+          <div className="mb-2">No section selected.</div>
           <div>Use the sections panel to choose a section or create a new one.</div>
         </div>
       </Panel>
@@ -93,7 +93,7 @@ export default function LessonSectionEditor(props: {
   }, {});
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Panel title={section.title} description="Focused section editing workspace.">
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -108,26 +108,28 @@ export default function LessonSectionEditor(props: {
           </div>
 
           {section.description ? (
-            <p className="text-sm text-gray-600">{section.description}</p>
+            <p className="text-sm app-text-muted">{section.description}</p>
           ) : (
-            <p className="text-sm text-gray-400">No section description yet.</p>
+            <p className="text-sm app-text-soft">No section description yet.</p>
           )}
 
-          <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
-            <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Variant visibility
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
+              <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
+                Variant visibility
+              </div>
+              <div className="mt-1 text-[var(--text-primary)]">
+                {formatVariantVisibility(section.variant_visibility)}
+              </div>
             </div>
-            <div className="mt-1 text-gray-700">
-              {formatVariantVisibility(section.variant_visibility)}
-            </div>
-          </div>
 
-          <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
-            <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Canonical section key
-            </div>
-            <div className="mt-1 text-gray-700">
-              {section.canonical_section_key || "Not set"}
+            <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
+              <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
+                Canonical section key
+              </div>
+              <div className="mt-1 text-[var(--text-primary)]">
+                {section.canonical_section_key || "Not set"}
+              </div>
             </div>
           </div>
 
@@ -228,7 +230,7 @@ export default function LessonSectionEditor(props: {
       <Panel title="Blocks" description="Select a block to edit it in the inspector.">
         <div className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm app-text-muted">
               Showing {filteredBlocks.length} of {section.blocks.length} block
               {section.blocks.length === 1 ? "" : "s"}
             </div>
@@ -250,7 +252,7 @@ export default function LessonSectionEditor(props: {
             </div>
           </div>
 
-          <div className={`${BUILDER_MUTED_INFO_BOX_CLASS} text-gray-600`}>
+          <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
             Drag a block to reorder it within this section, or drag it onto a section in
             the left sidebar to move it there.
           </div>
