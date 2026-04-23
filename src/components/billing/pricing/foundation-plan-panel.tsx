@@ -1,12 +1,13 @@
 import CheckoutButton from "@/components/billing/checkout-button";
 import {
+  ActionGroup,
   LockedOption,
   OwnedButton,
   RenewalMessage,
   UpgradeOffer,
 } from "@/components/billing/pricing/plan-state-elements";
 import type { FoundationPlanPanelProps } from "@/components/billing/pricing/types";
-import { getUpgradeFeeLabel, formatPriceLabel } from "@/lib/billing/pricing-ui";
+import { formatPriceLabel, getUpgradeFeeLabel } from "@/lib/billing/pricing-ui";
 
 export default function FoundationPlanPanel({
   user,
@@ -54,7 +55,7 @@ export default function FoundationPlanPanel({
 
   if (!user) {
     return (
-      <>
+      <ActionGroup title="Choose access" variant="compact">
         <CheckoutButton
           productCode="gcse-russian-foundation"
           billingType="subscription"
@@ -76,13 +77,13 @@ export default function FoundationPlanPanel({
         <CheckoutButton productCode="gcse-russian-foundation" billingType="one_time">
           Buy Foundation Lifetime ({foundationLifetimeLabel})
         </CheckoutButton>
-      </>
+      </ActionGroup>
     );
   }
 
   if (planState.higherLifetime) {
     return (
-      <>
+      <ActionGroup title="Unavailable while Higher is active" variant="compact">
         <LockedOption
           label="Foundation Monthly unavailable"
           message="Foundation plans aren’t needed because you already have Higher lifetime access."
@@ -97,13 +98,13 @@ export default function FoundationPlanPanel({
           label="Foundation Lifetime unavailable"
           message="Foundation plans aren’t needed because you already have Higher lifetime access."
         />
-      </>
+      </ActionGroup>
     );
   }
 
   if (planState.higherThreeMonth) {
     return (
-      <>
+      <ActionGroup title="Unavailable while Higher is active" variant="compact">
         <LockedOption
           label="Foundation Monthly unavailable"
           message="Foundation plans aren’t available while your active Higher 3-month plan is in place."
@@ -118,98 +119,111 @@ export default function FoundationPlanPanel({
           label="Foundation Lifetime unavailable"
           message="Foundation plans aren’t available while your active Higher 3-month plan is in place."
         />
-      </>
+      </ActionGroup>
     );
   }
 
   if (planState.higherMonthly) {
     return (
-      <LockedOption
-        label="Foundation unavailable"
-        message="Foundation plans aren’t available while you already have active Higher access."
-      />
+      <ActionGroup title="Unavailable while Higher is active" variant="compact">
+        <LockedOption
+          label="Foundation unavailable"
+          message="Foundation plans aren’t available while you already have active Higher access."
+        />
+      </ActionGroup>
     );
   }
 
   if (planState.foundationMonthly) {
     return (
-      <>
-        <OwnedButton label="Foundation Monthly active" />
-        <RenewalMessage renewal={activeSubscriptions.foundation} />
+      <div className="space-y-3">
+        <ActionGroup title="Current plan" variant="compact">
+          <OwnedButton label="Foundation Monthly active" />
+          <RenewalMessage renewal={activeSubscriptions.foundation} />
+        </ActionGroup>
 
-        {canShowFoundationMonthlyToThreeMonthUpgrade ? (
-          <UpgradeOffer
-            quote={foundationMonthlyToThreeMonthQuote}
-            targetPrice={pricing.threeMonth}
-            targetStandardLabel={foundationThreeMonthLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-foundation"
-              billingType="subscription"
-              intervalUnit="month"
-              intervalCount={3}
-              isUpgrade
-            >
-              Upgrade to Foundation 3 Months (
-              {getUpgradeFeeLabel(foundationMonthlyToThreeMonthQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
-        ) : null}
+        {canShowFoundationMonthlyToThreeMonthUpgrade ||
+        canShowFoundationMonthlyToFoundationLifetimeUpgrade ? (
+          <ActionGroup title="Upgrade options" variant="compact">
+            {canShowFoundationMonthlyToThreeMonthUpgrade ? (
+              <UpgradeOffer
+                quote={foundationMonthlyToThreeMonthQuote}
+                targetPrice={pricing.threeMonth}
+                targetStandardLabel={foundationThreeMonthLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-foundation"
+                  billingType="subscription"
+                  intervalUnit="month"
+                  intervalCount={3}
+                  isUpgrade
+                >
+                  Upgrade to Foundation 3 Months (
+                  {getUpgradeFeeLabel(foundationMonthlyToThreeMonthQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
 
-        {canShowFoundationMonthlyToFoundationLifetimeUpgrade ? (
-          <UpgradeOffer
-            quote={foundationMonthlyToFoundationLifetimeQuote}
-            targetPrice={pricing.lifetime}
-            targetStandardLabel={foundationLifetimeLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-foundation"
-              billingType="one_time"
-              isUpgrade
-            >
-              Upgrade to Foundation Lifetime (
-              {getUpgradeFeeLabel(foundationMonthlyToFoundationLifetimeQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
+            {canShowFoundationMonthlyToFoundationLifetimeUpgrade ? (
+              <UpgradeOffer
+                quote={foundationMonthlyToFoundationLifetimeQuote}
+                targetPrice={pricing.lifetime}
+                targetStandardLabel={foundationLifetimeLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-foundation"
+                  billingType="one_time"
+                  isUpgrade
+                >
+                  Upgrade to Foundation Lifetime (
+                  {getUpgradeFeeLabel(foundationMonthlyToFoundationLifetimeQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
+          </ActionGroup>
         ) : null}
-      </>
+      </div>
     );
   }
 
   if (planState.foundationThreeMonth) {
     return (
-      <>
+      <div className="space-y-3">
         <LockedOption
           label="Foundation Monthly unavailable"
           message="Monthly plans can’t be selected while your current 3-month Foundation plan is active."
         />
 
-        <OwnedButton label="Foundation 3-Month active" />
-        <RenewalMessage renewal={activeSubscriptions.foundation} />
+        <ActionGroup title="Current plan" variant="compact">
+          <OwnedButton label="Foundation 3-Month active" />
+          <RenewalMessage renewal={activeSubscriptions.foundation} />
+        </ActionGroup>
 
         {canShowFoundationThreeMonthToFoundationLifetimeUpgrade ? (
-          <UpgradeOffer
-            quote={foundationThreeMonthToFoundationLifetimeQuote}
-            targetPrice={pricing.lifetime}
-            targetStandardLabel={foundationLifetimeLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-foundation"
-              billingType="one_time"
-              isUpgrade
+          <ActionGroup title="Upgrade options" variant="compact">
+            <UpgradeOffer
+              quote={foundationThreeMonthToFoundationLifetimeQuote}
+              targetPrice={pricing.lifetime}
+              targetStandardLabel={foundationLifetimeLabel}
             >
-              Upgrade to Foundation Lifetime (
-              {getUpgradeFeeLabel(foundationThreeMonthToFoundationLifetimeQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
+              <CheckoutButton
+                productCode="gcse-russian-foundation"
+                billingType="one_time"
+                isUpgrade
+              >
+                Upgrade to Foundation Lifetime (
+                {getUpgradeFeeLabel(foundationThreeMonthToFoundationLifetimeQuote)})
+              </CheckoutButton>
+            </UpgradeOffer>
+          </ActionGroup>
         ) : null}
-      </>
+      </div>
     );
   }
 
   if (planState.foundationLifetime) {
     return (
-      <>
+      <div className="space-y-3">
         <LockedOption
           label="Foundation Monthly unavailable"
           message="Monthly plans aren’t needed because you already have Foundation lifetime access."
@@ -220,29 +234,29 @@ export default function FoundationPlanPanel({
           message="3-month plans aren’t needed because you already have Foundation lifetime access."
         />
 
-        <OwnedButton label="Foundation Lifetime active" />
-
-        <p className="text-xs text-[var(--text-secondary)]">
-          Your account already has active Foundation lifetime access.
-        </p>
-      </>
+        <ActionGroup title="Current plan" variant="compact">
+          <OwnedButton label="Foundation Lifetime active" />
+          <p className="text-xs leading-5 text-[var(--text-secondary)]">
+            Your account already has active Foundation lifetime access.
+          </p>
+        </ActionGroup>
+      </div>
     );
   }
 
   if (foundationOwned) {
     return (
-      <>
+      <ActionGroup title="Current plan" variant="compact">
         <OwnedButton label="Foundation already owned" />
-
-        <p className="text-xs text-[var(--text-secondary)]">
+        <p className="text-xs leading-5 text-[var(--text-secondary)]">
           Your account already has active Foundation access.
         </p>
-      </>
+      </ActionGroup>
     );
   }
 
   return (
-    <>
+    <ActionGroup title="Choose access" variant="compact">
       <CheckoutButton
         productCode="gcse-russian-foundation"
         billingType="subscription"
@@ -264,6 +278,6 @@ export default function FoundationPlanPanel({
       <CheckoutButton productCode="gcse-russian-foundation" billingType="one_time">
         Buy Foundation Lifetime ({foundationLifetimeLabel})
       </CheckoutButton>
-    </>
+    </ActionGroup>
   );
 }
