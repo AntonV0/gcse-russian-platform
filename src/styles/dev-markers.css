@@ -6,9 +6,9 @@
 
 .dev-marker-anchor {
   position: absolute;
-  top: -0.38rem;
-  right: -0.38rem;
-  z-index: 120;
+  top: 0.38rem;
+  right: 0.38rem;
+  z-index: 240;
   display: inline-flex;
   align-items: flex-start;
   justify-content: flex-end;
@@ -17,6 +17,22 @@
 
 .dev-marker-anchor > * {
   pointer-events: auto;
+}
+
+.dev-marker-anchor[data-dev-marker-tier="container"] {
+  z-index: 260;
+}
+
+.dev-marker-anchor[data-dev-marker-tier="layout"] {
+  top: 0.38rem;
+  right: 2.2rem;
+  z-index: 255;
+}
+
+.dev-marker-anchor[data-dev-marker-tier="semantic"] {
+  top: 2.1rem;
+  right: 0.38rem;
+  z-index: 250;
 }
 
 .dev-marker-trigger {
@@ -35,7 +51,7 @@
     0 0 0 2px rgba(246, 248, 251, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  opacity: 0.95;
+  opacity: 0.96;
   transform: scale(1);
   transition:
     opacity var(--transition-fast),
@@ -81,19 +97,18 @@
 }
 
 .dev-marker-panel {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  z-index: 70;
-  width: min(18rem, calc(100vw - 2rem));
+  position: fixed;
+  z-index: 9999;
+  width: min(22rem, calc(100vw - 1.5rem));
+  max-width: calc(100vw - 1.5rem);
   padding: 0.7rem 0.8rem;
   border: 1px solid rgba(37, 99, 235, 0.16);
   border-radius: 0.9rem;
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.985);
   color: var(--text-primary);
   box-shadow:
     0 2px 8px rgba(16, 32, 51, 0.08),
-    0 14px 32px rgba(16, 32, 51, 0.14);
+    0 18px 40px rgba(16, 32, 51, 0.16);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -102,13 +117,15 @@
   content: "";
   position: absolute;
   top: -0.35rem;
-  right: 0.55rem;
+  left: var(--dev-marker-arrow-left, 1rem);
   height: 0.7rem;
   width: 0.7rem;
   rotate: 45deg;
-  border-top: 1px solid rgba(37, 99, 235, 0.16);
-  border-left: 1px solid rgba(37, 99, 235, 0.16);
-  background: rgba(255, 255, 255, 0.98);
+  border-top: 1px solid currentColor;
+  border-left: 1px solid currentColor;
+  background: inherit;
+  color: inherit;
+  opacity: 0.16;
 }
 
 .dev-marker-panel-label {
@@ -136,13 +153,13 @@
   word-break: break-word;
 }
 
-/* container-tier marker polish */
+/* host polish */
 
-.dev-marker-host:has(.dev-marker-trigger[data-state="open"]) {
-  z-index: 30;
+.dev-marker-host:has(.dev-marker-anchor[data-dev-marker-open="true"]) {
+  z-index: 160;
 }
 
-.dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\])::after {
+.dev-marker-host:has(.dev-marker-trigger-container)::after {
   content: "";
   position: absolute;
   inset: -0.2rem;
@@ -156,15 +173,53 @@
     box-shadow var(--transition-fast);
 }
 
-.dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\]:hover)::after,
-.dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\][data-state="open"])::after {
+.dev-marker-host:has(.dev-marker-trigger-container:hover)::after,
+.dev-marker-host:has(.dev-marker-trigger-container[data-state="open"])::after {
   opacity: 1;
   border-color: rgba(37, 99, 235, 0.24);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.06);
 }
 
-.dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\]) .dev-marker-panel {
-  border-color: rgba(37, 99, 235, 0.2);
+.dev-marker-host:has(.dev-marker-trigger-layout)::after {
+  content: "";
+  position: absolute;
+  inset: -0.12rem;
+  border-radius: inherit;
+  border: 1px dashed rgba(14, 116, 144, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.dev-marker-host:has(.dev-marker-trigger-layout:hover)::after,
+.dev-marker-host:has(.dev-marker-trigger-layout[data-state="open"])::after {
+  opacity: 1;
+  border-color: rgba(14, 116, 144, 0.24);
+  box-shadow: 0 0 0 3px rgba(14, 116, 144, 0.06);
+}
+
+.dev-marker-host:has(.dev-marker-trigger-semantic)::after {
+  content: "";
+  position: absolute;
+  inset: -0.12rem;
+  border-radius: inherit;
+  border: 1px dashed rgba(124, 58, 237, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.dev-marker-host:has(.dev-marker-trigger-semantic:hover)::after,
+.dev-marker-host:has(.dev-marker-trigger-semantic[data-state="open"])::after {
+  opacity: 1;
+  border-color: rgba(124, 58, 237, 0.24);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.06);
 }
 
 [data-theme="dark"] .dev-marker-trigger {
@@ -195,35 +250,68 @@
     0 10px 24px rgba(0, 0, 0, 0.32);
 }
 
+[data-theme="dark"] .dev-marker-trigger-layout {
+  border-color: rgba(34, 211, 238, 0.28);
+  color: rgb(103, 232, 249);
+}
+
+[data-theme="dark"] .dev-marker-trigger-semantic {
+  border-color: rgba(167, 139, 250, 0.3);
+  color: rgb(196, 181, 253);
+}
+
 [data-theme="dark"] .dev-marker-panel {
   border-color: rgba(79, 140, 255, 0.18);
-  background: rgba(9, 23, 47, 0.98);
+  background: rgba(9, 23, 47, 0.985);
   color: var(--text-primary);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.28),
     0 18px 40px rgba(0, 0, 0, 0.34);
 }
 
-[data-theme="dark"] .dev-marker-panel::before {
-  border-top-color: rgba(79, 140, 255, 0.18);
-  border-left-color: rgba(79, 140, 255, 0.18);
-  background: rgba(9, 23, 47, 0.98);
-}
-
-[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\])::after {
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-container)::after {
   border-color: rgba(118, 167, 255, 0.14);
 }
 
-[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\]:hover)::after,
-[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger.h-\[1\.5rem\][data-state="open"])::after {
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-container:hover)::after,
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-container[data-state="open"])::after {
   border-color: rgba(118, 167, 255, 0.28);
   box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.08);
 }
 
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-layout)::after {
+  border-color: rgba(34, 211, 238, 0.12);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-layout:hover)::after,
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-layout[data-state="open"])::after {
+  border-color: rgba(34, 211, 238, 0.24);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.07);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-semantic)::after {
+  border-color: rgba(167, 139, 250, 0.12);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-semantic:hover)::after,
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-semantic[data-state="open"])::after {
+  border-color: rgba(167, 139, 250, 0.24);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.07);
+}
+
 @media (max-width: 640px) {
   .dev-marker-anchor {
-    top: -0.32rem;
-    right: -0.32rem;
+    top: 0.3rem;
+    right: 0.3rem;
+  }
+
+  .dev-marker-anchor[data-dev-marker-tier="layout"] {
+    right: 2rem;
+  }
+
+  .dev-marker-anchor[data-dev-marker-tier="semantic"] {
+    top: 1.95rem;
+    right: 0.3rem;
   }
 
   .dev-marker-trigger {
@@ -232,6 +320,7 @@
   }
 
   .dev-marker-panel {
-    width: min(16rem, calc(100vw - 1.5rem));
+    width: min(16rem, calc(100vw - 1rem));
+    max-width: calc(100vw - 1rem);
   }
 }

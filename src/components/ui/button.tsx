@@ -218,9 +218,8 @@ function getClassName({
   disabled?: boolean;
 }) {
   return [
-    "dev-marker-host",
     "app-focus-ring app-btn-surface-fix inline-flex items-center justify-center gap-2 font-semibold leading-none",
-    "select-none whitespace-nowrap",
+    "max-w-full select-none whitespace-nowrap",
     "transition-[transform,background-color,border-color,color,box-shadow,opacity,filter] duration-200 ease-out",
     disabled
       ? "cursor-not-allowed"
@@ -232,6 +231,26 @@ function getClassName({
   ]
     .filter(Boolean)
     .join(" ");
+}
+
+function getResolvedAriaLabel({
+  ariaLabel,
+  children,
+  iconOnly,
+}: {
+  ariaLabel?: string;
+  children?: React.ReactNode;
+  iconOnly?: boolean;
+}) {
+  if (ariaLabel) {
+    return ariaLabel;
+  }
+
+  if (iconOnly && typeof children === "string") {
+    return children;
+  }
+
+  return undefined;
 }
 
 function ButtonInner({
@@ -250,53 +269,48 @@ function ButtonInner({
   const iconSize = getIconSize(size);
 
   if (iconOnly) {
-    return (
-      <>
-        {SHOW_UI_DEBUG ? (
-          <DevComponentMarker
-            componentName="Button"
-            filePath="src/components/ui/button.tsx"
-            tier="primitive"
-            componentRole="Shared action primitive"
-            bestFor="Primary actions, secondary actions, utility controls, links styled as buttons, and icon-only actions with clear meaning."
-            usageExamples={[
-              "Form submit actions",
-              "Toolbar controls",
-              "Header actions",
-              "Card and row actions",
-            ]}
-            notes="Prefer shared variants and sizes over custom page-level button styling. Use iconOnly only for familiar actions."
-          />
-        ) : null}
-
-        {icon ? <AppIcon icon={icon} size={iconSize} /> : null}
-      </>
-    );
+    return icon ? <AppIcon icon={icon} size={iconSize} /> : null;
   }
 
   return (
     <>
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="Button"
-          filePath="src/components/ui/button.tsx"
-          tier="primitive"
-          componentRole="Shared action primitive"
-          bestFor="Primary actions, secondary actions, utility controls, links styled as buttons, and compact row actions."
-          usageExamples={[
-            "Save and publish actions",
-            "Toolbar filters",
-            "Navigation CTA buttons",
-            "Inline row actions",
-          ]}
-          notes="Prefer shared variants and sizes over page-local button wrappers. Keep labels short and action-led."
-        />
+      {icon && iconPosition === "left" ? (
+        <span className="shrink-0">
+          <AppIcon icon={icon} size={iconSize} />
+        </span>
       ) : null}
 
-      {icon && iconPosition === "left" ? <AppIcon icon={icon} size={iconSize} /> : null}
       {children ? <span className="truncate">{children}</span> : null}
-      {icon && iconPosition === "right" ? <AppIcon icon={icon} size={iconSize} /> : null}
+
+      {icon && iconPosition === "right" ? (
+        <span className="shrink-0">
+          <AppIcon icon={icon} size={iconSize} />
+        </span>
+      ) : null}
     </>
+  );
+}
+
+function ButtonMarker() {
+  if (!SHOW_UI_DEBUG) {
+    return null;
+  }
+
+  return (
+    <DevComponentMarker
+      componentName="Button"
+      filePath="src/components/ui/button.tsx"
+      tier="primitive"
+      componentRole="Shared action primitive for buttons and button-styled links"
+      bestFor="Primary CTAs, secondary actions, toolbar controls, row actions, and navigation links styled as buttons."
+      usageExamples={[
+        "Save and publish actions",
+        "Pricing checkout CTAs",
+        "Toolbar filters",
+        "Card footer actions",
+      ]}
+      notes="Prefer shared variants and sizes over custom page-level button styling. Use iconOnly only for familiar actions with an accessible label."
+    />
   );
 }
 
@@ -313,6 +327,11 @@ export default function Button(props: ButtonProps) {
   } = props;
 
   const disabled = "disabled" in props ? Boolean(props.disabled) : false;
+  const resolvedAriaLabel = getResolvedAriaLabel({
+    ariaLabel,
+    children,
+    iconOnly,
+  });
 
   const mergedClassName = getClassName({
     variant,
@@ -324,21 +343,25 @@ export default function Button(props: ButtonProps) {
 
   if ("href" in props && props.href) {
     return (
-      <Link
-        href={props.href}
-        className={mergedClassName}
-        aria-label={ariaLabel}
-        title={ariaLabel}
-      >
-        <ButtonInner
-          icon={icon}
-          iconPosition={iconPosition}
-          iconOnly={iconOnly}
-          size={size}
+      <span className="dev-marker-host relative inline-flex max-w-full">
+        <ButtonMarker />
+
+        <Link
+          href={props.href}
+          className={mergedClassName}
+          aria-label={resolvedAriaLabel}
+          title={resolvedAriaLabel}
         >
-          {children}
-        </ButtonInner>
-      </Link>
+          <ButtonInner
+            icon={icon}
+            iconPosition={iconPosition}
+            iconOnly={iconOnly}
+            size={size}
+          >
+            {children}
+          </ButtonInner>
+        </Link>
+      </span>
     );
   }
 
@@ -355,20 +378,24 @@ export default function Button(props: ButtonProps) {
   } = props as ButtonAsButtonProps;
 
   return (
-    <button
-      {...buttonProps}
-      className={mergedClassName}
-      aria-label={ariaLabel}
-      title={ariaLabel}
-    >
-      <ButtonInner
-        icon={icon}
-        iconPosition={iconPosition}
-        iconOnly={iconOnly}
-        size={size}
+    <span className="dev-marker-host relative inline-flex max-w-full">
+      <ButtonMarker />
+
+      <button
+        {...buttonProps}
+        className={mergedClassName}
+        aria-label={resolvedAriaLabel}
+        title={resolvedAriaLabel}
       >
-        {children}
-      </ButtonInner>
-    </button>
+        <ButtonInner
+          icon={icon}
+          iconPosition={iconPosition}
+          iconOnly={iconOnly}
+          size={size}
+        >
+          {children}
+        </ButtonInner>
+      </button>
+    </span>
   );
 }

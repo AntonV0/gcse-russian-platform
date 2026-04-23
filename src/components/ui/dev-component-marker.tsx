@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
-type DevMarkerTier = "primitive" | "container";
+type DevMarkerTier = "primitive" | "container" | "layout" | "semantic";
 
 type DevComponentMarkerProps = {
   componentName: string;
@@ -14,7 +15,17 @@ type DevComponentMarkerProps = {
   notes?: string;
 };
 
+type MarkerPanelPosition = {
+  top: number;
+  left: number;
+  arrowLeft: number;
+};
+
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+const PANEL_WIDTH = 352;
+const PANEL_GAP = 10;
+const VIEWPORT_MARGIN = 12;
+const ARROW_OFFSET = 18;
 
 function DevMarkerIcon() {
   return (
@@ -40,16 +51,15 @@ function getTriggerClass(tier: DevMarkerTier, isOpen: boolean) {
   const stateClass = isOpen ? "dev-marker-trigger-open" : "";
 
   if (tier === "container") {
-    return [
-      base,
-      stateClass,
-      "h-[1.5rem] w-[1.5rem] border-[rgba(37,99,235,0.32)] bg-[rgba(255,255,255,0.98)] text-[var(--brand-blue)] shadow-[0_2px_8px_rgba(16,32,51,0.10),0_0_0_2px_rgba(246,248,251,0.96)]",
-      "hover:scale-[1.08] hover:border-[rgba(37,99,235,0.52)] hover:shadow-[0_2px_8px_rgba(16,32,51,0.12),0_0_0_2px_rgba(246,248,251,0.98),0_14px_28px_rgba(16,32,51,0.16)]",
-      "focus-visible:scale-[1.08]",
-      "[data-theme='dark']:border-[rgba(118,167,255,0.42)] [data-theme='dark']:bg-[rgba(9,23,47,0.98)] [data-theme='dark']:text-[var(--brand-blue)]",
-    ]
-      .filter(Boolean)
-      .join(" ");
+    return [base, stateClass, "dev-marker-trigger-container"].filter(Boolean).join(" ");
+  }
+
+  if (tier === "layout") {
+    return [base, stateClass, "dev-marker-trigger-layout"].filter(Boolean).join(" ");
+  }
+
+  if (tier === "semantic") {
+    return [base, stateClass, "dev-marker-trigger-semantic"].filter(Boolean).join(" ");
   }
 
   return [base, stateClass].filter(Boolean).join(" ");
@@ -57,28 +67,71 @@ function getTriggerClass(tier: DevMarkerTier, isOpen: boolean) {
 
 function getPanelClass(tier: DevMarkerTier) {
   if (tier === "container") {
-    return [
-      "dev-marker-panel",
-      "w-[min(22rem,calc(100vw-2rem))]",
-      "border-[rgba(37,99,235,0.20)]",
-      "shadow-[0_4px_12px_rgba(16,32,51,0.10),0_18px_40px_rgba(16,32,51,0.16)]",
-    ].join(" ");
+    return ["dev-marker-panel", "dev-marker-panel-container"].join(" ");
+  }
+
+  if (tier === "layout") {
+    return ["dev-marker-panel", "dev-marker-panel-layout"].join(" ");
+  }
+
+  if (tier === "semantic") {
+    return ["dev-marker-panel", "dev-marker-panel-semantic"].join(" ");
   }
 
   return "dev-marker-panel";
 }
 
 function getDefaultRole(componentName: string) {
-  if (componentName.toLowerCase().includes("button")) return "Primitive action control";
-  if (componentName.toLowerCase().includes("badge")) return "Primitive status label";
-  if (componentName.toLowerCase().includes("icon")) return "Primitive icon wrapper";
-  if (componentName.toLowerCase().includes("card")) return "Shared content container";
-  if (componentName.toLowerCase().includes("panel"))
-    return "Section or inspector container";
-  if (componentName.toLowerCase().includes("header"))
-    return "Page or section heading pattern";
-  if (componentName.toLowerCase().includes("empty")) return "Empty-state pattern";
+  const lower = componentName.toLowerCase();
+
+  if (lower.includes("button")) return "Primitive action control";
+  if (lower.includes("badge")) return "Primitive status and metadata label";
+  if (lower.includes("icon")) return "Primitive icon wrapper";
+  if (lower.includes("card")) return "Shared content container";
+  if (lower.includes("panel")) return "Section or inspector container";
+  if (lower.includes("header")) return "Page or section heading pattern";
+  if (lower.includes("empty")) return "Empty-state pattern";
+  if (lower.includes("table")) return "Structured data display pattern";
+  if (lower.includes("input") || lower.includes("select") || lower.includes("textarea")) {
+    return "Form field control";
+  }
+
   return "Shared UI component";
+}
+
+function getTierLabel(tier: DevMarkerTier) {
+  switch (tier) {
+    case "container":
+      return "Shared container";
+    case "layout":
+      return "Layout pattern";
+    case "semantic":
+      return "Semantic wrapper";
+    case "primitive":
+    default:
+      return "Shared component";
+  }
+}
+
+function getPositionForTrigger(triggerRect: DOMRect): MarkerPanelPosition {
+  const panelWidth = Math.min(PANEL_WIDTH, window.innerWidth - VIEWPORT_MARGIN * 2);
+  const preferredLeft = triggerRect.right - panelWidth;
+  const minLeft = VIEWPORT_MARGIN;
+  const maxLeft = Math.max(
+    VIEWPORT_MARGIN,
+    window.innerWidth - panelWidth - VIEWPORT_MARGIN
+  );
+  const left = Math.min(Math.max(preferredLeft, minLeft), maxLeft);
+  const top = Math.min(
+    triggerRect.bottom + PANEL_GAP,
+    window.innerHeight - VIEWPORT_MARGIN - 120
+  );
+  const arrowLeft = Math.min(
+    Math.max(triggerRect.right - left - ARROW_OFFSET, 18),
+    panelWidth - 30
+  );
+
+  return { top, left, arrowLeft };
 }
 
 export default function DevComponentMarker({
@@ -91,8 +144,38 @@ export default function DevComponentMarker({
   notes,
 }: DevComponentMarkerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [panelPosition, setPanelPosition] = useState<MarkerPanelPosition | null>(null);
   const markerRef = useRef<HTMLSpanElement | null>(null);
+  const triggerRef = useRef<HTMLSpanElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
   const panelId = useId();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!SHOW_UI_DEBUG || !isOpen || !triggerRef.current) {
+      return;
+    }
+
+    function updatePosition() {
+      if (!triggerRef.current) return;
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPanelPosition(getPositionForTrigger(rect));
+    }
+
+    updatePosition();
+
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (!SHOW_UI_DEBUG || !isOpen) {
@@ -100,13 +183,21 @@ export default function DevComponentMarker({
     }
 
     function handlePointerDown(event: MouseEvent) {
-      if (!markerRef.current) {
+      const target = event.target;
+
+      if (!(target instanceof Node)) {
         return;
       }
 
-      if (event.target instanceof Node && !markerRef.current.contains(event.target)) {
-        setIsOpen(false);
+      if (triggerRef.current?.contains(target)) {
+        return;
       }
+
+      if (panelRef.current?.contains(target)) {
+        return;
+      }
+
+      setIsOpen(false);
     }
 
     function handleEscape(event: KeyboardEvent) {
@@ -151,9 +242,81 @@ export default function DevComponentMarker({
 
   const resolvedRole = componentRole ?? getDefaultRole(componentName);
 
+  const panel =
+    isMounted && isOpen && panelPosition
+      ? createPortal(
+          <div
+            ref={panelRef}
+            id={panelId}
+            className={getPanelClass(tier)}
+            role="dialog"
+            aria-label={`${componentName} component info`}
+            style={
+              {
+                top: `${panelPosition.top}px`,
+                left: `${panelPosition.left}px`,
+                "--dev-marker-arrow-left": `${panelPosition.arrowLeft}px`,
+              } as React.CSSProperties
+            }
+          >
+            <div className="dev-marker-panel-label">{getTierLabel(tier)}</div>
+
+            <div className="dev-marker-panel-name">{componentName}</div>
+            <div className="dev-marker-panel-path">{filePath}</div>
+
+            <div className="mt-3 space-y-3">
+              <div>
+                <div className="dev-marker-panel-label">Role</div>
+                <div className="text-[0.8rem] leading-5 text-[var(--text-primary)]">
+                  {resolvedRole}
+                </div>
+              </div>
+
+              {bestFor ? (
+                <div>
+                  <div className="dev-marker-panel-label">Best for</div>
+                  <div className="text-[0.78rem] leading-5 text-[var(--text-secondary)]">
+                    {bestFor}
+                  </div>
+                </div>
+              ) : null}
+
+              {usageExamples?.length ? (
+                <div>
+                  <div className="dev-marker-panel-label">Used in</div>
+                  <ul className="space-y-1 pl-4 text-[0.78rem] leading-5 text-[var(--text-secondary)]">
+                    {usageExamples.map((item) => (
+                      <li key={item} className="list-disc">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              {notes ? (
+                <div>
+                  <div className="dev-marker-panel-label">Notes</div>
+                  <div className="text-[0.78rem] leading-5 text-[var(--text-secondary)]">
+                    {notes}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>,
+          document.body
+        )
+      : null;
+
   return (
-    <span ref={markerRef} className="dev-marker-anchor">
+    <span
+      ref={markerRef}
+      className="dev-marker-anchor"
+      data-dev-marker-tier={tier}
+      data-dev-marker-open={isOpen ? "true" : "false"}
+    >
       <span
+        ref={triggerRef}
         role="button"
         tabIndex={0}
         className={getTriggerClass(tier, isOpen)}
@@ -167,61 +330,7 @@ export default function DevComponentMarker({
         <DevMarkerIcon />
       </span>
 
-      {isOpen ? (
-        <div
-          id={panelId}
-          className={getPanelClass(tier)}
-          role="dialog"
-          aria-label={`${componentName} component info`}
-        >
-          <div className="dev-marker-panel-label">
-            {tier === "container" ? "Shared container" : "Shared component"}
-          </div>
-
-          <div className="dev-marker-panel-name">{componentName}</div>
-          <div className="dev-marker-panel-path">{filePath}</div>
-
-          <div className="mt-3 space-y-3">
-            <div>
-              <div className="dev-marker-panel-label">Role</div>
-              <div className="text-[0.8rem] leading-5 text-[var(--text-primary)]">
-                {resolvedRole}
-              </div>
-            </div>
-
-            {bestFor ? (
-              <div>
-                <div className="dev-marker-panel-label">Best for</div>
-                <div className="text-[0.78rem] leading-5 text-[var(--text-secondary)]">
-                  {bestFor}
-                </div>
-              </div>
-            ) : null}
-
-            {usageExamples?.length ? (
-              <div>
-                <div className="dev-marker-panel-label">Used in</div>
-                <ul className="space-y-1 pl-4 text-[0.78rem] leading-5 text-[var(--text-secondary)]">
-                  {usageExamples.map((item) => (
-                    <li key={item} className="list-disc">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {notes ? (
-              <div>
-                <div className="dev-marker-panel-label">Notes</div>
-                <div className="text-[0.78rem] leading-5 text-[var(--text-secondary)]">
-                  {notes}
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+      {panel}
     </span>
   );
 }

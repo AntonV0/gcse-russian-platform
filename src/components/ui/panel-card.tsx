@@ -106,15 +106,15 @@ export default function PanelCard({
           componentName="PanelCard"
           filePath="src/components/ui/panel-card.tsx"
           tier="container"
-          componentRole="Premium section and inspector container"
-          bestFor="Admin edit sections, side inspectors, metadata panels, grouped settings, and softer student support sections."
+          componentRole="Structured support panel with optional header, body, actions, and footer"
+          bestFor="Side panels, inspector panels, settings groups, metadata panels, and secondary support sections."
           usageExamples={[
             "Lesson builder inspector",
-            "Admin settings sections",
-            "Course detail side panels",
-            "Student guidance/support panels",
+            "Admin settings panel",
+            "Course metadata side panel",
+            "Student guidance/support panel",
           ]}
-          notes="Use footer for action rows or link rows. Keep Card for neutral containers; use PanelCard when you need a structured header/body/footer section."
+          notes="Use PanelCard for supporting or utility content. Use SectionCard for primary page sections and Card for neutral low-level containers."
         />
       ) : null}
 

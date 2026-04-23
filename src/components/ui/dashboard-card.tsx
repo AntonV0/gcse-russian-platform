@@ -17,20 +17,39 @@ export default function DashboardCard({
   className,
 }: DashboardCardProps) {
   return (
-    <Card className={["dev-marker-host", className].filter(Boolean).join(" ")}>
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="DashboardCard"
           filePath="src/components/ui/dashboard-card.tsx"
+          tier="semantic"
+          componentRole="Compact dashboard content card"
+          bestFor="Small dashboard widgets, short summaries, progress snippets, and lightweight grouped dashboard content."
+          usageExamples={[
+            "Recent activity card",
+            "Quick progress summary",
+            "Student next-step card",
+            "Compact admin dashboard widget",
+          ]}
+          notes="Use DashboardCard for compact dashboard blocks. Use SectionCard for larger sections and PanelCard for structured support panels."
         />
       ) : null}
 
-      <CardBody>
-        {title ? <h2 className="app-card-title">{title}</h2> : null}
-        <div className={[title ? "mt-2" : "", "text-sm app-text-muted"].join(" ")}>
-          {children}
-        </div>
-      </CardBody>
-    </Card>
+      <Card
+        className={[
+          "app-dashboard-card rounded-2xl border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[0_10px_22px_rgba(16,32,51,0.05)]",
+          className,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <CardBody className="px-5 py-4">
+          {title ? <h2 className="app-card-title">{title}</h2> : null}
+          <div className={[title ? "mt-2.5" : "", "text-sm app-text-muted"].join(" ")}>
+            {children}
+          </div>
+        </CardBody>
+      </Card>
+    </div>
   );
 }

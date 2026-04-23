@@ -1,9 +1,14 @@
 "use client";
 
-import DevComponentMarker from "@/components/ui/dev-component-marker";
 import Badge from "@/components/ui/badge";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type Status = "not_started" | "submitted" | "reviewed" | "returned";
+
+type StatusBadgeProps = {
+  status?: string | null;
+  className?: string;
+};
 
 function getStatusConfig(status: Status) {
   switch (status) {
@@ -13,18 +18,22 @@ function getStatusConfig(status: Status) {
         tone: "warning" as const,
         icon: "pending" as const,
       };
+
     case "reviewed":
       return {
         label: "Reviewed",
         tone: "success" as const,
         icon: "completed" as const,
       };
+
     case "returned":
       return {
         label: "Returned",
         tone: "info" as const,
         icon: "next" as const,
       };
+
+    case "not_started":
     default:
       return {
         label: "Not started",
@@ -36,7 +45,7 @@ function getStatusConfig(status: Status) {
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-export default function StatusBadge({ status }: { status?: string | null }) {
+export default function StatusBadge({ status, className }: StatusBadgeProps) {
   const normalized: Status =
     status === "submitted" || status === "reviewed" || status === "returned"
       ? status
@@ -45,11 +54,25 @@ export default function StatusBadge({ status }: { status?: string | null }) {
   const { label, tone, icon } = getStatusConfig(normalized);
 
   return (
-    <span className="dev-marker-host inline-flex">
+    <span
+      className={["dev-marker-host relative inline-flex", className]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="StatusBadge"
           filePath="src/components/ui/status-badge.tsx"
+          tier="semantic"
+          componentRole="Semantic wrapper for standardized workflow status labels"
+          bestFor="Repeated product states where the same status should always map to the same label, tone, and icon."
+          usageExamples={[
+            "Assignment submission state",
+            "Teacher review state",
+            "Student workflow progress",
+            "Returned work status",
+          ]}
+          notes="Use StatusBadge instead of hand-building Badge when the status is a known product/workflow state. Do not use it for one-off marketing labels."
         />
       ) : null}
 
