@@ -12,14 +12,13 @@ import type {
   RouteFields,
 } from "@/components/admin/lesson-builder/lesson-builder-types";
 import {
-  getLessonBuilderStorageKey,
-  Panel,
+  BuilderHiddenFields,
+  CompactDisclosure,
   PendingStatusText,
   PendingSubmitButton,
-  StatCard,
   ToolbarButton,
   usePersistentBoolean,
-  BuilderHiddenFields,
+  getLessonBuilderStorageKey,
   BUILDER_DASHED_EMPTY_STATE_CLASS,
   BUILDER_SECONDARY_BUTTON_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
@@ -39,7 +38,12 @@ function getSectionCounts(sections: LessonSection[]) {
     }
   }
 
-  return { publishedSections, totalBlocks, publishedBlocks };
+  return {
+    publishedSections,
+    totalSections: sections.length,
+    publishedBlocks,
+    totalBlocks,
+  };
 }
 
 function getInitialSelectedSectionId(lessonId: string, sections: LessonSection[]) {
@@ -56,6 +60,22 @@ function getInitialSelectedSectionId(lessonId: string, sections: LessonSection[]
   }
 
   return sections[0]?.id ?? null;
+}
+
+function CompactBuilderStat(props: { label: string; published: number; total: number }) {
+  return (
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3 shadow-[0_1px_2px_rgba(16,32,51,0.04)]">
+      <div className="text-[11px] font-semibold uppercase tracking-wide app-text-soft">
+        {props.label}
+      </div>
+      <div className="mt-1 flex items-baseline gap-1">
+        <span className="text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+          {props.published}
+        </span>
+        <span className="text-sm app-text-muted">/ {props.total}</span>
+      </div>
+    </div>
+  );
 }
 
 export default function AdminLessonBuilderWorkspace({
@@ -82,7 +102,7 @@ export default function AdminLessonBuilderWorkspace({
     lessonSlug,
   };
 
-  const { publishedSections, totalBlocks, publishedBlocks } = useMemo(
+  const { publishedSections, totalSections, publishedBlocks, totalBlocks } = useMemo(
     () => getSectionCounts(sections),
     [sections]
   );
@@ -155,15 +175,15 @@ export default function AdminLessonBuilderWorkspace({
 
   const layoutClass = (() => {
     if (isSidebarOpen && isInspectorOpen) {
-      return "2xl:grid-cols-[340px_minmax(0,1fr)_340px] xl:grid-cols-[320px_minmax(0,1fr)_320px]";
+      return "2xl:grid-cols-[320px_minmax(0,1fr)_300px] xl:grid-cols-[300px_minmax(0,1fr)_280px]";
     }
 
     if (isSidebarOpen && !isInspectorOpen) {
-      return "xl:grid-cols-[340px_minmax(0,1fr)]";
+      return "xl:grid-cols-[320px_minmax(0,1fr)]";
     }
 
     if (!isSidebarOpen && isInspectorOpen) {
-      return "xl:grid-cols-[minmax(0,1fr)_340px]";
+      return "xl:grid-cols-[minmax(0,1fr)_300px]";
     }
 
     return "xl:grid-cols-[minmax(0,1fr)]";
@@ -171,15 +191,21 @@ export default function AdminLessonBuilderWorkspace({
 
   return (
     <div className="space-y-4">
-      <section className="grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
-        <StatCard label="Sections" value={sections.length} />
-        <StatCard label="Blocks" value={totalBlocks} />
-        <StatCard label="Published sections" value={publishedSections} />
-        <StatCard label="Published blocks" value={publishedBlocks} />
+      <section className="grid gap-3 md:grid-cols-2">
+        <CompactBuilderStat
+          label="Sections"
+          published={publishedSections}
+          total={totalSections}
+        />
+        <CompactBuilderStat
+          label="Blocks"
+          published={publishedBlocks}
+          total={totalBlocks}
+        />
       </section>
 
-      <Panel
-        title="Lesson templates"
+      <CompactDisclosure
+        title={`Lesson templates (${templateOptions.lessonTemplates.length})`}
         description="Create several structured sections at once for faster lesson setup."
       >
         <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
@@ -223,9 +249,9 @@ export default function AdminLessonBuilderWorkspace({
             ))
           )}
         </div>
-      </Panel>
+      </CompactDisclosure>
 
-      <section className="sticky top-4 z-10 rounded-[1.4rem] border border-[var(--border)] bg-[rgba(255,255,255,0.92)] p-4 shadow-[0_10px_26px_rgba(16,32,51,0.10)] backdrop-blur-md">
+      <section className="sticky z-10 rounded-[1.4rem] border border-[var(--border)] bg-[rgba(255,255,255,0.92)] p-4 shadow-[0_10px_26px_rgba(16,32,51,0.10)] backdrop-blur-md top-[calc(var(--site-header-height)+12px)]">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0">
             <div className="text-sm font-semibold text-[var(--text-primary)]">
@@ -276,7 +302,7 @@ export default function AdminLessonBuilderWorkspace({
 
       <section className={`grid items-start gap-4 ${layoutClass}`}>
         {isSidebarOpen ? (
-          <aside className="min-w-0 xl:sticky xl:top-24 xl:self-start">
+          <aside className="min-w-0 xl:sticky xl:top-[calc(var(--site-header-height)+84px)] xl:self-start">
             <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(37,99,235,0.03)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Sections</p>
@@ -326,7 +352,7 @@ export default function AdminLessonBuilderWorkspace({
         </div>
 
         {isInspectorOpen ? (
-          <aside className="min-w-0 xl:sticky xl:top-24 xl:self-start">
+          <aside className="min-w-0 xl:sticky xl:top-[calc(var(--site-header-height)+84px)] xl:self-start">
             <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(37,99,235,0.02)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Inspector</p>
