@@ -32,24 +32,26 @@ export default async function PricingPage() {
   const higherPriceLabel = getFromPriceLabel(higherPricing);
 
   return (
-    <div className="py-8 md:py-12">
-      <section className="app-surface-brand app-section-padding-lg">
-        <div className="mx-auto max-w-6xl space-y-8">
-          <div className="space-y-4 text-center">
+    <div className="py-5 md:py-8">
+      <section className="app-surface-brand px-4 py-5 md:px-6 md:py-7">
+        <div className="mx-auto max-w-5xl space-y-5">
+          <div className="space-y-3 text-center">
             <Badge tone="info" icon="info">
               Pricing
             </Badge>
 
-            <div className="space-y-3">
-              <h1 className="app-title">Choose your GCSE Russian course access</h1>
-              <p className="mx-auto max-w-3xl app-subtitle">
+            <div className="space-y-2">
+              <h1 className="text-balance text-3xl font-bold tracking-tight text-[var(--text-primary)] md:text-5xl">
+                Choose your GCSE Russian course access
+              </h1>
+              <p className="mx-auto max-w-2xl text-sm leading-6 text-[var(--text-secondary)] md:text-base">
                 Start with Foundation or go straight to Higher. Higher includes more
                 advanced content and is designed for students aiming for the top grades.
               </p>
             </div>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             <PlanCard
               title="Foundation"
               subtitle="Beginner-friendly structured GCSE Russian learning"
@@ -118,23 +120,27 @@ export default async function PricingPage() {
             </PlanCard>
           </div>
 
-          <div className="app-card app-section-padding text-sm text-[var(--text-secondary)]">
-            <p className="font-medium text-[var(--text-primary)]">
-              Looking for teacher-led learning?
-            </p>
-            <p className="mt-2">
-              You can also study through Volna School with live lessons and teacher
-              support. That flow stays separate from Stripe.
-            </p>
+          <div className="app-card px-5 py-4 text-sm text-[var(--text-secondary)]">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-1">
+                <p className="font-medium text-[var(--text-primary)]">
+                  Looking for teacher-led learning?
+                </p>
+                <p className="text-sm leading-6 text-[var(--text-secondary)]">
+                  You can also study through Volna School with live lessons and teacher
+                  support. That flow stays separate from Stripe.
+                </p>
+              </div>
 
-            <div className="mt-4">
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
-              >
-                <AppIcon icon="next" size={14} />
-                Back to homepage
-              </Link>
+              <div className="md:shrink-0">
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
+                >
+                  <AppIcon icon="next" size={14} />
+                  Back to homepage
+                </Link>
+              </div>
             </div>
           </div>
         </div>

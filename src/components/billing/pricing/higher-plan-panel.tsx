@@ -1,5 +1,6 @@
 import CheckoutButton from "@/components/billing/checkout-button";
 import {
+  ActionGroup,
   LockedOption,
   OwnedButton,
   RenewalMessage,
@@ -79,7 +80,7 @@ export default function HigherPlanPanel({
 
   if (!user) {
     return (
-      <>
+      <ActionGroup title="Choose access" variant="compact">
         <CheckoutButton
           productCode="gcse-russian-higher"
           billingType="subscription"
@@ -101,13 +102,13 @@ export default function HigherPlanPanel({
         <CheckoutButton productCode="gcse-russian-higher" billingType="one_time">
           Buy Higher Lifetime ({higherLifetimeStandardLabel})
         </CheckoutButton>
-      </>
+      </ActionGroup>
     );
   }
 
   if (planState.higherLifetime) {
     return (
-      <>
+      <div className="space-y-3">
         <LockedOption
           label="Higher Monthly unavailable"
           message="Monthly plans aren’t needed because you already have Higher lifetime access."
@@ -118,94 +119,106 @@ export default function HigherPlanPanel({
           message="3-month plans aren’t needed because you already have Higher lifetime access."
         />
 
-        <OwnedButton label="Higher Lifetime active" />
-
-        <p className="text-xs text-[var(--text-secondary)]">
-          Your account already has active Higher lifetime access.
-        </p>
-      </>
+        <ActionGroup title="Current plan" variant="compact">
+          <OwnedButton label="Higher Lifetime active" />
+          <p className="text-xs leading-5 text-[var(--text-secondary)]">
+            Your account already has active Higher lifetime access.
+          </p>
+        </ActionGroup>
+      </div>
     );
   }
 
   if (planState.higherThreeMonth) {
     return (
-      <>
+      <div className="space-y-3">
         <LockedOption
           label="Higher Monthly unavailable"
           message="Monthly plans can’t be selected while your current 3-month Higher plan is active."
         />
 
-        <OwnedButton label="Higher 3-Month active" />
-        <RenewalMessage renewal={activeSubscriptions.higher} />
+        <ActionGroup title="Current plan" variant="compact">
+          <OwnedButton label="Higher 3-Month active" />
+          <RenewalMessage renewal={activeSubscriptions.higher} />
+        </ActionGroup>
 
         {canShowHigherThreeMonthToHigherLifetimeUpgrade ? (
-          <UpgradeOffer
-            quote={higherThreeMonthToHigherLifetimeQuote}
-            targetPrice={pricing.lifetime}
-            targetStandardLabel={higherLifetimeStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="one_time"
-              isUpgrade
+          <ActionGroup title="Upgrade options" variant="compact">
+            <UpgradeOffer
+              quote={higherThreeMonthToHigherLifetimeQuote}
+              targetPrice={pricing.lifetime}
+              targetStandardLabel={higherLifetimeStandardLabel}
             >
-              Upgrade to Higher Lifetime (
-              {getUpgradeFeeLabel(higherThreeMonthToHigherLifetimeQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
+              <CheckoutButton
+                productCode="gcse-russian-higher"
+                billingType="one_time"
+                isUpgrade
+              >
+                Upgrade to Higher Lifetime (
+                {getUpgradeFeeLabel(higherThreeMonthToHigherLifetimeQuote)})
+              </CheckoutButton>
+            </UpgradeOffer>
+          </ActionGroup>
         ) : null}
-      </>
+      </div>
     );
   }
 
   if (planState.higherMonthly) {
     return (
-      <>
-        <OwnedButton label="Higher Monthly active" />
-        <RenewalMessage renewal={activeSubscriptions.higher} />
+      <div className="space-y-3">
+        <ActionGroup title="Current plan" variant="compact">
+          <OwnedButton label="Higher Monthly active" />
+          <RenewalMessage renewal={activeSubscriptions.higher} />
+        </ActionGroup>
 
-        {canShowHigherMonthlyToThreeMonthUpgrade ? (
-          <UpgradeOffer
-            quote={higherMonthlyToThreeMonthQuote}
-            targetPrice={pricing.threeMonth}
-            targetStandardLabel={higherThreeMonthStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="subscription"
-              intervalUnit="month"
-              intervalCount={3}
-              isUpgrade
-            >
-              Upgrade to Higher 3 Months (
-              {getUpgradeFeeLabel(higherMonthlyToThreeMonthQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
-        ) : null}
+        {canShowHigherMonthlyToThreeMonthUpgrade ||
+        canShowHigherMonthlyToHigherLifetimeUpgrade ? (
+          <ActionGroup title="Upgrade options" variant="compact">
+            {canShowHigherMonthlyToThreeMonthUpgrade ? (
+              <UpgradeOffer
+                quote={higherMonthlyToThreeMonthQuote}
+                targetPrice={pricing.threeMonth}
+                targetStandardLabel={higherThreeMonthStandardLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-higher"
+                  billingType="subscription"
+                  intervalUnit="month"
+                  intervalCount={3}
+                  isUpgrade
+                >
+                  Upgrade to Higher 3 Months (
+                  {getUpgradeFeeLabel(higherMonthlyToThreeMonthQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
 
-        {canShowHigherMonthlyToHigherLifetimeUpgrade ? (
-          <UpgradeOffer
-            quote={higherMonthlyToHigherLifetimeQuote}
-            targetPrice={pricing.lifetime}
-            targetStandardLabel={higherLifetimeStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="one_time"
-              isUpgrade
-            >
-              Upgrade to Higher Lifetime (
-              {getUpgradeFeeLabel(higherMonthlyToHigherLifetimeQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
+            {canShowHigherMonthlyToHigherLifetimeUpgrade ? (
+              <UpgradeOffer
+                quote={higherMonthlyToHigherLifetimeQuote}
+                targetPrice={pricing.lifetime}
+                targetStandardLabel={higherLifetimeStandardLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-higher"
+                  billingType="one_time"
+                  isUpgrade
+                >
+                  Upgrade to Higher Lifetime (
+                  {getUpgradeFeeLabel(higherMonthlyToHigherLifetimeQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
+          </ActionGroup>
         ) : null}
-      </>
+      </div>
     );
   }
 
   if (planState.foundationLifetime) {
     return (
-      <>
+      <div className="space-y-3">
         <LockedOption
           label="Higher Monthly unavailable"
           message="Monthly plans are not available from Foundation lifetime. You can upgrade straight to Higher lifetime instead."
@@ -217,150 +230,165 @@ export default function HigherPlanPanel({
         />
 
         {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-          <UpgradeOffer
-            quote={foundationLifetimeToHigherLifetimeQuote}
-            targetPrice={pricing.lifetime}
-            targetStandardLabel={higherLifetimeStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="one_time"
-              isUpgrade
+          <ActionGroup title="Upgrade options" variant="compact">
+            <UpgradeOffer
+              quote={foundationLifetimeToHigherLifetimeQuote}
+              targetPrice={pricing.lifetime}
+              targetStandardLabel={higherLifetimeStandardLabel}
             >
-              Upgrade to Higher Lifetime (
-              {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
+              <CheckoutButton
+                productCode="gcse-russian-higher"
+                billingType="one_time"
+                isUpgrade
+              >
+                Upgrade to Higher Lifetime (
+                {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
+              </CheckoutButton>
+            </UpgradeOffer>
+          </ActionGroup>
         ) : null}
-      </>
+      </div>
     );
   }
 
   if (planState.foundationThreeMonth) {
     return (
-      <>
+      <div className="space-y-3">
         <LockedOption
           label="Higher Monthly unavailable"
           message="You can move to Higher on the same 3-month schedule, but not down to a monthly plan while your current 3-month access is active."
         />
 
-        {canShowFoundationThreeMonthToHigherThreeMonthUpgrade ? (
-          <UpgradeOffer
-            quote={foundationThreeMonthToHigherThreeMonthQuote}
-            targetPrice={pricing.threeMonth}
-            targetStandardLabel={higherThreeMonthStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="subscription"
-              intervalUnit="month"
-              intervalCount={3}
-              isUpgrade
-            >
-              Upgrade to Higher 3 Months (
-              {getUpgradeFeeLabel(foundationThreeMonthToHigherThreeMonthQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
-        ) : null}
+        {canShowFoundationThreeMonthToHigherThreeMonthUpgrade ||
+        canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
+          <ActionGroup title="Upgrade options" variant="compact">
+            {canShowFoundationThreeMonthToHigherThreeMonthUpgrade ? (
+              <UpgradeOffer
+                quote={foundationThreeMonthToHigherThreeMonthQuote}
+                targetPrice={pricing.threeMonth}
+                targetStandardLabel={higherThreeMonthStandardLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-higher"
+                  billingType="subscription"
+                  intervalUnit="month"
+                  intervalCount={3}
+                  isUpgrade
+                >
+                  Upgrade to Higher 3 Months (
+                  {getUpgradeFeeLabel(foundationThreeMonthToHigherThreeMonthQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
 
-        {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-          <UpgradeOffer
-            quote={foundationLifetimeToHigherLifetimeQuote}
-            targetPrice={pricing.lifetime}
-            targetStandardLabel={higherLifetimeStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="one_time"
-              isUpgrade
-            >
-              Upgrade to Higher Lifetime (
-              {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
+            {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
+              <UpgradeOffer
+                quote={foundationLifetimeToHigherLifetimeQuote}
+                targetPrice={pricing.lifetime}
+                targetStandardLabel={higherLifetimeStandardLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-higher"
+                  billingType="one_time"
+                  isUpgrade
+                >
+                  Upgrade to Higher Lifetime (
+                  {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
+          </ActionGroup>
         ) : null}
-      </>
+      </div>
     );
   }
 
   if (planState.foundationMonthly) {
     return (
-      <>
-        <OwnedButton label="Foundation Monthly active" />
-        <RenewalMessage renewal={activeSubscriptions.foundation} />
+      <div className="space-y-3">
+        <ActionGroup title="Current plan" variant="compact">
+          <OwnedButton label="Foundation Monthly active" />
+          <RenewalMessage renewal={activeSubscriptions.foundation} />
+        </ActionGroup>
 
-        {canShowFoundationMonthlyToHigherMonthlyUpgrade ? (
-          <UpgradeOffer
-            quote={foundationMonthlyToHigherMonthlyQuote}
-            targetPrice={pricing.monthly}
-            targetStandardLabel={higherMonthlyStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="subscription"
-              intervalUnit="month"
-              intervalCount={1}
-              isUpgrade
-            >
-              Upgrade to Higher Monthly (
-              {getUpgradeFeeLabel(foundationMonthlyToHigherMonthlyQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
-        ) : null}
+        {canShowFoundationMonthlyToHigherMonthlyUpgrade ||
+        canShowFoundationMonthlyToHigherThreeMonthUpgrade ||
+        canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
+          <ActionGroup title="Upgrade options" variant="compact">
+            {canShowFoundationMonthlyToHigherMonthlyUpgrade ? (
+              <UpgradeOffer
+                quote={foundationMonthlyToHigherMonthlyQuote}
+                targetPrice={pricing.monthly}
+                targetStandardLabel={higherMonthlyStandardLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-higher"
+                  billingType="subscription"
+                  intervalUnit="month"
+                  intervalCount={1}
+                  isUpgrade
+                >
+                  Upgrade to Higher Monthly (
+                  {getUpgradeFeeLabel(foundationMonthlyToHigherMonthlyQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
 
-        {canShowFoundationMonthlyToHigherThreeMonthUpgrade ? (
-          <UpgradeOffer
-            quote={foundationMonthlyToHigherThreeMonthQuote}
-            targetPrice={pricing.threeMonth}
-            targetStandardLabel={higherThreeMonthStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="subscription"
-              intervalUnit="month"
-              intervalCount={3}
-              isUpgrade
-            >
-              Upgrade to Higher 3 Months (
-              {getUpgradeFeeLabel(foundationMonthlyToHigherThreeMonthQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
-        ) : null}
+            {canShowFoundationMonthlyToHigherThreeMonthUpgrade ? (
+              <UpgradeOffer
+                quote={foundationMonthlyToHigherThreeMonthQuote}
+                targetPrice={pricing.threeMonth}
+                targetStandardLabel={higherThreeMonthStandardLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-higher"
+                  billingType="subscription"
+                  intervalUnit="month"
+                  intervalCount={3}
+                  isUpgrade
+                >
+                  Upgrade to Higher 3 Months (
+                  {getUpgradeFeeLabel(foundationMonthlyToHigherThreeMonthQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
 
-        {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-          <UpgradeOffer
-            quote={foundationLifetimeToHigherLifetimeQuote}
-            targetPrice={pricing.lifetime}
-            targetStandardLabel={higherLifetimeStandardLabel}
-          >
-            <CheckoutButton
-              productCode="gcse-russian-higher"
-              billingType="one_time"
-              isUpgrade
-            >
-              Upgrade to Higher Lifetime (
-              {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
-            </CheckoutButton>
-          </UpgradeOffer>
+            {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
+              <UpgradeOffer
+                quote={foundationLifetimeToHigherLifetimeQuote}
+                targetPrice={pricing.lifetime}
+                targetStandardLabel={higherLifetimeStandardLabel}
+              >
+                <CheckoutButton
+                  productCode="gcse-russian-higher"
+                  billingType="one_time"
+                  isUpgrade
+                >
+                  Upgrade to Higher Lifetime (
+                  {getUpgradeFeeLabel(foundationLifetimeToHigherLifetimeQuote)})
+                </CheckoutButton>
+              </UpgradeOffer>
+            ) : null}
+          </ActionGroup>
         ) : null}
-      </>
+      </div>
     );
   }
 
   if (higherOwned) {
     return (
-      <>
+      <ActionGroup title="Current plan" variant="compact">
         <OwnedButton label="Higher already owned" />
 
-        <p className="text-xs text-[var(--text-secondary)]">
+        <p className="text-xs leading-5 text-[var(--text-secondary)]">
           Your account already has active Higher access.
         </p>
-      </>
+      </ActionGroup>
     );
   }
 
   return (
-    <>
+    <ActionGroup title="Choose access" variant="compact">
       <CheckoutButton
         productCode="gcse-russian-higher"
         billingType="subscription"
@@ -382,6 +410,6 @@ export default function HigherPlanPanel({
       <CheckoutButton productCode="gcse-russian-higher" billingType="one_time">
         Buy Higher Lifetime ({higherLifetimeStandardLabel})
       </CheckoutButton>
-    </>
+    </ActionGroup>
   );
 }
