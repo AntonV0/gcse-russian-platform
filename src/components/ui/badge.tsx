@@ -78,8 +78,8 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
   return (
     <span
       className={[
-        "dev-marker-host",
-        "inline-flex max-w-full items-center rounded-full px-3 py-1.5",
+        "dev-marker-host relative inline-flex max-w-full items-center rounded-full px-3 py-1.5",
+        "min-h-[1.9rem] align-middle",
         "text-[0.76rem] font-semibold tracking-[-0.01em]",
         getToneClass(tone),
         className,
@@ -92,20 +92,25 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
           componentName="Badge"
           filePath="src/components/ui/badge.tsx"
           tier="primitive"
-          componentRole="Shared status and metadata label"
-          bestFor="Short statuses, counts, category labels, and lightweight contextual markers."
+          componentRole="Compact status, category, or metadata label"
+          bestFor="Short labels that explain state, type, access, progress, or category without becoming full content."
           usageExamples={[
-            "Published / Draft status",
-            "Tier or access labels",
-            "Compact metadata pills",
-            "Small status counters",
+            "Published / Draft labels",
+            "Foundation / Higher access labels",
+            "Pricing or discount pills",
+            "Small workflow status labels",
           ]}
-          notes="Use for short labels only. Avoid turning badges into full content containers or overusing many on the same surface."
+          notes="Keep badge text short. Do not use Badge for long explanations, buttons, or large callouts."
         />
       ) : null}
 
       <span className="flex min-w-0 items-center gap-1.5 leading-[1.25]">
-        {icon ? <AppIcon icon={icon} size={13} /> : null}
+        {icon ? (
+          <span className="shrink-0">
+            <AppIcon icon={icon} size={13} />
+          </span>
+        ) : null}
+
         <span className="truncate leading-[1.25]">{children}</span>
       </span>
     </span>
