@@ -1,20 +1,25 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
-import DashboardCard from "@/components/ui/dashboard-card";
-import TeacherSubmissionReviewForm from "@/components/assignments/teacher-submission-review-form";
 import DeleteAssignmentButton from "@/components/assignments/delete-assignment-button";
-import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
 import ReopenSubmissionButton from "@/components/assignments/reopen-submission-button";
+import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
+import TeacherSubmissionReviewForm from "@/components/assignments/teacher-submission-review-form";
+import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
 import StatusBadge from "@/components/ui/status-badge";
+import SummaryStatCard from "@/components/ui/summary-stat-card";
 import {
   getAssignmentByIdDb,
   getAssignmentItemsWithDetailsDb,
   getAssignmentSubmissionsForTeacherDb,
 } from "@/lib/assignments/assignment-helpers-db";
+import { getDueDateClass, getDueDateStatus } from "@/lib/assignments/assignment-status";
 import { getLessonPath } from "@/lib/access/routes";
 import { canCurrentUserReviewAssignment } from "@/lib/auth/teacher-auth";
 import { getSignedStorageUrl } from "@/lib/shared/storage-helpers";
-import { getDueDateClass, getDueDateStatus } from "@/lib/assignments/assignment-status";
 
 type Props = {
   params: Promise<{ assignmentId: string }>;
@@ -55,6 +60,38 @@ function getProfileName(
 ) {
   if (!profile) return null;
   return profile.display_name || profile.full_name || profile.email || null;
+}
+
+function getItemBadge(itemType: string) {
+  if (itemType === "lesson") {
+    return (
+      <Badge tone="info" icon="lesson">
+        Lesson
+      </Badge>
+    );
+  }
+
+  if (itemType === "question_set") {
+    return (
+      <Badge tone="warning" icon="question">
+        Question set
+      </Badge>
+    );
+  }
+
+  if (itemType === "custom_task") {
+    return (
+      <Badge tone="muted" icon="write">
+        Custom task
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge tone="muted" icon="assignments">
+      Item
+    </Badge>
+  );
 }
 
 export default async function TeacherAssignmentReviewPage({
@@ -101,18 +138,11 @@ export default async function TeacherAssignmentReviewPage({
   const pendingCount = submissionsWithFiles.filter(
     ({ submission }) => submission.status !== "reviewed"
   ).length;
-
   const reviewedCount = submissionsWithFiles.length - pendingCount;
 
   const filteredSubmissions = submissionsWithFiles.filter(({ submission }) => {
-    if (filter === "pending") {
-      return submission.status !== "reviewed";
-    }
-
-    if (filter === "reviewed") {
-      return submission.status === "reviewed";
-    }
-
+    if (filter === "pending") return submission.status !== "reviewed";
+    if (filter === "reviewed") return submission.status === "reviewed";
     return true;
   });
 
@@ -135,9 +165,7 @@ export default async function TeacherAssignmentReviewPage({
       const aReviewed = a.submission.status === "reviewed" ? 0 : 1;
       const bReviewed = b.submission.status === "reviewed" ? 0 : 1;
 
-      if (aReviewed !== bReviewed) {
-        return aReviewed - bReviewed;
-      }
+      if (aReviewed !== bReviewed) return aReviewed - bReviewed;
 
       return (
         getSubmittedAtTime(b.submission.submitted_at) -
@@ -148,9 +176,7 @@ export default async function TeacherAssignmentReviewPage({
     const aPending = a.submission.status === "reviewed" ? 1 : 0;
     const bPending = b.submission.status === "reviewed" ? 1 : 0;
 
-    if (aPending !== bPending) {
-      return aPending - bPending;
-    }
+    if (aPending !== bPending) return aPending - bPending;
 
     return (
       getSubmittedAtTime(b.submission.submitted_at) -
@@ -160,14 +186,13 @@ export default async function TeacherAssignmentReviewPage({
 
   return (
     <main>
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-3">
-          <Link
-            href="/teacher/assignments"
-            className="inline-block text-sm text-blue-600 hover:underline"
-          >
-            Back to assignments
-          </Link>
+          <InlineActions>
+            <Button href="/teacher/assignments" variant="quiet" size="sm" icon="back">
+              Back to assignments
+            </Button>
+          </InlineActions>
 
           <PageHeader
             title={`Review: ${assignment.title}`}
@@ -175,312 +200,330 @@ export default async function TeacherAssignmentReviewPage({
           />
         </div>
 
-        <div className="flex gap-2">
-          <Link
+        <InlineActions align="end">
+          <Button
             href={`/teacher/assignments/${assignment.id}/edit`}
-            className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
+            variant="secondary"
+            size="sm"
+            icon="edit"
           >
             Edit
-          </Link>
+          </Button>
 
           <DeleteAssignmentButton assignmentId={assignment.id} />
-        </div>
+        </InlineActions>
       </div>
 
       <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <div className="rounded-lg border p-4">
-          <p className="mb-1 text-sm font-medium text-gray-900">Due date</p>
-          <p className={`text-sm ${getDueDateClass(dueStatus)}`}>
-            {formatDueDate(assignment.due_at)}
-            {dueStatus === "overdue" ? " (Overdue)" : ""}
-            {dueStatus === "soon" ? " (Due soon)" : ""}
-          </p>
-        </div>
-
-        <div className="rounded-lg border p-4">
-          <p className="mb-1 text-sm font-medium text-gray-900">Assignment items</p>
-          <p className="text-2xl font-semibold text-gray-900">{items.length}</p>
-        </div>
-
-        <div className="rounded-lg border p-4">
-          <p className="mb-1 text-sm font-medium text-gray-900">Pending review</p>
-          <p className="text-2xl font-semibold text-yellow-600">{pendingCount}</p>
-        </div>
-
-        <div className="rounded-lg border p-4">
-          <p className="mb-1 text-sm font-medium text-gray-900">Reviewed</p>
-          <p className="text-2xl font-semibold text-green-600">{reviewedCount}</p>
-        </div>
+        <SummaryStatCard
+          title="Due date"
+          value={
+            <span className={`text-base ${getDueDateClass(dueStatus)}`}>
+              {formatDueDate(assignment.due_at)}
+            </span>
+          }
+          description={
+            dueStatus === "overdue"
+              ? "Overdue"
+              : dueStatus === "soon"
+                ? "Due soon"
+                : "Scheduled"
+          }
+          icon="calendar"
+          tone={dueStatus === "overdue" ? "danger" : dueStatus === "soon" ? "warning" : "brand"}
+          compact
+        />
+        <SummaryStatCard
+          title="Assignment items"
+          value={items.length}
+          icon="assignments"
+          compact
+        />
+        <SummaryStatCard
+          title="Pending review"
+          value={pendingCount}
+          icon="pending"
+          tone="warning"
+          compact
+        />
+        <SummaryStatCard
+          title="Reviewed"
+          value={reviewedCount}
+          icon="completed"
+          tone="success"
+          compact
+        />
       </div>
 
-      <section className="mb-6">
-        <DashboardCard title="Assignment items">
-          {items.length === 0 ? (
-            <p className="text-sm text-gray-600">No items attached to this assignment.</p>
-          ) : (
-            <ol className="space-y-3 text-sm">
-              {items.map((item, index) => {
-                if (item.item_type === "lesson" && item.lesson) {
-                  return (
-                    <li key={item.id} className="rounded border p-4">
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Step {index + 1}
-                        </span>
-                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                          Lesson
-                        </span>
-                      </div>
-
-                      <Link
-                        href={getLessonPath(
-                          item.lesson.course_slug,
-                          item.lesson.variant_slug,
-                          item.lesson.module_slug,
-                          item.lesson.slug
-                        )}
-                        className="text-base font-medium text-blue-600 hover:underline"
-                      >
-                        {item.lesson.title}
-                      </Link>
-
-                      <p className="mt-1 text-gray-600">{item.lesson.module_title}</p>
-                    </li>
-                  );
-                }
-
-                if (item.item_type === "question_set" && item.questionSet?.slug) {
-                  return (
-                    <li key={item.id} className="rounded border p-4">
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Step {index + 1}
-                        </span>
-                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                          Question set
-                        </span>
-                      </div>
-
-                      <Link
-                        href={`/question-sets/${item.questionSet.slug}`}
-                        className="text-base font-medium text-blue-600 hover:underline"
-                      >
-                        {item.questionSet.title}
-                      </Link>
-
-                      {item.questionSet.description ? (
-                        <p className="mt-1 text-gray-700">
-                          {item.questionSet.description}
-                        </p>
-                      ) : null}
-                    </li>
-                  );
-                }
-
-                if (item.item_type === "custom_task") {
-                  return (
-                    <li key={item.id} className="rounded border p-4">
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Step {index + 1}
-                        </span>
-                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                          Custom task
-                        </span>
-                      </div>
-
-                      <p className="text-gray-700">
-                        {item.custom_prompt ?? "No task text provided."}
-                      </p>
-                    </li>
-                  );
-                }
-
+      <PanelCard
+        className="mb-6"
+        title="Assignment items"
+        description="The work students were asked to complete, in order."
+        tone="student"
+        contentClassName="space-y-3"
+      >
+        {items.length === 0 ? (
+          <EmptyState
+            icon="assignments"
+            title="No items attached"
+            description="This assignment does not have any lesson, question set, or custom task items yet."
+          />
+        ) : (
+          <ol className="space-y-3">
+            {items.map((item, index) => {
+              if (item.item_type === "lesson" && item.lesson) {
                 return (
-                  <li key={item.id} className="rounded border p-4">
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                        Step {index + 1}
-                      </span>
-                      <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                        Item
-                      </span>
-                    </div>
-
-                    <p className="text-gray-700">Assignment item</p>
+                  <li key={item.id}>
+                    <CardListItem
+                      title={item.lesson.title}
+                      subtitle={item.lesson.module_title}
+                      badges={
+                        <>
+                          <Badge tone="muted" icon="list">
+                            Step {index + 1}
+                          </Badge>
+                          {getItemBadge(item.item_type)}
+                        </>
+                      }
+                      actions={
+                        <Button
+                          href={getLessonPath(
+                            item.lesson.course_slug,
+                            item.lesson.variant_slug,
+                            item.lesson.module_slug,
+                            item.lesson.slug
+                          )}
+                          variant="secondary"
+                          size="sm"
+                          icon="preview"
+                        >
+                          Open
+                        </Button>
+                      }
+                    />
                   </li>
                 );
-              })}
-            </ol>
-          )}
-        </DashboardCard>
-      </section>
+              }
 
-      <section>
-        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex gap-2">
-            <Link
+              if (item.item_type === "question_set" && item.questionSet?.slug) {
+                return (
+                  <li key={item.id}>
+                    <CardListItem
+                      title={item.questionSet.title}
+                      subtitle={item.questionSet.description ?? undefined}
+                      badges={
+                        <>
+                          <Badge tone="muted" icon="list">
+                            Step {index + 1}
+                          </Badge>
+                          {getItemBadge(item.item_type)}
+                        </>
+                      }
+                      actions={
+                        <Button
+                          href={`/question-sets/${item.questionSet.slug}`}
+                          variant="secondary"
+                          size="sm"
+                          icon="preview"
+                        >
+                          Open
+                        </Button>
+                      }
+                    />
+                  </li>
+                );
+              }
+
+              return (
+                <li key={item.id}>
+                  <CardListItem
+                    title={
+                      item.item_type === "custom_task"
+                        ? "Custom task"
+                        : "Assignment item"
+                    }
+                    subtitle={item.custom_prompt ?? "No task text provided."}
+                    badges={
+                      <>
+                        <Badge tone="muted" icon="list">
+                          Step {index + 1}
+                        </Badge>
+                        {getItemBadge(item.item_type)}
+                      </>
+                    }
+                  />
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </PanelCard>
+
+      <PanelCard
+        title="Submissions"
+        description="Review student work, marks, feedback, and uploaded files."
+        tone="student"
+        contentClassName="space-y-5"
+        actions={
+          <InlineActions align="end">
+            <Button
               href={`/teacher/assignments/${assignment.id}?filter=all&sort=${sort}`}
-              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-                filter === "all" ? "bg-gray-100 font-medium" : ""
-              }`}
+              variant={filter === "all" ? "primary" : "secondary"}
+              size="sm"
             >
               All ({submissionsWithFiles.length})
-            </Link>
-
-            <Link
+            </Button>
+            <Button
               href={`/teacher/assignments/${assignment.id}?filter=pending&sort=${sort}`}
-              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-                filter === "pending" ? "bg-gray-100 font-medium" : ""
-              }`}
+              variant={filter === "pending" ? "primary" : "secondary"}
+              size="sm"
             >
               Pending ({pendingCount})
-            </Link>
-
-            <Link
+            </Button>
+            <Button
               href={`/teacher/assignments/${assignment.id}?filter=reviewed&sort=${sort}`}
-              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-                filter === "reviewed" ? "bg-gray-100 font-medium" : ""
-              }`}
+              variant={filter === "reviewed" ? "primary" : "secondary"}
+              size="sm"
             >
               Reviewed ({reviewedCount})
-            </Link>
-          </div>
-
-          <div className="flex gap-2">
-            <Link
-              href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=pending_first`}
-              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-                sort === "pending_first" ? "bg-gray-100 font-medium" : ""
-              }`}
-            >
-              Pending first
-            </Link>
-
-            <Link
-              href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=reviewed_first`}
-              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-                sort === "reviewed_first" ? "bg-gray-100 font-medium" : ""
-              }`}
-            >
-              Reviewed first
-            </Link>
-
-            <Link
-              href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=newest`}
-              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-                sort === "newest" ? "bg-gray-100 font-medium" : ""
-              }`}
-            >
-              Newest
-            </Link>
-
-            <Link
-              href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=oldest`}
-              className={`rounded border px-3 py-1 text-sm hover:bg-gray-50 ${
-                sort === "oldest" ? "bg-gray-100 font-medium" : ""
-              }`}
-            >
-              Oldest
-            </Link>
-          </div>
-        </div>
+            </Button>
+          </InlineActions>
+        }
+      >
+        <InlineActions align="end">
+          <Button
+            href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=pending_first`}
+            variant={sort === "pending_first" ? "primary" : "secondary"}
+            size="sm"
+          >
+            Pending first
+          </Button>
+          <Button
+            href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=reviewed_first`}
+            variant={sort === "reviewed_first" ? "primary" : "secondary"}
+            size="sm"
+          >
+            Reviewed first
+          </Button>
+          <Button
+            href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=newest`}
+            variant={sort === "newest" ? "primary" : "secondary"}
+            size="sm"
+          >
+            Newest
+          </Button>
+          <Button
+            href={`/teacher/assignments/${assignment.id}?filter=${filter}&sort=oldest`}
+            variant={sort === "oldest" ? "primary" : "secondary"}
+            size="sm"
+          >
+            Oldest
+          </Button>
+        </InlineActions>
 
         {visibleSubmissions.length === 0 ? (
-          <div className="rounded-lg border p-6 text-sm text-gray-600">
-            No submissions in this view.
-          </div>
+          <EmptyState
+            icon="filter"
+            title="No submissions in this view"
+            description="Try switching to all submissions or changing the sort order."
+          />
         ) : (
           <div className="grid gap-4">
             {visibleSubmissions.map(({ submission, student, reviewer, fileUrl }) => {
               const isPending = submission.status !== "reviewed";
               const reviewerName = getProfileName(reviewer);
+              const studentName =
+                student?.display_name ||
+                student?.full_name ||
+                student?.email ||
+                "Student submission";
 
               return (
-                <div
+                <PanelCard
                   key={submission.id}
-                  className={`transition ${isPending ? "border-l-4 border-yellow-400" : ""}`}
+                  title={studentName}
+                  tone="default"
+                  density="compact"
+                  className={isPending ? "border-l-4 border-l-[var(--warning)]" : ""}
+                  actions={
+                    <InlineActions align="end">
+                      <StatusBadge status={submission.status} />
+                      {submission.mark != null ? (
+                        <Badge tone="success" icon="completed">
+                          Mark: {submission.mark}
+                        </Badge>
+                      ) : null}
+                    </InlineActions>
+                  }
+                  contentClassName="space-y-4"
                 >
-                  <DashboardCard
-                    title={
-                      student?.display_name ||
-                      student?.full_name ||
-                      student?.email ||
-                      "Student submission"
-                    }
+                  <div className="grid gap-3 text-sm app-text-muted md:grid-cols-2">
+                    <div>Submitted: {formatDateTime(submission.submitted_at)}</div>
+                    {submission.reviewed_at ? (
+                      <div className="text-[var(--success)]">
+                        Reviewed: {formatDateTime(submission.reviewed_at)}
+                        {reviewerName ? ` by ${reviewerName}` : ""}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <PanelCard
+                    title="Submission"
+                    tone="muted"
+                    density="compact"
+                    contentClassName="text-sm leading-6 text-[var(--text-primary)]"
                   >
-                    <div className="space-y-4">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <StatusBadge status={submission.status} />
-                          {submission.mark != null ? (
-                            <span className="text-sm font-medium text-gray-700">
-                              Mark: {submission.mark}
-                            </span>
-                          ) : null}
-                        </div>
+                    {submission.submitted_text ?? "No text provided."}
+                  </PanelCard>
 
-                        <div className="text-right text-sm text-gray-600">
-                          <p>Submitted: {formatDateTime(submission.submitted_at)}</p>
-
-                          {submission.reviewed_at ? (
-                            <p className="text-green-600">
-                              Reviewed: {formatDateTime(submission.reviewed_at)}
-                              {reviewerName ? ` by ${reviewerName}` : ""}
-                            </p>
-                          ) : null}
-                        </div>
+                  {submission.submitted_file_name && fileUrl ? (
+                    <PanelCard title="Uploaded file" tone="muted" density="compact">
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                        <span className="font-medium text-[var(--text-primary)]">
+                          {submission.submitted_file_name}
+                        </span>
+                        <Button
+                          href={fileUrl}
+                          variant="secondary"
+                          size="sm"
+                          icon="upload"
+                        >
+                          Open file
+                        </Button>
                       </div>
+                    </PanelCard>
+                  ) : null}
 
-                      <div className="rounded border bg-gray-50 p-3 text-sm">
-                        <p className="mb-1 font-medium">Submission</p>
-                        <p>{submission.submitted_text ?? "No text provided."}</p>
-                      </div>
+                  {submission.feedback ? (
+                    <PanelCard
+                      title="Current feedback"
+                      tone="muted"
+                      density="compact"
+                      contentClassName="text-sm leading-6 text-[var(--text-primary)]"
+                    >
+                      {submission.feedback}
+                    </PanelCard>
+                  ) : null}
 
-                      {submission.submitted_file_name && fileUrl ? (
-                        <div className="rounded border bg-gray-50 p-3 text-sm">
-                          <p className="mb-1 font-medium">Uploaded file</p>
-                          <p>{submission.submitted_file_name}</p>
-                          <Link
-                            href={fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            Open file
-                          </Link>
-                        </div>
-                      ) : null}
-
-                      {submission.feedback ? (
-                        <div className="rounded border bg-gray-50 p-3 text-sm">
-                          <p className="mb-1 font-medium">Current feedback</p>
-                          <p className="text-gray-700">{submission.feedback}</p>
-                        </div>
-                      ) : null}
-
-                      {submission.status === "reviewed" ? (
-                        <div className="border-t pt-3">
-                          <ReopenSubmissionButton submissionId={submission.id} />
-                        </div>
-                      ) : null}
-
-                      <div className="border-t pt-3">
-                        <TeacherSubmissionReviewForm
-                          submissionId={submission.id}
-                          initialMark={submission.mark}
-                          initialFeedback={submission.feedback}
-                          initiallyOpen={submission.status !== "reviewed"}
-                        />
-                      </div>
+                  {submission.status === "reviewed" ? (
+                    <div className="border-t border-[var(--border-subtle)] pt-4">
+                      <ReopenSubmissionButton submissionId={submission.id} />
                     </div>
-                  </DashboardCard>
-                </div>
+                  ) : null}
+
+                  <div className="border-t border-[var(--border-subtle)] pt-4">
+                    <TeacherSubmissionReviewForm
+                      submissionId={submission.id}
+                      initialMark={submission.mark}
+                      initialFeedback={submission.feedback}
+                    />
+                  </div>
+                </PanelCard>
               );
             })}
           </div>
         )}
-      </section>
+      </PanelCard>
     </main>
   );
 }
