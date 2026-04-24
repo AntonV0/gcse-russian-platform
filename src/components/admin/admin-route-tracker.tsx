@@ -97,6 +97,27 @@ function getRouteMeta(pathname: string): Pick<RecentAdminRoute, "title" | "descr
     };
   }
 
+  if (pathname === "/admin/past-papers") {
+    return {
+      title: "Past papers",
+      description: "Manage official Pearson past paper resource links.",
+    };
+  }
+
+  if (pathname === "/admin/mock-exams") {
+    return {
+      title: "Mock exams",
+      description: "Manage original GCSE-style mock exam sets.",
+    };
+  }
+
+  if (/^\/admin\/mock-exams\/[^/]+$/.test(pathname)) {
+    return {
+      title: "Mock exam editor",
+      description: "Edit mock exam sections and JSON-backed questions.",
+    };
+  }
+
   if (pathname === "/admin/lesson-templates") {
     return {
       title: "Lesson templates",

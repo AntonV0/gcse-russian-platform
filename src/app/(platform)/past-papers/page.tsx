@@ -1,133 +1,261 @@
-import Link from "next/link";
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import DashboardCard from "@/components/ui/dashboard-card";
+import EmptyState from "@/components/ui/empty-state";
+import FeedbackBanner from "@/components/ui/feedback-banner";
+import PageIntroPanel from "@/components/ui/page-intro-panel";
+import SectionCard from "@/components/ui/section-card";
+import Select from "@/components/ui/select";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import {
+  filterPastPaperResourcesForDashboardAccess,
+  getPastPaperExamSeriesOptions,
+  getPastPaperResourceTypeLabel,
+  getPastPaperTierLabel,
+  getPublishedPastPaperResourcesDb,
+  groupPastPaperResourcesBySeries,
+  pastPaperResourceTypes,
+  pastPaperTiers,
+  type PastPaperResourceFilters,
+  type PastPaperResourceType,
+  type PastPaperTier,
+} from "@/lib/past-papers/past-paper-helpers-db";
 
-const paperAreas = [
-  {
-    title: "Reading practice",
-    description:
-      "Work with comprehension-style tasks, scanning skills, and exam-style reading confidence.",
-  },
-  {
-    title: "Listening practice",
-    description:
-      "Prepare for audio-based tasks with structured support and future listening resources.",
-  },
-  {
-    title: "Translation practice",
-    description:
-      "Build exam confidence with targeted translation-style revision and grammar-aware support.",
-  },
-  {
-    title: "Writing support",
-    description:
-      "Prepare for short and extended writing tasks with useful structures and revision prompts.",
-  },
-];
+type PastPapersPageProps = {
+  searchParams?: Promise<{
+    examSeries?: string;
+    paperNumber?: string;
+    tier?: string;
+    resourceType?: string;
+  }>;
+};
 
-export default function PastPapersPage() {
+function normalizePaperNumberFilter(
+  value?: string
+): PastPaperResourceFilters["paperNumber"] {
+  const numberValue = Number(value);
+
+  if ([1, 2, 3, 4].includes(numberValue)) {
+    return numberValue;
+  }
+
+  return "all";
+}
+
+function normalizeTierFilter(value?: string): PastPaperResourceFilters["tier"] {
+  if (pastPaperTiers.includes(value as PastPaperTier)) {
+    return value as PastPaperTier;
+  }
+
+  return "all";
+}
+
+function normalizeResourceTypeFilter(
+  value?: string
+): PastPaperResourceFilters["resourceType"] {
+  if (pastPaperResourceTypes.includes(value as PastPaperResourceType)) {
+    return value as PastPaperResourceType;
+  }
+
+  return "all";
+}
+
+export default async function PastPapersPage({ searchParams }: PastPapersPageProps) {
+  const params = (await searchParams) ?? {};
+  const dashboard = await getDashboardInfo();
+  const allAccessibleResources = filterPastPaperResourcesForDashboardAccess(
+    await getPublishedPastPaperResourcesDb(),
+    dashboard
+  );
+  const filters: PastPaperResourceFilters = {
+    examSeries: params.examSeries ?? null,
+    paperNumber: normalizePaperNumberFilter(params.paperNumber),
+    tier: normalizeTierFilter(params.tier),
+    resourceType: normalizeResourceTypeFilter(params.resourceType),
+  };
+  const resources = filterPastPaperResourcesForDashboardAccess(
+    await getPublishedPastPaperResourcesDb(filters),
+    dashboard
+  );
+  const groupedResources = groupPastPaperResourcesBySeries(resources);
+  const examSeriesOptions = getPastPaperExamSeriesOptions(allAccessibleResources);
+
   return (
-    <main className="space-y-8">
-      <PageHeader
+    <main className="space-y-4">
+      <PageIntroPanel
+        tone="student"
+        eyebrow="Past papers"
         title="Past Papers"
-        description="Prepare for exam-style work with structured revision and future practice tools."
+        description="Browse official Pearson Edexcel GCSE Russian 1RU0 resource links by series, paper, tier, and resource type."
+        badges={
+          <>
+            <Badge tone="info" icon="file">
+              Pearson Edexcel 1RU0
+            </Badge>
+            <Badge tone="muted" icon="school">
+              GCSE Russian
+            </Badge>
+            <Badge tone="success" icon="preview">
+              Official links only
+            </Badge>
+          </>
+        }
+        actions={
+          <>
+            <Button href="/dashboard" variant="secondary" icon="dashboard">
+              Dashboard
+            </Button>
+            <Button href="/mock-exams" variant="secondary" icon="exercise">
+              Mock exams
+            </Button>
+          </>
+        }
       />
 
-      <section className="app-surface-brand app-section-padding-lg">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_320px] xl:items-start">
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon="file">
-                Exam practice
-              </Badge>
-              <Badge tone="muted" icon="school">
-                GCSE Russian
-              </Badge>
-            </div>
+      <FeedbackBanner
+        tone="info"
+        title="External Pearson resources"
+        description="These links open official Pearson pages or files in a new tab. Downloads happen from Pearson, not from this platform."
+      />
 
-            <div className="space-y-2">
-              <h2 className="app-title">Get ready for the real exam</h2>
-              <p className="app-subtitle max-w-2xl">
-                This area can become the home for past papers, exam-style tasks, revision
-                guidance, and structured preparation before mocks and final exams.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button href="/dashboard" variant="primary" icon="dashboard">
-                Dashboard
-              </Button>
-
-              <Button href="/courses" variant="secondary" icon="courses">
-                Courses
-              </Button>
-            </div>
+      <SectionCard
+        title="Find resources"
+        description="Filter by paper, tier, exam series, and resource type."
+        tone="student"
+      >
+        <form className="flex flex-col gap-3 lg:flex-row lg:items-center">
+          <div className="w-full lg:max-w-[190px]">
+            <Select name="examSeries" defaultValue={params.examSeries ?? ""}>
+              <option value="">All series</option>
+              {examSeriesOptions.map((examSeries) => (
+                <option key={examSeries} value={examSeries}>
+                  {examSeries}
+                </option>
+              ))}
+            </Select>
           </div>
 
-          <DashboardCard title="Planned use">
-            <div className="space-y-3">
-              <p>
-                This section is especially useful for self-study students who want more
-                structured exam preparation, and it also fits well alongside your future
-                mock exam offering.
-              </p>
-
-              <ul className="space-y-2">
-                <li>• Exam-style paper navigation</li>
-                <li>• Skill-based practice areas</li>
-                <li>• Revision support before mocks</li>
-                <li>• Future downloadable resources</li>
-              </ul>
-            </div>
-          </DashboardCard>
-        </div>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {paperAreas.map((area) => (
-          <DashboardCard key={area.title} title={area.title}>
-            <p>{area.description}</p>
-          </DashboardCard>
-        ))}
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-        <DashboardCard title="Next build idea">
-          <div className="space-y-3">
-            <p>
-              A very strong next step would be a database-backed exam resource model, so
-              papers, mock materials, and revision assets can be managed from the admin
-              side like the rest of the platform.
-            </p>
-
-            <ul className="space-y-2">
-              <li>• Past paper records</li>
-              <li>• Skill tags and filters</li>
-              <li>• Mark scheme links</li>
-              <li>• Mock exam resources</li>
-            </ul>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Keep revising">
-          <div className="space-y-3">
-            <p>
-              Past paper work is strongest when combined with grammar and vocabulary
-              revision.
-            </p>
-
-            <Link
-              href="/grammar"
-              className="inline-flex items-center gap-2 font-medium app-brand-text"
+          <div className="w-full lg:max-w-[160px]">
+            <Select
+              name="paperNumber"
+              defaultValue={String(filters.paperNumber ?? "all")}
             >
-              Review grammar
-              <span aria-hidden="true">→</span>
-            </Link>
+              <option value="all">All papers</option>
+              <option value="1">Paper 1</option>
+              <option value="2">Paper 2</option>
+              <option value="3">Paper 3</option>
+              <option value="4">Paper 4</option>
+            </Select>
           </div>
-        </DashboardCard>
-      </section>
+
+          <div className="w-full lg:max-w-[180px]">
+            <Select name="tier" defaultValue={filters.tier ?? "all"}>
+              <option value="all">All tiers</option>
+              {pastPaperTiers.map((tier) => (
+                <option key={tier} value={tier}>
+                  {getPastPaperTierLabel(tier)}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="w-full lg:max-w-[240px]">
+            <Select name="resourceType" defaultValue={filters.resourceType ?? "all"}>
+              <option value="all">All resource types</option>
+              {pastPaperResourceTypes.map((resourceType) => (
+                <option key={resourceType} value={resourceType}>
+                  {getPastPaperResourceTypeLabel(resourceType)}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" variant="primary" icon="filter">
+              Apply
+            </Button>
+            <Button href="/past-papers" variant="secondary" icon="refresh">
+              Reset
+            </Button>
+          </div>
+        </form>
+      </SectionCard>
+
+      <SectionCard
+        title="Official resources"
+        description={`${resources.length} resource${resources.length === 1 ? "" : "s"} available for your filters.`}
+        tone="student"
+      >
+        {groupedResources.length === 0 ? (
+          <EmptyState
+            icon="search"
+            iconTone="brand"
+            title="No past paper resources found"
+            description="Try clearing filters, or check back once more official links have been published."
+          />
+        ) : (
+          <div className="space-y-5">
+            {groupedResources.map((group) => (
+              <section key={group.examSeries} className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="app-card-title">{group.examSeries}</h2>
+                  <Badge tone="muted" icon="list">
+                    {group.resources.length} resource
+                    {group.resources.length === 1 ? "" : "s"}
+                  </Badge>
+                </div>
+
+                <div className="grid gap-3">
+                  {group.resources.map((resource) => (
+                    <div
+                      key={resource.id}
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+                    >
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="min-w-0 space-y-3">
+                          <div>
+                            <h3 className="font-semibold leading-6 text-[var(--text-primary)]">
+                              {resource.title}
+                            </h3>
+                            <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                              {resource.paper_name} · {resource.source_label}
+                            </p>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <Badge tone="info" icon="file">
+                              Paper {resource.paper_number}
+                            </Badge>
+                            <Badge tone="muted" icon="school">
+                              {getPastPaperTierLabel(resource.tier)}
+                            </Badge>
+                            <Badge tone="muted">
+                              {getPastPaperResourceTypeLabel(resource.resource_type)}
+                            </Badge>
+                            {resource.is_official ? (
+                              <Badge tone="success" icon="preview">
+                                Official
+                              </Badge>
+                            ) : null}
+                          </div>
+                        </div>
+
+                        <a
+                          href={resource.official_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="app-btn-base app-btn-primary min-h-10 rounded-2xl px-4 py-2.5 text-sm"
+                        >
+                          Open Pearson resource
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </SectionCard>
     </main>
   );
 }

@@ -47,6 +47,10 @@ export function getPastPapersPath() {
   return "/past-papers";
 }
 
+export function getMockExamsPath() {
+  return "/mock-exams";
+}
+
 export function getProfilePath() {
   return "/profile";
 }

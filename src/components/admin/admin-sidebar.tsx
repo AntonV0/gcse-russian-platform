@@ -73,6 +73,8 @@ export default function AdminSidebar() {
   const isQuestionSets =
     pathname === "/admin/question-sets" || pathname.startsWith("/admin/question-sets/");
   const isQuestionTemplates = pathname === "/admin/question-sets/templates";
+  const isPastPapers = pathname.startsWith("/admin/past-papers");
+  const isMockExams = pathname.startsWith("/admin/mock-exams");
   const isLessonTemplates = pathname.startsWith("/admin/lesson-templates");
   const isAssignments = pathname.startsWith("/teacher/assignments");
   const isTeachingGroups = pathname.startsWith("/admin/teaching-groups");
@@ -235,6 +237,18 @@ export default function AdminSidebar() {
             >
               <AppIcon icon="file" size={18} />
               <span className="flex-1 text-left">Templates</span>
+            </Link>
+          </SidebarSection>
+
+          <SidebarSection title="Exams">
+            <Link href="/admin/past-papers" className={getNavItemClass(isPastPapers)}>
+              <AppIcon icon="file" size={18} />
+              <span className="flex-1 text-left">Past Papers</span>
+            </Link>
+
+            <Link href="/admin/mock-exams" className={getNavItemClass(isMockExams)}>
+              <AppIcon icon="exercise" size={18} />
+              <span className="flex-1 text-left">Mock Exams</span>
             </Link>
           </SidebarSection>
 

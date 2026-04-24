@@ -12,6 +12,7 @@ import {
   getCoursesPath,
   getDashboardPath,
   getGrammarPath,
+  getMockExamsPath,
   getOnlineClassesPath,
   getPastPapersPath,
   getProfilePath,
@@ -87,6 +88,7 @@ export default function PlatformSidebar({
     { label: "Vocabulary", href: getVocabularyPath(), icon: "language" },
     { label: "Grammar", href: getGrammarPath(), icon: "lessonContent" },
     { label: "Past Papers", href: getPastPapersPath(), icon: "file" },
+    { label: "Mock Exams", href: getMockExamsPath(), icon: "exercise" },
   ];
 
   const conditionalItems: NavItem[] = [];
