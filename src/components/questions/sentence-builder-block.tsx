@@ -106,7 +106,7 @@ export default function SentenceBuilderBlock({
                 type="button"
                 onClick={() => onRemoveToken(index)}
                 disabled={hasSubmitted || isSubmitting}
-                className="rounded-full border border-[var(--brand-blue)] bg-[var(--brand-blue)] px-3 py-1.5 text-sm text-white transition hover:opacity-90 disabled:cursor-default"
+                className="rounded-full border border-[var(--accent-fill)] bg-[var(--accent-fill)] px-3 py-1.5 text-sm text-[var(--accent-on-fill)] transition hover:bg-[var(--accent-fill-hover)] disabled:cursor-default"
               >
                 {token}
               </button>

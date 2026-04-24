@@ -72,7 +72,7 @@ export default function ThemeModeSelector() {
                 "app-focus-ring rounded-2xl border p-4 text-left transition",
                 "hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
                 isActive
-                  ? "border-[var(--brand-blue)] bg-[var(--brand-blue-soft)] text-[var(--brand-blue)] shadow-[var(--shadow-sm)]"
+                  ? "border-[var(--accent-fill)] bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)] shadow-[var(--shadow-sm)]"
                   : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:border-[var(--border-strong)]",
               ].join(" ")}
               aria-pressed={isActive}
@@ -94,7 +94,7 @@ export default function ThemeModeSelector() {
                   <span
                     className={[
                       "block text-xs leading-5",
-                      isActive ? "text-[var(--brand-blue)]/85" : "app-text-muted",
+                      isActive ? "text-[var(--accent-on-soft)]" : "app-text-muted",
                     ].join(" ")}
                   >
                     {option.description}
@@ -106,7 +106,7 @@ export default function ThemeModeSelector() {
                 className={[
                   "mt-4 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
                   isActive
-                    ? "bg-[var(--background-elevated)] text-[var(--brand-blue)]"
+                    ? "bg-[var(--background-elevated)] text-[var(--accent-on-soft)]"
                     : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
                 ].join(" ")}
               >

@@ -22,7 +22,7 @@ function getToneClass(tone: BadgeTone) {
         "app-badge-default",
         "border border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)]",
         "bg-[linear-gradient(135deg,var(--brand-blue-soft)_0%,var(--background-elevated)_100%)]",
-        "text-[var(--brand-blue)]",
+        "text-[var(--accent-on-soft)]",
         "shadow-[0_1px_2px_color-mix(in_srgb,var(--brand-blue)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
       ].join(" ");
 

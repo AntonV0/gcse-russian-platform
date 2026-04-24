@@ -1,7 +1,7 @@
 .app-focus-ring:focus-visible {
   outline: none;
   box-shadow: 0 0 0 4px var(--accent-ring);
-  border-color: var(--brand-blue);
+  border-color: var(--accent-fill);
 }
 
 .app-btn-base {
@@ -25,14 +25,14 @@
 }
 
 .app-btn-primary {
-  background: var(--brand-blue);
-  color: var(--text-inverse);
-  border-color: var(--brand-blue);
+  background: var(--accent-fill);
+  color: var(--accent-on-fill);
+  border-color: var(--accent-fill);
 }
 
 .app-btn-primary:hover {
-  background: var(--brand-blue-hover);
-  border-color: var(--brand-blue-hover);
+  background: var(--accent-fill-hover);
+  border-color: var(--accent-fill-hover);
 }
 
 .app-btn-secondary {
@@ -82,7 +82,7 @@
 }
 
 .app-btn-variant-primary {
-  color: #ffffff;
+  color: var(--accent-on-fill);
 }
 
 .app-btn-variant-primary > :not(.dev-marker-anchor) {
@@ -106,7 +106,7 @@
 }
 
 .app-btn-variant-soft {
-  color: var(--brand-blue);
+  color: var(--accent-on-soft);
 }
 
 .app-btn-variant-soft * {
@@ -114,12 +114,12 @@
 }
 
 [data-theme="dark"] .app-btn-variant-secondary {
-  border-color: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--control-border);
   background: rgba(9, 23, 47, 0.96);
 }
 
 [data-theme="dark"] .app-btn-variant-secondary:hover {
-  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  border-color: var(--control-border-strong);
   background: rgba(20, 35, 61, 0.98);
 }
 
@@ -128,14 +128,14 @@
 }
 
 [data-theme="dark"] .app-btn-variant-quiet:hover {
-  color: var(--brand-blue-hover);
+  color: var(--accent-on-soft);
   border-color: color-mix(in srgb, var(--accent) 12%, transparent);
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 [data-theme="dark"] .app-btn-variant-soft {
-  border-color: color-mix(in srgb, var(--accent) 18%, transparent);
-  color: color-mix(in srgb, var(--accent-hover) 62%, white);
+  border-color: var(--control-border);
+  color: var(--accent-on-soft);
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 26%, transparent) 0%,
@@ -151,8 +151,8 @@
 }
 
 [data-theme="dark"] .app-btn-variant-soft:hover {
-  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
-  color: color-mix(in srgb, var(--accent-hover) 44%, white);
+  border-color: var(--control-border-strong);
+  color: var(--accent-on-soft);
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 34%, transparent) 0%,

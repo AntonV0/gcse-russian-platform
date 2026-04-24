@@ -51,7 +51,7 @@ export function BlockTypeButton(props: BlockTypeButtonProps) {
       className={[
         "group inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition-[background-color,border-color,box-shadow,transform]",
         isSelected
-          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white shadow-[0_10px_22px_color-mix(in_srgb,var(--brand-blue)_18%,transparent)]"
+          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--brand-blue)_18%,transparent)]"
           : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] hover:shadow-[0_8px_18px_rgba(16,32,51,0.06)]",
       ].join(" ")}
     >

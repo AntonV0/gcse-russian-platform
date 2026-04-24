@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Button from "@/components/ui/button";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 
 type CheckoutButtonProps = {
   productCode: string;
@@ -79,16 +81,19 @@ export default function CheckoutButton({
         />
       ) : null}
 
-      <button
+      <Button
         type="button"
         onClick={handleCheckout}
         disabled={isLoading}
-        className="inline-flex w-full items-center justify-center rounded-xl bg-[var(--brand-blue)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+        variant="primary"
+        className="w-full"
       >
         {isLoading ? "Redirecting..." : children}
-      </button>
+      </Button>
 
-      {errorMessage ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
+      {errorMessage ? (
+        <FeedbackBanner tone="danger" description={errorMessage} />
+      ) : null}
     </div>
   );
 }
