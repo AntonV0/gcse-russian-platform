@@ -1,7 +1,12 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
 import { createLessonTemplateAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import {
   getLessonTemplateSectionsDb,
@@ -10,43 +15,29 @@ import {
 
 function CreateLessonTemplateCard() {
   return (
-    <section className="rounded-2xl border bg-white p-4 shadow-sm">
-      <div className="mb-3">
-        <div className="font-medium text-gray-900">Create lesson template</div>
-        <div className="text-sm text-gray-500">
-          Add a reusable full lesson scaffold built from ordered section templates.
-        </div>
-      </div>
-
+    <PanelCard
+      title="Create lesson template"
+      description="Add a reusable full lesson scaffold built from ordered section templates."
+      tone="admin"
+    >
       <form action={createLessonTemplateAction} className="grid gap-3 md:grid-cols-3">
-        <input
-          name="title"
-          required
-          placeholder="Lesson template title"
-          className="rounded-xl border px-3 py-2 text-sm"
-        />
-        <input
-          name="slug"
-          required
-          placeholder="lesson-template-slug"
-          className="rounded-xl border px-3 py-2 text-sm"
-        />
-        <input
-          name="description"
-          placeholder="Optional description"
-          className="rounded-xl border px-3 py-2 text-sm"
-        />
+        <FormField label="Title" required>
+          <Input name="title" required placeholder="Lesson template title" />
+        </FormField>
+        <FormField label="Slug" required>
+          <Input name="slug" required placeholder="lesson-template-slug" />
+        </FormField>
+        <FormField label="Description">
+          <Input name="description" placeholder="Optional description" />
+        </FormField>
 
         <div className="md:col-span-3">
-          <button
-            type="submit"
-            className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-          >
+          <Button type="submit" variant="primary" icon="create">
             Create lesson template
-          </button>
+          </Button>
         </div>
       </form>
-    </section>
+    </PanelCard>
   );
 }
 
@@ -79,22 +70,21 @@ export default async function AdminLessonTemplatesListPage() {
       <CreateLessonTemplateCard />
 
       {templates.length === 0 ? (
-        <div className="rounded-xl border border-dashed bg-white px-4 py-8 text-sm text-gray-500">
-          No lesson templates found yet.
-        </div>
+        <EmptyState
+          icon="lesson"
+          title="No lesson templates found yet"
+          description="Create a full lesson scaffold to build future lessons faster."
+        />
       ) : (
         <div className="space-y-3">
           {templates.map((template) => (
-            <Link
+            <CardListItem
               key={template.id}
               href={`/admin/lesson-templates/lesson-templates/${template.id}`}
-              className="block rounded-2xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="font-medium text-gray-900">{template.title}</div>
-
-                  <div className="mt-2 flex flex-wrap gap-2">
+              title={template.title}
+              subtitle={template.description ?? undefined}
+              badges={
+                <>
                     <Badge tone="muted" icon="file">
                       {template.slug}
                     </Badge>
@@ -112,16 +102,21 @@ export default async function AdminLessonTemplatesListPage() {
                         Inactive
                       </Badge>
                     )}
-                  </div>
-
-                  {template.description ? (
-                    <p className="mt-3 text-sm text-gray-600">{template.description}</p>
-                  ) : null}
-                </div>
-
-                <div className="text-sm text-gray-500">Open</div>
-              </div>
-            </Link>
+                </>
+              }
+              actions={
+                <InlineActions align="end">
+                  <Button
+                    href={`/admin/lesson-templates/lesson-templates/${template.id}`}
+                    variant="secondary"
+                    size="sm"
+                    icon="preview"
+                  >
+                    Open
+                  </Button>
+                </InlineActions>
+              }
+            />
           ))}
         </div>
       )}
