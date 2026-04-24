@@ -160,6 +160,14 @@ export type DbVocabularyListItem = {
   created_at: string;
 };
 
+export type DbVocabularyItemCoverage = {
+  vocabulary_item_id: string;
+  used_in_foundation: boolean;
+  used_in_higher: boolean;
+  used_in_volna: boolean;
+  used_in_custom_list: boolean;
+};
+
 export type DbLessonVocabularySetUsage = {
   id: string;
   lesson_id: string;
@@ -407,6 +415,18 @@ function normalizeVocabularyItem(row: unknown): DbVocabularyItem {
   };
 }
 
+function normalizeVocabularyItemCoverage(row: unknown): DbVocabularyItemCoverage {
+  const record = row as Partial<DbVocabularyItemCoverage>;
+
+  return {
+    vocabulary_item_id: String(record.vocabulary_item_id),
+    used_in_foundation: Boolean(record.used_in_foundation),
+    used_in_higher: Boolean(record.used_in_higher),
+    used_in_volna: Boolean(record.used_in_volna),
+    used_in_custom_list: Boolean(record.used_in_custom_list),
+  };
+}
+
 function slugifyVocabularyTitle(title: string) {
   const slug = title
     .trim()
@@ -623,6 +643,34 @@ export async function getVocabularyItemsBySetIdDb(vocabularySetId: string) {
   }
 
   return (data ?? []).map(normalizeVocabularyItem);
+}
+
+export async function getVocabularyItemCoverageByItemIdsDb(vocabularyItemIds: string[]) {
+  if (vocabularyItemIds.length === 0) {
+    return new Map<string, DbVocabularyItemCoverage>();
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("vocabulary_item_coverage")
+    .select("*")
+    .in("vocabulary_item_id", vocabularyItemIds);
+
+  if (error) {
+    console.error("Error fetching vocabulary item coverage:", {
+      vocabularyItemIds,
+      error,
+    });
+    return new Map<string, DbVocabularyItemCoverage>();
+  }
+
+  return new Map(
+    (data ?? []).map((row) => {
+      const coverage = normalizeVocabularyItemCoverage(row);
+      return [coverage.vocabulary_item_id, coverage];
+    })
+  );
 }
 
 export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
