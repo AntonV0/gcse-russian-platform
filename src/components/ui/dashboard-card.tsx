@@ -37,7 +37,7 @@ export default function DashboardCard({
 
       <Card
         className={[
-          "app-dashboard-card rounded-2xl border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[0_10px_22px_rgba(16,32,51,0.05)]",
+          "app-dashboard-card rounded-2xl border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[0_10px_22px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]",
           className,
         ]
           .filter(Boolean)

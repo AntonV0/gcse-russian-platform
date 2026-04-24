@@ -23,30 +23,30 @@ function getToneClass(tone: PageIntroPanelTone) {
     case "brand":
       return [
         "border border-[var(--border-subtle)]",
-        "bg-[linear-gradient(135deg,rgba(37,99,235,0.08)_0%,rgba(255,255,255,0.985)_52%,rgba(217,75,82,0.05)_100%)]",
-        "shadow-[0_16px_34px_rgba(16,32,51,0.08)]",
+        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98.5%,transparent)_52%,color-mix(in_srgb,var(--brand-red)_5%,transparent)_100%)]",
+        "shadow-[0_16px_34px_color-mix(in_srgb,var(--text-primary)_8%,transparent)]",
       ].join(" ");
 
     case "student":
       return [
         "border border-[var(--border-subtle)]",
-        "bg-[linear-gradient(135deg,rgba(37,99,235,0.06)_0%,rgba(255,255,255,0.985)_48%,rgba(217,75,82,0.04)_100%)]",
-        "shadow-[0_14px_30px_rgba(16,32,51,0.07)]",
+        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_6%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98.5%,transparent)_48%,color-mix(in_srgb,var(--brand-red)_4%,transparent)_100%)]",
+        "shadow-[0_14px_30px_color-mix(in_srgb,var(--text-primary)_7%,transparent)]",
       ].join(" ");
 
     case "neutral":
       return [
         "border border-[var(--border-subtle)]",
         "bg-[var(--background-elevated)]",
-        "shadow-[0_12px_28px_rgba(16,32,51,0.06)]",
+        "shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]",
       ].join(" ");
 
     case "admin":
     default:
       return [
         "border border-[var(--border-subtle)]",
-        "bg-[linear-gradient(180deg,rgba(37,99,235,0.04)_0%,var(--background-elevated)_100%)]",
-        "shadow-[0_12px_28px_rgba(16,32,51,0.06)]",
+        "bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_4%,transparent)_0%,var(--background-elevated)_100%)]",
+        "shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]",
       ].join(" ");
   }
 }

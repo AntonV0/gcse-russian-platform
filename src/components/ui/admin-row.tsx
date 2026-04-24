@@ -18,10 +18,10 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 function getStateClass(state: NonNullable<AdminRowProps["state"]>) {
   switch (state) {
     case "hover":
-      return "border-[var(--border-strong)] bg-[var(--background-muted)] shadow-[0_10px_20px_rgba(16,32,51,0.06)]";
+      return "border-[var(--border-strong)] bg-[var(--background-muted)] shadow-[0_10px_20px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]";
 
     case "selected":
-      return "border-[rgba(37,99,235,0.24)] bg-[rgba(37,99,235,0.08)] shadow-[0_10px_20px_rgba(37,99,235,0.08)]";
+      return "border-[color-mix(in_srgb,var(--brand-blue)_24%,transparent)] bg-[color-mix(in_srgb,var(--brand-blue)_8%,transparent)] shadow-[0_10px_20px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]";
 
     case "disabled":
       return "border-[var(--border-subtle)] bg-[var(--background-muted)] opacity-60";

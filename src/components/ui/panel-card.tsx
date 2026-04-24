@@ -26,30 +26,30 @@ function getToneClasses(tone: PanelCardTone) {
   switch (tone) {
     case "brand":
       return {
-        card: "border-[rgba(37,99,235,0.18)] bg-[linear-gradient(135deg,rgba(37,99,235,0.07)_0%,rgba(255,255,255,0.98)_48%,rgba(217,75,82,0.04)_100%)] shadow-[0_16px_34px_rgba(16,32,51,0.08)]",
+        card: "border-[color-mix(in_srgb,var(--brand-blue)_18%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_7%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_48%,color-mix(in_srgb,var(--brand-red)_4%,transparent)_100%)] shadow-[0_16px_34px_color-mix(in_srgb,var(--text-primary)_8%,transparent)]",
         header:
-          "border-b-[rgba(37,99,235,0.14)] bg-[linear-gradient(180deg,rgba(37,99,235,0.07)_0%,rgba(37,99,235,0)_100%)]",
+          "border-b-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_7%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]",
       };
 
     case "student":
       return {
-        card: "border-[var(--border-subtle)] bg-[linear-gradient(135deg,rgba(37,99,235,0.05)_0%,rgba(255,255,255,0.99)_56%,rgba(217,75,82,0.03)_100%)] shadow-[0_12px_28px_rgba(16,32,51,0.07)]",
+        card: "border-[var(--border-subtle)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_99%,transparent)_56%,color-mix(in_srgb,var(--brand-red)_3%,transparent)_100%)] shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_7%,transparent)]",
         header:
-          "border-b-[rgba(37,99,235,0.10)] bg-[linear-gradient(180deg,rgba(37,99,235,0.05)_0%,rgba(37,99,235,0)_100%)]",
+          "border-b-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]",
       };
 
     case "muted":
       return {
-        card: "border-[var(--border-subtle)] bg-[var(--background-muted)] shadow-[0_10px_22px_rgba(16,32,51,0.04)]",
+        card: "border-[var(--border-subtle)] bg-[var(--background-muted)] shadow-[0_10px_22px_color-mix(in_srgb,var(--text-primary)_4%,transparent)]",
         header:
-          "border-b-[var(--border-subtle)] bg-[linear-gradient(180deg,rgba(16,32,51,0.02)_0%,rgba(16,32,51,0)_100%)]",
+          "border-b-[var(--border-subtle)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--text-primary)_2%,transparent)_0%,color-mix(in_srgb,var(--text-primary)_0%,transparent)_100%)]",
       };
 
     case "admin":
       return {
-        card: "border-[var(--border-subtle)] bg-[linear-gradient(180deg,rgba(37,99,235,0.03)_0%,var(--background-elevated)_100%)] shadow-[0_12px_28px_rgba(16,32,51,0.06)]",
+        card: "border-[var(--border-subtle)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_3%,transparent)_0%,var(--background-elevated)_100%)] shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]",
         header:
-          "border-b-[rgba(37,99,235,0.12)] bg-[linear-gradient(180deg,rgba(37,99,235,0.05)_0%,rgba(37,99,235,0)_100%)]",
+          "border-b-[color-mix(in_srgb,var(--brand-blue)_12%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]",
       };
 
     case "default":
@@ -57,7 +57,7 @@ function getToneClasses(tone: PanelCardTone) {
       return {
         card: "",
         header:
-          "border-b-[rgba(37,99,235,0.10)] bg-[linear-gradient(180deg,rgba(37,99,235,0.04)_0%,rgba(37,99,235,0)_100%)]",
+          "border-b-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_4%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]",
       };
   }
 }

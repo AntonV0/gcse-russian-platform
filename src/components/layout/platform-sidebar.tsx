@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import LogoutButton from "@/components/layout/logout-button";
 import { appIcons } from "@/lib/shared/icons";
 import {
@@ -25,8 +26,9 @@ type NavItem = {
   label: string;
   href: string;
   icon: keyof typeof appIcons;
-  external?: boolean;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function isActive(pathname: string | undefined, href: string) {
   if (!pathname) return false;
@@ -50,6 +52,23 @@ function sectionLabel(label: string) {
       {label}
     </div>
   );
+}
+
+function getAccessLabel(
+  role: PlatformSidebarProps["role"],
+  accessMode: PlatformSidebarProps["accessMode"]
+) {
+  if (role === "student") {
+    if (accessMode === "volna") return "Volna student";
+    if (accessMode === "full") return "Full access";
+    if (accessMode === "trial") return "Trial access";
+    return "Student area";
+  }
+
+  if (role === "admin") return "Admin area";
+  if (role === "teacher") return "Teacher area";
+
+  return "Platform area";
 }
 
 export default function PlatformSidebar({
@@ -96,7 +115,24 @@ export default function PlatformSidebar({
   ];
 
   return (
-    <aside className="flex h-full min-h-[calc(100vh-10rem)] flex-col rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)]">
+    <aside className="dev-marker-host relative flex h-full min-h-[calc(100vh-10rem)] flex-col rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)]">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="PlatformSidebar"
+          filePath="src/components/layout/platform-sidebar.tsx"
+          tier="layout"
+          componentRole="Role-aware platform sidebar navigation"
+          bestFor="Authenticated platform pages, student/teacher/admin navigation, account utilities, and access-aware route groups."
+          usageExamples={[
+            "Student platform shell",
+            "Teacher assignment area",
+            "Admin navigation shell",
+            "Account/settings navigation",
+          ]}
+          notes="Use inside the authenticated platform layout. Keep route visibility rules here aligned with access control helpers."
+        />
+      ) : null}
+
       <div className="mb-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-3 py-3">
         <div className="flex items-center gap-3">
           <span className="app-brand-mark ring-1 ring-[var(--border)]">
@@ -108,25 +144,13 @@ export default function PlatformSidebar({
               GCSE Russian
             </div>
             <div className="text-xs app-text-soft">
-              {role === "student"
-                ? accessMode === "volna"
-                  ? "Volna student"
-                  : accessMode === "full"
-                    ? "Full access"
-                    : accessMode === "trial"
-                      ? "Trial access"
-                      : "Student area"
-                : role === "admin"
-                  ? "Admin area"
-                  : role === "teacher"
-                    ? "Teacher area"
-                    : "Platform area"}
+              {getAccessLabel(role, accessMode)}
             </div>
           </div>
         </div>
       </div>
 
-      <nav className="flex flex-1 flex-col">
+      <nav className="flex flex-1 flex-col" aria-label="Platform navigation">
         <div className="space-y-1">
           {sectionLabel("Learn")}
 
@@ -134,7 +158,12 @@ export default function PlatformSidebar({
             const active = isActive(pathname, item.href);
 
             return (
-              <Link key={item.href} href={item.href} className={itemClass(active)}>
+              <Link
+                key={item.href}
+                href={item.href}
+                className={itemClass(active)}
+                aria-current={active ? "page" : undefined}
+              >
                 <AppIcon
                   icon={appIcons[item.icon]}
                   size={18}
@@ -156,7 +185,12 @@ export default function PlatformSidebar({
               const active = isActive(pathname, item.href);
 
               return (
-                <Link key={item.href} href={item.href} className={itemClass(active)}>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={itemClass(active)}
+                  aria-current={active ? "page" : undefined}
+                >
                   <AppIcon
                     icon={appIcons[item.icon]}
                     size={18}
@@ -181,7 +215,12 @@ export default function PlatformSidebar({
               const active = isActive(pathname, item.href);
 
               return (
-                <Link key={item.href} href={item.href} className={itemClass(active)}>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={itemClass(active)}
+                  aria-current={active ? "page" : undefined}
+                >
                   <AppIcon
                     icon={appIcons[item.icon]}
                     size={18}

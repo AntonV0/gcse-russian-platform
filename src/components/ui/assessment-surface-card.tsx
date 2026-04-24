@@ -2,6 +2,7 @@
 
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import Card, { CardBody } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type AssessmentSurfaceCardProps = {
@@ -33,45 +34,62 @@ export default function AssessmentSurfaceCard({
         <DevComponentMarker
           componentName="AssessmentSurfaceCard"
           filePath="src/components/ui/assessment-surface-card.tsx"
+          tier="semantic"
+          componentRole="Assessment and exam-style task surface"
+          bestFor="Mock exams, timed assessments, exam-style question sets, and higher-stakes student tasks."
+          usageExamples={[
+            "Mock exam entry card",
+            "Timed assessment prompt",
+            "Exam-style question set",
+            "Speaking or writing assessment",
+          ]}
+          notes="Use when the task has exam/assessment weight. Avoid using it for casual practice or normal lesson previews."
         />
       ) : null}
 
-      <div className="app-surface-muted p-5">
-        <div className="mb-4 flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="mb-1 text-xs font-semibold uppercase tracking-[0.08em] app-text-soft">
-              Assessment
+      <Card
+        className="border-[color-mix(in_srgb,var(--danger)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_6%,transparent)_0%,var(--background-elevated)_62%,color-mix(in_srgb,var(--brand-blue)_3%,transparent)_100%)]"
+        interactive
+      >
+        <CardBody className="space-y-4 px-5 py-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                Assessment
+              </div>
+              <h3 className="font-semibold leading-6 text-[var(--text-primary)]">
+                {title}
+              </h3>
             </div>
-            <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+
+            <div className="flex shrink-0 flex-wrap justify-end gap-2">
+              <Badge tone="danger" icon="warning">
+                {urgencyLabel}
+              </Badge>
+              <Badge tone="muted" icon="file">
+                {metaLabel}
+              </Badge>
+            </div>
           </div>
 
-          <div className="flex shrink-0 flex-wrap gap-2">
-            <Badge tone="danger" icon="warning">
-              {urgencyLabel}
-            </Badge>
-            <Badge tone="muted" icon="file">
-              {metaLabel}
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="default" icon="courses">
+              {typeLabel}
             </Badge>
           </div>
-        </div>
 
-        <div className="mb-3 flex flex-wrap gap-2">
-          <Badge tone="default" icon="courses">
-            {typeLabel}
-          </Badge>
-        </div>
+          <p className="text-sm leading-6 text-[var(--text-secondary)]">{description}</p>
 
-        <p className="text-sm app-text-muted">{description}</p>
-
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Button variant="accent" icon="create">
-            {primaryActionLabel}
-          </Button>
-          <Button variant="secondary" icon="preview">
-            {secondaryActionLabel}
-          </Button>
-        </div>
-      </div>
+          <div className="flex flex-wrap gap-2.5">
+            <Button variant="accent" icon="create">
+              {primaryActionLabel}
+            </Button>
+            <Button variant="secondary" icon="preview">
+              {secondaryActionLabel}
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
     </div>
   );
 }

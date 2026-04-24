@@ -3,7 +3,7 @@
 import Card, { CardBody, CardHeader } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
-type Props = {
+type DangerZoneProps = {
   title?: string;
   description?: string;
   action?: React.ReactNode;
@@ -19,7 +19,7 @@ export default function DangerZone({
   action,
   children,
   className,
-}: Props) {
+}: DangerZoneProps) {
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
       {SHOW_UI_DEBUG ? (
@@ -28,35 +28,37 @@ export default function DangerZone({
           filePath="src/components/ui/danger-zone.tsx"
           tier="container"
           componentRole="Danger and destructive action container"
-          bestFor="Archive, delete, deactivate, or other destructive admin actions that need stronger visual separation."
+          bestFor="Archive, delete, deactivate, reset, or other high-risk admin actions that need strong visual separation."
           usageExamples={[
             "Archive course",
-            "Archive variant",
             "Delete content block",
-            "Deactivate account action",
+            "Deactivate account",
+            "Reset lesson progress",
           ]}
-          notes="Use for genuinely destructive or high-risk actions only. Keep copy concise and action labels explicit."
+          notes="Use only for genuinely destructive or difficult-to-reverse actions. Keep copy short and action labels explicit."
         />
       ) : null}
 
-      <Card className="border-[rgba(194,59,59,0.22)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(255,241,241,0.9)_100%)] shadow-[0_10px_22px_rgba(194,59,59,0.08)]">
-        <CardHeader className="border-b-[rgba(194,59,59,0.18)] bg-[linear-gradient(180deg,rgba(194,59,59,0.08)_0%,rgba(194,59,59,0.02)_100%)]">
+      <Card className="border-[color-mix(in_srgb,var(--danger)_22%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_0%,color-mix(in_srgb,var(--danger-soft)_90%,transparent)_100%)] shadow-[0_10px_22px_color-mix(in_srgb,var(--danger)_8%,transparent)]">
+        <CardHeader className="border-b-[color-mix(in_srgb,var(--danger)_18%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--danger)_8%,transparent)_0%,color-mix(in_srgb,var(--danger)_2%,transparent)_100%)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0">
-              <div className="font-semibold text-[var(--danger)]">{title}</div>
+              <h2 className="font-semibold text-[var(--danger)]">{title}</h2>
               {description ? (
-                <p className="mt-1 text-sm app-text-muted">{description}</p>
+                <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                  {description}
+                </p>
               ) : null}
             </div>
 
             {action ? (
-              <div className="flex shrink-0 flex-wrap gap-2">{action}</div>
+              <div className="flex shrink-0 flex-wrap gap-2 md:justify-end">{action}</div>
             ) : null}
           </div>
         </CardHeader>
 
         {children ? (
-          <CardBody className="space-y-3 text-sm text-[var(--text-primary)]">
+          <CardBody className="space-y-3 text-sm leading-6 text-[var(--text-primary)]">
             {children}
           </CardBody>
         ) : null}
