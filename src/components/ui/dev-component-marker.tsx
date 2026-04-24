@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useDevMarkers } from "@/components/providers/dev-marker-provider";
 
 type DevMarkerTier = "primitive" | "container" | "layout" | "semantic";
 
@@ -143,15 +144,17 @@ export default function DevComponentMarker({
   usageExamples,
   notes,
 }: DevComponentMarkerProps) {
+  const { markersEnabled } = useDevMarkers();
   const [isOpen, setIsOpen] = useState(false);
   const [panelPosition, setPanelPosition] = useState<MarkerPanelPosition | null>(null);
   const markerRef = useRef<HTMLSpanElement | null>(null);
   const triggerRef = useRef<HTMLSpanElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const panelId = useId();
+  const isMarkerOpen = markersEnabled && isOpen;
 
   useLayoutEffect(() => {
-    if (!SHOW_UI_DEBUG || !isOpen || !triggerRef.current) {
+    if (!SHOW_UI_DEBUG || !isMarkerOpen || !triggerRef.current) {
       return;
     }
 
@@ -170,10 +173,10 @@ export default function DevComponentMarker({
       window.removeEventListener("resize", updatePosition);
       window.removeEventListener("scroll", updatePosition, true);
     };
-  }, [isOpen]);
+  }, [isMarkerOpen]);
 
   useEffect(() => {
-    if (!SHOW_UI_DEBUG || !isOpen) {
+    if (!SHOW_UI_DEBUG || !isMarkerOpen) {
       return;
     }
 
@@ -208,9 +211,9 @@ export default function DevComponentMarker({
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen]);
+  }, [isMarkerOpen]);
 
-  if (!SHOW_UI_DEBUG) {
+  if (!SHOW_UI_DEBUG || !markersEnabled) {
     return null;
   }
 
@@ -238,7 +241,7 @@ export default function DevComponentMarker({
   const resolvedRole = componentRole ?? getDefaultRole(componentName);
 
   const panel =
-    typeof document !== "undefined" && isOpen && panelPosition
+    typeof document !== "undefined" && isMarkerOpen && panelPosition
       ? createPortal(
           <div
             ref={panelRef}
@@ -308,16 +311,16 @@ export default function DevComponentMarker({
       ref={markerRef}
       className="dev-marker-anchor"
       data-dev-marker-tier={tier}
-      data-dev-marker-open={isOpen ? "true" : "false"}
+      data-dev-marker-open={isMarkerOpen ? "true" : "false"}
     >
       <span
         ref={triggerRef}
         role="button"
         tabIndex={0}
-        className={getTriggerClass(tier, isOpen)}
-        data-state={isOpen ? "open" : "closed"}
+        className={getTriggerClass(tier, isMarkerOpen)}
+        data-state={isMarkerOpen ? "open" : "closed"}
         aria-label={`Show component info for ${componentName}`}
-        aria-expanded={isOpen}
+        aria-expanded={isMarkerOpen}
         aria-controls={panelId}
         onClick={toggleOpen}
         onKeyDown={handleKeyDown}

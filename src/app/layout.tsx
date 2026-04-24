@@ -1,7 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { getCurrentUser } from "@/lib/auth/auth";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import AppShell from "@/components/layout/app-shell";
+import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
@@ -15,6 +16,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+  const profile = user ? await getCurrentProfile() : null;
+  const isAdmin = Boolean(profile?.is_admin);
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -41,7 +44,9 @@ export default async function RootLayout({
       </head>
       <body className="min-h-screen">
         <ThemeProvider>
-          <AppShell user={user}>{children}</AppShell>
+          <DevMarkerProvider isAdmin={isAdmin}>
+            <AppShell user={user}>{children}</AppShell>
+          </DevMarkerProvider>
         </ThemeProvider>
       </body>
     </html>
