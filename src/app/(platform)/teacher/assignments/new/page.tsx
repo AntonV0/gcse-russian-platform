@@ -1,6 +1,7 @@
 import PageHeader from "@/components/layout/page-header";
 import TeacherCreateAssignmentForm from "@/components/assignments/teacher-create-assignment-form";
 import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
+import EmptyState from "@/components/ui/empty-state";
 import {
   getLessonOptionsForGroupDb,
   getQuestionSetOptionsDb,
@@ -37,9 +38,11 @@ export default async function NewTeacherAssignmentPage() {
       />
 
       {groups.length === 0 ? (
-        <div className="rounded-lg border p-6 text-sm text-gray-600">
-          You do not have any teacher groups yet.
-        </div>
+        <EmptyState
+          icon="users"
+          title="No teacher groups yet"
+          description="Ask an administrator to add you to a teaching group before creating assignments."
+        />
       ) : (
         <TeacherCreateAssignmentForm
           groups={groups}

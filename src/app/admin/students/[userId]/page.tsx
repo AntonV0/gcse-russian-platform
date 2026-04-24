@@ -1,5 +1,15 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import AdminConfirmButton from "@/components/admin/admin-confirm-button";
+import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import DetailList from "@/components/ui/detail-list";
+import EmptyState from "@/components/ui/empty-state";
+import FeedbackBanner from "@/components/ui/feedback-banner";
+import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getAdminAccessGrantsByUserIdDb,
@@ -19,11 +29,9 @@ import {
   setTeacherRoleAction,
   switchStudentAccessGrantAction,
 } from "@/app/actions/admin/admin-user-actions";
-import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
-import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 
 function formatDateTime(value: string | null) {
-  if (!value) return "—";
+  if (!value) return "-";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
@@ -72,13 +80,8 @@ function getProductLabel(product: AdminProductRow) {
     return "Higher Full";
   }
 
-  if (combined.includes("volna")) {
-    return "Volna";
-  }
-
-  if (combined.includes("trial")) {
-    return "Trial";
-  }
+  if (combined.includes("volna")) return "Volna";
+  if (combined.includes("trial")) return "Trial";
 
   return product.name || product.code || product.id;
 }
@@ -88,6 +91,46 @@ function formatVariantLabel(variantSlug: string) {
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function FeedbackMessages({ success, error }: { success?: string; error?: string }) {
+  if (!success && !error) return null;
+
+  return (
+    <div className="mb-6 space-y-3">
+      {success ? (
+        <FeedbackBanner tone="success" title="Student profile updated" description={success} />
+      ) : null}
+
+      {error ? (
+        <FeedbackBanner tone="danger" title="Update failed" description={error} />
+      ) : null}
+    </div>
+  );
+}
+
+function GrantBadges({
+  grant,
+  active,
+}: {
+  grant: AdminAccessGrantRow;
+  active: boolean;
+}) {
+  return (
+    <>
+      <Badge tone={active ? "info" : "muted"} icon="user">
+        {getGrantLabel(grant)}
+      </Badge>
+      <Badge tone={active ? "success" : "warning"} icon={active ? "completed" : "pending"}>
+        {active ? "Active" : "Inactive"}
+      </Badge>
+      {grant.products?.[0]?.name ? (
+        <Badge tone="muted" icon="courses">
+          {grant.products[0].name}
+        </Badge>
+      ) : null}
+    </>
+  );
 }
 
 export default async function AdminStudentProfilePage({
@@ -157,138 +200,113 @@ export default async function AdminStudentProfilePage({
 
   return (
     <main>
-      <div className="mb-4">
-        <Link href="/admin/students" className="text-sm text-blue-600 hover:underline">
-          ← Back to students
-        </Link>
-      </div>
+      <InlineActions className="mb-4">
+        <Button href="/admin/students" variant="quiet" size="sm" icon="back">
+          Back to students
+        </Button>
+      </InlineActions>
 
       <PageHeader
         title={getPersonLabel(student)}
         description="Student profile, access grants, teaching groups, and progress by variant."
       />
 
-      <AdminFeedbackBanner
+      <FeedbackMessages
         success={resolvedSearchParams.success}
         error={resolvedSearchParams.error}
       />
 
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Profile Details</div>
+        <PanelCard title="Profile Details" tone="admin">
+          <DetailList
+            items={[
+              { label: "Full name", value: student.full_name || "-" },
+              { label: "Display name", value: student.display_name || "-" },
+              { label: "Email", value: student.email || "-" },
+              { label: "Admin", value: student.is_admin ? "Yes" : "No" },
+              { label: "Teacher role", value: student.is_teacher ? "Yes" : "No" },
+              { label: "Created", value: formatDateTime(student.created_at) },
+            ]}
+          />
+        </PanelCard>
 
-          <div className="space-y-3 px-4 py-4 text-sm">
-            <div>
-              <span className="font-medium">Full name:</span> {student.full_name || "—"}
-            </div>
-            <div>
-              <span className="font-medium">Display name:</span>{" "}
-              {student.display_name || "—"}
-            </div>
-            <div>
-              <span className="font-medium">Email:</span> {student.email || "—"}
-            </div>
-            <div>
-              <span className="font-medium">Admin:</span>{" "}
-              {student.is_admin ? "Yes" : "No"}
-            </div>
-            <div>
-              <span className="font-medium">Teacher role:</span>{" "}
-              {student.is_teacher ? "Yes" : "No"}
-            </div>
-            <div>
-              <span className="font-medium">Created:</span>{" "}
-              {formatDateTime(student.created_at)}
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Actions</div>
-
-          <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <form action={setTeacherRoleAction} className="space-y-2">
-              <input type="hidden" name="userId" value={student.id} />
-              <input
-                type="hidden"
-                name="redirectTo"
-                value={`/admin/students/${student.id}`}
-              />
-              <input
-                type="hidden"
-                name="mode"
-                value={student.is_teacher ? "disable" : "enable"}
-              />
-              <button
-                type="submit"
-                className="rounded border px-3 py-2 text-left hover:bg-gray-50"
-              >
-                {student.is_teacher ? "Remove teacher role" : "Enable teacher role"}
-              </button>
-            </form>
-          </div>
-        </div>
+        <PanelCard
+          title="Actions"
+          description="Manage this learner's staff role when needed."
+          tone="admin"
+        >
+          <form action={setTeacherRoleAction}>
+            <input type="hidden" name="userId" value={student.id} />
+            <input
+              type="hidden"
+              name="redirectTo"
+              value={`/admin/students/${student.id}`}
+            />
+            <input
+              type="hidden"
+              name="mode"
+              value={student.is_teacher ? "disable" : "enable"}
+            />
+            <Button
+              type="submit"
+              variant={student.is_teacher ? "warning" : "secondary"}
+              icon={student.is_teacher ? "warning" : "user"}
+            >
+              {student.is_teacher ? "Remove teacher role" : "Enable teacher role"}
+            </Button>
+          </form>
+        </PanelCard>
       </section>
 
-      <section className="mb-6 rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Current Active Access</div>
-
-        <div className="divide-y">
+      <div className="space-y-6">
+        <PanelCard title="Current Active Access" tone="admin" contentClassName="space-y-3">
           {!activeGrant ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No active access grant found.
-            </div>
+            <EmptyState
+              icon="lock"
+              title="No active access grant found"
+              description="Switch the learner onto a product to restore course access."
+            />
           ) : (
-            <div className="flex items-start justify-between gap-4 px-4 py-4 text-sm">
-              <div>
-                <div className="mb-2 flex flex-wrap gap-2">
-                  <span className="rounded border px-2 py-0.5">
-                    {getGrantLabel(activeGrant)}
-                  </span>
-                  <span className="rounded border px-2 py-0.5">Active</span>
-                  {activeGrant.products?.[0]?.name ? (
-                    <span className="rounded border px-2 py-0.5">
-                      {activeGrant.products[0].name}
-                    </span>
-                  ) : null}
-                </div>
-
-                <div className="text-gray-600">
-                  <div>Start: {formatDateTime(activeGrant.starts_at)}</div>
-                  <div>End: {formatDateTime(activeGrant.ends_at)}</div>
-                </div>
-              </div>
-
-              <form action={deactivateAccessGrantAction}>
-                <input type="hidden" name="userId" value={student.id} />
-                <input type="hidden" name="grantId" value={activeGrant.id} />
-                <input
-                  type="hidden"
-                  name="redirectTo"
-                  value={`/admin/students/${student.id}`}
-                />
-                <AdminConfirmButton
-                  confirmMessage="Deactivate this student's current access grant?"
-                  className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
-                >
-                  Deactivate
-                </AdminConfirmButton>
-              </form>
-            </div>
+            <CardListItem
+              title={getGrantLabel(activeGrant)}
+              subtitle={`Start: ${formatDateTime(activeGrant.starts_at)} - End: ${formatDateTime(
+                activeGrant.ends_at
+              )}`}
+              badges={<GrantBadges grant={activeGrant} active />}
+              actions={
+                <form action={deactivateAccessGrantAction}>
+                  <input type="hidden" name="userId" value={student.id} />
+                  <input type="hidden" name="grantId" value={activeGrant.id} />
+                  <input
+                    type="hidden"
+                    name="redirectTo"
+                    value={`/admin/students/${student.id}`}
+                  />
+                  <AdminConfirmButton confirmMessage="Deactivate this student's current access grant?">
+                    Deactivate
+                  </AdminConfirmButton>
+                </form>
+              }
+            />
           )}
-        </div>
-      </section>
+        </PanelCard>
 
-      <section className="mb-6 rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Switch Access Type</div>
-
-        <div className="px-4 py-4 text-sm">
+        <PanelCard
+          title="Switch Access Type"
+          description="Assigning a new access type will use the existing admin action flow."
+          tone="admin"
+        >
           {selectableProducts.length === 0 ? (
-            <div className="text-gray-500">No selectable products found.</div>
+            <EmptyState
+              icon="warning"
+              iconTone="warning"
+              title="No selectable products found"
+              description="Create or enable a suitable product before switching access."
+            />
           ) : (
             <form
               action={switchStudentAccessGrantAction}
-              className="flex flex-wrap gap-3"
+              className="grid gap-3 sm:grid-cols-[minmax(0,22rem)_auto]"
             >
               <input type="hidden" name="userId" value={student.id} />
               <input
@@ -297,101 +315,90 @@ export default async function AdminStudentProfilePage({
                 value={`/admin/students/${student.id}`}
               />
 
-              <select
-                name="productId"
-                required
-                className="rounded border px-3 py-2 text-sm"
-                defaultValue=""
-              >
-                <option value="">Select access type</option>
-                {selectableProducts.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {getProductLabel(product)}
-                  </option>
-                ))}
-              </select>
+              <FormField label="Access type">
+                <Select name="productId" required defaultValue="">
+                  <option value="">Select access type</option>
+                  {selectableProducts.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {getProductLabel(product)}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
 
-              <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
-                Switch access
-              </button>
+              <InlineActions className="items-end">
+                <Button type="submit" variant="primary" icon="refresh">
+                  Switch access
+                </Button>
+              </InlineActions>
             </form>
           )}
-        </div>
-      </section>
+        </PanelCard>
 
-      <section className="mb-6 rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">
-          Access History ({inactiveGrants.length})
-        </div>
-
-        <div className="divide-y">
+        <PanelCard
+          title={`Access History (${inactiveGrants.length})`}
+          tone="admin"
+          contentClassName="space-y-3"
+        >
           {inactiveGrants.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No inactive access grants found.
-            </div>
+            <EmptyState
+              icon="pending"
+              title="No inactive access grants found"
+              description="Previous access changes will appear here."
+            />
           ) : (
             inactiveGrants.map((grant) => (
-              <div key={grant.id} className="px-4 py-4 text-sm">
-                <div className="mb-2 flex flex-wrap gap-2">
-                  <span className="rounded border px-2 py-0.5">
-                    {getGrantLabel(grant)}
-                  </span>
-                  <span className="rounded border px-2 py-0.5">Inactive</span>
-                  {grant.products?.[0]?.name ? (
-                    <span className="rounded border px-2 py-0.5">
-                      {grant.products[0].name}
-                    </span>
-                  ) : null}
-                </div>
-
-                <div className="text-gray-600">
-                  <div>Start: {formatDateTime(grant.starts_at)}</div>
-                  <div>End: {formatDateTime(grant.ends_at)}</div>
-                </div>
-              </div>
+              <CardListItem
+                key={grant.id}
+                title={getGrantLabel(grant)}
+                subtitle={`Start: ${formatDateTime(grant.starts_at)} - End: ${formatDateTime(
+                  grant.ends_at
+                )}`}
+                badges={<GrantBadges grant={grant} active={false} />}
+              />
             ))
           )}
-        </div>
-      </section>
+        </PanelCard>
 
-      <section className="mb-6 rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">
-          Progress Summary by Variant ({progressSummary.length})
-        </div>
-
-        <div className="divide-y">
+        <PanelCard
+          title={`Progress Summary by Variant (${progressSummary.length})`}
+          description="Completed lessons grouped by course and GCSE tier variant."
+          tone="admin"
+          contentClassName="space-y-3"
+        >
           {progressSummary.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No completed lesson progress found yet.
-            </div>
+            <EmptyState
+              icon="lesson"
+              title="No completed lesson progress yet"
+              description="This learner has not completed a lesson variant in the tracked flow."
+            />
           ) : (
             progressSummary.map((row) => (
-              <div
+              <CardListItem
                 key={`${row.course_slug}-${row.variant_slug}`}
-                className="px-4 py-4 text-sm"
-              >
-                <div className="font-medium">
-                  {row.course_slug} · {formatVariantLabel(row.variant_slug)}
-                </div>
-                <div className="text-gray-600">
-                  Completed lessons: {row.completed_lessons}
-                </div>
-              </div>
+                title={`${row.course_slug} - ${formatVariantLabel(row.variant_slug)}`}
+                subtitle={`Completed lessons: ${row.completed_lessons}`}
+                badges={
+                  <Badge tone="success" icon="completed">
+                    {row.completed_lessons} complete
+                  </Badge>
+                }
+              />
             ))
           )}
-        </div>
-      </section>
+        </PanelCard>
 
-      <section className="mb-6 rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Add To Teaching Group</div>
-
-        <div className="px-4 py-4 text-sm">
+        <PanelCard title="Add To Teaching Group" tone="admin">
           {availableGroups.length === 0 ? (
-            <div className="text-gray-500">No available teaching groups to add.</div>
+            <EmptyState
+              icon="users"
+              title="No available teaching groups to add"
+              description="The learner is already in all available groups."
+            />
           ) : (
             <form
               action={addStudentToTeachingGroupAction}
-              className="flex flex-wrap gap-3"
+              className="grid gap-3 sm:grid-cols-[minmax(0,22rem)_auto]"
             >
               <input type="hidden" name="userId" value={student.id} />
               <input
@@ -400,86 +407,92 @@ export default async function AdminStudentProfilePage({
                 value={`/admin/students/${student.id}`}
               />
 
-              <select
-                name="groupId"
-                required
-                className="rounded border px-3 py-2 text-sm"
-              >
-                <option value="">Select group</option>
-                {availableGroups.map((group) => (
-                  <option key={group.id} value={group.id}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
+              <FormField label="Teaching group">
+                <Select name="groupId" required defaultValue="">
+                  <option value="">Select group</option>
+                  {availableGroups.map((group) => (
+                    <option key={group.id} value={group.id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
 
-              <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
-                Add to group
-              </button>
+              <InlineActions className="items-end">
+                <Button type="submit" variant="primary" icon="create">
+                  Add to group
+                </Button>
+              </InlineActions>
             </form>
           )}
-        </div>
-      </section>
+        </PanelCard>
 
-      <section className="rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">
-          Teaching Group Memberships ({membershipsWithGroup.length})
-        </div>
-
-        <div className="divide-y">
+        <PanelCard
+          title={`Teaching Group Memberships (${membershipsWithGroup.length})`}
+          tone="admin"
+          contentClassName="space-y-3"
+        >
           {membershipsWithGroup.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No teaching group memberships found.
-            </div>
+            <EmptyState
+              icon="users"
+              title="No teaching group memberships found"
+              description="Add this learner to a teaching group to support class tracking."
+            />
           ) : (
             membershipsWithGroup.map((membership) => (
-              <div
+              <CardListItem
                 key={`${membership.group_id}-${membership.member_role}`}
-                className="flex items-center justify-between gap-4 px-4 py-4 text-sm"
-              >
-                <div>
-                  <div className="font-medium">
-                    {membership.group?.name || membership.group_id}
-                  </div>
-                  <div className="text-gray-600">Role: {membership.member_role}</div>
-                  <div className="text-gray-600">
-                    Group active: {membership.group?.is_active ? "Yes" : "No"}
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  {membership.group ? (
-                    <Link
-                      href={`/admin/teaching-groups/${membership.group.id}`}
-                      className="rounded border px-3 py-1 text-sm"
+                title={membership.group?.name || membership.group_id}
+                subtitle={`Role: ${membership.member_role} - Group active: ${
+                  membership.group?.is_active ? "Yes" : "No"
+                }`}
+                badges={
+                  <>
+                    <Badge tone="muted" icon="users">
+                      {membership.member_role}
+                    </Badge>
+                    <Badge
+                      tone={membership.group?.is_active ? "success" : "warning"}
+                      icon={membership.group?.is_active ? "completed" : "pending"}
                     >
-                      Open group
-                    </Link>
-                  ) : null}
-
-                  {membership.member_role === "student" ? (
-                    <form action={removeStudentFromTeachingGroupAction}>
-                      <input type="hidden" name="userId" value={student.id} />
-                      <input type="hidden" name="groupId" value={membership.group_id} />
-                      <input
-                        type="hidden"
-                        name="redirectTo"
-                        value={`/admin/students/${student.id}`}
-                      />
-                      <AdminConfirmButton
-                        confirmMessage="Remove this student from the teaching group?"
-                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                      {membership.group?.is_active ? "Active group" : "Inactive group"}
+                    </Badge>
+                  </>
+                }
+                actions={
+                  <InlineActions align="end">
+                    {membership.group ? (
+                      <Button
+                        href={`/admin/teaching-groups/${membership.group.id}`}
+                        variant="secondary"
+                        size="sm"
+                        icon="preview"
                       >
-                        Remove
-                      </AdminConfirmButton>
-                    </form>
-                  ) : null}
-                </div>
-              </div>
+                        Open group
+                      </Button>
+                    ) : null}
+
+                    {membership.member_role === "student" ? (
+                      <form action={removeStudentFromTeachingGroupAction}>
+                        <input type="hidden" name="userId" value={student.id} />
+                        <input type="hidden" name="groupId" value={membership.group_id} />
+                        <input
+                          type="hidden"
+                          name="redirectTo"
+                          value={`/admin/students/${student.id}`}
+                        />
+                        <AdminConfirmButton confirmMessage="Remove this student from the teaching group?">
+                          Remove
+                        </AdminConfirmButton>
+                      </form>
+                    ) : null}
+                  </InlineActions>
+                }
+              />
             ))
           )}
-        </div>
-      </section>
+        </PanelCard>
+      </div>
     </main>
   );
 }
