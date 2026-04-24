@@ -2,6 +2,23 @@
 
 import { useMemo, useState } from "react";
 import {
+  AlignLeft,
+  BookOpen,
+  FileQuestion,
+  Heading1,
+  Heading2,
+  Image,
+  Lightbulb,
+  Megaphone,
+  Minus,
+  Music,
+  NotebookText,
+  Quote,
+  Sparkles,
+  Type,
+  Volume2,
+} from "lucide-react";
+import {
   createAudioBlockAction,
   createCalloutBlockAction,
   createDividerBlockAction,
@@ -24,6 +41,7 @@ import type {
 } from "@/components/admin/lesson-builder/lesson-builder-types";
 import {
   BuilderHiddenFields,
+  CompactDisclosure,
   PendingStatusText,
   PendingSubmitButton,
   BUILDER_DASHED_EMPTY_STATE_CLASS,
@@ -344,6 +362,37 @@ function AddVocabularySetBlockForm(props: {
   );
 }
 
+function getBlockTypeIcon(value: NewBlockType) {
+  switch (value) {
+    case "header":
+      return Heading1;
+    case "subheader":
+      return Heading2;
+    case "divider":
+      return Minus;
+    case "text":
+      return AlignLeft;
+    case "note":
+      return NotebookText;
+    case "callout":
+      return Megaphone;
+    case "exam-tip":
+      return Lightbulb;
+    case "vocabulary":
+      return BookOpen;
+    case "image":
+      return Image;
+    case "audio":
+      return Volume2;
+    case "question-set":
+      return FileQuestion;
+    case "vocabulary-set":
+      return Type;
+    default:
+      return Sparkles;
+  }
+}
+
 function BlockTypeButton(props: {
   label: string;
   value: NewBlockType;
@@ -351,18 +400,30 @@ function BlockTypeButton(props: {
   onSelect: (value: NewBlockType) => void;
 }) {
   const isSelected = props.selectedValue === props.value;
+  const Icon = getBlockTypeIcon(props.value);
 
   return (
     <button
       type="button"
       onClick={() => props.onSelect(props.value)}
-      className={`rounded-xl border px-3 py-2 text-left text-sm font-medium transition ${
+      className={[
+        "group inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition-[background-color,border-color,box-shadow,transform]",
         isSelected
           ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white shadow-[0_10px_22px_rgba(37,99,235,0.18)]"
-          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]"
-      }`}
+          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] hover:shadow-[0_8px_18px_rgba(16,32,51,0.06)]",
+      ].join(" ")}
     >
-      {props.label}
+      <span
+        className={[
+          "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border",
+          isSelected
+            ? "border-white/25 bg-white/15 text-white"
+            : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)]",
+        ].join(" ")}
+      >
+        <Icon size={15} />
+      </span>
+      <span>{props.label}</span>
     </button>
   );
 }
@@ -403,15 +464,11 @@ export default function AddBlockComposer(props: {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
-        <div className="mb-4">
-          <div className="font-semibold text-[var(--text-primary)]">Quick presets</div>
-          <div className="text-sm app-text-muted">
-            Insert a ready-made starter structure for this section.
-          </div>
-        </div>
-
+    <div className="space-y-4">
+      <CompactDisclosure
+        title={`Quick presets (${props.blockPresetOptions.length})`}
+        description="Insert a ready-made starter structure for this section."
+      >
         <div className="grid gap-3">
           {props.blockPresetOptions.length === 0 ? (
             <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
@@ -450,9 +507,9 @@ export default function AddBlockComposer(props: {
             ))
           )}
         </div>
-      </div>
+      </CompactDisclosure>
 
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[0_1px_2px_rgba(16,32,51,0.04)]">
         <div className="mb-4">
           <div className="font-semibold text-[var(--text-primary)]">
             Choose a block type

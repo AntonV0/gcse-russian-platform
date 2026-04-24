@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import PanelCard from "@/components/ui/panel-card";
 import BadgePrimitive from "@/components/ui/badge";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 export const BUILDER_FIELD_CLASS =
   "w-full rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-3.5 py-2.5 text-sm text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04),0_8px_18px_rgba(16,32,51,0.04)] transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-[var(--text-muted)] hover:border-[var(--border-strong)] focus:border-[var(--brand-blue)] focus:outline-none focus:ring-4 focus:ring-[rgba(37,99,235,0.12)]";
@@ -222,20 +223,35 @@ export function CompactDisclosure({
   children: React.ReactNode;
   defaultOpen?: boolean;
 }) {
-  return (
-    <details
-      open={defaultOpen}
-      className="overflow-hidden rounded-[1.25rem] border border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04),0_8px_18px_rgba(16,32,51,0.04)] [&_summary::-webkit-details-marker]:hidden"
-    >
-      <summary className="cursor-pointer select-none px-5 py-4 transition hover:bg-[var(--background-muted)]">
-        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-        {description ? (
-          <div className="mt-1 text-sm app-text-muted">{description}</div>
-        ) : null}
-      </summary>
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
-      <div className="border-t border-[var(--border)] p-5">{children}</div>
-    </details>
+  return (
+    <div className="overflow-hidden rounded-[1.25rem] border border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04),0_8px_18px_rgba(16,32,51,0.04)]">
+      {/* HEADER */}
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex w-full items-start justify-between gap-3 px-5 py-4 text-left transition hover:bg-[var(--background-muted)]/45"
+      >
+        <div className="min-w-0">
+          <div className="text-sm font-semibold text-[var(--text-primary)]">{title}</div>
+
+          {description ? (
+            <div className="mt-1 text-sm app-text-muted">{description}</div>
+          ) : null}
+        </div>
+
+        {/* ICON */}
+        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)]">
+          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        </span>
+      </button>
+
+      {/* CONTENT */}
+      {isOpen ? (
+        <div className="border-t border-[var(--border)] px-5 py-4">{children}</div>
+      ) : null}
+    </div>
   );
 }
 
