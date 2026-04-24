@@ -39,9 +39,14 @@
 [data-theme="dark"] .app-surface-brand {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--accent) 22%, transparent) 0%,
-    rgba(9, 23, 47, 0.96) 40%,
-    rgba(239, 90, 97, 0.14) 100%
+    color-mix(
+        in srgb,
+        var(--accent) var(--accent-brand-surface-strength),
+        var(--background-elevated)
+      )
+      0%,
+    color-mix(in srgb, var(--background-elevated) 96%, var(--accent)) 46%,
+    color-mix(in srgb, var(--accent) 10%, var(--background-muted)) 100%
   );
 }
 
@@ -106,8 +111,8 @@
 [data-theme="dark"] .app-card-shell {
   background: linear-gradient(
     180deg,
-    rgba(13, 28, 54, 0.98) 0%,
-    rgba(9, 23, 47, 1) 100%
+    color-mix(in srgb, var(--surface-elevated) 98%, white) 0%,
+    var(--surface-primary) 100%
   );
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.22),
@@ -243,9 +248,14 @@
 [data-theme="dark"] .app-brand-mark {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--accent) 20%, transparent) 0%,
+    color-mix(
+        in srgb,
+        var(--accent) var(--accent-brand-mark-strength),
+        var(--background-muted)
+      )
+      0%,
     rgba(255, 255, 255, 0.04) 60%,
-    rgba(239, 90, 97, 0.16) 100%
+    color-mix(in srgb, var(--accent) 8%, var(--background-elevated)) 100%
   );
 }
 
