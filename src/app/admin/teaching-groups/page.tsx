@@ -1,7 +1,10 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
-import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -130,77 +133,78 @@ export default async function AdminTeachingGroupsPage() {
         </Button>
       </div>
 
-      <div className="rounded-xl border bg-white shadow-sm">
-        <div className="border-b px-4 py-3 font-medium">
-          Teaching Groups ({groupRows.length})
-        </div>
+      <PanelCard
+        title={`Teaching groups (${groupRows.length})`}
+        description="Groups connect Volna teachers, students, and the course variant they are following."
+        tone="admin"
+        contentClassName="space-y-3"
+      >
+        {groupRows.length === 0 ? (
+          <EmptyState
+            icon="users"
+            title="No teaching groups yet"
+            description="Create a teaching group to organise students, teachers, and course access."
+            action={
+              <Button href="/admin/teaching-groups/new" variant="primary" icon="write">
+                New teaching group
+              </Button>
+            }
+          />
+        ) : (
+          groupRows.map((group) => {
+            const count = counts.get(group.id) ?? {
+              total: 0,
+              teachers: 0,
+              students: 0,
+              teacherNames: [],
+            };
 
-        <div className="divide-y">
-          {groupRows.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No teaching groups found.
-            </div>
-          ) : (
-            groupRows.map((group) => {
-              const count = counts.get(group.id) ?? {
-                total: 0,
-                teachers: 0,
-                students: 0,
-                teacherNames: [],
-              };
+            const linkedCourse = group.course_id
+              ? (courseMap.get(group.course_id) ?? null)
+              : null;
+            const linkedVariant = group.course_variant_id
+              ? (variantMap.get(group.course_variant_id) ?? null)
+              : null;
 
-              const linkedCourse = group.course_id
-                ? (courseMap.get(group.course_id) ?? null)
-                : null;
-              const linkedVariant = group.course_variant_id
-                ? (variantMap.get(group.course_variant_id) ?? null)
-                : null;
+            return (
+              <CardListItem
+                key={group.id}
+                title={group.name}
+                subtitle={[
+                  `Teachers: ${count.teachers}`,
+                  `Students: ${count.students}`,
+                  `Total: ${count.total}`,
+                  count.teacherNames.length > 0
+                    ? `Lead: ${count.teacherNames.join(", ")}`
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+                href={`/admin/teaching-groups/${group.id}`}
+                badges={
+                  <>
+                    <Badge
+                      tone={group.is_active ? "success" : "warning"}
+                      icon={group.is_active ? "completed" : "pending"}
+                    >
+                      {group.is_active ? "Active" : "Inactive"}
+                    </Badge>
 
-              return (
-                <div
-                  key={group.id}
-                  className="flex items-center justify-between gap-4 px-4 py-4"
-                >
-                  <Link
-                    href={`/admin/teaching-groups/${group.id}`}
-                    className="min-w-0 flex-1 hover:text-blue-600"
-                  >
-                    <div className="font-medium">{group.name}</div>
-
-                    <div className="mt-1 text-sm text-gray-500">
-                      Teachers: {count.teachers} · Students: {count.students} · Total:{" "}
-                      {count.total}
-                    </div>
-
-                    {count.teacherNames.length > 0 ? (
-                      <div className="mt-1 text-xs text-gray-500">
-                        Teachers: {count.teacherNames.join(", ")}
-                      </div>
+                    {linkedCourse ? (
+                      <Badge tone="muted" icon="courses">
+                        {linkedCourse.title}
+                      </Badge>
                     ) : null}
 
-                    <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                      <Badge
-                        tone={group.is_active ? "success" : "warning"}
-                        icon={group.is_active ? "completed" : "pending"}
-                      >
-                        {group.is_active ? "Active" : "Inactive"}
+                    {linkedVariant ? (
+                      <Badge tone="muted" icon="file">
+                        {linkedVariant.title}
                       </Badge>
-
-                      {linkedCourse ? (
-                        <Badge tone="muted" icon="courses">
-                          {linkedCourse.title}
-                        </Badge>
-                      ) : null}
-
-                      {linkedVariant ? (
-                        <Badge tone="muted" icon="file">
-                          {linkedVariant.title}
-                        </Badge>
-                      ) : null}
-                    </div>
-                  </Link>
-
-                  <div className="flex items-center gap-2">
+                    ) : null}
+                  </>
+                }
+                actions={
+                  <InlineActions>
                     <Button
                       href={`/admin/teaching-groups/${group.id}/edit`}
                       variant="secondary"
@@ -218,13 +222,13 @@ export default async function AdminTeachingGroupsPage() {
                     >
                       Open
                     </Button>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
+                  </InlineActions>
+                }
+              />
+            );
+          })
+        )}
+      </PanelCard>
     </main>
   );
 }

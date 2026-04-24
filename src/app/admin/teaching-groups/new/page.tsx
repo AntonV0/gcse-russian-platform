@@ -1,8 +1,14 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import CheckboxField from "@/components/ui/checkbox-field";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
+import { createTeachingGroupAction } from "@/app/actions/admin/admin-teaching-group-actions";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { createTeachingGroupAction } from "@/app/actions/admin/admin-teaching-group-actions";
 
 type CourseRow = {
   id: string;
@@ -42,12 +48,9 @@ export default async function AdminTeachingGroupNewPage() {
   return (
     <main>
       <div className="mb-4">
-        <Link
-          href="/admin/teaching-groups"
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Back to teaching groups
-        </Link>
+        <Button href="/admin/teaching-groups" variant="quiet" size="sm" icon="back">
+          Back to teaching groups
+        </Button>
       </div>
 
       <PageHeader
@@ -55,58 +58,57 @@ export default async function AdminTeachingGroupNewPage() {
         description="Create a teaching group and optionally link it to a course and variant."
       />
 
-      <section className="max-w-3xl rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Teaching Group Details</div>
+      <PanelCard
+        title="Teaching group details"
+        description="Link the group to the course and variant students should see in their guided Volna experience."
+        tone="admin"
+        className="max-w-3xl"
+      >
+        <form action={createTeachingGroupAction} className="space-y-4">
+          <FormField label="Name" required>
+            <Input name="name" required placeholder="Year 10 Saturday group" />
+          </FormField>
 
-        <form action={createTeachingGroupAction} className="space-y-4 px-4 py-4 text-sm">
-          <div>
-            <label className="mb-1 block font-medium">Name</label>
-            <input name="name" required className="w-full rounded border px-3 py-2" />
-          </div>
-
-          <div>
-            <label className="mb-1 block font-medium">Linked Course</label>
-            <select name="courseId" className="w-full rounded border px-3 py-2">
+          <FormField label="Linked course">
+            <Select name="courseId">
               <option value="">No linked course</option>
               {courseRows.map((course) => (
                 <option key={course.id} value={course.id}>
                   {course.title}
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormField>
 
-          <div>
-            <label className="mb-1 block font-medium">Linked Variant</label>
-            <select name="courseVariantId" className="w-full rounded border px-3 py-2">
+          <FormField label="Linked variant">
+            <Select name="courseVariantId">
               <option value="">No linked variant</option>
               {variantRows.map((variant) => (
                 <option key={variant.id} value={variant.id}>
                   {variant.title}
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormField>
 
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="isActive" value="true" defaultChecked />
-            Active
-          </label>
+          <CheckboxField
+            name="isActive"
+            label="Active"
+            description="Active groups can be used for teacher-led assignment workflows."
+            defaultChecked
+          />
 
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button type="submit" className="rounded bg-black px-4 py-2 text-white">
+          <InlineActions>
+            <Button type="submit" variant="primary" icon="write">
               Create teaching group
-            </button>
+            </Button>
 
-            <Link
-              href="/admin/teaching-groups"
-              className="rounded border px-4 py-2 hover:bg-gray-50"
-            >
+            <Button href="/admin/teaching-groups" variant="secondary" icon="cancel">
               Cancel
-            </Link>
-          </div>
+            </Button>
+          </InlineActions>
         </form>
-      </section>
+      </PanelCard>
     </main>
   );
 }

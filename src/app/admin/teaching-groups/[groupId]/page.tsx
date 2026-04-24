@@ -1,15 +1,23 @@
-import Link from "next/link";
+import AdminConfirmButton from "@/components/admin/admin-confirm-button";
+import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
 import PageHeader from "@/components/layout/page-header";
-import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { createClient } from "@/lib/supabase/server";
+import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import DetailList from "@/components/ui/detail-list";
+import EmptyState from "@/components/ui/empty-state";
+import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
 import {
   addStudentToTeachingGroupAction,
   addTeacherToTeachingGroupAction,
   removeStudentFromTeachingGroupAction,
   removeTeacherFromTeachingGroupAction,
 } from "@/app/actions/admin/admin-user-actions";
-import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
-import AdminConfirmButton from "@/components/admin/admin-confirm-button";
+import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import { createClient } from "@/lib/supabase/server";
 
 type TeachingGroupRow = {
   id: string;
@@ -51,6 +59,133 @@ function getPersonLabel(
   profile: Pick<ProfileRow, "full_name" | "display_name" | "email">
 ) {
   return profile.full_name || profile.display_name || profile.email || "Unnamed";
+}
+
+function AddMemberPanel({
+  title,
+  description,
+  emptyText,
+  action,
+  groupId,
+  redirectTo,
+  profiles,
+  selectLabel,
+  buttonLabel,
+}: {
+  title: string;
+  description: string;
+  emptyText: string;
+  action: (formData: FormData) => void | Promise<void>;
+  groupId: string;
+  redirectTo: string;
+  profiles: ProfileRow[];
+  selectLabel: string;
+  buttonLabel: string;
+}) {
+  return (
+    <PanelCard title={title} description={description} tone="admin">
+      {profiles.length === 0 ? (
+        <p className="text-sm app-text-muted">{emptyText}</p>
+      ) : (
+        <form action={action} className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <input type="hidden" name="groupId" value={groupId} />
+          <input type="hidden" name="redirectTo" value={redirectTo} />
+
+          <FormField label={selectLabel} className="min-w-0 flex-1">
+            <Select name="userId" required>
+              <option value="">Select user</option>
+              {profiles.map((profile) => (
+                <option key={profile.id} value={profile.id}>
+                  {getPersonLabel(profile)}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+
+          <Button type="submit" variant="secondary" icon="create">
+            {buttonLabel}
+          </Button>
+        </form>
+      )}
+    </PanelCard>
+  );
+}
+
+function MemberSection({
+  title,
+  emptyTitle,
+  emptyDescription,
+  members,
+  profileMap,
+  viewHrefPrefix,
+  viewLabel,
+  removeAction,
+  confirmMessage,
+  groupId,
+}: {
+  title: string;
+  emptyTitle: string;
+  emptyDescription: string;
+  members: TeachingGroupMemberRow[];
+  profileMap: Map<string, ProfileRow>;
+  viewHrefPrefix: "/admin/teachers" | "/admin/students";
+  viewLabel: string;
+  removeAction: (formData: FormData) => void | Promise<void>;
+  confirmMessage: string;
+  groupId: string;
+}) {
+  const redirectTo = `/admin/teaching-groups/${groupId}`;
+
+  return (
+    <PanelCard title={`${title} (${members.length})`} tone="admin" contentClassName="space-y-3">
+      {members.length === 0 ? (
+        <EmptyState
+          icon="users"
+          title={emptyTitle}
+          description={emptyDescription}
+        />
+      ) : (
+        members.map((member) => {
+          const profile = profileMap.get(member.user_id);
+
+          return (
+            <CardListItem
+              key={member.user_id}
+              title={profile ? getPersonLabel(profile) : member.user_id}
+              subtitle={profile?.email || "No email"}
+              badges={<Badge tone="muted">{member.member_role}</Badge>}
+              actions={
+                <InlineActions>
+                  {profile ? (
+                    <Button
+                      href={`${viewHrefPrefix}/${profile.id}`}
+                      variant="secondary"
+                      size="sm"
+                      icon="preview"
+                    >
+                      {viewLabel}
+                    </Button>
+                  ) : null}
+
+                  <form action={removeAction}>
+                    <input type="hidden" name="userId" value={member.user_id} />
+                    <input type="hidden" name="groupId" value={groupId} />
+                    <input type="hidden" name="redirectTo" value={redirectTo} />
+                    <AdminConfirmButton
+                      confirmMessage={confirmMessage}
+                      className="app-btn-base app-btn-danger min-h-9 rounded-xl px-3.5 py-2 text-sm"
+                    >
+                      Remove
+                    </AdminConfirmButton>
+                  </form>
+                </InlineActions>
+              }
+            />
+          );
+        })
+      )}
+    </PanelCard>
+  );
 }
 
 export default async function AdminTeachingGroupDetailPage({
@@ -152,15 +287,14 @@ export default async function AdminTeachingGroupDetailPage({
     return activeGrantUserIds.has(profile.id);
   });
 
+  const groupHref = `/admin/teaching-groups/${teachingGroup.id}`;
+
   return (
     <main>
       <div className="mb-4">
-        <Link
-          href="/admin/teaching-groups"
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Back to teaching groups
-        </Link>
+        <Button href="/admin/teaching-groups" variant="quiet" size="sm" icon="back">
+          Back to teaching groups
+        </Button>
       </div>
 
       <PageHeader
@@ -174,241 +308,94 @@ export default async function AdminTeachingGroupDetailPage({
       />
 
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Group Details</div>
+        <PanelCard
+          title="Group details"
+          description="Course and membership context for this guided learning group."
+          tone="admin"
+        >
+          <DetailList
+            items={[
+              { label: "Name", value: teachingGroup.name },
+              {
+                label: "Status",
+                value: teachingGroup.is_active ? "Active" : "Inactive",
+              },
+              {
+                label: "Linked course",
+                value: linkedCourse ? linkedCourse.title : "-",
+              },
+              {
+                label: "Linked variant",
+                value: linkedVariant ? linkedVariant.title : "-",
+              },
+            ]}
+          />
+        </PanelCard>
 
-          <div className="space-y-3 px-4 py-4 text-sm">
-            <div>
-              <span className="font-medium">Name:</span> {teachingGroup.name}
-            </div>
-            <div>
-              <span className="font-medium">Active:</span>{" "}
-              {teachingGroup.is_active ? "Yes" : "No"}
-            </div>
-            <div>
-              <span className="font-medium">Linked course:</span>{" "}
-              {linkedCourse ? linkedCourse.title : "—"}
-            </div>
-            <div>
-              <span className="font-medium">Linked variant:</span>{" "}
-              {linkedVariant ? linkedVariant.title : "—"}
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Actions</div>
-
-          <div className="flex flex-col gap-3 px-4 py-4 text-sm">
-            <Link
-              href={`/admin/teaching-groups/${teachingGroup.id}/edit`}
-              className="rounded border px-3 py-2 text-left hover:bg-gray-50"
-            >
-              Edit teaching group
-            </Link>
-          </div>
-        </div>
+        <PanelCard title="Actions" description="Manage the group setup." tone="muted">
+          <Button
+            href={`/admin/teaching-groups/${teachingGroup.id}/edit`}
+            variant="secondary"
+            icon="edit"
+          >
+            Edit teaching group
+          </Button>
+        </PanelCard>
       </section>
 
       <section className="mb-6 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Add Teacher</div>
+        <AddMemberPanel
+          title="Add teacher"
+          description="Attach a teacher or admin user to this group."
+          emptyText="No available teachers to add."
+          action={addTeacherToTeachingGroupAction}
+          groupId={teachingGroup.id}
+          redirectTo={groupHref}
+          profiles={availableTeachers}
+          selectLabel="Teacher"
+          buttonLabel="Add teacher"
+        />
 
-          <div className="px-4 py-4 text-sm">
-            {availableTeachers.length === 0 ? (
-              <div className="text-gray-500">No available teachers to add.</div>
-            ) : (
-              <form
-                action={addTeacherToTeachingGroupAction}
-                className="flex flex-wrap gap-3"
-              >
-                <input type="hidden" name="groupId" value={teachingGroup.id} />
-                <input
-                  type="hidden"
-                  name="redirectTo"
-                  value={`/admin/teaching-groups/${teachingGroup.id}`}
-                />
-
-                <select
-                  name="userId"
-                  required
-                  className="rounded border px-3 py-2 text-sm"
-                >
-                  <option value="">Select teacher</option>
-                  {availableTeachers.map((profile) => (
-                    <option key={profile.id} value={profile.id}>
-                      {getPersonLabel(profile)}
-                    </option>
-                  ))}
-                </select>
-
-                <button
-                  type="submit"
-                  className="rounded border px-4 py-2 hover:bg-gray-50"
-                >
-                  Add teacher
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Add Student</div>
-
-          <div className="px-4 py-4 text-sm">
-            {availableStudents.length === 0 ? (
-              <div className="text-gray-500">No available students to add.</div>
-            ) : (
-              <form
-                action={addStudentToTeachingGroupAction}
-                className="flex flex-wrap gap-3"
-              >
-                <input type="hidden" name="groupId" value={teachingGroup.id} />
-                <input
-                  type="hidden"
-                  name="redirectTo"
-                  value={`/admin/teaching-groups/${teachingGroup.id}`}
-                />
-
-                <select
-                  name="userId"
-                  required
-                  className="rounded border px-3 py-2 text-sm"
-                >
-                  <option value="">Select student</option>
-                  {availableStudents.map((profile) => (
-                    <option key={profile.id} value={profile.id}>
-                      {getPersonLabel(profile)}
-                    </option>
-                  ))}
-                </select>
-
-                <button
-                  type="submit"
-                  className="rounded border px-4 py-2 hover:bg-gray-50"
-                >
-                  Add student
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
+        <AddMemberPanel
+          title="Add student"
+          description="Attach an eligible active student to this group."
+          emptyText="No available students to add."
+          action={addStudentToTeachingGroupAction}
+          groupId={teachingGroup.id}
+          redirectTo={groupHref}
+          profiles={availableStudents}
+          selectLabel="Student"
+          buttonLabel="Add student"
+        />
       </section>
 
-      <section className="mb-6 rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Teachers ({teachers.length})</div>
-
-        <div className="divide-y">
-          {teachers.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No teacher members found.
-            </div>
-          ) : (
-            teachers.map((member) => {
-              const profile = profileMap.get(member.user_id);
-
-              return (
-                <div
-                  key={member.user_id}
-                  className="flex items-center justify-between gap-4 px-4 py-4 text-sm"
-                >
-                  <div>
-                    <div className="font-medium">
-                      {profile ? getPersonLabel(profile) : member.user_id}
-                    </div>
-                    <div className="text-gray-500">{profile?.email || "No email"}</div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    {profile ? (
-                      <Link
-                        href={`/admin/teachers/${profile.id}`}
-                        className="rounded border px-3 py-1 text-sm"
-                      >
-                        View teacher
-                      </Link>
-                    ) : null}
-
-                    <form action={removeTeacherFromTeachingGroupAction}>
-                      <input type="hidden" name="userId" value={member.user_id} />
-                      <input type="hidden" name="groupId" value={teachingGroup.id} />
-                      <input
-                        type="hidden"
-                        name="redirectTo"
-                        value={`/admin/teaching-groups/${teachingGroup.id}`}
-                      />
-                      <AdminConfirmButton
-                        confirmMessage="Remove this teacher from the teaching group?"
-                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
-                      >
-                        Remove
-                      </AdminConfirmButton>
-                    </form>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
+      <section className="mb-6">
+        <MemberSection
+          title="Teachers"
+          emptyTitle="No teacher members yet"
+          emptyDescription="Add a teacher to make this group useful for guided Volna work."
+          members={teachers}
+          profileMap={profileMap}
+          viewHrefPrefix="/admin/teachers"
+          viewLabel="View teacher"
+          removeAction={removeTeacherFromTeachingGroupAction}
+          confirmMessage="Remove this teacher from the teaching group?"
+          groupId={teachingGroup.id}
+        />
       </section>
 
-      <section className="rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Students ({students.length})</div>
-
-        <div className="divide-y">
-          {students.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No student members found.
-            </div>
-          ) : (
-            students.map((member) => {
-              const profile = profileMap.get(member.user_id);
-
-              return (
-                <div
-                  key={member.user_id}
-                  className="flex items-center justify-between gap-4 px-4 py-4 text-sm"
-                >
-                  <div>
-                    <div className="font-medium">
-                      {profile ? getPersonLabel(profile) : member.user_id}
-                    </div>
-                    <div className="text-gray-500">{profile?.email || "No email"}</div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    {profile ? (
-                      <Link
-                        href={`/admin/students/${profile.id}`}
-                        className="rounded border px-3 py-1 text-sm"
-                      >
-                        View student
-                      </Link>
-                    ) : null}
-
-                    <form action={removeStudentFromTeachingGroupAction}>
-                      <input type="hidden" name="userId" value={member.user_id} />
-                      <input type="hidden" name="groupId" value={teachingGroup.id} />
-                      <input
-                        type="hidden"
-                        name="redirectTo"
-                        value={`/admin/teaching-groups/${teachingGroup.id}`}
-                      />
-                      <AdminConfirmButton
-                        confirmMessage="Remove this student from the teaching group?"
-                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
-                      >
-                        Remove
-                      </AdminConfirmButton>
-                    </form>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </section>
+      <MemberSection
+        title="Students"
+        emptyTitle="No student members yet"
+        emptyDescription="Add students once they have active access and are ready for teacher-led work."
+        members={students}
+        profileMap={profileMap}
+        viewHrefPrefix="/admin/students"
+        viewLabel="View student"
+        removeAction={removeStudentFromTeachingGroupAction}
+        confirmMessage="Remove this student from the teaching group?"
+        groupId={teachingGroup.id}
+      />
     </main>
   );
 }
