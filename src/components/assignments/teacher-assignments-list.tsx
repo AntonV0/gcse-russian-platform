@@ -1,9 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import DashboardCard from "@/components/ui/dashboard-card";
+import Badge from "@/components/ui/badge";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import StatusBadge from "@/components/ui/status-badge";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
@@ -176,7 +179,8 @@ export default function TeacherAssignmentsList({
         />
       ) : null}
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 md:flex-row md:items-end md:justify-between">
+      <PanelCard tone="student" density="compact">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div className="flex flex-col gap-3 md:flex-row md:items-end">
           <FormField label="Filter">
             <Select
@@ -211,11 +215,14 @@ export default function TeacherAssignmentsList({
           Showing {visibleAssignments.length} of {assignments.length} assignments
         </p>
       </div>
+      </PanelCard>
 
       {visibleAssignments.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] p-6 text-sm app-text-muted">
-          No assignments match the selected filter.
-        </div>
+        <EmptyState
+          icon="filter"
+          title="No assignments match this filter"
+          description="Try showing all assignments or changing the sort order."
+        />
       ) : (
         <section className="grid gap-4">
           {visibleAssignments.map(
@@ -227,42 +234,55 @@ export default function TeacherAssignmentsList({
               const dueStatus = getDueDateStatus(assignment.due_at);
 
               return (
-                <Link
+                <CardListItem
                   key={assignment.id}
                   href={`/teacher/assignments/${assignment.id}`}
-                  className="block"
-                >
-                  <div
-                    className={`transition hover:-translate-y-0.5 ${
-                      teacherStatus.isActive ? "border-l-4 border-yellow-400" : ""
-                    }`}
-                  >
-                    <DashboardCard title={assignment.title}>
-                      <div className="space-y-2 text-sm text-[var(--text-secondary)]">
-                        {assignment.instructions ? (
-                          <p>{assignment.instructions}</p>
-                        ) : null}
-
-                        <div className="flex flex-wrap items-center gap-4 text-sm app-text-muted">
-                          <span>Group: {group?.name ?? "Unknown group"}</span>
-                          <span className={getDueDateClass(dueStatus)}>
-                            Due: {formatDueDate(assignment.due_at)}
-                            {dueStatus === "overdue" ? " (Overdue)" : ""}
-                            {dueStatus === "soon" ? " (Due soon)" : ""}
-                          </span>
-                          <span>Submissions: {submissionCount}</span>
-                          {teacherStatus.badgeStatus ? (
-                            <StatusBadge status={teacherStatus.badgeStatus} />
-                          ) : (
-                            <span className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--background-muted)] px-2 py-1 text-xs font-medium text-[var(--text-secondary)]">
-                              {teacherStatus.label}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </DashboardCard>
-                  </div>
-                </Link>
+                  className={teacherStatus.isActive ? "border-l-4 border-l-[var(--warning)]" : ""}
+                  title={assignment.title}
+                  subtitle={[
+                    assignment.instructions,
+                    `Group: ${group?.name ?? "Unknown group"}`,
+                    `Due: ${formatDueDate(assignment.due_at)}${
+                      dueStatus === "overdue"
+                        ? " (Overdue)"
+                        : dueStatus === "soon"
+                          ? " (Due soon)"
+                          : ""
+                    }`,
+                    `Submissions: ${submissionCount}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" - ")}
+                  badges={
+                    <>
+                      <Badge tone="muted" icon="users">
+                        {group?.name ?? "Unknown group"}
+                      </Badge>
+                      <Badge tone="muted" icon="calendar">
+                        <span className={getDueDateClass(dueStatus)}>
+                          {formatDueDate(assignment.due_at)}
+                        </span>
+                      </Badge>
+                      {teacherStatus.badgeStatus ? (
+                        <StatusBadge status={teacherStatus.badgeStatus} />
+                      ) : (
+                        <Badge tone="muted" icon="pending">
+                          {teacherStatus.label}
+                        </Badge>
+                      )}
+                    </>
+                  }
+                  actions={
+                    <InlineActions align="end">
+                      <Badge tone={submissionCount > 0 ? "info" : "muted"} icon="upload">
+                        {submissionCount} submitted
+                      </Badge>
+                      <Badge tone="success" icon="completed">
+                        {reviewedSubmissionCount} reviewed
+                      </Badge>
+                    </InlineActions>
+                  }
+                />
               );
             }
           )}

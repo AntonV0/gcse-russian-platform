@@ -1,7 +1,8 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
 import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
 import TeacherAssignmentsList from "@/components/assignments/teacher-assignments-list";
+import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
 import { getTeacherAssignmentsDb } from "@/lib/assignments/assignment-helpers-db";
 import { isCurrentUserTeacherForAnyGroup } from "@/lib/auth/teacher-auth";
 
@@ -21,18 +22,22 @@ export default async function TeacherAssignmentsPage() {
           title="Teacher Assignments"
           description="Review homework and submissions for your Volna groups."
         />
-        <Link
-          href="/teacher/assignments/new"
-          className="rounded bg-black px-4 py-2 text-white"
-        >
+        <Button href="/teacher/assignments/new" variant="primary" icon="create">
           New assignment
-        </Link>
+        </Button>
       </div>
 
       {assignments.length === 0 ? (
-        <div className="rounded-lg border p-6 text-sm text-gray-600">
-          No teacher assignments yet.
-        </div>
+        <EmptyState
+          icon="assignments"
+          title="No teacher assignments yet"
+          description="Create the first task for a group when you are ready to set homework."
+          action={
+            <Button href="/teacher/assignments/new" variant="primary" icon="create">
+              New assignment
+            </Button>
+          }
+        />
       ) : (
         <TeacherAssignmentsList assignments={assignments} />
       )}

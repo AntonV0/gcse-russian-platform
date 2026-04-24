@@ -1,8 +1,13 @@
 import PageHeader from "@/components/layout/page-header";
-import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
+import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
@@ -69,7 +74,7 @@ function getPersonLabel(
 }
 
 function formatDate(value: string | null) {
-  if (!value) return "—";
+  if (!value) return "-";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
@@ -150,13 +155,8 @@ function getProductLabel(product: ProductRow) {
     return "Higher Full";
   }
 
-  if (combined.includes("volna")) {
-    return "Volna";
-  }
-
-  if (combined.includes("trial")) {
-    return "Trial";
-  }
+  if (combined.includes("volna")) return "Volna";
+  if (combined.includes("trial")) return "Trial";
 
   return product.name || product.code || product.id;
 }
@@ -177,20 +177,93 @@ function matchesSearch(student: StudentCard, search: string) {
 }
 
 function SuccessErrorBanners({ success, error }: { success?: string; error?: string }) {
+  if (!success && !error) return null;
+
   return (
-    <>
+    <div className="mb-6 space-y-3">
       {success ? (
-        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {success}
-        </div>
+        <FeedbackBanner tone="success" title="Student account updated" description={success} />
       ) : null}
 
       {error ? (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
-        </div>
+        <FeedbackBanner tone="danger" title="Update failed" description={error} />
       ) : null}
+    </div>
+  );
+}
+
+function StudentAccessBadges({ student }: { student: StudentCard }) {
+  return (
+    <>
+      <Badge tone={student.isActive ? "info" : "muted"} icon="user">
+        {student.accessLabel}
+      </Badge>
+
+      <Badge
+        tone={student.isActive ? "success" : "warning"}
+        icon={student.isActive ? "completed" : "pending"}
+      >
+        {student.isActive ? "Active" : "Inactive"}
+      </Badge>
+
+      {student.groupNames.map((groupName) => (
+        <Badge key={groupName} tone="muted" icon="users">
+          {groupName}
+        </Badge>
+      ))}
     </>
+  );
+}
+
+function StudentRowActions({
+  student,
+  accessOptions,
+  currentPathWithFilters,
+}: {
+  student: StudentCard;
+  accessOptions: ProductRow[];
+  currentPathWithFilters: string;
+}) {
+  return (
+    <InlineActions align="end">
+      <form action={switchStudentAccessGrantAction} className="flex flex-wrap gap-2">
+        <input type="hidden" name="userId" value={student.id} />
+        <input type="hidden" name="redirectTo" value={currentPathWithFilters} />
+        <Select
+          name="productId"
+          defaultValue=""
+          className="w-auto min-w-[150px] px-2 py-1 text-xs"
+        >
+          <option value="">Switch access</option>
+          {accessOptions.map((product) => (
+            <option key={product.id} value={product.id}>
+              {getProductLabel(product)}
+            </option>
+          ))}
+        </Select>
+        <Button type="submit" variant="secondary" size="sm">
+          Apply
+        </Button>
+      </form>
+
+      <form action={setTeacherRoleAction}>
+        <input type="hidden" name="userId" value={student.id} />
+        <input type="hidden" name="redirectTo" value={currentPathWithFilters} />
+        <input type="hidden" name="mode" value="enable" />
+        <Button type="submit" variant="secondary" size="sm">
+          Make teacher
+        </Button>
+      </form>
+
+      <Button
+        href={`/admin/students/${student.id}`}
+        variant="secondary"
+        size="sm"
+        icon="preview"
+      >
+        View
+      </Button>
+    </InlineActions>
   );
 }
 
@@ -273,7 +346,6 @@ export default async function AdminStudentsPage({
   const productMap = new Map(productRows.map((product) => [product.id, product]));
   const groupedStudents = new Map<string, { label: string; rows: StudentCard[] }>();
   const inactiveStudents: StudentCard[] = [];
-
   const grantsByUserId = new Map<string, AccessGrantRow[]>();
 
   for (const grant of grantRows) {
@@ -296,11 +368,11 @@ export default async function AdminStudentsPage({
       const product = activeGrant.product_id
         ? (productMap.get(activeGrant.product_id) ?? null)
         : null;
-
-      const productCode = product?.code ?? null;
-      const productName = product?.name ?? null;
-
-      const bucket = getStudentBucket(activeGrant.access_mode, productCode, productName);
+      const bucket = getStudentBucket(
+        activeGrant.access_mode,
+        product?.code ?? null,
+        product?.name ?? null
+      );
 
       if (!groupedStudents.has(bucket.key)) {
         groupedStudents.set(bucket.key, { label: bucket.label, rows: [] });
@@ -327,7 +399,6 @@ export default async function AdminStudentsPage({
     const latestProduct = latestGrant?.product_id
       ? (productMap.get(latestGrant.product_id) ?? null)
       : null;
-
     const latestLabel = latestGrant
       ? getGrantLabel(
           latestGrant.access_mode,
@@ -335,7 +406,6 @@ export default async function AdminStudentsPage({
           latestProduct?.name ?? null
         )
       : "No Active Access";
-
     const latestKey = latestGrant
       ? getStudentBucket(
           latestGrant.access_mode,
@@ -404,260 +474,135 @@ export default async function AdminStudentsPage({
 
       <SuccessErrorBanners success={params.success} error={params.error} />
 
-      <form className="mb-6 rounded-xl border bg-white p-4 shadow-sm">
-        <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr_auto]">
-          <FormField label="Search">
-            <Input
-              type="text"
-              name="q"
-              defaultValue={q}
-              placeholder="Name, email, or teaching group"
-            />
-          </FormField>
+      <PanelCard
+        className="mb-6"
+        title="Find student accounts"
+        description="Filter by access, status, name, email, or teaching group."
+        tone="admin"
+        density="compact"
+      >
+        <form>
+          <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr_auto]">
+            <FormField label="Search">
+              <Input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Name, email, or teaching group"
+              />
+            </FormField>
 
-          <FormField label="Status">
-            <Select name="status" defaultValue={statusFilter}>
-              <option value="all">All</option>
-              <option value="active">Active only</option>
-              <option value="inactive">Inactive only</option>
-            </Select>
-          </FormField>
+            <FormField label="Status">
+              <Select name="status" defaultValue={statusFilter}>
+                <option value="all">All</option>
+                <option value="active">Active only</option>
+                <option value="inactive">Inactive only</option>
+              </Select>
+            </FormField>
 
-          <FormField label="Access">
-            <Select name="access" defaultValue={accessFilter}>
-              <option value="all">All</option>
-              <option value="foundation">Foundation</option>
-              <option value="higher">Higher</option>
-              <option value="volna">Volna</option>
-              <option value="trial">Trial</option>
-              <option value="other">Other</option>
-            </Select>
-          </FormField>
+            <FormField label="Access">
+              <Select name="access" defaultValue={accessFilter}>
+                <option value="all">All</option>
+                <option value="foundation">Foundation</option>
+                <option value="higher">Higher</option>
+                <option value="volna">Volna</option>
+                <option value="trial">Trial</option>
+                <option value="other">Other</option>
+              </Select>
+            </FormField>
 
-          <div className="flex items-end gap-2">
-            <Button type="submit" variant="primary" icon="filter">
-              Apply
-            </Button>
+            <InlineActions className="items-end" align="end">
+              <Button type="submit" variant="primary" icon="filter">
+                Apply
+              </Button>
 
-            <Button href="/admin/students" variant="secondary" icon="back">
-              Reset
-            </Button>
+              <Button href="/admin/students" variant="secondary" icon="back">
+                Reset
+              </Button>
+            </InlineActions>
           </div>
-        </div>
-      </form>
+        </form>
+      </PanelCard>
 
-      <div className="mb-6 rounded-xl border bg-white px-4 py-3 text-sm text-gray-600 shadow-sm">
-        Total student accounts shown: {totalStudents}
-      </div>
+      <FeedbackBanner
+        className="mb-6"
+        tone="info"
+        title={`${totalStudents} student account${totalStudents === 1 ? "" : "s"} shown`}
+        description="Students are grouped by their current active access grant so support tasks stay easy to scan."
+      />
 
       <div className="space-y-6">
         {orderedGroups.length === 0 && filteredInactiveStudents.length === 0 ? (
-          <div className="rounded-xl border bg-white px-4 py-6 text-sm text-gray-500 shadow-sm">
-            No student accounts found.
-          </div>
+          <EmptyState
+            icon="search"
+            title="No student accounts found"
+            description="Try adjusting the search, access, or status filters."
+          />
         ) : null}
 
         {orderedGroups.map((group) => (
-          <div key={group.label} className="rounded-xl border bg-white shadow-sm">
-            <div className="border-b px-4 py-3 font-medium">
-              {group.label} ({group.rows.length})
-            </div>
-
-            <div className="divide-y">
-              {group.rows.map((student) => (
-                <div
-                  key={student.id}
-                  className="flex items-center justify-between gap-4 px-4 py-4"
-                >
-                  <div>
-                    <div className="font-medium">{getPersonLabel(student)}</div>
-
-                    <div className="text-sm text-gray-500">
-                      {student.email || "No email"}
-                    </div>
-
-                    <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                      <Badge tone="info" icon="user">
-                        {student.accessLabel}
-                      </Badge>
-
-                      <Badge tone="success" icon="completed">
-                        Active
-                      </Badge>
-
-                      {student.groupNames.map((groupName) => (
-                        <Badge key={groupName} tone="muted" icon="users">
-                          {groupName}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-3 text-xs">
-                    <div className="text-right text-gray-400">
-                      <div>Start: {formatDate(student.startsAt)}</div>
-                      <div>End: {formatDate(student.endsAt)}</div>
-                    </div>
-
-                    <div className="flex flex-wrap justify-end gap-2">
-                      <form
-                        action={switchStudentAccessGrantAction}
-                        className="flex gap-2"
-                      >
-                        <input type="hidden" name="userId" value={student.id} />
-                        <input
-                          type="hidden"
-                          name="redirectTo"
-                          value={currentPathWithFilters}
-                        />
-                        <Select
-                          name="productId"
-                          defaultValue=""
-                          className="w-auto min-w-[140px] px-2 py-1 text-xs"
-                        >
-                          <option value="">Switch access</option>
-                          {accessOptions.map((product) => (
-                            <option key={product.id} value={product.id}>
-                              {getProductLabel(product)}
-                            </option>
-                          ))}
-                        </Select>
-                        <Button type="submit" variant="secondary" size="sm">
-                          Apply
-                        </Button>
-                      </form>
-
-                      <form action={setTeacherRoleAction}>
-                        <input type="hidden" name="userId" value={student.id} />
-                        <input
-                          type="hidden"
-                          name="redirectTo"
-                          value={currentPathWithFilters}
-                        />
-                        <input type="hidden" name="mode" value="enable" />
-                        <Button type="submit" variant="secondary" size="sm">
-                          Make teacher
-                        </Button>
-                      </form>
-
-                      <Button
-                        href={`/admin/students/${student.id}`}
-                        variant="secondary"
-                        size="sm"
-                        icon="preview"
-                      >
-                        View
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <PanelCard
+            key={group.label}
+            title={`${group.label} (${group.rows.length})`}
+            description="Active learners with this access type."
+            tone="admin"
+            density="compact"
+            contentClassName="space-y-3"
+          >
+            {group.rows.map((student) => (
+              <CardListItem
+                key={student.id}
+                title={getPersonLabel(student)}
+                subtitle={`${student.email || "No email"} - Start: ${formatDate(
+                  student.startsAt
+                )} - End: ${formatDate(student.endsAt)}`}
+                badges={<StudentAccessBadges student={student} />}
+                actions={
+                  <StudentRowActions
+                    student={student}
+                    accessOptions={accessOptions}
+                    currentPathWithFilters={currentPathWithFilters}
+                  />
+                }
+              />
+            ))}
+          </PanelCard>
         ))}
 
-        <div className="rounded-xl border bg-white shadow-sm">
-          <div className="border-b px-4 py-3 font-medium">
-            Inactive / No Active Access ({filteredInactiveStudents.length})
-          </div>
-
-          <div className="divide-y">
-            {filteredInactiveStudents.length === 0 ? (
-              <div className="px-4 py-6 text-sm text-gray-500">
-                No inactive students found.
-              </div>
-            ) : (
-              filteredInactiveStudents.map((student) => (
-                <div
-                  key={student.id}
-                  className="flex items-center justify-between gap-4 px-4 py-4"
-                >
-                  <div>
-                    <div className="font-medium">{getPersonLabel(student)}</div>
-
-                    <div className="text-sm text-gray-500">
-                      {student.email || "No email"}
-                    </div>
-
-                    <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                      <Badge tone="muted" icon="user">
-                        {student.accessLabel}
-                      </Badge>
-
-                      <Badge tone="warning" icon="pending">
-                        Inactive
-                      </Badge>
-
-                      {student.groupNames.map((groupName) => (
-                        <Badge key={groupName} tone="muted" icon="users">
-                          {groupName}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-3 text-xs">
-                    <div className="text-right text-gray-400">
-                      <div>Start: {formatDate(student.startsAt)}</div>
-                      <div>End: {formatDate(student.endsAt)}</div>
-                    </div>
-
-                    <div className="flex flex-wrap justify-end gap-2">
-                      <form
-                        action={switchStudentAccessGrantAction}
-                        className="flex gap-2"
-                      >
-                        <input type="hidden" name="userId" value={student.id} />
-                        <input
-                          type="hidden"
-                          name="redirectTo"
-                          value={currentPathWithFilters}
-                        />
-                        <Select
-                          name="productId"
-                          defaultValue=""
-                          className="w-auto min-w-[140px] px-2 py-1 text-xs"
-                        >
-                          <option value="">Switch access</option>
-                          {accessOptions.map((product) => (
-                            <option key={product.id} value={product.id}>
-                              {getProductLabel(product)}
-                            </option>
-                          ))}
-                        </Select>
-                        <Button type="submit" variant="secondary" size="sm">
-                          Apply
-                        </Button>
-                      </form>
-
-                      <form action={setTeacherRoleAction}>
-                        <input type="hidden" name="userId" value={student.id} />
-                        <input
-                          type="hidden"
-                          name="redirectTo"
-                          value={currentPathWithFilters}
-                        />
-                        <input type="hidden" name="mode" value="enable" />
-                        <Button type="submit" variant="secondary" size="sm">
-                          Make teacher
-                        </Button>
-                      </form>
-
-                      <Button
-                        href={`/admin/students/${student.id}`}
-                        variant="secondary"
-                        size="sm"
-                        icon="preview"
-                      >
-                        View
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        <PanelCard
+          title={`Inactive / No Active Access (${filteredInactiveStudents.length})`}
+          description="Learners without a current active grant."
+          tone="admin"
+          density="compact"
+          contentClassName="space-y-3"
+        >
+          {filteredInactiveStudents.length === 0 ? (
+            <EmptyState
+              icon="completed"
+              iconTone="success"
+              title="No inactive students found"
+              description="All students matching these filters currently have active access."
+            />
+          ) : (
+            filteredInactiveStudents.map((student) => (
+              <CardListItem
+                key={student.id}
+                title={getPersonLabel(student)}
+                subtitle={`${student.email || "No email"} - Start: ${formatDate(
+                  student.startsAt
+                )} - End: ${formatDate(student.endsAt)}`}
+                badges={<StudentAccessBadges student={student} />}
+                actions={
+                  <StudentRowActions
+                    student={student}
+                    accessOptions={accessOptions}
+                    currentPathWithFilters={currentPathWithFilters}
+                  />
+                }
+              />
+            ))
+          )}
+        </PanelCard>
       </div>
     </main>
   );
