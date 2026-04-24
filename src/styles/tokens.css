@@ -12,7 +12,12 @@
   --text-inverse: #ffffff;
 
   --border: #d8e1eb;
+  --border-subtle: #e4ecf5;
   --border-strong: #c3d0de;
+
+  --surface-primary: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-secondary: #f1f5fa;
 
   /* ========= Brand colours ========= */
   --brand-blue: #2563eb;
@@ -102,18 +107,29 @@
   --text-inverse: #071633;
 
   --border: #243552;
+  --border-subtle: #1c2d49;
   --border-strong: #344867;
+
+  --surface-primary: #09172f;
+  --surface-elevated: #0d1c37;
+  --surface-secondary: #14233d;
 
   --brand-blue: #4f8cff;
   --brand-blue-hover: #76a7ff;
+  --brand-blue-soft: #102448;
 
   --brand-red: #ef5a61;
   --brand-red-hover: #ff7378;
+  --brand-red-soft: #3a1922;
 
   --success: #22c55e;
+  --success-soft: #0f2f24;
   --warning: #f59e0b;
+  --warning-soft: #34260e;
   --danger: #ef4444;
+  --danger-soft: #3a1922;
   --info: #4f8cff;
+  --info-soft: #102448;
 }
 
 @media (min-width: 640px) {

@@ -1,5 +1,6 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabLessonBuilderPrimitivesDemo from "@/components/admin/ui-lab-lesson-builder-primitives-demo";
 import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
@@ -18,6 +19,7 @@ import Textarea from "@/components/ui/textarea";
 
 const pageNavItems = [
   { id: "workspace-shell", label: "Workspace shell" },
+  { id: "production-primitives", label: "Primitives" },
   { id: "section-sidebar", label: "Section sidebar" },
   { id: "block-composer", label: "Block composer" },
   { id: "block-list", label: "Block list" },
@@ -195,6 +197,14 @@ export default async function AdminUiLessonBuilderPage() {
             </div>
           </PanelCard>
         </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="production-primitives"
+        title="Production builder primitives"
+        description="These are real reusable components from the lesson-builder package, shown separately from static future extraction ideas."
+      >
+        <UiLabLessonBuilderPrimitivesDemo />
       </UiLabSection>
 
       <UiLabSection
