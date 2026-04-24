@@ -19,7 +19,9 @@ import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import TableShell from "@/components/ui/table-shell";
 import TableToolbar from "@/components/ui/table-toolbar";
+import Textarea from "@/components/ui/textarea";
 import {
+  bulkCreatePastPaperResourcesAction,
   createPastPaperResourceAction,
   deletePastPaperResourceAction,
   updatePastPaperResourceAction,
@@ -137,6 +139,30 @@ export default async function AdminPastPapersPage({
         title="Copyright-safe resource model"
         description="Paste official Pearson URLs and keep this library as metadata plus links. Do not copy Pearson question papers, mark schemes, transcripts, or audio content into the platform database."
       />
+
+      <PanelCard
+        title="Bulk import yearly links"
+        description="Paste CSV or tab-separated rows when Pearson releases a new exam series. Header row is supported."
+        tone="admin"
+      >
+        <form action={bulkCreatePastPaperResourcesAction} className="space-y-4">
+          <FormField
+            label="Bulk import rows"
+            hint="Columns: title, exam_series, paper_number, paper_name, tier, resource_type, official_url, source_label, is_official, sort_order, is_published, is_trial_visible, requires_paid_access, available_in_volna"
+          >
+            <Textarea
+              name="bulkImport"
+              className="font-mono"
+              rows={8}
+              placeholder={"title,exam_series,paper_number,paper_name,tier,resource_type,official_url,source_label,is_official,sort_order,is_published,is_trial_visible,requires_paid_access,available_in_volna\nJune 2026 Paper 1 Listening Foundation question paper,June 2026,1,Paper 1 Listening,foundation,question_paper,https://qualifications.pearson.com/...,Pearson,true,0,false,true,false,true"}
+            />
+          </FormField>
+
+          <Button type="submit" variant="primary" icon="upload">
+            Import links
+          </Button>
+        </form>
+      </PanelCard>
 
       <PanelCard
         title="Add past paper resource"

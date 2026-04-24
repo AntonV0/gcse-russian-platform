@@ -1,4 +1,5 @@
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
+import MockExamQuestionForm from "@/components/admin/mock-exam-question-form";
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -62,6 +63,12 @@ export default async function AdminMockExamDetailPage({
     (total, section) => total + (questionsBySectionId[section.id]?.length ?? 0),
     0
   );
+  const questionTypeLabels = Object.fromEntries(
+    mockExamQuestionTypes.map((questionType) => [
+      questionType,
+      getMockExamQuestionTypeLabel(questionType),
+    ])
+  ) as Record<(typeof mockExamQuestionTypes)[number], string>;
 
   return (
     <main className="space-y-4">
@@ -398,58 +405,21 @@ export default async function AdminMockExamDetailPage({
                       </p>
                     </div>
 
-                    <form action={createMockExamQuestionAction} className="space-y-4">
-                      <input type="hidden" name="mockExamId" value={exam.id} />
-                      <input type="hidden" name="sectionId" value={section.id} />
-
-                      <div className="grid gap-4 lg:grid-cols-3">
-                        <FormField label="Question type" required>
-                          <Select name="questionType" required defaultValue="multiple_choice">
-                            {mockExamQuestionTypes.map((questionType) => (
-                              <option key={questionType} value={questionType}>
-                                {getMockExamQuestionTypeLabel(questionType)}
-                              </option>
-                            ))}
-                          </Select>
-                        </FormField>
-
-                        <FormField label="Marks">
-                          <Input
-                            name="marks"
-                            type="number"
-                            min="0"
-                            step="0.5"
-                            defaultValue="1"
-                          />
-                        </FormField>
-
-                        <FormField label="Sort order">
-                          <Input
-                            name="sortOrder"
-                            type="number"
-                            min="0"
-                            defaultValue={String(questions.length + 1)}
-                          />
-                        </FormField>
-                      </div>
-
-                      <FormField label="Prompt" required>
-                        <Textarea name="prompt" rows={3} required />
-                      </FormField>
-
-                      <FormField label="Question data JSON">
-                        <Textarea
-                          name="data"
-                          className="font-mono"
-                          rows={8}
-                          defaultValue={mockExamQuestionDataTemplates.multiple_choice}
-                        />
-                      </FormField>
-
-                      <Button type="submit" variant="primary" size="sm" icon="create">
-                        Add question
-                      </Button>
-                    </form>
+                    <MockExamQuestionForm
+                      action={createMockExamQuestionAction}
+                      mockExamId={exam.id}
+                      sectionId={section.id}
+                      mode="create"
+                      questionTypes={mockExamQuestionTypes}
+                      questionTypeLabels={questionTypeLabels}
+                      questionDataTemplates={mockExamQuestionDataTemplates}
+                      defaultValues={{
+                        questionType: "multiple_choice",
+                        marks: "1",
+                        sortOrder: String(questions.length + 1),
+                        data: mockExamQuestionDataTemplates.multiple_choice,
+                      }}
+                    />
                   </div>
 
                   {questions.length === 0 ? (
@@ -480,81 +450,22 @@ export default async function AdminMockExamDetailPage({
                             index={questionIndex}
                           />
 
-                          <form
+                          <MockExamQuestionForm
                             action={updateMockExamQuestionAction}
-                            className="space-y-4"
-                          >
-                            <input type="hidden" name="mockExamId" value={exam.id} />
-                            <input
-                              type="hidden"
-                              name="questionId"
-                              value={question.id}
-                            />
-
-                            <div className="grid gap-4 lg:grid-cols-3">
-                              <FormField label="Question type" required>
-                                <Select
-                                  name="questionType"
-                                  required
-                                  defaultValue={question.question_type}
-                                >
-                                  {mockExamQuestionTypes.map((questionType) => (
-                                    <option key={questionType} value={questionType}>
-                                      {getMockExamQuestionTypeLabel(questionType)}
-                                    </option>
-                                  ))}
-                                </Select>
-                              </FormField>
-
-                              <FormField label="Marks">
-                                <Input
-                                  name="marks"
-                                  type="number"
-                                  min="0"
-                                  step="0.5"
-                                  defaultValue={String(question.marks)}
-                                />
-                              </FormField>
-
-                              <FormField label="Sort order">
-                                <Input
-                                  name="sortOrder"
-                                  type="number"
-                                  min="0"
-                                  defaultValue={String(question.sort_order)}
-                                />
-                              </FormField>
-                            </div>
-
-                            <FormField label="Prompt" required>
-                              <Textarea
-                                name="prompt"
-                                rows={3}
-                                required
-                                defaultValue={question.prompt}
-                              />
-                            </FormField>
-
-                            <FormField label="Question data JSON">
-                              <Textarea
-                                name="data"
-                                className="font-mono"
-                                rows={10}
-                                defaultValue={JSON.stringify(question.data, null, 2)}
-                              />
-                            </FormField>
-
-                            <div className="flex flex-wrap gap-2">
-                              <Button
-                                type="submit"
-                                variant="primary"
-                                size="sm"
-                                icon="save"
-                              >
-                                Save question
-                              </Button>
-                            </div>
-                          </form>
+                            mockExamId={exam.id}
+                            questionId={question.id}
+                            mode="edit"
+                            questionTypes={mockExamQuestionTypes}
+                            questionTypeLabels={questionTypeLabels}
+                            questionDataTemplates={mockExamQuestionDataTemplates}
+                            defaultValues={{
+                              questionType: question.question_type,
+                              prompt: question.prompt,
+                              marks: String(question.marks),
+                              sortOrder: String(question.sort_order),
+                              data: JSON.stringify(question.data, null, 2),
+                            }}
+                          />
 
                           <form action={deleteMockExamQuestionAction}>
                             <input type="hidden" name="mockExamId" value={exam.id} />

@@ -84,10 +84,45 @@ export type DbMockExamQuestion = {
   updated_at: string;
 };
 
+export type MockExamAttemptStatus = "draft" | "submitted" | "marked" | "abandoned";
+
+export type DbMockExamAttempt = {
+  id: string;
+  mock_exam_id: string;
+  user_id: string;
+  status: MockExamAttemptStatus;
+  started_at: string;
+  submitted_at: string | null;
+  time_limit_minutes_snapshot: number | null;
+  total_marks_snapshot: number;
+  awarded_marks: number | null;
+  feedback: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DbMockExamResponse = {
+  id: string;
+  attempt_id: string;
+  question_id: string;
+  response_text: string | null;
+  response_payload: Record<string, unknown>;
+  awarded_marks: number | null;
+  feedback: string | null;
+  is_flagged: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type LoadedMockExamDb = {
   exam: DbMockExamSet | null;
   sections: DbMockExamSection[];
   questionsBySectionId: Record<string, DbMockExamQuestion[]>;
+};
+
+export type LoadedMockExamAttemptDb = LoadedMockExamDb & {
+  attempt: DbMockExamAttempt | null;
+  responsesByQuestionId: Record<string, DbMockExamResponse>;
 };
 
 export type MockExamFilters = {
@@ -335,6 +370,52 @@ function normalizeMockExamQuestion(row: unknown): DbMockExamQuestion {
   };
 }
 
+function normalizeMockExamAttempt(row: unknown): DbMockExamAttempt {
+  const record = row as Partial<DbMockExamAttempt>;
+
+  return {
+    id: String(record.id),
+    mock_exam_id: String(record.mock_exam_id),
+    user_id: String(record.user_id),
+    status: (record.status ?? "draft") as MockExamAttemptStatus,
+    started_at: String(record.started_at),
+    submitted_at: record.submitted_at ?? null,
+    time_limit_minutes_snapshot:
+      record.time_limit_minutes_snapshot === null ||
+      record.time_limit_minutes_snapshot === undefined
+        ? null
+        : Number(record.time_limit_minutes_snapshot),
+    total_marks_snapshot: Number(record.total_marks_snapshot ?? 0),
+    awarded_marks:
+      record.awarded_marks === null || record.awarded_marks === undefined
+        ? null
+        : Number(record.awarded_marks),
+    feedback: record.feedback ?? null,
+    created_at: String(record.created_at),
+    updated_at: String(record.updated_at),
+  };
+}
+
+function normalizeMockExamResponse(row: unknown): DbMockExamResponse {
+  const record = row as Partial<DbMockExamResponse>;
+
+  return {
+    id: String(record.id),
+    attempt_id: String(record.attempt_id),
+    question_id: String(record.question_id),
+    response_text: record.response_text ?? null,
+    response_payload: normalizeRecord(record.response_payload),
+    awarded_marks:
+      record.awarded_marks === null || record.awarded_marks === undefined
+        ? null
+        : Number(record.awarded_marks),
+    feedback: record.feedback ?? null,
+    is_flagged: Boolean(record.is_flagged),
+    created_at: String(record.created_at),
+    updated_at: String(record.updated_at),
+  };
+}
+
 function applyMockExamFilters(exams: DbMockExamSet[], filters?: MockExamFilters) {
   const paperNumber =
     filters?.paperNumber && filters.paperNumber !== "all"
@@ -557,11 +638,103 @@ export async function loadMockExamBySlugDb(
   };
 }
 
+export async function getMockExamAttemptByIdDb(attemptId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("mock_exam_attempts")
+    .select("*")
+    .eq("id", attemptId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching mock exam attempt:", { attemptId, error });
+    return null;
+  }
+
+  return data ? normalizeMockExamAttempt(data) : null;
+}
+
+export async function getMockExamResponsesByAttemptIdDb(attemptId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("mock_exam_responses")
+    .select("*")
+    .eq("attempt_id", attemptId);
+
+  if (error) {
+    console.error("Error fetching mock exam responses:", { attemptId, error });
+    return [];
+  }
+
+  return (data ?? []).map(normalizeMockExamResponse);
+}
+
+export async function getCurrentUserMockExamAttemptsDb(
+  mockExamId: string,
+  userId: string
+) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("mock_exam_attempts")
+    .select("*")
+    .eq("mock_exam_id", mockExamId)
+    .eq("user_id", userId)
+    .order("started_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching user mock exam attempts:", {
+      mockExamId,
+      userId,
+      error,
+    });
+    return [];
+  }
+
+  return (data ?? []).map(normalizeMockExamAttempt);
+}
+
+export async function loadMockExamAttemptDb(
+  attemptId: string
+): Promise<LoadedMockExamAttemptDb> {
+  const attempt = await getMockExamAttemptByIdDb(attemptId);
+
+  if (!attempt) {
+    return {
+      attempt: null,
+      exam: null,
+      sections: [],
+      questionsBySectionId: {},
+      responsesByQuestionId: {},
+    };
+  }
+
+  const [loadedExam, responses] = await Promise.all([
+    loadMockExamByIdDb(attempt.mock_exam_id),
+    getMockExamResponsesByAttemptIdDb(attempt.id),
+  ]);
+
+  return {
+    ...loadedExam,
+    attempt,
+    responsesByQuestionId: groupResponsesByQuestionId(responses),
+  };
+}
+
 function groupQuestionsBySectionId(questions: DbMockExamQuestion[]) {
   return questions.reduce<Record<string, DbMockExamQuestion[]>>((acc, question) => {
     const existing = acc[question.section_id] ?? [];
     existing.push(question);
     acc[question.section_id] = existing;
+    return acc;
+  }, {});
+}
+
+function groupResponsesByQuestionId(responses: DbMockExamResponse[]) {
+  return responses.reduce<Record<string, DbMockExamResponse>>((acc, response) => {
+    acc[response.question_id] = response;
     return acc;
   }, {});
 }
