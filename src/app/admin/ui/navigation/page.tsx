@@ -43,7 +43,7 @@ function DemoHeaderLink({ label, active = false }: { label: string; active?: boo
       className={[
         "rounded-full px-3 py-2 text-sm font-medium transition",
         active
-          ? "bg-[rgba(37,99,235,0.10)] text-[var(--brand-blue)] shadow-[0_6px_18px_rgba(37,99,235,0.10)]"
+          ? "bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--brand-blue)] shadow-[0_6px_18px_color-mix(in_srgb,var(--brand-blue)_10%,transparent)]"
           : "text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
       ].join(" ")}
     >
@@ -65,7 +65,7 @@ function DemoSidebarItem({
         "flex items-center gap-3 rounded-2xl border transition",
         compact ? "px-3 py-2.5" : "px-3.5 py-3",
         item.active
-          ? "border-[rgba(37,99,235,0.22)] bg-[rgba(37,99,235,0.08)] text-[var(--text-primary)] shadow-[0_10px_20px_rgba(37,99,235,0.08)]"
+          ? "border-[color-mix(in_srgb,var(--brand-blue)_22%,transparent)] bg-[color-mix(in_srgb,var(--brand-blue)_8%,transparent)] text-[var(--text-primary)] shadow-[0_10px_20px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]"
           : item.locked
             ? "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)] opacity-80"
             : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]",
@@ -75,7 +75,7 @@ function DemoSidebarItem({
         className={[
           "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
           item.active
-            ? "bg-[rgba(37,99,235,0.14)] text-[var(--brand-blue)]"
+            ? "bg-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)] text-[var(--brand-blue)]"
             : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
         ].join(" ")}
       >
@@ -365,7 +365,7 @@ function DemoSecondaryNavigation() {
               className={[
                 "rounded-full px-4 py-2 text-sm font-medium transition",
                 tab.active
-                  ? "bg-[rgba(37,99,235,0.10)] text-[var(--brand-blue)] shadow-[0_8px_18px_rgba(37,99,235,0.10)]"
+                  ? "bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--brand-blue)] shadow-[0_8px_18px_color-mix(in_srgb,var(--brand-blue)_10%,transparent)]"
                   : "bg-[var(--background-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
               ].join(" ")}
             >
@@ -393,7 +393,7 @@ function DemoSecondaryNavigation() {
                 className={[
                   "rounded-2xl px-3 py-3 text-center",
                   item.active
-                    ? "bg-[rgba(37,99,235,0.10)] text-[var(--brand-blue)]"
+                    ? "bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--brand-blue)]"
                     : "text-[var(--text-secondary)]",
                 ].join(" ")}
               >
@@ -504,7 +504,7 @@ function DemoNavigationRules() {
       {rules.map((rule) => (
         <Card key={rule} className="h-full p-4">
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[rgba(37,99,235,0.10)] text-[var(--brand-blue)]">
+            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--brand-blue)]">
               <AppIcon icon="navigation" size={16} />
             </span>
             <p className="text-sm app-text-muted">{rule}</p>

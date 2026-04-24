@@ -11,7 +11,7 @@
   min-height: 2.5rem;
   max-width: calc(100vw - 2rem);
   padding: 0.55rem 0.75rem;
-  border: 1px solid rgba(37, 99, 235, 0.24);
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 24%, transparent);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.96);
   color: var(--text-primary);
@@ -33,7 +33,7 @@
 
 .dev-marker-toggle:hover {
   transform: translateY(-1px);
-  border-color: rgba(37, 99, 235, 0.42);
+  border-color: color-mix(in srgb, var(--brand-blue) 42%, transparent);
   box-shadow:
     0 3px 10px rgba(16, 32, 51, 0.12),
     0 18px 40px rgba(16, 32, 51, 0.2);
@@ -41,15 +41,15 @@
 
 .dev-marker-toggle:focus-visible {
   outline: none;
-  border-color: rgba(37, 99, 235, 0.5);
+  border-color: color-mix(in srgb, var(--brand-blue) 50%, transparent);
   box-shadow:
-    0 0 0 4px rgba(37, 99, 235, 0.14),
+    0 0 0 4px var(--accent-ring),
     0 3px 10px rgba(16, 32, 51, 0.12),
     0 18px 40px rgba(16, 32, 51, 0.2);
 }
 
 .dev-marker-toggle[data-state="enabled"] {
-  border-color: rgba(37, 99, 235, 0.45);
+  border-color: color-mix(in srgb, var(--brand-blue) 45%, transparent);
   background: var(--brand-blue);
   color: white;
 }
@@ -74,7 +74,7 @@
   width: min(22rem, calc(100vw - 2rem));
   max-height: min(28rem, calc(100vh - 6rem));
   overflow: hidden;
-  border: 1px solid rgba(37, 99, 235, 0.18);
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 18%, transparent);
   border-radius: 1rem;
   background: rgba(255, 255, 255, 0.975);
   color: var(--text-primary);
@@ -91,7 +91,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.8rem 0.9rem 0.7rem;
-  border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-blue) 10%, transparent);
 }
 
 .dev-marker-control-panel-title {
@@ -113,9 +113,9 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(37, 99, 235, 0.16);
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 16%, transparent);
   border-radius: 999px;
-  background: rgba(37, 99, 235, 0.06);
+  background: color-mix(in srgb, var(--brand-blue) 6%, transparent);
   color: var(--brand-blue);
   transition:
     border-color var(--transition-fast),
@@ -126,8 +126,8 @@
 .dev-marker-control-icon-button:hover,
 .dev-marker-control-icon-button[aria-expanded="true"] {
   transform: translateY(-1px);
-  border-color: rgba(37, 99, 235, 0.32);
-  background: rgba(37, 99, 235, 0.1);
+  border-color: color-mix(in srgb, var(--brand-blue) 32%, transparent);
+  background: color-mix(in srgb, var(--brand-blue) 10%, transparent);
 }
 
 .dev-marker-tier-filter {
@@ -135,14 +135,14 @@
   gap: 0.35rem;
   overflow-x: auto;
   padding: 0.7rem 0.75rem;
-  border-bottom: 1px solid rgba(37, 99, 235, 0.08);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-blue) 8%, transparent);
 }
 
 .dev-marker-tier-filter-button {
   flex-shrink: 0;
-  border: 1px solid rgba(37, 99, 235, 0.14);
+  border: 1px solid var(--accent-ring);
   border-radius: 999px;
-  background: rgba(37, 99, 235, 0.04);
+  background: color-mix(in srgb, var(--brand-blue) 4%, transparent);
   padding: 0.35rem 0.55rem;
   color: var(--text-secondary);
   font-size: 0.68rem;
@@ -155,8 +155,8 @@
 
 .dev-marker-tier-filter-button:hover,
 .dev-marker-tier-filter-button[data-state="active"] {
-  border-color: rgba(37, 99, 235, 0.38);
-  background: rgba(37, 99, 235, 0.1);
+  border-color: color-mix(in srgb, var(--brand-blue) 38%, transparent);
+  background: color-mix(in srgb, var(--brand-blue) 10%, transparent);
   color: var(--brand-blue);
 }
 
@@ -191,7 +191,7 @@
 .dev-marker-index-item:hover,
 .dev-marker-index-item:focus-visible {
   outline: none;
-  background: rgba(37, 99, 235, 0.07);
+  background: color-mix(in srgb, var(--brand-blue) 7%, transparent);
 }
 
 .dev-marker-index-name {
@@ -249,10 +249,10 @@
   height: 1.3rem;
   width: 1.3rem;
   padding: 0;
-  border: 1px solid rgba(37, 99, 235, 0.24);
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 24%, transparent);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.96);
-  color: rgba(37, 99, 235, 0.9);
+  color: color-mix(in srgb, var(--brand-blue) 90%, transparent);
   box-shadow:
     0 1px 2px rgba(16, 32, 51, 0.08),
     0 0 0 2px rgba(246, 248, 251, 0.92);
@@ -273,7 +273,7 @@
 .dev-marker-trigger[data-state="open"] {
   opacity: 1;
   transform: scale(1.05);
-  border-color: rgba(37, 99, 235, 0.45);
+  border-color: color-mix(in srgb, var(--brand-blue) 45%, transparent);
   background: rgba(255, 255, 255, 1);
   color: var(--brand-blue);
   box-shadow:
@@ -286,9 +286,9 @@
   outline: none;
   opacity: 1;
   transform: scale(1.05);
-  border-color: rgba(37, 99, 235, 0.45);
+  border-color: color-mix(in srgb, var(--brand-blue) 45%, transparent);
   box-shadow:
-    0 0 0 4px rgba(37, 99, 235, 0.14),
+    0 0 0 4px var(--accent-ring),
     0 0 0 6px rgba(246, 248, 251, 0.96),
     0 10px 24px rgba(16, 32, 51, 0.14);
 }
@@ -309,7 +309,7 @@
   width: min(22rem, calc(100vw - 1.5rem));
   max-width: calc(100vw - 1.5rem);
   padding: 0.7rem 0.8rem;
-  border: 1px solid rgba(37, 99, 235, 0.16);
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 16%, transparent);
   border-radius: 0.9rem;
   background: rgba(255, 255, 255, 0.985);
   color: var(--text-primary);
@@ -377,9 +377,9 @@
   flex-shrink: 0;
   align-items: center;
   gap: 0.28rem;
-  border: 1px solid rgba(37, 99, 235, 0.18);
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 18%, transparent);
   border-radius: 999px;
-  background: rgba(37, 99, 235, 0.06);
+  background: color-mix(in srgb, var(--brand-blue) 6%, transparent);
   padding: 0.28rem 0.45rem;
   color: var(--brand-blue);
   font-size: 0.66rem;
@@ -392,8 +392,8 @@
 .dev-marker-copy-button:hover,
 .dev-marker-copy-button:focus-visible {
   outline: none;
-  border-color: rgba(37, 99, 235, 0.36);
-  background: rgba(37, 99, 235, 0.1);
+  border-color: color-mix(in srgb, var(--brand-blue) 36%, transparent);
+  background: color-mix(in srgb, var(--brand-blue) 10%, transparent);
 }
 
 /* host polish */
@@ -407,7 +407,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  border: 1px dashed rgba(37, 99, 235, 0.12);
+  border: 1px dashed color-mix(in srgb, var(--brand-blue) 12%, transparent);
   pointer-events: none;
   opacity: 0;
   transition:
@@ -419,8 +419,8 @@
 .dev-marker-host:has(.dev-marker-trigger-container:hover)::after,
 .dev-marker-host:has(.dev-marker-trigger-container[data-state="open"])::after {
   opacity: 1;
-  border-color: rgba(37, 99, 235, 0.24);
-  box-shadow: inset 0 0 0 3px rgba(37, 99, 235, 0.06);
+  border-color: color-mix(in srgb, var(--brand-blue) 24%, transparent);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--brand-blue) 6%, transparent);
 }
 
 .dev-marker-host:has(.dev-marker-trigger-layout)::after {
@@ -466,16 +466,16 @@
 }
 
 [data-theme="dark"] .dev-marker-trigger {
-  border-color: rgba(79, 140, 255, 0.3);
+  border-color: color-mix(in srgb, var(--brand-blue) 30%, transparent);
   background: rgba(9, 23, 47, 0.98);
-  color: rgba(118, 167, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-blue-hover) 92%, transparent);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.28),
     0 0 0 2px rgba(7, 22, 51, 0.94);
 }
 
 [data-theme="dark"] .dev-marker-toggle {
-  border-color: rgba(79, 140, 255, 0.3);
+  border-color: color-mix(in srgb, var(--brand-blue) 30%, transparent);
   background: rgba(9, 23, 47, 0.98);
   color: var(--text-primary);
   box-shadow:
@@ -485,17 +485,17 @@
 
 [data-theme="dark"] .dev-marker-toggle:hover,
 [data-theme="dark"] .dev-marker-toggle:focus-visible {
-  border-color: rgba(118, 167, 255, 0.45);
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 45%, transparent);
 }
 
 [data-theme="dark"] .dev-marker-toggle[data-state="enabled"] {
-  border-color: rgba(118, 167, 255, 0.48);
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 48%, transparent);
   background: var(--brand-blue);
   color: white;
 }
 
 [data-theme="dark"] .dev-marker-control-panel {
-  border-color: rgba(79, 140, 255, 0.2);
+  border-color: color-mix(in srgb, var(--brand-blue) 20%, transparent);
   background: rgba(9, 23, 47, 0.975);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.28),
@@ -504,14 +504,14 @@
 
 [data-theme="dark"] .dev-marker-control-panel-header,
 [data-theme="dark"] .dev-marker-tier-filter {
-  border-color: rgba(118, 167, 255, 0.12);
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 12%, transparent);
 }
 
 [data-theme="dark"] .dev-marker-control-icon-button,
 [data-theme="dark"] .dev-marker-tier-filter-button,
 [data-theme="dark"] .dev-marker-copy-button {
-  border-color: rgba(118, 167, 255, 0.18);
-  background: rgba(79, 140, 255, 0.08);
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 18%, transparent);
+  background: color-mix(in srgb, var(--brand-blue) 8%, transparent);
 }
 
 [data-theme="dark"] .dev-marker-control-icon-button:hover,
@@ -522,12 +522,12 @@
 [data-theme="dark"] .dev-marker-copy-button:focus-visible,
 [data-theme="dark"] .dev-marker-index-item:hover,
 [data-theme="dark"] .dev-marker-index-item:focus-visible {
-  background: rgba(79, 140, 255, 0.14);
+  background: color-mix(in srgb, var(--brand-blue) 14%, transparent);
 }
 
 [data-theme="dark"] .dev-marker-trigger:hover,
 [data-theme="dark"] .dev-marker-trigger[data-state="open"] {
-  border-color: rgba(118, 167, 255, 0.45);
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 45%, transparent);
   background: rgba(9, 23, 47, 1);
   color: var(--brand-blue);
   box-shadow:
@@ -537,9 +537,9 @@
 }
 
 [data-theme="dark"] .dev-marker-trigger:focus-visible {
-  border-color: rgba(118, 167, 255, 0.45);
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 45%, transparent);
   box-shadow:
-    0 0 0 4px rgba(79, 140, 255, 0.16),
+    0 0 0 4px var(--accent-ring),
     0 0 0 6px rgba(7, 22, 51, 0.98),
     0 10px 24px rgba(0, 0, 0, 0.32);
 }
@@ -555,7 +555,7 @@
 }
 
 [data-theme="dark"] .dev-marker-panel {
-  border-color: rgba(79, 140, 255, 0.18);
+  border-color: color-mix(in srgb, var(--brand-blue) 18%, transparent);
   background: rgba(9, 23, 47, 0.985);
   color: var(--text-primary);
   box-shadow:
@@ -564,13 +564,13 @@
 }
 
 [data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-container)::after {
-  border-color: rgba(118, 167, 255, 0.14);
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 14%, transparent);
 }
 
 [data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-container:hover)::after,
 [data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-container[data-state="open"])::after {
-  border-color: rgba(118, 167, 255, 0.28);
-  box-shadow: inset 0 0 0 3px rgba(79, 140, 255, 0.08);
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 28%, transparent);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--brand-blue) 8%, transparent);
 }
 
 [data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-layout)::after {

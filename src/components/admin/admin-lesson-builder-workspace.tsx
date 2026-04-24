@@ -318,7 +318,7 @@ export default function AdminLessonBuilderWorkspace({
       <section className={`grid items-start gap-4 ${layoutClass}`}>
         {isSidebarOpen ? (
           <aside className="min-w-0 xl:sticky xl:top-[calc(var(--site-header-height)+84px)] xl:self-start">
-            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(37,99,235,0.03)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
+            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_3%,transparent)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Sections</p>
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">
@@ -368,7 +368,7 @@ export default function AdminLessonBuilderWorkspace({
 
         {isInspectorOpen ? (
           <aside className="min-w-0 xl:sticky xl:top-[calc(var(--site-header-height)+84px)] xl:self-start">
-            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(37,99,235,0.02)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
+            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_2%,transparent)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Inspector</p>
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">
