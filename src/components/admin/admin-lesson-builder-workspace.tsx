@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { insertLessonTemplateAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import LessonInspectorPanel from "@/components/admin/lesson-builder/lesson-inspector-panel";
 import LessonSectionEditor from "@/components/admin/lesson-builder/lesson-section-editor";
@@ -24,6 +24,8 @@ import {
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import { getLessonBlockLabel } from "@/lib/lessons/lesson-blocks";
 
+const LESSON_BUILDER_STORAGE_EVENT = "gcse-russian-lesson-builder-storage";
+
 function getSectionCounts(sections: LessonSection[]) {
   let publishedSections = 0;
   let totalBlocks = 0;
@@ -44,22 +46,6 @@ function getSectionCounts(sections: LessonSection[]) {
     publishedBlocks,
     totalBlocks,
   };
-}
-
-function getInitialSelectedSectionId(lessonId: string, sections: LessonSection[]) {
-  if (typeof window === "undefined") {
-    return sections[0]?.id ?? null;
-  }
-
-  const storedSectionId = window.localStorage.getItem(
-    getLessonBuilderStorageKey(lessonId, "selected-section-id")
-  );
-
-  if (storedSectionId && sections.some((section) => section.id === storedSectionId)) {
-    return storedSectionId;
-  }
-
-  return sections[0]?.id ?? null;
 }
 
 function CompactBuilderStat(props: { label: string; published: number; total: number }) {
@@ -107,8 +93,26 @@ export default function AdminLessonBuilderWorkspace({
     [sections]
   );
 
-  const [storedSelectedSectionId, setStoredSelectedSectionId] = useState<string | null>(
-    () => getInitialSelectedSectionId(lessonId, sections)
+  const selectedSectionStorageKey = getLessonBuilderStorageKey(
+    lessonId,
+    "selected-section-id"
+  );
+  const subscribeToSelectedSectionStorage = useCallback((callback: () => void) => {
+    window.addEventListener("storage", callback);
+    window.addEventListener(LESSON_BUILDER_STORAGE_EVENT, callback);
+
+    return () => {
+      window.removeEventListener("storage", callback);
+      window.removeEventListener(LESSON_BUILDER_STORAGE_EVENT, callback);
+    };
+  }, []);
+  const readSelectedSectionStorage = useCallback(() => {
+    return window.localStorage.getItem(selectedSectionStorageKey);
+  }, [selectedSectionStorageKey]);
+  const storedSelectedSectionId = useSyncExternalStore(
+    subscribeToSelectedSectionStorage,
+    readSelectedSectionStorage,
+    () => null
   );
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [sectionSearch, setSectionSearch] = useState("");
@@ -148,17 +152,9 @@ export default function AdminLessonBuilderWorkspace({
     ? (selectedSection?.blocks.findIndex((block) => block.id === selectedBlock.id) ?? -1)
     : -1;
 
-  useEffect(() => {
-    if (!selectedSectionId) return;
-
-    window.localStorage.setItem(
-      getLessonBuilderStorageKey(lessonId, "selected-section-id"),
-      selectedSectionId
-    );
-  }, [lessonId, selectedSectionId]);
-
   function handleSelectSection(sectionId: string) {
-    setStoredSelectedSectionId(sectionId);
+    window.localStorage.setItem(selectedSectionStorageKey, sectionId);
+    window.dispatchEvent(new Event(LESSON_BUILDER_STORAGE_EVENT));
     setSelectedBlockId(null);
     setBlockSearch("");
   }

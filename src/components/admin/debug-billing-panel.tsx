@@ -25,7 +25,7 @@ type GrantRow = {
 
 function formatDate(value: string | null) {
   if (!value) return "—";
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString("en-GB");
 }
 
 export default async function DebugBillingPanel({ userId }: DebugBillingPanelProps) {
