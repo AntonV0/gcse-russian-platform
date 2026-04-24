@@ -1,4 +1,6 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
@@ -12,6 +14,15 @@ import PracticeSurfaceCard from "@/components/ui/practice-surface-card";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import AssessmentSurfaceCard from "@/components/ui/assessment-surface-card";
 import Surface from "@/components/ui/surface";
+
+const pageNavItems = [
+  { id: "foundations", label: "Foundations" },
+  { id: "primitives", label: "Primitives" },
+  { id: "tone-density", label: "Tone + density" },
+  { id: "semantic-surfaces", label: "Semantic" },
+  { id: "dark-surfaces", label: "Dark surfaces" },
+  { id: "future-components", label: "Future" },
+];
 
 function SurfaceExample({
   title,
@@ -97,7 +108,10 @@ export default async function AdminUiSurfacesPage() {
       description="Compare cards, panels, branded containers, and spacing patterns so pages feel consistent across the platform."
       currentPath="/admin/ui/surfaces"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="foundations"
         title="Foundational surface types"
         description="These are low-level visual surface weights. They answer how strong a container should feel before a semantic component is built on top of it."
       >
@@ -140,6 +154,7 @@ export default async function AdminUiSurfacesPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="primitives"
         title="Shared card primitives"
         description="These are the reusable building blocks for most admin pages. Their roles should stay visually distinct and should be reused before creating page-specific wrappers."
       >
@@ -209,6 +224,29 @@ export default async function AdminUiSurfacesPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="tone-density"
+        title="Tone and density matrix"
+        description="PanelCard and SectionCard share tone and density options that should be tested explicitly."
+      >
+        <div className="grid gap-4 xl:grid-cols-3">
+          {(["default", "admin", "student", "brand", "muted"] as const).map((tone) => (
+            <PanelCard
+              key={tone}
+              title={`${tone} panel`}
+              description="Tone sample for reusable support panels."
+              tone={tone}
+              density={tone === "muted" ? "compact" : "default"}
+            >
+              <p className="text-sm app-text-muted">
+                Use tone deliberately so admin, student, and brand contexts stay distinct.
+              </p>
+            </PanelCard>
+          ))}
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="semantic-surfaces"
         title="Semantic content surface patterns"
         description="These are higher-level patterns for specific product experiences. The strongest ones below are now extracted into shared components."
       >
@@ -348,6 +386,7 @@ export default async function AdminUiSurfacesPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="dark-surfaces"
         title="Surface hierarchy on dark emphasis"
         description="This helps verify that cards and badges still feel layered correctly when placed on stronger dark backgrounds."
       >
@@ -603,6 +642,17 @@ export default async function AdminUiSurfacesPage() {
           </Card>
         </div>
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "Dialog and modal surfaces for confirmation and focused editing.",
+          "Drawer surface for mobile navigation and side inspectors.",
+          "MediaCard for image, audio, and future video previews.",
+          "CalloutPanel for reusable informational, exam-tip, and warning blocks.",
+          "PricingComparisonSurface for plan and upgrade decisions.",
+          "TimelineSurface for future activity, audit, and progress history.",
+        ]}
+      />
     </UiLabShell>
   );
 }

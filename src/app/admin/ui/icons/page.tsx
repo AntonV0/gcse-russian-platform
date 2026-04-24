@@ -1,5 +1,7 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import type { AppIconKey } from "@/lib/shared/icons";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import AllIconsBrowser from "@/components/admin/all-icons-browser";
@@ -8,6 +10,15 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
 import PanelCard from "@/components/ui/panel-card";
+
+const pageNavItems = [
+  { id: "sizes", label: "Sizes" },
+  { id: "label-patterns", label: "Labels" },
+  { id: "controls", label: "Controls" },
+  { id: "semantic-groups", label: "Groups" },
+  { id: "browser", label: "Browser" },
+  { id: "future-components", label: "Future" },
+];
 
 const curatedGroups: {
   title: string;
@@ -270,7 +281,10 @@ export default async function AdminUiIconsPage() {
       description="Practical icon reference for sizing, semantics, controls, and consistent usage across the platform."
       currentPath="/admin/ui/icons"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="sizes"
         title="Sizing rules"
         description="Most UI icons should stay within a small, consistent size range."
       >
@@ -278,6 +292,7 @@ export default async function AdminUiIconsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="label-patterns"
         title="Icon + label patterns"
         description="The most reusable icon pattern is still the icon paired with clear text."
       >
@@ -285,6 +300,7 @@ export default async function AdminUiIconsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="controls"
         title="Icon-only controls and status meaning"
         description="Icon-only controls should be limited, while status semantics should stay very consistent."
       >
@@ -292,6 +308,7 @@ export default async function AdminUiIconsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="semantic-groups"
         title="Semantic icon groups"
         description="Use the curated icon set first so product meaning stays stable."
       >
@@ -299,11 +316,23 @@ export default async function AdminUiIconsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="browser"
         title="Full Lucide browser"
         description="Use this only when the curated app set does not already cover the meaning you need."
       >
         <AllIconsBrowser />
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "IconUsageMatrix for navigation, status, learning, admin, and billing meanings.",
+          "IconTooltipButton for dense icon-only controls.",
+          "CuratedIconGapList for missing app-specific icon keys.",
+          "IconPairingGuide for badge, button, row, and card patterns.",
+          "StatusIconLegend for progress, review, locked, and danger states.",
+          "IconAccessibilityChecklist for labels, titles, and decorative usage.",
+        ]}
+      />
     </UiLabShell>
   );
 }

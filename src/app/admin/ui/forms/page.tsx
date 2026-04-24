@@ -1,4 +1,6 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import FormField from "@/components/ui/form-field";
@@ -10,6 +12,16 @@ import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import Card, { CardBody } from "@/components/ui/card";
 import AppIcon from "@/components/ui/app-icon";
+
+const pageNavItems = [
+  { id: "field-basics", label: "Field basics" },
+  { id: "validation", label: "Validation" },
+  { id: "dense-controls", label: "Dense controls" },
+  { id: "builder-rows", label: "Builder rows" },
+  { id: "sectioned-form", label: "Sectioned form" },
+  { id: "states", label: "States" },
+  { id: "future-components", label: "Future" },
+];
 
 function DemoBasicFields() {
   return (
@@ -770,7 +782,10 @@ export default async function AdminUiFormsPage() {
       description="Compare field styles, validation cues, grouped layouts, and patterns used across admin editing screens."
       currentPath="/admin/ui/forms"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="field-basics"
         title="Field basics"
         description="These are the default input patterns the platform should reuse across edit pages and internal tools."
       >
@@ -792,6 +807,7 @@ export default async function AdminUiFormsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="validation"
         title="Validation and helper states"
         description="Use helper text and error text consistently so forms feel trustworthy and easy to use."
       >
@@ -799,6 +815,7 @@ export default async function AdminUiFormsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="dense-controls"
         title="Dense admin controls"
         description="These patterns are useful for filters, inspector sidebars, and compact builder interfaces."
       >
@@ -806,6 +823,7 @@ export default async function AdminUiFormsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="builder-rows"
         title="Builder row patterns"
         description="These patterns help you test repeatable lesson-builder and list-toolbar rows before applying them across real admin screens."
       >
@@ -820,6 +838,7 @@ export default async function AdminUiFormsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="sectioned-form"
         title="Sectioned real-world form"
         description="This is a closer representation of a full admin editing screen, where multiple kinds of content and settings need to work together."
       >
@@ -827,6 +846,7 @@ export default async function AdminUiFormsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="states"
         title="Disabled, read-only, and save states"
         description="A polished form system also needs clear inactive, protected, and in-progress states."
       >
@@ -904,6 +924,17 @@ export default async function AdminUiFormsPage() {
           </Card>
         </div>
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "RadioGroupField for tier, plan, and visibility choices.",
+          "ToggleField for binary settings that need switch-style affordance.",
+          "FileUploadField for images, audio, and assignment submissions.",
+          "DateTimeField for assignments, exam windows, and scheduling.",
+          "FormValidationSummary for large admin edit screens.",
+          "AutosaveStatus for future lesson-builder editing flows.",
+        ]}
+      />
     </UiLabShell>
   );
 }

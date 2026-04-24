@@ -1,6 +1,8 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import type { AppIconKey } from "@/lib/shared/icons";
 import { uiLabPages } from "@/lib/ui/ui-lab";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
@@ -11,6 +13,16 @@ import Card from "@/components/ui/card";
 import EmptyState from "@/components/ui/empty-state";
 import PanelCard from "@/components/ui/panel-card";
 import SectionHeader from "@/components/ui/section-header";
+import ThemeToggle from "@/components/ui/theme-toggle";
+
+const pageNavItems = [
+  { id: "platform-header", label: "Header" },
+  { id: "sidebars", label: "Sidebars" },
+  { id: "secondary-nav", label: "Secondary" },
+  { id: "utility-controls", label: "Utility controls" },
+  { id: "rules", label: "Rules" },
+  { id: "future-components", label: "Future" },
+];
 
 type PrimaryNavItem = {
   label: string;
@@ -516,7 +528,10 @@ export default async function AdminUiNavigationPage() {
       description="Reference page for headers, sidebars, breadcrumb direction, tabs, and access-aware navigation patterns."
       currentPath="/admin/ui/navigation"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="platform-header"
         title="Platform header"
         description="Primary shell direction for public and student-facing navigation."
       >
@@ -524,6 +539,7 @@ export default async function AdminUiNavigationPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="sidebars"
         title="Sidebar systems"
         description="Admin, student, and teacher navigation should share one visual language while reflecting different priorities."
       >
@@ -538,6 +554,7 @@ export default async function AdminUiNavigationPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="secondary-nav"
         title="Back-nav, breadcrumb direction, and tabs"
         description="Use lighter secondary navigation for context and sibling movement inside one area."
       >
@@ -548,6 +565,49 @@ export default async function AdminUiNavigationPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="utility-controls"
+        title="Utility controls"
+        description="Theme, settings, profile, and logout controls should sit outside the main learning/work navigation."
+      >
+        <div className="grid gap-4 xl:grid-cols-2">
+          <PanelCard
+            title="Theme utility"
+            description="Use the production ThemeToggle in app chrome, not as ordinary page content."
+            contentClassName="space-y-4"
+          >
+            <div className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+              <ThemeToggle />
+              <div>
+                <div className="font-semibold text-[var(--text-primary)]">
+                  Quick theme override
+                </div>
+                <p className="text-sm app-text-muted">
+                  Keep one instance in the header or sidebar utility area.
+                </p>
+              </div>
+            </div>
+          </PanelCard>
+
+          <PanelCard
+            title="Utility placement"
+            description="Settings and logout should remain visually separate from daily work routes."
+            contentClassName="space-y-3"
+          >
+            <DemoNavGroup
+              title="Utility"
+              compact
+              items={[
+                { label: "Profile", icon: "user" },
+                { label: "Settings", icon: "settings" },
+                { label: "Log out", icon: "userX" },
+              ]}
+            />
+          </PanelCard>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="rules"
         title="Navigation rules"
         description="System-level rules to keep admin, student, and teacher navigation coherent."
       >
@@ -570,6 +630,17 @@ export default async function AdminUiNavigationPage() {
           }
         />
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "Tabs component for sibling views inside course, user, and settings areas.",
+          "Breadcrumbs component for dense admin hierarchy paths.",
+          "MobileNavDrawer for compact platform and admin navigation.",
+          "SidebarNavItem to replace repeated sidebar item styling.",
+          "UtilityNavGroup for settings, profile, billing, and logout placement.",
+          "AccessAwareNavPreview for trial, full, and Volna student states.",
+        ]}
+      />
     </UiLabShell>
   );
 }

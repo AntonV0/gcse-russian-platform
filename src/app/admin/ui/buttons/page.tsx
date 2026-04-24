@@ -1,8 +1,19 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import Button from "@/components/ui/button";
 import Card, { CardBody } from "@/components/ui/card";
+
+const pageNavItems = [
+  { id: "dev-markers", label: "Dev markers" },
+  { id: "core-hierarchy", label: "Core hierarchy" },
+  { id: "states", label: "States" },
+  { id: "dense-patterns", label: "Dense patterns" },
+  { id: "project-examples", label: "Project examples" },
+  { id: "future-components", label: "Future" },
+];
 
 export default async function AdminUiButtonsPage() {
   const canAccess = await requireAdminAccess();
@@ -17,7 +28,10 @@ export default async function AdminUiButtonsPage() {
       description="Reference for button variants, icon patterns, interaction states, and shared component inspection in development."
       currentPath="/admin/ui/buttons"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="dev-markers"
         title="Dev marker behaviour"
         description="In development, shared buttons now show a subtle corner marker. Click it to inspect the reusable component name and source path without covering the button itself."
       >
@@ -48,6 +62,7 @@ export default async function AdminUiButtonsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="core-hierarchy"
         title="Core hierarchy"
         description="These are the main reusable button hierarchies for admin pages, forms, and platform navigation."
       >
@@ -359,6 +374,7 @@ export default async function AdminUiButtonsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="states"
         title="Disabled states by hierarchy"
         description="Disabled buttons should remain readable, clearly inactive, and still preserve the intended action hierarchy."
       >
@@ -408,6 +424,7 @@ export default async function AdminUiButtonsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="dense-patterns"
         title="Toolbar and dense admin patterns"
         description="These patterns are useful for list screens, builder toolbars, inspectors, and table action bars."
       >
@@ -559,6 +576,7 @@ export default async function AdminUiButtonsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="project-examples"
         title="Project-specific examples"
         description="These are closer to how buttons could be used in GCSE Russian lessons, revision flows, and sales funnel moments."
       >
@@ -700,6 +718,17 @@ export default async function AdminUiButtonsPage() {
           </Button>
         </div>
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "LoadingButton for server action pending states.",
+          "SplitButton for create-and-add-another admin flows.",
+          "SegmentedControl for compact mode or variant switching.",
+          "CommandButton for keyboard-aware editor actions.",
+          "IconTooltipButton for dense builder and toolbar controls.",
+          "ButtonGroup for grouped mutually related actions.",
+        ]}
+      />
     </UiLabShell>
   );
 }
