@@ -317,6 +317,29 @@ src/
         lesson-section-editor.tsx
         lesson-section-sidebar.tsx
 
+        add-block-composer/
+          block-preset-list.tsx
+          block-type-button.tsx
+          media-block-forms.tsx
+          selected-block-form.tsx
+          shared.ts
+          text-block-forms.tsx
+          vocabulary-block-forms.tsx
+
+        block-editors/
+          media-editors.tsx
+          shared.ts
+          slug-block-editor.tsx
+          text-editors.tsx
+          vocabulary-block-editor.tsx
+          vocabulary-set-block-editor.tsx
+
+        lesson-section-sidebar/
+          add-section-form.tsx
+          section-list.tsx
+          section-template-list.tsx
+          sidebar-primitives.tsx
+
     assignments/
       assignment-submission-form.tsx
       delete-assignment-button.tsx
@@ -354,9 +377,18 @@ src/
       lesson-renderer.tsx
       note-block.tsx
       question-set-block.tsx
+      structure-blocks.tsx
       text-block.tsx
       vocabulary-block.tsx
       vocabulary-set-block.tsx
+
+      lesson-page-template/
+        lesson-completion-panel.tsx
+        lesson-step-routes.ts
+        progress-helpers.ts
+        section-pager.tsx
+        step-meta-bar.tsx
+        step-tracker.tsx
 
     providers/
       theme-provider.tsx
@@ -662,6 +694,26 @@ supabase/
 
 - `src/components/ui/theme-toggle.tsx`  
   Quick header theme override
+
+---
+
+### Component structure updates
+
+- `src/components/admin/lesson-builder/add-block-composer/`  
+  Focused block creation subcomponents and forms
+
+- `src/components/admin/lesson-builder/block-editors/`  
+  Focused block editor forms for text, media, slug, and vocabulary blocks
+
+- `src/components/admin/lesson-builder/lesson-section-sidebar/`  
+  Sidebar section creation, listing, template, and primitive helpers
+
+- `src/components/lesson-blocks/structure-blocks.tsx`  
+  Shared renderer components for structural lesson blocks such as headers,
+  dividers, callouts, images, and audio
+
+- `src/components/lesson-blocks/lesson-page-template/`  
+  Step routing, progress, pager, tracker, and completion panel helpers
 
 ---
 
