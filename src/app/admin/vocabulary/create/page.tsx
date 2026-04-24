@@ -214,6 +214,7 @@ export default function CreateVocabularySetPage() {
                   <option value="both">Both tiers</option>
                   <option value="foundation">Foundation</option>
                   <option value="higher">Higher</option>
+                  <option value="unknown">Unknown</option>
                 </Select>
               </FormField>
 
@@ -237,6 +238,7 @@ export default function CreateVocabularySetPage() {
               >
                 <Select id="setType" name="setType" defaultValue="lesson_custom">
                   <option value="lesson_custom">Lesson custom</option>
+                  <option value="specification">Specification</option>
                   <option value="core">Core</option>
                   <option value="theme">Theme</option>
                   <option value="phrase_bank">Phrase bank</option>
@@ -259,6 +261,33 @@ export default function CreateVocabularySetPage() {
                   <option value="compact_cards">Compact cards</option>
                 </Select>
               </FormField>
+            </div>
+          </section>
+
+          <section className="app-surface app-section-padding">
+            <div className="mb-5">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+                Import metadata
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                Optional fields used by the future idempotent vocabulary importer.
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField label="Source key" htmlFor="sourceKey">
+                <Input id="sourceKey" name="sourceKey" placeholder="pearson_edexcel_gcse_russian" />
+              </FormField>
+
+              <FormField label="Source version" htmlFor="sourceVersion">
+                <Input id="sourceVersion" name="sourceVersion" placeholder="manual-review-v1" />
+              </FormField>
+
+              <div className="md:col-span-2">
+                <FormField label="Import key" htmlFor="importKey">
+                  <Input id="importKey" name="importKey" placeholder="pearson_edexcel_gcse_russian:theme_1" />
+                </FormField>
+              </div>
             </div>
           </section>
 

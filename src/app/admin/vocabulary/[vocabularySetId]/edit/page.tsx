@@ -218,6 +218,7 @@ export default async function EditVocabularySetPage({
                   <option value="both">Both tiers</option>
                   <option value="foundation">Foundation</option>
                   <option value="higher">Higher</option>
+                  <option value="unknown">Unknown</option>
                 </Select>
               </FormField>
 
@@ -237,6 +238,7 @@ export default async function EditVocabularySetPage({
               <FormField label="Set type" htmlFor="setType">
                 <Select id="setType" name="setType" defaultValue={vocabularySet.set_type}>
                   <option value="lesson_custom">Lesson custom</option>
+                  <option value="specification">Specification</option>
                   <option value="core">Core</option>
                   <option value="theme">Theme</option>
                   <option value="phrase_bank">Phrase bank</option>
@@ -255,6 +257,45 @@ export default async function EditVocabularySetPage({
                   <option value="compact_cards">Compact cards</option>
                 </Select>
               </FormField>
+            </div>
+          </section>
+
+          <section className="app-surface app-section-padding">
+            <div className="mb-5">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+                Import metadata
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                Stable source metadata for repeatable manifest imports.
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField label="Source key" htmlFor="sourceKey">
+                <Input
+                  id="sourceKey"
+                  name="sourceKey"
+                  defaultValue={vocabularySet.source_key ?? ""}
+                />
+              </FormField>
+
+              <FormField label="Source version" htmlFor="sourceVersion">
+                <Input
+                  id="sourceVersion"
+                  name="sourceVersion"
+                  defaultValue={vocabularySet.source_version ?? ""}
+                />
+              </FormField>
+
+              <div className="md:col-span-2">
+                <FormField label="Import key" htmlFor="importKey">
+                  <Input
+                    id="importKey"
+                    name="importKey"
+                    defaultValue={vocabularySet.import_key ?? ""}
+                  />
+                </FormField>
+              </div>
             </div>
           </section>
 
