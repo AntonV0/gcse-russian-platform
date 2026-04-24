@@ -108,7 +108,7 @@ export default function AllIconsBrowser() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="text-sm text-gray-600">
+        <div className="text-sm app-text-muted">
           {allIcons.length} total icons available · {curatedCount} already in curated set
         </div>
 
@@ -123,7 +123,7 @@ export default function AllIconsBrowser() {
       </div>
 
       {!isOpen ? (
-        <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
+        <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-6 text-sm app-text-muted">
           The full Lucide browser is collapsed by default to keep the page lighter.
         </div>
       ) : (
@@ -135,12 +135,12 @@ export default function AllIconsBrowser() {
               placeholder="Search all Lucide icons..."
             />
 
-            <div className="flex items-center rounded-xl border bg-gray-50 px-4 text-sm text-gray-600">
+            <div className="flex items-center rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 text-sm app-text-muted">
               Showing {pagedIcons.length} of {filteredIcons.length}
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-600">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3 text-sm app-text-muted">
             <div>
               Page {page} of {totalPages}
             </div>
@@ -196,21 +196,25 @@ export default function AllIconsBrowser() {
                 <div
                   key={name}
                   className={`rounded-2xl border p-3 text-center shadow-sm transition hover:-translate-y-0.5 ${
-                    isCurated ? "border-green-200 bg-green-50" : "bg-white"
+                    isCurated
+                      ? "border-[color-mix(in_srgb,var(--success)_24%,transparent)] bg-[var(--success-soft)]"
+                      : "border-[var(--border)] bg-[var(--background-elevated)]"
                   }`}
                 >
                   <div className="mb-2 flex justify-center">
                     <AppIcon icon={Icon} size={20} />
                   </div>
 
-                  <div className="mb-2 break-words text-xs text-gray-700">{name}</div>
+                  <div className="mb-2 break-words text-xs text-[var(--text-primary)]">
+                    {name}
+                  </div>
 
                   <div className="mb-3 flex justify-center">
                     <span
                       className={`rounded-full border px-2 py-0.5 text-[10px] ${
                         isCurated
-                          ? "border-green-200 bg-white text-green-700"
-                          : "border-gray-200 bg-gray-50 text-gray-500"
+                          ? "border-[color-mix(in_srgb,var(--success)_24%,transparent)] bg-[var(--background-elevated)] text-[var(--success)]"
+                          : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)]"
                       }`}
                     >
                       {isCurated ? "In curated set" : "Not curated"}
@@ -221,7 +225,7 @@ export default function AllIconsBrowser() {
                     <Button
                       type="button"
                       onClick={() => handleCopyName(name)}
-                      className="flex-1 rounded-md border px-2 py-1 text-xs text-gray-600 hover:bg-gray-50"
+                      className="flex-1 rounded-md border border-[var(--border)] px-2 py-1 text-xs text-[var(--text-secondary)] hover:bg-[var(--background-muted)]"
                     >
                       {copied === `name:${name}` ? "✓" : "Name"}
                     </Button>
@@ -229,7 +233,7 @@ export default function AllIconsBrowser() {
                     <Button
                       type="button"
                       onClick={() => handleCopyRegistryLine(name)}
-                      className="flex-1 rounded-md border px-2 py-1 text-xs text-gray-600 hover:bg-gray-50"
+                      className="flex-1 rounded-md border border-[var(--border)] px-2 py-1 text-xs text-[var(--text-secondary)] hover:bg-[var(--background-muted)]"
                     >
                       {copied === `registry:${name}` ? "✓" : "Import"}
                     </Button>
@@ -240,7 +244,7 @@ export default function AllIconsBrowser() {
           </div>
 
           {filteredIcons.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
+            <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-6 text-sm app-text-muted">
               No icons match your search.
             </div>
           ) : null}

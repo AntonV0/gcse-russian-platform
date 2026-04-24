@@ -48,8 +48,20 @@ function subscribeToRecentAdminRoute(callback: () => void) {
   };
 }
 
-function formatRelativeTime(timestamp: number) {
-  const diffMs = Date.now() - timestamp;
+function subscribeToMinuteClock(callback: () => void) {
+  const interval = window.setInterval(callback, 60_000);
+
+  return () => {
+    window.clearInterval(interval);
+  };
+}
+
+function getMinuteSnapshot() {
+  return Math.floor(Date.now() / 60_000);
+}
+
+function formatRelativeTime(timestamp: number, nowMs: number) {
+  const diffMs = nowMs - timestamp;
   const diffMinutes = Math.max(1, Math.floor(diffMs / 60000));
 
   if (diffMinutes < 60) {
@@ -76,14 +88,19 @@ export default function ContinueWhereLeftOffPanel() {
     () => parseRecentAdminRoute(recentRouteSnapshot),
     [recentRouteSnapshot]
   );
+  const minuteSnapshot = useSyncExternalStore(
+    subscribeToMinuteClock,
+    getMinuteSnapshot,
+    () => 0
+  );
 
   const relativeTime = useMemo(() => {
     if (!recentRoute?.timestamp) {
       return null;
     }
 
-    return formatRelativeTime(recentRoute.timestamp);
-  }, [recentRoute]);
+    return formatRelativeTime(recentRoute.timestamp, minuteSnapshot * 60_000);
+  }, [minuteSnapshot, recentRoute]);
 
   return (
     <PanelCard

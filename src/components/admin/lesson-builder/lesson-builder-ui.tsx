@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import PanelCard from "@/components/ui/panel-card";
 import BadgePrimitive from "@/components/ui/badge";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
 import { ChevronDown, ChevronRight } from "lucide-react";
+
+const LESSON_BUILDER_STORAGE_EVENT = "gcse-russian-lesson-builder-storage";
 
 export const BUILDER_FIELD_CLASS =
   "w-full rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-3.5 py-2.5 text-sm text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04),0_8px_18px_rgba(16,32,51,0.04)] transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-[var(--text-muted)] hover:border-[var(--border-strong)] focus:border-[var(--brand-blue)] focus:outline-none focus:ring-4 focus:ring-[rgba(37,99,235,0.12)]";
@@ -271,16 +273,35 @@ export function MiniStatPill({
 }
 
 export function usePersistentBoolean(key: string, defaultValue: boolean) {
-  const [value, setValue] = useState<boolean>(() => {
-    if (typeof window === "undefined") {
-      return defaultValue;
-    }
+  const subscribe = useCallback((callback: () => void) => {
+    window.addEventListener("storage", callback);
+    window.addEventListener(LESSON_BUILDER_STORAGE_EVENT, callback);
 
-    const stored = window.localStorage.getItem(key);
-    if (stored === "true") return true;
-    if (stored === "false") return false;
-    return defaultValue;
-  });
+    return () => {
+      window.removeEventListener("storage", callback);
+      window.removeEventListener(LESSON_BUILDER_STORAGE_EVENT, callback);
+    };
+  }, []);
+
+  const getSnapshot = useCallback(() => {
+    return window.localStorage.getItem(key);
+  }, [key]);
+
+  const storedValue = useSyncExternalStore(subscribe, getSnapshot, () => null);
+
+  const value =
+    storedValue === "true" ? true : storedValue === "false" ? false : defaultValue;
+
+  const setValue = useCallback(
+    (nextValue: boolean | ((currentValue: boolean) => boolean)) => {
+      const resolvedValue =
+        typeof nextValue === "function" ? nextValue(value) : nextValue;
+
+      window.localStorage.setItem(key, String(resolvedValue));
+      window.dispatchEvent(new Event(LESSON_BUILDER_STORAGE_EVENT));
+    },
+    [key, value]
+  );
 
   return [value, setValue] as const;
 }
