@@ -103,7 +103,7 @@ export default function AudioPlayer({
       ) : null}
 
       {showLockedState ? (
-        <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
+        <div className="rounded-xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] p-3 text-sm text-[var(--warning)]">
           Playback limit reached for this listening task.
         </div>
       ) : (

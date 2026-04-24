@@ -40,7 +40,7 @@ export function StepMetaBar({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
-              Step {currentStepNumber} of {totalSteps} Â·{" "}
+              Step {currentStepNumber} of {totalSteps} -{" "}
               {sectionKind.replaceAll("_", " ")}
             </div>
 

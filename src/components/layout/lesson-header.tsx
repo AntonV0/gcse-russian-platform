@@ -38,7 +38,7 @@ export default function LessonHeader({
       ) : null}
 
       <Link href={backHref} className="app-nav-link inline-flex w-fit text-sm">
-        ← {backLabel}
+        {backLabel}
       </Link>
 
       <p className="app-label">{moduleTitle}</p>

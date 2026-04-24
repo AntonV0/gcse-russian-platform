@@ -79,11 +79,11 @@ export function SectionPager({
               href={previousHref}
               className="app-btn-base app-btn-secondary rounded-lg px-4 py-2 text-sm"
             >
-              â† Previous section
+              Previous section
             </Link>
           ) : (
             <span className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
-              â† Previous section
+              Previous section
             </span>
           )}
 
@@ -92,11 +92,11 @@ export function SectionPager({
               href={nextHref}
               className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm"
             >
-              Next section â†’
+              Next section
             </Link>
           ) : (
             <span className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
-              Next section â†’
+              Next section
             </span>
           )}
         </div>
