@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
@@ -148,6 +149,8 @@ export async function createVocabularySetAction(formData: FormData) {
     });
   }
 
+  revalidatePath("/admin/vocabulary");
+  revalidatePath("/vocabulary");
   redirect("/admin/vocabulary");
 }
 
@@ -211,5 +214,38 @@ export async function updateVocabularySetAction(formData: FormData) {
     throw new Error("Failed to update vocabulary set");
   }
 
+  revalidatePath("/admin/vocabulary");
+  revalidatePath(`/admin/vocabulary/${vocabularySetId}/edit`);
+  revalidatePath("/vocabulary");
+  redirect("/admin/vocabulary");
+}
+
+export async function deleteVocabularySetAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const vocabularySetId = getTrimmedString(formData, "vocabularySetId");
+
+  if (!vocabularySetId) {
+    throw new Error("Vocabulary set id is required");
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("vocabulary_sets")
+    .delete()
+    .eq("id", vocabularySetId);
+
+  if (error) {
+    console.error("Error deleting vocabulary set:", { vocabularySetId, error });
+    throw new Error("Failed to delete vocabulary set");
+  }
+
+  revalidatePath("/admin/vocabulary");
+  revalidatePath("/vocabulary");
   redirect("/admin/vocabulary");
 }

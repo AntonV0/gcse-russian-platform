@@ -200,6 +200,14 @@ export type LoadedVocabularySetDetailDb = {
   usageStats: DbVocabularySetUsageStats;
 };
 
+export type VocabularySetFilters = {
+  search?: string | null;
+  tier?: DbVocabularyTier | "all" | null;
+  themeKey?: string | null;
+  listMode?: DbVocabularyListMode | "all" | null;
+  published?: "all" | "published" | "draft" | null;
+};
+
 export function groupVocabularyItemsBySource(items: DbVocabularyItem[]) {
   return {
     specRequired: items.filter((item) => item.source_type === "spec_required"),
@@ -253,6 +261,50 @@ export function getVocabularyProductiveReceptiveLabel(
     default:
       return value;
   }
+}
+
+export function getVocabularySetTypeLabel(setType: DbVocabularySetType) {
+  switch (setType) {
+    case "specification":
+      return "Specification";
+    case "core":
+      return "Core";
+    case "theme":
+      return "Theme";
+    case "phrase_bank":
+      return "Phrase bank";
+    case "exam_prep":
+      return "Exam prep";
+    case "lesson_custom":
+      return "Lesson custom";
+    default:
+      return setType;
+  }
+}
+
+export function getVocabularyDisplayVariantLabel(
+  displayVariant: DbVocabularyDisplayVariant
+) {
+  switch (displayVariant) {
+    case "single_column":
+      return "Single column";
+    case "two_column":
+      return "Two column";
+    case "compact_cards":
+      return "Compact cards";
+    default:
+      return displayVariant;
+  }
+}
+
+export function getVocabularyThemeLabel(value: string | null) {
+  if (!value) return "General";
+  return value.replaceAll("_", " ");
+}
+
+export function getVocabularyTopicLabel(value: string | null) {
+  if (!value) return "Mixed";
+  return value.replaceAll("_", " ");
 }
 
 export function buildVocabularyUsageStats(
@@ -403,6 +455,16 @@ export async function getVocabularySetBySlugDb(vocabularySetSlug: string) {
   }
 
   return data ? normalizeVocabularySet(data) : null;
+}
+
+export async function getVocabularySetByRefDb(vocabularySetRef: string) {
+  const bySlug = await getVocabularySetBySlugDb(vocabularySetRef);
+
+  if (bySlug) {
+    return bySlug;
+  }
+
+  return getVocabularySetByIdDb(vocabularySetRef);
 }
 
 export async function getVocabularyListsBySetIdDb(vocabularySetId: string) {
@@ -700,6 +762,31 @@ export async function loadVocabularySetBySlugDb(
   };
 }
 
+export async function loadVocabularySetByRefDb(
+  vocabularySetRef: string
+): Promise<LoadedVocabularySetDb> {
+  const vocabularySet = await getVocabularySetByRefDb(vocabularySetRef);
+
+  if (!vocabularySet) {
+    return {
+      vocabularySet: null,
+      vocabularyList: null,
+      lists: [],
+      items: [],
+    };
+  }
+
+  const lists = await getVocabularyListsBySetIdDb(vocabularySet.id);
+  const items = await getVocabularyItemsBySetIdDb(vocabularySet.id);
+
+  return {
+    vocabularySet,
+    vocabularyList: lists[0] ?? null,
+    lists,
+    items,
+  };
+}
+
 async function attachVocabularyCountsAndUsage(
   vocabularySets: DbVocabularySet[]
 ): Promise<DbVocabularySetListItem[]> {
@@ -723,7 +810,60 @@ async function attachVocabularyCountsAndUsage(
   return enriched;
 }
 
-export async function getVocabularySetsDb(options?: { publishedOnly?: boolean }) {
+function applyVocabularySetFilters(
+  vocabularySets: DbVocabularySetListItem[],
+  filters?: VocabularySetFilters
+) {
+  const search = filters?.search?.trim().toLowerCase();
+  const tier = filters?.tier && filters.tier !== "all" ? filters.tier : null;
+  const themeKey = filters?.themeKey?.trim();
+  const listMode = filters?.listMode && filters.listMode !== "all" ? filters.listMode : null;
+  const published = filters?.published ?? "all";
+
+  return vocabularySets.filter((vocabularySet) => {
+    if (search) {
+      const haystack = [
+        vocabularySet.title,
+        vocabularySet.description,
+        vocabularySet.slug,
+        vocabularySet.theme_key,
+        vocabularySet.topic_key,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      if (!haystack.includes(search)) return false;
+    }
+
+    if (tier && vocabularySet.tier !== tier && vocabularySet.tier !== "both") {
+      return false;
+    }
+
+    if (themeKey && vocabularySet.theme_key !== themeKey) {
+      return false;
+    }
+
+    if (listMode && vocabularySet.list_mode !== listMode) {
+      return false;
+    }
+
+    if (published === "published" && !vocabularySet.is_published) {
+      return false;
+    }
+
+    if (published === "draft" && vocabularySet.is_published) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+export async function getVocabularySetsDb(options?: {
+  publishedOnly?: boolean;
+  filters?: VocabularySetFilters;
+}) {
   const supabase = await createClient();
 
   let query = supabase
@@ -746,9 +886,13 @@ export async function getVocabularySetsDb(options?: { publishedOnly?: boolean })
     return [] as DbVocabularySetListItem[];
   }
 
-  return attachVocabularyCountsAndUsage((data ?? []).map(normalizeVocabularySet));
+  const withCounts = await attachVocabularyCountsAndUsage(
+    (data ?? []).map(normalizeVocabularySet)
+  );
+
+  return applyVocabularySetFilters(withCounts, options?.filters);
 }
 
-export async function getPublishedVocabularySetsDb() {
-  return getVocabularySetsDb({ publishedOnly: true });
+export async function getPublishedVocabularySetsDb(filters?: VocabularySetFilters) {
+  return getVocabularySetsDb({ publishedOnly: true, filters });
 }
