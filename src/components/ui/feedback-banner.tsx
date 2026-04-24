@@ -23,21 +23,21 @@ function getToneConfig(tone: FeedbackBannerTone) {
       return {
         icon: "completed" as const,
         wrapperClass:
-          "border-[rgba(31,138,76,0.24)] bg-[linear-gradient(135deg,rgba(31,138,76,0.14)_0%,rgba(31,138,76,0.05)_100%)] text-[var(--success)] shadow-[0_10px_24px_rgba(31,138,76,0.08)]",
+          "border-[color-mix(in_srgb,var(--success)_24%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--success)_14%,transparent)_0%,color-mix(in_srgb,var(--success)_5%,transparent)_100%)] text-[var(--success)] shadow-[0_10px_24px_color-mix(in_srgb,var(--success)_8%,transparent)]",
       };
 
     case "warning":
       return {
         icon: "warning" as const,
         wrapperClass:
-          "border-[rgba(183,121,31,0.26)] bg-[linear-gradient(135deg,rgba(183,121,31,0.14)_0%,rgba(183,121,31,0.05)_100%)] text-[var(--warning)] shadow-[0_10px_24px_rgba(183,121,31,0.08)]",
+          "border-[color-mix(in_srgb,var(--warning)_26%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--warning)_14%,transparent)_0%,color-mix(in_srgb,var(--warning)_5%,transparent)_100%)] text-[var(--warning)] shadow-[0_10px_24px_color-mix(in_srgb,var(--warning)_8%,transparent)]",
       };
 
     case "danger":
       return {
         icon: "alert" as const,
         wrapperClass:
-          "border-[rgba(194,59,59,0.24)] bg-[linear-gradient(135deg,rgba(194,59,59,0.14)_0%,rgba(194,59,59,0.05)_100%)] text-[var(--danger)] shadow-[0_10px_24px_rgba(194,59,59,0.08)]",
+          "border-[color-mix(in_srgb,var(--danger)_24%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_14%,transparent)_0%,color-mix(in_srgb,var(--danger)_5%,transparent)_100%)] text-[var(--danger)] shadow-[0_10px_24px_color-mix(in_srgb,var(--danger)_8%,transparent)]",
       };
 
     case "info":
@@ -45,7 +45,7 @@ function getToneConfig(tone: FeedbackBannerTone) {
       return {
         icon: "info" as const,
         wrapperClass:
-          "border-[rgba(37,99,235,0.22)] bg-[linear-gradient(135deg,rgba(37,99,235,0.14)_0%,rgba(37,99,235,0.05)_100%)] text-[var(--info)] shadow-[0_10px_24px_rgba(37,99,235,0.08)]",
+          "border-[color-mix(in_srgb,var(--brand-blue)_22%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_14%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_100%)] text-[var(--info)] shadow-[0_10px_24px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
       };
   }
 }
@@ -87,7 +87,7 @@ export default function FeedbackBanner({
           wrapperClass,
         ].join(" ")}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_100%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-white)_12%,transparent)_0%,color-mix(in_srgb,var(--brand-white)_0%,transparent)_100%)]" />
 
         <div className="relative flex items-start gap-3">
           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-current/10">

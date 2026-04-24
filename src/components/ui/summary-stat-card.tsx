@@ -26,29 +26,29 @@ function getToneClasses(tone: SummaryStatCardTone) {
   switch (tone) {
     case "brand":
       return {
-        card: "border-[rgba(37,99,235,0.16)] bg-[linear-gradient(135deg,rgba(37,99,235,0.08)_0%,rgba(255,255,255,0.98)_55%,rgba(217,75,82,0.04)_100%)]",
-        iconWrap: "bg-[rgba(37,99,235,0.10)] text-[var(--brand-blue)]",
+        card: "border-[color-mix(in_srgb,var(--brand-blue)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_55%,color-mix(in_srgb,var(--brand-red)_4%,transparent)_100%)]",
+        iconWrap: "bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--brand-blue)]",
         value: "text-[var(--brand-blue)]",
       };
 
     case "success":
       return {
-        card: "border-[rgba(31,138,76,0.16)] bg-[linear-gradient(135deg,rgba(31,138,76,0.08)_0%,rgba(255,255,255,0.98)_100%)]",
-        iconWrap: "bg-[rgba(31,138,76,0.10)] text-[var(--success)]",
+        card: "border-[color-mix(in_srgb,var(--success)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--success)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_100%)]",
+        iconWrap: "bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-[var(--success)]",
         value: "text-[var(--success)]",
       };
 
     case "warning":
       return {
-        card: "border-[rgba(183,121,31,0.16)] bg-[linear-gradient(135deg,rgba(183,121,31,0.08)_0%,rgba(255,255,255,0.98)_100%)]",
-        iconWrap: "bg-[rgba(183,121,31,0.10)] text-[var(--warning)]",
+        card: "border-[color-mix(in_srgb,var(--warning)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--warning)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_100%)]",
+        iconWrap: "bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] text-[var(--warning)]",
         value: "text-[var(--warning)]",
       };
 
     case "danger":
       return {
-        card: "border-[rgba(194,59,59,0.16)] bg-[linear-gradient(135deg,rgba(194,59,59,0.08)_0%,rgba(255,255,255,0.98)_100%)]",
-        iconWrap: "bg-[rgba(194,59,59,0.10)] text-[var(--danger)]",
+        card: "border-[color-mix(in_srgb,var(--danger)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_100%)]",
+        iconWrap: "bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-[var(--danger)]",
         value: "text-[var(--danger)]",
       };
 

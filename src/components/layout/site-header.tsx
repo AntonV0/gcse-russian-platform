@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { appIcons } from "@/lib/shared/icons";
 import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/access/routes";
 
@@ -14,6 +15,8 @@ type SiteHeaderProps = {
     email?: string | null;
   } | null;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -45,7 +48,24 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/88 shadow-[0_1px_2px_rgba(16,32,51,0.03)] backdrop-blur">
+    <header className="dev-marker-host sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/88 shadow-[0_1px_2px_rgba(16,32,51,0.03)] backdrop-blur">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="SiteHeader"
+          filePath="src/components/layout/site-header.tsx"
+          tier="layout"
+          componentRole="Public/top-level site header"
+          bestFor="Primary site navigation, auth links, mobile menu, branding, and theme toggle in the main site chrome."
+          usageExamples={[
+            "Homepage header",
+            "Pricing page header",
+            "Login/signup navigation",
+            "Top-level course site navigation",
+          ]}
+          notes="Use at the site layout boundary. Do not use inside platform pages that already use the platform shell/sidebar."
+        />
+      ) : null}
+
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="app-brand-lockup shrink-0" onClick={closeMobileMenu}>
@@ -59,7 +79,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
           </Link>
 
           <div className="hidden items-center gap-4 md:flex">
-            <nav className="flex items-center gap-4 text-sm">
+            <nav className="flex items-center gap-4 text-sm" aria-label="Main navigation">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -70,6 +90,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
                   ]
                     .filter(Boolean)
                     .join(" ")}
+                  aria-current={activeMap[item.href] ? "page" : undefined}
                 >
                   {item.label}
                 </Link>
@@ -127,7 +148,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
               Navigation
             </div>
 
-            <nav className="flex flex-col gap-1">
+            <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -139,6 +160,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
                       ? "bg-[var(--brand-blue-soft)] font-medium text-[var(--brand-blue)]"
                       : "hover:bg-[var(--background-muted)]",
                   ].join(" ")}
+                  aria-current={activeMap[item.href] ? "page" : undefined}
                 >
                   {item.label}
                 </Link>

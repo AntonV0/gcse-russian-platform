@@ -23,24 +23,36 @@ export default function TableShell({
   return (
     <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
-        <div className="absolute right-6 z-[140]">
-          <DevComponentMarker
-            componentName="TableShell"
-            filePath="src/components/ui/table-shell.tsx"
-          />
-        </div>
+        <DevComponentMarker
+          componentName="TableShell"
+          filePath="src/components/ui/table-shell.tsx"
+          tier="container"
+          componentRole="Table container with header and actions"
+          bestFor="Admin data sections, searchable management tables, vocabulary/grammar tables, billing tables, and structured table panels."
+          usageExamples={[
+            "Student management table",
+            "Vocabulary table wrapper",
+            "Course content table",
+            "Billing subscription list",
+          ]}
+          notes="Use with DataTable and optional TableToolbar. Avoid for simple card lists where columns do not add value."
+        />
       ) : null}
 
       <Card className={["overflow-hidden", className].filter(Boolean).join(" ")}>
         <CardHeader>
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0">
               <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-              <p className="mt-1 text-sm app-text-muted">{description}</p>
+              <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                {description}
+              </p>
             </div>
 
             {actions ? (
-              <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
+              <div className="flex shrink-0 flex-wrap gap-2 lg:justify-end">
+                {actions}
+              </div>
             ) : null}
           </div>
         </CardHeader>

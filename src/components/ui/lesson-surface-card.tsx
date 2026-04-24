@@ -32,20 +32,35 @@ export default function LessonSurfaceCard({
         <DevComponentMarker
           componentName="LessonSurfaceCard"
           filePath="src/components/ui/lesson-surface-card.tsx"
+          tier="semantic"
+          componentRole="Student lesson entry surface"
+          bestFor="Lesson previews, module lesson cards, student course content cards, and lesson entry points."
+          usageExamples={[
+            "Student module lesson card",
+            "Course lesson preview",
+            "Recommended next lesson",
+            "Lesson content overview",
+          ]}
+          notes="Use for lesson entry/preview surfaces. Avoid using it for practice flows, assessments, or locked access prompts."
         />
       ) : null}
 
-      <Card>
-        <CardBody className="space-y-4">
-          <div className="flex items-start justify-between gap-3">
+      <Card
+        className="border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_0%,var(--background-elevated)_60%,color-mix(in_srgb,var(--brand-red)_3%,transparent)_100%)]"
+        interactive
+      >
+        <CardBody className="space-y-4 px-5 py-5">
+          <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="mb-1 text-xs font-semibold uppercase tracking-[0.08em] app-text-soft">
+              <div className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
                 Lesson content
               </div>
-              <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+              <h3 className="font-semibold leading-6 text-[var(--text-primary)]">
+                {title}
+              </h3>
             </div>
 
-            <div className="flex shrink-0 flex-wrap gap-2">
+            <div className="flex shrink-0 flex-wrap justify-end gap-2">
               <Badge tone="info" icon="preview">
                 {levelLabel}
               </Badge>
@@ -55,9 +70,9 @@ export default function LessonSurfaceCard({
             </div>
           </div>
 
-          <p className="text-sm app-text-muted">{description}</p>
+          <p className="text-sm leading-6 text-[var(--text-secondary)]">{description}</p>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2.5">
             <Button variant="soft" icon="next" iconPosition="right">
               {primaryActionLabel}
             </Button>
