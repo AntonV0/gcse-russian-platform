@@ -198,6 +198,25 @@ function buildItemsPath(vocabularySetId: string) {
   return `/admin/vocabulary/${vocabularySetId}/items`;
 }
 
+function parseBulkVocabularyLines(rawInput: string) {
+  return rawInput
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const delimiter = line.includes("\t") ? "\t" : line.includes("|") ? "|" : ",";
+      const [russian = "", english = ""] = line
+        .split(delimiter)
+        .map((part) => part.trim());
+
+      return {
+        russian,
+        english,
+      };
+    })
+    .filter((item) => item.russian && item.english);
+}
+
 export async function createVocabularyItemAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
 
@@ -312,6 +331,113 @@ export async function createVocabularyItemAction(formData: FormData) {
       error: listItemError,
     });
     throw new Error("Failed to link vocabulary item to list");
+  }
+
+  const path = buildItemsPath(vocabularySetId);
+  revalidatePath("/admin/vocabulary");
+  revalidatePath(path);
+  redirect(path);
+}
+
+export async function bulkCreateVocabularyItemsAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const vocabularySetId = getRequiredString(formData, "vocabularySetId");
+  const vocabularyListId = getOptionalString(formData, "vocabularyListId");
+  const bulkItems = parseBulkVocabularyLines(getRequiredString(formData, "bulkItems"));
+  const itemType = assertVocabularyItemType(
+    getTrimmedString(formData, "itemType") || "word"
+  );
+  const sourceType = assertVocabularyItemSourceType(
+    getTrimmedString(formData, "sourceType") || "custom"
+  );
+  const priority = assertVocabularyItemPriority(
+    getTrimmedString(formData, "priority") || "core"
+  );
+  const partOfSpeech = assertVocabularyPartOfSpeech(
+    getTrimmedString(formData, "partOfSpeech") || "unknown"
+  );
+  const productiveReceptive = assertVocabularyProductiveReceptive(
+    getTrimmedString(formData, "productiveReceptive") || "unknown"
+  );
+  const tier = assertVocabularyTier(getTrimmedString(formData, "tier") || "unknown");
+  const themeKey = getOptionalString(formData, "themeKey");
+  const topicKey = getOptionalString(formData, "topicKey");
+  const categoryKey = getOptionalString(formData, "categoryKey");
+  const sourceKey = getOptionalString(formData, "sourceKey");
+  const sourceVersion = getOptionalString(formData, "sourceVersion");
+  const sourceSectionRef = getOptionalString(formData, "sourceSectionRef");
+
+  if (bulkItems.length === 0) {
+    throw new Error("Add at least one valid Russian and English pair");
+  }
+
+  const supabase = await createClient();
+  const vocabularyList = await getVocabularyListForItemWrite({
+    vocabularySetId,
+    vocabularyListId,
+  });
+  const startingPosition = await getNextVocabularyListItemPosition(vocabularyList.id);
+
+  const itemPayloads = bulkItems.map((item, index) => ({
+    vocabulary_set_id: vocabularySetId,
+    russian: item.russian,
+    english: item.english,
+    item_type: itemType,
+    source_type: sourceType,
+    priority,
+    part_of_speech: partOfSpeech,
+    productive_receptive: productiveReceptive,
+    tier,
+    theme_key: themeKey,
+    topic_key: topicKey,
+    category_key: categoryKey,
+    source_key: sourceKey,
+    source_version: sourceVersion,
+    source_section_ref: sourceSectionRef,
+    position: startingPosition + index,
+  }));
+
+  const { data: insertedItems, error } = await supabase
+    .from("vocabulary_items")
+    .insert(itemPayloads)
+    .select("id, position");
+
+  if (error) {
+    console.error("Error bulk creating vocabulary items:", {
+      vocabularySetId,
+      error,
+    });
+    throw new Error("Failed to bulk create vocabulary items");
+  }
+
+  const listItemPayloads = (insertedItems ?? []).map((item) => ({
+    vocabulary_list_id: vocabularyList.id,
+    vocabulary_item_id: item.id,
+    position: item.position,
+    productive_receptive_override:
+      productiveReceptive === "unknown" ? null : productiveReceptive,
+    tier_override: tier === "unknown" ? null : tier,
+    source_section_ref: sourceSectionRef,
+  }));
+
+  if (listItemPayloads.length > 0) {
+    const { error: listItemError } = await supabase
+      .from("vocabulary_list_items")
+      .insert(listItemPayloads);
+
+    if (listItemError) {
+      console.error("Error linking bulk vocabulary items to list:", {
+        vocabularySetId,
+        vocabularyListId: vocabularyList.id,
+        error: listItemError,
+      });
+      throw new Error("Failed to link bulk vocabulary items to list");
+    }
   }
 
   const path = buildItemsPath(vocabularySetId);
