@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import PanelCard from "@/components/ui/panel-card";
@@ -13,6 +13,38 @@ type RecentAdminRoute = {
 };
 
 const STORAGE_KEY = "gcse-russian-admin-last-route";
+
+function readRecentAdminRoute(): RecentAdminRoute | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const raw = window.localStorage.getItem(STORAGE_KEY);
+
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as RecentAdminRoute;
+
+    if (!parsed?.href || parsed.href === "/admin") {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function subscribeToRecentAdminRoute(callback: () => void) {
+  window.addEventListener("storage", callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+  };
+}
 
 function formatRelativeTime(timestamp: number) {
   const diffMs = Date.now() - timestamp;
@@ -32,27 +64,11 @@ function formatRelativeTime(timestamp: number) {
 }
 
 export default function ContinueWhereLeftOffPanel() {
-  const [recentRoute, setRecentRoute] = useState<RecentAdminRoute | null>(null);
-
-  useEffect(() => {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!raw) {
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(raw) as RecentAdminRoute;
-
-      if (!parsed?.href || parsed.href === "/admin") {
-        return;
-      }
-
-      setRecentRoute(parsed);
-    } catch {
-      return;
-    }
-  }, []);
+  const recentRoute = useSyncExternalStore(
+    subscribeToRecentAdminRoute,
+    readRecentAdminRoute,
+    () => null
+  );
 
   const relativeTime = useMemo(() => {
     if (!recentRoute?.timestamp) {

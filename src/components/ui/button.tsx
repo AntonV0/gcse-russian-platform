@@ -167,17 +167,18 @@ export default function Button(props: ButtonProps) {
     );
   }
 
-  const {
-    variant: _variant,
-    size: _size,
-    className: _className,
-    icon: _icon,
-    iconPosition: _iconPosition,
-    iconOnly: _iconOnly,
-    ariaLabel: _ariaLabel,
-    children: _children,
-    ...buttonProps
-  } = props as ButtonAsButtonProps;
+  const buttonProps = {
+    ...(props as ButtonAsButtonProps),
+  } as React.ButtonHTMLAttributes<HTMLButtonElement> & Partial<BaseProps>;
+
+  delete buttonProps.variant;
+  delete buttonProps.size;
+  delete buttonProps.className;
+  delete buttonProps.icon;
+  delete buttonProps.iconPosition;
+  delete buttonProps.iconOnly;
+  delete buttonProps.ariaLabel;
+  delete buttonProps.children;
 
   return (
     <span className="dev-marker-host relative inline-flex max-w-full">

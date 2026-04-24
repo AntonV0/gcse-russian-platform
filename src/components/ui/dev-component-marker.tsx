@@ -144,16 +144,11 @@ export default function DevComponentMarker({
   notes,
 }: DevComponentMarkerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const [panelPosition, setPanelPosition] = useState<MarkerPanelPosition | null>(null);
   const markerRef = useRef<HTMLSpanElement | null>(null);
   const triggerRef = useRef<HTMLSpanElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const panelId = useId();
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useLayoutEffect(() => {
     if (!SHOW_UI_DEBUG || !isOpen || !triggerRef.current) {
@@ -243,7 +238,7 @@ export default function DevComponentMarker({
   const resolvedRole = componentRole ?? getDefaultRole(componentName);
 
   const panel =
-    isMounted && isOpen && panelPosition
+    typeof document !== "undefined" && isOpen && panelPosition
       ? createPortal(
           <div
             ref={panelRef}
