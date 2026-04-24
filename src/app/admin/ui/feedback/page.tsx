@@ -212,7 +212,7 @@ export default async function AdminUiFeedbackPage() {
         title="Badges on darker surfaces"
         description="This section helps validate contrast when badges sit inside darker cards, dashboards, or high-emphasis surfaces."
       >
-        <div className="rounded-[1.5rem] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,#0b1a30_0%,#142742_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
+        <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(135deg,var(--dark-surface-elevated)_0%,var(--dark-surface-muted)_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
           <div className="mb-3 text-sm font-semibold text-white">
             Dark-surface badge check
           </div>

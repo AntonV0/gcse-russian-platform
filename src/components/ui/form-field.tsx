@@ -1,10 +1,19 @@
 "use client";
 
+import { Fragment, cloneElement, isValidElement, useId } from "react";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+
+type FormControlElementProps = {
+  id?: string;
+  "aria-describedby"?: string;
+  "aria-invalid"?: boolean | "true" | "false";
+};
 
 type FormFieldProps = {
   label: string;
   children: React.ReactNode;
+  id?: string;
+  htmlFor?: string;
   hint?: string;
   description?: string;
   error?: string;
@@ -19,6 +28,8 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 export default function FormField({
   label,
   children,
+  id,
+  htmlFor,
   hint,
   description,
   error,
@@ -33,6 +44,29 @@ export default function FormField({
     : success
       ? "app-form-message app-form-message-success"
       : "app-form-message";
+  const generatedId = useId();
+  const controlElement =
+    isValidElement<FormControlElementProps>(children) && children.type !== Fragment
+    ? children
+    : null;
+  const controlId =
+    id ?? htmlFor ?? controlElement?.props.id ?? `form-field-${generatedId}`;
+  const descriptionId = description ? `${controlId}-description` : undefined;
+  const statusId = statusText ? `${controlId}-message` : undefined;
+  const describedBy = [
+    controlElement?.props["aria-describedby"],
+    descriptionId,
+    statusId,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const control = controlElement
+    ? cloneElement(controlElement, {
+        id: controlId,
+        "aria-describedby": describedBy || undefined,
+        "aria-invalid": error ? true : controlElement.props["aria-invalid"],
+      })
+    : children;
 
   return (
     <div
@@ -58,17 +92,28 @@ export default function FormField({
       ) : null}
 
       <div className="app-form-field-header">
-        <label className={["app-form-label", labelClassName].filter(Boolean).join(" ")}>
+        <label
+          htmlFor={controlElement ? controlId : undefined}
+          className={["app-form-label", labelClassName].filter(Boolean).join(" ")}
+        >
           <span>{label}</span>
           {required ? <span className="app-form-required">*</span> : null}
         </label>
 
-        {description ? <p className="app-form-description">{description}</p> : null}
+        {description ? (
+          <p id={descriptionId} className="app-form-description">
+            {description}
+          </p>
+        ) : null}
       </div>
 
-      <div className="app-form-control-wrap">{children}</div>
+      <div className="app-form-control-wrap">{control}</div>
 
-      {statusText ? <p className={statusClassName}>{statusText}</p> : null}
+      {statusText ? (
+        <p id={statusId} className={statusClassName}>
+          {statusText}
+        </p>
+      ) : null}
     </div>
   );
 }
