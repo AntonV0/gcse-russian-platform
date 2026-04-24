@@ -1,7 +1,7 @@
 export type AccessMode = "trial" | "full" | "volna" | null;
-export type Track = "foundation" | "higher" | "volna" | null;
+export type StudentVariant = "foundation" | "higher" | "volna" | null;
 
-export function getStudentMessaging(track: Track, accessMode: AccessMode) {
+export function getStudentMessaging(variant: StudentVariant, accessMode: AccessMode) {
   // VOLNA STUDENTS
   if (accessMode === "volna") {
     return {

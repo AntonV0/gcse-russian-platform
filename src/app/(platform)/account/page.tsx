@@ -26,26 +26,26 @@ function formatAccessLabel(accessMode: string | null | undefined) {
   return accessMode;
 }
 
-function getTrackLabel(track: "foundation" | "higher" | "volna" | null) {
-  if (!track) return "No active track";
-  if (track === "foundation") return "Foundation";
-  if (track === "higher") return "Higher";
+function getVariantLabel(variant: "foundation" | "higher" | "volna" | null) {
+  if (!variant) return "No active variant";
+  if (variant === "foundation") return "Foundation";
+  if (variant === "higher") return "Higher";
   return "Volna";
 }
 
 function getAccountSummaryText(
-  track: "foundation" | "higher" | "volna" | null,
+  variant: "foundation" | "higher" | "volna" | null,
   accessMode: "trial" | "full" | "volna" | null
 ) {
   if (accessMode === "volna") {
     return "Your account is set up for the Volna student experience, including teacher-linked learning and assignments.";
   }
 
-  if (track === "foundation") {
+  if (variant === "foundation") {
     return "Your account is currently focused on the Foundation learning path.";
   }
 
-  if (track === "higher") {
+  if (variant === "higher") {
     return "Your account is currently focused on the Higher learning path.";
   }
 
@@ -60,8 +60,11 @@ function formatDate(value: string | null | undefined) {
 export default async function AccountPage() {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
-  const courseAccess = await getCurrentCourseAccess("gcse-russian", "foundation");
   const dashboard = await getDashboardInfo();
+  const courseAccess = await getCurrentCourseAccess(
+    "gcse-russian",
+    dashboard.variant ?? "foundation"
+  );
 
   if (!user) {
     return (
@@ -108,7 +111,7 @@ export default async function AccountPage() {
               </Badge>
 
               <Badge tone="muted" icon="layers">
-                {getTrackLabel(dashboard.track)}
+                {getVariantLabel(dashboard.variant)}
               </Badge>
 
               <Badge tone="muted" icon="userCheck">
@@ -119,7 +122,7 @@ export default async function AccountPage() {
             <div className="space-y-2">
               <h2 className="app-title">Your account overview</h2>
               <p className="app-subtitle max-w-2xl">
-                {getAccountSummaryText(dashboard.track, dashboard.accessMode)}
+                {getAccountSummaryText(dashboard.variant, dashboard.accessMode)}
               </p>
             </div>
 
@@ -267,9 +270,9 @@ export default async function AccountPage() {
 
             <div>
               <span className="font-medium text-[var(--text-primary)]">
-                Learning track:
+                Learning variant:
               </span>{" "}
-              {getTrackLabel(dashboard.track)}
+              {getVariantLabel(dashboard.variant)}
             </div>
 
             <div>

@@ -33,7 +33,7 @@ export async function getCurrentProfile() {
 
 export async function getCurrentCourseAccess(
   courseSlug: string,
-  variant: string = "foundation"
+  variantSlug: string = "foundation"
 ) {
   const supabase = await createClient();
 
@@ -44,13 +44,13 @@ export async function getCurrentCourseAccess(
   if (!user) return null;
 
   // 1. Prefer the new access grant model
-  const grant = await getCurrentCourseVariantAccessGrantDb(courseSlug, variant);
+  const grant = await getCurrentCourseVariantAccessGrantDb(courseSlug, variantSlug);
 
   if (grant) {
     return {
       user_id: grant.user_id,
       course_slug: courseSlug,
-      course_variant: variant,
+      course_variant: variantSlug,
       access_mode: grant.access_mode,
       source: "user_access_grants",
       product_id: grant.product_id,
@@ -66,7 +66,7 @@ export async function getCurrentCourseAccess(
     .select("*")
     .eq("user_id", user.id)
     .eq("course_slug", courseSlug)
-    .eq("course_variant", variant)
+    .eq("course_variant", variantSlug)
     .single();
 
   if (error) return null;

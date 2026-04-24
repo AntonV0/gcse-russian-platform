@@ -13,10 +13,10 @@ function formatLabel(value: string | null) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-function getTrackLabel(track: "foundation" | "higher" | "volna" | null) {
-  if (!track) return "No active track";
-  if (track === "volna") return "Volna";
-  if (track === "foundation") return "Foundation";
+function getVariantLabel(variant: "foundation" | "higher" | "volna" | null) {
+  if (!variant) return "No active variant";
+  if (variant === "volna") return "Volna";
+  if (variant === "foundation") return "Foundation";
   return "Higher";
 }
 
@@ -27,24 +27,24 @@ function getAccessLabel(accessMode: "trial" | "full" | "volna" | null) {
   return "Volna access";
 }
 
-function getStudentIntro(track: "foundation" | "higher" | "volna" | null) {
-  if (track === "foundation") {
+function getStudentIntro(variant: "foundation" | "higher" | "volna" | null) {
+  if (variant === "foundation") {
     return "You are currently on the Foundation learning path, with structured lessons and revision support designed to build confidence step by step.";
   }
 
-  if (track === "higher") {
+  if (variant === "higher") {
     return "You are currently on the Higher learning path, with more advanced language work, exam preparation, and deeper revision support.";
   }
 
-  if (track === "volna") {
+  if (variant === "volna") {
     return "You are currently using the Volna student learning experience, with teacher-led support, assignments, and guided progress.";
   }
 
-  return "Your account is ready, but no active GCSE Russian track has been detected yet.";
+  return "Your account is ready, but no active GCSE Russian variant has been detected yet.";
 }
 
 function getStudentPrimaryAction(
-  track: "foundation" | "higher" | "volna" | null,
+  variant: "foundation" | "higher" | "volna" | null,
   accessMode: "trial" | "full" | "volna" | null
 ) {
   if (accessMode === "volna") {
@@ -55,7 +55,7 @@ function getStudentPrimaryAction(
     };
   }
 
-  if (track) {
+  if (variant) {
     return {
       href: "/courses",
       label: "Continue learning",
@@ -110,7 +110,7 @@ function getProgressMessage(
 }
 
 function getNextStep(
-  track: "foundation" | "higher" | "volna" | null,
+  variant: "foundation" | "higher" | "volna" | null,
   accessMode: "trial" | "full" | "volna" | null,
   completedLessons: number
 ) {
@@ -136,7 +136,7 @@ function getNextStep(
     };
   }
 
-  if (track && completedLessons > 0) {
+  if (variant && completedLessons > 0) {
     return {
       title: "Keep your momentum going",
       description:
@@ -147,7 +147,7 @@ function getNextStep(
     };
   }
 
-  if (track) {
+  if (variant) {
     return {
       title: "Start your course path",
       description:
@@ -173,15 +173,15 @@ export default async function DashboardPage() {
   const dashboard = await getDashboardInfo();
 
   const progressSummary =
-    dashboard.track && dashboard.role === "student"
-      ? await getCourseProgressSummary("gcse-russian", dashboard.track)
+    dashboard.variant && dashboard.role === "student"
+      ? await getCourseProgressSummary("gcse-russian", dashboard.variant)
       : { completedLessons: 0 };
 
   const welcomeName = profile?.full_name ? `, ${profile.full_name}` : "";
-  const primaryAction = getStudentPrimaryAction(dashboard.track, dashboard.accessMode);
+  const primaryAction = getStudentPrimaryAction(dashboard.variant, dashboard.accessMode);
   const secondaryAction = getStudentSecondaryAction(dashboard.accessMode);
   const nextStep = getNextStep(
-    dashboard.track,
+    dashboard.variant,
     dashboard.accessMode,
     progressSummary.completedLessons
   );
@@ -226,7 +226,7 @@ export default async function DashboardPage() {
                     </Badge>
 
                     <Badge tone="muted" icon="layers">
-                      {getTrackLabel(dashboard.track)}
+                      {getVariantLabel(dashboard.variant)}
                     </Badge>
 
                     <Badge tone="muted" icon="userCheck">
@@ -237,7 +237,7 @@ export default async function DashboardPage() {
                   <div className="space-y-2">
                     <h2 className="app-title max-w-3xl">Your student hub</h2>
                     <p className="app-subtitle max-w-2xl">
-                      {getStudentIntro(dashboard.track)}
+                      {getStudentIntro(dashboard.variant)}
                     </p>
                   </div>
                 </div>
@@ -270,10 +270,10 @@ export default async function DashboardPage() {
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-xl bg-[var(--background-muted)] p-3">
                       <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                        Track
+                        Variant
                       </div>
                       <div className="font-semibold text-[var(--text-primary)]">
-                        {getTrackLabel(dashboard.track)}
+                        {getVariantLabel(dashboard.variant)}
                       </div>
                     </div>
 
@@ -464,9 +464,9 @@ export default async function DashboardPage() {
 
                 <div>
                   <span className="font-medium text-[var(--text-primary)]">
-                    Learning track:
+                    Learning variant:
                   </span>{" "}
-                  {getTrackLabel(dashboard.track)}
+                  {getVariantLabel(dashboard.variant)}
                 </div>
 
                 <div>
@@ -549,7 +549,9 @@ export default async function DashboardPage() {
           <section className="grid gap-4 md:grid-cols-3">
             <DashboardCard title="Role">{formatLabel(dashboard.role)}</DashboardCard>
 
-            <DashboardCard title="Track">{getTrackLabel(dashboard.track)}</DashboardCard>
+            <DashboardCard title="Variant">
+              {getVariantLabel(dashboard.variant)}
+            </DashboardCard>
 
             <DashboardCard title="Access">
               {getAccessLabel(dashboard.accessMode)}
@@ -627,7 +629,9 @@ export default async function DashboardPage() {
           <section className="grid gap-4 md:grid-cols-3">
             <DashboardCard title="Role">{formatLabel(dashboard.role)}</DashboardCard>
 
-            <DashboardCard title="Track">{getTrackLabel(dashboard.track)}</DashboardCard>
+            <DashboardCard title="Variant">
+              {getVariantLabel(dashboard.variant)}
+            </DashboardCard>
 
             <DashboardCard title="Access">
               {getAccessLabel(dashboard.accessMode)}
