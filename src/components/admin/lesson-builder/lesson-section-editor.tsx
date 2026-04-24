@@ -39,6 +39,26 @@ function formatVariantVisibility(value: LessonSection["variant_visibility"]) {
   );
 }
 
+function MetadataField({
+  label,
+  description,
+  children,
+}: {
+  label: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/35 p-4">
+      <label className="block text-sm font-semibold text-[var(--text-primary)]">
+        {label}
+      </label>
+      <p className="mt-1 text-xs app-text-muted">{description}</p>
+      <div className="mt-3">{children}</div>
+    </div>
+  );
+}
+
 export default function LessonSectionEditor(props: {
   section: LessonSection | null;
   routeFields: RouteFields;
@@ -85,7 +105,12 @@ export default function LessonSectionEditor(props: {
 
   return (
     <div className="space-y-4">
-      <Panel title={section.title} description="Focused section editing workspace.">
+      <CompactDisclosure
+        title={section.title}
+        description={`${section.blocks.length} block${
+          section.blocks.length === 1 ? "" : "s"
+        } · ${formatVariantVisibility(section.variant_visibility)}`}
+      >
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <Badge tone={section.is_published ? "success" : "warning"}>
@@ -138,12 +163,13 @@ export default function LessonSectionEditor(props: {
             </div>
           ) : null}
         </div>
-      </Panel>
+      </CompactDisclosure>
 
       <div id="add-block-composer">
-        <Panel
+        <CompactDisclosure
           title="Create a new block"
-          description="Choose a block type, then fill in the form. This is the main place to add new lesson content."
+          description="Choose a block type, then fill in the form."
+          defaultOpen={section.blocks.length === 0}
         >
           <AddBlockComposer
             section={section}
@@ -151,7 +177,7 @@ export default function LessonSectionEditor(props: {
             blockPresetOptions={props.templateOptions.blockPresets}
             vocabularySetOptions={props.vocabularySetOptions}
           />
-        </Panel>
+        </CompactDisclosure>
       </div>
 
       <Panel title="Blocks" description="Select a block to edit it in the inspector.">
@@ -218,55 +244,81 @@ export default function LessonSectionEditor(props: {
         description="Update section title, description, section kind, visibility, and shared progress key."
         defaultOpen={section.blocks.length === 0}
       >
-        <form action={updateSectionAction} className="space-y-3">
+        <form action={updateSectionAction} className="space-y-4">
           <BuilderHiddenFields {...props.routeFields} />
           <input type="hidden" name="sectionId" value={section.id} />
 
-          <input
-            name="title"
-            required
-            defaultValue={section.title}
-            className={BUILDER_FIELD_CLASS}
-          />
-
-          <input
-            name="description"
-            defaultValue={section.description ?? ""}
-            className={BUILDER_FIELD_CLASS}
-          />
-
-          <select
-            name="sectionKind"
-            defaultValue={section.section_kind}
-            className={BUILDER_SELECT_CLASS}
+          <MetadataField
+            label="Section title"
+            description="Shown in the lesson builder and used as the section heading."
           >
-            {SECTION_KIND_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            <input
+              name="title"
+              required
+              defaultValue={section.title}
+              className={BUILDER_FIELD_CLASS}
+            />
+          </MetadataField>
 
-          <select
-            name="variantVisibility"
-            defaultValue={section.variant_visibility}
-            className={BUILDER_SELECT_CLASS}
+          <MetadataField
+            label="Description"
+            description="Optional short admin note describing the purpose of this section."
           >
-            {VARIANT_VISIBILITY_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            <input
+              name="description"
+              defaultValue={section.description ?? ""}
+              className={BUILDER_FIELD_CLASS}
+              placeholder="Optional short description"
+            />
+          </MetadataField>
 
-          <input
-            name="canonicalSectionKey"
-            defaultValue={section.canonical_section_key ?? ""}
-            className={BUILDER_FIELD_CLASS}
-            placeholder="e.g. food-drink-core-vocab"
-          />
+          <MetadataField
+            label="Section kind"
+            description="Classifies the section for structure, filtering, and future lesson logic."
+          >
+            <select
+              name="sectionKind"
+              defaultValue={section.section_kind}
+              className={BUILDER_SELECT_CLASS}
+            >
+              {SECTION_KIND_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </MetadataField>
 
-          <div className="space-y-2">
+          <MetadataField
+            label="Variant visibility"
+            description="Controls which course variant should include this section."
+          >
+            <select
+              name="variantVisibility"
+              defaultValue={section.variant_visibility}
+              className={BUILDER_SELECT_CLASS}
+            >
+              {VARIANT_VISIBILITY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </MetadataField>
+
+          <MetadataField
+            label="Canonical section key"
+            description="Optional shared progress key for matching equivalent sections across variants."
+          >
+            <input
+              name="canonicalSectionKey"
+              defaultValue={section.canonical_section_key ?? ""}
+              className={BUILDER_FIELD_CLASS}
+              placeholder="e.g. food-drink-core-vocab"
+            />
+          </MetadataField>
+
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             <PendingSubmitButton
               idleLabel="Save section"
               pendingLabel="Saving section..."

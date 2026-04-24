@@ -1,397 +1,32 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import {
-  updateAudioBlockAction,
   updateCalloutBlockAction,
   updateExamTipBlockAction,
   updateHeaderBlockAction,
-  updateImageBlockAction,
   updateNoteBlockAction,
   updateQuestionSetBlockAction,
   updateSubheaderBlockAction,
   updateTextBlockAction,
-  updateVocabularyBlockAction,
-  updateVocabularySetBlockAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
 import type {
   LessonBuilderVocabularySetOption,
   RouteFields,
 } from "@/components/admin/lesson-builder/lesson-builder-types";
 import {
-  BuilderHiddenFields,
-  PendingStatusText,
-  PendingSubmitButton,
-  BUILDER_FIELD_CLASS,
-  BUILDER_SELECT_CLASS,
-  BUILDER_SECONDARY_BUTTON_CLASS,
-  BUILDER_TEXTAREA_CLASS,
-  BUILDER_MUTED_INFO_BOX_CLASS,
-} from "@/components/admin/lesson-builder/lesson-builder-ui";
+  AudioBlockEditor,
+  ImageBlockEditor,
+} from "@/components/admin/lesson-builder/block-editors/media-editors";
+import { SlugBlockEditor } from "@/components/admin/lesson-builder/block-editors/slug-block-editor";
+import {
+  TextLikeEditor,
+  TitledContentEditor,
+} from "@/components/admin/lesson-builder/block-editors/text-editors";
+import { VocabularyBlockEditor } from "@/components/admin/lesson-builder/block-editors/vocabulary-block-editor";
+import { VocabularySetBlockEditor } from "@/components/admin/lesson-builder/block-editors/vocabulary-set-block-editor";
 
-function stringifyVocabularyItems(items: unknown) {
-  if (!Array.isArray(items)) return "";
-
-  return items
-    .map((item) => {
-      if (!item || typeof item !== "object") return "";
-      const record = item as Record<string, unknown>;
-      const russian = typeof record.russian === "string" ? record.russian : "";
-      const english = typeof record.english === "string" ? record.english : "";
-      return russian && english ? `${russian} | ${english}` : "";
-    })
-    .filter(Boolean)
-    .join("\n");
-}
-
-function TextLikeEditor(props: {
-  blockId: string;
-  routeFields: RouteFields;
-  defaultValue: string;
-  action: (formData: FormData) => void | Promise<void>;
-  label: string;
-}) {
-  return (
-    <form action={props.action} className="space-y-2">
-      <BuilderHiddenFields {...props.routeFields} />
-      <input type="hidden" name="blockId" value={props.blockId} />
-      <textarea
-        name="content"
-        required
-        rows={3}
-        defaultValue={props.defaultValue}
-        className={BUILDER_TEXTAREA_CLASS}
-      />
-      <div className="space-y-2">
-        <PendingSubmitButton
-          idleLabel={`Save ${props.label}`}
-          pendingLabel="Saving..."
-          className={BUILDER_SECONDARY_BUTTON_CLASS}
-        />
-        <PendingStatusText pendingText="Updating block..." />
-      </div>
-    </form>
-  );
-}
-
-function TitledContentEditor(props: {
-  blockId: string;
-  routeFields: RouteFields;
-  defaultTitle: string;
-  defaultContent: string;
-  action: (formData: FormData) => void | Promise<void>;
-  label: string;
-  titleRequired?: boolean;
-}) {
-  return (
-    <form action={props.action} className="space-y-2">
-      <BuilderHiddenFields {...props.routeFields} />
-      <input type="hidden" name="blockId" value={props.blockId} />
-      <input
-        name="title"
-        required={props.titleRequired ?? false}
-        defaultValue={props.defaultTitle}
-        className={BUILDER_FIELD_CLASS}
-      />
-      <textarea
-        name="content"
-        required
-        rows={4}
-        defaultValue={props.defaultContent}
-        className={BUILDER_TEXTAREA_CLASS}
-      />
-      <div className="space-y-2">
-        <PendingSubmitButton
-          idleLabel={`Save ${props.label}`}
-          pendingLabel="Saving..."
-          className={BUILDER_SECONDARY_BUTTON_CLASS}
-        />
-        <PendingStatusText pendingText="Updating block..." />
-      </div>
-    </form>
-  );
-}
-
-function SlugBlockEditor(props: {
-  blockId: string;
-  routeFields: RouteFields;
-  defaultTitle: string;
-  defaultSlug: string;
-  slugFieldName: "questionSetSlug" | "vocabularySetSlug";
-  action: (formData: FormData) => void | Promise<void>;
-  label: string;
-}) {
-  return (
-    <form action={props.action} className="space-y-2">
-      <BuilderHiddenFields {...props.routeFields} />
-      <input type="hidden" name="blockId" value={props.blockId} />
-      <input
-        name="title"
-        defaultValue={props.defaultTitle}
-        placeholder="Optional heading"
-        className={BUILDER_FIELD_CLASS}
-      />
-      <input
-        name={props.slugFieldName}
-        required
-        defaultValue={props.defaultSlug}
-        className={BUILDER_FIELD_CLASS}
-      />
-      <div className="space-y-2">
-        <PendingSubmitButton
-          idleLabel={`Save ${props.label}`}
-          pendingLabel="Saving..."
-          className={BUILDER_SECONDARY_BUTTON_CLASS}
-        />
-        <PendingStatusText pendingText="Updating linked block..." />
-      </div>
-    </form>
-  );
-}
-
-function ImageBlockEditor(props: {
-  blockId: string;
-  routeFields: RouteFields;
-  defaultSrc: string;
-  defaultAlt: string;
-  defaultCaption: string;
-}) {
-  return (
-    <form action={updateImageBlockAction} className="space-y-2">
-      <BuilderHiddenFields {...props.routeFields} />
-      <input type="hidden" name="blockId" value={props.blockId} />
-      <input
-        name="src"
-        required
-        defaultValue={props.defaultSrc}
-        placeholder="https://..."
-        className={BUILDER_FIELD_CLASS}
-      />
-      <input
-        name="alt"
-        defaultValue={props.defaultAlt}
-        placeholder="Alt text"
-        className={BUILDER_FIELD_CLASS}
-      />
-      <input
-        name="caption"
-        defaultValue={props.defaultCaption}
-        placeholder="Optional caption"
-        className={BUILDER_FIELD_CLASS}
-      />
-      <div className="space-y-2">
-        <PendingSubmitButton
-          idleLabel="Save image block"
-          pendingLabel="Saving image block..."
-          className={BUILDER_SECONDARY_BUTTON_CLASS}
-        />
-        <PendingStatusText pendingText="Updating image block..." />
-      </div>
-    </form>
-  );
-}
-
-function AudioBlockEditor(props: {
-  blockId: string;
-  routeFields: RouteFields;
-  defaultTitle: string;
-  defaultSrc: string;
-  defaultCaption: string;
-  defaultAutoPlay: boolean;
-}) {
-  return (
-    <form action={updateAudioBlockAction} className="space-y-2">
-      <BuilderHiddenFields {...props.routeFields} />
-      <input type="hidden" name="blockId" value={props.blockId} />
-      <input
-        name="title"
-        defaultValue={props.defaultTitle}
-        placeholder="Optional title"
-        className={BUILDER_FIELD_CLASS}
-      />
-      <input
-        name="src"
-        required
-        defaultValue={props.defaultSrc}
-        placeholder="https://..."
-        className={BUILDER_FIELD_CLASS}
-      />
-      <input
-        name="caption"
-        defaultValue={props.defaultCaption}
-        placeholder="Optional caption"
-        className={BUILDER_FIELD_CLASS}
-      />
-      <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-        <input
-          type="checkbox"
-          name="autoPlay"
-          value="true"
-          defaultChecked={props.defaultAutoPlay}
-        />
-        Auto play
-      </label>
-      <div className="space-y-2">
-        <PendingSubmitButton
-          idleLabel="Save audio block"
-          pendingLabel="Saving audio block..."
-          className={BUILDER_SECONDARY_BUTTON_CLASS}
-        />
-        <PendingStatusText pendingText="Updating audio block..." />
-      </div>
-    </form>
-  );
-}
-
-function VocabularyBlockEditor(props: {
-  blockId: string;
-  routeFields: RouteFields;
-  defaultTitle: string;
-  defaultItems: unknown;
-}) {
-  return (
-    <form action={updateVocabularyBlockAction} className="space-y-2">
-      <BuilderHiddenFields {...props.routeFields} />
-      <input type="hidden" name="blockId" value={props.blockId} />
-      <input
-        name="title"
-        required
-        defaultValue={props.defaultTitle}
-        placeholder="Key vocabulary"
-        className={BUILDER_FIELD_CLASS}
-      />
-      <textarea
-        name="items"
-        required
-        rows={6}
-        defaultValue={stringifyVocabularyItems(props.defaultItems)}
-        placeholder={`дом | house\nшкола | school`}
-        className={`${BUILDER_TEXTAREA_CLASS} font-mono`}
-      />
-      <p className="text-xs app-text-soft">
-        Use one item per line in the format: russian | english
-      </p>
-      <div className="space-y-2">
-        <PendingSubmitButton
-          idleLabel="Save vocabulary block"
-          pendingLabel="Saving vocabulary block..."
-          className={BUILDER_SECONDARY_BUTTON_CLASS}
-        />
-        <PendingStatusText pendingText="Updating vocabulary block..." />
-      </div>
-    </form>
-  );
-}
-
-function VocabularySetBlockEditor(props: {
-  blockId: string;
-  routeFields: RouteFields;
-  defaultTitle: string;
-  defaultSlug: string;
-  vocabularySetOptions: LessonBuilderVocabularySetOption[];
-}) {
-  const hasMatchingOption = props.vocabularySetOptions.some(
-    (option) => option.slug === props.defaultSlug
-  );
-
-  const initialValue =
-    hasMatchingOption || !props.defaultSlug
-      ? props.defaultSlug
-      : `__missing__:${props.defaultSlug}`;
-
-  const [selectedValue, setSelectedValue] = useState<string>(initialValue);
-
-  const selectedVocabularySet = useMemo(() => {
-    if (selectedValue.startsWith("__missing__:")) {
-      return null;
-    }
-
-    return (
-      props.vocabularySetOptions.find((option) => option.slug === selectedValue) ?? null
-    );
-  }, [props.vocabularySetOptions, selectedValue]);
-
-  if (props.vocabularySetOptions.length === 0 && !props.defaultSlug) {
-    return (
-      <div className="space-y-2 rounded-2xl border border-dashed border-[var(--border)] px-4 py-4 text-sm app-text-muted">
-        <div>No vocabulary sets with slugs are available yet.</div>
-        <div>Create a vocabulary set first, then return to attach it here.</div>
-      </div>
-    );
-  }
-
-  return (
-    <form action={updateVocabularySetBlockAction} className="space-y-2">
-      <BuilderHiddenFields {...props.routeFields} />
-      <input type="hidden" name="blockId" value={props.blockId} />
-
-      <input
-        name="title"
-        defaultValue={props.defaultTitle}
-        placeholder="Optional heading"
-        className={BUILDER_FIELD_CLASS}
-      />
-
-      <select
-        name="vocabularySetSlug"
-        required
-        value={selectedValue}
-        onChange={(event) => setSelectedValue(event.target.value)}
-        className={BUILDER_SELECT_CLASS}
-      >
-        {!hasMatchingOption && props.defaultSlug ? (
-          <option value={`__missing__:${props.defaultSlug}`}>
-            Missing set · {props.defaultSlug}
-          </option>
-        ) : null}
-
-        {props.vocabularySetOptions.map((option) => (
-          <option key={option.id} value={option.slug}>
-            {option.title} · {option.slug}
-            {option.isPublished ? "" : " · draft"}
-          </option>
-        ))}
-      </select>
-
-      {!hasMatchingOption && props.defaultSlug ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
-          The currently linked vocabulary set slug no longer matches an available library
-          option. Choose a new set before saving.
-        </div>
-      ) : null}
-
-      {selectedVocabularySet ? (
-        <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
-          <div className="font-medium text-[var(--text-primary)]">
-            {selectedVocabularySet.title}
-          </div>
-          <div className="mt-1 text-xs app-text-soft">
-            Slug: {selectedVocabularySet.slug}
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
-              {selectedVocabularySet.isPublished ? "Published" : "Draft"}
-            </span>
-            <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
-              Tier: {selectedVocabularySet.tier}
-            </span>
-            <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
-              Mode: {selectedVocabularySet.listMode}
-            </span>
-          </div>
-        </div>
-      ) : null}
-
-      <div className="space-y-2">
-        <PendingSubmitButton
-          idleLabel="Save vocabulary-set block"
-          pendingLabel="Saving vocabulary-set block..."
-          className={BUILDER_SECONDARY_BUTTON_CLASS}
-        />
-        <PendingStatusText pendingText="Updating linked vocabulary set..." />
-      </div>
-    </form>
-  );
+function getStringValue(value: unknown) {
+  return typeof value === "string" ? value : "";
 }
 
 export function BlockEditPanel(props: {
@@ -409,9 +44,7 @@ export function BlockEditPanel(props: {
         <TextLikeEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultValue={
-            typeof props.block.data.content === "string" ? props.block.data.content : ""
-          }
+          defaultValue={getStringValue(props.block.data.content)}
           action={updateHeaderBlockAction}
           label="header block"
         />
@@ -422,9 +55,7 @@ export function BlockEditPanel(props: {
         <TextLikeEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultValue={
-            typeof props.block.data.content === "string" ? props.block.data.content : ""
-          }
+          defaultValue={getStringValue(props.block.data.content)}
           action={updateSubheaderBlockAction}
           label="subheader block"
         />
@@ -435,9 +66,7 @@ export function BlockEditPanel(props: {
         <TextLikeEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultValue={
-            typeof props.block.data.content === "string" ? props.block.data.content : ""
-          }
+          defaultValue={getStringValue(props.block.data.content)}
           action={updateTextBlockAction}
           label="text block"
         />
@@ -448,12 +77,8 @@ export function BlockEditPanel(props: {
         <TitledContentEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultTitle={
-            typeof props.block.data.title === "string" ? props.block.data.title : ""
-          }
-          defaultContent={
-            typeof props.block.data.content === "string" ? props.block.data.content : ""
-          }
+          defaultTitle={getStringValue(props.block.data.title)}
+          defaultContent={getStringValue(props.block.data.content)}
           action={updateNoteBlockAction}
           label="note block"
           titleRequired
@@ -465,12 +90,8 @@ export function BlockEditPanel(props: {
         <TitledContentEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultTitle={
-            typeof props.block.data.title === "string" ? props.block.data.title : ""
-          }
-          defaultContent={
-            typeof props.block.data.content === "string" ? props.block.data.content : ""
-          }
+          defaultTitle={getStringValue(props.block.data.title)}
+          defaultContent={getStringValue(props.block.data.content)}
           action={updateCalloutBlockAction}
           label="callout block"
         />
@@ -481,12 +102,8 @@ export function BlockEditPanel(props: {
         <TitledContentEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultTitle={
-            typeof props.block.data.title === "string" ? props.block.data.title : ""
-          }
-          defaultContent={
-            typeof props.block.data.content === "string" ? props.block.data.content : ""
-          }
+          defaultTitle={getStringValue(props.block.data.title)}
+          defaultContent={getStringValue(props.block.data.content)}
           action={updateExamTipBlockAction}
           label="exam tip block"
         />
@@ -497,15 +114,9 @@ export function BlockEditPanel(props: {
         <ImageBlockEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultSrc={
-            typeof props.block.data.src === "string" ? props.block.data.src : ""
-          }
-          defaultAlt={
-            typeof props.block.data.alt === "string" ? props.block.data.alt : ""
-          }
-          defaultCaption={
-            typeof props.block.data.caption === "string" ? props.block.data.caption : ""
-          }
+          defaultSrc={getStringValue(props.block.data.src)}
+          defaultAlt={getStringValue(props.block.data.alt)}
+          defaultCaption={getStringValue(props.block.data.caption)}
         />
       );
 
@@ -514,15 +125,9 @@ export function BlockEditPanel(props: {
         <AudioBlockEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultTitle={
-            typeof props.block.data.title === "string" ? props.block.data.title : ""
-          }
-          defaultSrc={
-            typeof props.block.data.src === "string" ? props.block.data.src : ""
-          }
-          defaultCaption={
-            typeof props.block.data.caption === "string" ? props.block.data.caption : ""
-          }
+          defaultTitle={getStringValue(props.block.data.title)}
+          defaultSrc={getStringValue(props.block.data.src)}
+          defaultCaption={getStringValue(props.block.data.caption)}
           defaultAutoPlay={
             typeof props.block.data.autoPlay === "boolean"
               ? props.block.data.autoPlay
@@ -536,9 +141,7 @@ export function BlockEditPanel(props: {
         <VocabularyBlockEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultTitle={
-            typeof props.block.data.title === "string" ? props.block.data.title : ""
-          }
+          defaultTitle={getStringValue(props.block.data.title)}
           defaultItems={props.block.data.items}
         />
       );
@@ -548,14 +151,8 @@ export function BlockEditPanel(props: {
         <SlugBlockEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultTitle={
-            typeof props.block.data.title === "string" ? props.block.data.title : ""
-          }
-          defaultSlug={
-            typeof props.block.data.questionSetSlug === "string"
-              ? props.block.data.questionSetSlug
-              : ""
-          }
+          defaultTitle={getStringValue(props.block.data.title)}
+          defaultSlug={getStringValue(props.block.data.questionSetSlug)}
           slugFieldName="questionSetSlug"
           action={updateQuestionSetBlockAction}
           label="question-set block"
@@ -567,14 +164,8 @@ export function BlockEditPanel(props: {
         <VocabularySetBlockEditor
           blockId={props.block.id}
           routeFields={props.routeFields}
-          defaultTitle={
-            typeof props.block.data.title === "string" ? props.block.data.title : ""
-          }
-          defaultSlug={
-            typeof props.block.data.vocabularySetSlug === "string"
-              ? props.block.data.vocabularySetSlug
-              : ""
-          }
+          defaultTitle={getStringValue(props.block.data.title)}
+          defaultSlug={getStringValue(props.block.data.vocabularySetSlug)}
           vocabularySetOptions={props.vocabularySetOptions}
         />
       );
