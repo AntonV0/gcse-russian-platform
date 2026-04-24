@@ -2,6 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { reviewAssignmentSubmissionAction } from "@/app/actions/teacher/teacher-assignment-actions";
+import Button from "@/components/ui/button";
+import FeedbackBanner from "@/components/ui/feedback-banner";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import PanelCard from "@/components/ui/panel-card";
+import Textarea from "@/components/ui/textarea";
 
 type Props = {
   submissionId: string;
@@ -61,80 +67,84 @@ export default function TeacherSubmissionReviewForm({
   if (!isOpen) {
     return (
       <div className="space-y-2">
-        <button
+        <Button
           type="button"
           onClick={() => {
             setIsOpen(true);
             setSaved(false);
             setError(null);
           }}
-          className="rounded border px-3 py-2 text-sm hover:bg-gray-50"
+          variant="secondary"
+          size="sm"
+          icon="edit"
         >
           Edit review
-        </button>
+        </Button>
 
         {saved ? (
-          <p className="text-sm font-medium text-green-600">Review saved successfully.</p>
+          <FeedbackBanner tone="success" description="Review saved successfully." />
         ) : null}
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 rounded border bg-white p-4">
+    <PanelCard
+      title="Review submission"
+      tone="default"
+      density="compact"
+      contentClassName="space-y-4"
+    >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-medium">Review submission</p>
-
-        <button
+        <div />
+        <Button
           type="button"
           onClick={() => {
             setIsOpen(false);
             setSaved(false);
             setError(null);
           }}
-          className="text-sm text-gray-600 hover:underline"
+          variant="quiet"
+          size="sm"
         >
           Cancel
-        </button>
+        </Button>
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-medium">Mark</label>
-        <input
+      <FormField label="Mark">
+        <Input
           type="number"
           step="0.01"
           value={mark}
           onChange={(e) => handleMarkChange(e.target.value)}
-          className="w-full rounded border px-3 py-2"
           placeholder="Optional"
         />
-      </div>
+      </FormField>
 
-      <div className="space-y-1">
-        <label className="text-sm font-medium">Feedback</label>
-        <textarea
+      <FormField label="Feedback">
+        <Textarea
           value={feedback}
           onChange={(e) => handleFeedbackChange(e.target.value)}
           rows={4}
-          className="w-full rounded border px-3 py-2"
           placeholder="Write feedback for the student..."
         />
-      </div>
+      </FormField>
 
-      <button
+      <Button
         type="button"
         onClick={handleSubmit}
         disabled={isPending}
-        className="w-full rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+        variant="primary"
+        className="w-full"
       >
         {isPending ? "Saving..." : "Save review"}
-      </button>
+      </Button>
 
       {saved ? (
-        <p className="text-sm font-medium text-green-600">Review saved successfully.</p>
+        <FeedbackBanner tone="success" description="Review saved successfully." />
       ) : null}
 
-      {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
-    </div>
+      {error ? <FeedbackBanner tone="danger" description={error} /> : null}
+    </PanelCard>
   );
 }

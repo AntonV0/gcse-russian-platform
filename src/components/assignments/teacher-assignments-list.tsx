@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import DashboardCard from "@/components/ui/dashboard-card";
+import FormField from "@/components/ui/form-field";
+import Select from "@/components/ui/select";
 import StatusBadge from "@/components/ui/status-badge";
 import { getDueDateClass, getDueDateStatus } from "@/lib/assignments/assignment-status";
 import type { TeacherAssignmentListItem } from "@/lib/assignments/assignment-helpers-db";
@@ -154,14 +156,12 @@ export default function TeacherAssignmentsList({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 rounded-lg border p-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 md:flex-row md:items-end md:justify-between">
         <div className="flex flex-col gap-3 md:flex-row md:items-end">
-          <div className="space-y-1">
-            <label className="block text-sm font-medium">Filter</label>
-            <select
+          <FormField label="Filter">
+            <Select
               value={filter}
               onChange={(e) => setFilter(e.target.value as TeacherFilterValue)}
-              className="rounded border px-3 py-2 text-sm"
             >
               <option value="all">All ({counts.all})</option>
               <option value="pending_review">
@@ -171,31 +171,29 @@ export default function TeacherAssignmentsList({
               <option value="no_submissions">
                 No submissions ({counts.no_submissions})
               </option>
-            </select>
-          </div>
+            </Select>
+          </FormField>
 
-          <div className="space-y-1">
-            <label className="block text-sm font-medium">Sort by</label>
-            <select
+          <FormField label="Sort by">
+            <Select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as TeacherSortValue)}
-              className="rounded border px-3 py-2 text-sm"
             >
               <option value="priority">Priority</option>
               <option value="due_date">Due date</option>
               <option value="newest">Newest created</option>
               <option value="most_submissions">Most submissions</option>
-            </select>
-          </div>
+            </Select>
+          </FormField>
         </div>
 
-        <p className="text-sm text-gray-600">
+        <p className="text-sm app-text-muted">
           Showing {visibleAssignments.length} of {assignments.length} assignments
         </p>
       </div>
 
       {visibleAssignments.length === 0 ? (
-        <div className="rounded-lg border p-6 text-sm text-gray-600">
+        <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] p-6 text-sm app-text-muted">
           No assignments match the selected filter.
         </div>
       ) : (
@@ -220,12 +218,12 @@ export default function TeacherAssignmentsList({
                     }`}
                   >
                     <DashboardCard title={assignment.title}>
-                      <div className="space-y-2 text-sm text-gray-700">
+                      <div className="space-y-2 text-sm text-[var(--text-secondary)]">
                         {assignment.instructions ? (
                           <p>{assignment.instructions}</p>
                         ) : null}
 
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                        <div className="flex flex-wrap items-center gap-4 text-sm app-text-muted">
                           <span>Group: {group?.name ?? "Unknown group"}</span>
                           <span className={getDueDateClass(dueStatus)}>
                             Due: {formatDueDate(assignment.due_at)}
@@ -236,7 +234,7 @@ export default function TeacherAssignmentsList({
                           {teacherStatus.badgeStatus ? (
                             <StatusBadge status={teacherStatus.badgeStatus} />
                           ) : (
-                            <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                            <span className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--background-muted)] px-2 py-1 text-xs font-medium text-[var(--text-secondary)]">
                               {teacherStatus.label}
                             </span>
                           )}

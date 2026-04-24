@@ -1,18 +1,15 @@
-import Link from "next/link";
+import Button from "@/components/ui/button";
 
 export default function TeacherAccessDenied() {
   return (
     <main className="max-w-xl space-y-4">
-      <h1 className="text-2xl font-bold">Access denied</h1>
-      <p className="text-gray-600">
+      <h1 className="text-2xl font-bold text-[var(--text-primary)]">Access denied</h1>
+      <p className="app-text-muted">
         You do not have permission to view this teacher page.
       </p>
-      <Link
-        href="/dashboard"
-        className="inline-block rounded bg-black px-4 py-2 text-white"
-      >
+      <Button href="/dashboard" variant="primary" icon="dashboard">
         Back to dashboard
-      </Link>
+      </Button>
     </main>
   );
 }

@@ -2,6 +2,11 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { submitAssignmentAction } from "@/app/actions/assignments/assignment-actions";
+import Button from "@/components/ui/button";
+import FeedbackBanner from "@/components/ui/feedback-banner";
+import FormField from "@/components/ui/form-field";
+import PanelCard from "@/components/ui/panel-card";
+import Textarea from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 
 type AssignmentSubmissionFormProps = {
@@ -124,42 +129,48 @@ export default function AssignmentSubmissionForm({
     value.trim().length > 0 || (allowFileUpload && (selectedFile || uploadedFilePath));
 
   return (
-    <div className="space-y-3 rounded-lg border p-4">
+    <PanelCard tone="student" density="compact" contentClassName="space-y-4">
       {isLocked ? (
-        <div className="rounded border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
-          This assignment has been reviewed and can no longer be edited.
-        </div>
+        <FeedbackBanner
+          tone="warning"
+          description="This assignment has been reviewed and can no longer be edited."
+        />
       ) : null}
 
-      <textarea
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-          setSaved(false);
-        }}
-        disabled={isLocked}
-        rows={6}
-        className="w-full rounded border px-3 py-2 disabled:bg-gray-100 disabled:text-gray-600"
-        placeholder="Write your homework response here..."
-      />
+      <FormField label="Homework response">
+        <Textarea
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+            setSaved(false);
+          }}
+          disabled={isLocked}
+          rows={6}
+          placeholder="Write your homework response here..."
+        />
+      </FormField>
 
       {isLocked && (mark !== null || feedback) ? (
-        <div className="rounded border bg-gray-50 p-3 text-sm">
-          <p className="mb-1 font-medium">Teacher feedback</p>
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
+          <p className="mb-1 font-medium text-[var(--text-primary)]">
+            Teacher feedback
+          </p>
 
           {mark !== null ? <p className="mb-1">Mark: {mark}</p> : null}
 
           {feedback ? (
-            <p className="text-gray-700">{feedback}</p>
+            <p className="text-[var(--text-secondary)]">{feedback}</p>
           ) : (
-            <p className="text-gray-600">No feedback provided.</p>
+            <p className="app-text-muted">No feedback provided.</p>
           )}
         </div>
       ) : null}
 
       {allowFileUpload ? (
-        <div className="space-y-2 rounded border p-3">
-          <label className="block text-sm font-medium">Upload written work</label>
+        <div className="space-y-2 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+          <label className="block text-sm font-medium text-[var(--text-primary)]">
+            Upload written work
+          </label>
 
           <input
             type="file"
@@ -171,45 +182,45 @@ export default function AssignmentSubmissionForm({
               setSaved(false);
               setUploadError(null);
             }}
-            className="block w-full text-sm disabled:opacity-50"
+            className="block w-full text-sm text-[var(--text-secondary)] disabled:opacity-50"
           />
 
           {selectedFile ? (
-            <p className="text-sm text-gray-700">Selected file: {selectedFile.name}</p>
+            <p className="text-sm text-[var(--text-secondary)]">
+              Selected file: {selectedFile.name}
+            </p>
           ) : null}
 
           {!selectedFile && uploadedFileName ? (
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-[var(--text-secondary)]">
               Existing uploaded file: {uploadedFileName}
             </p>
           ) : null}
 
-          <p className="text-xs text-gray-500">Accepted formats: JPG, PNG, WEBP, PDF</p>
+          <p className="text-xs app-text-soft">Accepted formats: JPG, PNG, WEBP, PDF</p>
         </div>
       ) : null}
 
       {uploadError ? (
-        <p className="text-sm font-medium text-red-600">{uploadError}</p>
+        <FeedbackBanner tone="danger" description={uploadError} />
       ) : null}
 
-      <button
+      <Button
         type="button"
         onClick={handleSubmit}
         disabled={isPending || !canSubmit || isLocked}
-        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+        variant="primary"
       >
         {isPending
           ? "Submitting..."
           : initialValue || initialFilePath
             ? "Update submission"
             : "Submit homework"}
-      </button>
+      </Button>
 
       {saved ? (
-        <p className="text-sm font-medium text-green-600">
-          Submission saved successfully.
-        </p>
+        <FeedbackBanner tone="success" description="Submission saved successfully." />
       ) : null}
-    </div>
+    </PanelCard>
   );
 }
