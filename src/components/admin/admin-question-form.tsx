@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
@@ -99,40 +101,43 @@ export default function AdminQuestionForm({
         <div className="grid gap-4 md:grid-cols-2">
           <FormField label="Question type" required>
             <Select
-            name="questionType"
-            required
-            value={questionType}
-            onChange={(event) =>
-              setQuestionType(
-                event.target.value as "multiple_choice" | "short_answer" | "translation"
-              )
-            }
-          >
-            <option value="multiple_choice">Multiple choice</option>
-            <option value="short_answer">Short answer</option>
-            <option value="translation">Translation</option>
+              name="questionType"
+              required
+              value={questionType}
+              onChange={(event) =>
+                setQuestionType(
+                  event.target.value as
+                    | "multiple_choice"
+                    | "short_answer"
+                    | "translation"
+                )
+              }
+            >
+              <option value="multiple_choice">Multiple choice</option>
+              <option value="short_answer">Short answer</option>
+              <option value="translation">Translation</option>
             </Select>
           </FormField>
 
           {showStrategySelector ? (
             <FormField label="Answer strategy">
               <Select
-              name="answerStrategy"
-              value={answerStrategy}
-              onChange={(event) =>
-                setAnswerStrategy(
-                  event.target.value as
-                    | "text_input"
-                    | "selection_based"
-                    | "sentence_builder"
-                    | "upload_required"
-                )
-              }
-            >
-              <option value="text_input">Text input</option>
-              <option value="selection_based">Selection based</option>
-              <option value="sentence_builder">Sentence builder</option>
-              <option value="upload_required">Upload required</option>
+                name="answerStrategy"
+                value={answerStrategy}
+                onChange={(event) =>
+                  setAnswerStrategy(
+                    event.target.value as
+                      | "text_input"
+                      | "selection_based"
+                      | "sentence_builder"
+                      | "upload_required"
+                  )
+                }
+              >
+                <option value="text_input">Text input</option>
+                <option value="selection_based">Selection based</option>
+                <option value="sentence_builder">Sentence builder</option>
+                <option value="upload_required">Upload required</option>
               </Select>
             </FormField>
           ) : (
@@ -142,45 +147,40 @@ export default function AdminQuestionForm({
 
         <FormField label="Prompt" required>
           <Textarea
-          name="prompt"
-          required
-          rows={3}
-          defaultValue={defaultValues?.prompt ?? ""}
+            name="prompt"
+            required
+            rows={3}
+            defaultValue={defaultValues?.prompt ?? ""}
           />
         </FormField>
 
         <FormField label="Explanation">
           <Textarea
-          name="explanation"
-          rows={3}
-          defaultValue={defaultValues?.explanation ?? ""}
+            name="explanation"
+            rows={3}
+            defaultValue={defaultValues?.explanation ?? ""}
           />
         </FormField>
 
         <div className="grid gap-4 md:grid-cols-3">
           <FormField label="Marks">
             <Input
-            name="marks"
-            type="number"
-            min="1"
-            defaultValue={defaultValues?.marks ?? "1"}
+              name="marks"
+              type="number"
+              min="1"
+              defaultValue={defaultValues?.marks ?? "1"}
             />
           </FormField>
-
           <FormField label="Position">
             <Input
-            name="position"
-            type="number"
-            min="1"
-            defaultValue={defaultValues?.position ?? "1"}
+              name="position"
+              type="number"
+              min="1"
+              defaultValue={defaultValues?.position ?? "1"}
             />
           </FormField>
-
           <FormField label="Audio path">
-            <Input
-            name="audioPath"
-            defaultValue={defaultValues?.audioPath ?? ""}
-            />
+            <Input name="audioPath" defaultValue={defaultValues?.audioPath ?? ""} />
           </FormField>
         </div>
       </PanelCard>
@@ -225,7 +225,6 @@ export default function AdminQuestionForm({
                 defaultValue={defaultValues?.placeholder ?? ""}
               />
             </FormField>
-
             <FormField label="Source language label">
               <Input
                 name="sourceLanguageLabel"
@@ -233,7 +232,6 @@ export default function AdminQuestionForm({
                 defaultValue={defaultValues?.sourceLanguageLabel ?? ""}
               />
             </FormField>
-
             <FormField label="Target language label">
               <Input
                 name="targetLanguageLabel"
@@ -254,222 +252,178 @@ export default function AdminQuestionForm({
       ) : null}
 
       {showSelectionSettings ? (
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-2 font-semibold">Selection-Based Settings</h2>
+        <PanelCard
+          title="Selection-based settings"
+          description="Configure grouped or inline selection options for scaffolded translation answers."
+          tone="admin"
+          contentClassName="space-y-4"
+        >
+          <FormField label="Selection display mode">
+            <Select
+              name="selectionDisplayMode"
+              defaultValue={defaultValues?.selectionDisplayMode ?? "grouped"}
+            >
+              <option value="grouped">Grouped</option>
+              <option value="inline_gaps">Inline gaps</option>
+            </Select>
+          </FormField>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium">Selection display mode</label>
-              <select
-                name="selectionDisplayMode"
-                className="w-full rounded border px-3 py-2"
-                defaultValue={defaultValues?.selectionDisplayMode ?? "grouped"}
-              >
-                <option value="grouped">Grouped</option>
-                <option value="inline_gaps">Inline gaps</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <label className="block text-sm font-medium">Selection groups</label>
-            <textarea
+          <FormField
+            label="Selection groups"
+            hint="One group per line: id|label|option1,option2,option3"
+          >
+            <Textarea
               name="selectionGroupsText"
-              className="w-full rounded border px-3 py-2 font-mono text-sm"
+              className="font-mono"
               rows={8}
               defaultValue={defaultValues?.selectionGroupsText ?? ""}
-              placeholder={`subject|Choose subject|Я,Ты,Он\nverb|Choose verb|живу,живёшь,живёт`}
+              placeholder={"subject|Choose subject|I,you,he\nverb|Choose verb|live,study,like"}
             />
-            <p className="mt-1 text-sm text-gray-500">
-              One group per line: <code>id|label|option1,option2,option3</code>
-            </p>
-          </div>
-        </div>
+          </FormField>
+        </PanelCard>
       ) : null}
 
       {showSentenceBuilderSettings ? (
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-2 font-semibold">Sentence Builder Settings</h2>
-
-          <div>
-            <label className="block text-sm font-medium">Word bank</label>
-            <textarea
+        <PanelCard
+          title="Sentence builder settings"
+          description="Provide optional word-bank tokens for sentence construction tasks."
+          tone="admin"
+        >
+          <FormField
+            label="Word bank"
+            hint="One token per line. Leave blank to auto-build from the primary accepted answer."
+          >
+            <Textarea
               name="wordBankText"
-              className="w-full rounded border px-3 py-2"
               rows={5}
               defaultValue={defaultValues?.wordBankText ?? ""}
-              placeholder={`Я\nживу\nв\nЛондоне`}
+              placeholder={"I\nlive\nin\nLondon"}
             />
-            <p className="mt-1 text-sm text-gray-500">
-              One token per line. Leave blank to auto-build from the primary accepted
-              answer.
-            </p>
-          </div>
-        </div>
+          </FormField>
+        </PanelCard>
       ) : null}
 
       {isTextQuestion ? (
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-2 font-semibold">Validation Options</h2>
-
+        <PanelCard title="Validation options" tone="admin">
           <div className="grid gap-3 md:grid-cols-3">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="ignorePunctuation"
-                value="true"
-                defaultChecked={defaultValues?.ignorePunctuation ?? false}
-              />
-              Ignore punctuation
-            </label>
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="ignoreArticles"
-                value="true"
-                defaultChecked={defaultValues?.ignoreArticles ?? false}
-              />
-              Ignore articles
-            </label>
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="collapseWhitespace"
-                value="true"
-                defaultChecked={defaultValues?.collapseWhitespace ?? true}
-              />
-              Collapse whitespace
-            </label>
+            <CheckboxField
+              name="ignorePunctuation"
+              label="Ignore punctuation"
+              defaultChecked={defaultValues?.ignorePunctuation ?? false}
+            />
+            <CheckboxField
+              name="ignoreArticles"
+              label="Ignore articles"
+              defaultChecked={defaultValues?.ignoreArticles ?? false}
+            />
+            <CheckboxField
+              name="collapseWhitespace"
+              label="Collapse whitespace"
+              defaultChecked={defaultValues?.collapseWhitespace ?? true}
+            />
           </div>
-        </div>
+        </PanelCard>
       ) : null}
 
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
-        <h2 className="mb-2 font-semibold">Listening Mode Settings</h2>
+      <PanelCard
+        title="Listening mode settings"
+        description="Configure audio playback behaviour for listening-style questions."
+        tone="admin"
+        contentClassName="space-y-4"
+      >
+        <FormField label="Max plays">
+          <Input
+            name="maxPlays"
+            type="number"
+            min="1"
+            defaultValue={defaultValues?.maxPlays ?? ""}
+          />
+        </FormField>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium">Max plays</label>
-            <input
-              name="maxPlays"
-              type="number"
-              min="1"
-              className="w-full rounded border px-3 py-2"
-              defaultValue={defaultValues?.maxPlays ?? ""}
-            />
-          </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          <CheckboxField
+            name="listeningMode"
+            label="Listening mode"
+            defaultChecked={defaultValues?.listeningMode ?? false}
+          />
+          <CheckboxField
+            name="autoPlay"
+            label="Auto play"
+            defaultChecked={defaultValues?.autoPlay ?? false}
+          />
+          <CheckboxField
+            name="hideNativeControls"
+            label="Hide native controls"
+            defaultChecked={defaultValues?.hideNativeControls ?? false}
+          />
+          <CheckboxField
+            name="requireAudioCompletionBeforeSubmit"
+            label="Require audio completion before submit"
+            defaultChecked={defaultValues?.requireAudioCompletionBeforeSubmit ?? false}
+          />
         </div>
+      </PanelCard>
 
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="listeningMode"
-              value="true"
-              defaultChecked={defaultValues?.listeningMode ?? false}
-            />
-            Listening mode
-          </label>
-
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="autoPlay"
-              value="true"
-              defaultChecked={defaultValues?.autoPlay ?? false}
-            />
-            Auto play
-          </label>
-
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="hideNativeControls"
-              value="true"
-              defaultChecked={defaultValues?.hideNativeControls ?? false}
-            />
-            Hide native controls
-          </label>
-
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="requireAudioCompletionBeforeSubmit"
-              value="true"
-              defaultChecked={defaultValues?.requireAudioCompletionBeforeSubmit ?? false}
-            />
-            Require audio completion before submit
-          </label>
-        </div>
-      </div>
-
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
-        <h2 className="mb-2 font-semibold">Answer Content</h2>
-
-        <div className="space-y-4">
-          {showMultipleChoiceFields ? (
-            <>
-              <div>
-                <label className="block text-sm font-medium">
-                  Multiple choice options
-                </label>
-                <textarea
-                  name="optionsText"
-                  className="w-full rounded border px-3 py-2"
-                  rows={5}
-                  defaultValue={defaultValues?.optionsText ?? ""}
-                  placeholder={`Option 1\nOption 2\nOption 3`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Correct option index</label>
-                <input
-                  name="correctOptionIndex"
-                  type="number"
-                  min="1"
-                  className="w-full rounded border px-3 py-2"
-                  defaultValue={defaultValues?.correctOptionIndex ?? ""}
-                  placeholder="1"
-                />
-              </div>
-            </>
-          ) : null}
-
-          {showAcceptedAnswers ? (
-            <div>
-              <label className="block text-sm font-medium">Accepted answers</label>
-              <textarea
-                name="acceptedAnswersText"
-                className="w-full rounded border px-3 py-2"
-                rows={6}
-                defaultValue={defaultValues?.acceptedAnswersText ?? ""}
-                placeholder={`Answer 1\nAnswer 2`}
+      <PanelCard
+        title="Answer content"
+        description="Define answer options or accepted text answers."
+        tone="admin"
+        contentClassName="space-y-4"
+      >
+        {showMultipleChoiceFields ? (
+          <>
+            <FormField label="Multiple choice options">
+              <Textarea
+                name="optionsText"
+                rows={5}
+                defaultValue={defaultValues?.optionsText ?? ""}
+                placeholder={"Option 1\nOption 2\nOption 3"}
               />
-            </div>
-          ) : null}
-        </div>
-      </div>
+            </FormField>
+            <FormField label="Correct option index">
+              <Input
+                name="correctOptionIndex"
+                type="number"
+                min="1"
+                defaultValue={defaultValues?.correctOptionIndex ?? ""}
+                placeholder="1"
+              />
+            </FormField>
+          </>
+        ) : null}
 
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
-        <h2 className="mb-2 font-semibold">Advanced Metadata Override</h2>
+        {showAcceptedAnswers ? (
+          <FormField label="Accepted answers">
+            <Textarea
+              name="acceptedAnswersText"
+              rows={6}
+              defaultValue={defaultValues?.acceptedAnswersText ?? ""}
+              placeholder={"Answer 1\nAnswer 2"}
+            />
+          </FormField>
+        ) : null}
+      </PanelCard>
 
-        <div>
-          <label className="block text-sm font-medium">Extra metadata JSON</label>
-          <textarea
+      <PanelCard
+        title="Advanced metadata override"
+        description="Add extra metadata JSON only when a question needs behaviour not covered above."
+        tone="muted"
+      >
+        <FormField label="Extra metadata JSON">
+          <Textarea
             name="metadata"
-            className="w-full rounded border px-3 py-2 font-mono text-sm"
+            className="font-mono"
             rows={8}
             defaultValue={defaultValues?.metadata ?? "{}"}
           />
-        </div>
-      </div>
+        </FormField>
+      </PanelCard>
 
-      <button type="submit" className="rounded-lg bg-black px-4 py-2 text-white">
-        {submitLabel}
-      </button>
+      <InlineActions>
+        <Button type="submit" variant="primary" icon="save">
+          {submitLabel}
+        </Button>
+      </InlineActions>
     </form>
   );
 }

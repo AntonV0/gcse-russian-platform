@@ -1,7 +1,9 @@
 import PageHeader from "@/components/layout/page-header";
-import DashboardCard from "@/components/ui/dashboard-card";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import InlineActions from "@/components/ui/inline-actions";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { getQuestionSetTemplatesDb } from "@/lib/questions/question-helpers-db";
 
@@ -28,15 +30,20 @@ export default async function AdminQuestionSetTemplatesPage() {
       </div>
 
       {templates.length === 0 ? (
-        <div className="rounded-xl border bg-white p-6 text-sm text-gray-600 shadow-sm">
-          No templates yet.
-        </div>
+        <EmptyState
+          icon="question"
+          title="No templates yet"
+          description="Reusable question-set templates will appear here once created."
+        />
       ) : (
         <section className="grid gap-4">
           {templates.map((template) => (
-            <DashboardCard key={template.id} title={template.title}>
-              <div className="space-y-3 text-sm text-gray-700">
-                <div className="flex flex-wrap gap-2">
+            <CardListItem
+              key={template.id}
+              title={template.title}
+              subtitle={template.description ?? undefined}
+              badges={
+                <>
                   <Badge tone="muted" icon="file">
                     {template.slug}
                   </Badge>
@@ -46,11 +53,10 @@ export default async function AdminQuestionSetTemplatesPage() {
                       {template.template_type}
                     </Badge>
                   ) : null}
-                </div>
-
-                {template.description ? <p>{template.description}</p> : null}
-
-                <div className="flex flex-wrap gap-3">
+                </>
+              }
+              actions={
+                <InlineActions align="end">
                   <Button
                     href={`/admin/question-sets/${template.id}`}
                     variant="secondary"
@@ -68,9 +74,9 @@ export default async function AdminQuestionSetTemplatesPage() {
                   >
                     Create from template
                   </Button>
-                </div>
-              </div>
-            </DashboardCard>
+                </InlineActions>
+              }
+            />
           ))}
         </section>
       )}

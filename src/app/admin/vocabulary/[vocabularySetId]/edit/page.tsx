@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import CheckboxField from "@/components/ui/checkbox-field";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -49,23 +50,16 @@ function ToggleField({
   defaultChecked?: boolean;
 }) {
   return (
-    <label className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3">
+    <div>
       <input type="hidden" name={name} value="false" />
-      <input
-        type="checkbox"
+      <CheckboxField
         name={name}
+        label={label}
         value="true"
+        description={description}
         defaultChecked={defaultChecked}
-        className="mt-1 h-4 w-4 rounded border-[var(--border)]"
       />
-
-      <div className="min-w-0">
-        <div className="text-sm font-semibold text-[var(--text-primary)]">{label}</div>
-        <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-          {description}
-        </p>
-      </div>
-    </label>
+    </div>
   );
 }
 
