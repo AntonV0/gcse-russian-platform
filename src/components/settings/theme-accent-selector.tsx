@@ -48,7 +48,7 @@ export default function ThemeAccentSelector() {
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)] ring-1 ring-[color-mix(in_srgb,var(--brand-blue)_18%,transparent)]">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-selected-bg)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
           <AppIcon icon="palette" size={18} />
         </span>
 
@@ -75,7 +75,7 @@ export default function ThemeAccentSelector() {
                 "app-focus-ring min-h-20 rounded-2xl border p-3 text-left transition",
                 "hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
                 isActive
-                  ? "border-[var(--brand-blue)] bg-[var(--brand-blue-soft)] shadow-[var(--shadow-sm)]"
+                  ? "border-[var(--accent-selected-border)] bg-[var(--accent-selected-bg)] shadow-[0_1px_2px_rgba(0,0,0,0.22),0_0_0_1px_var(--accent-glow),0_14px_32px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
                   : "border-[var(--border)] bg-[var(--background-elevated)] hover:border-[var(--border-strong)]",
               ].join(" ")}
               aria-pressed={isActive}
@@ -95,7 +95,7 @@ export default function ThemeAccentSelector() {
                 className={[
                   "mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
                   isActive
-                    ? "bg-[var(--background-elevated)] text-[var(--accent-on-soft)]"
+                    ? "bg-[color-mix(in_srgb,var(--accent)_10%,var(--background-elevated))] text-[var(--accent-on-soft)]"
                     : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
                 ].join(" ")}
               >

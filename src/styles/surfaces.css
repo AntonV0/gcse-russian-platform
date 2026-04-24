@@ -37,17 +37,41 @@
 }
 
 [data-theme="dark"] .app-surface-brand {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--dark-surface-border));
+  background:
+    radial-gradient(
+      circle at 16% 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 96% 100%,
+      color-mix(in srgb, var(--accent) 8%, transparent) 0%,
+      transparent 32%
+    ),
+    linear-gradient(135deg, var(--background-elevated) 0%, var(--surface-elevated) 100%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    0 18px 42px rgba(0, 0, 0, 0.28),
+    0 0 0 1px color-mix(in srgb, var(--accent-glow) 45%, transparent);
+}
+
+[data-theme="dark"] .app-surface-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
   background: linear-gradient(
-    135deg,
-    color-mix(
-        in srgb,
-        var(--accent) var(--accent-brand-surface-strength),
-        var(--background-elevated)
-      )
-      0%,
-    color-mix(in srgb, var(--background-elevated) 96%, var(--accent)) 46%,
-    color-mix(in srgb, var(--accent) 10%, var(--background-muted)) 100%
+    90deg,
+    color-mix(in srgb, var(--accent) 54%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 18%, transparent) 24%,
+    transparent 72%
   );
+  height: 1px;
+  opacity: 0.72;
 }
 
 .app-panel {
@@ -256,6 +280,14 @@
       0%,
     rgba(255, 255, 255, 0.04) 60%,
     color-mix(in srgb, var(--accent) 8%, var(--background-elevated)) 100%
+  );
+}
+
+[data-theme="dark"] .app-brand-soft {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 7%, var(--background-elevated)) 0%,
+    var(--background-elevated) 100%
   );
 }
 
