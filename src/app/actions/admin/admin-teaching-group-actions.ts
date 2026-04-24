@@ -4,19 +4,11 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-
-function getTrimmedString(formData: FormData, key: string) {
-  return String(formData.get(key) || "").trim();
-}
-
-function getOptionalString(formData: FormData, key: string) {
-  const value = getTrimmedString(formData, key);
-  return value.length > 0 ? value : null;
-}
-
-function getBoolean(formData: FormData, key: string) {
-  return formData.get(key) === "true";
-}
+import {
+  getBoolean,
+  getOptionalString,
+  getTrimmedString,
+} from "@/app/actions/shared/form-data";
 
 export async function createTeachingGroupAction(formData: FormData) {
   const canAccess = await requireAdminAccess();

@@ -4,10 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-
-function getTrimmedString(formData: FormData, key: string) {
-  return String(formData.get(key) || "").trim();
-}
+import { getTrimmedString } from "@/app/actions/shared/form-data";
 
 function buildRedirectUrl(
   basePath: string,
