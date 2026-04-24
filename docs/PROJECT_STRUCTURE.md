@@ -253,6 +253,8 @@ src/
 
       ui/
         page.tsx
+        admin-patterns/
+          page.tsx
         buttons/
           page.tsx
         components/
@@ -265,11 +267,17 @@ src/
           page.tsx
         layout/
           page.tsx
+        lesson-builder/
+          page.tsx
+        lesson-content/
+          page.tsx
         navigation/
           page.tsx
         surfaces/
           page.tsx
         tables/
+          page.tsx
+        theme/
           page.tsx
         typography/
           page.tsx
@@ -304,6 +312,8 @@ src/
       continue-where-left-off-panel.tsx
       debug-billing-panel.tsx
       expandable-admin-form-panel.tsx
+      ui-lab-future-section.tsx
+      ui-lab-page-nav.tsx
       ui-lab-section.tsx
       ui-lab-shell.tsx
 

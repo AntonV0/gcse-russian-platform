@@ -219,16 +219,29 @@ A dedicated **UI Lab system** has been introduced to standardise and evolve UI p
 
 Current UI Lab pages include:
 
+- Overview
 - Buttons
 - Surfaces
 - Feedback
 - Tables
-- Forms (in progress)
-- Components (in progress)
-- Navigation (planned)
-- Layout (planned)
-- Typography (planned)
-- Icons (planned)
+- Forms
+- Components
+- Navigation
+- Layout
+- Typography
+- Icons
+- Admin Patterns
+- Lesson Builder
+- Lesson Content
+- Theme
+
+Recent expansion added:
+
+- page-level anchor navigation for longer UI Lab sections
+- reusable "Future components" sections
+- dedicated admin/CMS pattern references
+- dedicated lesson-builder authoring references
+- dedicated lesson-content and theme references
 
 ---
 
