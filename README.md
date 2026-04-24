@@ -9,6 +9,17 @@ Online Russian School**.
 
 ---
 
+## Documentation
+
+Project architecture notes are kept in `docs/`:
+
+- `docs/architecture.md`
+- `docs/decisions.md`
+- `docs/PROJECT_STRUCTURE.md`
+- `docs/ui-system-guidelines.md`
+
+---
+
 ## 🚀 Overview
 
 This platform combines:
@@ -17,7 +28,7 @@ This platform combines:
 - teacher-managed assignments and review workflows
 - a fully database-driven lesson system
 - a growing CMS for managing all learning content
-- a structured internal **UI design system (UI Lab)** for consistent UX across the platform (NEW)
+- a structured internal **UI design system (UI Lab)** for consistent UX across the platform
 
 It is designed as a **single unified system** that supports multiple
 learning experiences without splitting into separate apps.
@@ -82,7 +93,7 @@ Lessons now follow a strict hierarchical structure:
 
 ---
 
-## 🧬 Variant-Based Content System (NEW)
+## 🧬 Variant-Based Content System
 
 The lesson system now supports **variant-aware content delivery**.
 
@@ -121,7 +132,7 @@ This replaces the previous:
 
 ---
 
-## ♻️ Shared Section Architecture (NEW)
+## ♻️ Shared Section Architecture
 
 To support future content reuse, sections now include:
 
@@ -176,13 +187,13 @@ The lesson builder has evolved into a **true CMS-style authoring tool**.
 - Publish/unpublish states
 - Sidebar navigation
 - Inspector editing
-- **Variant visibility control (NEW)**
-- **Canonical section key editing (NEW)**
+- **Variant visibility control**
+- **Canonical section key editing**
 
 ### Architectural shift
 
 - ❌ Removed hardcoded templates
-- ❌ Removed static preset files
+- ✅ Presets resolved dynamically from the database
 - ❌ Removed track/delivery visibility system
 - ✅ Fully DB-driven content system
 - ✅ Templates resolved dynamically
@@ -190,7 +201,7 @@ The lesson builder has evolved into a **true CMS-style authoring tool**.
 
 ---
 
-## 🎨 UI Lab & Design System (NEW)
+## 🎨 UI Lab & Design System
 
 A dedicated **UI Lab system** has been introduced to standardise and evolve UI patterns across:
 
@@ -211,7 +222,7 @@ Current UI Lab pages include:
 - Buttons
 - Surfaces
 - Feedback
-- Tables (NEW)
+- Tables
 - Forms (in progress)
 - Components (in progress)
 - Navigation (planned)
@@ -240,7 +251,7 @@ This is:
 
 ---
 
-## 📊 Table System & Data Display (NEW)
+## 📊 Table System & Data Display
 
 A reusable table architecture has been introduced to replace raw table markup.
 
@@ -248,7 +259,7 @@ A reusable table architecture has been introduced to replace raw table markup.
 
 - `TableShell` → outer structure (title, description, actions)
 - `TableToolbar` → filters, search, actions
-- `DataTable` (NEW abstraction)
+- `DataTable`
   - header
   - body
   - rows
@@ -273,7 +284,7 @@ A reusable table architecture has been introduced to replace raw table markup.
 
 ---
 
-## ✨ Lesson Builder UX Improvements (THIS UPDATE)
+## ✨ Lesson Builder UX Improvements
 
 This phase focused heavily on **authoring experience**, not just
 functionality.
@@ -338,7 +349,7 @@ Now:
 
 ---
 
-## 🧭 Platform UX & Navigation System (NEW)
+## 🧭 Platform UX & Navigation System
 
 This update introduced a more structured and scalable **student platform UI layer**.
 
@@ -386,7 +397,7 @@ This ensures:
 
 ---
 
-## 👤 Account System Improvements (NEW)
+## 👤 Account System Improvements
 
 ### Profile system
 
@@ -408,7 +419,7 @@ This ensures:
 
 ---
 
-## 🧠 Dashboard System (NEW)
+## 🧠 Dashboard System
 
 The dashboard is evolving into a **central learning hub**, not just a landing page.
 
@@ -494,7 +505,7 @@ The platform is moving toward:
 - modular learning system
 - variant-aware course structure
 - intelligent student progression
-- a unified **design system-driven UI architecture (NEW)**
+- a unified **design system-driven UI architecture**
 
 ---
 
@@ -536,7 +547,7 @@ Core content:
 - cleaned ESLint errors
 - improved React patterns
 - improved image handling
-- replaced raw table markup with reusable table system (NEW)
+- replaced raw table markup with reusable table system
 
 ---
 

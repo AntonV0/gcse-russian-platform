@@ -10,9 +10,9 @@ This version includes:
 
 - lesson builder CMS evolution
 - platform UI and dashboard decisions
-- variant-based content architecture (NEW)
-- shared section system (NEW)
-- UI Lab system and component architecture (NEW)
+- variant-based content architecture
+- shared section system
+- UI Lab system and component architecture
 
 ---
 
@@ -104,7 +104,7 @@ Internal builder instead of external CMS.
 
 ---
 
-## 8. Why introduce variant-based content system? (NEW)
+## 8. Why introduce variant-based content system?
 
 ### Decision
 
@@ -131,7 +131,7 @@ Values:
 
 ---
 
-## 9. Why introduce canonical section keys? (NEW)
+## 9. Why introduce canonical section keys?
 
 ### Decision
 
@@ -214,7 +214,7 @@ Use avatar_key instead of uploads.
 
 ---
 
-## 17. Why introduce a UI Lab system? (NEW)
+## 17. Why introduce a UI Lab system?
 
 ### Decision
 
@@ -234,7 +234,7 @@ Build a dedicated UI Lab to design and validate components before using them in 
 
 ---
 
-## 18. Why use Dev Component Markers? (NEW)
+## 18. Why use Dev Component Markers?
 
 ### Decision
 
@@ -253,7 +253,7 @@ Attach a development-only marker to all shared UI components.
 
 ---
 
-## 19. Why replace raw table markup with a table system? (NEW)
+## 19. Why replace raw table markup with a table system?
 
 ### Decision
 
@@ -279,7 +279,7 @@ Raw tables led to:
 
 ---
 
-## 20. Why treat tables and hierarchy as separate patterns? (NEW)
+## 20. Why treat tables and hierarchy as separate patterns?
 
 ### Decision
 
@@ -302,7 +302,7 @@ Different data needs different representation:
 
 ---
 
-## 21. Why introduce structured row interaction patterns? (NEW)
+## 21. Why introduce structured row interaction patterns?
 
 ### Decision
 
@@ -335,7 +335,7 @@ Build strong foundations before features.
 
 ---
 
-## 23. Theme System Design (2026-XX-XX)
+## 23. Theme System Design
 
 ### Decision
 
