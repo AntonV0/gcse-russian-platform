@@ -87,9 +87,12 @@ function readStoredTierFilter(): DevMarkerTierFilter {
 
 export function DevMarkerProvider({ isAdmin, children }: DevMarkerProviderProps) {
   const canUseMarkers = SHOW_UI_DEBUG && isAdmin;
-  const [markersEnabled, setMarkersEnabled] = useState(readStoredMarkerPreference);
-  const [activeTierFilter, setActiveTierFilterState] =
-    useState<DevMarkerTierFilter>(readStoredTierFilter);
+  const [markersEnabled, setMarkersEnabled] = useState(() =>
+    canUseMarkers ? readStoredMarkerPreference() : false
+  );
+  const [activeTierFilter, setActiveTierFilterState] = useState<DevMarkerTierFilter>(
+    () => (canUseMarkers ? readStoredTierFilter() : "all")
+  );
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [registeredMarkers, setRegisteredMarkers] = useState<
     Record<string, DevMarkerRegistryItem>
