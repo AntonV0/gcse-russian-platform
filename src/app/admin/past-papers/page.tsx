@@ -47,6 +47,8 @@ type AdminPastPapersPageProps = {
     tier?: string;
     resourceType?: string;
     published?: string;
+    imported?: string;
+    skipped?: string;
   }>;
 };
 
@@ -106,6 +108,9 @@ export default async function AdminPastPapersPage({
   const resources = await getPastPaperResourcesDb(filters);
   const examSeriesOptions = getPastPaperExamSeriesOptions(allResources);
   const publishedCount = allResources.filter((resource) => resource.is_published).length;
+  const importedCount = Number(params.imported ?? "");
+  const skippedCount = Number(params.skipped ?? "");
+  const hasImportResult = Number.isFinite(importedCount) && Number.isFinite(skippedCount);
 
   return (
     <main className="space-y-4">
@@ -140,6 +145,14 @@ export default async function AdminPastPapersPage({
         description="Paste official Pearson URLs and keep this library as metadata plus links. Do not copy Pearson question papers, mark schemes, transcripts, or audio content into the platform database."
       />
 
+      {hasImportResult ? (
+        <FeedbackBanner
+          tone="success"
+          title="Bulk import complete"
+          description={`${importedCount} row${importedCount === 1 ? "" : "s"} imported. ${skippedCount} duplicate row${skippedCount === 1 ? "" : "s"} skipped.`}
+        />
+      ) : null}
+
       <PanelCard
         title="Bulk import yearly links"
         description="Paste CSV or tab-separated rows when Pearson releases a new exam series. Header row is supported."
@@ -157,6 +170,16 @@ export default async function AdminPastPapersPage({
               placeholder={"title,exam_series,paper_number,paper_name,tier,resource_type,official_url,source_label,is_official,sort_order,is_published,is_trial_visible,requires_paid_access,available_in_volna\nJune 2026 Paper 1 Listening Foundation question paper,June 2026,1,Paper 1 Listening,foundation,question_paper,https://qualifications.pearson.com/...,Pearson,true,0,false,true,false,true"}
             />
           </FormField>
+
+          <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+            <input
+              type="checkbox"
+              name="skipDuplicateUrls"
+              value="true"
+              defaultChecked
+            />
+            Skip duplicate official URLs
+          </label>
 
           <Button type="submit" variant="primary" icon="upload">
             Import links

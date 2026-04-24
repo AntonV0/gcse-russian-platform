@@ -92,6 +92,25 @@ function validateOfficialUrl(value: string) {
   return url.toString();
 }
 
+function validateOfficialPearsonUrl(value: string, isOfficial: boolean) {
+  const officialUrl = validateOfficialUrl(value);
+
+  if (!isOfficial) {
+    return officialUrl;
+  }
+
+  const url = new URL(officialUrl);
+
+  if (
+    url.hostname !== "qualifications.pearson.com" &&
+    !url.hostname.endsWith(".qualifications.pearson.com")
+  ) {
+    throw new Error("Official Pearson resources must use qualifications.pearson.com");
+  }
+
+  return officialUrl;
+}
+
 function getBooleanFromString(value: string, defaultValue: boolean) {
   const normalized = value.trim().toLowerCase();
 
@@ -139,7 +158,11 @@ function getPastPaperPayload(formData: FormData) {
   const paperName = validatePaperName(getTrimmedString(formData, "paperName"));
   const tier = validateTier(getTrimmedString(formData, "tier"));
   const resourceType = validateResourceType(getTrimmedString(formData, "resourceType"));
-  const officialUrl = validateOfficialUrl(getTrimmedString(formData, "officialUrl"));
+  const isOfficial = getBoolean(formData, "isOfficial");
+  const officialUrl = validateOfficialPearsonUrl(
+    getTrimmedString(formData, "officialUrl"),
+    isOfficial
+  );
   const sourceLabel = getOptionalString(formData, "sourceLabel") ?? "Pearson";
   const sortOrder = getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0;
 
@@ -160,7 +183,7 @@ function getPastPaperPayload(formData: FormData) {
     resource_type: resourceType,
     official_url: officialUrl,
     source_label: sourceLabel,
-    is_official: getBoolean(formData, "isOfficial"),
+    is_official: isOfficial,
     sort_order: sortOrder,
     is_published: getBoolean(formData, "isPublished"),
     is_trial_visible: getBoolean(formData, "isTrialVisible"),
@@ -248,7 +271,8 @@ function getBulkImportPayload(row: PastPaperImportRow, rowNumber: number) {
   const paperName = validatePaperName(row.paperName.trim());
   const tier = validateTier(row.tier.trim() || "both");
   const resourceType = validateResourceType(row.resourceType.trim() || "other");
-  const officialUrl = validateOfficialUrl(row.officialUrl.trim());
+  const isOfficial = getBooleanFromString(row.isOfficial, true);
+  const officialUrl = validateOfficialPearsonUrl(row.officialUrl.trim(), isOfficial);
 
   if (!title || !examSeries || !Number.isFinite(paperNumber)) {
     throw new Error(`Missing required fields on row ${rowNumber}`);
@@ -267,7 +291,7 @@ function getBulkImportPayload(row: PastPaperImportRow, rowNumber: number) {
     resource_type: resourceType,
     official_url: officialUrl,
     source_label: row.sourceLabel.trim() || "Pearson",
-    is_official: getBooleanFromString(row.isOfficial, true),
+    is_official: isOfficial,
     sort_order: getOptionalNonNegativeNumberFromString(row.sortOrder, "sort_order") ?? 0,
     is_published: getBooleanFromString(row.isPublished, false),
     is_trial_visible: getBooleanFromString(row.isTrialVisible, true),
@@ -336,17 +360,55 @@ export async function bulkCreatePastPaperResourcesAction(formData: FormData) {
   );
 
   const supabase = await createClient();
-  const { error } = await supabase.from("past_paper_resources").insert(payloads);
+  const skipDuplicateUrls = getBoolean(formData, "skipDuplicateUrls");
+  let rowsToInsert = payloads;
+  let skippedCount = 0;
+
+  if (skipDuplicateUrls) {
+    const officialUrls = payloads.map((payload) => payload.official_url);
+    const { data: existingResources, error: existingError } = await supabase
+      .from("past_paper_resources")
+      .select("official_url")
+      .in("official_url", officialUrls);
+
+    if (existingError) {
+      console.error("Error checking existing past paper URLs:", existingError);
+      throw new Error(`Failed to check duplicate URLs: ${existingError.message}`);
+    }
+
+    const existingUrls = new Set(
+      (existingResources ?? []).map((resource) => String(resource.official_url))
+    );
+    const seenUrls = new Set<string>();
+
+    rowsToInsert = payloads.filter((payload) => {
+      if (existingUrls.has(payload.official_url) || seenUrls.has(payload.official_url)) {
+        skippedCount += 1;
+        return false;
+      }
+
+      seenUrls.add(payload.official_url);
+      return true;
+    });
+  }
+
+  if (rowsToInsert.length === 0) {
+    redirect(`/admin/past-papers?imported=0&skipped=${skippedCount}`);
+  }
+
+  const { error } = await supabase.from("past_paper_resources").insert(rowsToInsert);
 
   if (error) {
     console.error("Error bulk importing past paper resources:", {
-      count: payloads.length,
+      count: rowsToInsert.length,
       error,
     });
     throw new Error(`Failed to bulk import past paper resources: ${error.message}`);
   }
 
-  redirect("/admin/past-papers");
+  redirect(
+    `/admin/past-papers?imported=${rowsToInsert.length}&skipped=${skippedCount}`
+  );
 }
 
 export async function updatePastPaperResourceAction(formData: FormData) {
