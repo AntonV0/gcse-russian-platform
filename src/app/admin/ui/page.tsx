@@ -2,6 +2,8 @@ import Link from "next/link";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import type { AppIconKey } from "@/lib/shared/icons";
 import { uiLabPages } from "@/lib/ui/ui-lab";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
@@ -77,12 +79,55 @@ const refinementAreas = [
 
 const designPrinciples = [
   "Premium and modern without feeling cold",
-  "Readable for students aged 12–16 and reassuring for parents",
+  "Readable for students aged 12-16 and reassuring for parents",
   "Consistent hierarchy before decorative styling",
   "Shared components first, page-specific styling second",
   "Use restrained branding and clear content structure",
   "Support admin density and student calmness within one system",
 ];
+
+const pageNavItems = [
+  { id: "system-overview", label: "Overview" },
+  { id: "sections", label: "Sections" },
+  { id: "audience-fit", label: "Audience fit" },
+  { id: "coverage", label: "Coverage" },
+  { id: "consistency-next", label: "Consistency" },
+  { id: "principles", label: "Principles" },
+  { id: "future-components", label: "Future" },
+];
+
+const audienceFit = [
+  {
+    title: "Students aged 12-16",
+    badge: "Primary",
+    tone: "info" as const,
+    description:
+      "Use confident, friendly examples with clear next steps, visible progress, and enough energy to feel motivating without becoming childish.",
+    checks: ["Short labels", "Recognisable GCSE content", "Encouraging progression"],
+  },
+  {
+    title: "Parents and guardians",
+    badge: "Important",
+    tone: "success" as const,
+    description:
+      "Surfaces should feel trustworthy, polished, and worth paying for. Avoid clutter, vague copy, or playful styling that weakens confidence.",
+    checks: ["Premium restraint", "Clear value", "Stable hierarchy"],
+  },
+  {
+    title: "Adult learners",
+    badge: "Secondary",
+    tone: "muted" as const,
+    description:
+      "Keep the system mature enough for older learners by using readable typography, practical task language, and calm support panels.",
+    checks: ["Readable rhythm", "Practical examples", "No teen-only slang"],
+  },
+] as const;
+
+function getAudiencePanelTone(tone: (typeof audienceFit)[number]["tone"]) {
+  if (tone === "info") return "student" as const;
+  if (tone === "success") return "brand" as const;
+  return "muted" as const;
+}
 
 function OverviewHero({
   completeCount,
@@ -220,7 +265,10 @@ export default async function AdminUiOverviewPage() {
       description="Internal design-system workspace for comparing styles, tracking completeness, and standardising reusable UI across the platform."
       currentPath="/admin/ui"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="system-overview"
         title="System overview"
         description="Use this page as the entry point for the UI Lab and the current design-system status."
       >
@@ -232,6 +280,7 @@ export default async function AdminUiOverviewPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="sections"
         title="UI Lab sections"
         description="Each section should help guide real implementation, not just isolated demos."
       >
@@ -267,6 +316,42 @@ export default async function AdminUiOverviewPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="audience-fit"
+        title="Audience fit"
+        description="Use this as the tone check for UI Lab examples: modern and premium, motivating for GCSE students, reassuring for parents, and still mature enough for adult learners."
+      >
+        <div className="grid gap-4 xl:grid-cols-3">
+          {audienceFit.map((item) => (
+            <PanelCard
+              key={item.title}
+              title={item.title}
+              description={item.description}
+              tone={getAudiencePanelTone(item.tone)}
+              contentClassName="space-y-4"
+            >
+              <div className="flex flex-wrap gap-2">
+                <Badge tone={item.tone}>{item.badge}</Badge>
+                <Badge tone="muted">Design check</Badge>
+              </div>
+
+              <div className="space-y-2">
+                {item.checks.map((check) => (
+                  <div
+                    key={check}
+                    className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm app-text-muted"
+                  >
+                    <AppIcon icon="completed" size={15} className="app-brand-text" />
+                    <span>{check}</span>
+                  </div>
+                ))}
+              </div>
+            </PanelCard>
+          ))}
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="coverage"
         title="What this system is already helping us build"
         description="The UI Lab should support real production implementation across different parts of the platform."
       >
@@ -315,6 +400,7 @@ export default async function AdminUiOverviewPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="consistency-next"
         title="Needs consistency next"
         description="These are the areas most likely to create visual drift if left unstandardised."
       >
@@ -331,6 +417,7 @@ export default async function AdminUiOverviewPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="principles"
         title="Design principles"
         description="Use these rules when making design decisions so the product stays coherent as more pages are added."
       >
@@ -345,6 +432,17 @@ export default async function AdminUiOverviewPage() {
           ))}
         </div>
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "AudienceToneExamples for student, parent, teacher, and adult-learner copy checks.",
+          "PremiumExampleGallery for polished GCSE Russian page compositions.",
+          "StudentMotivationPatterns for progress, streaks, revision prompts, and next-step CTAs.",
+          "ParentConfidencePatterns for pricing, access, safety, and value reassurance.",
+          "AdultLearnerCompatibility checks for mature wording and calmer interaction states.",
+          "VisualQualityChecklist for spacing, hierarchy, colour balance, and example realism.",
+        ]}
+      />
     </UiLabShell>
   );
 }
