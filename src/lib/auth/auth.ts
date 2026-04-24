@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentCourseVariantAccessGrantDb } from "@/lib/access/access-helpers-db";
+import { cache } from "react";
 
-export async function getCurrentUser() {
+export const getCurrentUser = cache(async function getCurrentUser() {
   const supabase = await createClient();
 
   const {
@@ -9,14 +10,11 @@ export async function getCurrentUser() {
   } = await supabase.auth.getUser();
 
   return user;
-}
+});
 
-export async function getCurrentProfile() {
+export const getCurrentProfile = cache(async function getCurrentProfile() {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) return null;
 
@@ -29,22 +27,23 @@ export async function getCurrentProfile() {
   if (error) return null;
 
   return profile;
-}
+});
 
-export async function getCurrentCourseAccess(
+export const getCurrentCourseAccess = cache(async function getCurrentCourseAccess(
   courseSlug: string,
   variantSlug: string = "foundation"
 ) {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) return null;
 
   // 1. Prefer the new access grant model
-  const grant = await getCurrentCourseVariantAccessGrantDb(courseSlug, variantSlug);
+  const grant = await getCurrentCourseVariantAccessGrantDb(
+    courseSlug,
+    variantSlug,
+    user.id
+  );
 
   if (grant) {
     return {
@@ -72,4 +71,4 @@ export async function getCurrentCourseAccess(
   if (error) return null;
 
   return access;
-}
+});
