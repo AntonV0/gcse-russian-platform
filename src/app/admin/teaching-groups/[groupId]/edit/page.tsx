@@ -1,8 +1,14 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import CheckboxField from "@/components/ui/checkbox-field";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
+import { updateTeachingGroupAction } from "@/app/actions/admin/admin-teaching-group-actions";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { updateTeachingGroupAction } from "@/app/actions/admin/admin-teaching-group-actions";
 
 type TeachingGroupRow = {
   id: string;
@@ -64,17 +70,19 @@ export default async function AdminTeachingGroupEditPage({
 
   return (
     <main>
-      <div className="mb-4 flex flex-wrap gap-4 text-sm">
-        <Link href="/admin/teaching-groups" className="text-blue-600 hover:underline">
-          ← Back to teaching groups
-        </Link>
+      <div className="mb-4 flex flex-wrap gap-3">
+        <Button href="/admin/teaching-groups" variant="quiet" size="sm" icon="back">
+          Back to teaching groups
+        </Button>
 
-        <Link
+        <Button
           href={`/admin/teaching-groups/${teachingGroup.id}`}
-          className="text-blue-600 hover:underline"
+          variant="quiet"
+          size="sm"
+          icon="preview"
         >
           Back to {teachingGroup.name}
-        </Link>
+        </Button>
       </div>
 
       <PageHeader
@@ -82,28 +90,27 @@ export default async function AdminTeachingGroupEditPage({
         description="Update teaching group details and links."
       />
 
-      <section className="max-w-3xl rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Teaching Group Settings</div>
-
-        <form action={updateTeachingGroupAction} className="space-y-4 px-4 py-4 text-sm">
+      <PanelCard
+        title="Teaching group settings"
+        description="Keep the group name, active state, and linked learning path up to date."
+        tone="admin"
+        className="max-w-3xl"
+      >
+        <form action={updateTeachingGroupAction} className="space-y-4">
           <input type="hidden" name="groupId" value={teachingGroup.id} />
 
-          <div>
-            <label className="mb-1 block font-medium">Name</label>
-            <input
+          <FormField label="Name" required>
+            <Input
               name="name"
               required
               defaultValue={teachingGroup.name}
-              className="w-full rounded border px-3 py-2"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="mb-1 block font-medium">Linked Course</label>
-            <select
+          <FormField label="Linked course">
+            <Select
               name="courseId"
               defaultValue={teachingGroup.course_id ?? ""}
-              className="w-full rounded border px-3 py-2"
             >
               <option value="">No linked course</option>
               {courseRows.map((course) => (
@@ -111,15 +118,13 @@ export default async function AdminTeachingGroupEditPage({
                   {course.title}
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormField>
 
-          <div>
-            <label className="mb-1 block font-medium">Linked Variant</label>
-            <select
+          <FormField label="Linked variant">
+            <Select
               name="courseVariantId"
               defaultValue={teachingGroup.course_variant_id ?? ""}
-              className="w-full rounded border px-3 py-2"
             >
               <option value="">No linked variant</option>
               {variantRows.map((variant) => (
@@ -127,33 +132,31 @@ export default async function AdminTeachingGroupEditPage({
                   {variant.title}
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormField>
 
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="isActive"
-              value="true"
-              defaultChecked={teachingGroup.is_active}
-            />
-            Active
-          </label>
+          <CheckboxField
+            name="isActive"
+            label="Active"
+            description="Inactive groups remain visible to admins but should not be used for new guided work."
+            defaultChecked={teachingGroup.is_active}
+          />
 
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button type="submit" className="rounded bg-black px-4 py-2 text-white">
+          <InlineActions>
+            <Button type="submit" variant="primary" icon="save">
               Save teaching group
-            </button>
+            </Button>
 
-            <Link
+            <Button
               href={`/admin/teaching-groups/${teachingGroup.id}`}
-              className="rounded border px-4 py-2 hover:bg-gray-50"
+              variant="secondary"
+              icon="cancel"
             >
               Cancel
-            </Link>
-          </div>
+            </Button>
+          </InlineActions>
         </form>
-      </section>
+      </PanelCard>
     </main>
   );
 }
