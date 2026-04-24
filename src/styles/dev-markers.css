@@ -467,16 +467,16 @@
 
 [data-theme="dark"] .dev-marker-trigger {
   border-color: color-mix(in srgb, var(--brand-blue) 30%, transparent);
-  background: rgba(9, 23, 47, 0.98);
+  background: color-mix(in srgb, var(--dark-control-bg) 98%, transparent);
   color: color-mix(in srgb, var(--brand-blue-hover) 92%, transparent);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.28),
-    0 0 0 2px rgba(7, 22, 51, 0.94);
+    0 0 0 2px color-mix(in srgb, var(--dark-surface-base) 94%, transparent);
 }
 
 [data-theme="dark"] .dev-marker-toggle {
   border-color: color-mix(in srgb, var(--brand-blue) 30%, transparent);
-  background: rgba(9, 23, 47, 0.98);
+  background: color-mix(in srgb, var(--dark-control-bg) 98%, transparent);
   color: var(--text-primary);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.28),
@@ -491,12 +491,12 @@
 [data-theme="dark"] .dev-marker-toggle[data-state="enabled"] {
   border-color: color-mix(in srgb, var(--brand-blue-hover) 48%, transparent);
   background: var(--brand-blue);
-  color: white;
+  color: var(--accent-on-fill);
 }
 
 [data-theme="dark"] .dev-marker-control-panel {
   border-color: color-mix(in srgb, var(--brand-blue) 20%, transparent);
-  background: rgba(9, 23, 47, 0.975);
+  background: color-mix(in srgb, var(--dark-control-bg) 97.5%, transparent);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.28),
     0 18px 42px rgba(0, 0, 0, 0.36);
@@ -528,11 +528,11 @@
 [data-theme="dark"] .dev-marker-trigger:hover,
 [data-theme="dark"] .dev-marker-trigger[data-state="open"] {
   border-color: color-mix(in srgb, var(--brand-blue-hover) 45%, transparent);
-  background: rgba(9, 23, 47, 1);
+  background: var(--dark-control-bg);
   color: var(--brand-blue);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.28),
-    0 0 0 2px rgba(7, 22, 51, 0.98),
+    0 0 0 2px color-mix(in srgb, var(--dark-surface-base) 98%, transparent),
     0 10px 24px rgba(0, 0, 0, 0.32);
 }
 
@@ -540,7 +540,7 @@
   border-color: color-mix(in srgb, var(--brand-blue-hover) 45%, transparent);
   box-shadow:
     0 0 0 4px var(--accent-ring),
-    0 0 0 6px rgba(7, 22, 51, 0.98),
+    0 0 0 6px color-mix(in srgb, var(--dark-surface-base) 98%, transparent),
     0 10px 24px rgba(0, 0, 0, 0.32);
 }
 
@@ -556,7 +556,7 @@
 
 [data-theme="dark"] .dev-marker-panel {
   border-color: color-mix(in srgb, var(--brand-blue) 18%, transparent);
-  background: rgba(9, 23, 47, 0.985);
+  background: color-mix(in srgb, var(--dark-control-bg) 98.5%, transparent);
   color: var(--text-primary);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.28),

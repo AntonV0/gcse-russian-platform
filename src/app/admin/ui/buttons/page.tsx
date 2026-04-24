@@ -304,7 +304,7 @@ export default async function AdminUiButtonsPage() {
         description="Use this section to quickly validate contrast and hover clarity on darker surfaces, especially for inverse, accent, and soft variants."
       >
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="rounded-[1.5rem] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,#102033_0%,#17314d_58%,#214466_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
+          <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(135deg,var(--dark-surface-elevated)_0%,var(--dark-surface-muted)_58%,var(--dark-surface-strong)_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
             <div className="mb-3 text-sm font-semibold text-white">
               Strong CTAs on dark surface
             </div>
@@ -321,7 +321,7 @@ export default async function AdminUiButtonsPage() {
             </div>
           </div>
 
-          <div className="rounded-[1.5rem] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,#0b1a30_0%,#142742_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
+          <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(135deg,var(--dark-surface-elevated)_0%,var(--dark-surface-muted)_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
             <div className="mb-3 text-sm font-semibold text-white">
               Subtle and utility actions on dark surface
             </div>

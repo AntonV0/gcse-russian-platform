@@ -712,7 +712,7 @@ function DemoDarkSurfaceFormCheck() {
   return (
     <div
       data-theme="dark"
-      className="rounded-[1.75rem] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,#0b1a30_0%,#142742_100%)] p-5 shadow-[0_16px_34px_rgba(16,32,51,0.24)]"
+      className="rounded-[1.75rem] border border-[var(--border)] bg-[linear-gradient(135deg,var(--dark-surface-elevated)_0%,var(--dark-surface-muted)_100%)] p-5 shadow-[0_16px_34px_rgba(16,32,51,0.24)]"
     >
       <div className="mb-4">
         <div className="text-sm font-semibold text-white">Dark-surface form check</div>

@@ -62,7 +62,7 @@
 
 [data-theme="dark"] .app-badge-muted {
   border-color: color-mix(in srgb, var(--accent) 12%, transparent);
-  background: rgba(20, 35, 61, 0.92);
+  background: color-mix(in srgb, var(--dark-surface-muted) 92%, transparent);
   color: var(--text-secondary);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
 }
@@ -72,9 +72,9 @@
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 22%, transparent) 0%,
-    rgba(24, 43, 72, 0.98) 100%
+    var(--dark-control-bg-hover) 100%
   );
-  color: color-mix(in srgb, var(--accent-hover) 52%, white);
+  color: var(--accent-on-soft);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.18),
     0 8px 18px color-mix(in srgb, var(--accent) 12%, transparent);
@@ -85,9 +85,9 @@
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 24%, transparent) 0%,
-    rgba(23, 42, 70, 0.98) 100%
+    var(--dark-control-bg-hover) 100%
   );
-  color: color-mix(in srgb, var(--accent-hover) 45%, white);
+  color: var(--accent-on-soft);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.18),
     0 8px 18px color-mix(in srgb, var(--accent) 12%, transparent);
