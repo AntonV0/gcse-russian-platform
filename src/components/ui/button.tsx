@@ -46,15 +46,15 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
   switch (variant) {
     case "primary":
       return [
-        "app-btn-variant-primary border border-transparent !text-white",
-        "bg-[linear-gradient(135deg,#3b82f6_0%,#2563eb_58%,#1d4ed8_100%)]",
-        "shadow-[0_12px_28px_rgba(37,99,235,0.28),0_3px_8px_rgba(37,99,235,0.16)]",
+        "app-btn-variant-primary border border-transparent !text-[var(--brand-white)]",
+        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_82%,var(--brand-white))_0%,var(--brand-blue)_58%,var(--brand-blue-hover)_100%)]",
+        "shadow-[0_12px_28px_color-mix(in_srgb,var(--brand-blue)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--brand-blue)_16%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:brightness-[1.08]",
               "hover:saturate-[1.06]",
-              "hover:shadow-[0_18px_40px_rgba(37,99,235,0.34),0_6px_14px_rgba(37,99,235,0.22)]",
+              "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--brand-blue)_34%,transparent),0_6px_14px_color-mix(in_srgb,var(--brand-blue)_22%,transparent)]",
             ].join(" "),
       ].join(" ");
 
@@ -63,14 +63,14 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
         "app-btn-variant-secondary",
         "border border-[var(--border)]",
         "bg-[var(--background-elevated)] text-[var(--text-primary)]",
-        "shadow-[0_1px_2px_rgba(16,32,51,0.05),0_8px_18px_rgba(16,32,51,0.04)]",
+        "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--text-primary)_4%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:text-[var(--text-primary)]",
               "hover:border-[var(--border-strong)]",
               "hover:bg-[var(--background-muted)]",
-              "hover:shadow-[0_14px_30px_rgba(16,32,51,0.10),0_3px_8px_rgba(16,32,51,0.06)]",
+              "hover:shadow-[0_14px_30px_color-mix(in_srgb,var(--text-primary)_10%,transparent),0_3px_8px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]",
             ].join(" "),
       ].join(" ");
 
@@ -83,102 +83,103 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
           ? "opacity-55"
           : [
               "hover:text-[var(--brand-blue)]",
-              "hover:border-[rgba(37,99,235,0.14)]",
-              "hover:bg-[rgba(37,99,235,0.10)]",
-              "hover:shadow-[0_8px_18px_rgba(37,99,235,0.10)]",
+              "hover:border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)]",
+              "hover:bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)]",
+              "hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--brand-blue)_10%,transparent)]",
             ].join(" "),
       ].join(" ");
 
     case "success":
       return [
         "app-btn-variant-success",
-        "border border-[rgba(31,138,76,0.18)]",
+        "border border-[color-mix(in_srgb,var(--success)_18%,transparent)]",
         "bg-[var(--success-soft)] text-[var(--success)]",
-        "shadow-[0_1px_2px_rgba(31,138,76,0.03)]",
+        "shadow-[0_1px_2px_color-mix(in_srgb,var(--success)_3%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:text-[var(--success)]",
-              "hover:border-[rgba(31,138,76,0.32)]",
-              "hover:bg-[linear-gradient(135deg,rgba(31,138,76,0.16)_0%,var(--success-soft)_100%)]",
-              "hover:shadow-[0_12px_24px_rgba(31,138,76,0.14)]",
+              "hover:border-[color-mix(in_srgb,var(--success)_32%,transparent)]",
+              "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--success)_16%,transparent)_0%,var(--success-soft)_100%)]",
+              "hover:shadow-[0_12px_24px_color-mix(in_srgb,var(--success)_14%,transparent)]",
             ].join(" "),
       ].join(" ");
 
     case "warning":
       return [
         "app-btn-variant-warning",
-        "border border-[rgba(183,121,31,0.18)]",
+        "border border-[color-mix(in_srgb,var(--warning)_18%,transparent)]",
         "bg-[var(--warning-soft)] text-[var(--warning)]",
-        "shadow-[0_1px_2px_rgba(183,121,31,0.03)]",
+        "shadow-[0_1px_2px_color-mix(in_srgb,var(--warning)_3%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:text-[var(--warning)]",
-              "hover:border-[rgba(183,121,31,0.32)]",
-              "hover:bg-[linear-gradient(135deg,rgba(183,121,31,0.16)_0%,var(--warning-soft)_100%)]",
-              "hover:shadow-[0_12px_24px_rgba(183,121,31,0.14)]",
+              "hover:border-[color-mix(in_srgb,var(--warning)_32%,transparent)]",
+              "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--warning)_16%,transparent)_0%,var(--warning-soft)_100%)]",
+              "hover:shadow-[0_12px_24px_color-mix(in_srgb,var(--warning)_14%,transparent)]",
             ].join(" "),
       ].join(" ");
 
     case "danger":
       return [
         "app-btn-variant-danger",
-        "border border-[rgba(194,59,59,0.18)]",
+        "border border-[color-mix(in_srgb,var(--danger)_18%,transparent)]",
         "bg-[var(--danger-soft)] text-[var(--danger)]",
-        "shadow-[0_1px_2px_rgba(194,59,59,0.03)]",
+        "shadow-[0_1px_2px_color-mix(in_srgb,var(--danger)_3%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:text-[var(--danger)]",
-              "hover:border-[rgba(194,59,59,0.32)]",
-              "hover:bg-[linear-gradient(135deg,rgba(194,59,59,0.16)_0%,var(--danger-soft)_100%)]",
-              "hover:shadow-[0_12px_24px_rgba(194,59,59,0.14)]",
+              "hover:border-[color-mix(in_srgb,var(--danger)_32%,transparent)]",
+              "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_16%,transparent)_0%,var(--danger-soft)_100%)]",
+              "hover:shadow-[0_12px_24px_color-mix(in_srgb,var(--danger)_14%,transparent)]",
             ].join(" "),
       ].join(" ");
 
     case "soft":
       return [
         "app-btn-variant-soft",
-        "border border-[rgba(37,99,235,0.14)]",
+        "border border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)]",
         "text-[var(--brand-blue)]",
         "bg-[linear-gradient(135deg,var(--info-soft)_0%,var(--background-elevated)_100%)]",
-        "shadow-[0_1px_2px_rgba(37,99,235,0.05),0_8px_18px_rgba(37,99,235,0.08)]",
+        "shadow-[0_1px_2px_color-mix(in_srgb,var(--brand-blue)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:text-[var(--brand-blue-hover)]",
-              "hover:border-[rgba(37,99,235,0.30)]",
-              "hover:bg-[linear-gradient(135deg,rgba(37,99,235,0.24)_0%,var(--background-elevated)_100%)]",
-              "hover:shadow-[0_14px_28px_rgba(37,99,235,0.16),0_4px_10px_rgba(37,99,235,0.08)]",
+              "hover:border-[color-mix(in_srgb,var(--brand-blue)_30%,transparent)]",
+              "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_24%,transparent)_0%,var(--background-elevated)_100%)]",
+              "hover:shadow-[0_14px_28px_color-mix(in_srgb,var(--brand-blue)_16%,transparent),0_4px_10px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
             ].join(" "),
       ].join(" ");
 
     case "accent":
       return [
-        "app-btn-variant-accent border border-transparent !text-white",
-        "bg-[linear-gradient(135deg,#fb7185_0%,#ef4444_56%,#d94b52_100%)]",
-        "shadow-[0_12px_28px_rgba(217,75,82,0.28),0_3px_8px_rgba(217,75,82,0.16)]",
+        "app-btn-variant-accent border border-transparent !text-[var(--brand-white)]",
+        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-red)_70%,var(--brand-white))_0%,var(--brand-red)_56%,var(--brand-red-hover)_100%)]",
+        "shadow-[0_12px_28px_color-mix(in_srgb,var(--brand-red)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--brand-red)_16%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:brightness-[1.08]",
               "hover:saturate-[1.06]",
-              "hover:shadow-[0_18px_40px_rgba(217,75,82,0.34),0_6px_14px_rgba(217,75,82,0.20)]",
+              "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--brand-red)_34%,transparent),0_6px_14px_color-mix(in_srgb,var(--brand-red)_20%,transparent)]",
             ].join(" "),
       ].join(" ");
 
     case "inverse":
       return [
-        "app-btn-variant-inverse border border-transparent !text-white",
-        "bg-[linear-gradient(135deg,#102033_0%,#17314d_58%,#214466_100%)]",
-        "shadow-[0_12px_26px_rgba(16,32,51,0.28),0_3px_8px_rgba(16,32,51,0.14)]",
+        "app-btn-variant-inverse border border-transparent !text-[var(--brand-white)]",
+        "bg-[linear-gradient(135deg,var(--text-primary)_0%,color-mix(in_srgb,var(--text-primary)_92%,var(--brand-blue))_58%,color-mix(in_srgb,var(--text-primary)_84%,var(--brand-blue))_100%)]",
+        "[html[data-theme=dark]_&]:bg-[linear-gradient(135deg,var(--text-inverse)_0%,color-mix(in_srgb,var(--text-inverse)_90%,var(--brand-blue))_58%,color-mix(in_srgb,var(--text-inverse)_80%,var(--brand-blue))_100%)]",
+        "shadow-[0_12px_26px_color-mix(in_srgb,var(--text-primary)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--text-primary)_14%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:brightness-[1.10]",
               "hover:saturate-[1.03]",
-              "hover:shadow-[0_18px_36px_rgba(16,32,51,0.34),0_6px_14px_rgba(16,32,51,0.18)]",
+              "hover:shadow-[0_18px_36px_color-mix(in_srgb,var(--text-primary)_34%,transparent),0_6px_14px_color-mix(in_srgb,var(--text-primary)_18%,transparent)]",
             ].join(" "),
       ].join(" ");
 
