@@ -1,4 +1,5 @@
 import Badge from "@/components/ui/badge";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type PlanCardProps = {
   title: string;
@@ -8,6 +9,8 @@ type PlanCardProps = {
   tone?: "default" | "highlight";
   children: React.ReactNode;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function PlanCard({
   title,
@@ -22,10 +25,27 @@ export default function PlanCard({
   return (
     <div
       className={[
-        "app-card flex h-full flex-col overflow-hidden",
+        "dev-marker-host relative app-card flex h-full flex-col overflow-hidden",
         isHighlight ? "ring-2 ring-[color:var(--brand-blue)] shadow-lg" : "",
       ].join(" ")}
     >
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="PlanCard"
+          filePath="src/components/billing/pricing/plan-card.tsx"
+          tier="container"
+          componentRole="Pricing plan container with title, price, included features, and purchasable options"
+          bestFor="Billing and pricing pages where a GCSE Russian access tier needs comparable pricing and action content."
+          usageExamples={[
+            "Foundation pricing panel",
+            "Higher pricing panel",
+            "Billing/pricing/access UI",
+            "Upgrade offer comparison",
+          ]}
+          notes="Use for purchasable plan cards only. Do not use it for dashboard summaries, account facts, or generic feature lists."
+        />
+      ) : null}
+
       <div className="border-b border-[var(--border-subtle)] px-5 py-5 md:px-6">
         <div className="space-y-3">
           <div className="flex items-start justify-between gap-3">

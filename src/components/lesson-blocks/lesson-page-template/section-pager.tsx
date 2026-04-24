@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { buildLessonStepHref } from "./lesson-step-routes";
 
 type SectionPagerProps = {
@@ -10,6 +11,8 @@ type SectionPagerProps = {
   moduleSlug: string;
   lessonSlug: string;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export function SectionPager({
   currentStepIndex,
@@ -44,7 +47,24 @@ export function SectionPager({
     : null;
 
   return (
-    <div className="app-card app-section-padding">
+    <div className="dev-marker-host relative app-card app-section-padding">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="SectionPager"
+          filePath="src/components/lesson-blocks/lesson-page-template/section-pager.tsx"
+          tier="semantic"
+          componentRole="In-lesson section pager for moving between unlocked lesson steps"
+          bestFor="Section-based lesson pages where students move sequentially through unlocked content."
+          usageExamples={[
+            "Foundation lesson section navigation",
+            "Higher lesson step flow",
+            "Volna assignment lesson steps",
+            "Student course progression",
+          ]}
+          notes="Use for section-step navigation inside one lesson. Do not use for previous/next lesson navigation."
+        />
+      ) : null}
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="font-semibold text-[var(--text-primary)]">Section navigation</h2>

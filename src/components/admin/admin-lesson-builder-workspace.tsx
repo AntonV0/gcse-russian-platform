@@ -22,9 +22,11 @@ import {
   BUILDER_DASHED_EMPTY_STATE_CLASS,
   BUILDER_SECONDARY_BUTTON_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { getLessonBlockLabel } from "@/lib/lessons/lesson-blocks";
 
 const LESSON_BUILDER_STORAGE_EVENT = "gcse-russian-lesson-builder-storage";
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getSectionCounts(sections: LessonSection[]) {
   let publishedSections = 0;
@@ -186,7 +188,24 @@ export default function AdminLessonBuilderWorkspace({
   })();
 
   return (
-    <div className="space-y-4">
+    <div className="dev-marker-host relative space-y-4">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="AdminLessonBuilderWorkspace"
+          filePath="src/components/admin/admin-lesson-builder-workspace.tsx"
+          tier="layout"
+          componentRole="Three-column admin lesson builder workspace with section navigation, content editing, and inspector regions"
+          bestFor="CMS lesson authoring where admins need section structure, block editing, templates, and contextual settings in one workspace."
+          usageExamples={[
+            "Admin lesson builder",
+            "Course/module/lesson management",
+            "Variant-aware section editing",
+            "DB-driven lesson content authoring",
+          ]}
+          notes="Use as the main lesson builder surface only. Do not reuse it for simple admin forms or read-only lesson previews."
+        />
+      ) : null}
+
       <section className="grid gap-3 md:grid-cols-2">
         <CompactBuilderStat
           label="Sections"

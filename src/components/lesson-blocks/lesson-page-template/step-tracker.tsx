@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { LessonSection } from "@/types/lesson";
 import { buildLessonStepHref } from "./lesson-step-routes";
 
@@ -13,6 +14,8 @@ type StepTrackerProps = {
   lessonSlug: string;
 };
 
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+
 export function StepTracker({
   sections,
   currentStepIndex,
@@ -24,7 +27,24 @@ export function StepTracker({
   lessonSlug,
 }: StepTrackerProps) {
   return (
-    <div className="app-card app-section-padding">
+    <div className="dev-marker-host relative app-card app-section-padding">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="StepTracker"
+          filePath="src/components/lesson-blocks/lesson-page-template/step-tracker.tsx"
+          tier="semantic"
+          componentRole="Lesson step tracker showing current, visited, available, and locked sections"
+          bestFor="Student lesson sidebars where section progress and unlocked lesson steps need to remain visible."
+          usageExamples={[
+            "Section-based lesson sidebar",
+            "Student lesson progress tracking",
+            "Foundation/Higher lesson navigation",
+            "Volna lesson assignment flow",
+          ]}
+          notes="Use for lesson section tracking. Do not use for course module navigation or admin builder sidebars."
+        />
+      ) : null}
+
       <div className="mb-4">
         <p className="text-sm font-semibold text-[var(--text-primary)]">
           Section {currentStepIndex + 1} of {sections.length}

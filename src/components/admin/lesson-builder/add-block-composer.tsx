@@ -14,6 +14,9 @@ import {
 import { BlockPresetList } from "@/components/admin/lesson-builder/add-block-composer/block-preset-list";
 import { BlockTypeButton } from "@/components/admin/lesson-builder/add-block-composer/block-type-button";
 import { SelectedBlockForm } from "@/components/admin/lesson-builder/add-block-composer/selected-block-form";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getDefaultComposerSelection(section: LessonSection): NewBlockType | null {
   return section.blocks.length === 0 ? "text" : null;
@@ -51,7 +54,24 @@ export default function AddBlockComposer(props: {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="dev-marker-host relative space-y-4">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="AddBlockComposer"
+          filePath="src/components/admin/lesson-builder/add-block-composer.tsx"
+          tier="semantic"
+          componentRole="Lesson-builder block creation region with presets, block type selection, and selected-block form"
+          bestFor="Admin lesson authoring flows where a section needs new text, teaching, media, vocabulary, or question blocks."
+          usageExamples={[
+            "Admin lesson builder",
+            "Creating vocabulary blocks",
+            "Adding question-set practice",
+            "Building section starter content",
+          ]}
+          notes="Use inside the lesson section editor. Do not use it for editing existing blocks or for non-lesson CMS forms."
+        />
+      ) : null}
+
       <CompactDisclosure
         title={`Quick presets (${props.blockPresetOptions.length})`}
         description="Insert a ready-made starter structure for this section."

@@ -6,6 +6,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import FormField from "@/components/ui/form-field";
 import Select from "@/components/ui/select";
 import StatusBadge from "@/components/ui/status-badge";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { getDueDateClass, getDueDateStatus } from "@/lib/assignments/assignment-status";
 import type { TeacherAssignmentListItem } from "@/lib/assignments/assignment-helpers-db";
 
@@ -15,6 +16,8 @@ type TeacherSortValue = "priority" | "due_date" | "newest" | "most_submissions";
 type TeacherAssignmentsListProps = {
   assignments: TeacherAssignmentListItem[];
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function formatDueDate(value: string | null) {
   if (!value) return "No due date";
@@ -155,7 +158,24 @@ export default function TeacherAssignmentsList({
   }, [assignments, filter, sortBy]);
 
   return (
-    <div className="space-y-4">
+    <div className="dev-marker-host relative space-y-4">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="TeacherAssignmentsList"
+          filePath="src/components/assignments/teacher-assignments-list.tsx"
+          tier="semantic"
+          componentRole="Teacher assignment management list with filter, sort, due-date, and review-status summaries"
+          bestFor="Teacher workflows where assignment queues need to be scanned by review priority, due date, and submission activity."
+          usageExamples={[
+            "Teacher assignment dashboard",
+            "Pending review queue",
+            "Teaching group assignment list",
+            "Assignment review workflow",
+          ]}
+          notes="Use for teacher assignment lists only. Do not use for student assignment cards or admin content tables."
+        />
+      ) : null}
+
       <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 md:flex-row md:items-end md:justify-between">
         <div className="flex flex-col gap-3 md:flex-row md:items-end">
           <FormField label="Filter">

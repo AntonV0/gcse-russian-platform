@@ -36,6 +36,9 @@ import {
   getLessonBlockLabel,
   getLessonBlockPreview,
 } from "@/lib/lessons/lesson-blocks";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function LessonInspectorPanel(props: {
   section: LessonSection | null;
@@ -47,18 +50,40 @@ export default function LessonInspectorPanel(props: {
   blockIndex: number;
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
 }) {
+  const marker = SHOW_UI_DEBUG ? (
+    <DevComponentMarker
+      componentName="LessonInspectorPanel"
+      filePath="src/components/admin/lesson-builder/lesson-inspector-panel.tsx"
+      tier="container"
+      componentRole="Contextual lesson-builder inspector for selected section or block settings and actions"
+      bestFor="Admin lesson authoring sidebars where the selected section or block needs metadata, movement, publishing, and delete controls."
+      usageExamples={[
+        "Block content editing",
+        "Section publish controls",
+        "Moving blocks between sections",
+        "Lesson builder inspector actions",
+      ]}
+      notes="Use only as the lesson builder inspector region. Do not use it for page-level admin detail panels."
+    />
+  ) : null;
+
   if (!props.section) {
     return (
-      <Panel title="Inspector" description="Select a section to begin editing.">
-        <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>No section selected yet.</div>
-      </Panel>
+      <div className="dev-marker-host relative">
+        {marker}
+        <Panel title="Inspector" description="Select a section to begin editing.">
+          <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>No section selected yet.</div>
+        </Panel>
+      </div>
     );
   }
 
   if (props.block) {
     return (
-      <Panel title="Block inspector" description="Edit the selected block.">
-        <div className="space-y-4">
+      <div className="dev-marker-host relative">
+        {marker}
+        <Panel title="Block inspector" description="Edit the selected block.">
+          <div className="space-y-4">
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/45 p-4">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <span
@@ -205,17 +230,20 @@ export default function LessonInspectorPanel(props: {
               </ConfirmSubmitButton>
             </form>
           </div>
-        </div>
-      </Panel>
+          </div>
+        </Panel>
+      </div>
     );
   }
 
   return (
-    <Panel
-      title="Section inspector"
-      description="Quick actions for the selected section."
-    >
-      <div className="space-y-4">
+    <div className="dev-marker-host relative">
+      {marker}
+      <Panel
+        title="Section inspector"
+        description="Quick actions for the selected section."
+      >
+        <div className="space-y-4">
         <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
           <div className="space-y-2 text-sm">
             <div>
@@ -313,7 +341,8 @@ export default function LessonInspectorPanel(props: {
             </ConfirmSubmitButton>
           </form>
         </div>
-      </div>
-    </Panel>
+        </div>
+      </Panel>
+    </div>
   );
 }

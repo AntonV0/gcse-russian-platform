@@ -10,6 +10,7 @@ import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type {
   LessonOption,
   QuestionSetOption,
@@ -40,6 +41,8 @@ type TeacherCreateAssignmentFormProps = {
   assignmentId?: string;
   initialData?: TeacherAssignmentFormInitialData;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function toDateTimeLocalValue(value: string | null | undefined) {
   if (!value) return "";
@@ -279,19 +282,37 @@ export default function TeacherCreateAssignmentForm({
   }
 
   return (
-    <PanelCard
-      title={isEditMode ? "Edit assignment" : "New assignment"}
-      description="Choose the group, add work items, and set the order students should complete them in."
-      tone="default"
-      contentClassName="space-y-6"
-    >
-      <div className="flex justify-end">
+    <div className="dev-marker-host relative">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="TeacherCreateAssignmentForm"
+          filePath="src/components/assignments/teacher-create-assignment-form.tsx"
+          tier="semantic"
+          componentRole="Teacher assignment authoring form for selecting groups, lessons, question sets, custom tasks, and item order"
+          bestFor="Teacher workflows where an assignment needs structured work items and optional file-upload settings."
+          usageExamples={[
+            "Create teacher assignment",
+            "Edit assignment workflow",
+            "Attach lessons to group work",
+            "Question-set homework setup",
+          ]}
+          notes="Use for teacher assignment create/edit flows. Do not use for student submissions or admin lesson-builder forms."
+        />
+      ) : null}
+
+      <PanelCard
+        title={isEditMode ? "Edit assignment" : "New assignment"}
+        description="Choose the group, add work items, and set the order students should complete them in."
+        tone="default"
+        contentClassName="space-y-6"
+      >
+        <div className="flex justify-end">
         <Button href="/teacher/assignments" variant="quiet" size="sm" icon="back">
           Back to assignments
         </Button>
-      </div>
+        </div>
 
-      <FormField label="Group">
+        <FormField label="Group">
         <Select value={groupId} onChange={(event) => handleGroupChange(event.target.value)}>
           {groups.map((group) => (
             <option key={group.id} value={group.id}>
@@ -299,35 +320,35 @@ export default function TeacherCreateAssignmentForm({
             </option>
           ))}
         </Select>
-      </FormField>
+        </FormField>
 
-      <FormField label="Title" required>
+        <FormField label="Title" required>
         <Input
           type="text"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder="e.g. Week 1 homework"
         />
-      </FormField>
+        </FormField>
 
-      <FormField label="Instructions">
+        <FormField label="Instructions">
         <Textarea
           value={instructions}
           onChange={(event) => setInstructions(event.target.value)}
           rows={4}
           placeholder="Add any instructions for students..."
         />
-      </FormField>
+        </FormField>
 
-      <FormField label="Due date">
+        <FormField label="Due date">
         <Input
           type="datetime-local"
           value={dueAt}
           onChange={(event) => setDueAt(event.target.value)}
         />
-      </FormField>
+        </FormField>
 
-      <label className="app-checkbox-field">
+        <label className="app-checkbox-field">
         <input
           type="checkbox"
           checked={allowFileUpload}
@@ -340,9 +361,9 @@ export default function TeacherCreateAssignmentForm({
             Students can upload an image, PDF, or file with their written work.
           </span>
         </span>
-      </label>
+        </label>
 
-      <div className="space-y-3">
+        <div className="space-y-3">
         <p className="text-sm font-semibold text-[var(--text-primary)]">
           Attach lessons
         </p>
@@ -376,9 +397,9 @@ export default function TeacherCreateAssignmentForm({
             ))}
           </div>
         )}
-      </div>
+        </div>
 
-      <div className="space-y-3">
+        <div className="space-y-3">
         <p className="text-sm font-semibold text-[var(--text-primary)]">
           Attach question sets
         </p>
@@ -414,18 +435,18 @@ export default function TeacherCreateAssignmentForm({
             ))}
           </div>
         )}
-      </div>
+        </div>
 
-      <FormField label="Custom task">
+        <FormField label="Custom task">
         <Textarea
           value={customTaskValue}
           onChange={(event) => setCustomTaskValue(event.target.value)}
           rows={4}
           placeholder="Optional: add a written task or teacher instruction..."
         />
-      </FormField>
+        </FormField>
 
-      <div className="space-y-3">
+        <div className="space-y-3">
         <p className="text-sm font-semibold text-[var(--text-primary)]">
           Assignment items (order)
         </p>
@@ -490,11 +511,11 @@ export default function TeacherCreateAssignmentForm({
             })}
           </div>
         )}
-      </div>
+        </div>
 
-      {error ? <FeedbackBanner tone="danger" description={error} /> : null}
+        {error ? <FeedbackBanner tone="danger" description={error} /> : null}
 
-      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"
           onClick={handleSubmit}
@@ -513,7 +534,8 @@ export default function TeacherCreateAssignmentForm({
         <Button href="/teacher/assignments" variant="quiet">
           Cancel
         </Button>
-      </div>
-    </PanelCard>
+        </div>
+      </PanelCard>
+    </div>
   );
 }
