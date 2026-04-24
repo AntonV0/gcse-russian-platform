@@ -9,19 +9,11 @@ import type {
   DbVocabularySetType,
   DbVocabularyTier,
 } from "@/lib/vocabulary/vocabulary-helpers-db";
-
-function getTrimmedString(formData: FormData, key: string) {
-  return String(formData.get(key) || "").trim();
-}
-
-function getOptionalString(formData: FormData, key: string) {
-  const value = getTrimmedString(formData, key);
-  return value.length > 0 ? value : null;
-}
-
-function getBoolean(formData: FormData, key: string) {
-  return formData.get(key) === "true";
-}
+import {
+  getBoolean,
+  getOptionalString,
+  getTrimmedString,
+} from "@/app/actions/shared/form-data";
 
 function getOptionalNonNegativeNumber(formData: FormData, key: string) {
   const raw = getTrimmedString(formData, key);

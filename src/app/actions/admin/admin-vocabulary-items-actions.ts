@@ -9,15 +9,10 @@ import type {
   DbVocabularyItemSourceType,
   DbVocabularyItemType,
 } from "@/lib/vocabulary/vocabulary-helpers-db";
-
-function getTrimmedString(formData: FormData, key: string) {
-  return String(formData.get(key) || "").trim();
-}
-
-function getOptionalString(formData: FormData, key: string) {
-  const value = getTrimmedString(formData, key);
-  return value.length > 0 ? value : null;
-}
+import {
+  getOptionalString,
+  getTrimmedString,
+} from "@/app/actions/shared/form-data";
 
 function getRequiredString(formData: FormData, key: string) {
   const value = getTrimmedString(formData, key);
