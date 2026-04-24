@@ -5,6 +5,7 @@ import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
+import { startMockExamAttemptAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   canDashboardAccessMockExam,
@@ -64,6 +65,12 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
         }
         actions={
           <>
+            <form action={startMockExamAttemptAction}>
+              <input type="hidden" name="mockExamSlug" value={exam.slug} />
+              <Button type="submit" variant="primary" icon="create">
+                Start attempt
+              </Button>
+            </form>
             <Button href="/mock-exams" variant="secondary" icon="back">
               Mock exams
             </Button>
