@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth/auth";
 
 export type DashboardInfo = {
   role: "admin" | "teacher" | "student" | "guest";
-  track: "foundation" | "higher" | "volna" | null;
+  variant: "foundation" | "higher" | "volna" | null;
   accessMode: "trial" | "full" | "volna" | null;
 };
 
@@ -31,7 +31,7 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
   if (!user) {
     return {
       role: "guest",
-      track: null,
+      variant: null,
       accessMode: null,
     };
   }
@@ -45,7 +45,7 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
   if (profile?.is_admin) {
     return {
       role: "admin",
-      track: "volna",
+      variant: "volna",
       accessMode: "volna",
     };
   }
@@ -60,7 +60,7 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
   if ((teacherMembership?.length ?? 0) > 0) {
     return {
       role: "teacher",
-      track: "volna",
+      variant: "volna",
       accessMode: "volna",
     };
   }
@@ -81,7 +81,7 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
   if (!grants || grants.length === 0) {
     return {
       role: "student",
-      track: null,
+      variant: null,
       accessMode: null,
     };
   }
@@ -92,7 +92,7 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     if (grant.access_mode === "volna") {
       return {
         role: "student",
-        track: "volna",
+        variant: "volna",
         accessMode: "volna",
       };
     }
@@ -104,7 +104,7 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     if (code === "gcse-russian-higher") {
       return {
         role: "student",
-        track: "higher",
+        variant: "higher",
         accessMode: grant.access_mode === "trial" ? "trial" : "full",
       };
     }
@@ -116,7 +116,7 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
     if (code === "gcse-russian-foundation") {
       return {
         role: "student",
-        track: "foundation",
+        variant: "foundation",
         accessMode: grant.access_mode === "trial" ? "trial" : "full",
       };
     }
@@ -124,7 +124,7 @@ export async function getDashboardInfo(): Promise<DashboardInfo> {
 
   return {
     role: "student",
-    track: null,
+    variant: null,
     accessMode: null,
   };
 }
