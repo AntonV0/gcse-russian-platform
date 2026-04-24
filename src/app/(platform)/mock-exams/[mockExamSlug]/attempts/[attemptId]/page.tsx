@@ -1,12 +1,11 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
+import MockExamResponseField from "@/components/mock-exams/mock-exam-response-field";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import FormField from "@/components/ui/form-field";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
-import Textarea from "@/components/ui/textarea";
 import { saveMockExamAttemptResponsesAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
 import { getCurrentUser } from "@/lib/auth/auth";
 import {
@@ -146,15 +145,18 @@ export default async function MockExamAttemptPage({
                               index={questionIndex}
                             />
 
-                            <FormField label="Your response">
-                              <Textarea
-                                name={`response_${question.id}`}
-                                rows={5}
-                                defaultValue={response?.response_text ?? ""}
-                                disabled={!isDraft}
-                                placeholder="Type your answer here."
-                              />
-                            </FormField>
+                            <MockExamResponseField
+                              question={question}
+                              response={response}
+                              disabled={!isDraft}
+                            />
+
+                            {response?.awarded_marks !== null &&
+                            response?.awarded_marks !== undefined ? (
+                              <Badge tone="info">
+                                Auto-marked: {response.awarded_marks} / {question.marks}
+                              </Badge>
+                            ) : null}
                           </div>
                         );
                       })}
