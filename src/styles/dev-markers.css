@@ -1,5 +1,59 @@
 /* ========= DEV COMPONENT MARKER (DEV USE ONLY) ========= */
 
+.dev-marker-toggle {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 10000;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow:
+    0 2px 8px rgba(16, 32, 51, 0.1),
+    0 16px 36px rgba(16, 32, 51, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.dev-marker-toggle:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.42);
+  box-shadow:
+    0 3px 10px rgba(16, 32, 51, 0.12),
+    0 18px 40px rgba(16, 32, 51, 0.2);
+}
+
+.dev-marker-toggle:focus-visible {
+  outline: none;
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.14),
+    0 3px 10px rgba(16, 32, 51, 0.12),
+    0 18px 40px rgba(16, 32, 51, 0.2);
+}
+
+.dev-marker-toggle[data-state="enabled"] {
+  border-color: rgba(37, 99, 235, 0.45);
+  background: var(--brand-blue);
+  color: white;
+}
+
 .dev-marker-host {
   position: relative;
 }
@@ -229,6 +283,26 @@
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.28),
     0 0 0 2px rgba(7, 22, 51, 0.94);
+}
+
+[data-theme="dark"] .dev-marker-toggle {
+  border-color: rgba(79, 140, 255, 0.3);
+  background: rgba(9, 23, 47, 0.98);
+  color: var(--text-primary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.28),
+    0 16px 36px rgba(0, 0, 0, 0.34);
+}
+
+[data-theme="dark"] .dev-marker-toggle:hover,
+[data-theme="dark"] .dev-marker-toggle:focus-visible {
+  border-color: rgba(118, 167, 255, 0.45);
+}
+
+[data-theme="dark"] .dev-marker-toggle[data-state="enabled"] {
+  border-color: rgba(118, 167, 255, 0.48);
+  background: var(--brand-blue);
+  color: white;
 }
 
 [data-theme="dark"] .dev-marker-trigger:hover,
