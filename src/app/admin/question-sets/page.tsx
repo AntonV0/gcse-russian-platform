@@ -4,6 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
+import EmptyState from "@/components/ui/empty-state";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { getQuestionSetsDb } from "@/lib/questions/question-helpers-db";
 
@@ -30,9 +31,17 @@ export default async function AdminQuestionSetsPage() {
       </div>
 
       {questionSets.length === 0 ? (
-        <div className="rounded-xl border bg-white p-6 text-sm text-gray-600 shadow-sm">
-          No question sets found.
-        </div>
+        <EmptyState
+          icon="question"
+          iconTone="brand"
+          title="No question sets yet"
+          description="Create your first reusable question set for lessons, assignments, or GCSE practice tasks."
+          action={
+            <Button href="/admin/question-sets/create" variant="primary" icon="write">
+              Create question set
+            </Button>
+          }
+        />
       ) : (
         <section className="grid gap-4">
           {questionSets.map((questionSet) => (
@@ -51,14 +60,18 @@ export default async function AdminQuestionSetsPage() {
                     </div>
 
                     {questionSet.description ? (
-                      <p className="text-gray-700">{questionSet.description}</p>
+                      <p className="text-[var(--text-primary)]">
+                        {questionSet.description}
+                      </p>
                     ) : null}
 
                     {questionSet.instructions ? (
-                      <p className="text-gray-500">{questionSet.instructions}</p>
+                      <p className="text-sm app-text-muted">
+                        {questionSet.instructions}
+                      </p>
                     ) : null}
 
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-2 text-sm app-text-muted">
                       <AppIcon icon="preview" size={16} />
                       <span>Open question set</span>
                     </div>

@@ -1,6 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import CheckboxField from "@/components/ui/checkbox-field";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
+import Textarea from "@/components/ui/textarea";
 
 type AdminQuestionFormProps = {
   mode: "create" | "edit";
@@ -84,13 +90,17 @@ export default function AdminQuestionForm({
       <input type="hidden" name="questionSetId" value={questionSetId} />
       {questionId ? <input type="hidden" name="questionId" value={questionId} /> : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="block text-sm font-medium">Question type</label>
-          <select
+      <PanelCard
+        title="Core question"
+        description="Define the question type, prompt, marking, and optional audio source."
+        tone="admin"
+        contentClassName="space-y-4"
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <FormField label="Question type" required>
+            <Select
             name="questionType"
             required
-            className="w-full rounded border px-3 py-2"
             value={questionType}
             onChange={(event) =>
               setQuestionType(
@@ -101,15 +111,13 @@ export default function AdminQuestionForm({
             <option value="multiple_choice">Multiple choice</option>
             <option value="short_answer">Short answer</option>
             <option value="translation">Translation</option>
-          </select>
-        </div>
+            </Select>
+          </FormField>
 
-        {showStrategySelector ? (
-          <div>
-            <label className="block text-sm font-medium">Answer strategy</label>
-            <select
+          {showStrategySelector ? (
+            <FormField label="Answer strategy">
+              <Select
               name="answerStrategy"
-              className="w-full rounded border px-3 py-2"
               value={answerStrategy}
               onChange={(event) =>
                 setAnswerStrategy(
@@ -125,145 +133,124 @@ export default function AdminQuestionForm({
               <option value="selection_based">Selection based</option>
               <option value="sentence_builder">Sentence builder</option>
               <option value="upload_required">Upload required</option>
-            </select>
-          </div>
-        ) : (
-          <input type="hidden" name="answerStrategy" value="text_input" />
-        )}
-      </div>
+              </Select>
+            </FormField>
+          ) : (
+            <input type="hidden" name="answerStrategy" value="text_input" />
+          )}
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium">Prompt</label>
-        <textarea
+        <FormField label="Prompt" required>
+          <Textarea
           name="prompt"
           required
-          className="w-full rounded border px-3 py-2"
           rows={3}
           defaultValue={defaultValues?.prompt ?? ""}
-        />
-      </div>
+          />
+        </FormField>
 
-      <div>
-        <label className="block text-sm font-medium">Explanation</label>
-        <textarea
+        <FormField label="Explanation">
+          <Textarea
           name="explanation"
-          className="w-full rounded border px-3 py-2"
           rows={3}
           defaultValue={defaultValues?.explanation ?? ""}
-        />
-      </div>
+          />
+        </FormField>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <div>
-          <label className="block text-sm font-medium">Marks</label>
-          <input
+        <div className="grid gap-4 md:grid-cols-3">
+          <FormField label="Marks">
+            <Input
             name="marks"
             type="number"
             min="1"
             defaultValue={defaultValues?.marks ?? "1"}
-            className="w-full rounded border px-3 py-2"
-          />
-        </div>
+            />
+          </FormField>
 
-        <div>
-          <label className="block text-sm font-medium">Position</label>
-          <input
+          <FormField label="Position">
+            <Input
             name="position"
             type="number"
             min="1"
             defaultValue={defaultValues?.position ?? "1"}
-            className="w-full rounded border px-3 py-2"
-          />
-        </div>
+            />
+          </FormField>
 
-        <div>
-          <label className="block text-sm font-medium">Audio path</label>
-          <input
+          <FormField label="Audio path">
+            <Input
             name="audioPath"
-            className="w-full rounded border px-3 py-2"
             defaultValue={defaultValues?.audioPath ?? ""}
-          />
+            />
+          </FormField>
         </div>
-      </div>
+      </PanelCard>
 
       {mode === "edit" ? (
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-2 font-semibold">Question State</h2>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="isActive"
-              value="true"
-              defaultChecked={defaultValues?.isActive ?? true}
-            />
-            Active
-          </label>
-        </div>
+        <PanelCard title="Question state" tone="muted" density="compact">
+          <CheckboxField
+            name="isActive"
+            label="Active"
+            defaultChecked={defaultValues?.isActive ?? true}
+          />
+        </PanelCard>
       ) : null}
 
       {showTranslationSettings ? (
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-2 font-semibold">Translation / Text Settings</h2>
-
+        <PanelCard
+          title="Translation / text settings"
+          description="Configure labels and instructions for student-facing text answers."
+          tone="admin"
+          contentClassName="space-y-4"
+        >
           <div className="grid gap-4 md:grid-cols-2">
             {isTranslation ? (
-              <div>
-                <label className="block text-sm font-medium">Translation direction</label>
-                <select
+              <FormField label="Translation direction">
+                <Select
                   name="translationDirection"
-                  className="w-full rounded border px-3 py-2"
                   defaultValue={defaultValues?.translationDirection ?? ""}
                 >
                   <option value="">None</option>
                   <option value="to_russian">To Russian</option>
                   <option value="to_english">To English</option>
-                </select>
-              </div>
+                </Select>
+              </FormField>
             ) : (
               <input type="hidden" name="translationDirection" value="" />
             )}
 
-            <div>
-              <label className="block text-sm font-medium">Placeholder</label>
-              <input
+            <FormField label="Placeholder">
+              <Input
                 name="placeholder"
-                className="w-full rounded border px-3 py-2"
                 placeholder="Type your answer"
                 defaultValue={defaultValues?.placeholder ?? ""}
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium">Source language label</label>
-              <input
+            <FormField label="Source language label">
+              <Input
                 name="sourceLanguageLabel"
-                className="w-full rounded border px-3 py-2"
                 placeholder="English"
                 defaultValue={defaultValues?.sourceLanguageLabel ?? ""}
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium">Target language label</label>
-              <input
+            <FormField label="Target language label">
+              <Input
                 name="targetLanguageLabel"
-                className="w-full rounded border px-3 py-2"
                 placeholder="Russian"
                 defaultValue={defaultValues?.targetLanguageLabel ?? ""}
               />
-            </div>
+            </FormField>
           </div>
 
-          <div className="mt-4">
-            <label className="block text-sm font-medium">Instruction</label>
-            <input
+          <FormField label="Instruction">
+            <Input
               name="instruction"
-              className="w-full rounded border px-3 py-2"
               placeholder={defaultInstructionHint}
               defaultValue={defaultValues?.instruction ?? ""}
             />
-          </div>
-        </div>
+          </FormField>
+        </PanelCard>
       ) : null}
 
       {showSelectionSettings ? (
