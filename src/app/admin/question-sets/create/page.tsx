@@ -1,5 +1,12 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import PageHeader from "@/components/layout/page-header";
+import Button from "@/components/ui/button";
+import CheckboxField from "@/components/ui/checkbox-field";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
+import Textarea from "@/components/ui/textarea";
 import { createQuestionSetAction } from "@/app/actions/admin/admin-question-actions";
 
 export default async function CreateQuestionSetPage() {
@@ -17,47 +24,66 @@ export default async function CreateQuestionSetPage() {
       />
 
       <form action={createQuestionSetAction} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Title</label>
-          <input name="title" required className="w-full rounded border px-3 py-2" />
-        </div>
+        <PanelCard
+          title="Question set details"
+          description="Use a clear title and slug so this set is easy to find in lessons and assignment workflows."
+          tone="admin"
+          contentClassName="space-y-4"
+        >
+          <FormField label="Title" required>
+            <Input name="title" required placeholder="Theme 2 translation practice" />
+          </FormField>
 
-        <div>
-          <label className="block text-sm font-medium">Slug</label>
-          <input name="slug" required className="w-full rounded border px-3 py-2" />
-        </div>
+          <FormField label="Slug" required>
+            <Input
+              name="slug"
+              required
+              placeholder="theme-2-translation-practice"
+            />
+          </FormField>
 
-        <div>
-          <label className="block text-sm font-medium">Description</label>
-          <textarea name="description" className="w-full rounded border px-3 py-2" />
-        </div>
+          <FormField label="Description">
+            <Textarea
+              name="description"
+              rows={3}
+              placeholder="Short internal summary for this question set."
+            />
+          </FormField>
 
-        <div>
-          <label className="block text-sm font-medium">Instructions</label>
-          <textarea name="instructions" className="w-full rounded border px-3 py-2" />
-        </div>
+          <FormField label="Instructions">
+            <Textarea
+              name="instructions"
+              rows={3}
+              placeholder="Student-facing instructions shown before the questions."
+            />
+          </FormField>
+        </PanelCard>
 
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h2 className="mb-2 font-semibold">Template Settings</h2>
+        <PanelCard
+          title="Template settings"
+          description="Save this question set as a reusable starting point for future GCSE Russian tasks."
+          tone="muted"
+          contentClassName="space-y-4"
+        >
+          <CheckboxField
+            name="isTemplate"
+            label="Save as template"
+            description="Templates can be copied into new question sets."
+          />
 
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" name="isTemplate" value="true" />
-            Save as template
-          </label>
-
-          <div className="mt-4">
-            <label className="block text-sm font-medium">Template type</label>
-            <input
+          <FormField label="Template type">
+            <Input
               name="templateType"
-              className="w-full rounded border px-3 py-2"
               placeholder="translation_selection_based"
             />
-          </div>
-        </div>
+          </FormField>
+        </PanelCard>
 
-        <button type="submit" className="rounded-lg bg-black px-4 py-2 text-white">
-          Create question set
-        </button>
+        <InlineActions>
+          <Button type="submit" variant="primary" icon="write">
+            Create question set
+          </Button>
+        </InlineActions>
       </form>
     </main>
   );
