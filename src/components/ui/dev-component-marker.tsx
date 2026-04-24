@@ -2,9 +2,13 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useDevMarkers } from "@/components/providers/dev-marker-provider";
+import { Check, Copy } from "lucide-react";
+import {
+  type DevMarkerTier,
+  useDevMarkers,
+} from "@/components/providers/dev-marker-provider";
 
-type DevMarkerTier = "primitive" | "container" | "layout" | "semantic";
+const warnedMarkerIds = new Set<string>();
 
 type DevComponentMarkerProps = {
   componentName: string;
@@ -144,14 +148,73 @@ export default function DevComponentMarker({
   usageExamples,
   notes,
 }: DevComponentMarkerProps) {
-  const { markersEnabled } = useDevMarkers();
+  const {
+    canUseMarkers,
+    isTierVisible,
+    markersEnabled,
+    registerMarker,
+    unregisterMarker,
+  } = useDevMarkers();
   const [isOpen, setIsOpen] = useState(false);
+  const [copiedPath, setCopiedPath] = useState(false);
   const [panelPosition, setPanelPosition] = useState<MarkerPanelPosition | null>(null);
   const markerRef = useRef<HTMLSpanElement | null>(null);
   const triggerRef = useRef<HTMLSpanElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const panelId = useId();
-  const isMarkerOpen = markersEnabled && isOpen;
+  const markerId = useId();
+  const markerDomId = markerId.replaceAll(":", "");
+  const isMarkerVisible = markersEnabled && isTierVisible(tier);
+  const isMarkerOpen = isMarkerVisible && isOpen;
+
+  useEffect(() => {
+    if (!SHOW_UI_DEBUG || !canUseMarkers) {
+      return;
+    }
+
+    registerMarker({
+      id: markerDomId,
+      componentName,
+      filePath,
+      tier,
+    });
+
+    return () => {
+      unregisterMarker(markerDomId);
+    };
+  }, [
+    canUseMarkers,
+    componentName,
+    filePath,
+    markerDomId,
+    registerMarker,
+    tier,
+    unregisterMarker,
+  ]);
+
+  useEffect(() => {
+    if (!SHOW_UI_DEBUG || !canUseMarkers) {
+      return;
+    }
+
+    const missingFields = [
+      componentRole ? null : "componentRole",
+      bestFor ? null : "bestFor",
+      usageExamples?.length ? null : "usageExamples",
+      notes ? null : "notes",
+    ].filter(Boolean);
+
+    if (missingFields.length === 0 || warnedMarkerIds.has(componentName)) {
+      return;
+    }
+
+    warnedMarkerIds.add(componentName);
+    console.warn(
+      `[DevComponentMarker] ${componentName} is missing metadata: ${missingFields.join(
+        ", "
+      )}`
+    );
+  }, [bestFor, canUseMarkers, componentName, componentRole, notes, usageExamples]);
 
   useLayoutEffect(() => {
     if (!SHOW_UI_DEBUG || !isMarkerOpen || !triggerRef.current) {
@@ -213,8 +276,18 @@ export default function DevComponentMarker({
     };
   }, [isMarkerOpen]);
 
-  if (!SHOW_UI_DEBUG || !markersEnabled) {
+  if (!SHOW_UI_DEBUG || !isMarkerVisible) {
     return null;
+  }
+
+  async function handleCopyFilePath() {
+    try {
+      await navigator.clipboard.writeText(filePath);
+      setCopiedPath(true);
+      window.setTimeout(() => setCopiedPath(false), 1400);
+    } catch {
+      setCopiedPath(false);
+    }
   }
 
   function toggleOpen(event: React.MouseEvent<HTMLSpanElement>) {
@@ -260,7 +333,19 @@ export default function DevComponentMarker({
             <div className="dev-marker-panel-label">{getTierLabel(tier)}</div>
 
             <div className="dev-marker-panel-name">{componentName}</div>
-            <div className="dev-marker-panel-path">{filePath}</div>
+            <div className="dev-marker-panel-path-row">
+              <div className="dev-marker-panel-path">{filePath}</div>
+              <button
+                type="button"
+                className="dev-marker-copy-button"
+                onClick={handleCopyFilePath}
+                aria-label={`Copy file path for ${componentName}`}
+                title="Copy file path"
+              >
+                {copiedPath ? <Check size={13} /> : <Copy size={13} />}
+                <span>{copiedPath ? "Copied" : "Copy"}</span>
+              </button>
+            </div>
 
             <div className="mt-3 space-y-3">
               <div>
@@ -310,6 +395,7 @@ export default function DevComponentMarker({
     <span
       ref={markerRef}
       className="dev-marker-anchor"
+      data-dev-marker-id={markerDomId}
       data-dev-marker-tier={tier}
       data-dev-marker-open={isMarkerOpen ? "true" : "false"}
     >
