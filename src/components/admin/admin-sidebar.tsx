@@ -25,15 +25,19 @@ function getUiLabItemIcon(label: string) {
   const normalized = label.toLowerCase();
 
   if (normalized.includes("overview")) return "dashboard";
+  if (normalized.includes("admin")) return "settings";
   if (normalized.includes("button")) return "pencil";
   if (normalized.includes("component")) return "component";
   if (normalized.includes("feedback")) return "feedback";
   if (normalized.includes("form")) return "forms";
   if (normalized.includes("icon")) return "star";
   if (normalized.includes("layout")) return "layout";
+  if (normalized.includes("lesson builder")) return "blocks";
+  if (normalized.includes("lesson content")) return "lessons";
   if (normalized.includes("navigation")) return "navigation";
   if (normalized.includes("surface")) return "surfaces";
   if (normalized.includes("table")) return "list";
+  if (normalized.includes("theme")) return "moon";
   if (normalized.includes("typography")) return "text";
 
   return "file";
