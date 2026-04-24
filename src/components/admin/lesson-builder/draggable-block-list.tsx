@@ -21,11 +21,23 @@ import {
   BUILDER_MUTED_INFO_BOX_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import {
-  getLessonBlockAccentClass,
   getLessonBlockGroupLabel,
   getLessonBlockLabel,
   getLessonBlockPreview,
 } from "@/lib/lessons/lesson-blocks";
+
+function getBlockGroupTone(
+  blockType: string
+): "default" | "success" | "muted" | "warning" | "info" {
+  const groupLabel = getLessonBlockGroupLabel(blockType).toLowerCase();
+
+  if (groupLabel.includes("practice")) return "warning";
+  if (groupLabel.includes("media")) return "muted";
+  if (groupLabel.includes("structure")) return "muted";
+  if (groupLabel.includes("teaching")) return "info";
+
+  return "default";
+}
 
 function BlockIconButton({
   children,
@@ -157,22 +169,16 @@ export default function DraggableBlockList(props: {
                   </span>
 
                   <span className="text-sm font-semibold text-[var(--text-primary)]">
-                    {getLessonBlockLabel(block.block_type)}
+                    {block.position}. {getLessonBlockLabel(block.block_type)}
                   </span>
 
-                  <span
-                    className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold ${getLessonBlockAccentClass(
-                      block.block_type
-                    )}`}
-                  >
+                  <Badge tone={getBlockGroupTone(block.block_type)}>
                     {getLessonBlockGroupLabel(block.block_type)}
-                  </span>
+                  </Badge>
 
                   <Badge tone={block.is_published ? "success" : "warning"}>
                     {block.is_published ? "Published" : "Draft"}
                   </Badge>
-
-                  <Badge tone="muted">Pos. {block.position}</Badge>
 
                   {isSelected ? <Badge tone="default">Selected</Badge> : null}
                 </div>
@@ -196,6 +202,20 @@ export default function DraggableBlockList(props: {
                   </BlockIconButton>
                 </form>
 
+                <form action={moveBlockAction}>
+                  <BuilderHiddenFields {...props.routeFields} />
+                  <input type="hidden" name="sectionId" value={props.section.id} />
+                  <input type="hidden" name="blockId" value={block.id} />
+                  <input type="hidden" name="direction" value="up" />
+                  <BlockIconButton
+                    ariaLabel="Move block up"
+                    title="Move block up"
+                    disabled={blockIndex === 0 || isPending}
+                  >
+                    <ChevronUp size={14} />
+                  </BlockIconButton>
+                </form>
+
                 <form action={toggleBlockPublishedAction}>
                   <BuilderHiddenFields {...props.routeFields} />
                   <input type="hidden" name="blockId" value={block.id} />
@@ -210,20 +230,6 @@ export default function DraggableBlockList(props: {
                     disabled={isPending}
                   >
                     {block.is_published ? <EyeOff size={13} /> : <Eye size={13} />}
-                  </BlockIconButton>
-                </form>
-
-                <form action={moveBlockAction}>
-                  <BuilderHiddenFields {...props.routeFields} />
-                  <input type="hidden" name="sectionId" value={props.section.id} />
-                  <input type="hidden" name="blockId" value={block.id} />
-                  <input type="hidden" name="direction" value="up" />
-                  <BlockIconButton
-                    ariaLabel="Move block up"
-                    title="Move block up"
-                    disabled={blockIndex === 0 || isPending}
-                  >
-                    <ChevronUp size={14} />
                   </BlockIconButton>
                 </form>
 
