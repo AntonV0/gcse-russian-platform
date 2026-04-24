@@ -3,8 +3,12 @@ import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
 import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
+import LessonFooterNav from "@/components/layout/lesson-footer-nav";
+import LessonHeader from "@/components/layout/lesson-header";
 import PageContainer from "@/components/layout/page-container";
 import PageHeader from "@/components/layout/page-header";
+import PlatformSidebar from "@/components/layout/platform-sidebar";
+import SiteFooter from "@/components/layout/site-footer";
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
@@ -15,6 +19,7 @@ import StatusSummaryCard from "@/components/ui/status-summary-card";
 import Surface from "@/components/ui/surface";
 
 const pageNavItems = [
+  { id: "boundary-components", label: "Boundaries" },
   { id: "page-boundaries", label: "Page boundaries" },
   { id: "shells", label: "Shells" },
   { id: "grids", label: "Grids" },
@@ -362,6 +367,74 @@ export default async function AdminUiLayoutPage() {
       currentPath="/admin/ui/layout"
     >
       <UiLabPageNav items={pageNavItems} />
+
+      <UiLabSection
+        id="boundary-components"
+        title="Production layout boundaries"
+        description="These are the real shared layout components, shown separately from future layout ideas. AppShell and SiteHeader are already active around this UI Lab page, so they are documented here rather than nested again."
+      >
+        <div className="grid gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
+          <Card className="max-h-[620px] overflow-auto p-3">
+            <PlatformSidebar role="student" accessMode="full" pathname="/courses" />
+          </Card>
+
+          <div className="space-y-4">
+            <Surface variant="muted" padding="md">
+              <LessonHeader
+                backHref="/courses"
+                backLabel="Back to Theme 1"
+                moduleTitle="Theme 1 / Identity and culture"
+                lessonTitle="School and daily routine"
+                lessonDescription="A realistic lesson header using the production reading-page component."
+              />
+
+              <Card className="p-4">
+                <p className="text-sm app-text-muted">
+                  Lesson content sits between the header and footer navigation in the real
+                  student learning flow.
+                </p>
+              </Card>
+
+              <LessonFooterNav
+                moduleHref="/courses/theme-1"
+                previousLesson={{
+                  href: "/courses/theme-1/family",
+                  label: "Family and relationships",
+                }}
+                nextLesson={{
+                  href: "/courses/theme-1/free-time",
+                  label: "Free time activities",
+                }}
+              />
+            </Surface>
+
+            <Card className="overflow-hidden">
+              <SiteFooter />
+            </Card>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <StatusSummaryCard
+            title="AppShell"
+            description="Active around the page; avoid rendering nested app shells inside UI Lab examples."
+            badgeTone="info"
+            badgeLabel="Boundary"
+          />
+          <StatusSummaryCard
+            title="SiteHeader"
+            description="Active at the top of the page, including theme and account utilities."
+            badgeTone="success"
+            badgeLabel="Visible"
+          />
+          <StatusSummaryCard
+            title="LogoutButton"
+            description="Displayed through PlatformSidebar and SiteHeader utility areas."
+            badgeTone="muted"
+            badgeLabel="Utility"
+          />
+        </div>
+      </UiLabSection>
 
       <UiLabSection
         id="page-boundaries"

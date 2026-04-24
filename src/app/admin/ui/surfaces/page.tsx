@@ -6,7 +6,7 @@ import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import Card, { CardBody } from "@/components/ui/card";
+import Card, { CardBody, CardFooter, CardHeader } from "@/components/ui/card";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 import LessonSurfaceCard from "@/components/ui/lesson-surface-card";
@@ -18,6 +18,7 @@ import Surface from "@/components/ui/surface";
 const pageNavItems = [
   { id: "foundations", label: "Foundations" },
   { id: "primitives", label: "Primitives" },
+  { id: "card-anatomy", label: "Card anatomy" },
   { id: "tone-density", label: "Tone + density" },
   { id: "semantic-surfaces", label: "Semantic" },
   { id: "dark-surfaces", label: "Dark surfaces" },
@@ -220,6 +221,86 @@ export default async function AdminUiSurfacesPage() {
               </div>
             </div>
           </SectionCard>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="card-anatomy"
+        title="Card anatomy"
+        description="Use CardHeader, CardBody, and CardFooter when a card needs clear internal regions instead of one undifferentiated content block."
+      >
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)]">
+          <Card>
+            <CardHeader>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className="font-semibold text-[var(--text-primary)]">
+                    Lesson metadata
+                  </div>
+                  <p className="mt-1 text-sm app-text-muted">
+                    A structured card with heading, body, and action footer.
+                  </p>
+                </div>
+                <Badge tone="warning" icon="pending">
+                  Draft
+                </Badge>
+              </div>
+            </CardHeader>
+
+            <CardBody className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.08em] app-text-soft">
+                    Variant
+                  </div>
+                  <div className="mt-1 text-sm text-[var(--text-primary)]">Higher</div>
+                </div>
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.08em] app-text-soft">
+                    Blocks
+                  </div>
+                  <div className="mt-1 text-sm text-[var(--text-primary)]">6</div>
+                </div>
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.08em] app-text-soft">
+                    Updated
+                  </div>
+                  <div className="mt-1 text-sm text-[var(--text-primary)]">
+                    Today
+                  </div>
+                </div>
+              </div>
+            </CardBody>
+
+            <CardFooter>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="primary" icon="completed">
+                  Save lesson
+                </Button>
+                <Button variant="secondary" icon="preview">
+                  Preview
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+
+          <PanelCard
+            title="When to use anatomy"
+            description="Card sections are best for repeated objects with a stable internal structure."
+            tone="admin"
+            density="compact"
+          >
+            <div className="space-y-3 text-sm app-text-muted">
+              <p>
+                Use a header when status, title, or context must remain visually tied to
+                the card.
+              </p>
+              <p>
+                Use a footer for actions that apply to the whole card, especially when the
+                body contains scannable metadata.
+              </p>
+            </div>
+          </PanelCard>
         </div>
       </UiLabSection>
 

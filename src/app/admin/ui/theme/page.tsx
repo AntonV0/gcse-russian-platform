@@ -15,19 +15,73 @@ import ThemeToggle from "@/components/ui/theme-toggle";
 
 const pageNavItems = [
   { id: "theme-controls", label: "Controls" },
+  { id: "colour-variables", label: "Colours" },
   { id: "token-checks", label: "Token checks" },
   { id: "dark-surfaces", label: "Dark surfaces" },
   { id: "guidance", label: "Guidance" },
   { id: "future-components", label: "Future" },
 ];
 
+const colourTokenGroups = [
+  {
+    title: "Backgrounds and surfaces",
+    tokens: [
+      ["Background", "--background"],
+      ["Elevated background", "--background-elevated"],
+      ["Muted background", "--background-muted"],
+      ["Soft blue background", "--background-soft-blue"],
+      ["Soft red background", "--background-soft-red"],
+      ["Primary surface", "--surface-primary"],
+      ["Elevated surface", "--surface-elevated"],
+      ["Secondary surface", "--surface-secondary"],
+    ],
+  },
+  {
+    title: "Text and borders",
+    tokens: [
+      ["Primary text", "--text-primary"],
+      ["Secondary text", "--text-secondary"],
+      ["Muted text", "--text-muted"],
+      ["Inverse text", "--text-inverse"],
+      ["Border", "--border"],
+      ["Subtle border", "--border-subtle"],
+      ["Strong border", "--border-strong"],
+    ],
+  },
+  {
+    title: "Brand colours",
+    tokens: [
+      ["Brand blue", "--brand-blue"],
+      ["Brand blue hover", "--brand-blue-hover"],
+      ["Brand blue soft", "--brand-blue-soft"],
+      ["Brand red", "--brand-red"],
+      ["Brand red hover", "--brand-red-hover"],
+      ["Brand red soft", "--brand-red-soft"],
+      ["Brand white", "--brand-white"],
+    ],
+  },
+  {
+    title: "Semantic colours",
+    tokens: [
+      ["Success", "--success"],
+      ["Success soft", "--success-soft"],
+      ["Warning", "--warning"],
+      ["Warning soft", "--warning-soft"],
+      ["Danger", "--danger"],
+      ["Danger soft", "--danger-soft"],
+      ["Info", "--info"],
+      ["Info soft", "--info-soft"],
+    ],
+  },
+] as const;
+
 const tokenSamples = [
-  ["Background", "var(--background)"],
-  ["Elevated", "var(--background-elevated)"],
-  ["Muted", "var(--background-muted)"],
-  ["Primary text", "var(--text-primary)"],
-  ["Secondary text", "var(--text-secondary)"],
-  ["Border", "var(--border)"],
+  ["Page max width", "var(--page-max-width)"],
+  ["Page padding X", "var(--page-padding-x)"],
+  ["Site header height", "var(--site-header-height)"],
+  ["Radius md", "var(--radius-md)"],
+  ["Shadow sm", "var(--shadow-sm)"],
+  ["Transition base", "var(--transition-base)"],
 ] as const;
 
 export default async function AdminUiThemePage() {
@@ -82,9 +136,50 @@ export default async function AdminUiThemePage() {
       </UiLabSection>
 
       <UiLabSection
+        id="colour-variables"
+        title="Colour variables"
+        description="Every shared colour token currently defined for light and dark mode. New components should use these variables before adding local colour values."
+      >
+        <div className="grid gap-4 xl:grid-cols-2">
+          {colourTokenGroups.map((group) => (
+            <PanelCard
+              key={group.title}
+              title={group.title}
+              description="Token swatches resolve through CSS variables, so this view changes with the active theme."
+              tone="muted"
+              density="compact"
+            >
+              <div className="grid gap-3 sm:grid-cols-2">
+                {group.tokens.map(([label, token]) => (
+                  <div
+                    key={token}
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3"
+                  >
+                    <div className="mb-3 flex items-center gap-3">
+                      <span
+                        className="h-10 w-10 shrink-0 rounded-xl border border-[var(--border)] shadow-[var(--shadow-xs)]"
+                        style={{ background: `var(${token})` }}
+                        aria-hidden="true"
+                      />
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
+                          {label}
+                        </div>
+                        <code className="text-xs app-text-soft">{token}</code>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </PanelCard>
+          ))}
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
         id="token-checks"
-        title="Token checks"
-        description="Components should use CSS variables rather than hardcoded theme-specific colours."
+        title="Foundation token checks"
+        description="Layout, radius, shadow, and motion tokens should stay separate from colour variables."
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {tokenSamples.map(([label, token]) => (
