@@ -1,5 +1,4 @@
 import Link from "next/link";
-import DebugBillingPanel from "@/components/admin/debug-billing-panel";
 import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -385,7 +384,6 @@ export default async function AccountPage() {
         </DashboardCard>
       </section>
 
-      {profile?.is_admin ? <DebugBillingPanel userId={user.id} /> : null}
     </main>
   );
 }
