@@ -73,7 +73,7 @@
   outline: none;
   border-color: var(--brand-blue);
   box-shadow:
-    0 0 0 4px rgba(37, 99, 235, 0.14),
+    0 0 0 4px var(--accent-ring),
     0 1px 2px rgba(16, 32, 51, 0.05),
     0 10px 22px rgba(16, 32, 51, 0.06);
 }
@@ -176,16 +176,16 @@
 }
 
 .app-checkbox-field:has(.app-checkbox-input:checked) {
-  border-color: rgba(37, 99, 235, 0.26);
+  border-color: color-mix(in srgb, var(--accent) 26%, transparent);
   background: linear-gradient(
     180deg,
-    rgba(37, 99, 235, 0.07) 0%,
+    color-mix(in srgb, var(--accent) 7%, transparent) 0%,
     var(--background-elevated) 100%
   );
   box-shadow:
-    0 0 0 3px rgba(37, 99, 235, 0.06),
-    0 1px 2px rgba(37, 99, 235, 0.05),
-    0 10px 22px rgba(37, 99, 235, 0.08);
+    0 0 0 3px color-mix(in srgb, var(--accent) 6%, transparent),
+    0 1px 2px color-mix(in srgb, var(--accent) 5%, transparent),
+    0 10px 22px color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .app-checkbox-field-disabled {
@@ -227,7 +227,7 @@
 }
 
 [data-theme="dark"] .app-form-control {
-  border-color: rgba(118, 167, 255, 0.14);
+  border-color: color-mix(in srgb, var(--accent) 14%, transparent);
   background: linear-gradient(
     180deg,
     rgba(15, 30, 56, 0.98) 0%,
@@ -239,7 +239,7 @@
 }
 
 [data-theme="dark"] .app-form-control:hover {
-  border-color: rgba(118, 167, 255, 0.24);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.24),
     0 12px 26px rgba(0, 0, 0, 0.24);
@@ -247,15 +247,15 @@
 
 [data-theme="dark"] .app-form-control:focus,
 [data-theme="dark"] .app-form-control:focus-visible {
-  border-color: rgba(118, 167, 255, 0.46);
+  border-color: color-mix(in srgb, var(--accent) 46%, transparent);
   box-shadow:
-    0 0 0 4px rgba(79, 140, 255, 0.16),
+    0 0 0 4px var(--accent-ring),
     0 1px 2px rgba(0, 0, 0, 0.24),
     0 12px 26px rgba(0, 0, 0, 0.24);
 }
 
 [data-theme="dark"] .app-form-control:disabled {
-  border-color: rgba(118, 167, 255, 0.1);
+  border-color: color-mix(in srgb, var(--accent) 10%, transparent);
   background: rgba(7, 18, 38, 0.9);
   color: var(--text-muted);
 }
@@ -293,7 +293,7 @@
 }
 
 [data-theme="dark"] .app-checkbox-field {
-  border-color: rgba(118, 167, 255, 0.12);
+  border-color: color-mix(in srgb, var(--accent) 12%, transparent);
   background: linear-gradient(
     180deg,
     rgba(13, 28, 54, 0.98) 0%,
@@ -305,21 +305,21 @@
 }
 
 [data-theme="dark"] .app-checkbox-field:hover {
-  border-color: rgba(118, 167, 255, 0.22);
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.24),
     0 12px 26px rgba(0, 0, 0, 0.24);
 }
 
 [data-theme="dark"] .app-checkbox-field:has(.app-checkbox-input:checked) {
-  border-color: rgba(118, 167, 255, 0.28);
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
   background: linear-gradient(
     180deg,
-    rgba(37, 99, 235, 0.18) 0%,
+    color-mix(in srgb, var(--accent) 18%, transparent) 0%,
     rgba(9, 23, 47, 1) 100%
   );
   box-shadow:
-    0 0 0 3px rgba(79, 140, 255, 0.08),
+    0 0 0 3px color-mix(in srgb, var(--accent) 8%, transparent),
     0 1px 2px rgba(0, 0, 0, 0.24),
     0 12px 26px rgba(0, 0, 0, 0.24);
 }

@@ -36,6 +36,23 @@ export default async function RootLayout({
           ? "dark"
           : "light";
     document.documentElement.setAttribute("data-theme", theme);
+    const accentOptions = new Set([
+      "blue",
+      "purple",
+      "pink",
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "teal",
+      "brown",
+      "slate",
+    ]);
+    const storedAccent = localStorage.getItem("accent");
+    document.documentElement.setAttribute(
+      "data-accent",
+      accentOptions.has(storedAccent) ? storedAccent : "blue"
+    );
   } catch (e) {}
 })();
 `,
