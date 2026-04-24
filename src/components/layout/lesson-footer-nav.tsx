@@ -53,7 +53,7 @@ export default function LessonFooterNav({
               href={previousLesson.href}
               className="app-btn-base app-btn-secondary px-4 py-2 text-sm"
             >
-              ← {previousLesson.label}
+              Previous lesson: {previousLesson.label}
             </Link>
           ) : null}
 
@@ -62,7 +62,7 @@ export default function LessonFooterNav({
               href={nextLesson.href}
               className="app-btn-base app-btn-primary px-4 py-2 text-sm"
             >
-              {nextLesson.label} →
+              Next lesson: {nextLesson.label}
             </Link>
           ) : null}
         </div>

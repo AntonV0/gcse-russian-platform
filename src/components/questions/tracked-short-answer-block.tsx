@@ -397,7 +397,7 @@ export default function TrackedShortAnswerBlock({
 
   if (questionType === "translation" && answerStrategy !== "text_input") {
     return (
-      <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-700">
+      <div className="rounded-lg border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] p-4 text-sm text-[var(--warning)]">
         This question requires a different interaction type (
         {answerStrategy.replace("_", " ")}). This will be supported soon.
       </div>

@@ -18,7 +18,7 @@ export default async function VocabularySetBlock({
 
   if (!vocabularySet) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+      <div className="rounded-2xl border border-[color-mix(in_srgb,var(--danger)_24%,transparent)] bg-[var(--danger-soft)] px-5 py-4 text-sm text-[var(--danger)]">
         Vocabulary set not found: {vocabularySetSlug}
       </div>
     );

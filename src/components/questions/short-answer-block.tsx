@@ -126,7 +126,7 @@ export default function ShortAnswerBlock({
         />
 
         {submitLocked ? (
-          <p className="rounded-xl border border-yellow-200 bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+          <p className="rounded-xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] px-3 py-2 text-sm text-[var(--warning)]">
             Listen to the audio fully before submitting your answer.
           </p>
         ) : null}

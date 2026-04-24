@@ -29,7 +29,7 @@ export function DividerBlock() {
 
 export function CalloutBlock({ title, content }: { title?: string; content: string }) {
   return (
-    <div className="dev-marker-host relative rounded-2xl border border-blue-200 bg-[var(--info-soft)] px-5 py-4">
+    <div className="dev-marker-host relative rounded-2xl border border-[color-mix(in_srgb,var(--info)_24%,transparent)] bg-[var(--info-soft)] px-5 py-4">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="CalloutBlock"
@@ -60,7 +60,7 @@ export function CalloutBlock({ title, content }: { title?: string; content: stri
 
 export function ExamTipBlock({ title, content }: { title?: string; content: string }) {
   return (
-    <div className="dev-marker-host relative rounded-2xl border border-amber-200 bg-[var(--warning-soft)] px-5 py-4">
+    <div className="dev-marker-host relative rounded-2xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] px-5 py-4">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="ExamTipBlock"

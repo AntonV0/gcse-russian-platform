@@ -20,7 +20,7 @@ export default async function QuestionSetBlock({
 
   if (!questionSet) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <div className="rounded-xl border border-[color-mix(in_srgb,var(--danger)_24%,transparent)] bg-[var(--danger-soft)] p-4 text-sm text-[var(--danger)]">
         Question set not found: {questionSetSlug}
       </div>
     );
