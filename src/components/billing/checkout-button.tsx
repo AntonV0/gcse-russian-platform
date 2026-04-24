@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type CheckoutButtonProps = {
   productCode: string;
@@ -10,6 +11,8 @@ type CheckoutButtonProps = {
   isUpgrade?: boolean;
   children: React.ReactNode;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function CheckoutButton({
   productCode,
@@ -58,7 +61,24 @@ export default function CheckoutButton({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="dev-marker-host relative space-y-2">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="CheckoutButton"
+          filePath="src/components/billing/checkout-button.tsx"
+          tier="semantic"
+          componentRole="Stripe checkout action control with loading and error feedback"
+          bestFor="Billing flows where a pricing option or upgrade needs to create a checkout session."
+          usageExamples={[
+            "Foundation monthly purchase",
+            "Higher lifetime checkout",
+            "Foundation to Higher upgrade",
+            "Billing/pricing/access UI",
+          ]}
+          notes="Use only for Stripe checkout redirects. Use the shared Button component for ordinary navigation or form actions."
+        />
+      ) : null}
+
       <button
         type="button"
         onClick={handleCheckout}

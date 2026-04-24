@@ -1,11 +1,14 @@
 import { loadRuntimeQuestionSetBySlugDb } from "@/lib/questions/question-helpers-db";
 import QuestionRenderer from "@/components/questions/question-renderer";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type QuestionSetBlockProps = {
   title?: string;
   questionSetSlug: string;
   lessonId?: string | null;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default async function QuestionSetBlock({
   title,
@@ -24,7 +27,24 @@ export default async function QuestionSetBlock({
   }
 
   return (
-    <section className="app-card app-section-padding space-y-5">
+    <section className="dev-marker-host relative app-card app-section-padding space-y-5">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="QuestionSetBlock"
+          filePath="src/components/lesson-blocks/question-set-block.tsx"
+          tier="semantic"
+          componentRole="Lesson block that loads and renders a linked runtime question set"
+          bestFor="Practice sections where saved GCSE Russian question sets need to appear inside lesson content."
+          usageExamples={[
+            "Lesson practice questions",
+            "Listening/reading question set",
+            "Grammar check exercise",
+            "Past paper practice area",
+          ]}
+          notes="Use for linked question sets. Do not use for single hardcoded questions or admin question-set editing screens."
+        />
+      ) : null}
+
       <div className="space-y-3">
         <div className="flex flex-wrap gap-2">
           <span className="app-pill app-pill-info">Question set</span>

@@ -1,3 +1,5 @@
+import DevComponentMarker from "@/components/ui/dev-component-marker";
+
 type VocabularyItem = {
   russian: string;
   english: string;
@@ -11,6 +13,8 @@ type VocabularyBlockProps = {
   meta?: string[];
 };
 
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+
 export default function VocabularyBlock({
   title,
   items,
@@ -19,7 +23,24 @@ export default function VocabularyBlock({
   meta = [],
 }: VocabularyBlockProps) {
   return (
-    <section className="app-card app-section-padding">
+    <section className="dev-marker-host relative app-card app-section-padding">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="VocabularyBlock"
+          filePath="src/components/lesson-blocks/vocabulary-block.tsx"
+          tier="semantic"
+          componentRole="Lesson vocabulary list block with metadata, item count, and Russian-English rows"
+          bestFor="Vocabulary-focused lesson sections, GCSE topic word lists, and reusable vocabulary-set rendering."
+          usageExamples={[
+            "High-frequency vocabulary lesson",
+            "Theme vocabulary list",
+            "Vocabulary set block",
+            "Student revision vocabulary area",
+          ]}
+          notes="Use for compact Russian-English item lists. Do not use for editable vocabulary management tables or long grammar prose."
+        />
+      ) : null}
+
       <div className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-3">

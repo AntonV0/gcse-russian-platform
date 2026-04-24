@@ -1,3 +1,5 @@
+import DevComponentMarker from "@/components/ui/dev-component-marker";
+
 type StepMetaBarProps = {
   currentStepNumber: number;
   totalSteps: number;
@@ -5,6 +7,8 @@ type StepMetaBarProps = {
   sectionDescription?: string;
   visitedPercent: number;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export function StepMetaBar({
   currentStepNumber,
@@ -14,7 +18,24 @@ export function StepMetaBar({
   visitedPercent,
 }: StepMetaBarProps) {
   return (
-    <div className="app-card app-section-padding">
+    <div className="dev-marker-host relative app-card app-section-padding">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="StepMetaBar"
+          filePath="src/components/lesson-blocks/lesson-page-template/step-meta-bar.tsx"
+          tier="semantic"
+          componentRole="Lesson step progress summary with section kind, description, and visited-progress bar"
+          bestFor="Student lesson pages where the current section needs lightweight progress context above content."
+          usageExamples={[
+            "Section-based lesson flow",
+            "Student lesson progress",
+            "Foundation lesson steps",
+            "Volna assigned lesson progress",
+          ]}
+          notes="Use for section progress context only. Do not use for full lesson completion controls or dashboard metrics."
+        />
+      ) : null}
+
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>

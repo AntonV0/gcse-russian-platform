@@ -25,6 +25,9 @@ import {
   getLessonBlockLabel,
   getLessonBlockPreview,
 } from "@/lib/lessons/lesson-blocks";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getBlockGroupTone(
   blockType: string
@@ -99,7 +102,24 @@ export default function DraggableBlockList(props: {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="dev-marker-host relative space-y-2">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="DraggableBlockList"
+          filePath="src/components/admin/lesson-builder/draggable-block-list.tsx"
+          tier="semantic"
+          componentRole="Sortable lesson block list with selection, duplicate, publish, and move controls"
+          bestFor="Admin lesson builder sections where existing blocks need ordering and quick block-level actions."
+          usageExamples={[
+            "Admin lesson builder",
+            "Reordering lesson blocks",
+            "Selecting blocks for inspector editing",
+            "Publishing draft block content",
+          ]}
+          notes="Use for block ordering inside a selected lesson section. Do not use it for section ordering or generic sortable lists."
+        />
+      ) : null}
+
       {isPending ? (
         <div className={BUILDER_MUTED_INFO_BOX_CLASS}>Saving block order...</div>
       ) : null}

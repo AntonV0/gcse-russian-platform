@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type LessonFooterNavProps = {
   moduleHref: string;
@@ -12,13 +13,32 @@ type LessonFooterNavProps = {
   };
 };
 
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+
 export default function LessonFooterNav({
   moduleHref,
   previousLesson,
   nextLesson,
 }: LessonFooterNavProps) {
   return (
-    <div className="mt-8 app-surface app-section-padding">
+    <div className="dev-marker-host relative mt-8 app-surface app-section-padding">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="LessonFooterNav"
+          filePath="src/components/layout/lesson-footer-nav.tsx"
+          tier="layout"
+          componentRole="Lesson-level footer navigation for returning to a module or moving between lessons"
+          bestFor="End-of-lesson navigation where students need a safe route back to the module and adjacent lesson links."
+          usageExamples={[
+            "Foundation module lesson sequence",
+            "Higher revision lesson flow",
+            "Volna assigned lesson navigation",
+            "Student course progression",
+          ]}
+          notes="Use for lesson-to-lesson navigation. Do not use for section-step navigation inside a single lesson."
+        />
+      ) : null}
+
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <Link
           href={moduleHref}

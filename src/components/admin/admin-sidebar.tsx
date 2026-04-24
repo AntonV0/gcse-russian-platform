@@ -5,7 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { uiLabPages } from "@/lib/ui/ui-lab";
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getNavItemClass(isActive: boolean, isSubItem = false) {
   return [
@@ -102,7 +105,24 @@ export default function AdminSidebar() {
   }
 
   return (
-    <aside className="flex h-full min-h-0 flex-col bg-[var(--background-elevated)]">
+    <aside className="dev-marker-host relative flex h-full min-h-0 flex-col bg-[var(--background-elevated)]">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="AdminSidebar"
+          filePath="src/components/admin/admin-sidebar.tsx"
+          tier="layout"
+          componentRole="Admin workspace sidebar navigation for content, UI Lab, teaching, and user management areas"
+          bestFor="Admin-only app chrome where routes need grouped management navigation and active-route highlighting."
+          usageExamples={[
+            "Course/module/lesson management",
+            "Admin lesson builder access",
+            "UI Lab navigation",
+            "Student and teacher admin pages",
+          ]}
+          notes="Use only inside the admin layout. Do not use it for student platform navigation or public site headers."
+        />
+      ) : null}
+
       <div className="shrink-0 border-b border-[var(--border)] px-4 py-4">
         <div className="flex items-center gap-3 px-3 py-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--background-muted)] text-[var(--brand-blue)]">

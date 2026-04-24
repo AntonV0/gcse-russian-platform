@@ -25,6 +25,7 @@ import {
 import { updateSectionAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import { SECTION_KIND_OPTIONS } from "@/components/admin/lesson-builder/lesson-builder-types";
 import { getLessonBlockLabel, getLessonBlockPreview } from "@/lib/lessons/lesson-blocks";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 const VARIANT_VISIBILITY_OPTIONS = [
   { value: "shared", label: "Shared" },
@@ -32,6 +33,8 @@ const VARIANT_VISIBILITY_OPTIONS = [
   { value: "higher_only", label: "Higher only" },
   { value: "volna_only", label: "Volna only" },
 ] as const;
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function formatVariantVisibility(value: LessonSection["variant_visibility"]) {
   return (
@@ -72,17 +75,37 @@ export default function LessonSectionEditor(props: {
   templateOptions: LessonBuilderTemplateOptions;
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
 }) {
+  const marker = SHOW_UI_DEBUG ? (
+    <DevComponentMarker
+      componentName="LessonSectionEditor"
+      filePath="src/components/admin/lesson-builder/lesson-section-editor.tsx"
+      tier="container"
+      componentRole="Main lesson-builder editing column for selected section summary, block creation, block list, and metadata"
+      bestFor="Admin lesson builder screens where a selected section needs both content editing and section metadata controls."
+      usageExamples={[
+        "Section content editing",
+        "Creating new lesson blocks",
+        "Editing canonical section keys",
+        "Variant visibility management",
+      ]}
+      notes="Use only inside the lesson builder workspace. Do not use it as a generic form or standalone lesson preview."
+    />
+  ) : null;
+
   if (!props.section) {
     return (
-      <Panel
-        title="Lesson editor"
-        description="Select a section from the left to start editing."
-      >
-        <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
-          <div className="mb-2">No section selected.</div>
-          <div>Use the sections panel to choose a section or create a new one.</div>
-        </div>
-      </Panel>
+      <div className="dev-marker-host relative">
+        {marker}
+        <Panel
+          title="Lesson editor"
+          description="Select a section from the left to start editing."
+        >
+          <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
+            <div className="mb-2">No section selected.</div>
+            <div>Use the sections panel to choose a section or create a new one.</div>
+          </div>
+        </Panel>
+      </div>
     );
   }
 
@@ -104,7 +127,9 @@ export default function LessonSectionEditor(props: {
   }, {});
 
   return (
-    <div className="space-y-4">
+    <div className="dev-marker-host relative space-y-4">
+      {marker}
+
       <CompactDisclosure
         title={section.title}
         description={`${section.blocks.length} block${

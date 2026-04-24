@@ -14,6 +14,7 @@ import {
 } from "@/components/lesson-blocks/structure-blocks";
 import MultipleChoiceBlock from "@/components/questions/multiple-choice-block";
 import ShortAnswerBlock from "@/components/questions/short-answer-block";
+import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { LessonSection } from "@/types/lesson";
 
 export type LessonRendererVariant = "foundation" | "higher" | "volna";
@@ -23,6 +24,8 @@ type LessonRendererProps = {
   lessonId?: string | null;
   currentVariant?: LessonRendererVariant;
 };
+
+const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function isSectionVisible(section: LessonSection, currentVariant: LessonRendererVariant) {
   if (section.variantVisibility === "shared") {
@@ -57,7 +60,24 @@ export default function LessonRenderer({
   );
 
   return (
-    <div className="space-y-8">
+    <div className="dev-marker-host relative space-y-8">
+      {SHOW_UI_DEBUG ? (
+        <DevComponentMarker
+          componentName="LessonRenderer"
+          filePath="src/components/lesson-blocks/lesson-renderer.tsx"
+          tier="container"
+          componentRole="Runtime lesson content renderer that filters sections by variant and renders lesson blocks"
+          bestFor="Student lesson pages where DB-driven sections and blocks need to render for Foundation, Higher, or Volna variants."
+          usageExamples={[
+            "Foundation lesson content",
+            "Higher lesson content",
+            "Volna lesson sections",
+            "Vocabulary/grammar/past paper areas",
+          ]}
+          notes="Use for rendering saved lesson content. Do not use it for admin authoring previews that need edit controls."
+        />
+      ) : null}
+
       {visibleSections.map((section) => (
         <section
           key={section.id}
