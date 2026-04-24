@@ -11,15 +11,42 @@ import {
 
 export type ThemeMode = "light" | "dark";
 export type ThemePreference = ThemeMode | "system";
+export type AccentPreference =
+  | "blue"
+  | "purple"
+  | "pink"
+  | "red"
+  | "orange"
+  | "yellow"
+  | "green"
+  | "teal"
+  | "brown"
+  | "slate";
 
 type ThemeContextValue = {
   theme: ThemeMode | null;
   themePreference: ThemePreference | null;
+  accentPreference: AccentPreference | null;
   setThemePreference: (preference: ThemePreference) => void;
+  setAccentPreference: (preference: AccentPreference) => void;
   toggleTheme: () => void;
 };
 
 const THEME_STORAGE_KEY = "theme";
+const ACCENT_STORAGE_KEY = "accent";
+const DEFAULT_ACCENT: AccentPreference = "blue";
+const ACCENT_OPTIONS = new Set<AccentPreference>([
+  "blue",
+  "purple",
+  "pink",
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "teal",
+  "brown",
+  "slate",
+]);
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
@@ -38,6 +65,19 @@ function readStoredThemePreference(): ThemePreference | null {
 
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   return stored === "light" || stored === "dark" || stored === "system" ? stored : null;
+}
+
+function isAccentPreference(value: string | null): value is AccentPreference {
+  return value !== null && ACCENT_OPTIONS.has(value as AccentPreference);
+}
+
+function readStoredAccentPreference(): AccentPreference | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const stored = localStorage.getItem(ACCENT_STORAGE_KEY);
+  return isAccentPreference(stored) ? stored : null;
 }
 
 function readResolvedTheme(): ThemeMode {
@@ -77,13 +117,35 @@ function applyTheme(theme: ThemeMode, animate = true) {
   }
 }
 
+function applyAccent(accent: AccentPreference, animate = true) {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const root = document.documentElement;
+
+  if (animate) {
+    root.classList.add("theme-transition");
+  }
+
+  root.setAttribute("data-accent", accent);
+
+  if (animate) {
+    window.setTimeout(() => {
+      root.classList.remove("theme-transition");
+    }, 300);
+  }
+}
+
 function readInitialThemeState() {
   const storedPreference = readStoredThemePreference();
+  const storedAccent = readStoredAccentPreference();
   const initialPreference: ThemePreference = storedPreference ?? "system";
 
   return {
     theme: resolveTheme(initialPreference),
     themePreference: initialPreference,
+    accentPreference: storedAccent ?? DEFAULT_ACCENT,
   };
 }
 
@@ -97,6 +159,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   );
   const [themePreference, setThemePreferenceState] = useState<ThemePreference | null>(
     () => readInitialThemeState().themePreference
+  );
+  const [accentPreference, setAccentPreferenceState] = useState<AccentPreference | null>(
+    () => readInitialThemeState().accentPreference
   );
 
   const setThemePreference = useCallback((nextPreference: ThemePreference) => {
@@ -118,26 +183,41 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     setThemeState(nextTheme);
   }, [theme]);
 
+  const setAccentPreference = useCallback((nextPreference: AccentPreference) => {
+    localStorage.setItem(ACCENT_STORAGE_KEY, nextPreference);
+    applyAccent(nextPreference);
+    setAccentPreferenceState(nextPreference);
+  }, []);
+
   useEffect(() => {
     applyTheme(theme ?? readResolvedTheme(), false);
+    applyAccent(accentPreference ?? readStoredAccentPreference() ?? DEFAULT_ACCENT, false);
 
     function handleStorage(event: StorageEvent) {
-      if (event.key !== THEME_STORAGE_KEY) {
+      if (event.key === ACCENT_STORAGE_KEY) {
+        const nextPreference = isAccentPreference(event.newValue)
+          ? event.newValue
+          : DEFAULT_ACCENT;
+
+        applyAccent(nextPreference);
+        setAccentPreferenceState(nextPreference);
         return;
       }
 
-      const nextPreference =
-        event.newValue === "light" ||
-        event.newValue === "dark" ||
-        event.newValue === "system"
-          ? event.newValue
-          : "system";
+      if (event.key === THEME_STORAGE_KEY) {
+        const nextPreference =
+          event.newValue === "light" ||
+          event.newValue === "dark" ||
+          event.newValue === "system"
+            ? event.newValue
+            : "system";
 
-      const nextResolvedTheme = resolveTheme(nextPreference);
+        const nextResolvedTheme = resolveTheme(nextPreference);
 
-      applyTheme(nextResolvedTheme);
-      setThemePreferenceState(nextPreference);
-      setThemeState(nextResolvedTheme);
+        applyTheme(nextResolvedTheme);
+        setThemePreferenceState(nextPreference);
+        setThemeState(nextResolvedTheme);
+      }
     }
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -163,16 +243,18 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       mediaQuery.removeEventListener("change", handleSystemThemeChange);
       window.removeEventListener("storage", handleStorage);
     };
-  }, [theme]);
+  }, [theme, accentPreference]);
 
   const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
       themePreference,
+      accentPreference,
       setThemePreference,
+      setAccentPreference,
       toggleTheme,
     }),
-    [theme, themePreference, setThemePreference, toggleTheme]
+    [theme, themePreference, accentPreference, setThemePreference, setAccentPreference, toggleTheme]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

@@ -1,3 +1,4 @@
+import ThemeAccentSelector from "@/components/settings/theme-accent-selector";
 import ThemeModeSelector from "@/components/settings/theme-mode-selector";
 import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
@@ -182,7 +183,11 @@ export default async function SettingsPage({
 
       <section className="grid gap-4 lg:grid-cols-2">
         <DashboardCard title="Appearance">
-          <ThemeModeSelector />
+          <div className="space-y-6">
+            <ThemeModeSelector />
+            <div className="h-px bg-[var(--border-subtle)]" />
+            <ThemeAccentSelector />
+          </div>
         </DashboardCard>
 
         <DashboardCard title="Preferences">
