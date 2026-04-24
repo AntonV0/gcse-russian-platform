@@ -2,6 +2,8 @@ import {
   markLessonComplete,
   markLessonIncomplete,
 } from "@/app/actions/progress/progress";
+import Button from "@/components/ui/button";
+import PanelCard from "@/components/ui/panel-card";
 
 type LessonCompletionFormProps = {
   courseSlug: string;
@@ -19,16 +21,19 @@ export default function LessonCompletionForm({
   completed,
 }: LessonCompletionFormProps) {
   return (
-    <div className="mt-6 rounded-xl border bg-white p-4 shadow-sm">
+    <PanelCard
+      title="Lesson progress"
+      description={
+        completed
+          ? "This lesson is marked as complete."
+          : "Mark this lesson as complete when finished."
+      }
+      tone="student"
+      density="compact"
+      className="mt-6"
+    >
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="font-semibold">Lesson progress</h2>
-          <p className="text-sm text-gray-600">
-            {completed
-              ? "This lesson is marked as complete."
-              : "Mark this lesson as complete when finished."}
-          </p>
-        </div>
+        <div />
 
         {completed ? (
           <form action={markLessonIncomplete}>
@@ -36,12 +41,13 @@ export default function LessonCompletionForm({
             <input type="hidden" name="variantSlug" value={variantSlug} />
             <input type="hidden" name="moduleSlug" value={moduleSlug} />
             <input type="hidden" name="lessonSlug" value={lessonSlug} />
-            <button
+            <Button
               type="submit"
-              className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50"
+              variant="secondary"
+              size="sm"
             >
               Mark incomplete
-            </button>
+            </Button>
           </form>
         ) : (
           <form action={markLessonComplete}>
@@ -49,15 +55,17 @@ export default function LessonCompletionForm({
             <input type="hidden" name="variantSlug" value={variantSlug} />
             <input type="hidden" name="moduleSlug" value={moduleSlug} />
             <input type="hidden" name="lessonSlug" value={lessonSlug} />
-            <button
+            <Button
               type="submit"
-              className="rounded-lg bg-black px-4 py-2 text-sm text-white hover:opacity-90"
+              variant="primary"
+              size="sm"
+              icon="completed"
             >
               Mark complete
-            </button>
+            </Button>
           </form>
         )}
       </div>
-    </div>
+    </PanelCard>
   );
 }
