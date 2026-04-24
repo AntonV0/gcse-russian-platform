@@ -134,7 +134,7 @@ export default function LessonSectionEditor(props: {
         title={section.title}
         description={`${section.blocks.length} block${
           section.blocks.length === 1 ? "" : "s"
-        } · ${formatVariantVisibility(section.variant_visibility)}`}
+        } - ${formatVariantVisibility(section.variant_visibility)}`}
       >
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">

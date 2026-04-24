@@ -48,9 +48,9 @@ export function SectionTemplateList(props: {
             <div className="text-sm app-text-muted">{template.description}</div>
             <div className="mt-2 flex flex-wrap gap-2 text-xs app-text-soft">
               <span>{template.defaultSectionTitle}</span>
-              <span>Â·</span>
+              <span>-</span>
               <span>{template.defaultSectionKind}</span>
-              <span>Â·</span>
+              <span>-</span>
               <span>
                 {template.presetCount} preset{template.presetCount === 1 ? "" : "s"}
               </span>

@@ -72,20 +72,20 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
       >
         {!hasMatchingOption && props.defaultSlug ? (
           <option value={`__missing__:${props.defaultSlug}`}>
-            Missing set Â· {props.defaultSlug}
+            Missing set - {props.defaultSlug}
           </option>
         ) : null}
 
         {props.vocabularySetOptions.map((option) => (
           <option key={option.id} value={option.slug}>
-            {option.title} Â· {option.slug}
-            {option.isPublished ? "" : " Â· draft"}
+            {option.title} - {option.slug}
+            {option.isPublished ? "" : " - draft"}
           </option>
         ))}
       </select>
 
       {!hasMatchingOption && props.defaultSlug ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
+        <div className="rounded-2xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] px-3 py-3 text-sm text-[var(--warning)]">
           The currently linked vocabulary set slug no longer matches an available library
           option. Choose a new set before saving.
         </div>
