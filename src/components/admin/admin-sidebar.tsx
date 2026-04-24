@@ -68,6 +68,7 @@ export default function AdminSidebar() {
   const isDashboard = pathname === "/admin";
   const isContent = pathname.startsWith("/admin/content");
   const isVocabulary = pathname.startsWith("/admin/vocabulary");
+  const isGrammar = pathname.startsWith("/admin/grammar");
   const isUiLab = pathname.startsWith("/admin/ui");
   const isQuestionSets =
     pathname === "/admin/question-sets" || pathname.startsWith("/admin/question-sets/");
@@ -211,6 +212,11 @@ export default function AdminSidebar() {
             <Link href="/admin/vocabulary" className={getNavItemClass(isVocabulary)}>
               <AppIcon icon="language" size={18} />
               <span className="flex-1 text-left">Vocabulary</span>
+            </Link>
+
+            <Link href="/admin/grammar" className={getNavItemClass(isGrammar)}>
+              <AppIcon icon="lessonContent" size={18} />
+              <span className="flex-1 text-left">Grammar</span>
             </Link>
           </SidebarSection>
 

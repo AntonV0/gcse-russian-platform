@@ -1,139 +1,170 @@
-import Link from "next/link";
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import DashboardCard from "@/components/ui/dashboard-card";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import Input from "@/components/ui/input";
+import PageIntroPanel from "@/components/ui/page-intro-panel";
+import SectionCard from "@/components/ui/section-card";
+import Select from "@/components/ui/select";
+import {
+  filterGrammarSetsForDashboardAccess,
+  getGrammarThemeLabel,
+  getGrammarTierLabel,
+  getPublishedGrammarSetsDb,
+  type GrammarSetFilters,
+} from "@/lib/grammar/grammar-helpers-db";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
-const grammarAreas = [
-  {
-    title: "Cases",
-    description:
-      "Build confidence with nominative, accusative, genitive, dative, instrumental, and prepositional usage.",
-  },
-  {
-    title: "Verb forms",
-    description:
-      "Present, past, future, infinitives, aspect basics, and useful GCSE-style verb patterns.",
-  },
-  {
-    title: "Adjectives and agreement",
-    description:
-      "Gender, number, case agreement, and describing people, places, and things accurately.",
-  },
-  {
-    title: "Pronouns",
-    description:
-      "Personal, possessive, and other core pronoun patterns that appear frequently in exam tasks.",
-  },
-  {
-    title: "Sentence structure",
-    description:
-      "Word order, connectives, opinions, reasons, and writing with more control and variety.",
-  },
-  {
-    title: "Translation support",
-    description:
-      "Grammar help focused on common translation patterns and exam-relevant accuracy issues.",
-  },
-];
+type GrammarPageProps = {
+  searchParams?: Promise<{
+    search?: string;
+    tier?: string;
+    themeKey?: string;
+  }>;
+};
 
-export default function GrammarPage() {
+function normalizeTierFilter(value?: string): GrammarSetFilters["tier"] {
+  if (
+    value === "foundation" ||
+    value === "higher" ||
+    value === "both" ||
+    value === "unknown"
+  ) {
+    return value;
+  }
+
+  return "all";
+}
+
+export default async function GrammarPage({ searchParams }: GrammarPageProps) {
+  const params = (await searchParams) ?? {};
+  const dashboard = await getDashboardInfo();
+  const filters: GrammarSetFilters = {
+    search: params.search ?? null,
+    tier: normalizeTierFilter(params.tier),
+    themeKey: params.themeKey ?? null,
+  };
+  const grammarSets = filterGrammarSetsForDashboardAccess(
+    await getPublishedGrammarSetsDb(filters),
+    dashboard
+  );
+
   return (
-    <main className="space-y-8">
-      <PageHeader
+    <main className="space-y-4">
+      <PageIntroPanel
+        tone="student"
+        eyebrow="Grammar"
         title="Grammar"
-        description="Review key Russian grammar areas in a clearer, more structured way."
+        description="Review GCSE Russian grammar through structured sets, explanations, examples, and reference tables."
+        badges={
+          <>
+            <Badge tone="info" icon="lessonContent">
+              Grammar hub
+            </Badge>
+            <Badge tone="muted" icon="school">
+              GCSE Russian
+            </Badge>
+          </>
+        }
+        actions={
+          <>
+            <Button href="/dashboard" variant="secondary" icon="dashboard">
+              Dashboard
+            </Button>
+            <Button href="/vocabulary" variant="secondary" icon="language">
+              Vocabulary
+            </Button>
+          </>
+        }
       />
 
-      <section className="app-surface-brand app-section-padding-lg">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_320px] xl:items-start">
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon="lessonContent">
-                Grammar hub
-              </Badge>
-              <Badge tone="muted" icon="school">
-                GCSE Russian
-              </Badge>
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="app-title">Understand the rules more clearly</h2>
-              <p className="app-subtitle max-w-2xl">
-                This section is the future home for grammar explanations, examples, and
-                revision support that can sit alongside lessons and exam preparation.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button href="/dashboard" variant="primary" icon="dashboard">
-                Dashboard
-              </Button>
-
-              <Button href="/courses" variant="secondary" icon="courses">
-                Courses
-              </Button>
-            </div>
+      <SectionCard
+        title="Find grammar"
+        description="Search by keyword or filter by tier and theme."
+        tone="student"
+      >
+        <form className="flex flex-col gap-3 lg:flex-row lg:items-center">
+          <div className="w-full lg:max-w-xs">
+            <Input name="search" defaultValue={params.search ?? ""} placeholder="Search grammar..." />
           </div>
 
-          <DashboardCard title="Why this matters">
-            <div className="space-y-3">
-              <p>
-                Strong grammar improves reading, writing, translation, and speaking. A
-                dedicated grammar area makes revision easier than hiding everything inside
-                lessons only.
-              </p>
-
-              <ul className="space-y-2">
-                <li>• Better writing accuracy</li>
-                <li>• More confident translation</li>
-                <li>• Clearer sentence building</li>
-                <li>• Easier revision before exams</li>
-              </ul>
-            </div>
-          </DashboardCard>
-        </div>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {grammarAreas.map((area) => (
-          <DashboardCard key={area.title} title={area.title}>
-            <p>{area.description}</p>
-          </DashboardCard>
-        ))}
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-        <DashboardCard title="Future direction">
-          <div className="space-y-3">
-            <p>
-              A strong next step here would be structured grammar reference pages linked
-              to lesson sections, with examples, explanations, and exam-focused reminders.
-            </p>
-
-            <ul className="space-y-2">
-              <li>• Grammar reference notes</li>
-              <li>• Example sentences</li>
-              <li>• Common mistake callouts</li>
-              <li>• Links to related lessons</li>
-            </ul>
+          <div className="w-full lg:max-w-[190px]">
+            <Select name="tier" defaultValue={filters.tier ?? "all"}>
+              <option value="all">All tiers</option>
+              <option value="foundation">Foundation</option>
+              <option value="higher">Higher</option>
+              <option value="both">Both tiers</option>
+            </Select>
           </div>
-        </DashboardCard>
 
-        <DashboardCard title="Related resource">
-          <div className="space-y-3">
-            <p>Pair grammar study with topic vocabulary to make revision stick better.</p>
-
-            <Link
-              href="/vocabulary"
-              className="inline-flex items-center gap-2 font-medium app-brand-text"
-            >
-              Explore vocabulary
-              <span aria-hidden="true">→</span>
-            </Link>
+          <div className="w-full lg:max-w-[220px]">
+            <Input
+              name="themeKey"
+              defaultValue={params.themeKey ?? ""}
+              placeholder="Theme key"
+            />
           </div>
-        </DashboardCard>
-      </section>
+
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" variant="primary" icon="search">
+              Search
+            </Button>
+            <Button href="/grammar" variant="secondary" icon="refresh">
+              Reset
+            </Button>
+          </div>
+        </form>
+      </SectionCard>
+
+      <SectionCard
+        title="Grammar sets"
+        description={`${grammarSets.length} set${grammarSets.length === 1 ? "" : "s"} available for your access level.`}
+        tone="student"
+      >
+        {grammarSets.length === 0 ? (
+          <EmptyState
+            icon="search"
+            iconTone="brand"
+            title="No grammar sets found"
+            description="Try clearing filters, or check back once more grammar content has been published."
+          />
+        ) : (
+          <div className="grid gap-3">
+            {grammarSets.map((grammarSet) => (
+              <CardListItem
+                key={grammarSet.id}
+                href={`/grammar/${grammarSet.slug}`}
+                title={grammarSet.title}
+                subtitle={grammarSet.description ?? "Grammar reference set."}
+                badges={
+                  <>
+                    <Badge tone="info" icon="school">
+                      {getGrammarTierLabel(grammarSet.tier)}
+                    </Badge>
+                    <Badge tone="muted" className="capitalize">
+                      {getGrammarThemeLabel(grammarSet.theme_key)}
+                    </Badge>
+                    <Badge tone="muted" icon="list">
+                      {grammarSet.point_count} point
+                      {grammarSet.point_count === 1 ? "" : "s"}
+                    </Badge>
+                  </>
+                }
+                actions={
+                  <Button
+                    href={`/grammar/${grammarSet.slug}`}
+                    variant="quiet"
+                    size="sm"
+                    icon="next"
+                    iconOnly
+                    ariaLabel={`Open ${grammarSet.title}`}
+                  />
+                }
+              />
+            ))}
+          </div>
+        )}
+      </SectionCard>
     </main>
   );
 }
