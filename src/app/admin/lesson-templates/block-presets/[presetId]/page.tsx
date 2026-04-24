@@ -2,6 +2,13 @@ import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import CheckboxField from "@/components/ui/checkbox-field";
+import EmptyState from "@/components/ui/empty-state";
+import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
+import Input from "@/components/ui/input";
+import PanelCard from "@/components/ui/panel-card";
+import Textarea from "@/components/ui/textarea";
 import {
   createLessonBlockPresetBlockAction,
   deleteLessonBlockPresetAction,
@@ -49,31 +56,34 @@ function BlockFields({
     case "subheader":
     case "text":
       return (
-        <textarea
-          name={name("content")}
-          required
-          rows={3}
-          defaultValue={typeof data?.content === "string" ? data.content : ""}
-          className="w-full rounded-xl border px-3 py-2 text-sm"
-        />
+        <FormField label="Content" required>
+          <Textarea
+            name={name("content")}
+            required
+            rows={3}
+            defaultValue={typeof data?.content === "string" ? data.content : ""}
+          />
+        </FormField>
       );
 
     case "note":
       return (
         <div className="space-y-2">
-          <input
-            name={name("title")}
-            required
-            defaultValue={typeof data?.title === "string" ? data.title : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <textarea
-            name={name("content")}
-            required
-            rows={4}
-            defaultValue={typeof data?.content === "string" ? data.content : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
+          <FormField label="Title" required>
+            <Input
+              name={name("title")}
+              required
+              defaultValue={typeof data?.title === "string" ? data.title : ""}
+            />
+          </FormField>
+          <FormField label="Content" required>
+            <Textarea
+              name={name("content")}
+              required
+              rows={4}
+              defaultValue={typeof data?.content === "string" ? data.content : ""}
+            />
+          </FormField>
         </div>
       );
 
@@ -81,159 +91,185 @@ function BlockFields({
     case "exam-tip":
       return (
         <div className="space-y-2">
-          <input
-            name={name("title")}
-            defaultValue={typeof data?.title === "string" ? data.title : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <textarea
-            name={name("content")}
-            required
-            rows={4}
-            defaultValue={typeof data?.content === "string" ? data.content : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
+          <FormField label="Title">
+            <Input
+              name={name("title")}
+              defaultValue={typeof data?.title === "string" ? data.title : ""}
+            />
+          </FormField>
+          <FormField label="Content" required>
+            <Textarea
+              name={name("content")}
+              required
+              rows={4}
+              defaultValue={typeof data?.content === "string" ? data.content : ""}
+            />
+          </FormField>
         </div>
       );
 
     case "image":
       return (
         <div className="space-y-2">
-          <input
-            name={name("src")}
-            required
-            placeholder="https://..."
-            defaultValue={typeof data?.src === "string" ? data.src : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <input
-            name={name("alt")}
-            placeholder="Alt text"
-            defaultValue={typeof data?.alt === "string" ? data.alt : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <input
-            name={name("caption")}
-            placeholder="Optional caption"
-            defaultValue={typeof data?.caption === "string" ? data.caption : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
+          <FormField label="Image URL" required>
+            <Input
+              name={name("src")}
+              required
+              placeholder="https://..."
+              defaultValue={typeof data?.src === "string" ? data.src : ""}
+            />
+          </FormField>
+          <FormField label="Alt text">
+            <Input
+              name={name("alt")}
+              placeholder="Alt text"
+              defaultValue={typeof data?.alt === "string" ? data.alt : ""}
+            />
+          </FormField>
+          <FormField label="Caption">
+            <Input
+              name={name("caption")}
+              placeholder="Optional caption"
+              defaultValue={typeof data?.caption === "string" ? data.caption : ""}
+            />
+          </FormField>
         </div>
       );
 
     case "audio":
       return (
         <div className="space-y-2">
-          <input
-            name={name("title")}
-            placeholder="Optional title"
-            defaultValue={typeof data?.title === "string" ? data.title : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <input
-            name={name("src")}
-            required
-            placeholder="https://..."
-            defaultValue={typeof data?.src === "string" ? data.src : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <input
-            name={name("caption")}
-            placeholder="Optional caption"
-            defaultValue={typeof data?.caption === "string" ? data.caption : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name={name("autoPlay")}
-              value="true"
-              defaultChecked={data?.autoPlay === true}
+          <FormField label="Title">
+            <Input
+              name={name("title")}
+              placeholder="Optional title"
+              defaultValue={typeof data?.title === "string" ? data.title : ""}
             />
-            Auto play
-          </label>
+          </FormField>
+          <FormField label="Audio URL" required>
+            <Input
+              name={name("src")}
+              required
+              placeholder="https://..."
+              defaultValue={typeof data?.src === "string" ? data.src : ""}
+            />
+          </FormField>
+          <FormField label="Caption">
+            <Input
+              name={name("caption")}
+              placeholder="Optional caption"
+              defaultValue={typeof data?.caption === "string" ? data.caption : ""}
+            />
+          </FormField>
+          <CheckboxField
+            name={name("autoPlay")}
+            label="Auto play"
+            defaultChecked={data?.autoPlay === true}
+          />
         </div>
       );
 
     case "vocabulary":
       return (
         <div className="space-y-2">
-          <input
-            name={name("title")}
-            required
-            defaultValue={typeof data?.title === "string" ? data.title : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <textarea
-            name={name("items")}
-            required
-            rows={6}
-            defaultValue={
-              Array.isArray(data?.items)
-                ? data.items
-                    .map((item) => {
-                      if (!item || typeof item !== "object") return "";
-                      const record = item as Record<string, unknown>;
-                      const russian =
-                        typeof record.russian === "string" ? record.russian : "";
-                      const english =
-                        typeof record.english === "string" ? record.english : "";
-                      return russian && english ? `${russian} | ${english}` : "";
-                    })
-                    .filter(Boolean)
-                    .join("\n")
-                : ""
-            }
-            className="w-full rounded-xl border px-3 py-2 font-mono text-sm"
-          />
+          <FormField label="Title" required>
+            <Input
+              name={name("title")}
+              required
+              defaultValue={typeof data?.title === "string" ? data.title : ""}
+            />
+          </FormField>
+          <FormField label="Vocabulary items" required>
+            <Textarea
+              name={name("items")}
+              required
+              rows={6}
+              defaultValue={
+                Array.isArray(data?.items)
+                  ? data.items
+                      .map((item) => {
+                        if (!item || typeof item !== "object") return "";
+                        const record = item as Record<string, unknown>;
+                        const russian =
+                          typeof record.russian === "string" ? record.russian : "";
+                        const english =
+                          typeof record.english === "string" ? record.english : "";
+                        return russian && english ? `${russian} | ${english}` : "";
+                      })
+                      .filter(Boolean)
+                      .join("\n")
+                  : ""
+              }
+              className="font-mono"
+            />
+          </FormField>
         </div>
       );
 
     case "question-set":
       return (
         <div className="space-y-2">
-          <input
-            name={name("title")}
-            placeholder="Optional heading"
-            defaultValue={typeof data?.title === "string" ? data.title : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <input
-            name={name("questionSetSlug")}
-            required
-            defaultValue={
-              typeof data?.questionSetSlug === "string" ? data.questionSetSlug : ""
-            }
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
+          <FormField label="Heading">
+            <Input
+              name={name("title")}
+              placeholder="Optional heading"
+              defaultValue={typeof data?.title === "string" ? data.title : ""}
+            />
+          </FormField>
+          <FormField label="Question set slug" required>
+            <Input
+              name={name("questionSetSlug")}
+              required
+              defaultValue={
+                typeof data?.questionSetSlug === "string" ? data.questionSetSlug : ""
+              }
+            />
+          </FormField>
         </div>
       );
 
     case "vocabulary-set":
       return (
         <div className="space-y-2">
-          <input
-            name={name("title")}
-            placeholder="Optional heading"
-            defaultValue={typeof data?.title === "string" ? data.title : ""}
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
-          <input
-            name={name("vocabularySetSlug")}
-            required
-            defaultValue={
-              typeof data?.vocabularySetSlug === "string" ? data.vocabularySetSlug : ""
-            }
-            className="w-full rounded-xl border px-3 py-2 text-sm"
-          />
+          <FormField label="Heading">
+            <Input
+              name={name("title")}
+              placeholder="Optional heading"
+              defaultValue={typeof data?.title === "string" ? data.title : ""}
+            />
+          </FormField>
+          <FormField label="Vocabulary set slug" required>
+            <Input
+              name={name("vocabularySetSlug")}
+              required
+              defaultValue={
+                typeof data?.vocabularySetSlug === "string"
+                  ? data.vocabularySetSlug
+                  : ""
+              }
+            />
+          </FormField>
         </div>
       );
 
     case "divider":
-      return <div className="text-sm text-gray-500">No fields required for divider.</div>;
+      return (
+        <EmptyState
+          icon="blocks"
+          title="No fields required"
+          description="Divider blocks only need their block type and position."
+        />
+      );
 
     default:
-      return <div className="text-sm text-gray-500">Unsupported block type form.</div>;
+      return (
+        <EmptyState
+          icon="warning"
+          iconTone="warning"
+          title="Unsupported block type"
+          description="This block type does not have an editor form yet."
+        />
+      );
   }
 }
 
@@ -268,109 +304,80 @@ export default async function AdminLessonBlockPresetDetailPage({
         </div>
       </div>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4 flex flex-wrap gap-2">
-          <Badge tone="muted" icon="file">
-            {detail.preset.slug}
-          </Badge>
-
-          {detail.preset.is_active ? (
-            <Badge tone="success" icon="completed">
-              Active
+      <PanelCard
+        title="Block preset details"
+        tone="admin"
+        actions={
+          <>
+            <Badge tone="muted" icon="file">
+              {detail.preset.slug}
             </Badge>
-          ) : (
-            <Badge tone="warning" icon="pending">
-              Inactive
+            <Badge
+              tone={detail.preset.is_active ? "success" : "warning"}
+              icon={detail.preset.is_active ? "completed" : "pending"}
+            >
+              {detail.preset.is_active ? "Active" : "Inactive"}
             </Badge>
-          )}
-
-          <Badge tone="muted" icon="help">
-            {detail.blocks.length} block(s)
-          </Badge>
-        </div>
-
+            <Badge tone="muted" icon="help">
+              {detail.blocks.length} block(s)
+            </Badge>
+          </>
+        }
+      >
         <form
           action={updateLessonBlockPresetAction}
-          className="grid gap-3 md:grid-cols-2"
+          className="grid gap-4 md:grid-cols-2"
         >
           <input type="hidden" name="presetId" value={detail.preset.id} />
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-900">Title</label>
-            <input
-              name="title"
-              required
-              defaultValue={detail.preset.title}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
-            />
-          </div>
+          <FormField label="Title" required>
+            <Input name="title" required defaultValue={detail.preset.title} />
+          </FormField>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-900">Slug</label>
-            <input
-              name="slug"
-              required
-              defaultValue={detail.preset.slug}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
-            />
-          </div>
+          <FormField label="Slug" required>
+            <Input name="slug" required defaultValue={detail.preset.slug} />
+          </FormField>
 
-          <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-900">Description</label>
-            <input
+          <FormField label="Description" className="md:col-span-2">
+            <Input
               name="description"
               defaultValue={detail.preset.description ?? ""}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
             />
-          </div>
+          </FormField>
 
-          <div className="md:col-span-2">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                name="isActive"
-                value="true"
-                defaultChecked={detail.preset.is_active}
-              />
-              Active
-            </label>
-          </div>
+          <CheckboxField
+            className="md:col-span-2"
+            name="isActive"
+            label="Active"
+            defaultChecked={detail.preset.is_active}
+          />
 
-          <div className="flex gap-2 md:col-span-2">
-            <button
-              type="submit"
-              className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-            >
+          <InlineActions className="md:col-span-2">
+            <Button type="submit" variant="primary" icon="save">
               Save preset
-            </button>
-          </div>
+            </Button>
+          </InlineActions>
         </form>
 
         <form action={deleteLessonBlockPresetAction} className="mt-4">
           <input type="hidden" name="presetId" value={detail.preset.id} />
-          <button
-            type="submit"
-            className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
-          >
+          <Button type="submit" variant="danger" icon="delete">
             Delete preset
-          </button>
+          </Button>
         </form>
-      </section>
+      </PanelCard>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4">
-          <div className="font-medium text-gray-900">Add preset block</div>
-          <div className="text-sm text-gray-500">
-            Add a new starter block to this preset.
-          </div>
-        </div>
-
+      <PanelCard
+        title="Add preset block"
+        description="Add a new starter block to this preset."
+        tone="admin"
+      >
         <div className="grid gap-4">
           {templateBlockTypes.map((blockType) => (
             <form
               key={blockType}
               action={createLessonBlockPresetBlockAction}
-              className="rounded-xl border p-4"
+              className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/55 p-4"
             >
               <input type="hidden" name="presetId" value={detail.preset!.id} />
               <input type="hidden" name="blockType" value={blockType} />
@@ -383,7 +390,7 @@ export default async function AdminLessonBlockPresetDetailPage({
                 >
                   {getLessonBlockGroupLabel(blockType)}
                 </span>
-                <span className="font-medium text-gray-900">
+                <span className="font-medium text-[var(--text-primary)]">
                   {getLessonBlockLabel(blockType)}
                 </span>
               </div>
@@ -391,85 +398,75 @@ export default async function AdminLessonBlockPresetDetailPage({
               <BlockFields blockType={blockType} />
 
               <div className="mt-3">
-                <button
-                  type="submit"
-                  className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-                >
+                <Button type="submit" variant="secondary" size="sm" icon="create">
                   Add {getLessonBlockLabel(blockType).toLowerCase()}
-                </button>
+                </Button>
               </div>
             </form>
           ))}
         </div>
-      </section>
+      </PanelCard>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4">
-          <div className="font-medium text-gray-900">Preset blocks</div>
-          <div className="text-sm text-gray-500">
-            Current blocks inside this preset. Reordering is done by ordered ids for now.
-          </div>
-        </div>
-
+      <PanelCard
+        title="Preset blocks"
+        description="Current blocks inside this preset. Reordering is done by ordered ids for now."
+        tone="admin"
+        contentClassName="space-y-4"
+      >
         {detail.blocks.length === 0 ? (
-          <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
-            No blocks in this preset yet.
-          </div>
+          <EmptyState
+            icon="blocks"
+            title="No blocks in this preset yet"
+            description="Add a starter block above to begin composing this preset."
+          />
         ) : (
           <div className="space-y-4">
-            <form
-              action={reorderLessonBlockPresetBlocksAction}
-              className="rounded-xl border bg-gray-50 p-4"
-            >
-              <input type="hidden" name="presetId" value={detail.preset.id} />
-              <label className="mb-2 block text-sm font-medium text-gray-900">
-                Ordered preset block ids
-              </label>
-              <textarea
-                name="orderedPresetBlockIds"
-                rows={3}
-                defaultValue={detail.blocks.map((block) => block.id).join(",")}
-                className="w-full rounded-xl border px-3 py-2 font-mono text-sm"
-              />
-              <button
-                type="submit"
-                className="mt-3 rounded-lg border px-3 py-2 text-sm hover:bg-white"
-              >
-                Save block order
-              </button>
-            </form>
+            <PanelCard title="Block order" tone="muted" density="compact">
+              <form action={reorderLessonBlockPresetBlocksAction} className="space-y-3">
+                <input type="hidden" name="presetId" value={detail.preset.id} />
+                <FormField label="Ordered preset block ids">
+                  <Textarea
+                    name="orderedPresetBlockIds"
+                    rows={3}
+                    defaultValue={detail.blocks.map((block) => block.id).join(",")}
+                    className="font-mono"
+                  />
+                </FormField>
+                <Button type="submit" variant="secondary" icon="save">
+                  Save block order
+                </Button>
+              </form>
+            </PanelCard>
 
             {detail.blocks.map((block) => (
-              <section key={block.id} className="rounded-xl border p-4">
-                <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <span
-                    className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
-                      block.block_type
-                    )}`}
-                  >
-                    {getLessonBlockGroupLabel(block.block_type)}
-                  </span>
-
-                  <span className="font-medium text-gray-900">
-                    {getLessonBlockLabel(block.block_type)}
-                  </span>
-
-                  <Badge tone="muted" icon="help">
-                    Position {block.position}
-                  </Badge>
-
-                  {block.is_active ? (
-                    <Badge tone="success" icon="completed">
-                      Active
+              <PanelCard
+                key={block.id}
+                title={getLessonBlockLabel(block.block_type)}
+                tone="default"
+                density="compact"
+                contentClassName="space-y-4"
+                actions={
+                  <>
+                    <span
+                      className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${getLessonBlockAccentClass(
+                        block.block_type
+                      )}`}
+                    >
+                      {getLessonBlockGroupLabel(block.block_type)}
+                    </span>
+                    <Badge tone="muted" icon="help">
+                      Position {block.position}
                     </Badge>
-                  ) : (
-                    <Badge tone="warning" icon="pending">
-                      Inactive
+                    <Badge
+                      tone={block.is_active ? "success" : "warning"}
+                      icon={block.is_active ? "completed" : "pending"}
+                    >
+                      {block.is_active ? "Active" : "Inactive"}
                     </Badge>
-                  )}
-                </div>
-
-                <div className="mb-3 rounded-xl border bg-gray-50 px-3 py-2 text-sm text-gray-600">
+                  </>
+                }
+              >
+                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/60 px-3 py-2 text-sm app-text-muted">
                   {getLessonBlockPreview({
                     block_type: block.block_type,
                     data: block.data,
@@ -483,41 +480,31 @@ export default async function AdminLessonBlockPresetDetailPage({
 
                   <BlockFields blockType={block.block_type} data={block.data} />
 
-                  <label className="flex items-center gap-2 text-sm text-gray-700">
-                    <input
-                      type="checkbox"
-                      name="isActive"
-                      value="true"
-                      defaultChecked={block.is_active}
-                    />
-                    Active
-                  </label>
+                  <CheckboxField
+                    name="isActive"
+                    label="Active"
+                    defaultChecked={block.is_active}
+                  />
 
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="submit"
-                      className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-                    >
+                  <InlineActions>
+                    <Button type="submit" variant="secondary" icon="save">
                       Save block
-                    </button>
-                  </div>
+                    </Button>
+                  </InlineActions>
                 </form>
 
                 <form action={deleteLessonBlockPresetBlockAction} className="mt-3">
                   <input type="hidden" name="presetId" value={detail.preset!.id} />
                   <input type="hidden" name="presetBlockId" value={block.id} />
-                  <button
-                    type="submit"
-                    className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
-                  >
+                  <Button type="submit" variant="danger" icon="delete">
                     Delete block
-                  </button>
+                  </Button>
                 </form>
-              </section>
+              </PanelCard>
             ))}
           </div>
         )}
-      </section>
+      </PanelCard>
     </main>
   );
 }
