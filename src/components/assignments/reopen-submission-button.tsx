@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { reopenAssignmentSubmissionAction } from "@/app/actions/teacher/teacher-assignment-actions";
+import Button from "@/components/ui/button";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 
 type ReopenSubmissionButtonProps = {
   submissionId: string;
@@ -31,22 +33,21 @@ export default function ReopenSubmissionButton({
 
   return (
     <div className="space-y-2">
-      <button
+      <Button
         type="button"
         onClick={handleClick}
         disabled={isPending}
-        className="rounded border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
+        variant="secondary"
+        size="sm"
       >
         {isPending ? "Reopening..." : "Reopen for resubmission"}
-      </button>
+      </Button>
 
       {saved ? (
-        <p className="text-sm font-medium text-green-600">
-          Submission reopened successfully.
-        </p>
+        <FeedbackBanner tone="success" description="Submission reopened successfully." />
       ) : null}
 
-      {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
+      {error ? <FeedbackBanner tone="danger" description={error} /> : null}
     </div>
   );
 }

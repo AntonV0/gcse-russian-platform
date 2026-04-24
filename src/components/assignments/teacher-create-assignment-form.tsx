@@ -1,9 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { createTeacherAssignmentAction } from "@/app/actions/teacher/teacher-create-assignment-actions";
 import { updateTeacherAssignmentAction } from "@/app/actions/teacher/teacher-update-assignment-actions";
+import Button from "@/components/ui/button";
+import FeedbackBanner from "@/components/ui/feedback-banner";
+import FormField from "@/components/ui/form-field";
+import Input from "@/components/ui/input";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
+import Textarea from "@/components/ui/textarea";
 import type {
   LessonOption,
   QuestionSetOption,
@@ -273,86 +279,76 @@ export default function TeacherCreateAssignmentForm({
   }
 
   return (
-    <div className="space-y-6 rounded-lg border p-6">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold">
-          {isEditMode ? "Edit assignment" : "New assignment"}
-        </h2>
-        <Link
-          href="/teacher/assignments"
-          className="text-sm text-blue-600 hover:underline"
-        >
+    <PanelCard
+      title={isEditMode ? "Edit assignment" : "New assignment"}
+      description="Choose the group, add work items, and set the order students should complete them in."
+      tone="default"
+      contentClassName="space-y-6"
+    >
+      <div className="flex justify-end">
+        <Button href="/teacher/assignments" variant="quiet" size="sm" icon="back">
           Back to assignments
-        </Link>
+        </Button>
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">Group</label>
-        <select
-          value={groupId}
-          onChange={(e) => handleGroupChange(e.target.value)}
-          className="w-full rounded border px-3 py-2"
-        >
+      <FormField label="Group">
+        <Select value={groupId} onChange={(event) => handleGroupChange(event.target.value)}>
           {groups.map((group) => (
             <option key={group.id} value={group.id}>
               {group.name}
             </option>
           ))}
-        </select>
-      </div>
+        </Select>
+      </FormField>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">Title</label>
-        <input
+      <FormField label="Title" required>
+        <Input
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded border px-3 py-2"
+          onChange={(event) => setTitle(event.target.value)}
           placeholder="e.g. Week 1 homework"
         />
-      </div>
+      </FormField>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">Instructions</label>
-        <textarea
+      <FormField label="Instructions">
+        <Textarea
           value={instructions}
-          onChange={(e) => setInstructions(e.target.value)}
+          onChange={(event) => setInstructions(event.target.value)}
           rows={4}
-          className="w-full rounded border px-3 py-2"
           placeholder="Add any instructions for students..."
         />
-      </div>
+      </FormField>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">Due date</label>
-        <input
+      <FormField label="Due date">
+        <Input
           type="datetime-local"
           value={dueAt}
-          onChange={(e) => setDueAt(e.target.value)}
-          className="w-full rounded border px-3 py-2"
+          onChange={(event) => setDueAt(event.target.value)}
         />
-      </div>
+      </FormField>
 
-      <label className="flex items-start gap-3 rounded border p-4">
+      <label className="app-checkbox-field">
         <input
           type="checkbox"
           checked={allowFileUpload}
-          onChange={(e) => setAllowFileUpload(e.target.checked)}
-          className="mt-1"
+          onChange={(event) => setAllowFileUpload(event.target.checked)}
+          className="app-focus-ring app-checkbox-input"
         />
-        <div>
-          <div className="font-medium">Allow file upload</div>
-          <div className="text-sm text-gray-600">
+        <span className="app-checkbox-copy">
+          <span className="app-checkbox-label">Allow file upload</span>
+          <span className="app-checkbox-description">
             Students can upload an image, PDF, or file with their written work.
-          </div>
-        </div>
+          </span>
+        </span>
       </label>
 
       <div className="space-y-3">
-        <p className="text-sm font-medium">Attach lessons</p>
+        <p className="text-sm font-semibold text-[var(--text-primary)]">
+          Attach lessons
+        </p>
 
         {availableLessons.length === 0 ? (
-          <div className="rounded border p-4 text-sm text-gray-600">
+          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 text-sm app-text-muted">
             No lessons available for this group yet.
           </div>
         ) : (
@@ -360,18 +356,22 @@ export default function TeacherCreateAssignmentForm({
             {availableLessons.map((lesson) => (
               <label
                 key={lesson.id}
-                className="flex cursor-pointer items-start gap-3 rounded border p-3"
+                className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 transition hover:border-[var(--border-strong)]"
               >
                 <input
                   type="checkbox"
                   checked={selectedLessonIds.includes(lesson.id)}
                   onChange={() => toggleLesson(lesson.id)}
-                  className="mt-1"
+                  className="app-focus-ring app-checkbox-input mt-1"
                 />
-                <div>
-                  <div className="font-medium">{lesson.title}</div>
-                  <div className="text-sm text-gray-600">{lesson.module_title}</div>
-                </div>
+                <span>
+                  <span className="block font-medium text-[var(--text-primary)]">
+                    {lesson.title}
+                  </span>
+                  <span className="block text-sm app-text-muted">
+                    {lesson.module_title}
+                  </span>
+                </span>
               </label>
             ))}
           </div>
@@ -379,10 +379,12 @@ export default function TeacherCreateAssignmentForm({
       </div>
 
       <div className="space-y-3">
-        <p className="text-sm font-medium">Attach question sets</p>
+        <p className="text-sm font-semibold text-[var(--text-primary)]">
+          Attach question sets
+        </p>
 
         {questionSets.length === 0 ? (
-          <div className="rounded border p-4 text-sm text-gray-600">
+          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 text-sm app-text-muted">
             No question sets available yet.
           </div>
         ) : (
@@ -390,42 +392,46 @@ export default function TeacherCreateAssignmentForm({
             {questionSets.map((questionSet) => (
               <label
                 key={questionSet.id}
-                className="flex cursor-pointer items-start gap-3 rounded border p-3"
+                className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 transition hover:border-[var(--border-strong)]"
               >
                 <input
                   type="checkbox"
                   checked={selectedQuestionSetIds.includes(questionSet.id)}
                   onChange={() => toggleQuestionSet(questionSet.id)}
-                  className="mt-1"
+                  className="app-focus-ring app-checkbox-input mt-1"
                 />
-                <div>
-                  <div className="font-medium">{questionSet.title}</div>
+                <span>
+                  <span className="block font-medium text-[var(--text-primary)]">
+                    {questionSet.title}
+                  </span>
                   {questionSet.description ? (
-                    <div className="text-sm text-gray-600">{questionSet.description}</div>
+                    <span className="block text-sm app-text-muted">
+                      {questionSet.description}
+                    </span>
                   ) : null}
-                </div>
+                </span>
               </label>
             ))}
           </div>
         )}
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">Custom task</label>
-        <textarea
+      <FormField label="Custom task">
+        <Textarea
           value={customTaskValue}
-          onChange={(e) => setCustomTaskValue(e.target.value)}
+          onChange={(event) => setCustomTaskValue(event.target.value)}
           rows={4}
-          className="w-full rounded border px-3 py-2"
           placeholder="Optional: add a written task or teacher instruction..."
         />
-      </div>
+      </FormField>
 
       <div className="space-y-3">
-        <p className="text-sm font-medium">Assignment items (order)</p>
+        <p className="text-sm font-semibold text-[var(--text-primary)]">
+          Assignment items (order)
+        </p>
 
         {items.length === 0 ? (
-          <div className="rounded border p-4 text-sm text-gray-600">
+          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 text-sm app-text-muted">
             No items added yet.
           </div>
         ) : (
@@ -436,39 +442,48 @@ export default function TeacherCreateAssignmentForm({
               return (
                 <div
                   key={`${item.type}-${index}`}
-                  className="flex items-start justify-between gap-4 rounded border p-3 text-sm"
+                  className="flex items-start justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 text-sm"
                 >
                   <div>
-                    <p className="font-medium">
+                    <p className="font-medium text-[var(--text-primary)]">
                       {index + 1}. {label.title}
                     </p>
                     {label.subtitle ? (
-                      <p className="text-gray-600">{label.subtitle}</p>
+                      <p className="app-text-muted">{label.subtitle}</p>
                     ) : null}
                   </div>
 
-                  <div className="flex gap-2">
-                    <button
+                  <div className="flex flex-wrap gap-2">
+                    <Button
                       type="button"
                       onClick={() => moveItem(index, "up")}
-                      className="rounded border px-2 py-1 text-xs"
+                      variant="secondary"
+                      size="sm"
+                      iconOnly
+                      icon="up"
+                      ariaLabel="Move item up"
                     >
-                      ↑
-                    </button>
-                    <button
+                      Move item up
+                    </Button>
+                    <Button
                       type="button"
                       onClick={() => moveItem(index, "down")}
-                      className="rounded border px-2 py-1 text-xs"
+                      variant="secondary"
+                      size="sm"
+                      iconOnly
+                      icon="down"
+                      ariaLabel="Move item down"
                     >
-                      ↓
-                    </button>
-                    <button
+                      Move item down
+                    </Button>
+                    <Button
                       type="button"
                       onClick={() => removeItem(index)}
-                      className="rounded border px-2 py-1 text-xs text-red-600"
+                      variant="danger"
+                      size="sm"
                     >
                       Remove
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
@@ -477,18 +492,14 @@ export default function TeacherCreateAssignmentForm({
         )}
       </div>
 
-      {error ? (
-        <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {error}
-        </div>
-      ) : null}
+      {error ? <FeedbackBanner tone="danger" description={error} /> : null}
 
-      <div className="flex items-center gap-3">
-        <button
+      <div className="flex flex-wrap items-center gap-3">
+        <Button
           type="button"
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+          variant="primary"
         >
           {isSubmitting
             ? isEditMode
@@ -497,15 +508,12 @@ export default function TeacherCreateAssignmentForm({
             : isEditMode
               ? "Save changes"
               : "Create assignment"}
-        </button>
+        </Button>
 
-        <Link
-          href="/teacher/assignments"
-          className="text-sm text-gray-600 hover:underline"
-        >
+        <Button href="/teacher/assignments" variant="quiet">
           Cancel
-        </Link>
+        </Button>
       </div>
-    </div>
+    </PanelCard>
   );
 }

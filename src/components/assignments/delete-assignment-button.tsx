@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { deleteTeacherAssignmentAction } from "@/app/actions/teacher/teacher-delete-assignment-actions";
+import Button from "@/components/ui/button";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 
 type DeleteAssignmentButtonProps = {
   assignmentId: string;
@@ -25,38 +27,41 @@ export default function DeleteAssignmentButton({
 
   if (!confirming) {
     return (
-      <button
+      <Button
         type="button"
         onClick={() => setConfirming(true)}
-        className="text-sm text-red-600 hover:underline"
+        variant="danger"
+        size="sm"
       >
         Delete assignment
-      </button>
+      </Button>
     );
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <button
+    <div className="flex flex-wrap items-center gap-3">
+      <Button
         type="button"
         onClick={handleDelete}
-        className="rounded bg-red-600 px-3 py-2 text-sm text-white"
+        variant="danger"
+        size="sm"
       >
         Confirm delete
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
         onClick={() => {
           setConfirming(false);
           setError(null);
         }}
-        className="text-sm text-gray-600 hover:underline"
+        variant="quiet"
+        size="sm"
       >
         Cancel
-      </button>
+      </Button>
 
-      {error ? <span className="text-sm text-red-600">{error}</span> : null}
+      {error ? <FeedbackBanner tone="danger" description={error} /> : null}
     </div>
   );
 }
