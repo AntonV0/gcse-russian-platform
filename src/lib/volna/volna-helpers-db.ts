@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth/auth";
 
 export type DbTeachingGroup = {
   id: string;
@@ -21,12 +22,9 @@ export type DbTeachingGroupMember = {
 export async function getCurrentUserTeachingGroupMembershipsDb() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
-  if (userError || !user) {
+  if (!user) {
     return [];
   }
 

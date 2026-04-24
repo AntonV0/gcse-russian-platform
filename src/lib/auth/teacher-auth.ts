@@ -1,27 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 
 async function isCurrentUserAdmin() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return false;
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (profileError) {
-    console.error("Error checking admin status:", profileError);
-    return false;
-  }
+  const profile = await getCurrentProfile();
 
   return Boolean(profile?.is_admin);
 }
@@ -29,12 +10,9 @@ async function isCurrentUserAdmin() {
 export async function isCurrentUserTeacherForAnyGroup() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
-  if (userError || !user) {
+  if (!user) {
     return false;
   }
 
@@ -62,12 +40,9 @@ export async function isCurrentUserTeacherForAnyGroup() {
 export async function canCurrentUserReviewAssignment(assignmentId: string) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
-  if (userError || !user) {
+  if (!user) {
     return false;
   }
 

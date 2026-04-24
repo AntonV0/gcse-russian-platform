@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth/auth";
 import { isCurrentUserAdminDb } from "./auth";
 import type {
   DbAssignment,
@@ -91,12 +92,9 @@ export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string)
 export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListItem[]> {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
-  if (userError || !user) return [];
+  if (!user) return [];
 
   const isAdmin = await isCurrentUserAdminDb();
 

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth/auth";
 import { isCurrentUserAdminDb } from "./auth";
 import { getQuestionSetMetaByIdDb } from "./options";
 import type {
@@ -11,12 +12,9 @@ import type {
 export async function getCurrentUserAssignmentsDb() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
-  if (userError || !user) return [];
+  if (!user) return [];
 
   const isAdmin = await isCurrentUserAdminDb();
 
@@ -79,12 +77,9 @@ export async function getAssignmentItemsDb(assignmentId: string) {
 export async function getCurrentUserAssignmentSubmissionDb(assignmentId: string) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
-  if (userError || !user) return null;
+  if (!user) return null;
 
   const { data, error } = await supabase
     .from("assignment_submissions")

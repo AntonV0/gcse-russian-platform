@@ -79,22 +79,27 @@ export async function getProductsForCourseVariantDb(
   return (data ?? []) as DbProduct[];
 }
 
-export async function getCurrentUserAccessGrantsDb() {
+export async function getCurrentUserAccessGrantsDb(userId?: string) {
   const supabase = await createClient();
+  let currentUserId = userId;
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  if (!currentUserId) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  if (userError || !user) {
-    return [];
+    if (userError || !user) {
+      return [];
+    }
+
+    currentUserId = user.id;
   }
 
   const { data, error } = await supabase
     .from("user_access_grants")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", currentUserId)
     .eq("is_active", true);
 
   if (error) {
@@ -107,12 +112,13 @@ export async function getCurrentUserAccessGrantsDb() {
 
 export async function getCurrentCourseVariantAccessGrantDb(
   courseSlug: string,
-  variantSlug: string
+  variantSlug: string,
+  userId?: string
 ) {
   const products = await getProductsForCourseVariantDb(courseSlug, variantSlug);
   if (products.length === 0) return null;
 
-  const grants = await getCurrentUserAccessGrantsDb();
+  const grants = await getCurrentUserAccessGrantsDb(userId);
   if (grants.length === 0) return null;
 
   const productIds = new Set(products.map((product) => product.id));

@@ -1,25 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile } from "@/lib/auth/auth";
 
 export async function isCurrentUserAdminDb() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) return false;
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (profileError) {
-    console.error("Error checking admin status in assignment helpers:", profileError);
-    return false;
-  }
+  const profile = await getCurrentProfile();
 
   return Boolean(profile?.is_admin);
 }
