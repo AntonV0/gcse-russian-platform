@@ -24,15 +24,27 @@ const THEME_STORAGE_KEY = "theme";
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function getSystemTheme(): ThemeMode {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function readStoredThemePreference(): ThemePreference | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   return stored === "light" || stored === "dark" || stored === "system" ? stored : null;
 }
 
 function readResolvedTheme(): ThemeMode {
+  if (typeof document === "undefined") {
+    return "light";
+  }
+
   const current = document.documentElement.getAttribute("data-theme");
   return current === "dark" ? "dark" : "light";
 }
@@ -46,6 +58,10 @@ function resolveTheme(preference: ThemePreference | null): ThemeMode {
 }
 
 function applyTheme(theme: ThemeMode, animate = true) {
+  if (typeof document === "undefined") {
+    return;
+  }
+
   const root = document.documentElement;
 
   if (animate) {
@@ -61,14 +77,26 @@ function applyTheme(theme: ThemeMode, animate = true) {
   }
 }
 
+function readInitialThemeState() {
+  const storedPreference = readStoredThemePreference();
+  const initialPreference: ThemePreference = storedPreference ?? "system";
+
+  return {
+    theme: resolveTheme(initialPreference),
+    themePreference: initialPreference,
+  };
+}
+
 type ThemeProviderProps = {
   children: React.ReactNode;
 };
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<ThemeMode | null>(null);
+  const [theme, setThemeState] = useState<ThemeMode | null>(
+    () => readInitialThemeState().theme
+  );
   const [themePreference, setThemePreferenceState] = useState<ThemePreference | null>(
-    null
+    () => readInitialThemeState().themePreference
   );
 
   const setThemePreference = useCallback((nextPreference: ThemePreference) => {
@@ -91,13 +119,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   }, [theme]);
 
   useEffect(() => {
-    const storedPreference = readStoredThemePreference();
-    const initialPreference: ThemePreference = storedPreference ?? "system";
-    const initialResolvedTheme = resolveTheme(initialPreference);
-
-    applyTheme(initialResolvedTheme, false);
-    setThemePreferenceState(initialPreference);
-    setThemeState(initialResolvedTheme);
+    applyTheme(theme ?? readResolvedTheme(), false);
 
     function handleStorage(event: StorageEvent) {
       if (event.key !== THEME_STORAGE_KEY) {
@@ -141,7 +163,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       mediaQuery.removeEventListener("change", handleSystemThemeChange);
       window.removeEventListener("storage", handleStorage);
     };
-  }, []);
+  }, [theme]);
 
   const value = useMemo<ThemeContextValue>(
     () => ({
