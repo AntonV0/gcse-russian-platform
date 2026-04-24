@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import { useTheme, type ThemePreference } from "@/components/providers/theme-provider";
 
@@ -29,6 +30,18 @@ const themeOptions: Array<{
   },
 ];
 
+function subscribeToHydration() {
+  return () => {};
+}
+
+function getClientHydrationSnapshot() {
+  return true;
+}
+
+function getServerHydrationSnapshot() {
+  return false;
+}
+
 function formatThemeLabel(value: string | null) {
   if (!value) return "Loading";
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -36,12 +49,19 @@ function formatThemeLabel(value: string | null) {
 
 export default function ThemeModeSelector() {
   const { theme, themePreference, setThemePreference } = useTheme();
+  const hasMounted = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot
+  );
+  const displayedTheme = hasMounted ? theme : null;
+  const displayedPreference = hasMounted ? themePreference : null;
 
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-3">
         {themeOptions.map((option) => {
-          const isActive = themePreference === option.value;
+          const isActive = displayedPreference === option.value;
 
           return (
             <button
@@ -104,7 +124,7 @@ export default function ThemeModeSelector() {
               Preference
             </div>
             <div className="text-sm font-semibold text-[var(--text-primary)]">
-              {formatThemeLabel(themePreference)}
+              {formatThemeLabel(displayedPreference)}
             </div>
           </div>
 
@@ -113,7 +133,7 @@ export default function ThemeModeSelector() {
               Active theme
             </div>
             <div className="text-sm font-semibold text-[var(--text-primary)]">
-              {formatThemeLabel(theme)}
+              {formatThemeLabel(displayedTheme)}
             </div>
           </div>
         </div>

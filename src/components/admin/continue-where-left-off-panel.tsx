@@ -14,13 +14,15 @@ type RecentAdminRoute = {
 
 const STORAGE_KEY = "gcse-russian-admin-last-route";
 
-function readRecentAdminRoute(): RecentAdminRoute | null {
+function readRecentAdminRouteSnapshot(): string | null {
   if (typeof window === "undefined") {
     return null;
   }
 
-  const raw = window.localStorage.getItem(STORAGE_KEY);
+  return window.localStorage.getItem(STORAGE_KEY);
+}
 
+function parseRecentAdminRoute(raw: string | null): RecentAdminRoute | null {
   if (!raw) {
     return null;
   }
@@ -64,10 +66,15 @@ function formatRelativeTime(timestamp: number) {
 }
 
 export default function ContinueWhereLeftOffPanel() {
-  const recentRoute = useSyncExternalStore(
+  const recentRouteSnapshot = useSyncExternalStore(
     subscribeToRecentAdminRoute,
-    readRecentAdminRoute,
+    readRecentAdminRouteSnapshot,
     () => null
+  );
+
+  const recentRoute = useMemo(
+    () => parseRecentAdminRoute(recentRouteSnapshot),
+    [recentRouteSnapshot]
   );
 
   const relativeTime = useMemo(() => {

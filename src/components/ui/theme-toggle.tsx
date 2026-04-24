@@ -1,18 +1,33 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { useTheme } from "@/components/providers/theme-provider";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-export default function ThemeToggle() {
-  const { theme, toggleTheme, themePreference } = useTheme();
+function subscribeToHydration() {
+  return () => {};
+}
 
-  const title =
-    themePreference === "system"
-      ? "Toggle theme (currently following system)"
-      : "Toggle theme";
+function getClientHydrationSnapshot() {
+  return true;
+}
+
+function getServerHydrationSnapshot() {
+  return false;
+}
+
+export default function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const hasMounted = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot
+  );
+
+  const title = "Toggle theme";
 
   return (
     <span className="dev-marker-host relative inline-flex">
@@ -39,7 +54,7 @@ export default function ThemeToggle() {
         aria-label={title}
         title={title}
       >
-        {theme ? (
+        {hasMounted && theme ? (
           <AppIcon
             icon={theme === "dark" ? "sun" : "moon"}
             size={17}
