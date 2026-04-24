@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
-import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
+import LessonRenderer, {
+  type LessonRendererVariant,
+} from "@/components/lesson-blocks/lesson-renderer";
 import { LessonCompletionPanel } from "@/components/lesson-blocks/lesson-page-template/lesson-completion-panel";
 import { buildLessonStepHref } from "@/components/lesson-blocks/lesson-page-template/lesson-step-routes";
 import {
@@ -30,6 +32,14 @@ type LessonPageTemplateProps = {
   sections: LessonSection[];
   currentStep?: string;
 };
+
+function getLessonRendererVariant(variantSlug: string): LessonRendererVariant {
+  if (variantSlug === "higher" || variantSlug === "volna") {
+    return variantSlug;
+  }
+
+  return "foundation";
+}
 
 export default async function LessonPageTemplate({
   courseSlug,
@@ -88,6 +98,7 @@ export default async function LessonPageTemplate({
   const moduleHref = getModulePath(course.slug, variantSlug, moduleSlug);
   const currentStepNumber = effectiveStepIndex + 1;
   const isFinalStep = effectiveStepIndex === sections.length - 1;
+  const currentVariant = getLessonRendererVariant(variantSlug);
 
   return (
     <main className="space-y-6">
@@ -129,7 +140,11 @@ export default async function LessonPageTemplate({
           />
 
           <div className="app-card app-section-padding">
-            <LessonRenderer sections={[currentSection]} lessonId={lesson.id} />
+            <LessonRenderer
+              sections={[currentSection]}
+              lessonId={lesson.id}
+              currentVariant={currentVariant}
+            />
           </div>
 
           <SectionPager
