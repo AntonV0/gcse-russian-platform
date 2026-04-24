@@ -12,6 +12,10 @@
 
 # testing
 /coverage
+test-results/
+playwright-report/
+blob-report/
+.nyc_output/
 
 # next.js
 /.next/
@@ -19,6 +23,7 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -26,6 +31,8 @@ Thumbs.db
 *.pem
 
 # debug logs
+*.log
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -52,11 +59,33 @@ supabase/docker
 *.sql.gz
 *.dump
 *.bak
+backups/
+exports/
+uploads/
+
+# cache / temp artifacts
+.cache/
+.turbo/
+.swc/
+.parcel-cache/
+tmp/
+temp/
+*.tmp
+*.temp
+*.orig
+*.rej
 
 # editor
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# package manager local state
+.npm/
+.pnpm-store/
 
 # typescript
 *.tsbuildinfo
