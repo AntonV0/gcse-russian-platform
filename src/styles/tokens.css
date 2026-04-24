@@ -18,13 +18,14 @@
   --surface-primary: #ffffff;
   --surface-elevated: #ffffff;
   --surface-secondary: #f1f5fa;
-  --dark-surface-base: #070b12;
-  --dark-surface-elevated: #0d121c;
-  --dark-surface-muted: #151b27;
-  --dark-surface-strong: #1d2635;
-  --dark-surface-border: #2b3342;
-  --dark-control-bg: color-mix(in srgb, var(--accent) 3%, var(--dark-surface-elevated));
-  --dark-control-bg-hover: color-mix(in srgb, var(--accent) 6%, var(--dark-surface-muted));
+  --dark-page-bg: #050608;
+  --dark-surface-base: #07090d;
+  --dark-surface-elevated: #0c1016;
+  --dark-surface-muted: #141922;
+  --dark-surface-strong: #1e2530;
+  --dark-surface-border: #2b313c;
+  --dark-control-bg: color-mix(in srgb, var(--accent) 1.5%, var(--dark-surface-elevated));
+  --dark-control-bg-hover: color-mix(in srgb, var(--accent) 3%, var(--dark-surface-muted));
   --dark-control-bg-disabled: color-mix(in srgb, black 16%, var(--dark-surface-elevated));
 
   /* ========= Accent colours ========= */
@@ -36,6 +37,9 @@
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent-ink);
   --accent-soft: #eaf2ff;
+  --accent-selected-bg: var(--accent-soft);
+  --accent-selected-border: var(--accent-fill);
+  --accent-glow: rgba(37, 99, 235, 0.16);
   --accent-ring: rgba(37, 99, 235, 0.14);
   --accent-rgb: 37, 99, 235;
   --control-border: var(--border);
@@ -117,27 +121,25 @@
 
 /* ========= Dark mode ========= */
 [data-theme="dark"] {
-  --dark-surface-base: #070b12;
-  --dark-surface-elevated: #0d121c;
-  --dark-surface-muted: #151b27;
-  --dark-surface-strong: #1d2635;
-  --dark-surface-border: #2b3342;
-  --dark-control-bg: color-mix(in srgb, var(--accent) 3%, var(--dark-surface-elevated));
-  --dark-control-bg-hover: color-mix(in srgb, var(--accent) 6%, var(--dark-surface-muted));
+  --dark-page-bg: #050608;
+  --dark-surface-base: #07090d;
+  --dark-surface-elevated: #0c1016;
+  --dark-surface-muted: #141922;
+  --dark-surface-strong: #1e2530;
+  --dark-surface-border: #2b313c;
+  --dark-control-bg: color-mix(in srgb, var(--accent) 1.5%, var(--dark-surface-elevated));
+  --dark-control-bg-hover: color-mix(in srgb, var(--accent) 3%, var(--dark-surface-muted));
   --dark-control-bg-disabled: color-mix(in srgb, black 16%, var(--dark-surface-elevated));
-  --accent-surface-strength: 7%;
-  --accent-elevated-strength: 5%;
-  --accent-muted-strength: 9%;
-  --accent-border-strength: 18%;
-  --accent-strong-border-strength: 28%;
-  --accent-brand-surface-strength: 15%;
-  --accent-brand-mark-strength: 14%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
+  --accent-subtle-border-strength: 3%;
+  --accent-border-strength: 6%;
+  --accent-strong-border-strength: 18%;
+  --accent-brand-surface-strength: 5%;
+  --accent-brand-mark-strength: 8%;
 
-  --background: color-mix(
-    in srgb,
-    var(--accent) var(--accent-surface-strength),
-    var(--dark-surface-base)
-  );
+  --background: var(--dark-page-bg);
   --background-elevated: color-mix(
     in srgb,
     var(--accent) var(--accent-elevated-strength),
@@ -163,7 +165,7 @@
   );
   --border-subtle: color-mix(
     in srgb,
-    var(--accent) calc(var(--accent-border-strength) - 8%),
+    var(--accent) var(--accent-subtle-border-strength),
     var(--dark-surface-border)
   );
   --border-strong: color-mix(
@@ -173,11 +175,7 @@
   );
 
   --surface-primary: var(--background-elevated);
-  --surface-elevated: color-mix(
-    in srgb,
-    var(--accent) calc(var(--accent-elevated-strength) + 3%),
-    var(--dark-surface-elevated)
-  );
+  --surface-elevated: color-mix(in srgb, var(--accent) 1.5%, var(--dark-surface-elevated));
   --surface-secondary: var(--background-muted);
 
   --accent: #4f8cff;
@@ -187,11 +185,14 @@
   --accent-ink: var(--accent-fill);
   --accent-on-fill: #071633;
   --accent-on-soft: var(--accent-fill-hover);
-  --accent-soft: #102448;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
+  --accent-selected-bg: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
+  --accent-selected-border: color-mix(in srgb, var(--accent) 78%, var(--dark-surface-border));
+  --accent-glow: color-mix(in srgb, var(--accent) 24%, transparent);
   --accent-ring: rgba(79, 140, 255, 0.16);
   --accent-rgb: 79, 140, 255;
-  --control-border: color-mix(in srgb, var(--accent) 62%, var(--dark-surface-border));
-  --control-border-strong: color-mix(in srgb, var(--accent) 72%, var(--dark-surface-border));
+  --control-border: color-mix(in srgb, var(--accent) 10%, var(--dark-surface-border));
+  --control-border-strong: color-mix(in srgb, var(--accent) 30%, var(--dark-surface-border));
 
   --brand-blue: var(--accent-fill);
   --brand-blue-hover: var(--accent-fill-hover);
@@ -312,184 +313,146 @@
 }
 
 [data-theme="dark"][data-accent="purple"] {
-  --dark-surface-base: #0d0b14;
-  --dark-surface-elevated: #13101c;
-  --dark-surface-muted: #1b1726;
-  --dark-surface-strong: #241f31;
-  --dark-surface-border: #352d45;
   --accent: #a78bfa;
   --accent-fill: #a78bfa;
   --accent-fill-hover: #c4b5fd;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #271b4d;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-ring: rgba(167, 139, 250, 0.16);
   --accent-rgb: 167, 139, 250;
-  --accent-surface-strength: 7%;
-  --accent-elevated-strength: 5%;
-  --accent-muted-strength: 9%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
 }
 
 [data-theme="dark"][data-accent="pink"] {
-  --dark-surface-base: #100b11;
-  --dark-surface-elevated: #181017;
-  --dark-surface-muted: #221721;
-  --dark-surface-strong: #2c1d2a;
-  --dark-surface-border: #402b3a;
   --accent: #f472b6;
   --accent-fill: #f472b6;
   --accent-fill-hover: #f9a8d4;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #421630;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-ring: rgba(244, 114, 182, 0.16);
   --accent-rgb: 244, 114, 182;
-  --accent-surface-strength: 6%;
-  --accent-elevated-strength: 4%;
-  --accent-muted-strength: 8%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
 }
 
 [data-theme="dark"][data-accent="red"] {
-  --dark-surface-base: #110c0c;
-  --dark-surface-elevated: #191111;
-  --dark-surface-muted: #241818;
-  --dark-surface-strong: #2e2020;
-  --dark-surface-border: #432d2d;
   --accent: #f87171;
   --accent-fill: #f87171;
   --accent-fill-hover: #fca5a5;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #43191d;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-ring: rgba(248, 113, 113, 0.16);
   --accent-rgb: 248, 113, 113;
-  --accent-surface-strength: 5%;
-  --accent-elevated-strength: 4%;
-  --accent-muted-strength: 7%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
 }
 
 [data-theme="dark"][data-accent="orange"] {
-  --dark-surface-base: #110d09;
-  --dark-surface-elevated: #19130d;
-  --dark-surface-muted: #241b12;
-  --dark-surface-strong: #302417;
-  --dark-surface-border: #443521;
   --accent: #fb923c;
   --accent-fill: #fb923c;
   --accent-fill-hover: #fdba74;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #3e2314;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, var(--dark-control-bg));
   --accent-ring: rgba(251, 146, 60, 0.16);
   --accent-rgb: 251, 146, 60;
-  --accent-surface-strength: 4%;
-  --accent-elevated-strength: 3%;
-  --accent-muted-strength: 6%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
 }
 
 [data-theme="dark"][data-accent="yellow"] {
-  --dark-surface-base: #0f0d07;
-  --dark-surface-elevated: #17130b;
-  --dark-surface-muted: #211b10;
-  --dark-surface-strong: #2b2415;
-  --dark-surface-border: #40351d;
   --accent: #eab308;
   --accent-fill: #eab308;
   --accent-fill-hover: #facc15;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #30270c;
+  --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
+  --accent-selected-bg: color-mix(in srgb, var(--accent) 8%, var(--dark-control-bg));
+  --accent-selected-border: color-mix(in srgb, var(--accent) 82%, var(--dark-surface-border));
+  --accent-glow: color-mix(in srgb, var(--accent) 22%, transparent);
   --accent-ring: rgba(234, 179, 8, 0.16);
   --accent-rgb: 234, 179, 8;
-  --accent-surface-strength: 3%;
-  --accent-elevated-strength: 2.5%;
-  --accent-muted-strength: 5%;
-  --accent-border-strength: 14%;
-  --accent-strong-border-strength: 22%;
-  --accent-brand-surface-strength: 11%;
-  --accent-brand-mark-strength: 10%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
+  --accent-subtle-border-strength: 2%;
+  --accent-border-strength: 5%;
+  --accent-strong-border-strength: 16%;
+  --accent-brand-surface-strength: 4%;
+  --accent-brand-mark-strength: 6%;
 }
 
 [data-theme="dark"][data-accent="green"] {
-  --dark-surface-base: #07100c;
-  --dark-surface-elevated: #0d1712;
-  --dark-surface-muted: #142219;
-  --dark-surface-strong: #1b2d22;
-  --dark-surface-border: #294333;
   --accent: #4ade80;
   --accent-fill: #4ade80;
   --accent-fill-hover: #86efac;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #12351f;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, var(--dark-control-bg));
   --accent-ring: rgba(74, 222, 128, 0.16);
   --accent-rgb: 74, 222, 128;
-  --accent-surface-strength: 6%;
-  --accent-elevated-strength: 4%;
-  --accent-muted-strength: 8%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
 }
 
 [data-theme="dark"][data-accent="teal"] {
-  --dark-surface-base: #061012;
-  --dark-surface-elevated: #0b181b;
-  --dark-surface-muted: #112327;
-  --dark-surface-strong: #173035;
-  --dark-surface-border: #254850;
   --accent: #22d3ee;
   --accent-fill: #22d3ee;
   --accent-fill-hover: #67e8f9;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #10333d;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, var(--dark-control-bg));
   --accent-ring: rgba(34, 211, 238, 0.16);
   --accent-rgb: 34, 211, 238;
-  --accent-surface-strength: 6%;
-  --accent-elevated-strength: 4%;
-  --accent-muted-strength: 8%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
 }
 
 [data-theme="dark"][data-accent="brown"] {
-  --dark-surface-base: #100c09;
-  --dark-surface-elevated: #18120d;
-  --dark-surface-muted: #231a12;
-  --dark-surface-strong: #2e2218;
-  --dark-surface-border: #433225;
   --accent: #c98a52;
   --accent-fill: #c98a52;
   --accent-fill-hover: #e3b17d;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #33251a;
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--dark-control-bg));
   --accent-ring: rgba(201, 138, 82, 0.16);
   --accent-rgb: 201, 138, 82;
-  --accent-surface-strength: 4%;
-  --accent-elevated-strength: 3%;
-  --accent-muted-strength: 6%;
-  --accent-brand-surface-strength: 11%;
-  --accent-brand-mark-strength: 10%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
+  --accent-brand-surface-strength: 4%;
+  --accent-brand-mark-strength: 6%;
 }
 
 [data-theme="dark"][data-accent="slate"] {
-  --dark-surface-base: #080c12;
-  --dark-surface-elevated: #0e141d;
-  --dark-surface-muted: #171f2a;
-  --dark-surface-strong: #202b39;
-  --dark-surface-border: #334155;
   --accent: #94a3b8;
   --accent-fill: #94a3b8;
   --accent-fill-hover: #cbd5e1;
   --accent-hover: var(--accent-fill-hover);
   --accent-ink: var(--accent-fill);
-  --accent-soft: #1f2937;
+  --accent-soft: color-mix(in srgb, var(--accent) 8%, var(--dark-control-bg));
+  --accent-selected-bg: color-mix(in srgb, var(--accent) 7%, var(--dark-control-bg));
+  --accent-selected-border: color-mix(in srgb, var(--accent) 64%, var(--dark-surface-border));
   --accent-ring: rgba(148, 163, 184, 0.16);
   --accent-rgb: 148, 163, 184;
-  --accent-surface-strength: 3%;
-  --accent-elevated-strength: 2.5%;
-  --accent-muted-strength: 5%;
-  --accent-border-strength: 14%;
-  --accent-strong-border-strength: 22%;
-  --accent-brand-surface-strength: 9%;
-  --accent-brand-mark-strength: 8%;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
+  --accent-subtle-border-strength: 2%;
+  --accent-border-strength: 5%;
+  --accent-strong-border-strength: 16%;
+  --accent-brand-surface-strength: 3%;
+  --accent-brand-mark-strength: 5%;
 }
 
 @media (min-width: 640px) {
