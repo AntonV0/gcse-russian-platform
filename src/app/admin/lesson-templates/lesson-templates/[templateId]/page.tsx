@@ -1,7 +1,16 @@
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
-import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import CheckboxField from "@/components/ui/checkbox-field";
+import EmptyState from "@/components/ui/empty-state";
+import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
+import Input from "@/components/ui/input";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
+import Textarea from "@/components/ui/textarea";
 import {
   addSectionToLessonTemplateAction,
   deleteLessonTemplateAction,
@@ -11,6 +20,18 @@ import {
   updateLessonTemplateSectionAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
 import { getLessonTemplateDetailDb } from "@/lib/lessons/lesson-template-helpers-db";
+
+const sectionKindOptions = [
+  "intro",
+  "content",
+  "grammar",
+  "practice",
+  "reading_practice",
+  "writing_practice",
+  "speaking_practice",
+  "listening_practice",
+  "summary",
+];
 
 export default async function AdminLessonTemplateDetailPage({
   params,
@@ -40,112 +61,83 @@ export default async function AdminLessonTemplateDetailPage({
           description="Edit lesson template metadata and manage its ordered section template links."
         />
 
-        <div className="flex gap-2">
-          <Button
-            href="/admin/lesson-templates/lesson-templates"
-            variant="secondary"
-            icon="back"
-          >
-            Back
-          </Button>
-        </div>
+        <Button
+          href="/admin/lesson-templates/lesson-templates"
+          variant="secondary"
+          icon="back"
+        >
+          Back
+        </Button>
       </div>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4 flex flex-wrap gap-2">
-          <Badge tone="muted" icon="file">
-            {detail.template.slug}
-          </Badge>
-
-          {detail.template.is_active ? (
-            <Badge tone="success" icon="completed">
-              Active
+      <PanelCard
+        title="Lesson template details"
+        tone="admin"
+        actions={
+          <>
+            <Badge tone="muted" icon="file">
+              {detail.template.slug}
             </Badge>
-          ) : (
-            <Badge tone="warning" icon="pending">
-              Inactive
+            <Badge
+              tone={detail.template.is_active ? "success" : "warning"}
+              icon={detail.template.is_active ? "completed" : "pending"}
+            >
+              {detail.template.is_active ? "Active" : "Inactive"}
             </Badge>
-          )}
-        </div>
-
-        <form action={updateLessonTemplateAction} className="grid gap-3 md:grid-cols-2">
+          </>
+        }
+      >
+        <form action={updateLessonTemplateAction} className="grid gap-4 md:grid-cols-2">
           <input type="hidden" name="templateId" value={detail.template.id} />
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-900">Title</label>
-            <input
-              name="title"
-              required
-              defaultValue={detail.template.title}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
-            />
-          </div>
+          <FormField label="Title" required>
+            <Input name="title" required defaultValue={detail.template.title} />
+          </FormField>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-900">Slug</label>
-            <input
-              name="slug"
-              required
-              defaultValue={detail.template.slug}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
-            />
-          </div>
+          <FormField label="Slug" required>
+            <Input name="slug" required defaultValue={detail.template.slug} />
+          </FormField>
 
-          <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-900">Description</label>
-            <input
+          <FormField label="Description" className="md:col-span-2">
+            <Input
               name="description"
               defaultValue={detail.template.description ?? ""}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
             />
-          </div>
+          </FormField>
 
-          <div className="md:col-span-2">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                name="isActive"
-                value="true"
-                defaultChecked={detail.template.is_active}
-              />
-              Active
-            </label>
-          </div>
+          <CheckboxField
+            className="md:col-span-2"
+            name="isActive"
+            label="Active"
+            defaultChecked={detail.template.is_active}
+          />
 
-          <div className="md:col-span-2">
-            <button
-              type="submit"
-              className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-            >
+          <InlineActions className="md:col-span-2">
+            <Button type="submit" variant="primary" icon="save">
               Save lesson template
-            </button>
-          </div>
+            </Button>
+          </InlineActions>
         </form>
 
-        <form action={deleteLessonTemplateAction} className="mt-4">
+        <form action={deleteLessonTemplateAction} className="mt-5">
           <input type="hidden" name="templateId" value={detail.template.id} />
-          <button
-            type="submit"
-            className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
-          >
+          <Button type="submit" variant="danger" icon="delete">
             Delete lesson template
-          </button>
+          </Button>
         </form>
-      </section>
+      </PanelCard>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4">
-          <div className="font-medium text-gray-900">Add section template</div>
-          <div className="text-sm text-gray-500">
-            Attach an existing section template and optionally override its title or
-            section kind.
-          </div>
-        </div>
-
+      <PanelCard
+        title="Add section template"
+        description="Attach an existing section template and optionally override its title or section kind."
+        tone="admin"
+      >
         {availableSectionTemplates.length === 0 ? (
-          <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
-            No unlinked section templates available.
-          </div>
+          <EmptyState
+            icon="layers"
+            title="No unlinked section templates available"
+            description="Every available section template is already linked to this lesson template."
+          />
         ) : (
           <form
             action={addSectionToLessonTemplateAction}
@@ -153,93 +145,75 @@ export default async function AdminLessonTemplateDetailPage({
           >
             <input type="hidden" name="templateId" value={detail.template.id} />
 
-            <select
-              name="sectionTemplateId"
-              required
-              defaultValue=""
-              className="rounded-xl border px-3 py-2 text-sm"
-            >
-              <option value="" disabled>
-                Select a section template
-              </option>
-              {availableSectionTemplates.map((template) => (
-                <option key={template.id} value={template.id}>
-                  {template.title} ({template.slug})
+            <FormField label="Section template">
+              <Select name="sectionTemplateId" required defaultValue="">
+                <option value="" disabled>
+                  Select a section template
                 </option>
-              ))}
-            </select>
+                {availableSectionTemplates.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.title} ({template.slug})
+                  </option>
+                ))}
+              </Select>
+            </FormField>
 
-            <input
-              name="titleOverride"
-              placeholder="Optional title override"
-              className="rounded-xl border px-3 py-2 text-sm"
-            />
+            <FormField label="Title override">
+              <Input name="titleOverride" placeholder="Optional title override" />
+            </FormField>
 
-            <select
-              name="sectionKindOverride"
-              defaultValue=""
-              className="rounded-xl border px-3 py-2 text-sm"
-            >
-              <option value="">No section kind override</option>
-              <option value="intro">intro</option>
-              <option value="content">content</option>
-              <option value="grammar">grammar</option>
-              <option value="practice">practice</option>
-              <option value="reading_practice">reading_practice</option>
-              <option value="writing_practice">writing_practice</option>
-              <option value="speaking_practice">speaking_practice</option>
-              <option value="listening_practice">listening_practice</option>
-              <option value="summary">summary</option>
-            </select>
+            <FormField label="Section kind override">
+              <Select name="sectionKindOverride" defaultValue="">
+                <option value="">No section kind override</option>
+                {sectionKindOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
 
-            <div className="md:col-span-3">
-              <button
-                type="submit"
-                className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-              >
+            <InlineActions className="md:col-span-3">
+              <Button type="submit" variant="primary" icon="create">
                 Add section template
-              </button>
-            </div>
+              </Button>
+            </InlineActions>
           </form>
         )}
-      </section>
+      </PanelCard>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4">
-          <div className="font-medium text-gray-900">Ordered template sections</div>
-          <div className="text-sm text-gray-500">
-            Section templates are applied in this order when the lesson template is
-            inserted.
-          </div>
-        </div>
-
+      <PanelCard
+        title="Ordered template sections"
+        description="Section templates are applied in this order when the lesson template is inserted."
+        tone="admin"
+        contentClassName="space-y-4"
+      >
         {detail.templateSections.length === 0 ? (
-          <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
-            No section templates linked yet.
-          </div>
+          <EmptyState
+            icon="layers"
+            title="No section templates linked yet"
+            description="Add a section template to start composing this lesson scaffold."
+          />
         ) : (
-          <div className="space-y-4">
-            <form
-              action={reorderLessonTemplateSectionsAction}
-              className="rounded-xl border bg-gray-50 p-4"
-            >
-              <input type="hidden" name="templateId" value={detail.template.id} />
-              <label className="mb-2 block text-sm font-medium text-gray-900">
-                Ordered lesson template section ids
-              </label>
-              <textarea
-                name="orderedLessonTemplateSectionIds"
-                rows={3}
-                defaultValue={detail.templateSections.map((item) => item.id).join(",")}
-                className="w-full rounded-xl border px-3 py-2 font-mono text-sm"
-              />
-              <button
-                type="submit"
-                className="mt-3 rounded-lg border px-3 py-2 text-sm hover:bg-white"
-              >
-                Save section order
-              </button>
-            </form>
+          <>
+            <PanelCard title="Section order" tone="muted" density="compact">
+              <form action={reorderLessonTemplateSectionsAction} className="space-y-3">
+                <input type="hidden" name="templateId" value={detail.template.id} />
+                <FormField label="Ordered lesson template section ids">
+                  <Textarea
+                    name="orderedLessonTemplateSectionIds"
+                    rows={3}
+                    defaultValue={detail.templateSections
+                      .map((item) => item.id)
+                      .join(",")}
+                    className="font-mono"
+                  />
+                </FormField>
+                <Button type="submit" variant="secondary" icon="save">
+                  Save section order
+                </Button>
+              </form>
+            </PanelCard>
 
             {detail.templateSections.map((section) => {
               const baseTemplate = detail.allSectionTemplates.find(
@@ -247,24 +221,25 @@ export default async function AdminLessonTemplateDetailPage({
               );
 
               return (
-                <section key={section.id} className="rounded-xl border p-4">
-                  <div className="mb-3 flex flex-wrap items-center gap-2">
-                    <Badge tone="muted" icon="help">
-                      Position {section.position}
-                    </Badge>
-
-                    {baseTemplate ? (
-                      <>
+                <PanelCard
+                  key={section.id}
+                  tone="default"
+                  density="compact"
+                  title={baseTemplate?.title ?? "Unknown section template"}
+                  contentClassName="space-y-4"
+                  actions={
+                    <>
+                      <Badge tone="muted" icon="help">
+                        Position {section.position}
+                      </Badge>
+                      {baseTemplate ? (
                         <Badge tone="muted" icon="file">
-                          {baseTemplate.title}
-                        </Badge>
-                        <Badge tone="muted" icon="help">
                           {baseTemplate.slug}
                         </Badge>
-                      </>
-                    ) : null}
-                  </div>
-
+                      ) : null}
+                    </>
+                  }
+                >
                   <form
                     action={updateLessonTemplateSectionAction}
                     className="grid gap-3 md:grid-cols-2"
@@ -276,70 +251,63 @@ export default async function AdminLessonTemplateDetailPage({
                       value={section.id}
                     />
 
-                    <div className="space-y-1">
-                      <label className="text-sm font-medium text-gray-900">
-                        Title override
-                      </label>
-                      <input
+                    <FormField label="Title override">
+                      <Input
                         name="titleOverride"
                         defaultValue={section.title_override ?? ""}
                         placeholder={baseTemplate?.default_section_title ?? "No override"}
-                        className="w-full rounded-xl border px-3 py-2 text-sm"
                       />
-                    </div>
+                    </FormField>
 
-                    <div className="space-y-1">
-                      <label className="text-sm font-medium text-gray-900">
-                        Section kind override
-                      </label>
-                      <select
+                    <FormField label="Section kind override">
+                      <Select
                         name="sectionKindOverride"
                         defaultValue={section.section_kind_override ?? ""}
-                        className="w-full rounded-xl border px-3 py-2 text-sm"
                       >
                         <option value="">No override</option>
-                        <option value="intro">intro</option>
-                        <option value="content">content</option>
-                        <option value="grammar">grammar</option>
-                        <option value="practice">practice</option>
-                        <option value="reading_practice">reading_practice</option>
-                        <option value="writing_practice">writing_practice</option>
-                        <option value="speaking_practice">speaking_practice</option>
-                        <option value="listening_practice">listening_practice</option>
-                        <option value="summary">summary</option>
-                      </select>
-                    </div>
+                        {sectionKindOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormField>
 
-                    <div className="md:col-span-2 flex flex-wrap gap-2">
-                      <button
-                        type="submit"
-                        className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-                      >
+                    <InlineActions className="md:col-span-2">
+                      <Button type="submit" variant="secondary" icon="save">
                         Save linked section
-                      </button>
-                    </div>
+                      </Button>
+                    </InlineActions>
                   </form>
 
-                  <form action={removeSectionFromLessonTemplateAction} className="mt-3">
-                    <input type="hidden" name="templateId" value={detail.template!.id} />
-                    <input
-                      type="hidden"
-                      name="lessonTemplateSectionId"
-                      value={section.id}
-                    />
-                    <button
-                      type="submit"
-                      className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
-                    >
-                      Remove section
-                    </button>
-                  </form>
-                </section>
+                  <CardListItem
+                    title="Remove linked section"
+                    subtitle="This removes the section from this lesson template only."
+                    badges={
+                      <Badge tone="warning" icon="warning">
+                        Reversible by adding it again
+                      </Badge>
+                    }
+                    actions={
+                      <form action={removeSectionFromLessonTemplateAction}>
+                        <input type="hidden" name="templateId" value={detail.template!.id} />
+                        <input
+                          type="hidden"
+                          name="lessonTemplateSectionId"
+                          value={section.id}
+                        />
+                        <Button type="submit" variant="danger" size="sm" icon="delete">
+                          Remove section
+                        </Button>
+                      </form>
+                    }
+                  />
+                </PanelCard>
               );
             })}
-          </div>
+          </>
         )}
-      </section>
+      </PanelCard>
     </main>
   );
 }

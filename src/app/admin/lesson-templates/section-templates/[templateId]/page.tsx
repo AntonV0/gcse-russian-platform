@@ -1,7 +1,16 @@
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
-import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import CheckboxField from "@/components/ui/checkbox-field";
+import EmptyState from "@/components/ui/empty-state";
+import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
+import Input from "@/components/ui/input";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
+import Textarea from "@/components/ui/textarea";
 import {
   addPresetToLessonSectionTemplateAction,
   deleteLessonSectionTemplateAction,
@@ -10,6 +19,18 @@ import {
   updateLessonSectionTemplateAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
 import { getLessonSectionTemplateDetailDb } from "@/lib/lessons/lesson-template-helpers-db";
+
+const sectionKindOptions = [
+  "intro",
+  "content",
+  "grammar",
+  "practice",
+  "reading_practice",
+  "writing_practice",
+  "speaking_practice",
+  "listening_practice",
+  "summary",
+];
 
 export default async function AdminLessonSectionTemplateDetailPage({
   params,
@@ -38,222 +59,175 @@ export default async function AdminLessonSectionTemplateDetailPage({
           description="Edit section template metadata and manage its ordered block preset links."
         />
 
-        <div className="flex gap-2">
-          <Button
-            href="/admin/lesson-templates/section-templates"
-            variant="secondary"
-            icon="back"
-          >
-            Back
-          </Button>
-        </div>
+        <Button
+          href="/admin/lesson-templates/section-templates"
+          variant="secondary"
+          icon="back"
+        >
+          Back
+        </Button>
       </div>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4 flex flex-wrap gap-2">
-          <Badge tone="muted" icon="file">
-            {detail.template.slug}
-          </Badge>
-
-          <Badge tone="muted" icon="help">
-            {detail.template.default_section_kind}
-          </Badge>
-
-          {detail.template.is_active ? (
-            <Badge tone="success" icon="completed">
-              Active
+      <PanelCard
+        title="Section template details"
+        tone="admin"
+        actions={
+          <>
+            <Badge tone="muted" icon="file">
+              {detail.template.slug}
             </Badge>
-          ) : (
-            <Badge tone="warning" icon="pending">
-              Inactive
+            <Badge tone="muted" icon="help">
+              {detail.template.default_section_kind}
             </Badge>
-          )}
-        </div>
-
+            <Badge
+              tone={detail.template.is_active ? "success" : "warning"}
+              icon={detail.template.is_active ? "completed" : "pending"}
+            >
+              {detail.template.is_active ? "Active" : "Inactive"}
+            </Badge>
+          </>
+        }
+      >
         <form
           action={updateLessonSectionTemplateAction}
-          className="grid gap-3 md:grid-cols-2"
+          className="grid gap-4 md:grid-cols-2"
         >
           <input type="hidden" name="templateId" value={detail.template.id} />
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-900">Title</label>
-            <input
-              name="title"
-              required
-              defaultValue={detail.template.title}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
-            />
-          </div>
+          <FormField label="Title" required>
+            <Input name="title" required defaultValue={detail.template.title} />
+          </FormField>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-900">Slug</label>
-            <input
-              name="slug"
-              required
-              defaultValue={detail.template.slug}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
-            />
-          </div>
+          <FormField label="Slug" required>
+            <Input name="slug" required defaultValue={detail.template.slug} />
+          </FormField>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-900">
-              Default section title
-            </label>
-            <input
+          <FormField label="Default section title" required>
+            <Input
               name="defaultSectionTitle"
               required
               defaultValue={detail.template.default_section_title}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
             />
-          </div>
+          </FormField>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-900">
-              Default section kind
-            </label>
-            <select
+          <FormField label="Default section kind" required>
+            <Select
               name="defaultSectionKind"
               required
               defaultValue={detail.template.default_section_kind}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
             >
-              <option value="intro">intro</option>
-              <option value="content">content</option>
-              <option value="grammar">grammar</option>
-              <option value="practice">practice</option>
-              <option value="reading_practice">reading_practice</option>
-              <option value="writing_practice">writing_practice</option>
-              <option value="speaking_practice">speaking_practice</option>
-              <option value="listening_practice">listening_practice</option>
-              <option value="summary">summary</option>
-            </select>
-          </div>
+              {sectionKindOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </Select>
+          </FormField>
 
-          <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-900">Description</label>
-            <input
+          <FormField label="Description" className="md:col-span-2">
+            <Input
               name="description"
               defaultValue={detail.template.description ?? ""}
-              className="w-full rounded-xl border px-3 py-2 text-sm"
             />
-          </div>
+          </FormField>
 
-          <div className="md:col-span-2">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                name="isActive"
-                value="true"
-                defaultChecked={detail.template.is_active}
-              />
-              Active
-            </label>
-          </div>
+          <CheckboxField
+            className="md:col-span-2"
+            name="isActive"
+            label="Active"
+            defaultChecked={detail.template.is_active}
+          />
 
-          <div className="md:col-span-2">
-            <button
-              type="submit"
-              className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-            >
+          <InlineActions className="md:col-span-2">
+            <Button type="submit" variant="primary" icon="save">
               Save section template
-            </button>
-          </div>
+            </Button>
+          </InlineActions>
         </form>
 
-        <form action={deleteLessonSectionTemplateAction} className="mt-4">
+        <form action={deleteLessonSectionTemplateAction} className="mt-5">
           <input type="hidden" name="templateId" value={detail.template.id} />
-          <button
-            type="submit"
-            className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
-          >
+          <Button type="submit" variant="danger" icon="delete">
             Delete section template
-          </button>
+          </Button>
         </form>
-      </section>
+      </PanelCard>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4">
-          <div className="font-medium text-gray-900">Add block preset</div>
-          <div className="text-sm text-gray-500">
-            Attach an existing block preset to this section template.
-          </div>
-        </div>
-
+      <PanelCard
+        title="Add block preset"
+        description="Attach an existing block preset to this section template."
+        tone="admin"
+      >
         {availablePresets.length === 0 ? (
-          <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-gray-500">
-            No unlinked block presets available.
-          </div>
+          <EmptyState
+            icon="blocks"
+            title="No unlinked block presets available"
+            description="Every available block preset is already linked to this section template."
+          />
         ) : (
           <form
             action={addPresetToLessonSectionTemplateAction}
-            className="flex flex-col gap-3 md:flex-row"
+            className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]"
           >
             <input type="hidden" name="templateId" value={detail.template.id} />
 
-            <select
-              name="presetId"
-              required
-              defaultValue=""
-              className="w-full rounded-xl border px-3 py-2 text-sm"
-            >
-              <option value="" disabled>
-                Select a preset
-              </option>
-              {availablePresets.map((preset) => (
-                <option key={preset.id} value={preset.id}>
-                  {preset.title} ({preset.slug})
+            <FormField label="Block preset">
+              <Select name="presetId" required defaultValue="">
+                <option value="" disabled>
+                  Select a preset
                 </option>
-              ))}
-            </select>
+                {availablePresets.map((preset) => (
+                  <option key={preset.id} value={preset.id}>
+                    {preset.title} ({preset.slug})
+                  </option>
+                ))}
+              </Select>
+            </FormField>
 
-            <button
-              type="submit"
-              className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-            >
-              Add preset
-            </button>
+            <InlineActions className="items-end">
+              <Button type="submit" variant="primary" icon="create">
+                Add preset
+              </Button>
+            </InlineActions>
           </form>
         )}
-      </section>
+      </PanelCard>
 
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
-        <div className="mb-4">
-          <div className="font-medium text-gray-900">Ordered preset links</div>
-          <div className="text-sm text-gray-500">
-            Presets are applied in this order when the section template is inserted.
-          </div>
-        </div>
-
+      <PanelCard
+        title="Ordered preset links"
+        description="Presets are applied in this order when the section template is inserted."
+        tone="admin"
+        contentClassName="space-y-4"
+      >
         {detail.presetLinks.length === 0 ? (
-          <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-gray-500">
-            No presets linked to this section template yet.
-          </div>
+          <EmptyState
+            icon="blocks"
+            title="No presets linked"
+            description="Add a block preset to start building this section template."
+          />
         ) : (
-          <div className="space-y-4">
-            <form
-              action={reorderLessonSectionTemplatePresetsAction}
-              className="rounded-xl border bg-gray-50 p-4"
-            >
-              <input type="hidden" name="templateId" value={detail.template.id} />
-              <label className="mb-2 block text-sm font-medium text-gray-900">
-                Ordered preset ids
-              </label>
-              <textarea
-                name="orderedPresetIds"
-                rows={3}
-                defaultValue={detail.presetLinks
-                  .map((link) => link.lesson_block_preset_id)
-                  .join(",")}
-                className="w-full rounded-xl border px-3 py-2 font-mono text-sm"
-              />
-              <button
-                type="submit"
-                className="mt-3 rounded-lg border px-3 py-2 text-sm hover:bg-white"
+          <>
+            <PanelCard title="Preset order" tone="muted" density="compact">
+              <form
+                action={reorderLessonSectionTemplatePresetsAction}
+                className="space-y-3"
               >
-                Save preset order
-              </button>
-            </form>
+                <input type="hidden" name="templateId" value={detail.template.id} />
+                <FormField label="Ordered preset ids">
+                  <Textarea
+                    name="orderedPresetIds"
+                    rows={3}
+                    defaultValue={detail.presetLinks
+                      .map((link) => link.lesson_block_preset_id)
+                      .join(",")}
+                    className="font-mono"
+                  />
+                </FormField>
+                <Button type="submit" variant="secondary" icon="save">
+                  Save preset order
+                </Button>
+              </form>
+            </PanelCard>
 
             {detail.presetLinks.map((link) => {
               const preset = detail.allPresets.find(
@@ -261,43 +235,29 @@ export default async function AdminLessonSectionTemplateDetailPage({
               );
 
               return (
-                <section
+                <CardListItem
                   key={link.lesson_block_preset_id}
-                  className="rounded-xl border p-4"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {preset?.title ?? "Unknown preset"}
-                      </div>
-
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        <Badge tone="muted" icon="help">
-                          Position {link.position}
+                  title={preset?.title ?? "Unknown preset"}
+                  subtitle={preset?.description ?? undefined}
+                  badges={
+                    <>
+                      <Badge tone="muted" icon="help">
+                        Position {link.position}
+                      </Badge>
+                      {preset ? (
+                        <Badge tone="muted" icon="file">
+                          {preset.slug}
                         </Badge>
-
-                        {preset ? (
-                          <Badge tone="muted" icon="file">
-                            {preset.slug}
-                          </Badge>
-                        ) : null}
-
-                        {preset?.is_active ? (
-                          <Badge tone="success" icon="completed">
-                            Active
-                          </Badge>
-                        ) : (
-                          <Badge tone="warning" icon="pending">
-                            Inactive
-                          </Badge>
-                        )}
-                      </div>
-
-                      {preset?.description ? (
-                        <p className="mt-3 text-sm text-gray-600">{preset.description}</p>
                       ) : null}
-                    </div>
-
+                      <Badge
+                        tone={preset?.is_active ? "success" : "warning"}
+                        icon={preset?.is_active ? "completed" : "pending"}
+                      >
+                        {preset?.is_active ? "Active" : "Inactive"}
+                      </Badge>
+                    </>
+                  }
+                  actions={
                     <form action={removePresetFromLessonSectionTemplateAction}>
                       <input
                         type="hidden"
@@ -309,20 +269,17 @@ export default async function AdminLessonSectionTemplateDetailPage({
                         name="presetId"
                         value={link.lesson_block_preset_id}
                       />
-                      <button
-                        type="submit"
-                        className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
-                      >
+                      <Button type="submit" variant="danger" size="sm" icon="delete">
                         Remove
-                      </button>
+                      </Button>
                     </form>
-                  </div>
-                </section>
+                  }
+                />
               );
             })}
-          </div>
+          </>
         )}
-      </section>
+      </PanelCard>
     </main>
   );
 }
