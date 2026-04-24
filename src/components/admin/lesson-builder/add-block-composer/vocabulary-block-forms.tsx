@@ -43,7 +43,7 @@ export function AddVocabularyBlockForm(props: AddBlockFormProps) {
         defaultValue={(defaults.items ?? [])
           .map((item) => `${item.russian} | ${item.english}`)
           .join("\n")}
-        placeholder={`Ð´Ð¾Ð¼ | house\nÑˆÐºÐ¾Ð»Ð° | school`}
+        placeholder={`дом | house\nшкола | school`}
         className={`${BUILDER_TEXTAREA_CLASS} font-mono`}
       />
       <p className="text-xs app-text-soft">
@@ -117,8 +117,8 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
         >
           {props.vocabularySetOptions.map((option) => (
             <option key={option.id} value={option.slug}>
-              {option.title} Â· {option.slug}
-              {option.isPublished ? "" : " Â· draft"}
+              {option.title} - {option.slug}
+              {option.isPublished ? "" : " - draft"}
             </option>
           ))}
         </select>

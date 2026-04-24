@@ -48,7 +48,7 @@ export function VocabularyBlockEditor(props: VocabularyBlockEditorProps) {
         required
         rows={6}
         defaultValue={stringifyVocabularyItems(props.defaultItems)}
-        placeholder={`Ð´Ð¾Ð¼ | house\nÑˆÐºÐ¾Ð»Ð° | school`}
+        placeholder={`дом | house\nшкола | school`}
         className={`${BUILDER_TEXTAREA_CLASS} font-mono`}
       />
       <p className="text-xs app-text-soft">

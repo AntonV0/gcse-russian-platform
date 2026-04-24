@@ -116,7 +116,7 @@ export function SectionList(props: SectionListProps) {
         <div className="text-xs app-text-soft">
           Showing {filteredSections.length} of {props.sections.length} section
           {props.sections.length === 1 ? "" : "s"}
-          {isPending ? " Â· Saving..." : ""}
+          {isPending ? " - Saving..." : ""}
         </div>
       </div>
 
