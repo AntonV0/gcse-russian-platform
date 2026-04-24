@@ -168,7 +168,7 @@ export default function DraggableBlockList(props: {
             className={[
               "overflow-hidden rounded-[1rem] border transition-[border-color,box-shadow,background-color,transform]",
               isSelected
-                ? "border-[var(--brand-blue)] bg-[linear-gradient(135deg,rgba(37,99,235,0.18)_0%,var(--background-elevated)_100%)] shadow-[0_8px_18px_rgba(37,99,235,0.18)]"
+                ? "border-[var(--brand-blue)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_18%,transparent)_0%,var(--background-elevated)_100%)] shadow-[0_8px_18px_color-mix(in_srgb,var(--brand-blue)_18%,transparent)]"
                 : "border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]/35 hover:shadow-[0_8px_18px_rgba(16,32,51,0.06)]",
               isDropTarget ? "ring-2 ring-blue-300" : "",
               isPending ? "opacity-70" : "",

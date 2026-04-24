@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { updateAppearancePreferences } from "@/app/actions/settings/preference-actions";
 
 export type ThemeMode = "light" | "dark";
 export type ThemePreference = ThemeMode | "system";
@@ -151,17 +152,28 @@ function readInitialThemeState() {
 
 type ThemeProviderProps = {
   children: React.ReactNode;
+  initialThemePreference?: ThemePreference | null;
+  initialAccentPreference?: AccentPreference | null;
 };
 
-export function ThemeProvider({ children }: ThemeProviderProps) {
+export function ThemeProvider({
+  children,
+  initialThemePreference,
+  initialAccentPreference,
+}: ThemeProviderProps) {
+  const initialState = readInitialThemeState();
+  const resolvedInitialPreference =
+    initialThemePreference ?? initialState.themePreference;
+  const resolvedInitialAccent =
+    initialAccentPreference ?? initialState.accentPreference;
   const [theme, setThemeState] = useState<ThemeMode | null>(
-    () => readInitialThemeState().theme
+    () => resolveTheme(resolvedInitialPreference)
   );
   const [themePreference, setThemePreferenceState] = useState<ThemePreference | null>(
-    () => readInitialThemeState().themePreference
+    () => resolvedInitialPreference
   );
   const [accentPreference, setAccentPreferenceState] = useState<AccentPreference | null>(
-    () => readInitialThemeState().accentPreference
+    () => resolvedInitialAccent
   );
 
   const setThemePreference = useCallback((nextPreference: ThemePreference) => {
@@ -171,6 +183,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     applyTheme(resolvedTheme);
     setThemePreferenceState(nextPreference);
     setThemeState(resolvedTheme);
+    void updateAppearancePreferences({ themePreference: nextPreference });
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -181,17 +194,21 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     applyTheme(nextTheme);
     setThemePreferenceState(nextTheme);
     setThemeState(nextTheme);
+    void updateAppearancePreferences({ themePreference: nextTheme });
   }, [theme]);
 
   const setAccentPreference = useCallback((nextPreference: AccentPreference) => {
     localStorage.setItem(ACCENT_STORAGE_KEY, nextPreference);
     applyAccent(nextPreference);
     setAccentPreferenceState(nextPreference);
+    void updateAppearancePreferences({ accentPreference: nextPreference });
   }, []);
 
   useEffect(() => {
     applyTheme(theme ?? readResolvedTheme(), false);
     applyAccent(accentPreference ?? readStoredAccentPreference() ?? DEFAULT_ACCENT, false);
+    localStorage.setItem(THEME_STORAGE_KEY, themePreference ?? "system");
+    localStorage.setItem(ACCENT_STORAGE_KEY, accentPreference ?? DEFAULT_ACCENT);
 
     function handleStorage(event: StorageEvent) {
       if (event.key === ACCENT_STORAGE_KEY) {
@@ -243,7 +260,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       mediaQuery.removeEventListener("change", handleSystemThemeChange);
       window.removeEventListener("storage", handleStorage);
     };
-  }, [theme, accentPreference]);
+  }, [theme, themePreference, accentPreference]);
 
   const value = useMemo<ThemeContextValue>(
     () => ({

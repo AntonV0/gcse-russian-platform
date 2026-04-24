@@ -122,7 +122,7 @@ export default function ShortAnswerBlock({
           onChange={(event) => handleChange(event.target.value)}
           disabled={resolvedHasSubmitted || isSubmitting}
           placeholder={placeholder}
-          className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3 outline-none transition focus:border-[var(--brand-blue)] focus:shadow-[0_0_0_4px_rgba(37,99,235,0.12)]"
+          className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3 outline-none transition focus:border-[var(--brand-blue)] focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--brand-blue)_12%,transparent)]"
         />
 
         {submitLocked ? (
