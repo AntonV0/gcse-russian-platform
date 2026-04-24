@@ -1,11 +1,16 @@
 import PageHeader from "@/components/layout/page-header";
-import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
+import { setTeacherRoleAction } from "@/app/actions/admin/admin-user-actions";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { setTeacherRoleAction } from "@/app/actions/admin/admin-user-actions";
 
 type ProfileRow = {
   id: string;
@@ -148,79 +153,93 @@ export default async function AdminTeachersPage({
       <PageHeader title="Teachers" description="Admin and teaching accounts." />
 
       {params.success ? (
-        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {params.success}
-        </div>
+        <FeedbackBanner
+          tone="success"
+          title="Teacher account updated"
+          description={params.success}
+          className="mb-4"
+        />
       ) : null}
 
       {params.error ? (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {params.error}
-        </div>
+        <FeedbackBanner
+          tone="danger"
+          title="Teacher update failed"
+          description={params.error}
+          className="mb-4"
+        />
       ) : null}
 
-      <form className="mb-6 rounded-xl border bg-white p-4 shadow-sm">
-        <div className="grid gap-4 md:grid-cols-[2fr_auto]">
-          <FormField label="Search">
-            <Input
-              type="text"
-              name="q"
-              defaultValue={q}
-              placeholder="Name, email, or teaching group"
-            />
-          </FormField>
+      <PanelCard
+        title="Filter teachers"
+        description="Search by name, email, or teaching group."
+        tone="admin"
+        className="mb-6"
+      >
+        <form>
+          <div className="grid gap-4 md:grid-cols-[2fr_auto]">
+            <FormField label="Search">
+              <Input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Name, email, or teaching group"
+              />
+            </FormField>
 
-          <div className="flex items-end gap-2">
-            <Button type="submit" variant="primary" icon="filter">
-              Apply
-            </Button>
+            <InlineActions className="items-end md:pt-6">
+              <Button type="submit" variant="primary" icon="filter">
+                Apply
+              </Button>
 
-            <Button href="/admin/teachers" variant="secondary" icon="back">
-              Reset
-            </Button>
+              <Button href="/admin/teachers" variant="secondary" icon="back">
+                Reset
+              </Button>
+            </InlineActions>
           </div>
-        </div>
-      </form>
+        </form>
+      </PanelCard>
 
-      <div className="rounded-xl border bg-white shadow-sm">
-        <div className="border-b px-4 py-3 font-medium">
-          Teachers ({filteredTeachers.length})
-        </div>
+      <PanelCard
+        title={`Teachers (${filteredTeachers.length})`}
+        description="Accounts with admin or teacher permissions, including their group links."
+        tone="admin"
+        contentClassName="space-y-3"
+      >
+        {filteredTeachers.length === 0 ? (
+          <EmptyState
+            icon="users"
+            title="No teacher accounts found"
+            description="Try a broader search or clear the active filter."
+            action={
+              <Button href="/admin/teachers" variant="secondary" icon="back">
+                Reset search
+              </Button>
+            }
+          />
+        ) : (
+          filteredTeachers.map((teacher) => (
+            <CardListItem
+              key={teacher.id}
+              title={getPersonLabel(teacher)}
+              subtitle={teacher.email || "No email"}
+              badges={
+                <>
+                  {teacher.roles.map((role) => (
+                    <Badge key={role} tone="info" icon="users">
+                      {formatRole(role)}
+                    </Badge>
+                  ))}
 
-        <div className="divide-y">
-          {filteredTeachers.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No teacher accounts found.
-            </div>
-          ) : (
-            filteredTeachers.map((teacher) => (
-              <div
-                key={teacher.id}
-                className="flex items-center justify-between gap-4 px-4 py-4"
-              >
-                <div>
-                  <div className="font-medium">{getPersonLabel(teacher)}</div>
-
-                  <div className="text-sm text-gray-500">
-                    {teacher.email || "No email"}
-                  </div>
-
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                    {teacher.roles.map((role) => (
-                      <Badge key={role} tone="info" icon="users">
-                        {formatRole(role)}
-                      </Badge>
-                    ))}
-
-                    {teacher.groupNames.map((groupName) => (
-                      <Badge key={groupName} tone="muted" icon="users">
-                        {groupName}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap justify-end gap-2">
+                  {teacher.groupNames.map((groupName) => (
+                    <Badge key={groupName} tone="muted" icon="users">
+                      {groupName}
+                    </Badge>
+                  ))}
+                </>
+              }
+              actions={
+                <InlineActions>
                   {teacher.isTeacher ? (
                     <form action={setTeacherRoleAction}>
                       <input type="hidden" name="userId" value={teacher.id} />
@@ -244,12 +263,12 @@ export default async function AdminTeachersPage({
                   >
                     View
                   </Button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+                </InlineActions>
+              }
+            />
+          ))
+        )}
+      </PanelCard>
     </main>
   );
 }

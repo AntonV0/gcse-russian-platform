@@ -1,5 +1,20 @@
-import Link from "next/link";
+import AdminConfirmButton from "@/components/admin/admin-confirm-button";
+import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
 import PageHeader from "@/components/layout/page-header";
+import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import DetailList from "@/components/ui/detail-list";
+import EmptyState from "@/components/ui/empty-state";
+import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
+import Select from "@/components/ui/select";
+import {
+  addTeacherToTeachingGroupAction,
+  removeTeacherFromTeachingGroupAction,
+  setTeacherRoleAction,
+} from "@/app/actions/admin/admin-user-actions";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getAdminProfileByIdDb,
@@ -7,16 +22,9 @@ import {
   getAdminTeachingGroupsDb,
   type AdminProfileRow,
 } from "@/lib/users/admin-user-helpers-db";
-import {
-  addTeacherToTeachingGroupAction,
-  removeTeacherFromTeachingGroupAction,
-  setTeacherRoleAction,
-} from "@/app/actions/admin/admin-user-actions";
-import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
-import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 
 function formatDateTime(value: string | null) {
-  if (!value) return "—";
+  if (!value) return "-";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
@@ -75,12 +83,14 @@ export default async function AdminTeacherProfilePage({
     (group) => !currentTeacherGroupIds.has(group.id)
   );
 
+  const teacherHref = `/admin/teachers/${teacher.id}`;
+
   return (
     <main>
       <div className="mb-4">
-        <Link href="/admin/teachers" className="text-sm text-blue-600 hover:underline">
-          ← Back to teachers
-        </Link>
+        <Button href="/admin/teachers" variant="quiet" size="sm" icon="back">
+          Back to teachers
+        </Button>
       </div>
 
       <PageHeader
@@ -94,160 +104,129 @@ export default async function AdminTeacherProfilePage({
       />
 
       <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Profile Details</div>
+        <PanelCard
+          title="Profile details"
+          description="Identity and role information for this account."
+          tone="admin"
+        >
+          <DetailList
+            items={[
+              { label: "Full name", value: teacher.full_name || "-" },
+              { label: "Display name", value: teacher.display_name || "-" },
+              { label: "Email", value: teacher.email || "-" },
+              { label: "Admin", value: teacher.is_admin ? "Yes" : "No" },
+              { label: "Teacher role", value: teacher.is_teacher ? "Yes" : "No" },
+              { label: "Created", value: formatDateTime(teacher.created_at) },
+            ]}
+          />
+        </PanelCard>
 
-          <div className="space-y-3 px-4 py-4 text-sm">
-            <div>
-              <span className="font-medium">Full name:</span> {teacher.full_name || "—"}
-            </div>
-            <div>
-              <span className="font-medium">Display name:</span>{" "}
-              {teacher.display_name || "—"}
-            </div>
-            <div>
-              <span className="font-medium">Email:</span> {teacher.email || "—"}
-            </div>
-            <div>
-              <span className="font-medium">Admin:</span>{" "}
-              {teacher.is_admin ? "Yes" : "No"}
-            </div>
-            <div>
-              <span className="font-medium">Teacher role:</span>{" "}
-              {teacher.is_teacher ? "Yes" : "No"}
-            </div>
-            <div>
-              <span className="font-medium">Created:</span>{" "}
-              {formatDateTime(teacher.created_at)}
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-white">
-          <div className="border-b px-4 py-3 font-medium">Actions</div>
-
-          <div className="space-y-3 px-4 py-4 text-sm text-gray-600">
-            <form action={setTeacherRoleAction} className="space-y-2">
-              <input type="hidden" name="userId" value={teacher.id} />
-              <input
-                type="hidden"
-                name="redirectTo"
-                value={`/admin/teachers/${teacher.id}`}
-              />
-              <input
-                type="hidden"
-                name="mode"
-                value={teacher.is_teacher ? "disable" : "enable"}
-              />
-              <button
-                type="submit"
-                className="rounded border px-3 py-2 text-left hover:bg-gray-50"
-              >
-                {teacher.is_teacher ? "Remove teacher role" : "Enable teacher role"}
-              </button>
-            </form>
-          </div>
-        </div>
+        <PanelCard title="Actions" description="Adjust teaching permissions." tone="muted">
+          <form action={setTeacherRoleAction}>
+            <input type="hidden" name="userId" value={teacher.id} />
+            <input type="hidden" name="redirectTo" value={teacherHref} />
+            <input
+              type="hidden"
+              name="mode"
+              value={teacher.is_teacher ? "disable" : "enable"}
+            />
+            <Button type="submit" variant="secondary" icon="settings">
+              {teacher.is_teacher ? "Remove teacher role" : "Enable teacher role"}
+            </Button>
+          </form>
+        </PanelCard>
       </section>
 
-      <section className="mb-6 rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">Add To Teaching Group</div>
-
-        <div className="px-4 py-4 text-sm">
+      <section className="mb-6">
+        <PanelCard
+          title="Add to teaching group"
+          description="Attach this teacher to a Volna group so they can manage guided work."
+          tone="admin"
+        >
           {availableGroups.length === 0 ? (
-            <div className="text-gray-500">No available teaching groups to add.</div>
+            <p className="text-sm app-text-muted">
+              No available teaching groups to add.
+            </p>
           ) : (
             <form
               action={addTeacherToTeachingGroupAction}
-              className="flex flex-wrap gap-3"
+              className="flex flex-col gap-3 sm:flex-row sm:items-end"
             >
               <input type="hidden" name="userId" value={teacher.id} />
-              <input
-                type="hidden"
-                name="redirectTo"
-                value={`/admin/teachers/${teacher.id}`}
-              />
+              <input type="hidden" name="redirectTo" value={teacherHref} />
 
-              <select
-                name="groupId"
-                required
-                className="rounded border px-3 py-2 text-sm"
-              >
-                <option value="">Select group</option>
-                {availableGroups.map((group) => (
-                  <option key={group.id} value={group.id}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
+              <FormField label="Teaching group" className="min-w-0 flex-1">
+                <Select name="groupId" required>
+                  <option value="">Select group</option>
+                  {availableGroups.map((group) => (
+                    <option key={group.id} value={group.id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
 
-              <button type="submit" className="rounded border px-4 py-2 hover:bg-gray-50">
+              <Button type="submit" variant="secondary" icon="create">
                 Add to group
-              </button>
+              </Button>
             </form>
           )}
-        </div>
+        </PanelCard>
       </section>
 
-      <section className="rounded-lg border bg-white">
-        <div className="border-b px-4 py-3 font-medium">
-          Teaching Group Memberships ({membershipsWithGroup.length})
-        </div>
-
-        <div className="divide-y">
-          {membershipsWithGroup.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-gray-500">
-              No teaching group memberships found.
-            </div>
-          ) : (
-            membershipsWithGroup.map((membership) => (
-              <div
-                key={`${membership.group_id}-${membership.member_role}`}
-                className="flex items-center justify-between gap-4 px-4 py-4 text-sm"
-              >
-                <div>
-                  <div className="font-medium">
-                    {membership.group?.name || membership.group_id}
-                  </div>
-                  <div className="text-gray-600">Role: {membership.member_role}</div>
-                  <div className="text-gray-600">
-                    Group active: {membership.group?.is_active ? "Yes" : "No"}
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
+      <PanelCard
+        title={`Teaching group memberships (${membershipsWithGroup.length})`}
+        description="Groups this account is currently attached to."
+        tone="admin"
+        contentClassName="space-y-3"
+      >
+        {membershipsWithGroup.length === 0 ? (
+          <EmptyState
+            icon="users"
+            title="No teaching group memberships"
+            description="Add this teacher to a group when they begin managing Volna students."
+          />
+        ) : (
+          membershipsWithGroup.map((membership) => (
+            <CardListItem
+              key={`${membership.group_id}-${membership.member_role}`}
+              title={membership.group?.name || membership.group_id}
+              subtitle={`Role: ${membership.member_role} · Group active: ${
+                membership.group?.is_active ? "Yes" : "No"
+              }`}
+              badges={<Badge tone="muted">{membership.member_role}</Badge>}
+              actions={
+                <InlineActions>
                   {membership.group ? (
-                    <Link
+                    <Button
                       href={`/admin/teaching-groups/${membership.group.id}`}
-                      className="rounded border px-3 py-1 text-sm"
+                      variant="secondary"
+                      size="sm"
+                      icon="preview"
                     >
                       Open group
-                    </Link>
+                    </Button>
                   ) : null}
 
                   {membership.member_role === "teacher" ? (
                     <form action={removeTeacherFromTeachingGroupAction}>
                       <input type="hidden" name="userId" value={teacher.id} />
                       <input type="hidden" name="groupId" value={membership.group_id} />
-                      <input
-                        type="hidden"
-                        name="redirectTo"
-                        value={`/admin/teachers/${teacher.id}`}
-                      />
+                      <input type="hidden" name="redirectTo" value={teacherHref} />
                       <AdminConfirmButton
                         confirmMessage="Remove this teacher from the teaching group?"
-                        className="rounded border border-red-300 px-3 py-1 text-sm text-red-700 hover:bg-red-50"
+                        className="app-btn-base app-btn-danger min-h-9 rounded-xl px-3.5 py-2 text-sm"
                       >
                         Remove
                       </AdminConfirmButton>
                     </form>
                   ) : null}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
+                </InlineActions>
+              }
+            />
+          ))
+        )}
+      </PanelCard>
     </main>
   );
 }
