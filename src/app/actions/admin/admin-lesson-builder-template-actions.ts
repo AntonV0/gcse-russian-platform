@@ -1,1088 +1,120 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { resolveSectionKind } from "@/lib/lessons/lesson-blocks";
 import {
-  getLessonTemplateInsertDataDb,
-  getSectionTemplateInsertDataDb,
-} from "@/lib/lessons/lesson-template-helpers-db";
+  insertLessonTemplateAction as insertLessonTemplate,
+  insertSectionTemplateAction as insertSectionTemplate,
+} from "@/app/actions/admin/lesson-template-actions/insert-actions";
 import {
-  normalizeAudioBlockData,
-  normalizeCalloutBlockData,
-  normalizeExamTipBlockData,
-  normalizeHeaderBlockData,
-  normalizeImageBlockData,
-  normalizeNoteBlockData,
-  normalizeQuestionSetBlockData,
-  normalizeSubheaderBlockData,
-  normalizeTextBlockData,
-  normalizeVocabularyBlockData,
-  normalizeVocabularySetBlockData,
-} from "@/lib/lessons/lesson-blocks";
+  createLessonBlockPresetAction as createLessonBlockPreset,
+  createLessonBlockPresetBlockAction as createLessonBlockPresetBlock,
+  deleteLessonBlockPresetAction as deleteLessonBlockPreset,
+  deleteLessonBlockPresetBlockAction as deleteLessonBlockPresetBlock,
+  reorderLessonBlockPresetBlocksAction as reorderLessonBlockPresetBlocks,
+  updateLessonBlockPresetAction as updateLessonBlockPreset,
+  updateLessonBlockPresetBlockAction as updateLessonBlockPresetBlock,
+} from "@/app/actions/admin/lesson-template-actions/block-preset-actions";
 import {
-  finalizeLessonMutation,
-  getNextSectionPosition,
-  getTrimmedString,
-  reorderTablePositions,
-  revalidateLessonSectionTemplatePaths,
-  revalidateLessonTemplateEntityPaths,
-  revalidateLessonTemplatePaths,
-} from "@/app/actions/admin/admin-lesson-builder-shared";
+  addPresetToLessonSectionTemplateAction as addPresetToLessonSectionTemplate,
+  createLessonSectionTemplateAction as createLessonSectionTemplate,
+  deleteLessonSectionTemplateAction as deleteLessonSectionTemplate,
+  removePresetFromLessonSectionTemplateAction as removePresetFromLessonSectionTemplate,
+  reorderLessonSectionTemplatePresetsAction as reorderLessonSectionTemplatePresets,
+  updateLessonSectionTemplateAction as updateLessonSectionTemplate,
+} from "@/app/actions/admin/lesson-template-actions/section-template-actions";
+import {
+  addSectionToLessonTemplateAction as addSectionToLessonTemplate,
+  createLessonTemplateAction as createLessonTemplate,
+  deleteLessonTemplateAction as deleteLessonTemplate,
+  removeSectionFromLessonTemplateAction as removeSectionFromLessonTemplate,
+  reorderLessonTemplateSectionsAction as reorderLessonTemplateSections,
+  updateLessonTemplateAction as updateLessonTemplate,
+  updateLessonTemplateSectionAction as updateLessonTemplateSection,
+} from "@/app/actions/admin/lesson-template-actions/lesson-template-actions";
 
-type TemplateBlockType =
-  | "header"
-  | "subheader"
-  | "divider"
-  | "text"
-  | "note"
-  | "callout"
-  | "exam-tip"
-  | "vocabulary"
-  | "image"
-  | "audio"
-  | "question-set"
-  | "vocabulary-set";
-
-type PositionTableConfig =
-  | {
-      table: "lesson_block_preset_blocks";
-      positionColumnScope: "lesson_block_preset_id";
-      scopeValue: string;
-    }
-  | {
-      table: "lesson_section_template_presets";
-      positionColumnScope: "lesson_section_template_id";
-      scopeValue: string;
-    }
-  | {
-      table: "lesson_template_sections";
-      positionColumnScope: "lesson_template_id";
-      scopeValue: string;
-    };
-
-function normalizeTemplateBlockData(
-  blockType: TemplateBlockType,
-  formData: FormData
-): Record<string, unknown> {
-  switch (blockType) {
-    case "header":
-      return normalizeHeaderBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "subheader":
-      return normalizeSubheaderBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "divider":
-      return {};
-
-    case "text":
-      return normalizeTextBlockData({
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "note":
-      return normalizeNoteBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "callout":
-      return normalizeCalloutBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "exam-tip":
-      return normalizeExamTipBlockData({
-        title: getTrimmedString(formData, "title"),
-        content: getTrimmedString(formData, "content"),
-      });
-
-    case "image":
-      return normalizeImageBlockData({
-        src: getTrimmedString(formData, "src"),
-        alt: getTrimmedString(formData, "alt"),
-        caption: getTrimmedString(formData, "caption"),
-      });
-
-    case "audio":
-      return normalizeAudioBlockData({
-        title: getTrimmedString(formData, "title"),
-        src: getTrimmedString(formData, "src"),
-        caption: getTrimmedString(formData, "caption"),
-        autoPlay: String(formData.get("autoPlay") || "") === "true",
-      });
-
-    case "vocabulary":
-      return normalizeVocabularyBlockData({
-        title: getTrimmedString(formData, "title"),
-        items: getTrimmedString(formData, "items"),
-      });
-
-    case "question-set":
-      return normalizeQuestionSetBlockData({
-        title: getTrimmedString(formData, "title"),
-        questionSetSlug: getTrimmedString(formData, "questionSetSlug"),
-      });
-
-    case "vocabulary-set":
-      return normalizeVocabularySetBlockData({
-        title: getTrimmedString(formData, "title"),
-        vocabularySetSlug: getTrimmedString(formData, "vocabularySetSlug"),
-      });
-
-    default:
-      throw new Error(`Unsupported template block type: ${blockType}`);
-  }
-}
-
-async function getNextPosition(config: PositionTableConfig) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from(config.table)
-    .select("position")
-    .eq(config.positionColumnScope, config.scopeValue)
-    .order("position", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    console.error(`Error getting next position for ${config.table}:`, error);
-    throw new Error(`Failed to get next position: ${error.message}`);
-  }
-
-  return data?.position ? data.position + 1 : 1;
-}
-
-async function revalidatePresetDetailPath(presetId: string) {
-  revalidateLessonTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/block-presets/${presetId}`);
-}
-
-async function revalidateSectionTemplateDetailPath(templateId: string) {
-  revalidateLessonSectionTemplatePaths();
-  revalidatePath(`/admin/lesson-templates/section-templates/${templateId}`);
-}
-
-async function revalidateLessonTemplateDetailPath(templateId: string) {
-  revalidateLessonTemplateEntityPaths();
-  revalidatePath(`/admin/lesson-templates/lesson-templates/${templateId}`);
-}
-
-async function reorderRemainingRows(params: {
-  table:
-    | "lesson_block_preset_blocks"
-    | "lesson_section_template_presets"
-    | "lesson_template_sections";
-  selectIdField: "id";
-  scope:
-    | { lesson_block_preset_id: string }
-    | { lesson_section_template_id: string }
-    | { lesson_template_id: string };
-}) {
-  const supabase = await createClient();
-  const [scopeKey, scopeValue] = Object.entries(params.scope)[0] as [string, string];
-
-  const { data, error } = await supabase
-    .from(params.table)
-    .select(params.selectIdField)
-    .eq(scopeKey, scopeValue)
-    .order("position", { ascending: true });
-
-  if (error) {
-    console.error(`Error loading remaining rows from ${params.table}:`, error);
-    throw new Error(`Failed to normalize order: ${error.message}`);
-  }
-
-  await reorderTablePositions({
-    table: params.table,
-    orderedIds: (data ?? []).map((row) => row.id as string),
-    scope: params.scope,
-  });
-}
-
-async function insertLessonBlocksForSection(params: {
-  lessonSectionId: string;
-  blocks: {
-    blockType: string;
-    data: Record<string, unknown>;
-  }[];
-}) {
-  if (params.blocks.length === 0) {
-    return;
-  }
-
-  const supabase = await createClient();
-
-  const rows = params.blocks.map((block, index) => ({
-    lesson_section_id: params.lessonSectionId,
-    block_type: block.blockType,
-    position: index + 1,
-    is_published: true,
-    data: block.data,
-    settings: {},
-  }));
-
-  const { error } = await supabase.from("lesson_blocks").insert(rows);
-
-  if (error) {
-    console.error("Error inserting lesson template blocks:", error);
-    throw new Error(`Failed to insert lesson template blocks: ${error.message}`);
-  }
-}
-
-async function createLessonBlockPresetEntity(params: {
-  title: string;
-  slug: string;
-  description: string;
-}) {
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_block_presets").insert({
-    title: params.title,
-    slug: params.slug,
-    description: params.description || null,
-    is_active: true,
-  });
-
-  if (error) {
-    console.error("Error creating lesson block preset:", error);
-    throw new Error(`Failed to create block preset: ${error.message}`);
-  }
-}
-
-async function updateLessonBlockPresetEntity(params: {
-  presetId: string;
-  title: string;
-  slug: string;
-  description: string;
-  isActive: boolean;
-}) {
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_block_presets")
-    .update({
-      title: params.title,
-      slug: params.slug,
-      description: params.description || null,
-      is_active: params.isActive,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", params.presetId);
-
-  if (error) {
-    console.error("Error updating lesson block preset:", error);
-    throw new Error(`Failed to update block preset: ${error.message}`);
-  }
-}
-
-async function createLessonSectionTemplateEntity(params: {
-  title: string;
-  slug: string;
-  description: string;
-  defaultSectionTitle: string;
-  defaultSectionKind: string;
-}) {
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_section_templates").insert({
-    title: params.title,
-    slug: params.slug,
-    description: params.description || null,
-    default_section_title: params.defaultSectionTitle,
-    default_section_kind: params.defaultSectionKind,
-    is_active: true,
-  });
-
-  if (error) {
-    console.error("Error creating lesson section template:", error);
-    throw new Error(`Failed to create section template: ${error.message}`);
-  }
-}
-
-async function updateLessonSectionTemplateEntity(params: {
-  templateId: string;
-  title: string;
-  slug: string;
-  description: string;
-  defaultSectionTitle: string;
-  defaultSectionKind: string;
-  isActive: boolean;
-}) {
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_section_templates")
-    .update({
-      title: params.title,
-      slug: params.slug,
-      description: params.description || null,
-      default_section_title: params.defaultSectionTitle,
-      default_section_kind: params.defaultSectionKind,
-      is_active: params.isActive,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", params.templateId);
-
-  if (error) {
-    console.error("Error updating lesson section template:", error);
-    throw new Error(`Failed to update section template: ${error.message}`);
-  }
-}
-
-async function createLessonTemplateEntity(params: {
-  title: string;
-  slug: string;
-  description: string;
-}) {
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_templates").insert({
-    title: params.title,
-    slug: params.slug,
-    description: params.description || null,
-    is_active: true,
-  });
-
-  if (error) {
-    console.error("Error creating lesson template:", error);
-    throw new Error(`Failed to create lesson template: ${error.message}`);
-  }
-}
-
-async function updateLessonTemplateEntity(params: {
-  templateId: string;
-  title: string;
-  slug: string;
-  description: string;
-  isActive: boolean;
-}) {
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_templates")
-    .update({
-      title: params.title,
-      slug: params.slug,
-      description: params.description || null,
-      is_active: params.isActive,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", params.templateId);
-
-  if (error) {
-    console.error("Error updating lesson template:", error);
-    throw new Error(`Failed to update lesson template: ${error.message}`);
-  }
+export async function insertLessonTemplateAction(formData: FormData) {
+  return insertLessonTemplate(formData);
 }
 
 export async function insertSectionTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const lessonId = getTrimmedString(formData, "lessonId");
-  const templateId = getTrimmedString(formData, "templateId");
-
-  if (!lessonId || !templateId) {
-    throw new Error("Missing required fields");
-  }
-
-  const templateData = await getSectionTemplateInsertDataDb(templateId);
-  const supabase = await createClient();
-  const nextSectionPosition = await getNextSectionPosition(lessonId);
-
-  const { data: insertedSection, error: sectionError } = await supabase
-    .from("lesson_sections")
-    .insert({
-      lesson_id: lessonId,
-      title: templateData.template.default_section_title,
-      description: templateData.template.description,
-      section_kind: templateData.template.default_section_kind,
-      position: nextSectionPosition,
-      is_published: true,
-      settings: {},
-    })
-    .select("id")
-    .single();
-
-  if (sectionError || !insertedSection) {
-    console.error("Error inserting section template:", sectionError);
-    throw new Error(
-      `Failed to insert section template: ${sectionError?.message ?? "Unknown error"}`
-    );
-  }
-
-  await insertLessonBlocksForSection({
-    lessonSectionId: insertedSection.id,
-    blocks: templateData.blocks,
-  });
-
-  await finalizeLessonMutation(formData);
-}
-
-export async function insertLessonTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const lessonId = getTrimmedString(formData, "lessonId");
-  const templateId = getTrimmedString(formData, "templateId");
-
-  if (!lessonId || !templateId) {
-    throw new Error("Missing required fields");
-  }
-
-  const templateData = await getLessonTemplateInsertDataDb(templateId);
-  const supabase = await createClient();
-  const startingSectionPosition = await getNextSectionPosition(lessonId);
-
-  for (
-    let sectionIndex = 0;
-    sectionIndex < templateData.sections.length;
-    sectionIndex += 1
-  ) {
-    const section = templateData.sections[sectionIndex];
-
-    const { data: insertedSection, error: sectionError } = await supabase
-      .from("lesson_sections")
-      .insert({
-        lesson_id: lessonId,
-        title: section.title,
-        description: section.description,
-        section_kind: section.sectionKind,
-        position: startingSectionPosition + sectionIndex,
-        is_published: true,
-        settings: {},
-      })
-      .select("id")
-      .single();
-
-    if (sectionError || !insertedSection) {
-      console.error("Error inserting lesson template section:", sectionError);
-      throw new Error(
-        `Failed to insert lesson template section: ${sectionError?.message ?? "Unknown error"}`
-      );
-    }
-
-    await insertLessonBlocksForSection({
-      lessonSectionId: insertedSection.id,
-      blocks: section.blocks,
-    });
-  }
-
-  await finalizeLessonMutation(formData);
+  return insertSectionTemplate(formData);
 }
 
 export async function createLessonBlockPresetAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const title = getTrimmedString(formData, "title");
-  const slug = getTrimmedString(formData, "slug");
-  const description = getTrimmedString(formData, "description");
-
-  if (!title || !slug) {
-    throw new Error("Title and slug are required");
-  }
-
-  await createLessonBlockPresetEntity({
-    title,
-    slug,
-    description,
-  });
-
-  revalidateLessonTemplatePaths();
-}
-
-export async function updateLessonBlockPresetAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const presetId = getTrimmedString(formData, "presetId");
-  const title = getTrimmedString(formData, "title");
-  const slug = getTrimmedString(formData, "slug");
-  const description = getTrimmedString(formData, "description");
-  const isActive = String(formData.get("isActive") || "") === "true";
-
-  if (!presetId || !title || !slug) {
-    throw new Error("Preset id, title, and slug are required");
-  }
-
-  await updateLessonBlockPresetEntity({
-    presetId,
-    title,
-    slug,
-    description,
-    isActive,
-  });
-
-  await revalidatePresetDetailPath(presetId);
-}
-
-export async function deleteLessonBlockPresetAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const presetId = getTrimmedString(formData, "presetId");
-  if (!presetId) {
-    throw new Error("Preset id is required");
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_block_presets")
-    .delete()
-    .eq("id", presetId);
-
-  if (error) {
-    console.error("Error deleting lesson block preset:", error);
-    throw new Error(`Failed to delete block preset: ${error.message}`);
-  }
-
-  revalidateLessonTemplatePaths();
-  redirect("/admin/lesson-templates/block-presets");
+  return createLessonBlockPreset(formData);
 }
 
 export async function createLessonBlockPresetBlockAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const presetId = getTrimmedString(formData, "presetId");
-  const blockType = getTrimmedString(formData, "blockType") as TemplateBlockType;
-
-  if (!presetId || !blockType) {
-    throw new Error("Preset id and block type are required");
-  }
-
-  const data = normalizeTemplateBlockData(blockType, formData);
-  const position = await getNextPosition({
-    table: "lesson_block_preset_blocks",
-    positionColumnScope: "lesson_block_preset_id",
-    scopeValue: presetId,
-  });
-
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_block_preset_blocks").insert({
-    lesson_block_preset_id: presetId,
-    block_type: blockType,
-    position,
-    data,
-    is_active: true,
-  });
-
-  if (error) {
-    console.error("Error creating lesson block preset block:", error);
-    throw new Error(`Failed to create preset block: ${error.message}`);
-  }
-
-  await revalidatePresetDetailPath(presetId);
+  return createLessonBlockPresetBlock(formData);
 }
 
-export async function updateLessonBlockPresetBlockAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const presetId = getTrimmedString(formData, "presetId");
-  const presetBlockId = getTrimmedString(formData, "presetBlockId");
-  const blockType = getTrimmedString(formData, "blockType") as TemplateBlockType;
-  const isActive = String(formData.get("isActive") || "") === "true";
-
-  if (!presetId || !presetBlockId || !blockType) {
-    throw new Error("Preset id, preset block id, and block type are required");
-  }
-
-  const data = normalizeTemplateBlockData(blockType, formData);
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_block_preset_blocks")
-    .update({
-      data,
-      is_active: isActive,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", presetBlockId)
-    .eq("lesson_block_preset_id", presetId);
-
-  if (error) {
-    console.error("Error updating lesson block preset block:", error);
-    throw new Error(`Failed to update preset block: ${error.message}`);
-  }
-
-  await revalidatePresetDetailPath(presetId);
+export async function deleteLessonBlockPresetAction(formData: FormData) {
+  return deleteLessonBlockPreset(formData);
 }
 
 export async function deleteLessonBlockPresetBlockAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const presetId = getTrimmedString(formData, "presetId");
-  const presetBlockId = getTrimmedString(formData, "presetBlockId");
-
-  if (!presetId || !presetBlockId) {
-    throw new Error("Preset id and preset block id are required");
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_block_preset_blocks")
-    .delete()
-    .eq("id", presetBlockId)
-    .eq("lesson_block_preset_id", presetId);
-
-  if (error) {
-    console.error("Error deleting lesson block preset block:", error);
-    throw new Error(`Failed to delete preset block: ${error.message}`);
-  }
-
-  await reorderRemainingRows({
-    table: "lesson_block_preset_blocks",
-    selectIdField: "id",
-    scope: {
-      lesson_block_preset_id: presetId,
-    },
-  });
-
-  await revalidatePresetDetailPath(presetId);
+  return deleteLessonBlockPresetBlock(formData);
 }
 
 export async function reorderLessonBlockPresetBlocksAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const presetId = getTrimmedString(formData, "presetId");
-  const orderedPresetBlockIdsRaw = getTrimmedString(formData, "orderedPresetBlockIds");
-
-  if (!presetId || !orderedPresetBlockIdsRaw) {
-    throw new Error("Missing required fields");
-  }
-
-  const orderedPresetBlockIds = orderedPresetBlockIdsRaw
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  if (orderedPresetBlockIds.length === 0) {
-    throw new Error("No preset block ids provided");
-  }
-
-  await reorderTablePositions({
-    table: "lesson_block_preset_blocks",
-    orderedIds: orderedPresetBlockIds,
-    scope: {
-      lesson_block_preset_id: presetId,
-    },
-  });
-
-  await revalidatePresetDetailPath(presetId);
+  return reorderLessonBlockPresetBlocks(formData);
 }
 
-export async function createLessonSectionTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const title = getTrimmedString(formData, "title");
-  const slug = getTrimmedString(formData, "slug");
-  const description = getTrimmedString(formData, "description");
-  const defaultSectionTitle = getTrimmedString(formData, "defaultSectionTitle");
-  const defaultSectionKindRaw = getTrimmedString(formData, "defaultSectionKind");
-
-  if (!title || !slug || !defaultSectionTitle || !defaultSectionKindRaw) {
-    throw new Error(
-      "Title, slug, default section title, and default section kind are required"
-    );
-  }
-
-  const defaultSectionKind = resolveSectionKind(defaultSectionKindRaw);
-
-  await createLessonSectionTemplateEntity({
-    title,
-    slug,
-    description,
-    defaultSectionTitle,
-    defaultSectionKind,
-  });
-
-  revalidateLessonSectionTemplatePaths();
+export async function updateLessonBlockPresetAction(formData: FormData) {
+  return updateLessonBlockPreset(formData);
 }
 
-export async function updateLessonSectionTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const templateId = getTrimmedString(formData, "templateId");
-  const title = getTrimmedString(formData, "title");
-  const slug = getTrimmedString(formData, "slug");
-  const description = getTrimmedString(formData, "description");
-  const defaultSectionTitle = getTrimmedString(formData, "defaultSectionTitle");
-  const defaultSectionKindRaw = getTrimmedString(formData, "defaultSectionKind");
-  const isActive = String(formData.get("isActive") || "") === "true";
-
-  if (!templateId || !title || !slug || !defaultSectionTitle || !defaultSectionKindRaw) {
-    throw new Error(
-      "Template id, title, slug, default section title, and default section kind are required"
-    );
-  }
-
-  const defaultSectionKind = resolveSectionKind(defaultSectionKindRaw);
-
-  await updateLessonSectionTemplateEntity({
-    templateId,
-    title,
-    slug,
-    description,
-    defaultSectionTitle,
-    defaultSectionKind,
-    isActive,
-  });
-
-  await revalidateSectionTemplateDetailPath(templateId);
-}
-
-export async function deleteLessonSectionTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const templateId = getTrimmedString(formData, "templateId");
-  if (!templateId) {
-    throw new Error("Template id is required");
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_section_templates")
-    .delete()
-    .eq("id", templateId);
-
-  if (error) {
-    console.error("Error deleting lesson section template:", error);
-    throw new Error(`Failed to delete section template: ${error.message}`);
-  }
-
-  revalidateLessonSectionTemplatePaths();
-  redirect("/admin/lesson-templates/section-templates");
+export async function updateLessonBlockPresetBlockAction(formData: FormData) {
+  return updateLessonBlockPresetBlock(formData);
 }
 
 export async function addPresetToLessonSectionTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  return addPresetToLessonSectionTemplate(formData);
+}
 
-  const templateId = getTrimmedString(formData, "templateId");
-  const presetId = getTrimmedString(formData, "presetId");
+export async function createLessonSectionTemplateAction(formData: FormData) {
+  return createLessonSectionTemplate(formData);
+}
 
-  if (!templateId || !presetId) {
-    throw new Error("Template id and preset id are required");
-  }
-
-  const position = await getNextPosition({
-    table: "lesson_section_template_presets",
-    positionColumnScope: "lesson_section_template_id",
-    scopeValue: templateId,
-  });
-
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_section_template_presets").insert({
-    lesson_section_template_id: templateId,
-    lesson_block_preset_id: presetId,
-    position,
-  });
-
-  if (error) {
-    console.error("Error adding preset to lesson section template:", error);
-    throw new Error(`Failed to add preset to section template: ${error.message}`);
-  }
-
-  await revalidateSectionTemplateDetailPath(templateId);
+export async function deleteLessonSectionTemplateAction(formData: FormData) {
+  return deleteLessonSectionTemplate(formData);
 }
 
 export async function removePresetFromLessonSectionTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const templateId = getTrimmedString(formData, "templateId");
-  const presetId = getTrimmedString(formData, "presetId");
-
-  if (!templateId || !presetId) {
-    throw new Error("Template id and preset id are required");
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_section_template_presets")
-    .delete()
-    .eq("lesson_section_template_id", templateId)
-    .eq("lesson_block_preset_id", presetId);
-
-  if (error) {
-    console.error("Error removing preset from lesson section template:", error);
-    throw new Error(`Failed to remove preset from section template: ${error.message}`);
-  }
-
-  await reorderRemainingRows({
-    table: "lesson_section_template_presets",
-    selectIdField: "id",
-    scope: {
-      lesson_section_template_id: templateId,
-    },
-  });
-
-  await revalidateSectionTemplateDetailPath(templateId);
+  return removePresetFromLessonSectionTemplate(formData);
 }
 
 export async function reorderLessonSectionTemplatePresetsAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const templateId = getTrimmedString(formData, "templateId");
-  const orderedPresetIdsRaw = getTrimmedString(formData, "orderedPresetIds");
-
-  if (!templateId || !orderedPresetIdsRaw) {
-    throw new Error("Missing required fields");
-  }
-
-  const orderedPresetIds = orderedPresetIdsRaw
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  if (orderedPresetIds.length === 0) {
-    throw new Error("No preset ids provided");
-  }
-
-  await reorderTablePositions({
-    table: "lesson_section_template_presets",
-    orderedIds: orderedPresetIds,
-    scope: {
-      lesson_section_template_id: templateId,
-    },
-  });
-
-  await revalidateSectionTemplateDetailPath(templateId);
+  return reorderLessonSectionTemplatePresets(formData);
 }
 
-export async function createLessonTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const title = getTrimmedString(formData, "title");
-  const slug = getTrimmedString(formData, "slug");
-  const description = getTrimmedString(formData, "description");
-
-  if (!title || !slug) {
-    throw new Error("Title and slug are required");
-  }
-
-  await createLessonTemplateEntity({
-    title,
-    slug,
-    description,
-  });
-
-  revalidateLessonTemplateEntityPaths();
-}
-
-export async function updateLessonTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const templateId = getTrimmedString(formData, "templateId");
-  const title = getTrimmedString(formData, "title");
-  const slug = getTrimmedString(formData, "slug");
-  const description = getTrimmedString(formData, "description");
-  const isActive = String(formData.get("isActive") || "") === "true";
-
-  if (!templateId || !title || !slug) {
-    throw new Error("Template id, title, and slug are required");
-  }
-
-  await updateLessonTemplateEntity({
-    templateId,
-    title,
-    slug,
-    description,
-    isActive,
-  });
-
-  await revalidateLessonTemplateDetailPath(templateId);
-}
-
-export async function deleteLessonTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const templateId = getTrimmedString(formData, "templateId");
-  if (!templateId) {
-    throw new Error("Template id is required");
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_templates").delete().eq("id", templateId);
-
-  if (error) {
-    console.error("Error deleting lesson template:", error);
-    throw new Error(`Failed to delete lesson template: ${error.message}`);
-  }
-
-  revalidateLessonTemplateEntityPaths();
-  redirect("/admin/lesson-templates/lesson-templates");
+export async function updateLessonSectionTemplateAction(formData: FormData) {
+  return updateLessonSectionTemplate(formData);
 }
 
 export async function addSectionToLessonTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const templateId = getTrimmedString(formData, "templateId");
-  const sectionTemplateId = getTrimmedString(formData, "sectionTemplateId");
-  const titleOverride = getTrimmedString(formData, "titleOverride");
-  const sectionKindOverrideRaw = getTrimmedString(formData, "sectionKindOverride");
-
-  if (!templateId || !sectionTemplateId) {
-    throw new Error("Template id and section template id are required");
-  }
-
-  const sectionKindOverride = sectionKindOverrideRaw
-    ? resolveSectionKind(sectionKindOverrideRaw)
-    : null;
-
-  const position = await getNextPosition({
-    table: "lesson_template_sections",
-    positionColumnScope: "lesson_template_id",
-    scopeValue: templateId,
-  });
-
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("lesson_template_sections").insert({
-    lesson_template_id: templateId,
-    lesson_section_template_id: sectionTemplateId,
-    title_override: titleOverride || null,
-    section_kind_override: sectionKindOverride,
-    position,
-  });
-
-  if (error) {
-    console.error("Error adding section to lesson template:", error);
-    throw new Error(`Failed to add section to lesson template: ${error.message}`);
-  }
-
-  await revalidateLessonTemplateDetailPath(templateId);
+  return addSectionToLessonTemplate(formData);
 }
 
-export async function updateLessonTemplateSectionAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+export async function createLessonTemplateAction(formData: FormData) {
+  return createLessonTemplate(formData);
+}
 
-  const templateId = getTrimmedString(formData, "templateId");
-  const lessonTemplateSectionId = getTrimmedString(formData, "lessonTemplateSectionId");
-  const titleOverride = getTrimmedString(formData, "titleOverride");
-  const sectionKindOverrideRaw = getTrimmedString(formData, "sectionKindOverride");
-
-  if (!templateId || !lessonTemplateSectionId) {
-    throw new Error("Template id and lesson template section id are required");
-  }
-
-  const sectionKindOverride = sectionKindOverrideRaw
-    ? resolveSectionKind(sectionKindOverrideRaw)
-    : null;
-
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_template_sections")
-    .update({
-      title_override: titleOverride || null,
-      section_kind_override: sectionKindOverride,
-    })
-    .eq("id", lessonTemplateSectionId)
-    .eq("lesson_template_id", templateId);
-
-  if (error) {
-    console.error("Error updating lesson template section:", error);
-    throw new Error(`Failed to update lesson template section: ${error.message}`);
-  }
-
-  await revalidateLessonTemplateDetailPath(templateId);
+export async function deleteLessonTemplateAction(formData: FormData) {
+  return deleteLessonTemplate(formData);
 }
 
 export async function removeSectionFromLessonTemplateAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
-
-  const templateId = getTrimmedString(formData, "templateId");
-  const lessonTemplateSectionId = getTrimmedString(formData, "lessonTemplateSectionId");
-
-  if (!templateId || !lessonTemplateSectionId) {
-    throw new Error("Template id and lesson template section id are required");
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("lesson_template_sections")
-    .delete()
-    .eq("id", lessonTemplateSectionId)
-    .eq("lesson_template_id", templateId);
-
-  if (error) {
-    console.error("Error removing section from lesson template:", error);
-    throw new Error(`Failed to remove section from lesson template: ${error.message}`);
-  }
-
-  await reorderRemainingRows({
-    table: "lesson_template_sections",
-    selectIdField: "id",
-    scope: {
-      lesson_template_id: templateId,
-    },
-  });
-
-  await revalidateLessonTemplateDetailPath(templateId);
+  return removeSectionFromLessonTemplate(formData);
 }
 
 export async function reorderLessonTemplateSectionsAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  return reorderLessonTemplateSections(formData);
+}
 
-  const templateId = getTrimmedString(formData, "templateId");
-  const orderedLessonTemplateSectionIdsRaw = getTrimmedString(
-    formData,
-    "orderedLessonTemplateSectionIds"
-  );
+export async function updateLessonTemplateAction(formData: FormData) {
+  return updateLessonTemplate(formData);
+}
 
-  if (!templateId || !orderedLessonTemplateSectionIdsRaw) {
-    throw new Error("Missing required fields");
-  }
-
-  const orderedLessonTemplateSectionIds = orderedLessonTemplateSectionIdsRaw
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  if (orderedLessonTemplateSectionIds.length === 0) {
-    throw new Error("No lesson template section ids provided");
-  }
-
-  await reorderTablePositions({
-    table: "lesson_template_sections",
-    orderedIds: orderedLessonTemplateSectionIds,
-    scope: {
-      lesson_template_id: templateId,
-    },
-  });
-
-  await revalidateLessonTemplateDetailPath(templateId);
+export async function updateLessonTemplateSectionAction(formData: FormData) {
+  return updateLessonTemplateSection(formData);
 }
