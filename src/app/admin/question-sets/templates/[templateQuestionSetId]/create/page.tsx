@@ -1,6 +1,11 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
-import DashboardCard from "@/components/ui/dashboard-card";
+import Button from "@/components/ui/button";
+import DetailList from "@/components/ui/detail-list";
+import FormField from "@/components/ui/form-field";
+import InlineActions from "@/components/ui/inline-actions";
+import Input from "@/components/ui/input";
+import PanelCard from "@/components/ui/panel-card";
+import Textarea from "@/components/ui/textarea";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { getQuestionSetByIdDb } from "@/lib/questions/question-helpers-db";
 import { createQuestionSetFromTemplateAction } from "@/app/actions/admin/admin-question-actions";
@@ -51,14 +56,11 @@ export default async function CreateQuestionSetFromTemplatePage({
 
   return (
     <main className="max-w-3xl">
-      <div className="mb-6">
-        <Link
-          href="/admin/question-sets/templates"
-          className="inline-block text-sm text-blue-600 hover:underline"
-        >
+      <InlineActions className="mb-6">
+        <Button href="/admin/question-sets/templates" variant="quiet" size="sm" icon="back">
           Back to templates
-        </Link>
-      </div>
+        </Button>
+      </InlineActions>
 
       <PageHeader
         title="Create Question Set from Template"
@@ -66,84 +68,53 @@ export default async function CreateQuestionSetFromTemplatePage({
       />
 
       <section className="mb-8">
-        <DashboardCard title="Template Details">
-          <div className="space-y-2 text-sm">
-            <p>
-              <span className="font-medium">Title:</span> {template.title}
-            </p>
-            <p>
-              <span className="font-medium">Slug:</span> {template.slug ?? "—"}
-            </p>
-            {template.template_type ? (
-              <p>
-                <span className="font-medium">Template type:</span>{" "}
-                {template.template_type}
-              </p>
-            ) : null}
-            {template.description ? (
-              <p>
-                <span className="font-medium">Description:</span> {template.description}
-              </p>
-            ) : null}
-            {template.instructions ? (
-              <p>
-                <span className="font-medium">Instructions:</span> {template.instructions}
-              </p>
-            ) : null}
-          </div>
-        </DashboardCard>
+        <PanelCard title="Template Details" tone="admin">
+          <DetailList
+            items={[
+              { label: "Title", value: template.title },
+              { label: "Slug", value: template.slug ?? "-" },
+              { label: "Template type", value: template.template_type ?? "-" },
+              { label: "Description", value: template.description ?? "-" },
+              { label: "Instructions", value: template.instructions ?? "-" },
+            ]}
+          />
+        </PanelCard>
       </section>
 
       <section>
-        <DashboardCard title="New Question Set Details">
+        <PanelCard title="New Question Set Details" tone="admin">
           <form action={createQuestionSetFromTemplateAction} className="space-y-4">
             <input type="hidden" name="templateQuestionSetId" value={template.id} />
 
-            <div>
-              <label className="block text-sm font-medium">Title</label>
-              <input
-                name="title"
-                required
-                defaultValue={suggestedTitle}
-                className="w-full rounded border px-3 py-2"
-              />
-            </div>
+            <FormField label="Title" required>
+              <Input name="title" required defaultValue={suggestedTitle} />
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium">Slug</label>
-              <input
-                name="slug"
-                required
-                defaultValue={suggestedSlug}
-                className="w-full rounded border px-3 py-2"
-              />
-            </div>
+            <FormField label="Slug" required>
+              <Input name="slug" required defaultValue={suggestedSlug} />
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium">Description</label>
-              <textarea
+            <FormField label="Description">
+              <Textarea
                 name="description"
                 defaultValue={template.description ?? ""}
-                className="w-full rounded border px-3 py-2"
                 rows={3}
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium">Instructions</label>
-              <textarea
+            <FormField label="Instructions">
+              <Textarea
                 name="instructions"
                 defaultValue={template.instructions ?? ""}
-                className="w-full rounded border px-3 py-2"
                 rows={3}
               />
-            </div>
+            </FormField>
 
-            <button type="submit" className="rounded-lg bg-black px-4 py-2 text-white">
+            <Button type="submit" variant="primary" icon="create">
               Create from template
-            </button>
+            </Button>
           </form>
-        </DashboardCard>
+        </PanelCard>
       </section>
     </main>
   );

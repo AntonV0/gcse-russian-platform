@@ -1,6 +1,7 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
-import DashboardCard from "@/components/ui/dashboard-card";
+import Button from "@/components/ui/button";
+import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getAcceptedAnswersByQuestionIdDb,
@@ -102,29 +103,29 @@ export default async function AdminQuestionEditPage({
         title={`Edit Question ${question.position}`}
         description={question.prompt}
       />
-      <div className="mb-6 flex flex-wrap gap-3">
-        <Link
+      <InlineActions className="mb-6">
+        <Button
           href={
             questionSet
               ? `/admin/question-sets/${questionSet.id}`
               : "/admin/question-sets"
           }
-          className="rounded border px-4 py-2 text-sm"
+          variant="secondary"
+          icon="back"
         >
           Back to question set
-        </Link>
+        </Button>
 
         {questionSet?.slug ? (
-          <Link
+          <Button
             href={`/question-sets/${questionSet.slug}`}
-            className="rounded border px-4 py-2 text-sm"
-            target="_blank"
-            rel="noreferrer"
+            variant="secondary"
+            icon="preview"
           >
             Open public question set
-          </Link>
+          </Button>
         ) : null}
-      </div>
+      </InlineActions>
 
       <AdminQuestionForm
         mode="edit"
@@ -178,30 +179,31 @@ export default async function AdminQuestionEditPage({
       />
 
       <section className="mt-8">
-        <DashboardCard title="Quick Actions">
+        <PanelCard title="Quick Actions" tone="admin">
           <form action={duplicateQuestionAction}>
             <input type="hidden" name="questionId" value={question.id} />
             <input type="hidden" name="questionSetId" value={question.question_set_id} />
-            <button type="submit" className="rounded-lg border px-4 py-2 text-sm">
+            <Button type="submit" variant="secondary" icon="create">
               Duplicate question
-            </button>
+            </Button>
           </form>
-        </DashboardCard>
+        </PanelCard>
       </section>
 
       <section className="mt-8">
-        <DashboardCard title="Danger Zone">
+        <PanelCard
+          title="Danger Zone"
+          description="Deleting a question removes it from this question set."
+          tone="muted"
+        >
           <form action={deleteQuestionAction}>
             <input type="hidden" name="questionId" value={question.id} />
             <input type="hidden" name="questionSetId" value={question.question_set_id} />
-            <button
-              type="submit"
-              className="rounded-lg border border-red-300 px-4 py-2 text-red-700"
-            >
+            <Button type="submit" variant="danger" icon="delete">
               Delete question
-            </button>
+            </Button>
           </form>
-        </DashboardCard>
+        </PanelCard>
       </section>
     </main>
   );
