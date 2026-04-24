@@ -13,10 +13,12 @@ import {
   updateVocabularyItemAction,
 } from "@/app/actions/admin/admin-vocabulary-items-actions";
 import {
+  getVocabularyItemCoverageByItemIdsDb,
   getVocabularyListModeLabel,
   getVocabularyProductiveReceptiveLabel,
   getVocabularyTierLabel,
   loadVocabularySetByIdDb,
+  type DbVocabularyItemCoverage,
   type DbVocabularyItem,
   type DbVocabularyTier,
 } from "@/lib/vocabulary/vocabulary-helpers-db";
@@ -64,6 +66,90 @@ function getDefaultItemTier(setTier: DbVocabularyTier) {
   return setTier === "foundation" || setTier === "higher" || setTier === "both"
     ? setTier
     : "unknown";
+}
+
+function getRequiredLessonCoverageKeys(tier: DbVocabularyTier) {
+  if (tier === "foundation") {
+    return ["foundation"] as const;
+  }
+
+  if (tier === "higher") {
+    return ["higher", "volna"] as const;
+  }
+
+  return ["foundation", "higher", "volna"] as const;
+}
+
+function getLessonCoverageValue(
+  coverage: DbVocabularyItemCoverage | null,
+  key: "foundation" | "higher" | "volna"
+) {
+  if (!coverage) return false;
+
+  switch (key) {
+    case "foundation":
+      return coverage.used_in_foundation;
+    case "higher":
+      return coverage.used_in_higher;
+    case "volna":
+      return coverage.used_in_volna;
+    default:
+      return false;
+  }
+}
+
+function getLessonCoverageLabel(key: "foundation" | "higher" | "volna") {
+  switch (key) {
+    case "foundation":
+      return "Foundation";
+    case "higher":
+      return "Higher";
+    case "volna":
+      return "Volna";
+    default:
+      return key;
+  }
+}
+
+function CoverageBadge({
+  label,
+  isUsed,
+}: {
+  label: string;
+  isUsed: boolean;
+}) {
+  return (
+    <Badge tone={isUsed ? "success" : "danger"} icon={isUsed ? "success" : "cancel"}>
+      {label}
+    </Badge>
+  );
+}
+
+function VocabularyItemCoverageBadges({
+  item,
+  coverage,
+}: {
+  item: DbVocabularyItem;
+  coverage: DbVocabularyItemCoverage | null;
+}) {
+  const lessonCoverageKeys = getRequiredLessonCoverageKeys(item.tier);
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {lessonCoverageKeys.map((key) => (
+        <CoverageBadge
+          key={key}
+          label={getLessonCoverageLabel(key)}
+          isUsed={getLessonCoverageValue(coverage, key)}
+        />
+      ))}
+
+      <CoverageBadge
+        label="Custom list"
+        isUsed={Boolean(coverage?.used_in_custom_list)}
+      />
+    </div>
+  );
 }
 
 function FormField({
@@ -520,11 +606,13 @@ function VocabularyItemCard({
   vocabularySetId,
   vocabularyListId,
   defaultTier,
+  coverage,
 }: {
   item: DbVocabularyItem;
   vocabularySetId: string;
   vocabularyListId: string | null;
   defaultTier: DbVocabularyTier;
+  coverage: DbVocabularyItemCoverage | null;
 }) {
   return (
     <details className="group overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] shadow-[var(--shadow-sm)]">
@@ -550,6 +638,10 @@ function VocabularyItemCard({
               <Badge tone="muted" icon="info">
                 {getVocabularyProductiveReceptiveLabel(item.productive_receptive)}
               </Badge>
+            </div>
+
+            <div className="mt-3">
+              <VocabularyItemCoverageBadges item={item} coverage={coverage} />
             </div>
 
             <div className="mt-3">
@@ -579,6 +671,15 @@ function VocabularyItemCard({
             value={getPartOfSpeechLabel(item.part_of_speech)}
           />
           <StatTile label="Position" value={item.position} />
+        </div>
+
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] app-text-soft">
+            Usage coverage
+          </div>
+          <div className="mt-3">
+            <VocabularyItemCoverageBadges item={item} coverage={coverage} />
+          </div>
         </div>
 
         <form action={updateVocabularyItemAction} className="space-y-5">
@@ -866,6 +967,9 @@ export default async function VocabularySetItemsPage({
   }
 
   const defaultTier = getDefaultItemTier(vocabularySet.tier);
+  const itemCoverageById = await getVocabularyItemCoverageByItemIdsDb(
+    items.map((item) => item.id)
+  );
 
   return (
     <main className="space-y-8">
@@ -966,6 +1070,7 @@ export default async function VocabularySetItemsPage({
                 vocabularySetId={vocabularySet.id}
                 vocabularyListId={item.vocabulary_list_id ?? vocabularyList?.id ?? null}
                 defaultTier={defaultTier}
+                coverage={itemCoverageById.get(item.id) ?? null}
               />
             ))}
           </div>
