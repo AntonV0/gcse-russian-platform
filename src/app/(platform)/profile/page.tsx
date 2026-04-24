@@ -262,7 +262,7 @@ export default async function ProfilePage({
                     className={[
                       "rounded-full px-3 py-1 text-xs font-medium",
                       isSelected
-                        ? "bg-[var(--brand-blue-soft)] text-[var(--brand-blue)]"
+                        ? "bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)]"
                         : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
                     ].join(" ")}
                   >

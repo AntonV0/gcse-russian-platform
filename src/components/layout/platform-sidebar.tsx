@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import LogoutButton from "@/components/layout/logout-button";
@@ -41,7 +44,7 @@ function itemClass(active: boolean) {
   return [
     "group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition app-focus-ring",
     active
-      ? "bg-[var(--brand-blue-soft)] text-[var(--brand-blue)] shadow-sm ring-1 ring-[var(--brand-blue)]/10"
+      ? "bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)] shadow-sm ring-1 ring-[var(--brand-blue)]/10"
       : "text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
   ].join(" ");
 }
@@ -76,6 +79,8 @@ export default function PlatformSidebar({
   accessMode,
   pathname,
 }: PlatformSidebarProps) {
+  const currentPathname = usePathname();
+  const activePathname = pathname ?? currentPathname;
   const mainItems: NavItem[] = [
     { label: "Dashboard", href: getDashboardPath(), icon: "dashboard" },
     { label: "Courses", href: getCoursesPath(), icon: "courses" },
@@ -155,7 +160,7 @@ export default function PlatformSidebar({
           {sectionLabel("Learn")}
 
           {mainItems.map((item) => {
-            const active = isActive(pathname, item.href);
+            const active = isActive(activePathname, item.href);
 
             return (
               <Link
@@ -168,7 +173,7 @@ export default function PlatformSidebar({
                   icon={appIcons[item.icon]}
                   size={18}
                   className={
-                    active ? "text-[var(--brand-blue)]" : "text-[var(--text-muted)]"
+                    active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
                   }
                 />
                 <span>{item.label}</span>
@@ -182,7 +187,7 @@ export default function PlatformSidebar({
             {sectionLabel("More")}
 
             {conditionalItems.map((item) => {
-              const active = isActive(pathname, item.href);
+              const active = isActive(activePathname, item.href);
 
               return (
                 <Link
@@ -195,7 +200,7 @@ export default function PlatformSidebar({
                     icon={appIcons[item.icon]}
                     size={18}
                     className={
-                      active ? "text-[var(--brand-blue)]" : "text-[var(--text-muted)]"
+                      active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
                     }
                   />
                   <span>{item.label}</span>
@@ -212,7 +217,7 @@ export default function PlatformSidebar({
             {sectionLabel("Account")}
 
             {utilityItems.map((item) => {
-              const active = isActive(pathname, item.href);
+              const active = isActive(activePathname, item.href);
 
               return (
                 <Link
@@ -225,7 +230,7 @@ export default function PlatformSidebar({
                     icon={appIcons[item.icon]}
                     size={18}
                     className={
-                      active ? "text-[var(--brand-blue)]" : "text-[var(--text-muted)]"
+                      active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
                     }
                   />
                   <span>{item.label}</span>

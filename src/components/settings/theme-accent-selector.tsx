@@ -48,7 +48,7 @@ export default function ThemeAccentSelector() {
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-blue-soft)] text-[var(--brand-blue)] ring-1 ring-[color-mix(in_srgb,var(--brand-blue)_18%,transparent)]">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)] ring-1 ring-[color-mix(in_srgb,var(--brand-blue)_18%,transparent)]">
           <AppIcon icon="palette" size={18} />
         </span>
 
@@ -95,7 +95,7 @@ export default function ThemeAccentSelector() {
                 className={[
                   "mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
                   isActive
-                    ? "bg-[var(--background-elevated)] text-[var(--brand-blue)]"
+                    ? "bg-[var(--background-elevated)] text-[var(--accent-on-soft)]"
                     : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
                 ].join(" ")}
               >

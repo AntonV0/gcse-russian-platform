@@ -15,8 +15,8 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
   switch (variant) {
     case "primary":
       return [
-        "app-btn-variant-primary border border-transparent !text-[var(--brand-white)]",
-        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_82%,var(--brand-white))_0%,var(--brand-blue)_58%,var(--brand-blue-hover)_100%)]",
+        "app-btn-variant-primary border border-transparent !text-[var(--accent-on-fill)]",
+        "bg-[linear-gradient(135deg,var(--accent-fill)_0%,var(--accent-fill)_58%,var(--accent-fill-hover)_100%)]",
         "shadow-[0_12px_28px_color-mix(in_srgb,var(--brand-blue)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--brand-blue)_16%,transparent)]",
         disabled
           ? "opacity-60"
@@ -51,7 +51,7 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
         disabled
           ? "opacity-55"
           : [
-              "hover:text-[var(--brand-blue)]",
+              "hover:text-[var(--accent-ink)]",
               "hover:border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)]",
               "hover:bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)]",
               "hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--brand-blue)_10%,transparent)]",
@@ -110,13 +110,13 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
       return [
         "app-btn-variant-soft",
         "border border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)]",
-        "text-[var(--brand-blue)]",
+        "text-[var(--accent-on-soft)]",
         "bg-[linear-gradient(135deg,var(--info-soft)_0%,var(--background-elevated)_100%)]",
         "shadow-[0_1px_2px_color-mix(in_srgb,var(--brand-blue)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
         disabled
           ? "opacity-60"
           : [
-              "hover:text-[var(--brand-blue-hover)]",
+              "hover:text-[var(--accent-on-soft)]",
               "hover:border-[color-mix(in_srgb,var(--brand-blue)_30%,transparent)]",
               "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_24%,transparent)_0%,var(--background-elevated)_100%)]",
               "hover:shadow-[0_14px_28px_color-mix(in_srgb,var(--brand-blue)_16%,transparent),0_4px_10px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",

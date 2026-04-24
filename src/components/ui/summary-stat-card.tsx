@@ -27,8 +27,8 @@ function getToneClasses(tone: SummaryStatCardTone) {
     case "brand":
       return {
         card: "border-[color-mix(in_srgb,var(--brand-blue)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_55%,color-mix(in_srgb,var(--brand-red)_4%,transparent)_100%)]",
-        iconWrap: "bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--brand-blue)]",
-        value: "text-[var(--brand-blue)]",
+        iconWrap: "bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--accent-on-soft)]",
+        value: "text-[var(--accent-ink)]",
       };
 
     case "success":

@@ -20,7 +20,7 @@ export const BUILDER_SECONDARY_BUTTON_CLASS =
   "inline-flex items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] transition-[background-color,border-color,box-shadow,transform] duration-200 hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] hover:shadow-[0_10px_20px_rgba(16,32,51,0.06)] disabled:cursor-not-allowed disabled:opacity-60";
 
 export const BUILDER_PRIMARY_BUTTON_CLASS =
-  "app-focus-ring inline-flex items-center justify-center rounded-xl border border-transparent bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_82%,var(--brand-white))_0%,var(--brand-blue)_58%,var(--brand-blue-hover)_100%)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_color-mix(in_srgb,var(--brand-blue)_22%,transparent),0_3px_8px_color-mix(in_srgb,var(--brand-blue)_12%,transparent)] transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-[1px] hover:brightness-[1.05] hover:shadow-[0_16px_34px_color-mix(in_srgb,var(--brand-blue)_28%,transparent),0_5px_12px_color-mix(in_srgb,var(--brand-blue)_16%,transparent)] disabled:cursor-not-allowed disabled:opacity-60";
+  "app-focus-ring inline-flex items-center justify-center rounded-xl border border-transparent bg-[linear-gradient(135deg,var(--accent-fill)_0%,var(--accent-fill)_58%,var(--accent-fill-hover)_100%)] px-3.5 py-2.5 text-sm font-semibold text-[var(--accent-on-fill)] shadow-[0_12px_28px_color-mix(in_srgb,var(--brand-blue)_22%,transparent),0_3px_8px_color-mix(in_srgb,var(--brand-blue)_12%,transparent)] transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-[1px] hover:brightness-[1.05] hover:shadow-[0_16px_34px_color-mix(in_srgb,var(--brand-blue)_28%,transparent),0_5px_12px_color-mix(in_srgb,var(--brand-blue)_16%,transparent)] disabled:cursor-not-allowed disabled:opacity-60";
 
 export const BUILDER_DASHED_EMPTY_STATE_CLASS =
   "rounded-2xl border border-dashed border-[var(--border)] bg-[linear-gradient(180deg,var(--background-elevated)_0%,var(--background-muted)_100%)] px-4 py-6 text-sm app-text-muted";
@@ -171,7 +171,7 @@ export function ToolbarButton({
       onClick={onClick}
       className={`inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition ${
         isActive
-          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white shadow-[0_10px_22px_color-mix(in_srgb,var(--brand-blue)_18%,transparent)]"
+          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--brand-blue)_18%,transparent)]"
           : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]"
       }`}
     >

@@ -133,7 +133,7 @@ export default function SelectionBasedBlock({
                         className={[
                           "rounded-full border px-3 py-1.5 text-sm transition",
                           isSelected
-                            ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
+                            ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
                             : "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]",
                           hasSubmitted || isSubmitting
                             ? "cursor-default"
@@ -173,7 +173,7 @@ export default function SelectionBasedBlock({
                       className={[
                         "rounded-full border px-3 py-1.5 text-sm transition",
                         isSelected
-                          ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
+                          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
                           : "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]",
                         hasSubmitted || isSubmitting
                           ? "cursor-default"
