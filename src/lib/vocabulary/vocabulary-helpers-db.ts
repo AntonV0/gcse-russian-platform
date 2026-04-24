@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 
-export type DbVocabularyTier = "foundation" | "higher" | "both";
+export type DbVocabularyTier = "foundation" | "higher" | "both" | "unknown";
 
 export type DbVocabularyListMode =
   | "spec_only"
@@ -9,6 +9,7 @@ export type DbVocabularyListMode =
   | "custom";
 
 export type DbVocabularySetType =
+  | "specification"
   | "core"
   | "theme"
   | "phrase_bank"
@@ -22,6 +23,42 @@ export type DbVocabularyItemType = "word" | "phrase";
 export type DbVocabularyItemSourceType = "spec_required" | "extended" | "custom";
 
 export type DbVocabularyItemPriority = "core" | "extension";
+
+export type DbVocabularyPartOfSpeech =
+  | "noun"
+  | "verb"
+  | "adjective"
+  | "adverb"
+  | "pronoun"
+  | "preposition"
+  | "conjunction"
+  | "number"
+  | "phrase"
+  | "interjection"
+  | "other"
+  | "unknown";
+
+export type DbVocabularyGender =
+  | "masculine"
+  | "feminine"
+  | "neuter"
+  | "plural_only"
+  | "common"
+  | "not_applicable"
+  | "unknown";
+
+export type DbVocabularyProductiveReceptive =
+  | "productive"
+  | "receptive"
+  | "both"
+  | "unknown";
+
+export type DbVocabularyAspect =
+  | "perfective"
+  | "imperfective"
+  | "both"
+  | "not_applicable"
+  | "unknown";
 
 export type DbVocabularyUsageVariant = "foundation" | "higher" | "volna";
 
@@ -44,6 +81,32 @@ export type DbVocabularySet = {
   default_display_variant: DbVocabularyDisplayVariant;
   is_published: boolean;
   sort_order: number;
+  source_key: string | null;
+  source_version: string | null;
+  import_key: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DbVocabularyList = {
+  id: string;
+  vocabulary_set_id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  theme_key: string | null;
+  topic_key: string | null;
+  category_key: string | null;
+  subcategory_key: string | null;
+  tier: DbVocabularyTier;
+  list_mode: DbVocabularyListMode;
+  default_display_variant: DbVocabularyDisplayVariant;
+  is_published: boolean;
+  sort_order: number;
+  source_key: string | null;
+  source_version: string | null;
+  source_section_ref: string | null;
+  import_key: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -51,6 +114,8 @@ export type DbVocabularySet = {
 export type DbVocabularyItem = {
   id: string;
   vocabulary_set_id: string;
+  vocabulary_list_id?: string | null;
+  canonical_key: string | null;
   russian: string;
   english: string;
   transliteration: string | null;
@@ -61,9 +126,38 @@ export type DbVocabularyItem = {
   item_type: DbVocabularyItemType;
   source_type: DbVocabularyItemSourceType;
   priority: DbVocabularyItemPriority;
+  part_of_speech: DbVocabularyPartOfSpeech;
+  gender: DbVocabularyGender;
+  plural: string | null;
+  productive_receptive: DbVocabularyProductiveReceptive;
+  tier: DbVocabularyTier;
+  theme_key: string | null;
+  topic_key: string | null;
+  category_key: string | null;
+  subcategory_key: string | null;
+  aspect: DbVocabularyAspect;
+  case_governed: string | null;
+  is_reflexive: boolean;
+  source_key: string | null;
+  source_version: string | null;
+  source_section_ref: string | null;
+  import_key: string | null;
   position: number;
   created_at: string;
   updated_at: string;
+};
+
+export type DbVocabularyListItem = {
+  id: string;
+  vocabulary_list_id: string;
+  vocabulary_item_id: string;
+  position: number;
+  productive_receptive_override: DbVocabularyProductiveReceptive | null;
+  tier_override: DbVocabularyTier | null;
+  notes_override: string | null;
+  source_section_ref: string | null;
+  import_key: string | null;
+  created_at: string;
 };
 
 export type DbLessonVocabularySetUsage = {
@@ -77,6 +171,8 @@ export type DbLessonVocabularySetUsage = {
 
 export type LoadedVocabularySetDb = {
   vocabularySet: DbVocabularySet | null;
+  vocabularyList: DbVocabularyList | null;
+  lists: DbVocabularyList[];
   items: DbVocabularyItem[];
 };
 
@@ -92,11 +188,14 @@ export type DbVocabularySetUsageStats = {
 
 export type DbVocabularySetListItem = DbVocabularySet & {
   item_count: number;
+  list_count: number;
   usage_stats: DbVocabularySetUsageStats;
 };
 
 export type LoadedVocabularySetDetailDb = {
   vocabularySet: DbVocabularySet | null;
+  vocabularyList: DbVocabularyList | null;
+  lists: DbVocabularyList[];
   items: DbVocabularyItem[];
   usageStats: DbVocabularySetUsageStats;
 };
@@ -132,8 +231,27 @@ export function getVocabularyTierLabel(tier: DbVocabularyTier) {
       return "Higher";
     case "both":
       return "Both tiers";
+    case "unknown":
+      return "Unknown tier";
     default:
       return tier;
+  }
+}
+
+export function getVocabularyProductiveReceptiveLabel(
+  value: DbVocabularyProductiveReceptive
+) {
+  switch (value) {
+    case "productive":
+      return "Productive";
+    case "receptive":
+      return "Receptive";
+    case "both":
+      return "Productive + receptive";
+    case "unknown":
+      return "Unknown";
+    default:
+      return value;
   }
 }
 
@@ -173,6 +291,80 @@ export function buildVocabularyUsageStats(
   };
 }
 
+function normalizeVocabularySet(row: unknown): DbVocabularySet {
+  const record = row as Partial<DbVocabularySet>;
+
+  return {
+    id: String(record.id),
+    slug: record.slug ?? null,
+    title: String(record.title),
+    description: record.description ?? null,
+    theme_key: record.theme_key ?? null,
+    topic_key: record.topic_key ?? null,
+    tier: record.tier ?? "both",
+    list_mode: record.list_mode ?? "custom",
+    set_type: record.set_type ?? "lesson_custom",
+    default_display_variant: record.default_display_variant ?? "single_column",
+    is_published: Boolean(record.is_published),
+    sort_order: Number(record.sort_order ?? 0),
+    source_key: record.source_key ?? null,
+    source_version: record.source_version ?? null,
+    import_key: record.import_key ?? null,
+    created_at: String(record.created_at),
+    updated_at: String(record.updated_at),
+  };
+}
+
+function normalizeVocabularyItem(row: unknown): DbVocabularyItem {
+  const record = row as Partial<DbVocabularyItem>;
+
+  return {
+    id: String(record.id),
+    vocabulary_set_id: String(record.vocabulary_set_id),
+    vocabulary_list_id: record.vocabulary_list_id ?? null,
+    canonical_key: record.canonical_key ?? null,
+    russian: String(record.russian),
+    english: String(record.english),
+    transliteration: record.transliteration ?? null,
+    example_ru: record.example_ru ?? null,
+    example_en: record.example_en ?? null,
+    audio_path: record.audio_path ?? null,
+    notes: record.notes ?? null,
+    item_type: record.item_type ?? "word",
+    source_type: record.source_type ?? "custom",
+    priority: record.priority ?? "core",
+    part_of_speech: record.part_of_speech ?? "unknown",
+    gender: record.gender ?? "unknown",
+    plural: record.plural ?? null,
+    productive_receptive: record.productive_receptive ?? "unknown",
+    tier: record.tier ?? "unknown",
+    theme_key: record.theme_key ?? null,
+    topic_key: record.topic_key ?? null,
+    category_key: record.category_key ?? null,
+    subcategory_key: record.subcategory_key ?? null,
+    aspect: record.aspect ?? "unknown",
+    case_governed: record.case_governed ?? null,
+    is_reflexive: Boolean(record.is_reflexive),
+    source_key: record.source_key ?? null,
+    source_version: record.source_version ?? null,
+    source_section_ref: record.source_section_ref ?? null,
+    import_key: record.import_key ?? null,
+    position: Number(record.position ?? 0),
+    created_at: String(record.created_at),
+    updated_at: String(record.updated_at),
+  };
+}
+
+function slugifyVocabularyTitle(title: string) {
+  const slug = title
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || "default-list";
+}
+
 export async function getVocabularySetByIdDb(vocabularySetId: string) {
   const supabase = await createClient();
 
@@ -190,7 +382,7 @@ export async function getVocabularySetByIdDb(vocabularySetId: string) {
     return null;
   }
 
-  return (data as DbVocabularySet | null) ?? null;
+  return data ? normalizeVocabularySet(data) : null;
 }
 
 export async function getVocabularySetBySlugDb(vocabularySetSlug: string) {
@@ -210,10 +402,148 @@ export async function getVocabularySetBySlugDb(vocabularySetSlug: string) {
     return null;
   }
 
-  return (data as DbVocabularySet | null) ?? null;
+  return data ? normalizeVocabularySet(data) : null;
+}
+
+export async function getVocabularyListsBySetIdDb(vocabularySetId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("vocabulary_lists")
+    .select("*")
+    .eq("vocabulary_set_id", vocabularySetId)
+    .order("sort_order", { ascending: true })
+    .order("title", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching vocabulary lists by set id:", {
+      vocabularySetId,
+      error,
+    });
+    return [];
+  }
+
+  return (data ?? []) as DbVocabularyList[];
+}
+
+export async function getVocabularyListByIdDb(vocabularyListId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("vocabulary_lists")
+    .select("*")
+    .eq("id", vocabularyListId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching vocabulary list by id:", {
+      vocabularyListId,
+      error,
+    });
+    return null;
+  }
+
+  return (data as DbVocabularyList | null) ?? null;
+}
+
+export async function getDefaultVocabularyListBySetIdDb(vocabularySetId: string) {
+  const lists = await getVocabularyListsBySetIdDb(vocabularySetId);
+  return lists[0] ?? null;
+}
+
+export async function ensureDefaultVocabularyListForSetDb(vocabularySet: DbVocabularySet) {
+  const existing = await getDefaultVocabularyListBySetIdDb(vocabularySet.id);
+
+  if (existing) {
+    return existing;
+  }
+
+  const supabase = await createClient();
+  const slug = vocabularySet.slug?.trim() || slugifyVocabularyTitle(vocabularySet.title);
+
+  const { data, error } = await supabase
+    .from("vocabulary_lists")
+    .insert({
+      vocabulary_set_id: vocabularySet.id,
+      slug,
+      title: vocabularySet.title,
+      description: vocabularySet.description,
+      theme_key: vocabularySet.theme_key,
+      topic_key: vocabularySet.topic_key,
+      tier: vocabularySet.tier,
+      list_mode: vocabularySet.list_mode,
+      default_display_variant: vocabularySet.default_display_variant,
+      is_published: vocabularySet.is_published,
+      sort_order: 0,
+      source_key: vocabularySet.source_key,
+      source_version: vocabularySet.source_version,
+      import_key: vocabularySet.import_key
+        ? `${vocabularySet.import_key}:default-list`
+        : null,
+    })
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Error creating default vocabulary list:", {
+      vocabularySetId: vocabularySet.id,
+      error,
+    });
+    throw new Error("Failed to create default vocabulary list");
+  }
+
+  return data as DbVocabularyList;
+}
+
+export async function getVocabularyItemsByListIdDb(vocabularyListId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("vocabulary_list_items")
+    .select("position, vocabulary_items(*)")
+    .eq("vocabulary_list_id", vocabularyListId)
+    .order("position", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching vocabulary items by list id:", {
+      vocabularyListId,
+      error,
+    });
+    return [];
+  }
+
+  return (data ?? [])
+    .map((row) => {
+      const record = row as {
+        position?: number;
+        vocabulary_items?: Record<string, unknown> | Record<string, unknown>[] | null;
+      };
+      const joinedItem = Array.isArray(record.vocabulary_items)
+        ? record.vocabulary_items[0]
+        : record.vocabulary_items;
+
+      if (!joinedItem) return null;
+
+      return normalizeVocabularyItem({
+        ...joinedItem,
+        vocabulary_list_id: vocabularyListId,
+        position: record.position ?? 0,
+      });
+    })
+    .filter((item): item is DbVocabularyItem => Boolean(item));
 }
 
 export async function getVocabularyItemsBySetIdDb(vocabularySetId: string) {
+  const lists = await getVocabularyListsBySetIdDb(vocabularySetId);
+
+  if (lists.length > 0) {
+    const groupedItems = await Promise.all(
+      lists.map((list) => getVocabularyItemsByListIdDb(list.id))
+    );
+
+    return groupedItems.flat();
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -223,17 +553,40 @@ export async function getVocabularyItemsBySetIdDb(vocabularySetId: string) {
     .order("position", { ascending: true });
 
   if (error) {
-    console.error("Error fetching vocabulary items by set id:", {
+    console.error("Error fetching legacy vocabulary items by set id:", {
       vocabularySetId,
       error,
     });
     return [];
   }
 
-  return (data ?? []) as DbVocabularyItem[];
+  return (data ?? []).map(normalizeVocabularyItem);
 }
 
 export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
+  const lists = await getVocabularyListsBySetIdDb(vocabularySetId);
+
+  if (lists.length > 0) {
+    const supabase = await createClient();
+    const { count, error } = await supabase
+      .from("vocabulary_list_items")
+      .select("id", { count: "exact", head: true })
+      .in(
+        "vocabulary_list_id",
+        lists.map((list) => list.id)
+      );
+
+    if (error) {
+      console.error("Error counting vocabulary list items by set id:", {
+        vocabularySetId,
+        error,
+      });
+      return 0;
+    }
+
+    return count ?? 0;
+  }
+
   const supabase = await createClient();
 
   const { count, error } = await supabase
@@ -242,7 +595,7 @@ export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
     .eq("vocabulary_set_id", vocabularySetId);
 
   if (error) {
-    console.error("Error counting vocabulary items by set id:", {
+    console.error("Error counting legacy vocabulary items by set id:", {
       vocabularySetId,
       error,
     });
@@ -250,6 +603,11 @@ export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
   }
 
   return count ?? 0;
+}
+
+export async function getVocabularyListCountBySetIdDb(vocabularySetId: string) {
+  const lists = await getVocabularyListsBySetIdDb(vocabularySetId);
+  return lists.length;
 }
 
 export async function getVocabularySetUsagesBySetIdDb(vocabularySetId: string) {
@@ -286,6 +644,8 @@ export async function loadVocabularySetByIdDb(
   if (!vocabularySet) {
     return {
       vocabularySet: null,
+      vocabularyList: null,
+      lists: [],
       items: [],
       usageStats: {
         totalOccurrences: 0,
@@ -299,6 +659,8 @@ export async function loadVocabularySetByIdDb(
     };
   }
 
+  const lists = await getVocabularyListsBySetIdDb(vocabularySet.id);
+  const vocabularyList = lists[0] ?? null;
   const [items, usageStats] = await Promise.all([
     getVocabularyItemsBySetIdDb(vocabularySet.id),
     getVocabularySetUsageStatsBySetIdDb(vocabularySet.id),
@@ -306,6 +668,8 @@ export async function loadVocabularySetByIdDb(
 
   return {
     vocabularySet,
+    vocabularyList,
+    lists,
     items,
     usageStats,
   };
@@ -319,14 +683,19 @@ export async function loadVocabularySetBySlugDb(
   if (!vocabularySet) {
     return {
       vocabularySet: null,
+      vocabularyList: null,
+      lists: [],
       items: [],
     };
   }
 
+  const lists = await getVocabularyListsBySetIdDb(vocabularySet.id);
   const items = await getVocabularyItemsBySetIdDb(vocabularySet.id);
 
   return {
     vocabularySet,
+    vocabularyList: lists[0] ?? null,
+    lists,
     items,
   };
 }
@@ -336,14 +705,16 @@ async function attachVocabularyCountsAndUsage(
 ): Promise<DbVocabularySetListItem[]> {
   const enriched = await Promise.all(
     vocabularySets.map(async (vocabularySet) => {
-      const [itemCount, usageStats] = await Promise.all([
+      const [itemCount, listCount, usageStats] = await Promise.all([
         getVocabularyItemCountBySetIdDb(vocabularySet.id),
+        getVocabularyListCountBySetIdDb(vocabularySet.id),
         getVocabularySetUsageStatsBySetIdDb(vocabularySet.id),
       ]);
 
       return {
         ...vocabularySet,
         item_count: itemCount,
+        list_count: listCount,
         usage_stats: usageStats,
       };
     })
@@ -375,7 +746,7 @@ export async function getVocabularySetsDb(options?: { publishedOnly?: boolean })
     return [] as DbVocabularySetListItem[];
   }
 
-  return attachVocabularyCountsAndUsage((data ?? []) as DbVocabularySet[]);
+  return attachVocabularyCountsAndUsage((data ?? []).map(normalizeVocabularySet));
 }
 
 export async function getPublishedVocabularySetsDb() {

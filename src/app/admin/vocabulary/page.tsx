@@ -14,6 +14,8 @@ import {
 
 function getSetTypeLabel(setType: DbVocabularySetListItem["set_type"]) {
   switch (setType) {
+    case "specification":
+      return "Specification";
     case "core":
       return "Core";
     case "theme":

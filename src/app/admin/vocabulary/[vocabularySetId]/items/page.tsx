@@ -12,6 +12,7 @@ import {
 } from "@/app/actions/admin/admin-vocabulary-items-actions";
 import {
   getVocabularyListModeLabel,
+  getVocabularyProductiveReceptiveLabel,
   getVocabularyTierLabel,
   loadVocabularySetByIdDb,
   type DbVocabularyItem,
@@ -50,6 +51,10 @@ function getItemTypeLabel(itemType: DbVocabularyItem["item_type"]) {
     default:
       return itemType;
   }
+}
+
+function getPartOfSpeechLabel(partOfSpeech: DbVocabularyItem["part_of_speech"]) {
+  return partOfSpeech.replaceAll("_", " ");
 }
 
 function FormField({
@@ -94,7 +99,13 @@ function StatTile({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function NewVocabularyItemForm({ vocabularySetId }: { vocabularySetId: string }) {
+function NewVocabularyItemForm({
+  vocabularySetId,
+  vocabularyListId,
+}: {
+  vocabularySetId: string;
+  vocabularyListId: string | null;
+}) {
   return (
     <section className="app-surface app-section-padding">
       <div className="mb-5 flex flex-col gap-2">
@@ -106,6 +117,9 @@ function NewVocabularyItemForm({ vocabularySetId }: { vocabularySetId: string })
 
       <form action={createVocabularyItemAction} className="space-y-5">
         <input type="hidden" name="vocabularySetId" value={vocabularySetId} />
+        {vocabularyListId ? (
+          <input type="hidden" name="vocabularyListId" value={vocabularyListId} />
+        ) : null}
 
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
@@ -144,6 +158,83 @@ function NewVocabularyItemForm({ vocabularySetId }: { vocabularySetId: string })
           </FormField>
 
           <FormField
+            label="Productive / receptive"
+            htmlFor="create-productive-receptive"
+            hint="Use unknown when the source does not say."
+          >
+            <Select
+              id="create-productive-receptive"
+              name="productiveReceptive"
+              defaultValue="unknown"
+            >
+              <option value="unknown">Unknown</option>
+              <option value="productive">Productive</option>
+              <option value="receptive">Receptive</option>
+              <option value="both">Productive + receptive</option>
+            </Select>
+          </FormField>
+
+          <FormField
+            label="Tier"
+            htmlFor="create-tier"
+            hint="Use item-level tier only when known."
+          >
+            <Select id="create-tier" name="tier" defaultValue="unknown">
+              <option value="unknown">Unknown</option>
+              <option value="both">Both tiers</option>
+              <option value="foundation">Foundation</option>
+              <option value="higher">Higher</option>
+            </Select>
+          </FormField>
+
+          <FormField
+            label="Part of speech"
+            htmlFor="create-part-of-speech"
+            hint="Useful for Russian grammar-aware filtering."
+          >
+            <Select id="create-part-of-speech" name="partOfSpeech" defaultValue="unknown">
+              <option value="unknown">Unknown</option>
+              <option value="noun">Noun</option>
+              <option value="verb">Verb</option>
+              <option value="adjective">Adjective</option>
+              <option value="adverb">Adverb</option>
+              <option value="pronoun">Pronoun</option>
+              <option value="preposition">Preposition</option>
+              <option value="conjunction">Conjunction</option>
+              <option value="number">Number</option>
+              <option value="phrase">Phrase</option>
+              <option value="interjection">Interjection</option>
+              <option value="other">Other</option>
+            </Select>
+          </FormField>
+
+          <FormField label="Gender" htmlFor="create-gender">
+            <Select id="create-gender" name="gender" defaultValue="unknown">
+              <option value="unknown">Unknown</option>
+              <option value="not_applicable">Not applicable</option>
+              <option value="masculine">Masculine</option>
+              <option value="feminine">Feminine</option>
+              <option value="neuter">Neuter</option>
+              <option value="plural_only">Plural only</option>
+              <option value="common">Common</option>
+            </Select>
+          </FormField>
+
+          <FormField label="Plural" htmlFor="create-plural">
+            <Input id="create-plural" name="plural" />
+          </FormField>
+
+          <FormField label="Aspect" htmlFor="create-aspect">
+            <Select id="create-aspect" name="aspect" defaultValue="unknown">
+              <option value="unknown">Unknown</option>
+              <option value="not_applicable">Not applicable</option>
+              <option value="imperfective">Imperfective</option>
+              <option value="perfective">Perfective</option>
+              <option value="both">Both</option>
+            </Select>
+          </FormField>
+
+          <FormField
             label="Source type"
             htmlFor="create-source-type"
             hint="Marks where the vocabulary came from."
@@ -164,6 +255,30 @@ function NewVocabularyItemForm({ vocabularySetId }: { vocabularySetId: string })
               <option value="core">Core</option>
               <option value="extension">Extension</option>
             </Select>
+          </FormField>
+
+          <FormField label="Theme key" htmlFor="create-theme-key">
+            <Input id="create-theme-key" name="themeKey" />
+          </FormField>
+
+          <FormField label="Topic key" htmlFor="create-topic-key">
+            <Input id="create-topic-key" name="topicKey" />
+          </FormField>
+
+          <FormField label="Category key" htmlFor="create-category-key">
+            <Input id="create-category-key" name="categoryKey" />
+          </FormField>
+
+          <FormField label="Subcategory key" htmlFor="create-subcategory-key">
+            <Input id="create-subcategory-key" name="subcategoryKey" />
+          </FormField>
+
+          <FormField label="Case governed" htmlFor="create-case-governed">
+            <Input id="create-case-governed" name="caseGoverned" />
+          </FormField>
+
+          <FormField label="Canonical key" htmlFor="create-canonical-key">
+            <Input id="create-canonical-key" name="canonicalKey" />
           </FormField>
 
           <div className="md:col-span-2">
@@ -210,9 +325,11 @@ function NewVocabularyItemForm({ vocabularySetId }: { vocabularySetId: string })
 function VocabularyItemCard({
   item,
   vocabularySetId,
+  vocabularyListId,
 }: {
   item: DbVocabularyItem;
   vocabularySetId: string;
+  vocabularyListId: string | null;
 }) {
   return (
     <section className="app-card overflow-hidden">
@@ -238,6 +355,10 @@ function VocabularyItemCard({
               >
                 {getPriorityLabel(item.priority)}
               </Badge>
+
+              <Badge tone="muted" icon="info">
+                {getVocabularyProductiveReceptiveLabel(item.productive_receptive)}
+              </Badge>
             </div>
 
             <div>
@@ -255,12 +376,16 @@ function VocabularyItemCard({
           <StatTile label="Russian" value={item.russian} />
           <StatTile label="English" value={item.english} />
           <StatTile label="Type" value={getItemTypeLabel(item.item_type)} />
+          <StatTile label="Part of speech" value={getPartOfSpeechLabel(item.part_of_speech)} />
           <StatTile label="Position" value={item.position} />
         </div>
 
         <form action={updateVocabularyItemAction} className="space-y-5">
           <input type="hidden" name="vocabularyItemId" value={item.id} />
           <input type="hidden" name="vocabularySetId" value={vocabularySetId} />
+          {vocabularyListId ? (
+            <input type="hidden" name="vocabularyListId" value={vocabularyListId} />
+          ) : null}
 
           <div className="grid gap-4 md:grid-cols-2">
             <FormField label="Russian" htmlFor={`russian-${item.id}`}>
@@ -311,6 +436,64 @@ function VocabularyItemCard({
               </Select>
             </FormField>
 
+            <FormField
+              label="Productive / receptive"
+              htmlFor={`productive-receptive-${item.id}`}
+            >
+              <Select
+                id={`productive-receptive-${item.id}`}
+                name="productiveReceptive"
+                defaultValue={item.productive_receptive}
+              >
+                <option value="unknown">Unknown</option>
+                <option value="productive">Productive</option>
+                <option value="receptive">Receptive</option>
+                <option value="both">Productive + receptive</option>
+              </Select>
+            </FormField>
+
+            <FormField label="Tier" htmlFor={`tier-${item.id}`}>
+              <Select id={`tier-${item.id}`} name="tier" defaultValue={item.tier}>
+                <option value="unknown">Unknown</option>
+                <option value="both">Both tiers</option>
+                <option value="foundation">Foundation</option>
+                <option value="higher">Higher</option>
+              </Select>
+            </FormField>
+
+            <FormField label="Part of speech" htmlFor={`part-of-speech-${item.id}`}>
+              <Select
+                id={`part-of-speech-${item.id}`}
+                name="partOfSpeech"
+                defaultValue={item.part_of_speech}
+              >
+                <option value="unknown">Unknown</option>
+                <option value="noun">Noun</option>
+                <option value="verb">Verb</option>
+                <option value="adjective">Adjective</option>
+                <option value="adverb">Adverb</option>
+                <option value="pronoun">Pronoun</option>
+                <option value="preposition">Preposition</option>
+                <option value="conjunction">Conjunction</option>
+                <option value="number">Number</option>
+                <option value="phrase">Phrase</option>
+                <option value="interjection">Interjection</option>
+                <option value="other">Other</option>
+              </Select>
+            </FormField>
+
+            <FormField label="Gender" htmlFor={`gender-${item.id}`}>
+              <Select id={`gender-${item.id}`} name="gender" defaultValue={item.gender}>
+                <option value="unknown">Unknown</option>
+                <option value="not_applicable">Not applicable</option>
+                <option value="masculine">Masculine</option>
+                <option value="feminine">Feminine</option>
+                <option value="neuter">Neuter</option>
+                <option value="plural_only">Plural only</option>
+                <option value="common">Common</option>
+              </Select>
+            </FormField>
+
             <FormField label="Source type" htmlFor={`source-type-${item.id}`}>
               <Select
                 id={`source-type-${item.id}`}
@@ -334,7 +517,47 @@ function VocabularyItemCard({
               </Select>
             </FormField>
 
-            <div />
+            <FormField label="Plural" htmlFor={`plural-${item.id}`}>
+              <Input id={`plural-${item.id}`} name="plural" defaultValue={item.plural ?? ""} />
+            </FormField>
+
+            <FormField label="Aspect" htmlFor={`aspect-${item.id}`}>
+              <Select id={`aspect-${item.id}`} name="aspect" defaultValue={item.aspect}>
+                <option value="unknown">Unknown</option>
+                <option value="not_applicable">Not applicable</option>
+                <option value="imperfective">Imperfective</option>
+                <option value="perfective">Perfective</option>
+                <option value="both">Both</option>
+              </Select>
+            </FormField>
+
+            <FormField label="Theme key" htmlFor={`theme-key-${item.id}`}>
+              <Input id={`theme-key-${item.id}`} name="themeKey" defaultValue={item.theme_key ?? ""} />
+            </FormField>
+
+            <FormField label="Topic key" htmlFor={`topic-key-${item.id}`}>
+              <Input id={`topic-key-${item.id}`} name="topicKey" defaultValue={item.topic_key ?? ""} />
+            </FormField>
+
+            <FormField label="Category key" htmlFor={`category-key-${item.id}`}>
+              <Input id={`category-key-${item.id}`} name="categoryKey" defaultValue={item.category_key ?? ""} />
+            </FormField>
+
+            <FormField label="Subcategory key" htmlFor={`subcategory-key-${item.id}`}>
+              <Input
+                id={`subcategory-key-${item.id}`}
+                name="subcategoryKey"
+                defaultValue={item.subcategory_key ?? ""}
+              />
+            </FormField>
+
+            <FormField label="Case governed" htmlFor={`case-governed-${item.id}`}>
+              <Input id={`case-governed-${item.id}`} name="caseGoverned" defaultValue={item.case_governed ?? ""} />
+            </FormField>
+
+            <FormField label="Canonical key" htmlFor={`canonical-key-${item.id}`}>
+              <Input id={`canonical-key-${item.id}`} name="canonicalKey" defaultValue={item.canonical_key ?? ""} />
+            </FormField>
 
             <div className="md:col-span-2">
               <FormField label="Example (Russian)" htmlFor={`example-ru-${item.id}`}>
@@ -395,7 +618,7 @@ export default async function VocabularySetItemsPage({
   params: Promise<{ vocabularySetId: string }>;
 }) {
   const { vocabularySetId } = await params;
-  const { vocabularySet, items, usageStats } =
+  const { vocabularySet, vocabularyList, lists, items, usageStats } =
     await loadVocabularySetByIdDb(vocabularySetId);
 
   if (!vocabularySet) {
@@ -457,12 +680,15 @@ export default async function VocabularySetItemsPage({
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatTile label="Items" value={items.length} />
+        <StatTile label="Lists" value={lists.length} />
         <StatTile label="Foundation usages" value={usageStats.foundationOccurrences} />
         <StatTile label="Higher usages" value={usageStats.higherOccurrences} />
-        <StatTile label="Volna usages" value={usageStats.volnaOccurrences} />
       </section>
 
-      <NewVocabularyItemForm vocabularySetId={vocabularySet.id} />
+      <NewVocabularyItemForm
+        vocabularySetId={vocabularySet.id}
+        vocabularyListId={vocabularyList?.id ?? null}
+      />
 
       <section className="app-surface app-section-padding">
         <div className="mb-5 flex flex-col gap-2">
@@ -485,6 +711,7 @@ export default async function VocabularySetItemsPage({
                 key={item.id}
                 item={item}
                 vocabularySetId={vocabularySet.id}
+                vocabularyListId={item.vocabulary_list_id ?? vocabularyList?.id ?? null}
               />
             ))}
           </div>
