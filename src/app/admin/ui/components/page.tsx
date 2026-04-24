@@ -1,4 +1,6 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import Badge from "@/components/ui/badge";
@@ -19,6 +21,17 @@ import Textarea from "@/components/ui/textarea";
 import Select from "@/components/ui/select";
 import CheckboxField from "@/components/ui/checkbox-field";
 
+const pageNavItems = [
+  { id: "inspection", label: "Inspection" },
+  { id: "intro-panels", label: "Intro panels" },
+  { id: "headers", label: "Headers" },
+  { id: "stats", label: "Stats" },
+  { id: "panels", label: "Panels" },
+  { id: "lists", label: "Lists" },
+  { id: "forms", label: "Forms" },
+  { id: "future-components", label: "Future" },
+];
+
 export default async function AdminUiComponentsPage() {
   const canAccess = await requireAdminAccess();
 
@@ -32,7 +45,10 @@ export default async function AdminUiComponentsPage() {
       description="Preview the reusable building blocks that should shape admin and platform pages before applying one-off styling."
       currentPath="/admin/ui/components"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="inspection"
         title="Shared component inspection"
         description="Use this area to verify which elements are coming from shared UI primitives and to test the dev marker behaviour in realistic grouped layouts."
       >
@@ -90,6 +106,7 @@ export default async function AdminUiComponentsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="intro-panels"
         title="Page intro panels"
         description="This is the preferred premium top-of-page pattern for admin overviews, student course screens, and access or upgrade entry points."
       >
@@ -192,6 +209,7 @@ export default async function AdminUiComponentsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="headers"
         title="Page and section headers"
         description="Use shared header patterns so pages keep a consistent hierarchy and action placement."
       >
@@ -227,6 +245,7 @@ export default async function AdminUiComponentsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="stats"
         title="Summary stat cards"
         description="This is the preferred premium metric pattern for dashboards, admin overviews, review queues, and student progress."
       >
@@ -307,6 +326,7 @@ export default async function AdminUiComponentsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="panels"
         title="Premium section / inspector panels"
         description="This is the preferred container pattern for admin sections, side panels, metadata groups, and calmer student support panels."
       >
@@ -397,6 +417,7 @@ export default async function AdminUiComponentsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="lists"
         title="Cards and list items"
         description="These are core patterns for dashboards, overviews, and content index pages."
       >
@@ -532,6 +553,7 @@ export default async function AdminUiComponentsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="forms"
         title="Forms and field composition"
         description="The goal is calm, readable forms with consistent field spacing and action placement."
       >
@@ -690,6 +712,17 @@ export default async function AdminUiComponentsPage() {
           </div>
         </div>
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "ActivityItem for dashboard history and recent admin work.",
+          "ProgressCard for student module and lesson completion summaries.",
+          "ReviewQueueCard for teacher submissions and marking workflows.",
+          "SettingsPanel for account and admin configuration screens.",
+          "MetadataGrid for dense details without ad-hoc rows.",
+          "Timeline for future progress, audit, and feedback history.",
+        ]}
+      />
     </UiLabShell>
   );
 }

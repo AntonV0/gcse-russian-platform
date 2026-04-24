@@ -1,4 +1,6 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import AppIcon from "@/components/ui/app-icon";
@@ -23,6 +25,15 @@ import {
   DataTableHeaderRow,
   DataTableRow,
 } from "@/components/ui/data-table";
+
+const pageNavItems = [
+  { id: "standard-table", label: "Standard" },
+  { id: "dense-table", label: "Dense" },
+  { id: "row-states", label: "Row states" },
+  { id: "hierarchy", label: "Hierarchy" },
+  { id: "empty-states", label: "Empty states" },
+  { id: "future-components", label: "Future" },
+];
 
 type DemoRow = {
   name: string;
@@ -632,7 +643,10 @@ export default async function AdminUiTablesPage() {
       description="Compare table structures, row actions, toolbars, statuses, and empty-state patterns before applying them to real admin pages."
       currentPath="/admin/ui/tables"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="standard-table"
         title="Standard table pattern"
         description="This should be the default direction for admin index pages where scanning, filtering, and row actions matter."
       >
@@ -640,6 +654,7 @@ export default async function AdminUiTablesPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="dense-table"
         title="Dense variation"
         description="A denser table can work for compact admin areas, but it should not become the default everywhere."
       >
@@ -647,6 +662,7 @@ export default async function AdminUiTablesPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="row-states"
         title="Row states and action density"
         description="Before building real admin pages, validate how rows feel when hovered, selected, disabled, or paired with different action strategies."
       >
@@ -654,6 +670,7 @@ export default async function AdminUiTablesPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="hierarchy"
         title="Hierarchy and nested structures"
         description="Not every data display should become a strict table. This pattern is important for modules, lessons, and block relationships."
       >
@@ -661,6 +678,7 @@ export default async function AdminUiTablesPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="empty-states"
         title="Empty and filtered-empty states"
         description="Tables should remain useful when there is no data or when active filters remove all visible rows."
       >
@@ -683,6 +701,17 @@ export default async function AdminUiTablesPage() {
       >
         <TableGuidance />
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "Pagination controls for long admin datasets.",
+          "SortableHeaderCell for comparison-heavy list screens.",
+          "BulkActionBar for selected users, lessons, and vocabulary items.",
+          "RowActionMenu for compact edit, duplicate, archive, and delete actions.",
+          "ColumnVisibilityControl for dense admin tables.",
+          "TableLoadingState for server-rendered and filtered data refreshes.",
+        ]}
+      />
     </UiLabShell>
   );
 }

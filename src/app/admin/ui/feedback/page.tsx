@@ -1,4 +1,6 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
@@ -10,6 +12,16 @@ import Card, { CardBody } from "@/components/ui/card";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import StatusBadge from "@/components/ui/status-badge";
 import StatusSummaryCard from "@/components/ui/status-summary-card";
+
+const pageNavItems = [
+  { id: "badges", label: "Badges" },
+  { id: "status-badges", label: "Status badges" },
+  { id: "banners", label: "Banners" },
+  { id: "admin-feedback", label: "Admin feedback" },
+  { id: "question-feedback", label: "Question feedback" },
+  { id: "empty-states", label: "Empty states" },
+  { id: "future-components", label: "Future" },
+];
 
 export default async function AdminUiFeedbackPage() {
   const canAccess = await requireAdminAccess();
@@ -24,7 +36,10 @@ export default async function AdminUiFeedbackPage() {
       description="Compare badges, banners, alerts, empty states, and status messaging patterns used across the platform."
       currentPath="/admin/ui/feedback"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="badges"
         title="Badge hierarchy"
         description="Use badges for compact state, metadata, and short semantic emphasis. They should feel more polished than plain labels, but less dominant than buttons."
       >
@@ -150,6 +165,7 @@ export default async function AdminUiFeedbackPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="status-badges"
         title="Status badge mappings"
         description="Use StatusBadge where the underlying state is semantic and repeatable, so pages do not have to reimplement label and tone logic."
       >
@@ -224,6 +240,7 @@ export default async function AdminUiFeedbackPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="banners"
         title="Banner patterns"
         description="Use banners for page-level feedback, save results, warnings, or important next-step guidance."
       >
@@ -304,6 +321,7 @@ export default async function AdminUiFeedbackPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="admin-feedback"
         title="Admin feedback wrapper"
         description="Use AdminFeedbackBanner for quick success and error messaging in admin forms, edit screens, and save flows without reassembling banner styles each time."
       >
@@ -335,6 +353,7 @@ export default async function AdminUiFeedbackPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="question-feedback"
         title="Question feedback states"
         description="Question feedback is a different pattern from banners. Use it inside exercises and marked interactions to show outcome, correction, and explanation."
       >
@@ -417,6 +436,7 @@ export default async function AdminUiFeedbackPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="empty-states"
         title="Empty states"
         description="Empty states should explain what is missing, why it matters, and what the next useful action is."
       >
@@ -673,6 +693,17 @@ export default async function AdminUiFeedbackPage() {
           </Card>
         </div>
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "Toast notifications for transient save and copy events.",
+          "ConfirmDialog for destructive actions with richer context.",
+          "InlineValidationSummary for long admin forms.",
+          "LoadingState and Skeleton patterns for async lists and dashboards.",
+          "ProgressAlert for unlock, completion, and next-step learning moments.",
+          "ReviewOutcomeBanner for teacher marking and returned-work flows.",
+        ]}
+      />
     </UiLabShell>
   );
 }

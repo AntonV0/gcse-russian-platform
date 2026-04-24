@@ -1,6 +1,10 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
+import PageContainer from "@/components/layout/page-container";
+import PageHeader from "@/components/layout/page-header";
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
@@ -9,6 +13,15 @@ import PanelCard from "@/components/ui/panel-card";
 import SectionHeader from "@/components/ui/section-header";
 import StatusSummaryCard from "@/components/ui/status-summary-card";
 import Surface from "@/components/ui/surface";
+
+const pageNavItems = [
+  { id: "page-boundaries", label: "Page boundaries" },
+  { id: "shells", label: "Shells" },
+  { id: "grids", label: "Grids" },
+  { id: "density", label: "Density" },
+  { id: "responsive", label: "Responsive" },
+  { id: "future-components", label: "Future" },
+];
 
 function DemoBlock({
   title,
@@ -348,7 +361,30 @@ export default async function AdminUiLayoutPage() {
       description="Reference page for shells, grids, density decisions, and responsive page composition."
       currentPath="/admin/ui/layout"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="page-boundaries"
+        title="Page boundaries"
+        description="Use PageContainer and PageHeader at the page layout boundary before composing internal sections."
+      >
+        <PageContainer>
+          <Surface variant="muted" padding="md">
+            <PageHeader
+              title="Vocabulary management"
+              description="Manage GCSE Russian vocabulary sets, item counts, publication status, and theme coverage."
+            />
+            <div className="grid gap-4 md:grid-cols-3">
+              <DemoBlock title="Sets" description="12 vocabulary sets configured." />
+              <DemoBlock title="Items" description="438 words and phrases." />
+              <DemoBlock title="Coverage" description="Themes 1-5 in progress." />
+            </div>
+          </Surface>
+        </PageContainer>
+      </UiLabSection>
+
+      <UiLabSection
+        id="shells"
         title="Real page-shell directions"
         description="The layout system should answer how admin, student, and lesson pages are composed — not just how wide a container is."
       >
@@ -360,6 +396,7 @@ export default async function AdminUiLayoutPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="grids"
         title="Grid patterns"
         description="These are the most reusable grid structures worth standardising across the product."
       >
@@ -367,6 +404,7 @@ export default async function AdminUiLayoutPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="density"
         title="Density and hierarchy"
         description="The same design system can serve different page moods by changing density, emphasis, and pacing."
       >
@@ -381,6 +419,7 @@ export default async function AdminUiLayoutPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="responsive"
         title="Responsive rules"
         description="Use these rules before creating page-specific exceptions."
       >
@@ -431,6 +470,17 @@ export default async function AdminUiLayoutPage() {
           }
         />
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "AppShell preview harness for admin, platform, and public layouts.",
+          "ResponsivePreviewFrame for desktop, tablet, and mobile comparisons.",
+          "TwoPaneLayout for editors, inspectors, and review workflows.",
+          "StickyActionBar for long forms and builder screens.",
+          "MobileDrawerLayout for compact navigation and inspectors.",
+          "PageSectionStack helper for consistent vertical rhythm.",
+        ]}
+      />
     </UiLabShell>
   );
 }

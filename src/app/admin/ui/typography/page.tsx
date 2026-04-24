@@ -1,4 +1,6 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import Badge from "@/components/ui/badge";
@@ -8,6 +10,15 @@ import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 import SectionHeader from "@/components/ui/section-header";
 import Textarea from "@/components/ui/textarea";
+
+const pageNavItems = [
+  { id: "hierarchy", label: "Hierarchy" },
+  { id: "text-roles", label: "Text roles" },
+  { id: "forms", label: "Forms" },
+  { id: "tone", label: "Tone" },
+  { id: "lesson-copy", label: "Lesson copy" },
+  { id: "future-components", label: "Future" },
+];
 
 function DemoPageHierarchy() {
   return (
@@ -521,7 +532,10 @@ export default async function AdminUiTypographyPage() {
       description="Reference page for hierarchy, body copy, labels, metadata, and readable text patterns across the platform."
       currentPath="/admin/ui/typography"
     >
+      <UiLabPageNav items={pageNavItems} />
+
       <UiLabSection
+        id="hierarchy"
         title="Page hierarchy in context"
         description="Typography should be tested in real page structures, not isolated specimens."
       >
@@ -536,6 +550,7 @@ export default async function AdminUiTypographyPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="text-roles"
         title="Text roles"
         description="These are the core text layers reused across cards, rows, tables, and support copy."
       >
@@ -543,6 +558,7 @@ export default async function AdminUiTypographyPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="forms"
         title="Form and tool typography"
         description="Forms and compact admin tools need clear labels, support text, and status hierarchy."
       >
@@ -550,6 +566,7 @@ export default async function AdminUiTypographyPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="tone"
         title="Density and tone comparison"
         description="The same system should support dense admin tools and calmer student messaging."
       >
@@ -564,6 +581,7 @@ export default async function AdminUiTypographyPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="lesson-copy"
         title="Lesson-content typography"
         description="Typography should also hold up inside actual study patterns, not just admin UI."
       >
@@ -576,6 +594,17 @@ export default async function AdminUiTypographyPage() {
       >
         <DemoTypographyRules />
       </UiLabSection>
+
+      <UiLabFutureSection
+        items={[
+          "CopyToneMatrix for admin, student, teacher, and parent-facing text.",
+          "RussianTextStressTest for long words, mixed scripts, and dense vocabulary.",
+          "MetadataTextRow for timestamps, variant labels, and technical details.",
+          "InlineDefinition pattern for grammar notes and vocabulary support.",
+          "ReadingWidthPreview for long lesson explanations.",
+          "ErrorCopyGuide for validation, access, and destructive-action messages.",
+        ]}
+      />
     </UiLabShell>
   );
 }
