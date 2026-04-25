@@ -24,15 +24,31 @@
   transform: translateY(-1px);
 }
 
+.app-btn-base:active {
+  transform: translateY(1px);
+}
+
+.app-btn-base:disabled {
+  box-shadow: none;
+  filter: saturate(0.82);
+  transform: none;
+}
+
 .app-btn-primary {
-  background: var(--accent-fill);
+  background: var(--accent-gradient-fill);
   color: var(--accent-on-fill);
-  border-color: var(--accent-fill);
+  border-color: color-mix(in srgb, var(--accent-fill) 86%, transparent);
+  box-shadow:
+    0 10px 24px color-mix(in srgb, var(--accent) 22%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--brand-white) 8%, transparent);
 }
 
 .app-btn-primary:hover {
-  background: var(--accent-fill-hover);
+  background: var(--accent-gradient-fill-hover);
   border-color: var(--accent-fill-hover);
+  box-shadow:
+    0 14px 32px color-mix(in srgb, var(--accent) 28%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--brand-white) 10%, transparent);
 }
 
 .app-btn-secondary {
@@ -47,14 +63,42 @@
 }
 
 .app-btn-accent {
-  background: var(--accent-selected-bg);
+  background: var(--accent-gradient-selected);
   color: var(--accent-on-soft);
   border: 1px solid var(--accent-selected-border);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .app-btn-accent:hover {
-  background: color-mix(in srgb, var(--accent) 14%, var(--background-elevated));
+  background: var(--accent-gradient-soft-hover);
   border-color: var(--accent-fill);
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.app-btn-danger {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--danger) 10%, var(--background-elevated)) 0%,
+    var(--background-elevated) 100%
+  );
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--danger) 5%, transparent),
+    0 8px 18px color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+.app-btn-danger:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--danger) 15%, var(--background-elevated)) 0%,
+    color-mix(in srgb, var(--danger) 4%, var(--background-elevated)) 100%
+  );
+  color: var(--danger-text-strong);
+  border-color: var(--danger-border-strong);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--danger) 6%, transparent),
+    0 12px 26px color-mix(in srgb, var(--danger) 14%, transparent);
 }
 
 /* ========= Button rendering fixes ========= */
@@ -113,6 +157,23 @@
   color: inherit;
 }
 
+.app-btn-variant-exit {
+  color: color-mix(in srgb, var(--danger) 78%, var(--text-primary));
+}
+
+.app-btn-variant-exit > :not(.dev-marker-anchor) {
+  color: inherit;
+}
+
+.app-btn-icon-only {
+  min-width: 2.25rem;
+}
+
+.app-btn-icon-only:hover {
+  outline: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+  outline-offset: -1px;
+}
+
 [data-theme="dark"] .app-btn-variant-secondary {
   border-color: var(--control-border);
   background: var(--dark-control-bg);
@@ -167,13 +228,13 @@
 }
 
 [data-theme="dark"] .app-btn-accent {
-  background: var(--accent-selected-bg);
+  background: var(--accent-gradient-selected);
   color: var(--accent-on-soft);
   border-color: var(--accent-selected-border);
 }
 
 [data-theme="dark"] .app-btn-accent:hover {
-  background: color-mix(in srgb, var(--accent) 16%, var(--dark-control-bg));
+  background: var(--accent-gradient-soft-hover);
   border-color: color-mix(in srgb, var(--accent) 42%, var(--dark-surface-border));
 }
 
@@ -261,6 +322,58 @@
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.22),
     0 14px 28px var(--danger-shadow);
+}
+
+[data-theme="dark"] .app-btn-danger {
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+  background: linear-gradient(
+    135deg,
+    var(--danger-surface-strong) 0%,
+    var(--danger-surface) 100%
+  );
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22),
+    0 10px 22px var(--danger-shadow);
+}
+
+[data-theme="dark"] .app-btn-danger:hover {
+  border-color: var(--danger-border-strong);
+  color: var(--danger-text-strong);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--danger) 22%, var(--dark-control-bg)) 0%,
+    var(--danger-surface-strong) 100%
+  );
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22),
+    0 14px 28px var(--danger-shadow);
+}
+
+[data-theme="dark"] .app-btn-variant-exit {
+  border-color: color-mix(in srgb, var(--danger) 22%, var(--dark-surface-border));
+  color: color-mix(in srgb, var(--danger-text) 86%, var(--text-secondary));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--danger) 8%, var(--dark-control-bg)) 0%,
+    var(--dark-control-bg) 100%
+  );
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 10px 22px color-mix(in srgb, var(--danger) 7%, transparent);
+}
+
+[data-theme="dark"] .app-btn-variant-exit:hover {
+  border-color: color-mix(in srgb, var(--danger) 36%, var(--dark-surface-border));
+  color: var(--danger-text-strong);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--danger) 13%, var(--dark-control-bg)) 0%,
+    var(--dark-control-bg-hover) 100%
+  );
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22),
+    0 14px 28px color-mix(in srgb, var(--danger) 10%, transparent);
 }
 
 [data-theme="dark"] .app-btn-variant-primary,
