@@ -15,6 +15,8 @@ export default function GcseRussianReadingExamPage() {
       eyebrow="Paper 3: Reading"
       title="GCSE Russian reading exam guide"
       description="Reading preparation develops vocabulary recognition, grammar awareness, inference, and calm handling of unfamiliar language."
+      path="/marketing/gcse-russian-reading-exam"
+      keywords={["GCSE Russian reading", "Paper 3 reading", "Russian reading exam"]}
       badges={[
         { label: "Paper 3", icon: "lessonContent", tone: "info" },
         { label: "Comprehension and translation", icon: "translation" },

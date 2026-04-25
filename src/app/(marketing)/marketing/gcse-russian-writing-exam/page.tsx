@@ -15,6 +15,8 @@ export default function GcseRussianWritingExamPage() {
       eyebrow="Paper 4: Writing"
       title="GCSE Russian writing exam guide"
       description="Writing preparation should help students produce accurate Russian, express ideas clearly, and use language that fits the task and tier."
+      path="/marketing/gcse-russian-writing-exam"
+      keywords={["GCSE Russian writing", "Paper 4 writing", "Russian writing exam"]}
       badges={[
         { label: "Paper 4", icon: "write", tone: "info" },
         { label: "Translation into Russian", icon: "translation" },

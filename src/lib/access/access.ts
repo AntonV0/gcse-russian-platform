@@ -3,14 +3,25 @@ import { getLessonAccessMetaDb } from "@/lib/courses/course-helpers-db";
 
 export type LessonAccessState = "accessible" | "locked";
 
-export async function getLessonAccessState(
-  courseSlug: string,
-  variantSlug: string,
-  moduleSlug: string,
-  lessonSlug: string
-): Promise<LessonAccessState> {
-  const profile = await getCurrentProfile();
+type LessonAccessProfile = {
+  is_admin?: boolean | null;
+  is_teacher?: boolean | null;
+} | null;
 
+type LessonAccessGrant = {
+  access_mode?: string | null;
+} | null;
+
+type LessonAccessMeta = {
+  is_trial_visible: boolean;
+  available_in_volna: boolean;
+} | null;
+
+export function getLessonAccessStateFromMeta(
+  lesson: LessonAccessMeta,
+  profile: LessonAccessProfile,
+  access: LessonAccessGrant
+): LessonAccessState {
   if (profile?.is_admin) {
     return "accessible";
   }
@@ -19,13 +30,6 @@ export async function getLessonAccessState(
     return "accessible";
   }
 
-  const lesson = await getLessonAccessMetaDb(
-    courseSlug,
-    variantSlug,
-    moduleSlug,
-    lessonSlug
-  );
-
   if (!lesson) {
     return "locked";
   }
@@ -33,8 +37,6 @@ export async function getLessonAccessState(
   if (lesson.is_trial_visible) {
     return "accessible";
   }
-
-  const access = await getCurrentCourseAccess(courseSlug, variantSlug);
 
   if (!access) {
     return "locked";
@@ -49,6 +51,29 @@ export async function getLessonAccessState(
   }
 
   return "locked";
+}
+
+export async function getLessonAccessState(
+  courseSlug: string,
+  variantSlug: string,
+  moduleSlug: string,
+  lessonSlug: string
+): Promise<LessonAccessState> {
+  const profile = await getCurrentProfile();
+
+  const lesson = await getLessonAccessMetaDb(
+    courseSlug,
+    variantSlug,
+    moduleSlug,
+    lessonSlug
+  );
+
+  const needsAccessGrant = !profile?.is_admin && !profile?.is_teacher && !lesson?.is_trial_visible;
+  const access = needsAccessGrant
+    ? await getCurrentCourseAccess(courseSlug, variantSlug)
+    : null;
+
+  return getLessonAccessStateFromMeta(lesson, profile, access);
 }
 
 export async function canUserAccessLesson(

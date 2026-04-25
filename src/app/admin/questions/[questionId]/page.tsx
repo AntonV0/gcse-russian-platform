@@ -40,6 +40,18 @@ function asStringArray(value: unknown) {
     : [];
 }
 
+function asNumberArray(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item): item is number => Number.isInteger(item))
+    : [];
+}
+
+function toOneBasedIndexText(value: unknown) {
+  return asNumberArray(value)
+    .map((index) => index + 1)
+    .join(", ");
+}
+
 function stringifySelectionGroups(value: unknown) {
   if (!Array.isArray(value)) return "";
 
@@ -57,6 +69,63 @@ function stringifySelectionGroups(value: unknown) {
       if (!id || options.length === 0) return null;
 
       return `${id}|${label}|${options.join(",")}`;
+    })
+    .filter((line): line is string => Boolean(line))
+    .join("\n");
+}
+
+function stringifyGaps(value: unknown) {
+  if (!Array.isArray(value)) return "";
+
+  return value
+    .map((gap) => {
+      if (!gap || typeof gap !== "object") return null;
+
+      const record = gap as Record<string, unknown>;
+      const label = asString(record.label);
+      const acceptedAnswers = asStringArray(record.acceptedAnswers);
+
+      if (!label || acceptedAnswers.length === 0) return null;
+
+      return `${label}|${acceptedAnswers.join(";")}`;
+    })
+    .filter((line): line is string => Boolean(line))
+    .join("\n");
+}
+
+function stringifyCategories(value: unknown) {
+  if (!Array.isArray(value)) return "";
+
+  return value
+    .map((category) => {
+      if (!category || typeof category !== "object") return null;
+
+      const record = category as Record<string, unknown>;
+      const id = asString(record.id);
+      const label = asString(record.label);
+
+      if (!id) return null;
+
+      return `${id}|${label || id}`;
+    })
+    .filter((line): line is string => Boolean(line))
+    .join("\n");
+}
+
+function stringifyCategorisationItems(value: unknown) {
+  if (!Array.isArray(value)) return "";
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+
+      const record = item as Record<string, unknown>;
+      const text = asString(record.text);
+      const categoryId = asString(record.categoryId);
+
+      if (!text || !categoryId) return null;
+
+      return `${text}|${categoryId}`;
     })
     .filter((line): line is string => Boolean(line))
     .join("\n");
@@ -92,6 +161,10 @@ export default async function AdminQuestionEditPage({
     options.findIndex((option) => option.is_correct) >= 0
       ? String(options.findIndex((option) => option.is_correct) + 1)
       : "";
+  const correctOptionIndexes = options
+    .map((option, index) => (option.is_correct ? String(index + 1) : ""))
+    .filter(Boolean)
+    .join(", ");
 
   const acceptedAnswersText = acceptedAnswers
     .map((answer) => answer.answer_text)
@@ -135,8 +208,13 @@ export default async function AdminQuestionEditPage({
         defaultValues={{
           questionType: question.question_type as
             | "multiple_choice"
+            | "multiple_response"
             | "short_answer"
-            | "translation",
+            | "translation"
+            | "matching"
+            | "ordering"
+            | "word_bank_gap_fill"
+            | "categorisation",
           answerStrategy:
             (asString(metadata.answerStrategy) as
               | "text_input"
@@ -172,7 +250,17 @@ export default async function AdminQuestionEditPage({
           ),
           optionsText,
           correctOptionIndex,
+          correctOptionIndexes,
           acceptedAnswersText,
+          matchingPromptsText: asStringArray(metadata.prompts).join("\n"),
+          matchingOptionsText: asStringArray(metadata.options).join("\n"),
+          correctMatchesText: toOneBasedIndexText(metadata.correctMatches),
+          orderingItemsText: asStringArray(metadata.items).join("\n"),
+          correctOrderText: toOneBasedIndexText(metadata.correctOrder),
+          gapFillText: asString(metadata.text),
+          gapsText: stringifyGaps(metadata.gaps),
+          categoriesText: stringifyCategories(metadata.categories),
+          categorisationItemsText: stringifyCategorisationItems(metadata.items),
           metadata: "{}",
         }}
         submitLabel="Save question"

@@ -32,6 +32,14 @@ export function parseLineList(raw: string) {
     .filter(Boolean);
 }
 
+export function parseOneBasedIndexList(raw: string) {
+  return raw
+    .split(",")
+    .map((item) => Number(item.trim()))
+    .filter((item) => Number.isInteger(item) && item > 0)
+    .map((item) => item - 1);
+}
+
 function parseSelectionGroups(raw: string) {
   const lines = parseLineList(raw);
 
@@ -58,6 +66,66 @@ function parseSelectionGroups(raw: string) {
       id,
       label: label || undefined,
       options,
+    };
+  });
+}
+
+function parseGapRows(raw: string) {
+  return parseLineList(raw).map((line, index) => {
+    const [labelRaw, acceptedAnswersRaw] = line.split("|");
+    const label = labelRaw?.trim();
+    const acceptedAnswers = (acceptedAnswersRaw ?? "")
+      .split(";")
+      .map((answer) => answer.trim())
+      .filter(Boolean);
+
+    if (!label || acceptedAnswers.length === 0) {
+      throw new Error(
+        `Invalid gap format on line ${index + 1}. Use label|answer1;answer2`
+      );
+    }
+
+    return {
+      id: `gap-${index + 1}`,
+      label,
+      acceptedAnswers,
+    };
+  });
+}
+
+function parseCategoryRows(raw: string) {
+  return parseLineList(raw).map((line, index) => {
+    const [idRaw, labelRaw] = line.split("|");
+    const id = idRaw?.trim();
+    const label = labelRaw?.trim() || id;
+
+    if (!id) {
+      throw new Error(`Invalid category format on line ${index + 1}. Use id|label`);
+    }
+
+    return {
+      id,
+      label,
+    };
+  });
+}
+
+function parseCategorisationItemRows(raw: string) {
+  return parseLineList(raw).map((line, index) => {
+    const [textRaw, categoryIdRaw] = line.split("|");
+    const text = textRaw?.trim();
+    const categoryId = categoryIdRaw?.trim();
+
+    if (!text || !categoryId) {
+      throw new Error(
+        `Invalid categorisation item on line ${index + 1}. Use text|categoryId`
+      );
+    }
+
+    return {
+      id: `item-${index + 1}`,
+      text,
+      categoryId,
     };
   });
 }
@@ -108,6 +176,54 @@ export function buildStructuredMetadata(formData: FormData) {
   const wordBankText = getTrimmedString(formData, "wordBankText");
   if (wordBankText) {
     metadata.wordBank = parseLineList(wordBankText);
+  }
+
+  const matchingPromptsText = getTrimmedString(formData, "matchingPromptsText");
+  if (matchingPromptsText) {
+    metadata.prompts = parseLineList(matchingPromptsText);
+  }
+
+  const matchingOptionsText = getTrimmedString(formData, "matchingOptionsText");
+  if (matchingOptionsText) {
+    metadata.options = parseLineList(matchingOptionsText);
+  }
+
+  const correctMatchesText = getTrimmedString(formData, "correctMatchesText");
+  if (correctMatchesText) {
+    metadata.correctMatches = parseOneBasedIndexList(correctMatchesText);
+  }
+
+  const orderingItemsText = getTrimmedString(formData, "orderingItemsText");
+  if (orderingItemsText) {
+    metadata.items = parseLineList(orderingItemsText);
+  }
+
+  const correctOrderText = getTrimmedString(formData, "correctOrderText");
+  if (correctOrderText) {
+    metadata.correctOrder = parseOneBasedIndexList(correctOrderText);
+  }
+
+  const gapFillText = getOptionalString(formData, "gapFillText");
+  if (gapFillText) {
+    metadata.text = gapFillText;
+  }
+
+  const gapsText = getTrimmedString(formData, "gapsText");
+  if (gapsText) {
+    metadata.gaps = parseGapRows(gapsText);
+  }
+
+  const categoriesText = getTrimmedString(formData, "categoriesText");
+  if (categoriesText) {
+    metadata.categories = parseCategoryRows(categoriesText);
+  }
+
+  const categorisationItemsText = getTrimmedString(
+    formData,
+    "categorisationItemsText"
+  );
+  if (categorisationItemsText) {
+    metadata.items = parseCategorisationItemRows(categorisationItemsText);
   }
 
   metadata.ignorePunctuation = getBoolean(formData, "ignorePunctuation");

@@ -55,12 +55,21 @@ export type DbLesson = {
   updated_at: string;
 };
 
+const COURSE_SELECT =
+  "id, slug, title, description, is_active, is_published, created_at, updated_at";
+const VARIANT_SELECT =
+  "id, course_id, slug, title, description, position, is_active, is_published, created_at, updated_at";
+const MODULE_SELECT =
+  "id, course_variant_id, slug, title, description, position, is_published, created_at, updated_at";
+const LESSON_SELECT =
+  "id, module_id, slug, title, summary, lesson_type, position, estimated_minutes, is_published, is_trial_visible, requires_paid_access, available_in_volna, content_source, content_key, created_at, updated_at";
+
 export async function getCoursesDb(): Promise<DbCourse[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("courses")
-    .select("*")
+    .select(COURSE_SELECT)
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -76,7 +85,7 @@ export async function getCourseBySlugDb(courseSlug: string): Promise<DbCourse | 
 
   const { data, error } = await supabase
     .from("courses")
-    .select("*")
+    .select(COURSE_SELECT)
     .eq("slug", courseSlug)
     .maybeSingle();
 
@@ -93,7 +102,7 @@ export async function getCourseByIdDb(courseId: string): Promise<DbCourse | null
 
   const { data, error } = await supabase
     .from("courses")
-    .select("*")
+    .select(COURSE_SELECT)
     .eq("id", courseId)
     .maybeSingle();
 
@@ -112,7 +121,7 @@ export async function getVariantsByCourseIdDb(
 
   const { data, error } = await supabase
     .from("course_variants")
-    .select("*")
+    .select(VARIANT_SELECT)
     .eq("course_id", courseId)
     .order("position", { ascending: true });
 
@@ -132,7 +141,7 @@ export async function getVariantBySlugForCourseIdDb(
 
   const { data, error } = await supabase
     .from("course_variants")
-    .select("*")
+    .select(VARIANT_SELECT)
     .eq("course_id", courseId)
     .eq("slug", variantSlug)
     .maybeSingle();
@@ -152,7 +161,7 @@ export async function getVariantByIdDb(
 
   const { data, error } = await supabase
     .from("course_variants")
-    .select("*")
+    .select(VARIANT_SELECT)
     .eq("id", variantId)
     .maybeSingle();
 
@@ -171,7 +180,7 @@ export async function getModulesByVariantIdDb(
 
   const { data, error } = await supabase
     .from("modules")
-    .select("*")
+    .select(MODULE_SELECT)
     .eq("course_variant_id", courseVariantId)
     .order("position", { ascending: true });
 
@@ -194,7 +203,7 @@ export async function getModuleBySlugForVariantIdDb(
 
   const { data, error } = await supabase
     .from("modules")
-    .select("*")
+    .select(MODULE_SELECT)
     .eq("course_variant_id", courseVariantId)
     .eq("slug", moduleSlug)
     .maybeSingle();
@@ -216,7 +225,7 @@ export async function getModuleByIdDb(moduleId: string): Promise<DbModule | null
 
   const { data, error } = await supabase
     .from("modules")
-    .select("*")
+    .select(MODULE_SELECT)
     .eq("id", moduleId)
     .maybeSingle();
 
@@ -233,7 +242,7 @@ export async function getLessonsByModuleIdDb(moduleId: string): Promise<DbLesson
 
   const { data, error } = await supabase
     .from("lessons")
-    .select("*")
+    .select(LESSON_SELECT)
     .eq("module_id", moduleId)
     .order("position", { ascending: true });
 
@@ -245,12 +254,32 @@ export async function getLessonsByModuleIdDb(moduleId: string): Promise<DbLesson
   return (data ?? []) as DbLesson[];
 }
 
+export async function getLessonsByModuleIdsDb(moduleIds: string[]): Promise<DbLesson[]> {
+  if (moduleIds.length === 0) return [];
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .select(LESSON_SELECT)
+    .in("module_id", moduleIds)
+    .order("module_id", { ascending: true })
+    .order("position", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching lessons by module ids:", { moduleIds, error });
+    return [];
+  }
+
+  return (data ?? []) as DbLesson[];
+}
+
 export async function getLessonByIdDb(lessonId: string): Promise<DbLesson | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("lessons")
-    .select("*")
+    .select(LESSON_SELECT)
     .eq("id", lessonId)
     .maybeSingle();
 
@@ -270,7 +299,7 @@ export async function getLessonBySlugForModuleIdDb(
 
   const { data, error } = await supabase
     .from("lessons")
-    .select("*")
+    .select(LESSON_SELECT)
     .eq("module_id", moduleId)
     .eq("slug", lessonSlug)
     .maybeSingle();

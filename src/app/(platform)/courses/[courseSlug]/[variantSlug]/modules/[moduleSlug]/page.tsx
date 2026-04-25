@@ -7,7 +7,8 @@ import EmptyState from "@/components/ui/empty-state";
 import { loadModulePageData } from "@/lib/courses/course-helpers-db";
 import { getCoursesPath, getVariantPath, getLessonPath } from "@/lib/access/routes";
 import { getModuleProgress } from "@/lib/progress/progress-module";
-import { getLessonAccessState } from "@/lib/access/access";
+import { getLessonAccessStateFromMeta } from "@/lib/access/access";
+import { getCurrentCourseAccess, getCurrentProfile } from "@/lib/auth/auth";
 
 type ModulePageProps = {
   params: Promise<{
@@ -51,18 +52,15 @@ export default async function ModulePage({ params }: ModulePageProps) {
   const progressPercent =
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
-  const lessonAccessEntries = await Promise.all(
-    lessons.map(async (lesson) => {
-      const accessState = await getLessonAccessState(
-        courseSlug,
-        variantSlug,
-        moduleSlug,
-        lesson.slug
-      );
+  const [profile, access] = await Promise.all([
+    getCurrentProfile(),
+    getCurrentCourseAccess(courseSlug, variantSlug),
+  ]);
+  const lessonAccessEntries = lessons.map((lesson) => {
+    const accessState = getLessonAccessStateFromMeta(lesson, profile, access);
 
-      return [lesson.slug, accessState] as const;
-    })
-  );
+    return [lesson.slug, accessState] as const;
+  });
 
   const lessonAccessMap = new Map(lessonAccessEntries);
 

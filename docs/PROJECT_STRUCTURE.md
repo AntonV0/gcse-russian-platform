@@ -14,7 +14,7 @@ Notes:
 - this snapshot includes only project-relevant areas
 - local machine paths are intentionally excluded
 - build output and dependency folders such as `.next` and `node_modules` are excluded
-- this version reflects the current state after the lesson builder, UI Lab, billing, vocabulary, pricing UI, account/settings, and theme system work
+- this version reflects the current state after the lesson builder, UI Lab, billing, vocabulary, pricing UI, account/settings, theme system, grammar, past papers, mock exams, marketing SEO pages, and structure refactor work
 
 ---
 
@@ -820,6 +820,43 @@ Lesson builder server actions have been split into focused files:
 Vocabulary usage helpers now include:
 
 - `src/lib/vocabulary/vocabulary-usage-sync.ts`
+
+---
+
+### Structure refactor notes
+
+Newer feature domains should prefer focused folders over broad helper files:
+
+- `src/lib/vocabulary/db.ts` is the implementation module behind the compatibility
+  facade `src/lib/vocabulary/vocabulary-helpers-db.ts`.
+- `src/lib/mock-exams/db.ts` is the implementation module behind the compatibility
+  facade `src/lib/mock-exams/mock-exam-helpers-db.ts`.
+- `src/lib/mock-exams/question-data/codecs.ts` owns mock exam question-data
+  parsing and form serialization helpers.
+- `src/lib/dashboard/learning-plan.ts` owns student learning-plan and dashboard
+  next-step orchestration.
+- `src/app/actions/admin/vocabulary/item-actions.ts` owns vocabulary item server
+  actions. `src/app/actions/admin/admin-vocabulary-items-actions.ts` remains as
+  a compatibility wrapper while older imports are migrated.
+- `src/components/admin/vocabulary/items/` contains admin vocabulary item page UI
+  extracted from the route loader.
+
+Compatibility facades are allowed during refactors, but new imports should prefer
+the domain folder path.
+
+---
+
+### Migration naming
+
+Future Supabase migrations should use a single `.sql` suffix and a descriptive
+timestamped name:
+
+```text
+YYYYMMDDHHMMSS_descriptive_change_name.sql
+```
+
+Historical migrations that have already been applied should not be renamed just
+to fix naming drift. Existing `.sql.sql` files are treated as historical artifacts.
 
 
 

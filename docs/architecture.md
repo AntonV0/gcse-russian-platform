@@ -101,6 +101,12 @@ Responsibilities:
 - dashboard orchestration
 - access-aware UI decisions
 
+Large feature domains should be split into focused modules as they grow. Broad
+compatibility facades such as `vocabulary-helpers-db.ts` and
+`mock-exam-helpers-db.ts` may remain temporarily, but implementation code should
+live in domain folders such as `src/lib/vocabulary/`, `src/lib/mock-exams/`, and
+`src/app/actions/admin/<domain>/`.
+
 ---
 
 ### Data layer

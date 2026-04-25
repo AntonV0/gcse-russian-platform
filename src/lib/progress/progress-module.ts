@@ -24,3 +24,25 @@ export async function getModuleProgress(
 
   return data;
 }
+
+export async function getCourseLessonProgress(
+  courseSlug: string,
+  variantSlug: string
+) {
+  const user = await getCurrentUser();
+
+  if (!user) return [];
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_progress")
+    .select("module_slug, lesson_slug, completed")
+    .eq("user_id", user.id)
+    .eq("course_slug", courseSlug)
+    .eq("variant_slug", variantSlug);
+
+  if (error || !data) return [];
+
+  return data;
+}

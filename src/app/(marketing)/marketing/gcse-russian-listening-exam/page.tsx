@@ -15,6 +15,8 @@ export default function GcseRussianListeningExamPage() {
       eyebrow="Paper 1: Listening"
       title="GCSE Russian listening exam guide"
       description="Listening preparation is about more than playing audio. Students need habits for gist, detail, opinions, unknown vocabulary, and exam timing."
+      path="/marketing/gcse-russian-listening-exam"
+      keywords={["GCSE Russian listening", "Paper 1 listening", "Edexcel GCSE Russian"]}
       badges={[
         { label: "Paper 1", icon: "listening", tone: "info" },
         { label: "Pearson Edexcel 1RU0", icon: "school" },
