@@ -7,15 +7,86 @@ import Button from "@/components/ui/button";
 import Card, { CardBody } from "@/components/ui/card";
 import IconButton from "@/components/ui/icon-button";
 import LoadingButton from "@/components/ui/loading-button";
+import type { ButtonVariant } from "@/components/ui/button-styles";
+import type { AppIconKey } from "@/lib/shared/icons";
 
 const pageNavItems = [
   { id: "dev-markers", label: "Dev markers" },
   { id: "core-hierarchy", label: "Core hierarchy" },
+  { id: "variant-matrix", label: "Variants" },
   { id: "states", label: "States" },
   { id: "exit-loading", label: "Exit + loading" },
   { id: "dense-patterns", label: "Dense patterns" },
   { id: "project-examples", label: "Project examples" },
   { id: "future-components", label: "Future" },
+];
+
+const variantMatrix: Array<{
+  variant: ButtonVariant;
+  label: string;
+  role: string;
+  icon: AppIconKey;
+}> = [
+  {
+    variant: "primary",
+    label: "Primary",
+    role: "Main page or section action",
+    icon: "completed",
+  },
+  {
+    variant: "accent",
+    label: "Accent",
+    role: "Promotional or high-energy learning CTA",
+    icon: "create",
+  },
+  {
+    variant: "secondary",
+    label: "Secondary",
+    role: "Default safe action",
+    icon: "preview",
+  },
+  {
+    variant: "soft",
+    label: "Soft",
+    role: "Calm student progression action",
+    icon: "next",
+  },
+  {
+    variant: "quiet",
+    label: "Quiet",
+    role: "Low-emphasis utility action",
+    icon: "edit",
+  },
+  {
+    variant: "inverse",
+    label: "Inverse",
+    role: "Strong contrast or admin highlight",
+    icon: "dashboard",
+  },
+  {
+    variant: "success",
+    label: "Success",
+    role: "Positive status action",
+    icon: "completed",
+  },
+  {
+    variant: "warning",
+    label: "Warning",
+    role: "Caution or pending action",
+    icon: "pending",
+  },
+  {
+    variant: "danger",
+    label: "Danger",
+    role: "Destructive confirmation",
+    icon: "delete",
+  },
+  {
+    variant: "exit",
+    label: "Exit",
+    role: "Logout or leave-account flow",
+    icon: "userX",
+  },
 ];
 
 export default async function AdminUiButtonsPage() {
@@ -83,6 +154,89 @@ export default async function AdminUiButtonsPage() {
       </UiLabSection>
 
       <UiLabSection
+        id="variant-matrix"
+        title="Variant matrix"
+        description="Every shared variant should show a clear role, readable default state, strong focus state, and predictable disabled state in both light and dark mode."
+      >
+        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+          {variantMatrix.map((item) => (
+            <Card key={item.variant}>
+              <CardBody className="space-y-4 p-4">
+                <div>
+                  <div className="text-sm font-semibold text-[var(--text-primary)]">
+                    {item.label}
+                  </div>
+                  <p className="mt-1 text-sm app-text-muted">{item.role}</p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button variant={item.variant} icon={item.icon}>
+                    {item.label}
+                  </Button>
+                  <Button
+                    variant={item.variant}
+                    size="sm"
+                    icon={item.icon}
+                    iconOnly
+                    ariaLabel={`${item.label} icon action`}
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button variant={item.variant} disabled icon="pending">
+                    Disabled
+                  </Button>
+                  <Button
+                    variant={item.variant}
+                    size="sm"
+                    disabled
+                    icon={item.icon}
+                    iconOnly
+                    ariaLabel={`${item.label} disabled icon action`}
+                  />
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        title="Dark mode variant matrix"
+        description="This forced dark surface checks that gradients, muted controls, destructive actions, and icon-only states keep their hierarchy on darker UI."
+      >
+        <div
+          data-theme="dark"
+          className="rounded-[1.75rem] border border-[var(--border)] bg-[linear-gradient(135deg,var(--dark-surface-elevated)_0%,var(--dark-surface-muted)_58%,var(--dark-surface-strong)_100%)] p-5 shadow-[0_16px_34px_rgba(0,0,0,0.28)]"
+        >
+          <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            {variantMatrix.map((item) => (
+              <div
+                key={item.variant}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+              >
+                <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                  {item.label}
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button variant={item.variant} size="sm" icon={item.icon}>
+                    {item.label}
+                  </Button>
+                  <Button
+                    variant={item.variant}
+                    size="sm"
+                    icon={item.icon}
+                    iconOnly
+                    ariaLabel={`${item.label} dark icon action`}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
         title="Hover emphasis comparison"
         description="Use this area to compare how clearly each variant responds on hover. The interaction should feel deliberate, not just slightly lifted."
       >
@@ -138,40 +292,21 @@ export default async function AdminUiButtonsPage() {
       </UiLabSection>
 
       <UiLabSection
-        title="Animated interaction ideas"
-        description="These are slightly more expressive motion patterns for teen-facing or momentum-oriented actions. Use them sparingly so the main system still feels polished."
+        title="Gradient restraint checks"
+        description="These examples compare premium gradient buttons against calmer variants. The stronger buttons should lead without making the secondary actions feel unfinished."
       >
         <div className="grid gap-4 lg:grid-cols-3">
           <Card>
             <CardBody className="p-4">
               <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Slide-forward CTA
+                Primary progression
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button
-                  variant="primary"
-                  icon="next"
-                  iconPosition="right"
-                  className="motion-safe:hover:pr-5 motion-safe:hover:pl-4"
-                >
+                <Button variant="primary" icon="next" iconPosition="right">
                   Keep going
                 </Button>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Lift + glow emphasis
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  variant="accent"
-                  icon="create"
-                  className="motion-safe:hover:scale-[1.02] motion-safe:hover:-rotate-[0.4deg]"
-                >
-                  Launch sprint
+                <Button variant="secondary" icon="preview">
+                  Preview path
                 </Button>
               </div>
             </CardBody>
@@ -180,15 +315,30 @@ export default async function AdminUiButtonsPage() {
           <Card>
             <CardBody className="p-4">
               <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Calm reveal utility
+                Accent promotion
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button
-                  variant="soft"
-                  icon="preview"
-                  className="motion-safe:hover:translate-x-[2px]"
-                >
+                <Button variant="accent" icon="create">
+                  Launch sprint
+                </Button>
+                <Button variant="quiet" icon="file">
+                  View details
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Soft continuation
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="soft" icon="preview">
                   Reveal next task
+                </Button>
+                <Button variant="secondary" icon="back">
+                  Back
                 </Button>
               </div>
             </CardBody>
@@ -382,13 +532,7 @@ export default async function AdminUiButtonsPage() {
             iconOnly
             ariaLabel="Remove user"
           />
-          <Button
-            variant="exit"
-            size="sm"
-            icon="userX"
-            iconOnly
-            ariaLabel="Log out"
-          />
+          <Button variant="exit" size="sm" icon="userX" iconOnly ariaLabel="Log out" />
         </div>
       </UiLabSection>
 
@@ -559,21 +703,10 @@ export default async function AdminUiButtonsPage() {
           <Card>
             <CardBody className="p-4">
               <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="soft"
-                  size="sm"
-                  icon="next"
-                  iconPosition="right"
-                  className="motion-safe:hover:translate-x-[2px]"
-                >
+                <Button variant="soft" size="sm" icon="next" iconPosition="right">
                   Continue
                 </Button>
-                <Button
-                  variant="accent"
-                  size="sm"
-                  icon="create"
-                  className="motion-safe:hover:scale-[1.02]"
-                >
+                <Button variant="accent" size="sm" icon="create">
                   Launch revision sprint
                 </Button>
                 <Button variant="inverse" size="sm" icon="preview">
@@ -726,12 +859,7 @@ export default async function AdminUiButtonsPage() {
                 Momentum actions
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button
-                  variant="accent"
-                  icon="next"
-                  iconPosition="right"
-                  className="motion-safe:hover:scale-[1.015]"
-                >
+                <Button variant="accent" icon="next" iconPosition="right">
                   Keep the streak going
                 </Button>
                 <Button variant="soft" icon="completed">
@@ -747,11 +875,7 @@ export default async function AdminUiButtonsPage() {
                 Revision prompts
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button
-                  variant="primary"
-                  icon="create"
-                  className="motion-safe:hover:-rotate-[0.3deg]"
-                >
+                <Button variant="primary" icon="create">
                   Start vocab challenge
                 </Button>
                 <Button variant="secondary" icon="file">
@@ -770,11 +894,7 @@ export default async function AdminUiButtonsPage() {
                 <Button variant="inverse" icon="next" iconPosition="right">
                   See full course path
                 </Button>
-                <Button
-                  variant="accent"
-                  icon="preview"
-                  className="motion-safe:hover:scale-[1.02]"
-                >
+                <Button variant="accent" icon="preview">
                   Unlock premium tools
                 </Button>
               </div>
