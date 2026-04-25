@@ -30,7 +30,21 @@ export default async function CoursePage({ params }: CoursePageProps) {
   const { course, variants } = await loadCoursePageData(courseSlug);
 
   if (!course) {
-    return <main>Course not found.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="search"
+          iconTone="brand"
+          title="Course not found"
+          description="This course could not be found. Return to the course list and choose an available course."
+          action={
+            <Button href={getCoursesPath()} variant="primary" icon="courses">
+              Courses
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
   const primaryVariant = variants[0] ?? null;
@@ -52,7 +66,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                 GCSE Russian
               </Badge>
               <Badge tone="muted" icon="layers">
-                Foundation + Higher
+                Foundation and Higher
               </Badge>
               <Badge tone="muted" icon="language">
                 Structured course journey
@@ -89,7 +103,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="rounded-xl bg-[var(--background-muted)] p-3">
                   <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                    Variants
+                    Paths
                   </div>
                   <div className="font-semibold text-[var(--text-primary)]">
                     {variants.length}
@@ -101,14 +115,14 @@ export default async function CoursePage({ params }: CoursePageProps) {
                     Journey
                   </div>
                   <div className="font-semibold text-[var(--text-primary)]">
-                    Variant → Module → Lesson
+                    Path, module, lesson
                   </div>
                 </div>
               </div>
 
               <p className="text-sm app-text-muted">
-                Each path gives students a clearer route into the course instead of one
-                flat list of content.
+                Choose the path that matches your level, then follow the modules in
+                order.
               </p>
             </div>
           </DashboardCard>
@@ -118,7 +132,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
       {variants.length === 0 ? (
         <EmptyState
           title="No learning paths available yet"
-          description="This course has no visible variants at the moment."
+          description="This course has no visible paths at the moment."
           action={
             <Button href={getCoursesPath()} variant="secondary" icon="back">
               Back to courses
@@ -155,7 +169,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                   </div>
 
                   <div className="pt-1 text-sm font-medium app-brand-text">
-                    Open path →
+                    Open path
                   </div>
                 </div>
               </DashboardCard>

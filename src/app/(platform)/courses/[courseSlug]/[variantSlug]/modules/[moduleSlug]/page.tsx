@@ -5,7 +5,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import { loadModulePageData } from "@/lib/courses/course-helpers-db";
-import { getVariantPath, getLessonPath } from "@/lib/access/routes";
+import { getCoursesPath, getVariantPath, getLessonPath } from "@/lib/access/routes";
 import { getModuleProgress } from "@/lib/progress/progress-module";
 import { getLessonAccessState } from "@/lib/access/access";
 
@@ -27,7 +27,21 @@ export default async function ModulePage({ params }: ModulePageProps) {
   );
 
   if (!course || !module) {
-    return <main>Module not found.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="search"
+          iconTone="brand"
+          title="Module not found"
+          description="This module could not be found. Return to the course list and choose an available module."
+          action={
+            <Button href={getCoursesPath()} variant="primary" icon="courses">
+              Courses
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
   const progress = await getModuleProgress(courseSlug, variantSlug, moduleSlug);

@@ -5,7 +5,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import { loadVariantPageData } from "@/lib/courses/course-helpers-db";
-import { getCoursePath, getModulePath } from "@/lib/access/routes";
+import { getCoursePath, getCoursesPath, getModulePath } from "@/lib/access/routes";
 
 type VariantPageProps = {
   params: Promise<{
@@ -31,7 +31,21 @@ export default async function VariantPage({ params }: VariantPageProps) {
   const { course, variant, modules } = await loadVariantPageData(courseSlug, variantSlug);
 
   if (!course || !variant) {
-    return <main>Variant not found.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="search"
+          iconTone="brand"
+          title="Learning path not found"
+          description="This learning path could not be found. Return to the course list and choose an available path."
+          action={
+            <Button href={getCoursesPath()} variant="primary" icon="courses">
+              Courses
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
   const primaryModule = modules[0] ?? null;
@@ -85,7 +99,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
             </div>
           </div>
 
-          <DashboardCard title="Variant overview" className="h-full">
+          <DashboardCard title="Path overview" className="h-full">
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="rounded-xl bg-[var(--background-muted)] p-3">
@@ -108,8 +122,8 @@ export default async function VariantPage({ params }: VariantPageProps) {
               </div>
 
               <p className="text-sm app-text-muted">
-                This page should guide students into the next module rather than feel like
-                a plain list.
+                Start with the first available module, then continue in order as new
+                lessons unlock.
               </p>
             </div>
           </DashboardCard>
@@ -156,7 +170,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
                   </div>
 
                   <div className="pt-1 text-sm font-medium app-brand-text">
-                    Open module →
+                    Open module
                   </div>
                 </div>
               </DashboardCard>
