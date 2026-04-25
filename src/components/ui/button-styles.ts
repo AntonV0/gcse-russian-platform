@@ -5,6 +5,7 @@ export type ButtonVariant =
   | "success"
   | "warning"
   | "danger"
+  | "exit"
   | "soft"
   | "accent"
   | "inverse";
@@ -16,11 +17,12 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
     case "primary":
       return [
         "app-btn-variant-primary border border-transparent !text-[var(--accent-on-fill)]",
-        "bg-[linear-gradient(135deg,var(--accent-fill)_0%,var(--accent-fill)_58%,var(--accent-fill-hover)_100%)]",
+        "[background:var(--accent-gradient-fill)]",
         "shadow-[0_12px_28px_color-mix(in_srgb,var(--accent)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--accent)_16%,transparent)]",
         disabled
           ? "opacity-60"
           : [
+              "hover:[background:var(--accent-gradient-fill-hover)]",
               "hover:brightness-[1.08]",
               "hover:saturate-[1.06]",
               "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--accent)_30%,transparent),0_6px_14px_color-mix(in_srgb,var(--accent)_18%,transparent)]",
@@ -106,19 +108,36 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
             ].join(" "),
       ].join(" ");
 
+    case "exit":
+      return [
+        "app-btn-variant-exit",
+        "border border-[color-mix(in_srgb,var(--danger)_16%,var(--border))]",
+        "text-[color-mix(in_srgb,var(--danger)_78%,var(--text-primary))]",
+        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_7%,var(--background-elevated))_0%,var(--background-elevated)_100%)]",
+        "shadow-[0_1px_2px_color-mix(in_srgb,var(--danger)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--text-primary)_4%,transparent)]",
+        disabled
+          ? "opacity-60"
+          : [
+              "hover:text-[var(--danger-text)]",
+              "hover:border-[color-mix(in_srgb,var(--danger)_30%,var(--border))]",
+              "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_11%,var(--background-elevated))_0%,color-mix(in_srgb,var(--danger)_3%,var(--background-elevated))_100%)]",
+              "hover:shadow-[0_12px_26px_color-mix(in_srgb,var(--danger)_12%,transparent),0_3px_8px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]",
+            ].join(" "),
+      ].join(" ");
+
     case "soft":
       return [
         "app-btn-variant-soft",
         "border border-[color-mix(in_srgb,var(--accent)_14%,transparent)]",
         "text-[var(--accent-on-soft)]",
-        "bg-[linear-gradient(135deg,var(--info-soft)_0%,var(--background-elevated)_100%)]",
+        "[background:var(--accent-gradient-soft)]",
         "shadow-[0_1px_2px_color-mix(in_srgb,var(--accent)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--accent)_8%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:text-[var(--accent-on-soft)]",
               "hover:border-[color-mix(in_srgb,var(--accent)_30%,transparent)]",
-              "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_24%,transparent)_0%,var(--background-elevated)_100%)]",
+              "hover:[background:var(--accent-gradient-soft-hover)]",
               "hover:shadow-[0_14px_28px_color-mix(in_srgb,var(--accent)_16%,transparent),0_4px_10px_color-mix(in_srgb,var(--accent)_8%,transparent)]",
             ].join(" "),
       ].join(" ");
@@ -126,11 +145,12 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
     case "accent":
       return [
         "app-btn-variant-accent border border-transparent !text-[var(--accent-on-fill)]",
-        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent-fill)_86%,var(--brand-white))_0%,var(--accent-fill)_56%,var(--accent-fill-hover)_100%)]",
+        "[background:var(--accent-gradient-fill)]",
         "shadow-[0_12px_28px_color-mix(in_srgb,var(--accent)_26%,transparent),0_3px_8px_color-mix(in_srgb,var(--accent)_15%,transparent)]",
         disabled
           ? "opacity-60"
           : [
+              "hover:[background:var(--accent-gradient-fill-hover)]",
               "hover:brightness-[1.08]",
               "hover:saturate-[1.06]",
               "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--accent)_32%,transparent),0_6px_14px_color-mix(in_srgb,var(--accent)_20%,transparent)]",
@@ -198,11 +218,13 @@ export function getButtonClassName({
     "max-w-full select-none whitespace-nowrap",
     "transition-[transform,background-color,border-color,color,box-shadow,opacity,filter] duration-200 ease-out",
     disabled
-      ? "cursor-not-allowed"
-      : "hover:-translate-y-[2px] active:translate-y-0 active:scale-[0.985]",
+      ? "pointer-events-none cursor-not-allowed saturate-[0.82] !shadow-none"
+      : "hover:-translate-y-[2px] active:translate-y-[1px] active:scale-[0.99]",
     getVariantClass(variant, disabled),
     getSizeClass(size, iconOnly),
-    iconOnly ? "aspect-square shrink-0" : "",
+    iconOnly
+      ? "app-btn-icon-only aspect-square shrink-0 ring-1 ring-inset ring-[color-mix(in_srgb,var(--text-primary)_4%,transparent)]"
+      : "",
     className,
   ]
     .filter(Boolean)
