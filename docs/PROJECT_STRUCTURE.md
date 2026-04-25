@@ -42,6 +42,8 @@ src/
 
       account/
         page.tsx
+        billing/
+          page.tsx
 
       assignments/
         page.tsx
@@ -96,9 +98,18 @@ src/
       vocabulary/
         page.tsx
 
-    (public)/
+    (marketing)/
       layout.tsx
       page.tsx
+
+      about/
+        page.tsx
+
+      blog/
+        page.tsx
+
+      faq/
+        page.tsx
 
       (auth)/
         layout.tsx
@@ -380,6 +391,10 @@ src/
       platform-sidebar.tsx
       site-footer.tsx
       site-header.tsx
+
+    marketing/
+      marketing-site-footer.tsx
+      marketing-site-header.tsx
 
     lesson-blocks/
       lesson-completion-form.tsx
@@ -693,6 +708,23 @@ supabase/
 ---
 
 ## Recent structure additions
+
+### Marketing and platform route groups
+
+- `src/app/(marketing)/`  
+  Public marketing route group for homepage, pricing, blog, about, FAQ, and auth
+  entry points.
+
+- `src/app/(platform)/`  
+  Authenticated LMS route group for dashboard, courses, account, assignments,
+  vocabulary, grammar, past papers, mock exams, and teacher workflows.
+
+- `src/app/(platform)/account/billing/page.tsx`  
+  Signed-in billing and Stripe checkout page. Public `/pricing` remains
+  marketing-first and trial-focused.
+
+- `src/components/marketing/`  
+  Marketing-only site chrome for public pages.
 
 ### Theme and appearance system
 

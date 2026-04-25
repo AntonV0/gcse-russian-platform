@@ -44,7 +44,7 @@ export default function CheckoutButton({
           intervalCount,
           isUpgrade,
           successPath: "/account",
-          cancelPath: "/pricing",
+          cancelPath: "/account/billing",
         }),
       });
 

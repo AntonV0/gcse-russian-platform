@@ -63,6 +63,10 @@ export function getAccountPath() {
   return "/account";
 }
 
+export function getBillingPath() {
+  return "/account/billing";
+}
+
 export function getOnlineClassesPath() {
   return "/online-classes";
 }

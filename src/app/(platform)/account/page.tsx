@@ -358,7 +358,7 @@ export default async function AccountPage() {
                 </div>
 
                 <Link
-                  href="/pricing"
+                  href="/account/billing"
                   className="inline-flex items-center gap-2 font-medium app-brand-text"
                 >
                   View upgrade options
@@ -372,7 +372,7 @@ export default async function AccountPage() {
                 </p>
 
                 <Link
-                  href="/pricing"
+                  href="/account/billing"
                   className="inline-flex items-center gap-2 font-medium app-brand-text"
                 >
                   View pricing
