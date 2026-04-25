@@ -344,6 +344,51 @@ function normalizeRecord(value: unknown): Record<string, unknown> {
   }
 
   return value as Record<string, unknown>;
+const studentHiddenQuestionDataKeys = new Set([
+  "acceptedAnswers",
+  "answers",
+  "correctAnswer",
+  "correctAnswers",
+  "correctMatches",
+  "correctOrder",
+  "explanation",
+  "markGuidance",
+  "markScheme",
+  "modelAnswer",
+  "sampleAnswer",
+  "transcript",
+]);
+
+function removeStudentHiddenQuestionData(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(removeStudentHiddenQuestionData);
+  }
+
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  return Object.entries(value as Record<string, unknown>).reduce<Record<string, unknown>>(
+    (acc, [key, entry]) => {
+      if (!studentHiddenQuestionDataKeys.has(key)) {
+        acc[key] = removeStudentHiddenQuestionData(entry);
+      }
+
+      return acc;
+    },
+    {}
+  );
+}
+
+export function getStudentSafeMockExamQuestion(
+  question: DbMockExamQuestion
+): DbMockExamQuestion {
+  return {
+    ...question,
+    data: normalizeRecord(removeStudentHiddenQuestionData(question.data)),
+  };
+}
+
 }
 
 function normalizeMockExamSet(row: unknown): DbMockExamSet {

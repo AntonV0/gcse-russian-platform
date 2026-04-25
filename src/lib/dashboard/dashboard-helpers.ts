@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { cache } from "react";
 
 export type DashboardInfo = {
   role: "admin" | "teacher" | "student" | "guest";
@@ -24,107 +25,109 @@ function getProductCodeFromGrant(grant: DashboardGrantRow): string | null {
   return product?.code ?? null;
 }
 
-export async function getDashboardInfo(): Promise<DashboardInfo> {
-  const supabase = await createClient();
-  const user = await getCurrentUser();
+export const getDashboardInfo = cache(
+  async function getDashboardInfo(): Promise<DashboardInfo> {
+    const supabase = await createClient();
+    const user = await getCurrentUser();
 
-  if (!user) {
-    return {
-      role: "guest",
-      variant: null,
-      accessMode: null,
-    };
-  }
+    if (!user) {
+      return {
+        role: "guest",
+        variant: null,
+        accessMode: null,
+      };
+    }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", user.id)
-    .maybeSingle();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .maybeSingle();
 
-  if (profile?.is_admin) {
-    return {
-      role: "admin",
-      variant: "volna",
-      accessMode: "volna",
-    };
-  }
+    if (profile?.is_admin) {
+      return {
+        role: "admin",
+        variant: "volna",
+        accessMode: "volna",
+      };
+    }
 
-  const { data: teacherMembership } = await supabase
-    .from("teaching_group_members")
-    .select("group_id")
-    .eq("user_id", user.id)
-    .in("member_role", ["teacher", "assistant"])
-    .limit(1);
+    const { data: teacherMembership } = await supabase
+      .from("teaching_group_members")
+      .select("group_id")
+      .eq("user_id", user.id)
+      .in("member_role", ["teacher", "assistant"])
+      .limit(1);
 
-  if ((teacherMembership?.length ?? 0) > 0) {
-    return {
-      role: "teacher",
-      variant: "volna",
-      accessMode: "volna",
-    };
-  }
+    if ((teacherMembership?.length ?? 0) > 0) {
+      return {
+        role: "teacher",
+        variant: "volna",
+        accessMode: "volna",
+      };
+    }
 
-  const { data: grants } = await supabase
-    .from("user_access_grants")
-    .select(
-      `
+    const { data: grants } = await supabase
+      .from("user_access_grants")
+      .select(
+        `
       access_mode,
       products (
         code
       )
     `
-    )
-    .eq("user_id", user.id)
-    .eq("is_active", true);
+      )
+      .eq("user_id", user.id)
+      .eq("is_active", true);
 
-  if (!grants || grants.length === 0) {
+    if (!grants || grants.length === 0) {
+      return {
+        role: "student",
+        variant: null,
+        accessMode: null,
+      };
+    }
+
+    const typedGrants = grants as DashboardGrantRow[];
+
+    for (const grant of typedGrants) {
+      if (grant.access_mode === "volna") {
+        return {
+          role: "student",
+          variant: "volna",
+          accessMode: "volna",
+        };
+      }
+    }
+
+    for (const grant of typedGrants) {
+      const code = getProductCodeFromGrant(grant);
+
+      if (code === "gcse-russian-higher") {
+        return {
+          role: "student",
+          variant: "higher",
+          accessMode: grant.access_mode === "trial" ? "trial" : "full",
+        };
+      }
+    }
+
+    for (const grant of typedGrants) {
+      const code = getProductCodeFromGrant(grant);
+
+      if (code === "gcse-russian-foundation") {
+        return {
+          role: "student",
+          variant: "foundation",
+          accessMode: grant.access_mode === "trial" ? "trial" : "full",
+        };
+      }
+    }
+
     return {
       role: "student",
       variant: null,
       accessMode: null,
     };
   }
-
-  const typedGrants = grants as DashboardGrantRow[];
-
-  for (const grant of typedGrants) {
-    if (grant.access_mode === "volna") {
-      return {
-        role: "student",
-        variant: "volna",
-        accessMode: "volna",
-      };
-    }
-  }
-
-  for (const grant of typedGrants) {
-    const code = getProductCodeFromGrant(grant);
-
-    if (code === "gcse-russian-higher") {
-      return {
-        role: "student",
-        variant: "higher",
-        accessMode: grant.access_mode === "trial" ? "trial" : "full",
-      };
-    }
-  }
-
-  for (const grant of typedGrants) {
-    const code = getProductCodeFromGrant(grant);
-
-    if (code === "gcse-russian-foundation") {
-      return {
-        role: "student",
-        variant: "foundation",
-        accessMode: grant.access_mode === "trial" ? "trial" : "full",
-      };
-    }
-  }
-
-  return {
-    role: "student",
-    variant: null,
-    accessMode: null,
-  };
-}
+);

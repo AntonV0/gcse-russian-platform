@@ -12,6 +12,7 @@ import { getCurrentUser } from "@/lib/auth/auth";
 import {
   getMockExamScoreByAttemptIdDb,
   getMockExamSectionTypeLabel,
+  getStudentSafeMockExamQuestion,
   getMockExamTierLabel,
   loadMockExamAttemptDb,
 } from "@/lib/mock-exams/mock-exam-helpers-db";
@@ -205,16 +206,18 @@ export default async function MockExamAttemptPage({
                     <div className="space-y-4">
                       {questions.map((question, questionIndex) => {
                         const response = responsesByQuestionId[question.id];
+                        const studentSafeQuestion =
+                          getStudentSafeMockExamQuestion(question);
 
                         return (
                           <div key={question.id} className="space-y-3">
                             <MockExamQuestionPreview
-                              question={question}
+                              question={studentSafeQuestion}
                               index={questionIndex}
                             />
 
                             <MockExamResponseField
-                              question={question}
+                              question={studentSafeQuestion}
                               response={response}
                               disabled={!isDraft}
                             />
