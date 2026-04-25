@@ -1,0 +1,113 @@
+import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
+import Card, { CardBody } from "@/components/ui/card";
+import PageIntroPanel from "@/components/ui/page-intro-panel";
+import SectionCard from "@/components/ui/section-card";
+import Surface from "@/components/ui/surface";
+
+const highlights = [
+  {
+    title: "Trial-first learning",
+    description:
+      "Students can try the platform, explore trial lessons, and understand the course before choosing paid access.",
+  },
+  {
+    title: "Built for GCSE Russian",
+    description:
+      "The course is focused on Pearson Edexcel GCSE Russian, with Foundation and Higher pathways.",
+  },
+  {
+    title: "Clear app handoff",
+    description:
+      "Marketing pages explain the offer, while the app handles lessons, progress, account details, and billing.",
+  },
+];
+
+const pathways = [
+  "Start with a trial account",
+  "Try sample lessons and platform tools",
+  "Upgrade inside the app when ready",
+];
+
+export default function MarketingHomePage() {
+  return (
+    <div className="space-y-8 py-8 md:py-12">
+      <PageIntroPanel
+        tone="brand"
+        eyebrow="GCSE Russian Course Platform"
+        title="Structured Russian learning for GCSE students"
+        description="A focused online course platform for students preparing for Pearson Edexcel GCSE Russian, combining guided lessons, exam practice, vocabulary, grammar, and progress tracking."
+        badges={
+          <>
+            <Badge tone="info" icon="school">
+              Edexcel GCSE 1RU0
+            </Badge>
+            <Badge tone="muted" icon="layers">
+              Foundation and Higher
+            </Badge>
+            <Badge tone="success" icon="completed">
+              Trial-first access
+            </Badge>
+          </>
+        }
+        actions={
+          <>
+            <Button href="/signup" variant="primary" icon="create">
+              Start trial
+            </Button>
+            <Button href="/pricing" variant="secondary" icon="courses">
+              View pricing
+            </Button>
+          </>
+        }
+      >
+        <div className="grid gap-3 md:grid-cols-3">
+          {pathways.map((item, index) => (
+            <Card key={item}>
+              <CardBody className="flex items-start gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--brand-blue-soft)] text-sm font-semibold text-[var(--accent-on-soft)]">
+                  {index + 1}
+                </span>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{item}</p>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </PageIntroPanel>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {highlights.map((item) => (
+          <SectionCard
+            key={item.title}
+            title={item.title}
+            description={item.description}
+            tone="student"
+            density="compact"
+          />
+        ))}
+      </section>
+
+      <Surface variant="muted" padding="lg">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)] lg:items-center">
+          <div className="space-y-2">
+            <h2 className="app-section-title text-xl">Ready for the app?</h2>
+            <p className="max-w-2xl text-sm leading-6 text-[var(--text-secondary)]">
+              The learning platform lives separately from the marketing site. Students
+              can create a trial account first, then upgrade from inside their account
+              when they are ready.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3 lg:justify-end">
+            <Button href="/signup" variant="primary" icon="create">
+              Create trial account
+            </Button>
+            <Button href="/login" variant="secondary" icon="user">
+              Log in
+            </Button>
+          </div>
+        </div>
+      </Surface>
+    </div>
+  );
+}

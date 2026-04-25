@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
-import AppShell from "@/components/layout/app-shell";
 import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import {
   ThemeProvider,
@@ -106,7 +105,7 @@ export default async function RootLayout({
           initialAccentPreference={initialAccentPreference}
         >
           <DevMarkerProvider isAdmin={isAdmin}>
-            <AppShell user={user}>{children}</AppShell>
+            {children}
           </DevMarkerProvider>
         </ThemeProvider>
       </body>

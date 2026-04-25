@@ -9,6 +9,7 @@ import { appIcons } from "@/lib/shared/icons";
 import {
   getAccountPath,
   getAssignmentsPath,
+  getBillingPath,
   getCoursesPath,
   getDashboardPath,
   getGrammarPath,
@@ -117,6 +118,7 @@ export default function PlatformSidebar({
 
   const utilityItems: NavItem[] = [
     { label: "Overview", href: getAccountPath(), icon: "dashboard" },
+    { label: "Billing", href: getBillingPath(), icon: "courses" },
     { label: "Profile", href: getProfilePath(), icon: "user" },
     { label: "Settings", href: getSettingsPath(), icon: "settings" },
   ];

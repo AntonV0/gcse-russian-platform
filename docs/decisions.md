@@ -366,3 +366,36 @@ Implement a three-mode theme system (Light, Dark, System) using a client-side Th
 - Token cleanup across UI
 - Accent colour themes
 - Persist preferences to user profile
+
+---
+
+## 24. Why introduce marketing and platform route groups?
+
+### Decision
+
+Use Next.js App Router route groups to separate:
+
+- marketing pages in `(marketing)`
+- authenticated LMS pages in `(platform)`
+
+while preserving clean URLs.
+
+### Why
+
+The product needs to support:
+
+- `www.gcserussian.com` for public marketing and SEO pages
+- `app.gcserussian.com` for the LMS platform in future
+- one codebase during the current phase
+
+### Key Choices
+
+- Keep `/pricing` as a public, trial-first marketing page.
+- Move authenticated Stripe checkout and upgrade UI to `/account/billing`.
+- Keep platform pages inside the authenticated platform layout with `PlatformSidebar`.
+- Keep marketing pages inside a separate public layout with marketing-only header and footer.
+- Do not implement middleware or subdomain routing yet.
+
+### Result
+
+Public pages can grow independently from platform workflows, and future subdomain routing can map domains to route groups without changing visible URLs.

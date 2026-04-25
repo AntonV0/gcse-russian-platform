@@ -60,6 +60,7 @@ Built with Next.js App Router and React.
 
 Responsibilities:
 
+- public marketing pages
 - dashboards
 - course navigation
 - lesson rendering
@@ -69,6 +70,13 @@ Responsibilities:
 - lesson builder UI
 - role-aware navigation
 - account and settings UI
+
+Route groups separate public marketing pages from authenticated platform pages:
+
+- `(marketing)` contains landing, pricing, blog, about, FAQ, and auth entry pages
+- `(platform)` contains authenticated LMS pages and uses the platform sidebar layout
+
+This keeps clean URLs while preparing for future `www` and `app` subdomain routing.
 
 ---
 

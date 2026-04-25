@@ -1,14 +1,14 @@
 import Link from "next/link";
-import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
-import PlanCard from "@/components/billing/pricing/plan-card";
+import Badge from "@/components/ui/badge";
 import FoundationPlanPanel from "@/components/billing/pricing/foundation-plan-panel";
 import HigherPlanPanel from "@/components/billing/pricing/higher-plan-panel";
+import PlanCard from "@/components/billing/pricing/plan-card";
 import { getPricingPageData } from "@/components/billing/pricing/data";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getFromPriceLabel } from "@/lib/billing/pricing-ui";
 
-export default async function PricingPage() {
+export default async function BillingPage() {
   const user = await getCurrentUser();
 
   const {
@@ -32,12 +32,12 @@ export default async function PricingPage() {
   const higherPriceLabel = getFromPriceLabel(higherPricing);
 
   return (
-    <div className="py-5 md:py-8">
+    <main className="space-y-5 py-5 md:py-8">
       <section className="app-surface-brand px-4 py-5 md:px-6 md:py-7">
         <div className="mx-auto max-w-5xl space-y-5">
           <div className="space-y-3 text-center">
             <Badge tone="info" icon="info">
-              Pricing
+              Account billing
             </Badge>
 
             <div className="space-y-2">
@@ -45,8 +45,8 @@ export default async function PricingPage() {
                 Choose your GCSE Russian course access
               </h1>
               <p className="mx-auto max-w-2xl text-sm leading-6 text-[var(--text-secondary)] md:text-base">
-                Start with Foundation or go straight to Higher. Higher includes more
-                advanced content and is designed for students aiming for the top grades.
+                Start with Foundation or move to Higher. Checkout and upgrade options
+                are handled here because they depend on your signed-in account state.
               </p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export default async function PricingPage() {
                 "Advanced grammar and vocabulary",
                 "Exam-style questions and mock exams",
                 "Speaking, writing, listening, and reading practice",
-                "Designed for Grades 7–9",
+                "Designed for Grades 7-9",
                 "Progress tracking and structured learning",
               ]}
             >
@@ -124,27 +124,37 @@ export default async function PricingPage() {
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
                 <p className="font-medium text-[var(--text-primary)]">
-                  Looking for teacher-led learning?
+                  Looking for the public pricing overview?
                 </p>
                 <p className="text-sm leading-6 text-[var(--text-secondary)]">
-                  You can also study through Volna School with live lessons and teacher
-                  support. That flow stays separate from Stripe.
+                  The marketing pricing page stays public and trial-focused. This page
+                  contains signed-in checkout and upgrade actions.
                 </p>
               </div>
 
-              <div className="md:shrink-0">
+              <div className="flex flex-wrap gap-3 md:shrink-0 md:justify-end">
                 <Link
-                  href="/"
+                  href="/pricing"
+                  target="_blank"
+                  rel="noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
                 >
                   <AppIcon icon="next" size={14} />
-                  Back to homepage
+                  Open public pricing
+                </Link>
+
+                <Link
+                  href="/account"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
+                >
+                  <AppIcon icon="next" size={14} />
+                  Back to account
                 </Link>
               </div>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
