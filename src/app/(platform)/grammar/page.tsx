@@ -11,6 +11,7 @@ import {
   getGrammarThemeLabel,
   getGrammarTierLabel,
   getPublishedGrammarSetsDb,
+  type DbGrammarSetListItem,
   type GrammarSetFilters,
 } from "@/lib/grammar/grammar-helpers-db";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -36,6 +37,15 @@ function normalizeTierFilter(value?: string): GrammarSetFilters["tier"] {
   return "all";
 }
 
+function getTopicOptions(grammarSets: DbGrammarSetListItem[]) {
+  return [...new Set(grammarSets.map((set) => set.theme_key).filter(Boolean))]
+    .sort((a, b) => getGrammarThemeLabel(a).localeCompare(getGrammarThemeLabel(b)))
+    .map((themeKey) => ({
+      value: themeKey as string,
+      label: getGrammarThemeLabel(themeKey as string),
+    }));
+}
+
 export default async function GrammarPage({ searchParams }: GrammarPageProps) {
   const params = (await searchParams) ?? {};
   const dashboard = await getDashboardInfo();
@@ -44,9 +54,13 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
     tier: normalizeTierFilter(params.tier),
     themeKey: params.themeKey ?? null,
   };
-  const grammarSets = filterGrammarSetsForDashboardAccess(
-    await getPublishedGrammarSetsDb(filters),
-    dashboard
+  const [grammarSets, allVisibleGrammarSets] = await Promise.all([
+    getPublishedGrammarSetsDb(filters),
+    getPublishedGrammarSetsDb(),
+  ]);
+  const visibleGrammarSets = filterGrammarSetsForDashboardAccess(grammarSets, dashboard);
+  const topicOptions = getTopicOptions(
+    filterGrammarSetsForDashboardAccess(allVisibleGrammarSets, dashboard)
   );
 
   return (
@@ -102,11 +116,14 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
           </div>
 
           <div className="w-full lg:max-w-[220px]">
-            <Input
-              name="themeKey"
-              defaultValue={params.themeKey ?? ""}
-              placeholder="Topic"
-            />
+            <Select name="themeKey" defaultValue={filters.themeKey ?? ""}>
+              <option value="">All topics</option>
+              {topicOptions.map((topic) => (
+                <option key={topic.value} value={topic.value}>
+                  {topic.label}
+                </option>
+              ))}
+            </Select>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -122,10 +139,10 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
 
       <SectionCard
         title="Grammar sets"
-        description={`${grammarSets.length} set${grammarSets.length === 1 ? "" : "s"} available for your access level.`}
+        description={`${visibleGrammarSets.length} set${visibleGrammarSets.length === 1 ? "" : "s"} available for your access level.`}
         tone="student"
       >
-        {grammarSets.length === 0 ? (
+        {visibleGrammarSets.length === 0 ? (
           <EmptyState
             icon="search"
             iconTone="brand"
@@ -134,7 +151,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
           />
         ) : (
           <div className="grid gap-3">
-            {grammarSets.map((grammarSet) => (
+            {visibleGrammarSets.map((grammarSet) => (
               <CardListItem
                 key={grammarSet.id}
                 href={`/grammar/${grammarSet.slug}`}

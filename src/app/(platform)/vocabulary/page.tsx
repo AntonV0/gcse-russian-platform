@@ -73,6 +73,17 @@ function getCoverageTone(usedItems: number, totalItems: number) {
   return "info";
 }
 
+function getTopicOptions(
+  vocabularySets: Awaited<ReturnType<typeof getVocabularySetsDb>>
+) {
+  return [...new Set(vocabularySets.map((set) => set.theme_key).filter(Boolean))]
+    .sort((a, b) => getVocabularyThemeLabel(a).localeCompare(getVocabularyThemeLabel(b)))
+    .map((themeKey) => ({
+      value: themeKey as string,
+      label: getVocabularyThemeLabel(themeKey as string),
+    }));
+}
+
 function CoverageRatioBadge({
   label,
   usedItems,
@@ -137,10 +148,14 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
     themeKey: params.themeKey ?? null,
   };
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
-  const vocabularySets = canSeeDrafts
-    ? await getVocabularySetsDb({ filters })
-    : await getPublishedVocabularySetsDb(filters);
+  const [vocabularySets, allVisibleVocabularySets] = await Promise.all([
+    canSeeDrafts
+      ? getVocabularySetsDb({ filters })
+      : getPublishedVocabularySetsDb(filters),
+    canSeeDrafts ? getVocabularySetsDb() : getPublishedVocabularySetsDb(),
+  ]);
   const draftCount = vocabularySets.filter((set) => !set.is_published).length;
+  const topicOptions = getTopicOptions(allVisibleVocabularySets);
 
   return (
     <main className="space-y-4">
@@ -178,7 +193,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
 
       <SectionCard
         title="Find vocabulary"
-        description="Search by keyword, then narrow by tier, source, or topic."
+        description="Search by keyword, then narrow by tier, list type, or topic."
         tone="student"
       >
         <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_minmax(140px,160px)_minmax(150px,170px)_minmax(150px,170px)_max-content] xl:items-center">
@@ -201,20 +216,23 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
 
           <div className="min-w-0">
             <Select name="listMode" defaultValue={filters.listMode ?? "all"}>
-              <option value="all">All sources</option>
+              <option value="all">All list types</option>
+              <option value="spec_only">Exam list</option>
+              <option value="extended_only">Extra practice</option>
+              <option value="spec_and_extended">Exam + extra</option>
               <option value="custom">Custom sets</option>
-              <option value="spec_only">Exam specification</option>
-              <option value="extended_only">Extended vocabulary</option>
-              <option value="spec_and_extended">Spec + extended</option>
             </Select>
           </div>
 
           <div className="min-w-0">
-            <Input
-              name="themeKey"
-              defaultValue={params.themeKey ?? ""}
-              placeholder="Topic"
-            />
+            <Select name="themeKey" defaultValue={filters.themeKey ?? ""}>
+              <option value="">All topics</option>
+              {topicOptions.map((topic) => (
+                <option key={topic.value} value={topic.value}>
+                  {topic.label}
+                </option>
+              ))}
+            </Select>
           </div>
 
           <div className="flex shrink-0 flex-wrap gap-2 md:col-span-2 xl:col-span-1 xl:flex-nowrap xl:justify-end">

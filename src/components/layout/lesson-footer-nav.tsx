@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Button from "@/components/ui/button";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type LessonFooterNavProps = {
@@ -40,30 +40,34 @@ export default function LessonFooterNav({
       ) : null}
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <Link
+        <Button
           href={moduleHref}
-          className="app-btn-base app-btn-secondary px-4 py-2 text-sm"
+          variant="secondary"
+          icon="back"
         >
           Back to module
-        </Link>
+        </Button>
 
         <div className="flex flex-col gap-3 sm:flex-row">
           {previousLesson ? (
-            <Link
+            <Button
               href={previousLesson.href}
-              className="app-btn-base app-btn-secondary px-4 py-2 text-sm"
+              variant="secondary"
+              icon="back"
             >
               Previous lesson: {previousLesson.label}
-            </Link>
+            </Button>
           ) : null}
 
           {nextLesson ? (
-            <Link
+            <Button
               href={nextLesson.href}
-              className="app-btn-base app-btn-primary px-4 py-2 text-sm"
+              variant="primary"
+              icon="next"
+              iconPosition="right"
             >
               Next lesson: {nextLesson.label}
-            </Link>
+            </Button>
           ) : null}
         </div>
       </div>
