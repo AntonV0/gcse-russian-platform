@@ -147,7 +147,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
         tone="student"
         eyebrow="Vocabulary"
         title="Vocabulary"
-        description="Browse GCSE Russian vocabulary sets from the database, with filters for tier, source mode, and theme."
+        description="Browse GCSE Russian vocabulary by topic, tier, and source so you can find the right words to revise quickly."
         badges={
           <>
             <Badge tone="info" icon="vocabulary">
@@ -177,7 +177,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
 
       <SectionCard
         title="Find vocabulary"
-        description="Search by keyword, then narrow by tier, list mode, or theme key."
+        description="Search by keyword, then narrow by tier, source, or topic."
         tone="student"
       >
         <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_minmax(140px,160px)_minmax(150px,170px)_minmax(150px,170px)_max-content] xl:items-center">
@@ -200,10 +200,10 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
 
           <div className="min-w-0">
             <Select name="listMode" defaultValue={filters.listMode ?? "all"}>
-              <option value="all">All modes</option>
-              <option value="custom">Custom</option>
-              <option value="spec_only">Spec only</option>
-              <option value="extended_only">Extended only</option>
+              <option value="all">All sources</option>
+              <option value="custom">Custom sets</option>
+              <option value="spec_only">Exam specification</option>
+              <option value="extended_only">Extended vocabulary</option>
               <option value="spec_and_extended">Spec + extended</option>
             </Select>
           </div>
@@ -212,7 +212,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             <Input
               name="themeKey"
               defaultValue={params.themeKey ?? ""}
-              placeholder="Theme key"
+              placeholder="Topic"
             />
           </div>
 
@@ -267,7 +267,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
                         Draft
                       </Badge>
                     ) : null}
-                    {shouldShowCoverageBadges(vocabularySet.list_mode) ? (
+                    {canSeeDrafts && shouldShowCoverageBadges(vocabularySet.list_mode) ? (
                       <VocabularySetCoverageBadges
                         coverageSummary={vocabularySet.coverage_summary}
                       />
