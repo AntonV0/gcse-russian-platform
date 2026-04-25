@@ -6,7 +6,9 @@ import { useMemo, useState } from "react";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import IconButton from "@/components/ui/icon-button";
 import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/access/routes";
 
 type SiteHeaderProps = {
@@ -47,7 +49,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
   }
 
   return (
-    <header className="dev-marker-host sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/88 shadow-[0_1px_2px_rgba(16,32,51,0.03)] backdrop-blur">
+    <header className="dev-marker-host app-site-header">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="SiteHeader"
@@ -112,12 +114,9 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
                 <Link href="/login" className="app-nav-link">
                   Log in
                 </Link>
-                <Link
-                  href="/signup"
-                  className="app-btn-base app-btn-primary px-3 py-1.5 text-sm"
-                >
+                <Button href="/signup" variant="primary" size="sm" icon="create">
                   Sign up
-                </Link>
+                </Button>
               </>
             )}
           </div>
@@ -125,19 +124,13 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
 
-            <button
+            <IconButton
               type="button"
-              className="app-icon-button app-focus-ring"
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              icon={isMobileMenuOpen ? "cancel" : "menu"}
+              label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen((current) => !current)}
-            >
-              <AppIcon
-                icon={isMobileMenuOpen ? "cancel" : "menu"}
-                size={18}
-                className="app-icon-button-icon"
-              />
-            </button>
+            />
           </div>
         </div>
 
@@ -178,20 +171,22 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                <Link
+                <Button
                   href="/login"
-                  onClick={closeMobileMenu}
-                  className="app-btn-base app-btn-secondary px-3 py-2 text-sm"
+                  variant="secondary"
+                  className="w-full"
+                  icon="user"
                 >
                   Log in
-                </Link>
-                <Link
+                </Button>
+                <Button
                   href="/signup"
-                  onClick={closeMobileMenu}
-                  className="app-btn-base app-btn-primary px-3 py-2 text-sm"
+                  variant="primary"
+                  className="w-full"
+                  icon="create"
                 >
                   Sign up
-                </Link>
+                </Button>
               </div>
             )}
           </div>

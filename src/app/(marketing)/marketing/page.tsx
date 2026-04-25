@@ -5,6 +5,7 @@ import Card, { CardBody } from "@/components/ui/card";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import Surface from "@/components/ui/surface";
+import { MarketingRelatedLinks } from "@/components/marketing/marketing-page-sections";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -36,6 +37,45 @@ const pathways = [
   "Start with a trial account",
   "Try sample lessons and platform tools",
   "Upgrade inside the app when ready",
+];
+
+const guideLinks = [
+  {
+    title: "Online GCSE Russian course",
+    description: "See how the structured course supports Edexcel GCSE Russian preparation.",
+    href: "/marketing/gcse-russian-course",
+    icon: "courses" as const,
+  },
+  {
+    title: "Pearson Edexcel GCSE Russian",
+    description: "Understand qualification code 1RU0, papers, tiers, and platform support.",
+    href: "/marketing/edexcel-gcse-russian",
+    icon: "school" as const,
+  },
+  {
+    title: "GCSE Russian exam guide",
+    description: "Start with a clear overview of listening, speaking, reading, and writing.",
+    href: "/marketing/gcse-russian-exam-guide",
+    icon: "exam" as const,
+  },
+  {
+    title: "Russian GCSE private candidates",
+    description: "Plan preparation for students arranging their own exam entry.",
+    href: "/marketing/russian-gcse-private-candidate",
+    icon: "userCheck" as const,
+  },
+  {
+    title: "Online GCSE Russian lessons",
+    description: "Explore teacher-supported learning alongside the course platform.",
+    href: "/marketing/online-gcse-russian-lessons",
+    icon: "school" as const,
+  },
+  {
+    title: "Pricing",
+    description: "Compare Foundation and Higher access and start with trial-first onboarding.",
+    href: "/marketing/pricing",
+    icon: "pricing" as const,
+  },
 ];
 
 export default function MarketingHomePage() {
@@ -95,6 +135,12 @@ export default function MarketingHomePage() {
           />
         ))}
       </section>
+
+      <MarketingRelatedLinks
+        title="Explore GCSE Russian preparation"
+        description="Start with the page that matches your question, then move into trial access when you are ready to practise."
+        links={guideLinks}
+      />
 
       <Surface variant="muted" padding="lg">
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)] lg:items-center">

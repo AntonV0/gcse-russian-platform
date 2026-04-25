@@ -5,6 +5,9 @@ import { useFormStatus } from "react-dom";
 import PanelCard from "@/components/ui/panel-card";
 import BadgePrimitive from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
+import type { ButtonSize, ButtonVariant } from "@/components/ui/button-styles";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
 import type { AppIconKey } from "@/lib/shared/icons";
 
@@ -127,16 +130,17 @@ export function ConfirmSubmitButton({
   className?: string;
 }) {
   return (
-    <button
+    <Button
       type="submit"
+      variant="danger"
+      className={className}
       onClick={(event) => {
         const confirmed = window.confirm(confirmMessage);
         if (!confirmed) event.preventDefault();
       }}
-      className={className}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -173,18 +177,37 @@ export function ToolbarButton({
   isActive?: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition ${
-        isActive
-          ? "border-[var(--accent-fill)] [background:var(--accent-gradient-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--accent)_18%,transparent)]"
-          : "border-[var(--border)] bg-[var(--surface-plain-bg)] text-[var(--text-primary)] shadow-[var(--shadow-xs)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-muted-bg)]"
-      }`}
+      variant={isActive ? "primary" : "secondary"}
+      size="sm"
     >
       {children}
-    </button>
+    </Button>
   );
+}
+
+function getPendingButtonVariant(className?: string): ButtonVariant {
+  return className?.includes("app-btn-primary") ? "primary" : "secondary";
+}
+
+function getPendingButtonSize(className?: string): ButtonSize {
+  return className?.includes("min-h-10") ? "md" : "sm";
+}
+
+function getPendingButtonClassName(className?: string) {
+  return className
+    ?.split(" ")
+    .filter(
+      (item) =>
+        item &&
+        item !== "app-btn-base" &&
+        item !== "app-btn-primary" &&
+        item !== "app-btn-secondary" &&
+        !item.startsWith("disabled:")
+    )
+    .join(" ");
 }
 
 export function PendingSubmitButton({
@@ -196,12 +219,14 @@ export function PendingSubmitButton({
   pendingLabel: string;
   className?: string;
 }) {
-  const { pending } = useFormStatus();
-
   return (
-    <button type="submit" disabled={pending} className={className}>
-      {pending ? pendingLabel : idleLabel}
-    </button>
+    <LoadingButton
+      idleLabel={idleLabel}
+      pendingLabel={pendingLabel}
+      variant={getPendingButtonVariant(className)}
+      size={getPendingButtonSize(className)}
+      className={getPendingButtonClassName(className)}
+    />
   );
 }
 

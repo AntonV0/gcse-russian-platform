@@ -2,6 +2,10 @@ import type { LessonBlock } from "@/types/lesson";
 import { getLessonBlockLabel } from "./metadata";
 import type { DbLessonBlockLike } from "./types";
 
+function joinPreview(label: string, value: string) {
+  return `${label} - ${value}`;
+}
+
 export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): string {
   if ("type" in block) {
     switch (block.type) {
@@ -19,25 +23,25 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
 
       case "image":
         return block.caption
-          ? `Image Â· ${block.caption}`
+          ? joinPreview("Image", block.caption)
           : block.alt
-            ? `Image Â· ${block.alt}`
+            ? joinPreview("Image", block.alt)
             : block.src
-              ? `Image Â· ${block.src}`
+              ? joinPreview("Image", block.src)
               : "Image block";
 
       case "audio":
         return block.title
-          ? `Audio Â· ${block.title}`
+          ? joinPreview("Audio", block.title)
           : block.caption
-            ? `Audio Â· ${block.caption}`
+            ? joinPreview("Audio", block.caption)
             : block.src
-              ? `Audio Â· ${block.src}`
+              ? joinPreview("Audio", block.src)
               : "Audio block";
 
       case "vocabulary":
         return block.items.length > 0
-          ? `${block.items.length} item(s) Â· ${block.items
+          ? `${block.items.length} item(s) - ${block.items
               .slice(0, 2)
               .map((item) => `${item.russian} = ${item.english}`)
               .join(", ")}`
@@ -45,19 +49,19 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
 
       case "vocabulary-set":
         return block.title
-          ? `Vocabulary set Â· ${block.title}`
-          : `Vocabulary set Â· ${block.vocabularySetSlug}`;
+          ? joinPreview("Vocabulary set", block.title)
+          : joinPreview("Vocabulary set", block.vocabularySetSlug);
 
       case "question-set":
         return block.title
-          ? `Question set Â· ${block.title}`
-          : `Question set Â· ${block.questionSetSlug}`;
+          ? joinPreview("Question set", block.title)
+          : joinPreview("Question set", block.questionSetSlug);
 
       case "multiple-choice":
-        return `Multiple choice Â· ${block.question}`;
+        return joinPreview("Multiple choice", block.question);
 
       case "short-answer":
-        return `Short answer Â· ${block.question}`;
+        return joinPreview("Short answer", block.question);
 
       case "divider":
         return "Divider";
@@ -88,20 +92,20 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
 
     case "image":
       return typeof data.caption === "string" && data.caption.trim().length > 0
-        ? `Image Â· ${data.caption}`
+        ? joinPreview("Image", data.caption)
         : typeof data.alt === "string" && data.alt.trim().length > 0
-          ? `Image Â· ${data.alt}`
+          ? joinPreview("Image", data.alt)
           : typeof data.src === "string" && data.src.trim().length > 0
-            ? `Image Â· ${data.src}`
+            ? joinPreview("Image", data.src)
             : "Image block";
 
     case "audio":
       return typeof data.title === "string" && data.title.trim().length > 0
-        ? `Audio Â· ${data.title}`
+        ? joinPreview("Audio", data.title)
         : typeof data.caption === "string" && data.caption.trim().length > 0
-          ? `Audio Â· ${data.caption}`
+          ? joinPreview("Audio", data.caption)
           : typeof data.src === "string" && data.src.trim().length > 0
-            ? `Audio Â· ${data.src}`
+            ? joinPreview("Audio", data.src)
             : "Audio block";
 
     case "vocabulary":
@@ -118,7 +122,7 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
           .filter(Boolean)
           .join(", ");
 
-        return `${data.items.length} item(s)${preview ? ` Â· ${preview}` : ""}`;
+        return `${data.items.length} item(s)${preview ? ` - ${preview}` : ""}`;
       }
 
       return typeof data.title === "string" && data.title.trim().length > 0
@@ -127,18 +131,18 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
 
     case "vocabulary-set":
       return typeof data.title === "string" && data.title.trim().length > 0
-        ? `Vocabulary set Â· ${data.title}`
+        ? joinPreview("Vocabulary set", data.title)
         : typeof data.vocabularySetSlug === "string" &&
             data.vocabularySetSlug.trim().length > 0
-          ? `Vocabulary set Â· ${data.vocabularySetSlug}`
+          ? joinPreview("Vocabulary set", data.vocabularySetSlug)
           : "Vocabulary set block";
 
     case "question-set":
       return typeof data.title === "string" && data.title.trim().length > 0
-        ? `Question set Â· ${data.title}`
+        ? joinPreview("Question set", data.title)
         : typeof data.questionSetSlug === "string" &&
             data.questionSetSlug.trim().length > 0
-          ? `Question set Â· ${data.questionSetSlug}`
+          ? joinPreview("Question set", data.questionSetSlug)
           : "Question set block";
 
     case "divider":

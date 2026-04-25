@@ -130,6 +130,7 @@
   --page-padding-x: 1rem;
   --page-padding-y: 1rem;
   --site-header-height: 65px;
+  --sticky-site-offset: calc(var(--site-header-height) + 1.5rem);
 
   /* ========= Radius ========= */
   --radius-xs: 0.4rem;

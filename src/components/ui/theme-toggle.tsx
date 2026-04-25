@@ -1,8 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import IconButton from "@/components/ui/icon-button";
 import { useTheme } from "@/components/providers/theme-provider";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -47,23 +47,12 @@ export default function ThemeToggle() {
         />
       ) : null}
 
-      <button
+      <IconButton
         type="button"
         onClick={toggleTheme}
-        className="app-icon-button app-focus-ring"
-        aria-label={title}
-        title={title}
-      >
-        {hasMounted && theme ? (
-          <AppIcon
-            icon={theme === "dark" ? "sun" : "moon"}
-            size={17}
-            className="app-icon-button-icon"
-          />
-        ) : (
-          <span aria-hidden="true" className="block h-[17px] w-[17px] shrink-0" />
-        )}
-      </button>
+        icon={hasMounted && theme === "dark" ? "sun" : "moon"}
+        label={title}
+      />
     </span>
   );
 }

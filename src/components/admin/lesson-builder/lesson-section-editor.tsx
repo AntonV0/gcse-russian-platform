@@ -26,6 +26,7 @@ import { updateSectionAction } from "@/app/actions/admin/admin-lesson-builder-ac
 import { SECTION_KIND_OPTIONS } from "@/components/admin/lesson-builder/lesson-builder-types";
 import { getLessonBlockLabel, getLessonBlockPreview } from "@/lib/lessons/lesson-blocks";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import Button from "@/components/ui/button";
 
 const VARIANT_VISIBILITY_OPTIONS = [
   { value: "shared", label: "Shared" },
@@ -223,13 +224,14 @@ export default function LessonSectionEditor(props: {
                 placeholder="Search blocks..."
                 className={`${BUILDER_FIELD_CLASS} sm:w-64`}
               />
-              <button
+              <Button
                 type="button"
                 onClick={props.onJumpToAddBlock}
-                className={BUILDER_SECONDARY_BUTTON_CLASS}
+                variant="secondary"
+                size="sm"
               >
                 Jump to block creator
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -241,13 +243,14 @@ export default function LessonSectionEditor(props: {
           {section.blocks.length === 0 ? (
             <div className={`${BUILDER_DASHED_EMPTY_STATE_CLASS} py-8`}>
               <div className="mb-2">No blocks in this section yet.</div>
-              <button
+              <Button
                 type="button"
                 onClick={props.onJumpToAddBlock}
-                className={BUILDER_SECONDARY_BUTTON_CLASS}
+                variant="secondary"
+                size="sm"
               >
                 Create your first block
-              </button>
+              </Button>
             </div>
           ) : filteredBlocks.length === 0 ? (
             <div className={`${BUILDER_DASHED_EMPTY_STATE_CLASS} py-8`}>

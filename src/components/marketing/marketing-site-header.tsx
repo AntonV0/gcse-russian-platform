@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
+import IconButton from "@/components/ui/icon-button";
 import ThemeToggle from "@/components/ui/theme-toggle";
 
 type MarketingSiteHeaderProps = {
@@ -15,9 +16,11 @@ type MarketingSiteHeaderProps = {
 
 const navItems = [
   { href: "/marketing", label: "Home" },
+  { href: "/marketing/gcse-russian-course", label: "Course" },
+  { href: "/marketing/gcse-russian-exam-guide", label: "Exam guide" },
+  { href: "/marketing/russian-gcse-private-candidate", label: "Private candidates" },
+  { href: "/marketing/online-gcse-russian-lessons", label: "Lessons" },
   { href: "/marketing/pricing", label: "Pricing" },
-  { href: "/marketing/blog", label: "Blog" },
-  { href: "/marketing/about", label: "About" },
   { href: "/marketing/faq", label: "FAQ" },
 ];
 
@@ -44,7 +47,7 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/88 shadow-[0_1px_2px_rgba(16,32,51,0.03)] backdrop-blur">
+    <header className="app-site-header">
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <Link
@@ -106,19 +109,13 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
 
-            <button
+            <IconButton
               type="button"
-              className="app-icon-button app-focus-ring"
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              icon={isMobileMenuOpen ? "cancel" : "menu"}
+              label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen((current) => !current)}
-            >
-              <AppIcon
-                icon={isMobileMenuOpen ? "cancel" : "menu"}
-                size={18}
-                className="app-icon-button-icon"
-              />
-            </button>
+            />
           </div>
         </div>
 
