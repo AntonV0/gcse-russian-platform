@@ -1,4 +1,5 @@
 import { signUp } from "@/app/actions/auth/auth";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 
 type SignUpPageProps = {
   searchParams: Promise<{
@@ -10,22 +11,27 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const { error } = await searchParams;
 
   return (
-    <main className="mx-auto max-w-md">
-      <div className="rounded-xl border bg-white p-6 shadow-sm">
-        <h1 className="mb-2 text-3xl font-bold">Create account</h1>
-        <p className="mb-6 text-gray-600">
-          Start with a trial account for the GCSE Russian course platform.
-        </p>
+    <main className="mx-auto flex min-h-[calc(100vh-var(--site-header-height)-8rem)] max-w-md items-center px-4 py-10">
+      <section className="app-surface-brand app-section-padding-lg w-full">
+        <div className="mb-6 space-y-2">
+          <h1 className="app-title">Create account</h1>
+          <p className="app-subtitle">
+            Start with a trial account for the GCSE Russian course platform.
+          </p>
+        </div>
 
         {error ? (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
-            {error}
-          </div>
+          <FeedbackBanner
+            tone="danger"
+            title="Signup failed"
+            description={error}
+            className="mb-4"
+          />
         ) : null}
 
         <form action={signUp} className="space-y-4">
-          <div>
-            <label htmlFor="fullName" className="mb-1 block text-sm font-medium">
+          <div className="app-form-field">
+            <label htmlFor="fullName" className="app-form-label">
               Full name
             </label>
             <input
@@ -33,25 +39,25 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               name="fullName"
               type="text"
               required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              className="app-form-control app-form-input"
             />
           </div>
 
-          <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium">
-              Email
+          <div className="app-form-field">
+            <label htmlFor="email" className="app-form-label">
+              Email address
             </label>
             <input
               id="email"
               name="email"
               type="email"
               required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              className="app-form-control app-form-input"
             />
           </div>
 
-          <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium">
+          <div className="app-form-field">
+            <label htmlFor="password" className="app-form-label">
               Password
             </label>
             <input
@@ -59,18 +65,18 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               name="password"
               type="password"
               required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              className="app-form-control app-form-input"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-black px-4 py-3 text-white hover:opacity-90"
+            className="app-btn-base app-btn-primary min-h-11 w-full px-4 py-3 text-sm"
           >
             Create account
           </button>
         </form>
-      </div>
+      </section>
     </main>
   );
 }

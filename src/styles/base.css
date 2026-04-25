@@ -111,7 +111,7 @@ small {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #b9c6d6 transparent;
+  scrollbar-color: var(--border-strong) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -124,14 +124,14 @@ small {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #c0cad8;
+  background: var(--border-strong);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #aebccd;
+  background: color-mix(in srgb, var(--accent) 18%, var(--border-strong));
   border: 2px solid transparent;
   background-clip: padding-box;
 }

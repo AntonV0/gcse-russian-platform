@@ -3,6 +3,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import { updateStudentProfile } from "@/app/actions/auth/auth";
@@ -81,15 +82,19 @@ export default async function ProfilePage({
       />
 
       {resolvedSearchParams.success ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Your profile was updated successfully.
-        </div>
+        <FeedbackBanner
+          tone="success"
+          title="Profile updated"
+          description="Your profile was updated successfully."
+        />
       ) : null}
 
       {resolvedSearchParams.error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {resolvedSearchParams.error}
-        </div>
+        <FeedbackBanner
+          tone="danger"
+          title="Profile update failed"
+          description={resolvedSearchParams.error}
+        />
       ) : null}
 
       <section className="app-surface-brand app-section-padding-lg">

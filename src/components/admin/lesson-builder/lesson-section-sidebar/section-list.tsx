@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { ChevronDown, ChevronUp, Copy, Eye, EyeOff, GripVertical } from "lucide-react";
 import {
   duplicateSectionAction,
   moveBlockToSectionAction,
@@ -26,6 +25,7 @@ import {
   getVariantVisibilityMeta,
   SidebarIconButton,
 } from "./sidebar-primitives";
+import AppIcon from "@/components/ui/app-icon";
 
 type SectionListProps = {
   sections: LessonSection[];
@@ -213,10 +213,13 @@ export function SectionList(props: SectionListProps) {
                         className="inline-flex h-5 w-5 items-center justify-center text-[var(--text-muted)]"
                         aria-hidden="true"
                       >
-                        <GripVertical size={14} />
+                        <AppIcon icon="reorder" size={14} />
                       </span>
 
-                      <Badge tone={section.is_published ? "success" : "warning"}>
+                      <Badge
+                        tone={section.is_published ? "success" : "warning"}
+                        icon={section.is_published ? "published" : "draft"}
+                      >
                         {section.is_published ? "Published" : "Draft"}
                       </Badge>
 
@@ -245,7 +248,7 @@ export function SectionList(props: SectionListProps) {
                     ) : null}
 
                     {isBlockDropTarget ? (
-                      <div className="mt-1.5 text-xs font-medium text-green-700">
+                      <div className="mt-1.5 text-xs font-medium text-[var(--success-text)]">
                         Drop block here
                       </div>
                     ) : null}
@@ -261,7 +264,7 @@ export function SectionList(props: SectionListProps) {
                           title="Duplicate section"
                           disabled={isPending || !!props.draggedBlockContext}
                         >
-                          <Copy size={13} />
+                          <AppIcon icon="duplicate" size={13} />
                         </SidebarIconButton>
                       </form>
 
@@ -286,11 +289,10 @@ export function SectionList(props: SectionListProps) {
                           }
                           disabled={isPending || !!props.draggedBlockContext}
                         >
-                          {section.is_published ? (
-                            <EyeOff size={13} />
-                          ) : (
-                            <Eye size={13} />
-                          )}
+                          <AppIcon
+                            icon={section.is_published ? "hidden" : "preview"}
+                            size={13}
+                          />
                         </SidebarIconButton>
                       </form>
                     </div>
@@ -309,7 +311,7 @@ export function SectionList(props: SectionListProps) {
                             !!props.draggedBlockContext
                           }
                         >
-                          <ChevronUp size={14} />
+                          <AppIcon icon="up" size={14} />
                         </SidebarIconButton>
                       </form>
 
@@ -326,7 +328,7 @@ export function SectionList(props: SectionListProps) {
                             !!props.draggedBlockContext
                           }
                         >
-                          <ChevronDown size={14} />
+                          <AppIcon icon="down" size={14} />
                         </SidebarIconButton>
                       </form>
                     </div>

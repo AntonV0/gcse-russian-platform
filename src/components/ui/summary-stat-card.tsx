@@ -26,30 +26,30 @@ function getToneClasses(tone: SummaryStatCardTone) {
   switch (tone) {
     case "brand":
       return {
-        card: "border-[color-mix(in_srgb,var(--brand-blue)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_55%,color-mix(in_srgb,var(--brand-red)_4%,transparent)_100%)]",
-        iconWrap: "bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--accent-on-soft)]",
+        card: "app-section-tone-brand",
+        iconWrap: "bg-[var(--info-surface)] text-[var(--info-text)]",
         value: "text-[var(--accent-ink)]",
       };
 
     case "success":
       return {
-        card: "border-[color-mix(in_srgb,var(--success)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--success)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_100%)]",
-        iconWrap: "bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-[var(--success)]",
-        value: "text-[var(--success)]",
+        card: "border-[var(--success-border)] bg-[var(--success-surface)]",
+        iconWrap: "bg-[var(--success-surface-strong)] text-[var(--success-text)]",
+        value: "text-[var(--success-text)]",
       };
 
     case "warning":
       return {
-        card: "border-[color-mix(in_srgb,var(--warning)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--warning)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_100%)]",
-        iconWrap: "bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] text-[var(--warning)]",
-        value: "text-[var(--warning)]",
+        card: "border-[var(--warning-border)] bg-[var(--warning-surface)]",
+        iconWrap: "bg-[var(--warning-surface-strong)] text-[var(--warning-text)]",
+        value: "text-[var(--warning-text)]",
       };
 
     case "danger":
       return {
-        card: "border-[color-mix(in_srgb,var(--danger)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_100%)]",
-        iconWrap: "bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-[var(--danger)]",
-        value: "text-[var(--danger)]",
+        card: "border-[var(--danger-border)] bg-[var(--danger-surface)]",
+        iconWrap: "bg-[var(--danger-surface-strong)] text-[var(--danger-text)]",
+        value: "text-[var(--danger-text)]",
       };
 
     case "default":

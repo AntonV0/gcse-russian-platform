@@ -1,37 +1,23 @@
 "use client";
 
-import {
-  AlignLeft,
-  BookOpen,
-  FileQuestion,
-  Heading1,
-  Heading2,
-  Image,
-  Lightbulb,
-  Megaphone,
-  Minus,
-  NotebookText,
-  Sparkles,
-  Type,
-  Volume2,
-  type LucideIcon,
-} from "lucide-react";
+import AppIcon from "@/components/ui/app-icon";
 import type { NewBlockType } from "@/components/admin/lesson-builder/lesson-builder-types";
+import type { AppIconKey } from "@/lib/shared/icons";
 
 const BLOCK_TYPE_ICONS = {
-  header: Heading1,
-  subheader: Heading2,
-  divider: Minus,
-  text: AlignLeft,
-  note: NotebookText,
-  callout: Megaphone,
-  "exam-tip": Lightbulb,
-  vocabulary: BookOpen,
-  image: Image,
-  audio: Volume2,
-  "question-set": FileQuestion,
-  "vocabulary-set": Type,
-} satisfies Record<NewBlockType, LucideIcon>;
+  header: "heading",
+  subheader: "subheader",
+  divider: "divider",
+  text: "text",
+  note: "note",
+  callout: "callout",
+  "exam-tip": "examTip",
+  vocabulary: "vocabulary",
+  image: "image",
+  audio: "audio",
+  "question-set": "questionSet",
+  "vocabulary-set": "vocabularySet",
+} satisfies Record<NewBlockType, AppIconKey>;
 
 type BlockTypeButtonProps = {
   label: string;
@@ -42,7 +28,7 @@ type BlockTypeButtonProps = {
 
 export function BlockTypeButton(props: BlockTypeButtonProps) {
   const isSelected = props.selectedValue === props.value;
-  const Icon = BLOCK_TYPE_ICONS[props.value] ?? Sparkles;
+  const icon = BLOCK_TYPE_ICONS[props.value] ?? "feedback";
 
   return (
     <button
@@ -51,19 +37,19 @@ export function BlockTypeButton(props: BlockTypeButtonProps) {
       className={[
         "group inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition-[background-color,border-color,box-shadow,transform]",
         isSelected
-          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--brand-blue)_18%,transparent)]"
-          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] hover:shadow-[0_8px_18px_rgba(16,32,51,0.06)]",
+          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--accent)_18%,transparent)]"
+          : "border-[var(--border)] bg-[var(--surface-plain-bg)] text-[var(--text-primary)] shadow-[var(--shadow-xs)] hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--surface-muted-bg)] hover:shadow-[var(--shadow-sm)]",
       ].join(" ")}
     >
       <span
         className={[
           "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border",
           isSelected
-            ? "border-white/25 bg-white/15 text-white"
-            : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)]",
+            ? "border-[color-mix(in_srgb,var(--accent-on-fill)_28%,transparent)] bg-[color-mix(in_srgb,var(--accent-on-fill)_14%,transparent)] text-[var(--accent-on-fill)]"
+            : "border-[var(--border)] bg-[var(--surface-muted-bg)] text-[var(--text-secondary)]",
         ].join(" ")}
       >
-        <Icon size={15} />
+        <AppIcon icon={icon} size={15} />
       </span>
       <span>{props.label}</span>
     </button>

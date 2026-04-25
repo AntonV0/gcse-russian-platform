@@ -98,7 +98,10 @@ export default function LessonInspectorPanel(props: {
                 {getLessonBlockLabel(props.block.block_type)}
               </span>
 
-              <Badge tone={props.block.is_published ? "success" : "warning"}>
+              <Badge
+                tone={props.block.is_published ? "success" : "warning"}
+                icon={props.block.is_published ? "published" : "draft"}
+              >
                 {props.block.is_published ? "Published" : "Draft"}
               </Badge>
             </div>
@@ -224,7 +227,7 @@ export default function LessonInspectorPanel(props: {
                 confirmMessage={`Delete this ${getLessonBlockLabel(
                   props.block.block_type
                 ).toLowerCase()} block?`}
-                className="w-full rounded-xl border border-[rgba(194,59,59,0.28)] bg-[var(--danger-soft)] px-3 py-2 text-sm font-medium text-[var(--danger)] hover:border-[rgba(194,59,59,0.42)]"
+                className="w-full rounded-xl border border-[var(--danger-border)] bg-[var(--danger-surface)] px-3 py-2 text-sm font-medium text-[var(--danger-text)] hover:border-[var(--danger-border-strong)]"
               >
                 Delete block
               </ConfirmSubmitButton>
@@ -335,7 +338,7 @@ export default function LessonInspectorPanel(props: {
             <input type="hidden" name="sectionId" value={props.section.id} />
             <ConfirmSubmitButton
               confirmMessage={`Delete section "${props.section.title}"? This will remove the section and all blocks inside it.`}
-              className="w-full rounded-xl border border-[rgba(194,59,59,0.28)] bg-[var(--danger-soft)] px-3 py-2 text-sm font-medium text-[var(--danger)] hover:border-[rgba(194,59,59,0.42)]"
+              className="w-full rounded-xl border border-[var(--danger-border)] bg-[var(--danger-surface)] px-3 py-2 text-sm font-medium text-[var(--danger-text)] hover:border-[var(--danger-border-strong)]"
             >
               Delete section
             </ConfirmSubmitButton>

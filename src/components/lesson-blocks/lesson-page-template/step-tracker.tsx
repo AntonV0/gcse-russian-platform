@@ -64,7 +64,7 @@ export function StepTracker({
           const className = isActive
             ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
             : isVisited
-              ? "border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
+              ? "border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text)] hover:bg-[var(--success-surface-strong)]"
               : isUnlocked
                 ? "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:bg-[var(--background-muted)]"
                 : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)] cursor-not-allowed";
@@ -109,7 +109,7 @@ export function StepTracker({
           const className = isActive
             ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
             : isVisited
-              ? "border-green-200 bg-green-50 text-green-900 hover:bg-green-100"
+              ? "border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text-strong)] hover:bg-[var(--success-surface-strong)]"
               : isUnlocked
                 ? "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]"
                 : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]";
@@ -117,7 +117,7 @@ export function StepTracker({
           const descriptionClass = isActive
             ? "text-[var(--accent-on-fill)] opacity-80"
             : isVisited
-              ? "text-green-700"
+              ? "text-[var(--success-text)]"
               : isUnlocked
                 ? "text-[var(--text-muted)]"
                 : "text-[var(--text-muted)]";
