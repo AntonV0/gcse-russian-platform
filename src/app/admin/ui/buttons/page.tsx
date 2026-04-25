@@ -10,6 +10,7 @@ const pageNavItems = [
   { id: "dev-markers", label: "Dev markers" },
   { id: "core-hierarchy", label: "Core hierarchy" },
   { id: "states", label: "States" },
+  { id: "exit-loading", label: "Exit + loading" },
   { id: "dense-patterns", label: "Dense patterns" },
   { id: "project-examples", label: "Project examples" },
   { id: "future-components", label: "Future" },
@@ -73,6 +74,9 @@ export default async function AdminUiButtonsPage() {
           <Button variant="inverse">Inverse</Button>
           <Button variant="soft">Soft</Button>
           <Button variant="accent">Accent</Button>
+          <Button variant="exit" icon="userX">
+            Exit
+          </Button>
         </div>
       </UiLabSection>
 
@@ -241,6 +245,9 @@ export default async function AdminUiButtonsPage() {
           <Button variant="danger" icon="userX">
             Destructive
           </Button>
+          <Button variant="exit" icon="userX">
+            Log out
+          </Button>
         </div>
       </UiLabSection>
 
@@ -335,6 +342,9 @@ export default async function AdminUiButtonsPage() {
               <Button variant="quiet" icon="file">
                 View notes
               </Button>
+              <Button variant="exit" icon="userX">
+                Log out
+              </Button>
             </div>
           </div>
         </div>
@@ -370,6 +380,13 @@ export default async function AdminUiButtonsPage() {
             iconOnly
             ariaLabel="Remove user"
           />
+          <Button
+            variant="exit"
+            size="sm"
+            icon="userX"
+            iconOnly
+            ariaLabel="Log out"
+          />
         </div>
       </UiLabSection>
 
@@ -400,6 +417,55 @@ export default async function AdminUiButtonsPage() {
           <Button variant="danger" disabled icon="userX">
             Delete
           </Button>
+          <Button variant="exit" disabled icon="userX">
+            Log out
+          </Button>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="exit-loading"
+        title="Exit and loading states"
+        description="Logout should be noticeable without looking like account deletion. Pending examples show the current disabled-button pattern before a dedicated LoadingButton exists."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Account exit
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="exit" icon="userX">
+                  Log out
+                </Button>
+                <Button variant="exit" size="sm" icon="userX">
+                  Log out
+                </Button>
+                <Button variant="secondary" size="sm" icon="settings">
+                  Account settings
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Pending actions
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="primary" disabled icon="pending">
+                  Saving...
+                </Button>
+                <Button variant="secondary" disabled icon="pending">
+                  Loading preview...
+                </Button>
+                <Button variant="danger" disabled icon="pending">
+                  Deleting...
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
