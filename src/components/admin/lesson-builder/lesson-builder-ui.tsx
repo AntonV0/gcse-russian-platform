@@ -4,29 +4,30 @@ import { useCallback, useState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import PanelCard from "@/components/ui/panel-card";
 import BadgePrimitive from "@/components/ui/badge";
+import AppIcon from "@/components/ui/app-icon";
 import type { RouteFields } from "@/components/admin/lesson-builder/lesson-builder-types";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import type { AppIconKey } from "@/lib/shared/icons";
 
 const LESSON_BUILDER_STORAGE_EVENT = "gcse-russian-lesson-builder-storage";
 
 export const BUILDER_FIELD_CLASS =
-  "w-full rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-3.5 py-2.5 text-sm text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04),0_8px_18px_rgba(16,32,51,0.04)] transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-[var(--text-muted)] hover:border-[var(--border-strong)] focus:border-[var(--brand-blue)] focus:outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--brand-blue)_12%,transparent)]";
+  "app-form-control app-form-input";
 
-export const BUILDER_TEXTAREA_CLASS = BUILDER_FIELD_CLASS;
+export const BUILDER_TEXTAREA_CLASS = "app-form-control app-form-textarea";
 
-export const BUILDER_SELECT_CLASS = BUILDER_FIELD_CLASS;
+export const BUILDER_SELECT_CLASS = "app-form-control app-form-select";
 
 export const BUILDER_SECONDARY_BUTTON_CLASS =
-  "inline-flex items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] transition-[background-color,border-color,box-shadow,transform] duration-200 hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] hover:shadow-[0_10px_20px_rgba(16,32,51,0.06)] disabled:cursor-not-allowed disabled:opacity-60";
+  "app-btn-base app-btn-secondary min-h-9 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60";
 
 export const BUILDER_PRIMARY_BUTTON_CLASS =
-  "app-focus-ring inline-flex items-center justify-center rounded-xl border border-transparent bg-[linear-gradient(135deg,var(--accent-fill)_0%,var(--accent-fill)_58%,var(--accent-fill-hover)_100%)] px-3.5 py-2.5 text-sm font-semibold text-[var(--accent-on-fill)] shadow-[0_12px_28px_color-mix(in_srgb,var(--brand-blue)_22%,transparent),0_3px_8px_color-mix(in_srgb,var(--brand-blue)_12%,transparent)] transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-[1px] hover:brightness-[1.05] hover:shadow-[0_16px_34px_color-mix(in_srgb,var(--brand-blue)_28%,transparent),0_5px_12px_color-mix(in_srgb,var(--brand-blue)_16%,transparent)] disabled:cursor-not-allowed disabled:opacity-60";
+  "app-btn-base app-btn-primary min-h-10 px-3.5 py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-60";
 
 export const BUILDER_DASHED_EMPTY_STATE_CLASS =
-  "rounded-2xl border border-dashed border-[var(--border)] bg-[linear-gradient(180deg,var(--background-elevated)_0%,var(--background-muted)_100%)] px-4 py-6 text-sm app-text-muted";
+  "rounded-[var(--radius-lg)] border border-dashed border-[var(--border)] bg-[var(--surface-muted-bg)] px-4 py-6 text-sm app-text-muted";
 
 export const BUILDER_MUTED_INFO_BOX_CLASS =
-  "rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-4 py-3 text-sm text-[var(--text-secondary)]";
+  "rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] px-4 py-3 text-sm text-[var(--text-secondary)]";
 
 export function BuilderHiddenFields(props: RouteFields) {
   return (
@@ -70,9 +71,11 @@ export function buildLessonBuilderRouteFormData(
 export function Badge({
   children,
   tone = "default",
+  icon,
 }: {
   children: React.ReactNode;
   tone?: "default" | "success" | "muted" | "warning" | "info";
+  icon?: AppIconKey;
 }) {
   const mappedTone =
     tone === "success"
@@ -85,7 +88,11 @@ export function Badge({
             ? "info"
             : "default";
 
-  return <BadgePrimitive tone={mappedTone}>{children}</BadgePrimitive>;
+  return (
+    <BadgePrimitive tone={mappedTone} icon={icon}>
+      {children}
+    </BadgePrimitive>
+  );
 }
 
 export function Panel({
@@ -144,13 +151,13 @@ export function DragHandle({
     <div
       className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium ${
         tone === "active"
-          ? "border-[color-mix(in_srgb,var(--brand-blue)_18%,transparent)] bg-[var(--info-soft)] text-[var(--info)]"
+          ? "border-[var(--info-border)] bg-[var(--info-surface)] text-[var(--info-text)]"
           : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]"
       }`}
       aria-hidden="true"
       title={label}
     >
-      <span className="tracking-tight">⋮⋮</span>
+      <AppIcon icon="reorder" size={13} />
       {label ? <span>{label}</span> : null}
     </div>
   );
@@ -171,8 +178,8 @@ export function ToolbarButton({
       onClick={onClick}
       className={`inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition ${
         isActive
-          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--brand-blue)_18%,transparent)]"
-          : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]"
+          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--accent)_18%,transparent)]"
+          : "border-[var(--border)] bg-[var(--surface-plain-bg)] text-[var(--text-primary)] shadow-[var(--shadow-xs)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-muted-bg)]"
       }`}
     >
       {children}
@@ -228,7 +235,7 @@ export function CompactDisclosure({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="overflow-hidden rounded-[1.25rem] border border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_1px_2px_rgba(16,32,51,0.04),0_8px_18px_rgba(16,32,51,0.04)]">
+    <div className="app-card overflow-hidden">
       {/* HEADER */}
       <button
         type="button"
@@ -245,7 +252,7 @@ export function CompactDisclosure({
 
         {/* ICON */}
         <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)]">
-          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          <AppIcon icon={isOpen ? "down" : "next"} size={16} />
         </span>
       </button>
 

@@ -23,21 +23,21 @@ function getToneConfig(tone: FeedbackBannerTone) {
       return {
         icon: "completed" as const,
         wrapperClass:
-          "border-[color-mix(in_srgb,var(--success)_24%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--success)_14%,transparent)_0%,color-mix(in_srgb,var(--success)_5%,transparent)_100%)] text-[var(--success)] shadow-[0_10px_24px_color-mix(in_srgb,var(--success)_8%,transparent)]",
+          "border-[var(--success-border)] bg-[linear-gradient(135deg,var(--success-surface-strong)_0%,var(--success-surface)_100%)] text-[var(--success-text)] shadow-[0_10px_24px_var(--success-shadow)]",
       };
 
     case "warning":
       return {
         icon: "warning" as const,
         wrapperClass:
-          "border-[color-mix(in_srgb,var(--warning)_26%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--warning)_14%,transparent)_0%,color-mix(in_srgb,var(--warning)_5%,transparent)_100%)] text-[var(--warning)] shadow-[0_10px_24px_color-mix(in_srgb,var(--warning)_8%,transparent)]",
+          "border-[var(--warning-border)] bg-[linear-gradient(135deg,var(--warning-surface-strong)_0%,var(--warning-surface)_100%)] text-[var(--warning-text)] shadow-[0_10px_24px_var(--warning-shadow)]",
       };
 
     case "danger":
       return {
         icon: "alert" as const,
         wrapperClass:
-          "border-[color-mix(in_srgb,var(--danger)_24%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_14%,transparent)_0%,color-mix(in_srgb,var(--danger)_5%,transparent)_100%)] text-[var(--danger)] shadow-[0_10px_24px_color-mix(in_srgb,var(--danger)_8%,transparent)]",
+          "border-[var(--danger-border)] bg-[linear-gradient(135deg,var(--danger-surface-strong)_0%,var(--danger-surface)_100%)] text-[var(--danger-text)] shadow-[0_10px_24px_var(--danger-shadow)]",
       };
 
     case "info":
@@ -45,7 +45,7 @@ function getToneConfig(tone: FeedbackBannerTone) {
       return {
         icon: "info" as const,
         wrapperClass:
-          "border-[color-mix(in_srgb,var(--brand-blue)_22%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_14%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_100%)] text-[var(--info)] shadow-[0_10px_24px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
+          "border-[var(--info-border)] bg-[linear-gradient(135deg,var(--info-surface-strong)_0%,var(--info-surface)_100%)] text-[var(--info-text)] shadow-[0_10px_24px_var(--info-shadow)]",
       };
   }
 }

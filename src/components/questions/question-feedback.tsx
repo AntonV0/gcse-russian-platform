@@ -1,5 +1,6 @@
 "use client";
 
+import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type QuestionFeedbackProps = {
@@ -25,16 +26,16 @@ export default function QuestionFeedback({
 
   const wrapperClass = isCorrect
     ? [
-        "border-[rgba(31,138,76,0.24)]",
-        "bg-[linear-gradient(135deg,rgba(31,138,76,0.12)_0%,rgba(31,138,76,0.04)_100%)]",
-        "text-[var(--success)]",
-        "shadow-[0_10px_24px_rgba(31,138,76,0.06)]",
+        "border-[var(--success-border)]",
+        "bg-[linear-gradient(135deg,var(--success-surface-strong)_0%,var(--success-surface)_100%)]",
+        "text-[var(--success-text)]",
+        "shadow-[0_10px_24px_var(--success-shadow)]",
       ].join(" ")
     : [
-        "border-[rgba(194,59,59,0.24)]",
-        "bg-[linear-gradient(135deg,rgba(194,59,59,0.12)_0%,rgba(194,59,59,0.04)_100%)]",
-        "text-[var(--danger)]",
-        "shadow-[0_10px_24px_rgba(194,59,59,0.06)]",
+        "border-[var(--danger-border)]",
+        "bg-[linear-gradient(135deg,var(--danger-surface-strong)_0%,var(--danger-surface)_100%)]",
+        "text-[var(--danger-text)]",
+        "shadow-[0_10px_24px_var(--danger-shadow)]",
       ].join(" ");
 
   return (
@@ -55,9 +56,10 @@ export default function QuestionFeedback({
         <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_100%)]" />
 
         <div className="relative">
-          <p className="font-semibold tracking-[-0.01em]">
-            {statusLabel ?? (isCorrect ? "Correct." : "Not quite.")}
-          </p>
+          <div className="flex items-center gap-2 font-semibold tracking-[-0.01em]">
+            <AppIcon icon={isCorrect ? "success" : "error"} size={17} />
+            <p>{statusLabel ?? (isCorrect ? "Correct." : "Not quite.")}</p>
+          </div>
 
           {!isCorrect && correctAnswerText ? (
             <p className="mt-3 text-sm leading-6">

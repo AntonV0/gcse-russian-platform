@@ -46,7 +46,7 @@ export default function PracticeSurfaceCard({
       ) : null}
 
       <Card
-        className="border-[color-mix(in_srgb,var(--warning)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--warning)_6%,transparent)_0%,var(--background-elevated)_65%,color-mix(in_srgb,var(--brand-blue)_3%,transparent)_100%)]"
+        className="border-[var(--warning-border)] bg-[var(--warning-surface)]"
         interactive
       >
         <CardBody className="space-y-4 px-5 py-5">

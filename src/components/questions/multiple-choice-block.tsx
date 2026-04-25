@@ -118,8 +118,8 @@ export default function MultipleChoiceBlock({
               className={[
                 "w-full rounded-xl border px-4 py-3 text-left transition",
                 isSelected
-                  ? "border-[var(--brand-blue)] bg-[var(--brand-blue-soft)] text-[var(--text-primary)]"
-                  : "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]",
+                  ? "border-[var(--accent-selected-border)] bg-[var(--accent-selected-bg)] text-[var(--accent-on-soft)]"
+                  : "border-[var(--border)] bg-[var(--surface-plain-bg)] hover:bg-[var(--surface-muted-bg)]",
                 resolvedHasSubmitted || isSubmitting
                   ? "cursor-default"
                   : "cursor-pointer",
@@ -141,7 +141,7 @@ export default function MultipleChoiceBlock({
           type="button"
           onClick={handleSubmit}
           disabled={!resolvedSelectedOptionId || resolvedHasSubmitted || isSubmitting}
-          className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+          className="app-btn-base app-btn-primary px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           {resolvedHasSubmitted
             ? "Submitted"

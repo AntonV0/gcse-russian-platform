@@ -46,7 +46,7 @@ export default function LockedContentCard({
       ) : null}
 
       <Card
-        className="border-[color-mix(in_srgb,var(--brand-blue)_18%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_8%,transparent)_0%,var(--background-elevated)_52%,color-mix(in_srgb,var(--brand-red)_5%,transparent)_100%)]"
+        className="app-section-tone-brand"
         interactive
       >
         <CardBody className="space-y-4 px-5 py-5">

@@ -21,33 +21,17 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 function getToneClass(tone: PageIntroPanelTone) {
   switch (tone) {
     case "brand":
-      return [
-        "border border-[var(--border-subtle)]",
-        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_8%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98.5%,transparent)_52%,color-mix(in_srgb,var(--brand-red)_5%,transparent)_100%)]",
-        "shadow-[0_16px_34px_color-mix(in_srgb,var(--text-primary)_8%,transparent)]",
-      ].join(" ");
+      return "app-intro-panel app-intro-panel-brand";
 
     case "student":
-      return [
-        "border border-[var(--border-subtle)]",
-        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_6%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98.5%,transparent)_48%,color-mix(in_srgb,var(--brand-red)_4%,transparent)_100%)]",
-        "shadow-[0_14px_30px_color-mix(in_srgb,var(--text-primary)_7%,transparent)]",
-      ].join(" ");
+      return "app-intro-panel app-intro-panel-student";
 
     case "neutral":
-      return [
-        "border border-[var(--border-subtle)]",
-        "bg-[var(--background-elevated)]",
-        "shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]",
-      ].join(" ");
+      return "app-intro-panel app-intro-panel-neutral";
 
     case "admin":
     default:
-      return [
-        "border border-[var(--border-subtle)]",
-        "bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_4%,transparent)_0%,var(--background-elevated)_100%)]",
-        "shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]",
-      ].join(" ");
+      return "app-intro-panel app-intro-panel-admin";
   }
 }
 
@@ -83,7 +67,7 @@ export default function PageIntroPanel({
 
       <section
         className={[
-          "overflow-hidden rounded-[1.5rem] px-5 py-5 md:px-6 md:py-6",
+          "overflow-hidden px-5 py-5 md:px-6 md:py-6",
           getToneClass(tone),
           contentClassName,
         ]

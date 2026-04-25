@@ -5,57 +5,38 @@
 }
 
 .app-surface {
-  background: var(--background-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
+  background: var(--surface-raised-bg);
+  border: 1px solid var(--surface-panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--surface-panel-shadow);
 }
 
 .app-surface-strong {
-  background: var(--background-elevated);
-  border: 1px solid var(--border);
+  background: var(--surface-raised-bg);
+  border: 1px solid var(--surface-panel-border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--surface-raised-shadow);
 }
 
 .app-surface-muted {
-  background: var(--background-muted);
-  border: 1px solid var(--border);
+  background: var(--surface-muted-bg);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
 }
 
 .app-surface-brand {
-  background: linear-gradient(
-    135deg,
-    var(--brand-blue-soft) 0%,
-    rgba(255, 255, 255, 0.92) 40%,
-    rgba(217, 75, 82, 0.08) 100%
-  );
-  border: 1px solid var(--border);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-brand-bg);
+  border: 1px solid var(--surface-accent-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--surface-accent-shadow);
 }
 
 [data-theme="dark"] .app-surface-brand {
-  position: relative;
-  overflow: hidden;
-  border-color: color-mix(in srgb, var(--accent) 26%, var(--dark-surface-border));
-  background:
-    radial-gradient(
-      circle at 16% 0%,
-      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 96% 100%,
-      color-mix(in srgb, var(--accent) 8%, transparent) 0%,
-      transparent 32%
-    ),
-    linear-gradient(135deg, var(--background-elevated) 0%, var(--surface-elevated) 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.24),
-    0 18px 42px rgba(0, 0, 0, 0.28),
-    0 0 0 1px color-mix(in srgb, var(--accent-glow) 45%, transparent);
+  border-color: var(--surface-accent-border);
+  background: var(--surface-brand-bg);
+  box-shadow: var(--surface-accent-shadow);
 }
 
 [data-theme="dark"] .app-surface-brand::before {
@@ -75,16 +56,16 @@
 }
 
 .app-panel {
-  background: var(--background-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-sm);
+  background: var(--surface-raised-bg);
+  border: 1px solid var(--surface-panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--surface-panel-shadow);
 }
 
 .app-card {
-  background: var(--background-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  background: var(--surface-plain-bg);
+  border: 1px solid var(--surface-panel-border);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
 }
 
@@ -122,41 +103,21 @@
 
 .app-card-shell {
   overflow: hidden;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.98) 0%,
-    var(--background-elevated) 100%
-  );
-  box-shadow:
-    0 1px 2px rgba(16, 32, 51, 0.04),
-    0 10px 24px rgba(16, 32, 51, 0.05);
+  background: var(--surface-raised-bg);
+  box-shadow: var(--surface-panel-shadow);
 }
 
 [data-theme="dark"] .app-card-shell {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface-elevated) 98%, white) 0%,
-    var(--surface-primary) 100%
-  );
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.22),
-    0 12px 28px rgba(0, 0, 0, 0.24);
+  background: var(--surface-raised-bg);
+  box-shadow: var(--surface-panel-shadow);
 }
 
 .app-card-header {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent) 3%, transparent) 0%,
-    color-mix(in srgb, var(--accent) 0%, transparent) 100%
-  );
+  background: var(--surface-header-bg);
 }
 
 [data-theme="dark"] .app-card-header {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent) 6%, transparent) 0%,
-    color-mix(in srgb, var(--accent) 0%, transparent) 100%
-  );
+  background: var(--surface-header-bg);
 }
 
 .app-card-title {
@@ -174,15 +135,16 @@
 }
 
 .app-panel-card {
-  border-radius: 1.35rem;
+  border-radius: var(--radius-lg);
 }
 
 .app-panel-card-header {
-  border-bottom-color: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-bottom-color: var(--surface-header-border);
+  background: var(--surface-header-bg);
 }
 
 [data-theme="dark"] .app-panel-card-header {
-  border-bottom-color: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-bottom-color: var(--surface-header-border);
 }
 
 .app-panel-card-body {
@@ -190,23 +152,16 @@
 }
 
 .app-section-card {
-  border-radius: 1.45rem;
+  border-radius: var(--radius-lg);
 }
 
 .app-section-card-header {
-  background: linear-gradient(
-    180deg,
-    rgba(16, 32, 51, 0.02) 0%,
-    rgba(16, 32, 51, 0) 100%
-  );
+  background: var(--surface-header-bg);
+  border-bottom-color: var(--surface-header-border);
 }
 
 [data-theme="dark"] .app-section-card-header {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.02) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: var(--surface-header-bg);
 }
 
 .app-section-card-body {
@@ -215,6 +170,64 @@
 
 .app-divider {
   border-top: 1px solid var(--border);
+}
+
+.app-intro-panel,
+.app-section-tone-default,
+.app-section-tone-admin,
+.app-section-tone-student,
+.app-panel-tone-default,
+.app-panel-tone-admin,
+.app-panel-tone-student {
+  background: var(--surface-raised-bg);
+  border-color: var(--surface-panel-border);
+  box-shadow: var(--surface-panel-shadow);
+}
+
+.app-intro-panel {
+  border: 1px solid var(--surface-panel-border);
+  border-radius: var(--radius-xl);
+}
+
+.app-intro-panel-brand,
+.app-intro-panel-student,
+.app-section-tone-brand,
+.app-panel-tone-brand {
+  background: var(--surface-brand-bg);
+  border-color: var(--surface-accent-border);
+  box-shadow: var(--surface-accent-shadow);
+}
+
+.app-intro-panel-admin,
+.app-section-tone-admin,
+.app-panel-tone-admin {
+  background: var(--surface-accent-bg);
+}
+
+.app-intro-panel-neutral,
+.app-section-tone-muted,
+.app-panel-tone-muted {
+  background: var(--surface-muted-bg);
+  border-color: var(--border-subtle);
+  box-shadow: var(--shadow-xs);
+}
+
+.app-section-header-tone-default,
+.app-section-header-tone-admin,
+.app-section-header-tone-student,
+.app-section-header-tone-brand,
+.app-panel-header-tone-default,
+.app-panel-header-tone-admin,
+.app-panel-header-tone-student,
+.app-panel-header-tone-brand {
+  background: var(--surface-header-bg);
+  border-bottom-color: var(--surface-header-border);
+}
+
+.app-section-header-tone-muted,
+.app-panel-header-tone-muted {
+  background: color-mix(in srgb, var(--text-primary) 2%, transparent);
+  border-bottom-color: var(--border-subtle);
 }
 
 .app-brand-soft {
@@ -239,11 +252,11 @@
 }
 
 .app-hover-surface:hover {
-  background: #fbfdff;
+  background: var(--surface-muted-bg);
 }
 
 .app-hover-border:hover {
-  border-color: #c5d5e8;
+  border-color: var(--border-strong);
 }
 
 .app-brand-lockup {
@@ -261,9 +274,9 @@
   border-radius: 0.8rem;
   background: linear-gradient(
     135deg,
-    var(--brand-blue-soft) 0%,
+    var(--accent-soft) 0%,
     rgba(255, 255, 255, 0.98) 65%,
-    var(--brand-red-soft) 100%
+    color-mix(in srgb, var(--accent) 7%, var(--background-elevated)) 100%
   );
   border: 1px solid var(--border);
   box-shadow: var(--shadow-xs);
@@ -319,7 +332,7 @@
 }
 
 .app-icon-button:hover .app-icon-button-icon {
-  color: var(--brand-blue);
+  color: var(--accent-ink);
 }
 
 [data-theme="dark"] .app-icon-button-icon {
@@ -344,6 +357,6 @@
 }
 
 .app-card-hover:hover .app-card-link-arrow {
-  color: var(--brand-blue);
+  color: var(--accent-ink);
   transform: translateX(2px);
 }

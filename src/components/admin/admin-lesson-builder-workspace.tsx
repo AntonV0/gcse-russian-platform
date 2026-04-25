@@ -52,7 +52,7 @@ function getSectionCounts(sections: LessonSection[]) {
 
 function CompactBuilderStat(props: { label: string; published: number; total: number }) {
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3 shadow-[0_1px_2px_rgba(16,32,51,0.04)]">
+    <div className="app-card px-4 py-3">
       <div className="text-[11px] font-semibold uppercase tracking-wide app-text-soft">
         {props.label}
       </div>
@@ -233,7 +233,7 @@ export default function AdminLessonBuilderWorkspace({
               <form
                 key={template.id}
                 action={insertLessonTemplateAction}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/45 p-4 shadow-[0_1px_2px_rgba(16,32,51,0.04)]"
+                className="app-card p-4"
               >
                 <BuilderHiddenFields {...routeFields} />
                 <input type="hidden" name="templateId" value={template.id} />
@@ -266,7 +266,7 @@ export default function AdminLessonBuilderWorkspace({
         </div>
       </CompactDisclosure>
 
-      <section className="sticky z-10 rounded-[1.4rem] border border-[var(--border)] bg-[rgba(255,255,255,0.92)] p-4 shadow-[0_10px_26px_rgba(16,32,51,0.10)] backdrop-blur-md top-[calc(var(--site-header-height)+12px)]">
+      <section className="app-surface sticky z-10 p-4 backdrop-blur-md top-[calc(var(--site-header-height)+12px)]">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0">
             <div className="text-sm font-semibold text-[var(--text-primary)]">
@@ -318,7 +318,7 @@ export default function AdminLessonBuilderWorkspace({
       <section className={`grid items-start gap-4 ${layoutClass}`}>
         {isSidebarOpen ? (
           <aside className="min-w-0 xl:sticky xl:top-[calc(var(--site-header-height)+84px)] xl:self-start">
-            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_3%,transparent)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
+            <div className="app-card p-4">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Sections</p>
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">
@@ -342,7 +342,7 @@ export default function AdminLessonBuilderWorkspace({
         ) : null}
 
         <div className="min-w-0">
-          <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(16,32,51,0.02)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)] md:p-5 xl:p-6">
+          <div className="app-surface-strong p-4 md:p-5 xl:p-6">
             <div className="mb-4">
               <p className="text-xs uppercase tracking-wide app-text-soft">Builder</p>
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">
@@ -368,7 +368,7 @@ export default function AdminLessonBuilderWorkspace({
 
         {isInspectorOpen ? (
           <aside className="min-w-0 xl:sticky xl:top-[calc(var(--site-header-height)+84px)] xl:self-start">
-            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_2%,transparent)_0%,var(--background-elevated)_100%)] p-4 shadow-[0_12px_28px_rgba(16,32,51,0.06)]">
+            <div className="app-card p-4">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Inspector</p>
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">

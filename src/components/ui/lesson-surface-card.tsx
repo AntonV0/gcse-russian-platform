@@ -46,7 +46,7 @@ export default function LessonSurfaceCard({
       ) : null}
 
       <Card
-        className="border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_0%,var(--background-elevated)_60%,color-mix(in_srgb,var(--brand-red)_3%,transparent)_100%)]"
+        className="app-section-tone-student"
         interactive
       >
         <CardBody className="space-y-4 px-5 py-5">

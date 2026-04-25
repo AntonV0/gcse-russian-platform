@@ -20,46 +20,46 @@ function getToneClass(tone: BadgeTone) {
     case "default":
       return [
         "app-badge-default",
-        "border border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)]",
-        "bg-[linear-gradient(135deg,var(--brand-blue-soft)_0%,var(--background-elevated)_100%)]",
-        "text-[var(--accent-on-soft)]",
-        "shadow-[0_1px_2px_color-mix(in_srgb,var(--brand-blue)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
+        "border border-[var(--info-border)]",
+        "bg-[var(--info-surface)]",
+        "text-[var(--info-text)]",
+        "shadow-[0_6px_14px_var(--info-shadow)]",
       ].join(" ");
 
     case "info":
       return [
         "app-badge-info",
-        "border border-[color-mix(in_srgb,var(--brand-blue)_16%,transparent)]",
-        "bg-[linear-gradient(135deg,var(--info-soft)_0%,var(--background-elevated)_100%)]",
-        "text-[var(--info)]",
-        "shadow-[0_1px_2px_color-mix(in_srgb,var(--brand-blue)_4%,transparent),0_6px_14px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
+        "border border-[var(--info-border)]",
+        "bg-[var(--info-surface)]",
+        "text-[var(--info-text)]",
+        "shadow-[0_6px_14px_var(--info-shadow)]",
       ].join(" ");
 
     case "success":
       return [
         "app-badge-success",
-        "border border-[color-mix(in_srgb,var(--success)_16%,transparent)]",
-        "bg-[linear-gradient(135deg,var(--success-soft)_0%,var(--background-elevated)_100%)]",
-        "text-[var(--success)]",
-        "shadow-[0_1px_2px_color-mix(in_srgb,var(--success)_4%,transparent),0_6px_14px_color-mix(in_srgb,var(--success)_8%,transparent)]",
+        "border border-[var(--success-border)]",
+        "bg-[var(--success-surface)]",
+        "text-[var(--success-text)]",
+        "shadow-[0_6px_14px_var(--success-shadow)]",
       ].join(" ");
 
     case "warning":
       return [
         "app-badge-warning",
-        "border border-[color-mix(in_srgb,var(--warning)_18%,transparent)]",
-        "bg-[linear-gradient(135deg,var(--warning-soft)_0%,var(--background-elevated)_100%)]",
-        "text-[var(--warning)]",
-        "shadow-[0_1px_2px_color-mix(in_srgb,var(--warning)_4%,transparent),0_6px_14px_color-mix(in_srgb,var(--warning)_8%,transparent)]",
+        "border border-[var(--warning-border)]",
+        "bg-[var(--warning-surface)]",
+        "text-[var(--warning-text)]",
+        "shadow-[0_6px_14px_var(--warning-shadow)]",
       ].join(" ");
 
     case "danger":
       return [
         "app-badge-danger",
-        "border border-[color-mix(in_srgb,var(--danger)_16%,transparent)]",
-        "bg-[linear-gradient(135deg,var(--danger-soft)_0%,var(--background-elevated)_100%)]",
-        "text-[var(--danger)]",
-        "shadow-[0_1px_2px_color-mix(in_srgb,var(--danger)_4%,transparent),0_6px_14px_color-mix(in_srgb,var(--danger)_8%,transparent)]",
+        "border border-[var(--danger-border)]",
+        "bg-[var(--danger-surface)]",
+        "text-[var(--danger-text)]",
+        "shadow-[0_6px_14px_var(--danger-shadow)]",
       ].join(" ");
 
     case "muted":

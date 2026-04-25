@@ -26,38 +26,33 @@ function getToneClasses(tone: PanelCardTone) {
   switch (tone) {
     case "brand":
       return {
-        card: "border-[color-mix(in_srgb,var(--brand-blue)_18%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_7%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_98%,transparent)_48%,color-mix(in_srgb,var(--brand-red)_4%,transparent)_100%)] shadow-[0_16px_34px_color-mix(in_srgb,var(--text-primary)_8%,transparent)]",
-        header:
-          "border-b-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_7%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]",
+        card: "app-panel-tone-brand",
+        header: "app-panel-header-tone-brand",
       };
 
     case "student":
       return {
-        card: "border-[var(--border-subtle)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_0%,color-mix(in_srgb,var(--background-elevated)_99%,transparent)_56%,color-mix(in_srgb,var(--brand-red)_3%,transparent)_100%)] shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_7%,transparent)]",
-        header:
-          "border-b-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]",
+        card: "app-panel-tone-student",
+        header: "app-panel-header-tone-student",
       };
 
     case "muted":
       return {
-        card: "border-[var(--border-subtle)] bg-[var(--background-muted)] shadow-[0_10px_22px_color-mix(in_srgb,var(--text-primary)_4%,transparent)]",
-        header:
-          "border-b-[var(--border-subtle)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--text-primary)_2%,transparent)_0%,color-mix(in_srgb,var(--text-primary)_0%,transparent)_100%)]",
+        card: "app-panel-tone-muted",
+        header: "app-panel-header-tone-muted",
       };
 
     case "admin":
       return {
-        card: "border-[var(--border-subtle)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_3%,transparent)_0%,var(--background-elevated)_100%)] shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]",
-        header:
-          "border-b-[color-mix(in_srgb,var(--brand-blue)_12%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_5%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]",
+        card: "app-panel-tone-admin",
+        header: "app-panel-header-tone-admin",
       };
 
     case "default":
     default:
       return {
-        card: "",
-        header:
-          "border-b-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_4%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]",
+        card: "app-panel-tone-default",
+        header: "app-panel-header-tone-default",
       };
   }
 }

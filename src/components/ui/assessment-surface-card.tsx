@@ -48,7 +48,7 @@ export default function AssessmentSurfaceCard({
       ) : null}
 
       <Card
-        className="border-[color-mix(in_srgb,var(--danger)_16%,transparent)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--danger)_6%,transparent)_0%,var(--background-elevated)_62%,color-mix(in_srgb,var(--brand-blue)_3%,transparent)_100%)]"
+        className="border-[var(--danger-border)] bg-[var(--danger-surface)]"
         interactive
       >
         <CardBody className="space-y-4 px-5 py-5">

@@ -23,7 +23,7 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
           : [
               "hover:brightness-[1.08]",
               "hover:saturate-[1.06]",
-              "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--accent)_34%,transparent),0_6px_14px_color-mix(in_srgb,var(--accent)_22%,transparent)]",
+              "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--accent)_30%,transparent),0_6px_14px_color-mix(in_srgb,var(--accent)_18%,transparent)]",
             ].join(" "),
       ].join(" ");
 
@@ -52,9 +52,9 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
           ? "opacity-55"
           : [
               "hover:text-[var(--accent-ink)]",
-              "hover:border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)]",
-              "hover:bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)]",
-              "hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--brand-blue)_10%,transparent)]",
+              "hover:border-[color-mix(in_srgb,var(--accent)_14%,transparent)]",
+              "hover:bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
+              "hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_10%,transparent)]",
             ].join(" "),
       ].join(" ");
 
@@ -109,17 +109,17 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
     case "soft":
       return [
         "app-btn-variant-soft",
-        "border border-[color-mix(in_srgb,var(--brand-blue)_14%,transparent)]",
+        "border border-[color-mix(in_srgb,var(--accent)_14%,transparent)]",
         "text-[var(--accent-on-soft)]",
         "bg-[linear-gradient(135deg,var(--info-soft)_0%,var(--background-elevated)_100%)]",
-        "shadow-[0_1px_2px_color-mix(in_srgb,var(--brand-blue)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
+        "shadow-[0_1px_2px_color-mix(in_srgb,var(--accent)_5%,transparent),0_8px_18px_color-mix(in_srgb,var(--accent)_8%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:text-[var(--accent-on-soft)]",
-              "hover:border-[color-mix(in_srgb,var(--brand-blue)_30%,transparent)]",
-              "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-blue)_24%,transparent)_0%,var(--background-elevated)_100%)]",
-              "hover:shadow-[0_14px_28px_color-mix(in_srgb,var(--brand-blue)_16%,transparent),0_4px_10px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]",
+              "hover:border-[color-mix(in_srgb,var(--accent)_30%,transparent)]",
+              "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_24%,transparent)_0%,var(--background-elevated)_100%)]",
+              "hover:shadow-[0_14px_28px_color-mix(in_srgb,var(--accent)_16%,transparent),0_4px_10px_color-mix(in_srgb,var(--accent)_8%,transparent)]",
             ].join(" "),
       ].join(" ");
 
