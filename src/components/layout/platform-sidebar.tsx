@@ -51,6 +51,15 @@ function itemClass(active: boolean) {
   ].join(" ");
 }
 
+function mobileItemClass(active: boolean) {
+  return [
+    "inline-flex shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 text-sm font-medium transition app-focus-ring",
+    active
+      ? "border-[var(--brand-blue)] bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)]"
+      : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
+  ].join(" ");
+}
+
 function sectionLabel(label: string) {
   return (
     <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
@@ -124,7 +133,75 @@ export default function PlatformSidebar({
   ];
 
   return (
-    <aside className="dev-marker-host relative flex h-full min-h-[calc(100vh-10rem)] flex-col rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)]">
+    <>
+    <section className="dev-marker-host relative lg:hidden">
+      <div className="rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)]">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="app-brand-mark ring-1 ring-[var(--border)]">
+            <AppIcon icon="school" size={18} className="app-brand-text" />
+          </span>
+
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
+              GCSE Russian
+            </div>
+            <div className="text-xs app-text-soft">
+              {getAccessLabel(role, accessMode)}
+            </div>
+          </div>
+        </div>
+
+        <nav className="space-y-3" aria-label="Platform navigation">
+          <div>
+            <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
+              Learn
+            </div>
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+              {[...mainItems, ...conditionalItems].map((item) => {
+                const active = isActive(activePathname, item.href);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={mobileItemClass(active)}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    <AppIcon icon={item.icon} size={16} />
+                    <span className="whitespace-nowrap">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
+              Account
+            </div>
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+              {utilityItems.map((item) => {
+                const active = isActive(activePathname, item.href);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={mobileItemClass(active)}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    <AppIcon icon={item.icon} size={16} />
+                    <span className="whitespace-nowrap">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </nav>
+      </div>
+    </section>
+
+    <aside className="dev-marker-host relative hidden h-full min-h-[calc(100vh-10rem)] flex-col rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)] lg:flex">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="PlatformSidebar"
@@ -249,5 +326,6 @@ export default function PlatformSidebar({
         </div>
       </nav>
     </aside>
+    </>
   );
 }
