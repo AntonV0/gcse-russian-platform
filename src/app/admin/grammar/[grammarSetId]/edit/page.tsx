@@ -7,6 +7,7 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -40,12 +41,7 @@ export default async function EditGrammarSetPage({ params }: EditGrammarSetPageP
             <Badge tone="info" icon="school">
               {getGrammarTierLabel(grammarSet.tier)}
             </Badge>
-            <Badge
-              tone={grammarSet.is_published ? "success" : "warning"}
-              icon={grammarSet.is_published ? "preview" : "pending"}
-            >
-              {grammarSet.is_published ? "Published" : "Draft"}
-            </Badge>
+            <PublishStatusBadge isPublished={grammarSet.is_published} />
             <Badge tone="muted" icon="list">
               {points.length} point{points.length === 1 ? "" : "s"}
             </Badge>

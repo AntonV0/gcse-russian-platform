@@ -16,7 +16,12 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function AppShell({ user, children }: AppShellProps) {
   const pathname = usePathname();
-  const isAdminRoute = pathname.startsWith("/admin");
+  const isMarketingRoute =
+    pathname.startsWith("/marketing") || pathname === "/login" || pathname === "/signup";
+
+  if (isMarketingRoute) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="dev-marker-host relative flex min-h-screen flex-col">
@@ -39,11 +44,11 @@ export default function AppShell({ user, children }: AppShellProps) {
 
       <SiteHeader user={user} />
 
-      <main className={isAdminRoute ? "flex-1" : "app-shell-main flex-1"}>
+      <main className="app-shell-main flex-1">
         {children}
       </main>
 
-      {!isAdminRoute ? <SiteFooter /> : null}
+      <SiteFooter />
     </div>
   );
 }

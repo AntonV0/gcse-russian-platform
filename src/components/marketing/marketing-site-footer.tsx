@@ -2,10 +2,10 @@ import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 
 const footerLinks = [
-  { href: "/pricing", label: "Pricing" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/marketing/pricing", label: "Pricing" },
+  { href: "/marketing/blog", label: "Blog" },
+  { href: "/marketing/about", label: "About" },
+  { href: "/marketing/faq", label: "FAQ" },
   { href: "/login", label: "Log in" },
 ];
 

@@ -26,7 +26,7 @@ export default async function PlatformLayout({
   return (
     <PageContainer>
       <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
-        <div className="lg:sticky lg:top-6">
+        <div className="lg:sticky lg:top-[calc(var(--site-header-height)+1.5rem)]">
           <PlatformSidebar role={dashboard.role} accessMode={dashboard.accessMode} />
         </div>
 

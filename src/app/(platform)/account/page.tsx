@@ -142,29 +142,29 @@ export default async function AccountPage() {
 
           <DashboardCard title="At a glance" className="h-full">
             <div className="space-y-4">
-              <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+              <div className="app-stat-tile">
+                <div className="app-stat-label">
                   Full name
                 </div>
-                <div className="font-semibold text-[var(--text-primary)]">
+                <div className="app-stat-value">
                   {profile?.full_name ?? "No name saved"}
                 </div>
               </div>
 
-              <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+              <div className="app-stat-tile">
+                <div className="app-stat-label">
                   Email
                 </div>
-                <div className="font-semibold text-[var(--text-primary)]">
+                <div className="app-stat-value">
                   {user.email ?? "Not logged in"}
                 </div>
               </div>
 
-              <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+              <div className="app-stat-tile">
+                <div className="app-stat-label">
                   Role
                 </div>
-                <div className="font-semibold text-[var(--text-primary)]">
+                <div className="app-stat-value">
                   {formatRoleLabel(dashboard.role)}
                 </div>
               </div>

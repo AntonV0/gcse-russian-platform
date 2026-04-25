@@ -1,9 +1,11 @@
 import BackNav from "@/components/ui/back-nav";
+import ActiveStatusBadge from "@/components/ui/active-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
@@ -47,15 +49,8 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
             <Badge tone="muted" icon="file">
               {course.slug}
             </Badge>
-            <Badge
-              tone={course.is_active ? "success" : "warning"}
-              icon={course.is_active ? "completed" : "pending"}
-            >
-              {course.is_active ? "Active" : "Inactive"}
-            </Badge>
-            <Badge tone={course.is_published ? "info" : "muted"} icon="preview">
-              {course.is_published ? "Published" : "Draft"}
-            </Badge>
+            <ActiveStatusBadge isActive={course.is_active} />
+            <PublishStatusBadge isPublished={course.is_published} />
           </>
         }
         actions={

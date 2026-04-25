@@ -5,6 +5,7 @@ import DetailList from "@/components/ui/detail-list";
 import EmptyState from "@/components/ui/empty-state";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
@@ -116,7 +117,7 @@ function VocabularyItemRow({
   const studyUseLabel = getItemStudyUseLabel(item);
 
   return (
-    <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4">
+    <div className="app-card app-card-hover p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
           <div className="text-lg font-semibold leading-7 text-[var(--text-primary)]">
@@ -149,7 +150,7 @@ function VocabularyItemRow({
       {item.example_ru || item.example_en || item.notes ? (
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {item.example_ru || item.example_en ? (
-            <div className="rounded-xl bg-[var(--background-muted)] px-3 py-3">
+            <div className="app-soft-panel px-3 py-3">
               {item.example_ru ? (
                 <div className="font-medium text-[var(--text-primary)]">
                   {item.example_ru}
@@ -164,7 +165,7 @@ function VocabularyItemRow({
           ) : null}
 
           {item.notes ? (
-            <div className="rounded-xl bg-[var(--background-muted)] px-3 py-3 text-sm leading-6 text-[var(--text-secondary)]">
+            <div className="app-soft-panel px-3 py-3 text-sm leading-6 text-[var(--text-secondary)]">
               {item.notes}
             </div>
           ) : null}
@@ -238,13 +239,11 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
             <Badge tone="info" icon="school">
               {getVocabularyTierLabel(vocabularySet.tier)}
             </Badge>
-            <Badge tone="muted" icon="language">
+            <Badge tone="muted" icon="vocabularySet">
               {getVocabularyListModeLabel(vocabularySet.list_mode)}
             </Badge>
             {!vocabularySet.is_published ? (
-              <Badge tone="warning" icon="edit">
-                Draft
-              </Badge>
+              <PublishStatusBadge isPublished={vocabularySet.is_published} />
             ) : null}
           </>
         }
@@ -274,7 +273,7 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
         >
           {items.length === 0 ? (
             <EmptyState
-              icon="language"
+              icon="vocabulary"
               iconTone="brand"
               title="No vocabulary items yet"
               description="This set exists, but no items have been added yet."

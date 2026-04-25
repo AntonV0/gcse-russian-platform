@@ -378,7 +378,7 @@ Use Next.js App Router route groups to separate:
 - marketing pages in `(marketing)`
 - authenticated LMS pages in `(platform)`
 
-while preserving clean URLs.
+while preserving a future path to clean URLs.
 
 ### Why
 
@@ -390,7 +390,8 @@ The product needs to support:
 
 ### Key Choices
 
-- Keep `/pricing` as a public, trial-first marketing page.
+- Keep `/` as the app-facing landing page during local/single-domain development.
+- Keep `/marketing/pricing` as the temporary public, trial-first marketing pricing page.
 - Move authenticated Stripe checkout and upgrade UI to `/account/billing`.
 - Keep platform pages inside the authenticated platform layout with `PlatformSidebar`.
 - Keep marketing pages inside a separate public layout with marketing-only header and footer.
@@ -398,4 +399,4 @@ The product needs to support:
 
 ### Result
 
-Public pages can grow independently from platform workflows, and future subdomain routing can map domains to route groups without changing visible URLs.
+Public pages can grow independently from platform workflows. When host-based routing is introduced, `www.gcserussian.com` can map marketing pages back to root-level marketing URLs and `app.gcserussian.com` can keep the app-facing root experience.

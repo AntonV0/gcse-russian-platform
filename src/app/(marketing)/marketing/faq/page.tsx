@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
+import { buildPublicMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "GCSE Russian Course FAQ",
+  description:
+    "Answers to common questions about the GCSE Russian Course Platform, trial access, pricing, checkout, and the future www/app site split.",
+  path: "/marketing/faq",
+});
 
 const faqs = [
   {

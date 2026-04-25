@@ -5,6 +5,7 @@ import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import {
@@ -592,7 +593,7 @@ function VocabularyItemCard({
               <Badge tone="info" icon="file">
                 {getItemTypeLabel(item.item_type)}
               </Badge>
-              <Badge tone="muted" icon="language">
+              <Badge tone="muted" icon="vocabularySet">
                 {getSourceTypeLabel(item.source_type)}
               </Badge>
               <Badge
@@ -952,7 +953,7 @@ export default async function VocabularySetItemsPage({
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon="language">
+              <Badge tone="info" icon="vocabulary">
                 {getVocabularyTierLabel(vocabularySet.tier)}
               </Badge>
 
@@ -960,12 +961,7 @@ export default async function VocabularySetItemsPage({
                 {getVocabularyListModeLabel(vocabularySet.list_mode)}
               </Badge>
 
-              <Badge
-                tone={vocabularySet.is_published ? "success" : "warning"}
-                icon={vocabularySet.is_published ? "success" : "info"}
-              >
-                {vocabularySet.is_published ? "Published" : "Draft"}
-              </Badge>
+              <PublishStatusBadge isPublished={vocabularySet.is_published} />
             </div>
 
             <div>

@@ -1,6 +1,7 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
 import MockExamResponseField from "@/components/mock-exams/mock-exam-response-field";
 import MockExamTimerPanel from "@/components/mock-exams/mock-exam-timer-panel";
+import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
@@ -24,9 +25,7 @@ type MockExamAttemptPageProps = {
   }>;
 };
 
-export default async function MockExamAttemptPage({
-  params,
-}: MockExamAttemptPageProps) {
+export default async function MockExamAttemptPage({ params }: MockExamAttemptPageProps) {
   const { mockExamSlug, attemptId } = await params;
   const user = await getCurrentUser();
 
@@ -64,15 +63,13 @@ export default async function MockExamAttemptPage({
         description={exam.description ?? "Original GCSE-style mock exam attempt."}
         badges={
           <>
-            <Badge tone="info" icon="file">
+            <Badge tone="info" icon="mockExam">
               {exam.paper_name}
             </Badge>
             <Badge tone="muted" icon="school">
               {getMockExamTierLabel(exam.tier)}
             </Badge>
-            <Badge tone={isDraft ? "warning" : "success"} icon="pending">
-              {attempt.status}
-            </Badge>
+            <AttemptStatusBadge status={attempt.status} />
             <Badge tone="muted">
               {attempt.time_limit_minutes_snapshot
                 ? `${attempt.time_limit_minutes_snapshot} minutes`
@@ -86,7 +83,7 @@ export default async function MockExamAttemptPage({
             <Button href={`/mock-exams/${exam.slug}`} variant="secondary" icon="back">
               Exam preview
             </Button>
-            <Button href="/mock-exams" variant="secondary" icon="exercise">
+            <Button href="/mock-exams" variant="secondary" icon="mockExam">
               Mock exams
             </Button>
           </>

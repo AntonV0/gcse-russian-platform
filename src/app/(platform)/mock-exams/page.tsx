@@ -62,20 +62,20 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
         description="Attempt original GCSE-style mock exams built for this course, separate from official Pearson past papers."
         badges={
           <>
-            <Badge tone="info" icon="exercise">
+            <Badge tone="info" icon="mockExam">
               Original practice
             </Badge>
             <Badge tone="muted" icon="school">
               Pearson-style structure
             </Badge>
-            <Badge tone="success" icon="confirm">
+            <Badge tone="success" icon="marked">
               Attempts and marking
             </Badge>
           </>
         }
         actions={
           <>
-            <Button href="/past-papers" variant="secondary" icon="file">
+            <Button href="/past-papers" variant="secondary" icon="pastPapers">
               Past papers
             </Button>
             <Button href="/dashboard" variant="secondary" icon="dashboard">
@@ -181,7 +181,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
       >
         {exams.length === 0 ? (
           <EmptyState
-            icon="exercise"
+            icon="mockExam"
             iconTone="brand"
             title="No mock exams found"
             description="Try clearing filters, or check back once mock exams have been published."
@@ -196,7 +196,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
                 subtitle={exam.description ?? "Original GCSE-style mock exam."}
                 badges={
                   <>
-                    <Badge tone="info" icon="file">
+                    <Badge tone="info" icon="mockExam">
                       Paper {exam.paper_number}
                     </Badge>
                     <Badge tone="muted" icon="school">

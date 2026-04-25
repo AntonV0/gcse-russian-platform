@@ -14,11 +14,11 @@ type MarketingSiteHeaderProps = {
 };
 
 const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/marketing", label: "Home" },
+  { href: "/marketing/pricing", label: "Pricing" },
+  { href: "/marketing/blog", label: "Blog" },
+  { href: "/marketing/about", label: "About" },
+  { href: "/marketing/faq", label: "FAQ" },
 ];
 
 function isNavActive(pathname: string, href: string) {
@@ -47,7 +47,11 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/88 shadow-[0_1px_2px_rgba(16,32,51,0.03)] backdrop-blur">
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" className="app-brand-lockup shrink-0" onClick={closeMobileMenu}>
+          <Link
+            href="/marketing"
+            className="app-brand-lockup shrink-0"
+            onClick={closeMobileMenu}
+          >
             <span className="app-brand-mark ring-1 ring-[var(--border)]">
               <AppIcon icon="school" size={18} className="app-brand-text" />
             </span>
@@ -133,7 +137,7 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
                   className={[
                     "rounded-xl px-3 py-2 text-sm transition",
                     activeMap[item.href]
-                      ? "bg-[var(--brand-blue-soft)] font-medium text-[var(--accent-on-soft)]"
+                      ? "font-medium [background:var(--accent-gradient-selected)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]"
                       : "hover:bg-[var(--background-muted)]",
                   ].join(" ")}
                   aria-current={activeMap[item.href] ? "page" : undefined}

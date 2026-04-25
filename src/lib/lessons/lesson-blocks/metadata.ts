@@ -64,23 +64,23 @@ export function getLessonBlockAccentClass(blockType: string): string {
     case "header":
     case "subheader":
     case "divider":
-      return "border-slate-200 bg-slate-50 text-slate-700";
+      return "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)]";
     case "text":
     case "note":
     case "callout":
     case "exam-tip":
-      return "border-blue-200 bg-blue-50 text-blue-700";
+      return "border-[var(--info-border)] bg-[var(--info-surface)] text-[var(--info-text)]";
     case "vocabulary":
     case "vocabulary-set":
-      return "border-emerald-200 bg-emerald-50 text-emerald-700";
+      return "border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text)]";
     case "image":
     case "audio":
-      return "border-purple-200 bg-purple-50 text-purple-700";
+      return "border-[var(--surface-accent-border)] bg-[var(--accent-selected-bg)] text-[var(--accent-on-soft)]";
     case "question-set":
     case "multiple-choice":
     case "short-answer":
-      return "border-amber-200 bg-amber-50 text-amber-700";
+      return "border-[var(--warning-border)] bg-[var(--warning-surface)] text-[var(--warning-text)]";
     default:
-      return "border-gray-200 bg-gray-50 text-gray-700";
+      return "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)]";
   }
 }

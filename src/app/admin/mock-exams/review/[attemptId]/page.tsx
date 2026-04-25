@@ -1,4 +1,5 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
+import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
@@ -82,15 +83,13 @@ export default async function AdminMockExamAttemptReviewPage({
         description={`Review attempt by ${getProfileLabel(student)}.`}
         badges={
           <>
-            <Badge tone="info" icon="file">
+            <Badge tone="info" icon="mockExam">
               {exam.paper_name}
             </Badge>
             <Badge tone="muted" icon="school">
               {getMockExamTierLabel(exam.tier)}
             </Badge>
-            <Badge tone={attempt.status === "marked" ? "success" : "warning"} icon="pending">
-              {attempt.status}
-            </Badge>
+            <AttemptStatusBadge status={attempt.status} />
             <Badge tone="muted">
               {markedResponseCount} / {questions.length} marked
             </Badge>
@@ -255,7 +254,7 @@ export default async function AdminMockExamAttemptReviewPage({
                           />
 
                           {getString(question.data.markGuidance) ? (
-                            <div className="rounded-xl border border-[color-mix(in_srgb,var(--brand-blue)_18%,transparent)] bg-[var(--info-soft)] px-4 py-3">
+                            <div className="rounded-xl border border-[var(--info-border)] bg-[var(--info-soft)] px-4 py-3">
                               <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
                                 Mark guidance
                               </div>

@@ -9,6 +9,7 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -63,12 +64,7 @@ export default async function EditGrammarPointPage({
             <Badge tone="muted" className="capitalize">
               {getGrammarCategoryLabel(grammarPoint.category_key)}
             </Badge>
-            <Badge
-              tone={grammarPoint.is_published ? "success" : "warning"}
-              icon={grammarPoint.is_published ? "preview" : "pending"}
-            >
-              {grammarPoint.is_published ? "Published" : "Draft"}
-            </Badge>
+            <PublishStatusBadge isPublished={grammarPoint.is_published} />
           </>
         }
         actions={

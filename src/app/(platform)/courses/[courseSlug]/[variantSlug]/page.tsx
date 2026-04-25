@@ -102,20 +102,20 @@ export default async function VariantPage({ params }: VariantPageProps) {
           <DashboardCard title="Path overview" className="h-full">
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">
                     Path
                   </div>
-                  <div className="font-semibold text-[var(--text-primary)]">
+                  <div className="app-stat-value">
                     {getVariantLabel(variant.slug)}
                   </div>
                 </div>
 
-                <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">
                     Modules
                   </div>
-                  <div className="font-semibold text-[var(--text-primary)]">
+                  <div className="app-stat-value">
                     {modules.length}
                   </div>
                 </div>

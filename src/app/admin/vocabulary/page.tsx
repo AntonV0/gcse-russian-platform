@@ -13,6 +13,7 @@ import {
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import TableShell from "@/components/ui/table-shell";
@@ -99,13 +100,13 @@ export default async function AdminVocabularyPage({
         description="Create, edit, publish, filter, and inspect reusable vocabulary sets for lessons and revision."
         badges={
           <>
-            <Badge tone="info" icon="language">
+            <Badge tone="info" icon="vocabulary">
               Vocabulary CMS
             </Badge>
             <Badge tone="muted" icon="list">
               {totalSets} set{totalSets === 1 ? "" : "s"}
             </Badge>
-            <Badge tone="success" icon="preview">
+            <Badge tone="success" icon="published">
               {publishedSets} published
             </Badge>
           </>
@@ -127,19 +128,19 @@ export default async function AdminVocabularyPage({
           title="Vocabulary sets"
           value={totalSets}
           description="Reusable sets matching the current filters."
-          icon="language"
+          icon="vocabulary"
         />
         <SummaryStatCard
           title="Published"
           value={publishedSets}
           description="Visible on the student vocabulary page."
-          icon="preview"
+          icon="published"
         />
         <SummaryStatCard
           title="Draft"
           value={draftSets}
           description="Hidden from students until published."
-          icon="edit"
+          icon="draft"
         />
         <SummaryStatCard
           title="Items"
@@ -218,7 +219,7 @@ export default async function AdminVocabularyPage({
         {vocabularySets.length === 0 ? (
           <div className="p-5">
             <EmptyState
-              icon="language"
+              icon="vocabulary"
               iconTone="brand"
               title="No vocabulary sets found"
               description="Create a set, or clear the current filters to see all vocabulary content."
@@ -275,7 +276,7 @@ export default async function AdminVocabularyPage({
                   </DataTableCell>
 
                   <DataTableCell>
-                    <Badge tone="muted" icon="language">
+                    <Badge tone="muted" icon="vocabularySet">
                       {getVocabularyListModeLabel(vocabularySet.list_mode)}
                     </Badge>
                   </DataTableCell>
@@ -291,12 +292,7 @@ export default async function AdminVocabularyPage({
                   </DataTableCell>
 
                   <DataTableCell>
-                    <Badge
-                      tone={vocabularySet.is_published ? "success" : "warning"}
-                      icon={vocabularySet.is_published ? "preview" : "pending"}
-                    >
-                      {vocabularySet.is_published ? "Published" : "Draft"}
-                    </Badge>
+                    <PublishStatusBadge isPublished={vocabularySet.is_published} />
                   </DataTableCell>
 
                   <DataTableCell className="capitalize">

@@ -101,20 +101,20 @@ export default async function CoursePage({ params }: CoursePageProps) {
           <DashboardCard title="Course overview" className="h-full">
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">
                     Paths
                   </div>
-                  <div className="font-semibold text-[var(--text-primary)]">
+                  <div className="app-stat-value">
                     {variants.length}
                   </div>
                 </div>
 
-                <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">
                     Journey
                   </div>
-                  <div className="font-semibold text-[var(--text-primary)]">
+                  <div className="app-stat-value">
                     Path, module, lesson
                   </div>
                 </div>

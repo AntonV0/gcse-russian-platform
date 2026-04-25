@@ -5,6 +5,7 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -80,9 +81,7 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
             </Badge>
             <Badge tone="muted">{lesson.lesson_type}</Badge>
             <Badge tone="muted">Position {lesson.position}</Badge>
-            <Badge tone={lesson.is_published ? "info" : "muted"} icon="preview">
-              {lesson.is_published ? "Published" : "Draft"}
-            </Badge>
+            <PublishStatusBadge isPublished={lesson.is_published} />
           </>
         }
         actions={

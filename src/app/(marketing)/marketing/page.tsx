@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import Card, { CardBody } from "@/components/ui/card";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import Surface from "@/components/ui/surface";
+import { buildPublicMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "GCSE Russian Online Course",
+  description:
+    "A structured online GCSE Russian course for Pearson Edexcel 1RU0 students, with guided lessons, vocabulary, grammar, exam practice, and progress tracking.",
+  path: "/marketing",
+});
 
 const highlights = [
   {
@@ -45,7 +54,7 @@ export default function MarketingHomePage() {
             <Badge tone="muted" icon="layers">
               Foundation and Higher
             </Badge>
-            <Badge tone="success" icon="completed">
+            <Badge tone="success" icon="unlocked">
               Trial-first access
             </Badge>
           </>
@@ -55,7 +64,7 @@ export default function MarketingHomePage() {
             <Button href="/signup" variant="primary" icon="create">
               Start trial
             </Button>
-            <Button href="/pricing" variant="secondary" icon="courses">
+            <Button href="/marketing/pricing" variant="secondary" icon="pricing">
               View pricing
             </Button>
           </>
@@ -65,7 +74,7 @@ export default function MarketingHomePage() {
           {pathways.map((item, index) => (
             <Card key={item}>
               <CardBody className="flex items-start gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--brand-blue-soft)] text-sm font-semibold text-[var(--accent-on-soft)]">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full [background:var(--accent-gradient-selected)] text-sm font-semibold text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
                   {index + 1}
                 </span>
                 <p className="text-sm font-medium text-[var(--text-primary)]">{item}</p>

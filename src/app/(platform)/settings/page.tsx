@@ -138,7 +138,7 @@ export default async function SettingsPage({
           <div className="space-y-3">
             <p>Your sign-in email is shown below.</p>
 
-            <div className="rounded-xl bg-[var(--background-muted)] p-3">
+            <div className="app-stat-tile">
               <div className="text-sm font-medium text-[var(--text-primary)]">
                 {user.email ?? "No email"}
               </div>

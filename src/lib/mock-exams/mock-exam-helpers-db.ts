@@ -221,7 +221,10 @@ export const mockExamQuestionDataTemplates: Record<MockExamQuestionType, string>
   ),
   short_answer: JSON.stringify({ acceptedAnswers: ["answer"] }, null, 2),
   gap_fill: JSON.stringify(
-    { text: "Complete the sentence: I live in ____.", gaps: [{ acceptedAnswers: ["London"] }] },
+    {
+      text: "Complete the sentence: I live in ____.",
+      gaps: [{ acceptedAnswers: ["London"] }],
+    },
     null,
     2
   ),
@@ -308,7 +311,11 @@ export const mockExamQuestionDataTemplates: Record<MockExamQuestionType, string>
     null,
     2
   ),
-  reading_comprehension: JSON.stringify({ text: "Reading text here", questions: [] }, null, 2),
+  reading_comprehension: JSON.stringify(
+    { text: "Reading text here", questions: [] },
+    null,
+    2
+  ),
   other: JSON.stringify({}, null, 2),
 };
 
@@ -344,6 +351,8 @@ function normalizeRecord(value: unknown): Record<string, unknown> {
   }
 
   return value as Record<string, unknown>;
+}
+
 const studentHiddenQuestionDataKeys = new Set([
   "acceptedAnswers",
   "answers",
@@ -387,8 +396,6 @@ export function getStudentSafeMockExamQuestion(
     ...question,
     data: normalizeRecord(removeStudentHiddenQuestionData(question.data)),
   };
-}
-
 }
 
 function normalizeMockExamSet(row: unknown): DbMockExamSet {
@@ -693,9 +700,7 @@ export async function getMockExamQuestionsBySectionIdsDb(sectionIds: string[]) {
   return (data ?? []).map(normalizeMockExamQuestion);
 }
 
-export async function loadMockExamByIdDb(
-  mockExamId: string
-): Promise<LoadedMockExamDb> {
+export async function loadMockExamByIdDb(mockExamId: string): Promise<LoadedMockExamDb> {
   const exam = await getMockExamSetByIdDb(mockExamId);
 
   if (!exam) {
