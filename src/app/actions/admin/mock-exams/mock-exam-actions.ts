@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth/auth";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -14,6 +15,7 @@ import {
   mockExamQuestionTypes,
   mockExamSectionTypes,
   mockExamTiers,
+  loadMockExamAttemptDb,
   type MockExamPaperName,
   type MockExamQuestionType,
   type MockExamSectionType,
@@ -74,6 +76,18 @@ function parseJsonObject(raw: string) {
   }
 
   return parsed as Record<string, unknown>;
+}
+
+function getManualMark(formData: FormData, key: string, maxMarks: number) {
+  const raw = getTrimmedString(formData, key);
+  if (!raw) return null;
+
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0 || value > maxMarks) {
+    throw new Error(`${key} must be between 0 and ${maxMarks}`);
+  }
+
+  return value;
 }
 
 function getExamPayload(formData: FormData) {
@@ -415,4 +429,128 @@ export async function deleteMockExamQuestionAction(formData: FormData) {
   }
 
   redirect(`/admin/mock-exams/${mockExamId}`);
+}
+
+export async function markMockExamAttemptAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const attemptId = getTrimmedString(formData, "attemptId");
+
+  if (!attemptId) {
+    throw new Error("Missing attempt id");
+  }
+
+  const { attempt, exam, sections, questionsBySectionId, responsesByQuestionId } =
+    await loadMockExamAttemptDb(attemptId);
+
+  if (!attempt || !exam) {
+    throw new Error("Mock exam attempt not found");
+  }
+
+  if (attempt.status === "draft") {
+    throw new Error("Draft attempts cannot be marked until submitted");
+  }
+
+  const questions = sections.flatMap((section) =>
+    questionsBySectionId[section.id] ?? []
+  );
+  const now = new Date().toISOString();
+  const responseRows = questions.map((question) => {
+    const existingResponse = responsesByQuestionId[question.id];
+    const awardedMarks = getManualMark(
+      formData,
+      `awardedMarks_${question.id}`,
+      question.marks
+    );
+    const feedback = getOptionalString(formData, `feedback_${question.id}`);
+
+    return {
+      attempt_id: attempt.id,
+      question_id: question.id,
+      response_text: existingResponse?.response_text ?? null,
+      response_payload: existingResponse?.response_payload ?? {},
+      awarded_marks: awardedMarks,
+      feedback,
+      is_flagged: getBoolean(formData, `isFlagged_${question.id}`),
+      updated_at: now,
+    };
+  });
+  const markedRows = responseRows.filter((row) => row.awarded_marks !== null);
+  const awardedMarks = markedRows.reduce(
+    (total, row) => total + Number(row.awarded_marks ?? 0),
+    0
+  );
+  const overallFeedback = getOptionalString(formData, "overallFeedback");
+  const predictedGrade = getOptionalString(formData, "predictedGrade");
+  const status = markedRows.length === questions.length ? "marked" : "submitted";
+  const supabase = await createClient();
+
+  if (responseRows.length > 0) {
+    const { error } = await supabase
+      .from("mock_exam_responses")
+      .upsert(responseRows, { onConflict: "attempt_id,question_id" });
+
+    if (error) {
+      console.error("Error marking mock exam responses:", { attemptId, error });
+      throw new Error(`Failed to mark responses: ${error.message}`);
+    }
+  }
+
+  const { error: attemptError } = await supabase
+    .from("mock_exam_attempts")
+    .update({
+      status,
+      awarded_marks: markedRows.length > 0 ? awardedMarks : null,
+      feedback: overallFeedback,
+      updated_at: now,
+    })
+    .eq("id", attempt.id);
+
+  if (attemptError) {
+    console.error("Error updating marked mock exam attempt:", {
+      attemptId,
+      error: attemptError,
+    });
+    throw new Error(`Failed to update attempt: ${attemptError.message}`);
+  }
+
+  if (markedRows.length > 0) {
+    const { error: scoreError } = await supabase
+      .from("mock_exam_scores")
+      .upsert(
+        {
+          attempt_id: attempt.id,
+          total_marks: attempt.total_marks_snapshot,
+          awarded_marks: awardedMarks,
+          score_payload: {
+            predictedGrade,
+            markedResponseCount: markedRows.length,
+            totalQuestionCount: questions.length,
+            isFullyMarked: markedRows.length === questions.length,
+          },
+          feedback: overallFeedback,
+          marked_by: user.id,
+          marked_at: now,
+          updated_at: now,
+        },
+        { onConflict: "attempt_id" }
+      );
+
+    if (scoreError) {
+      console.error("Error saving mock exam score:", { attemptId, error: scoreError });
+      throw new Error(`Failed to save score: ${scoreError.message}`);
+    }
+  }
+
+  redirect(`/admin/mock-exams/review/${attempt.id}?saved=1`);
 }

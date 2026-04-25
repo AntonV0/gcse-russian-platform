@@ -59,7 +59,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
         tone="student"
         eyebrow="Mock exams"
         title="Mock Exams"
-        description="Preview original GCSE-style mock exams built for this course. Attempt, submission, and scoring flows will be added later."
+        description="Attempt original GCSE-style mock exams built for this course, separate from official Pearson past papers."
         badges={
           <>
             <Badge tone="info" icon="exercise">
@@ -68,8 +68,8 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             <Badge tone="muted" icon="school">
               Pearson-style structure
             </Badge>
-            <Badge tone="warning" icon="pending">
-              Preview mode
+            <Badge tone="success" icon="confirm">
+              Attempts and marking
             </Badge>
           </>
         }
@@ -87,9 +87,51 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
 
       <FeedbackBanner
         tone="info"
-        title="Preview foundation"
-        description="These mock exams are separate from official Pearson past papers. They are original platform content and currently show read-only previews."
+        title="Original mock exams"
+        description="These mocks use GCSE-style structures, but the questions are platform-created content. Official Pearson past papers remain linked separately in the Past Papers library."
       />
+
+      <SectionCard
+        title="Volna School official virtual mocks"
+        description="Volna School hosts two official virtual mock exam sessions each year for Volna School students."
+        tone="brand"
+        actions={
+          <Badge tone="info" icon="school">
+            Volna School students
+          </Badge>
+        }
+      >
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+              Frequency
+            </div>
+            <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+              Two official virtual mock exam sessions are hosted during the year.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+              Conditions
+            </div>
+            <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+              Sessions are run in exam conditions so the result is useful for
+              planning and progress decisions.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+              Predicted grade
+            </div>
+            <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+              Volna School can provide a predicted grade for Volna School students
+              after reviewing mock exam performance.
+            </p>
+          </div>
+        </div>
+      </SectionCard>
 
       <SectionCard
         title="Find mock exams"

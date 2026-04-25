@@ -1,14 +1,17 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import { startMockExamAttemptAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
+import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   canDashboardAccessMockExam,
+  getCurrentUserMockExamAttemptsDb,
   getMockExamSectionTypeLabel,
   getMockExamTierLabel,
   loadMockExamBySlugDb,
@@ -22,7 +25,7 @@ type MockExamDetailPageProps = {
 
 export default async function MockExamDetailPage({ params }: MockExamDetailPageProps) {
   const { mockExamSlug } = await params;
-  const dashboard = await getDashboardInfo();
+  const [dashboard, user] = await Promise.all([getDashboardInfo(), getCurrentUser()]);
   const { exam, sections, questionsBySectionId } = await loadMockExamBySlugDb(
     mockExamSlug,
     { publishedOnly: dashboard.role !== "admin" && dashboard.role !== "teacher" }
@@ -36,14 +39,17 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
     (total, section) => total + (questionsBySectionId[section.id]?.length ?? 0),
     0
   );
+  const attempts = user
+    ? await getCurrentUserMockExamAttemptsDb(exam.id, user.id)
+    : [];
 
   return (
     <main className="space-y-4">
       <PageIntroPanel
         tone="student"
-        eyebrow="Mock exam preview"
+        eyebrow="Mock exam"
         title={exam.title}
-        description={exam.description ?? "Original GCSE-style mock exam preview."}
+        description={exam.description ?? "Original GCSE-style mock exam."}
         badges={
           <>
             <Badge tone="info" icon="file">
@@ -55,11 +61,11 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
             <Badge tone="muted" icon="pending">
               {exam.time_limit_minutes
                 ? `${exam.time_limit_minutes} minutes`
-                : "Untimed preview"}
+                : "Untimed"}
             </Badge>
             <Badge tone="muted">{exam.total_marks} marks</Badge>
-            <Badge tone="warning" icon="preview">
-              Read-only
+            <Badge tone="success" icon="exercise">
+              Attemptable
             </Badge>
           </>
         }
@@ -82,10 +88,57 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
       />
 
       <FeedbackBanner
-        tone="warning"
-        title="Attempt flow coming later"
-        description="This page previews the structure and questions only. Timed attempts, submissions, scoring, and teacher review are future work."
+        tone="info"
+        title="Exam conditions"
+        description="When you start an attempt, answer independently and submit before the time limit if one is set. Objective questions may be auto-marked; longer writing, speaking, and translation tasks need teacher review."
       />
+
+      {attempts.length > 0 ? (
+        <SectionCard
+          title="Your attempts"
+          description="Continue a draft or review a submitted result."
+          tone="student"
+          density="compact"
+        >
+          <div className="grid gap-3">
+            {attempts.slice(0, 5).map((attempt) => (
+              <CardListItem
+                key={attempt.id}
+                href={`/mock-exams/${exam.slug}/attempts/${attempt.id}`}
+                title={`Attempt from ${new Date(attempt.started_at).toLocaleString("en-GB")}`}
+                subtitle={
+                  attempt.submitted_at
+                    ? `Submitted ${new Date(attempt.submitted_at).toLocaleString("en-GB")}`
+                    : "Draft attempt"
+                }
+                badges={
+                  <>
+                    <Badge
+                      tone={attempt.status === "marked" ? "success" : "warning"}
+                      icon="pending"
+                    >
+                      {attempt.status}
+                    </Badge>
+                    <Badge tone="muted">
+                      {attempt.awarded_marks ?? "-"} / {attempt.total_marks_snapshot}
+                    </Badge>
+                  </>
+                }
+                actions={
+                  <Button
+                    href={`/mock-exams/${exam.slug}/attempts/${attempt.id}`}
+                    variant="quiet"
+                    size="sm"
+                    icon="next"
+                    iconOnly
+                    ariaLabel="Open attempt"
+                  />
+                }
+              />
+            ))}
+          </div>
+        </SectionCard>
+      ) : null}
 
       {sections.length === 0 ? (
         <SectionCard

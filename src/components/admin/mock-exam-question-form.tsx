@@ -44,6 +44,7 @@ type QuestionDataState = {
   bulletsText: string;
   wordBankText: string;
   fieldsText: string;
+  markGuidance: string;
   minWordCount: string;
   recommendedWordCount: string;
   expectedSentences: string;
@@ -175,6 +176,7 @@ function stateFromData(data: Record<string, unknown>): QuestionDataState {
     bulletsText: linesToString(getStringArray(data.bullets)),
     wordBankText: linesToString(getStringArray(data.wordBank)),
     fieldsText: fieldsToText(getRecordArray(data.fields)),
+    markGuidance: getString(data.markGuidance),
     minWordCount:
       typeof data.minWordCount === "number" ? String(data.minWordCount) : "",
     recommendedWordCount:
@@ -341,7 +343,16 @@ export default function MockExamQuestionForm({
     )
   );
   const generatedData = useMemo(
-    () => JSON.stringify(buildQuestionData(questionType, state), null, 2),
+    () => {
+      const data = buildQuestionData(questionType, state) as Record<string, unknown>;
+      const markGuidance = state.markGuidance.trim();
+
+      if (markGuidance) {
+        data.markGuidance = markGuidance;
+      }
+
+      return JSON.stringify(data, null, 2);
+    },
     [questionType, state]
   );
 
@@ -642,6 +653,15 @@ export default function MockExamQuestionForm({
           <TextLinesHint>Use one line per item: prompt|answer1;answer2</TextLinesHint>
         </FormField>
       ) : null}
+
+      <FormField label="Mark guidance">
+        <Textarea
+          rows={4}
+          value={state.markGuidance}
+          onChange={(event) => updateField("markGuidance", event.target.value)}
+          placeholder="Original mark scheme notes or teacher rubric guidance for this platform mock question."
+        />
+      </FormField>
 
       <details className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
         <summary className="cursor-pointer text-sm font-semibold text-[var(--text-primary)]">
