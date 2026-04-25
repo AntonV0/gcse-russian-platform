@@ -121,7 +121,7 @@ export async function getLessonSectionProgressSummary(
 export async function markLessonSectionVisited(lessonId: string, sectionId: string) {
   const user = await getCurrentUser();
 
-  if (!user) return;
+  if (!user) return false;
 
   const supabase = await createClient();
 
@@ -135,7 +135,7 @@ export async function markLessonSectionVisited(lessonId: string, sectionId: stri
 
   if (existingError) {
     console.error("Error checking lesson section visit:", existingError);
-    return;
+    return false;
   }
 
   const now = new Date().toISOString();
@@ -154,7 +154,7 @@ export async function markLessonSectionVisited(lessonId: string, sectionId: stri
 
     if (insertError) {
       console.error("Error inserting lesson section visit:", insertError);
-      return;
+      return false;
     }
 
     await syncFoundationSectionProgressToHigherSameLesson({
@@ -163,7 +163,7 @@ export async function markLessonSectionVisited(lessonId: string, sectionId: stri
       sectionId,
     });
 
-    return;
+    return true;
   }
 
   const { error: updateError } = await supabase
@@ -177,7 +177,7 @@ export async function markLessonSectionVisited(lessonId: string, sectionId: stri
 
   if (updateError) {
     console.error("Error updating lesson section visit:", updateError);
-    return;
+    return false;
   }
 
   await syncFoundationSectionProgressToHigherSameLesson({
@@ -185,4 +185,6 @@ export async function markLessonSectionVisited(lessonId: string, sectionId: stri
     lessonId,
     sectionId,
   });
+
+  return true;
 }
