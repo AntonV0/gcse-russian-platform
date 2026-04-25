@@ -5,7 +5,13 @@ import Card, { CardBody } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
 
-type SummaryStatCardTone = "default" | "brand" | "success" | "warning" | "danger";
+type SummaryStatCardTone =
+  | "default"
+  | "brand"
+  | "info"
+  | "success"
+  | "warning"
+  | "danger";
 type SummaryStatCardLayout = "default" | "inline";
 
 type SummaryStatCardProps = {
@@ -29,6 +35,13 @@ function getToneClasses(tone: SummaryStatCardTone) {
         card: "app-section-tone-brand",
         iconWrap: "bg-[var(--info-surface)] text-[var(--info-text)]",
         value: "text-[var(--accent-ink)]",
+      };
+
+    case "info":
+      return {
+        card: "border-[var(--info-border)] bg-[var(--info-surface)]",
+        iconWrap: "bg-[var(--info-surface-strong)] text-[var(--info-text)]",
+        value: "text-[var(--info-text)]",
       };
 
     case "success":
