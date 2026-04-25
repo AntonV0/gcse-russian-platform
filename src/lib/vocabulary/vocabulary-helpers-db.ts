@@ -62,6 +62,8 @@ export type DbVocabularyAspect =
 
 export type DbVocabularyUsageVariant = "foundation" | "higher" | "volna";
 
+export type DbVocabularyCoverageVariant = DbVocabularyUsageVariant;
+
 export type DbVocabularyUsageType =
   | "lesson_block"
   | "lesson_page"
@@ -166,6 +168,10 @@ export type DbVocabularyItemCoverage = {
   used_in_higher: boolean;
   used_in_volna: boolean;
   used_in_custom_list: boolean;
+  foundation_occurrences: number;
+  higher_occurrences: number;
+  volna_occurrences: number;
+  custom_list_occurrences: number;
 };
 
 export type DbLessonVocabularySetUsage = {
@@ -315,6 +321,58 @@ export function getVocabularyTopicLabel(value: string | null) {
   return value.replaceAll("_", " ");
 }
 
+export function getRequiredVocabularyCoverageVariants(tier: DbVocabularyTier) {
+  if (tier === "foundation") {
+    return ["foundation"] as const;
+  }
+
+  if (tier === "higher") {
+    return ["higher", "volna"] as const;
+  }
+
+  return ["foundation", "higher", "volna"] as const;
+}
+
+export function getVocabularyCoverageVariantLabel(
+  variant: DbVocabularyCoverageVariant
+) {
+  switch (variant) {
+    case "foundation":
+      return "Foundation";
+    case "higher":
+      return "Higher";
+    case "volna":
+      return "Volna";
+    default:
+      return variant;
+  }
+}
+
+export function getVocabularyCoverageVariantCount(
+  coverage: DbVocabularyItemCoverage | null,
+  variant: DbVocabularyCoverageVariant
+) {
+  if (!coverage) return 0;
+
+  switch (variant) {
+    case "foundation":
+      return coverage.foundation_occurrences;
+    case "higher":
+      return coverage.higher_occurrences;
+    case "volna":
+      return coverage.volna_occurrences;
+    default:
+      return 0;
+  }
+}
+
+export function getVocabularyCoverageVariantUsed(
+  coverage: DbVocabularyItemCoverage | null,
+  variant: DbVocabularyCoverageVariant
+) {
+  return getVocabularyCoverageVariantCount(coverage, variant) > 0;
+}
+
 export function buildVocabularyUsageStats(
   usages: Pick<DbLessonVocabularySetUsage, "variant">[]
 ): DbVocabularySetUsageStats {
@@ -424,6 +482,10 @@ function normalizeVocabularyItemCoverage(row: unknown): DbVocabularyItemCoverage
     used_in_higher: Boolean(record.used_in_higher),
     used_in_volna: Boolean(record.used_in_volna),
     used_in_custom_list: Boolean(record.used_in_custom_list),
+    foundation_occurrences: Number(record.foundation_occurrences ?? 0),
+    higher_occurrences: Number(record.higher_occurrences ?? 0),
+    volna_occurrences: Number(record.volna_occurrences ?? 0),
+    custom_list_occurrences: Number(record.custom_list_occurrences ?? 0),
   };
 }
 

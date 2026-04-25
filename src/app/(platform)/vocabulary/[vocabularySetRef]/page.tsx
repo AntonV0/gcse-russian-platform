@@ -8,7 +8,12 @@ import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
+  getRequiredVocabularyCoverageVariants,
+  getVocabularyCoverageVariantCount,
+  getVocabularyCoverageVariantLabel,
+  getVocabularyCoverageVariantUsed,
   getVocabularyDisplayVariantLabel,
+  getVocabularyItemCoverageByItemIdsDb,
   getVocabularyListModeLabel,
   getVocabularyProductiveReceptiveLabel,
   getVocabularySetTypeLabel,
@@ -17,6 +22,7 @@ import {
   getVocabularyTopicLabel,
   groupVocabularyItemsBySource,
   loadVocabularySetByRefDb,
+  type DbVocabularyItemCoverage,
   type DbVocabularyItem,
 } from "@/lib/vocabulary/vocabulary-helpers-db";
 
@@ -30,7 +36,58 @@ function getItemBadgeTone(item: DbVocabularyItem) {
   return "muted";
 }
 
-function VocabularyItemRow({ item }: { item: DbVocabularyItem }) {
+function CoverageBadge({
+  label,
+  isUsed,
+  count,
+}: {
+  label: string;
+  isUsed: boolean;
+  count?: number;
+}) {
+  return (
+    <Badge tone={isUsed ? "success" : "danger"} icon={isUsed ? "success" : "cancel"}>
+      {count && count > 0 ? `${label} ${count}` : label}
+    </Badge>
+  );
+}
+
+function VocabularyItemCoverageBadges({
+  item,
+  coverage,
+}: {
+  item: DbVocabularyItem;
+  coverage: DbVocabularyItemCoverage | null;
+}) {
+  const lessonCoverageVariants = getRequiredVocabularyCoverageVariants(item.tier);
+
+  return (
+    <div className="flex flex-wrap gap-2 md:justify-end">
+      {lessonCoverageVariants.map((variant) => (
+        <CoverageBadge
+          key={variant}
+          label={getVocabularyCoverageVariantLabel(variant)}
+          isUsed={getVocabularyCoverageVariantUsed(coverage, variant)}
+          count={getVocabularyCoverageVariantCount(coverage, variant)}
+        />
+      ))}
+
+      <CoverageBadge
+        label="Custom list"
+        isUsed={Boolean(coverage?.used_in_custom_list)}
+        count={coverage?.custom_list_occurrences ?? 0}
+      />
+    </div>
+  );
+}
+
+function VocabularyItemRow({
+  item,
+  coverage,
+}: {
+  item: DbVocabularyItem;
+  coverage: DbVocabularyItemCoverage | null;
+}) {
   return (
     <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -48,10 +105,16 @@ function VocabularyItemRow({ item }: { item: DbVocabularyItem }) {
           ) : null}
         </div>
 
-        <div className="flex shrink-0 flex-wrap gap-2 md:justify-end">
-          <Badge tone={getItemBadgeTone(item)}>{item.source_type.replaceAll("_", " ")}</Badge>
-          <Badge tone="muted">{item.part_of_speech.replaceAll("_", " ")}</Badge>
-          <Badge tone="muted">{getVocabularyTierLabel(item.tier)}</Badge>
+        <div className="flex shrink-0 flex-col gap-2 md:items-end">
+          <div className="flex flex-wrap gap-2 md:justify-end">
+            <Badge tone={getItemBadgeTone(item)}>
+              {item.source_type.replaceAll("_", " ")}
+            </Badge>
+            <Badge tone="muted">{item.part_of_speech.replaceAll("_", " ")}</Badge>
+            <Badge tone="muted">{getVocabularyTierLabel(item.tier)}</Badge>
+          </div>
+
+          <VocabularyItemCoverageBadges item={item} coverage={coverage} />
         </div>
       </div>
 
@@ -86,9 +149,11 @@ function VocabularyItemRow({ item }: { item: DbVocabularyItem }) {
 function VocabularyItemSection({
   title,
   items,
+  itemCoverageById,
 }: {
   title: string;
   items: DbVocabularyItem[];
+  itemCoverageById: Map<string, DbVocabularyItemCoverage>;
 }) {
   if (items.length === 0) return null;
 
@@ -103,7 +168,11 @@ function VocabularyItemSection({
 
       <div className="grid gap-3">
         {items.map((item) => (
-          <VocabularyItemRow key={`${item.vocabulary_list_id ?? item.vocabulary_set_id}-${item.id}`} item={item} />
+          <VocabularyItemRow
+            key={`${item.vocabulary_list_id ?? item.vocabulary_set_id}-${item.id}`}
+            item={item}
+            coverage={itemCoverageById.get(item.id) ?? null}
+          />
         ))}
       </div>
     </div>
@@ -121,6 +190,9 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
   }
 
   const groupedItems = groupVocabularyItemsBySource(items);
+  const itemCoverageById = await getVocabularyItemCoverageByItemIdsDb(
+    items.map((item) => item.id)
+  );
 
   return (
     <main className="space-y-4">
@@ -180,9 +252,18 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
               <VocabularyItemSection
                 title="Specification vocabulary"
                 items={groupedItems.specRequired}
+                itemCoverageById={itemCoverageById}
               />
-              <VocabularyItemSection title="Extended vocabulary" items={groupedItems.extended} />
-              <VocabularyItemSection title="Custom vocabulary" items={groupedItems.custom} />
+              <VocabularyItemSection
+                title="Extended vocabulary"
+                items={groupedItems.extended}
+                itemCoverageById={itemCoverageById}
+              />
+              <VocabularyItemSection
+                title="Custom vocabulary"
+                items={groupedItems.custom}
+                itemCoverageById={itemCoverageById}
+              />
             </div>
           )}
         </SectionCard>
