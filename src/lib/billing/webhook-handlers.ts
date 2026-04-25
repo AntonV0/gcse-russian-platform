@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import {
   PRODUCT_CODES,
   getActivePriceByIdDb,
+  getActivePriceByStripePriceIdDb,
   getActiveProductByCodeDb,
   getProductByIdDb,
   getUpgradeFlowForPath,
@@ -11,10 +12,13 @@ import {
 } from "@/lib/billing/catalog";
 import {
   deactivateActiveUserProductGrantsDb,
+  deactivateActiveUserProductGrantsBySourceDb,
   grantProductAccessDb,
 } from "@/lib/billing/grants";
 import {
   getActiveUserSubscriptionsDb,
+  getSubscriptionByProviderSubscriptionIdDb,
+  isSubscriptionActiveStatus,
   upsertSubscriptionDb,
   type DbSubscription,
 } from "@/lib/billing/subscriptions";
@@ -38,6 +42,51 @@ function getMetadataValue(
   return metadata[snakeKey] ?? metadata[camelKey] ?? null;
 }
 
+function getSubscriptionCustomerId(subscription: Stripe.Subscription): string | null {
+  return typeof subscription.customer === "string" ? subscription.customer : null;
+}
+
+function getSubscriptionPeriod(subscription: Stripe.Subscription): {
+  startsAt: string | null;
+  endsAt: string | null;
+} {
+  const subscriptionItem = subscription.items.data[0] ?? null;
+  const subscriptionPeriod = subscription as Stripe.Subscription & {
+    current_period_start?: number | null;
+    current_period_end?: number | null;
+  };
+
+  return {
+    startsAt: fromUnixTimestamp(
+      subscriptionItem?.current_period_start ??
+        subscriptionPeriod.current_period_start
+    ),
+    endsAt: fromUnixTimestamp(
+      subscriptionItem?.current_period_end ?? subscriptionPeriod.current_period_end
+    ),
+  };
+}
+
+function assertActiveSubscriptionHasEndDate(
+  subscription: Stripe.Subscription,
+  endsAt: string | null
+): void {
+  if (!isSubscriptionActiveStatus(subscription.status)) {
+    return;
+  }
+
+  if (endsAt) {
+    return;
+  }
+
+  console.error("Active Stripe subscription is missing a period end:", {
+    subscriptionId: subscription.id,
+    status: subscription.status,
+  });
+
+  throw new Error("Active subscription missing period end");
+}
+
 async function syncSubscriptionRecordAndGrant(params: {
   userId: string;
   productId: string;
@@ -47,6 +96,8 @@ async function syncSubscriptionRecordAndGrant(params: {
   endsAt: string | null;
   customerId: string | null;
 }): Promise<void> {
+  assertActiveSubscriptionHasEndDate(params.subscription, params.endsAt);
+
   await upsertSubscriptionDb({
     userId: params.userId,
     productId: params.productId,
@@ -70,6 +121,106 @@ async function syncSubscriptionRecordAndGrant(params: {
     startsAt: params.startsAt,
     endsAt: params.endsAt,
   });
+}
+
+async function resolveStripeSubscriptionContext(
+  subscription: Stripe.Subscription
+): Promise<{
+  userId: string;
+  productId: string;
+  priceId: string;
+  customerId: string | null;
+}> {
+  const existingSubscription = await getSubscriptionByProviderSubscriptionIdDb(
+    subscription.id
+  );
+  const subscriptionItem = subscription.items.data[0] ?? null;
+  const stripePriceId = subscriptionItem?.price?.id ?? null;
+  const activePrice = stripePriceId
+    ? await getActivePriceByStripePriceIdDb(stripePriceId)
+    : null;
+
+  const userId =
+    getMetadataValue(subscription.metadata, "user_id", "userId") ??
+    existingSubscription?.user_id ??
+    null;
+  const productId =
+    activePrice?.product_id ??
+    getMetadataValue(subscription.metadata, "product_id", "productId") ??
+    existingSubscription?.product_id ??
+    null;
+  const priceId =
+    activePrice?.id ??
+    getMetadataValue(subscription.metadata, "price_id", "priceId") ??
+    existingSubscription?.price_id ??
+    null;
+  const customerId =
+    getSubscriptionCustomerId(subscription) ??
+    existingSubscription?.provider_customer_id ??
+    null;
+
+  if (!userId || !productId || !priceId) {
+    console.error("Stripe subscription webhook could not resolve access context:", {
+      subscriptionId: subscription.id,
+      stripePriceId,
+      metadata: subscription.metadata,
+      existingSubscriptionId: existingSubscription?.id ?? null,
+    });
+
+    throw new Error("Missing subscription access context");
+  }
+
+  return {
+    userId,
+    productId,
+    priceId,
+    customerId,
+  };
+}
+
+export async function handleStripeSubscriptionLifecycle(
+  subscription: Stripe.Subscription
+): Promise<void> {
+  const context = await resolveStripeSubscriptionContext(subscription);
+  const { startsAt, endsAt } = getSubscriptionPeriod(subscription);
+  assertActiveSubscriptionHasEndDate(subscription, endsAt);
+
+  await upsertSubscriptionDb({
+    userId: context.userId,
+    productId: context.productId,
+    priceId: context.priceId,
+    provider: "stripe",
+    providerCustomerId: context.customerId,
+    providerSubscriptionId: subscription.id,
+    status: subscription.status,
+    currentPeriodStart: startsAt,
+    currentPeriodEnd: endsAt,
+    cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    canceledAt: fromUnixTimestamp(subscription.canceled_at),
+  });
+
+  if (isSubscriptionActiveStatus(subscription.status)) {
+    await grantProductAccessDb({
+      userId: context.userId,
+      productId: context.productId,
+      priceId: context.priceId,
+      accessMode: "full",
+      source: "stripe",
+      startsAt,
+      endsAt,
+    });
+    return;
+  }
+
+  const deactivateResult = await deactivateActiveUserProductGrantsBySourceDb(
+    context.userId,
+    context.productId,
+    "stripe"
+  );
+
+  if (!deactivateResult.success) {
+    throw new Error("Failed to deactivate inactive Stripe subscription grants");
+  }
 }
 
 async function deactivateSourceGrantIfDifferent(params: {
@@ -325,9 +476,7 @@ async function handleStandardSubscriptionCheckout(params: {
     params.session.subscription as string
   );
 
-  const subscriptionItem = subscription.items.data[0] ?? null;
-  const startsAt = fromUnixTimestamp(subscriptionItem?.current_period_start);
-  const endsAt = fromUnixTimestamp(subscriptionItem?.current_period_end);
+  const { startsAt, endsAt } = getSubscriptionPeriod(subscription);
 
   await syncSubscriptionRecordAndGrant({
     userId: params.userId,

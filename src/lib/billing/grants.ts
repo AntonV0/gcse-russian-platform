@@ -123,6 +123,57 @@ export async function deactivateActiveUserProductGrantsDb(
   return { success: true, deactivatedCount: activeIds.length };
 }
 
+export async function deactivateActiveUserProductGrantsBySourceDb(
+  userId: string,
+  productId: string,
+  source: GrantSource
+): Promise<{ success: boolean; deactivatedCount: number }> {
+  const supabase = createAdminClient();
+
+  const { data: activeGrants, error: fetchError } = await supabase
+    .from("user_access_grants")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("product_id", productId)
+    .eq("source", source)
+    .eq("is_active", true);
+
+  if (fetchError) {
+    console.error("Error fetching active user product grants by source:", {
+      userId,
+      productId,
+      source,
+      error: fetchError,
+    });
+    return { success: false, deactivatedCount: 0 };
+  }
+
+  const activeIds = (activeGrants ?? []).map((grant) => grant.id as string);
+
+  if (activeIds.length === 0) {
+    return { success: true, deactivatedCount: 0 };
+  }
+
+  const { error } = await supabase
+    .from("user_access_grants")
+    .update({ is_active: false })
+    .in("id", activeIds);
+
+  if (error) {
+    console.error("Error deactivating active user product grants by source:", {
+      userId,
+      productId,
+      source,
+      activeIds,
+      error,
+    });
+
+    return { success: false, deactivatedCount: 0 };
+  }
+
+  return { success: true, deactivatedCount: activeIds.length };
+}
+
 export async function grantProductAccessDb(
   input: GrantProductAccessInput
 ): Promise<DbUserAccessGrant | null> {
