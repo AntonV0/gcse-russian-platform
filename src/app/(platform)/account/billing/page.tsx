@@ -51,6 +51,50 @@ export default async function BillingPage() {
             </div>
           </div>
 
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="app-card flex items-start gap-3 px-4 py-3">
+              <span className="mt-0.5 rounded-full bg-[var(--surface-secondary)] p-2 text-[var(--accent-ink)]">
+                <AppIcon icon="lock" size={16} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">
+                  Secure checkout
+                </p>
+                <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)]">
+                  Payments are handled through the account checkout flow.
+                </p>
+              </div>
+            </div>
+
+            <div className="app-card flex items-start gap-3 px-4 py-3">
+              <span className="mt-0.5 rounded-full bg-[var(--surface-secondary)] p-2 text-[var(--accent-ink)]">
+                <AppIcon icon="success" size={16} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">
+                  Access updates instantly
+                </p>
+                <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)]">
+                  Course access reflects your active plan after checkout.
+                </p>
+              </div>
+            </div>
+
+            <div className="app-card flex items-start gap-3 px-4 py-3">
+              <span className="mt-0.5 rounded-full bg-[var(--surface-secondary)] p-2 text-[var(--accent-ink)]">
+                <AppIcon icon="refresh" size={16} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">
+                  Upgrade credit applied
+                </p>
+                <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)]">
+                  Eligible upgrades show the adjusted fee before payment.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="grid gap-4 lg:grid-cols-2">
             <PlanCard
               title="Foundation"
@@ -134,10 +178,10 @@ export default async function BillingPage() {
 
               <div className="flex flex-wrap gap-3 md:shrink-0 md:justify-end">
                 <Link
-                  href="/pricing"
+                  href="/marketing/pricing"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent-ink)] hover:underline"
                 >
                   Open public pricing
                   <AppIcon icon="externalLink" size={14} />
@@ -145,7 +189,7 @@ export default async function BillingPage() {
 
                 <Link
                   href="/account"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent-ink)] hover:underline"
                 >
                   <AppIcon icon="back" size={14} />
                   Back to account
