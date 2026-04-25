@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import AppIcon from "@/components/ui/app-icon";
 import type { LessonSection } from "@/components/admin/lesson-builder/lesson-builder-types";
 
 export const VARIANT_VISIBILITY_OPTIONS = [
@@ -98,7 +98,7 @@ export function SidebarDisclosure(props: {
         </div>
 
         <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)]">
-          {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          <AppIcon icon={isOpen ? "down" : "next"} size={14} />
         </span>
       </button>
 

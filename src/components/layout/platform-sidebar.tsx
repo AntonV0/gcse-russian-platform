@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import LogoutButton from "@/components/layout/logout-button";
-import { appIcons } from "@/lib/shared/icons";
+import type { AppIconKey } from "@/lib/shared/icons";
 import {
   getAccountPath,
   getAssignmentsPath,
@@ -30,7 +30,7 @@ type PlatformSidebarProps = {
 type NavItem = {
   label: string;
   href: string;
-  icon: keyof typeof appIcons;
+  icon: AppIconKey;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -86,10 +86,10 @@ export default function PlatformSidebar({
   const mainItems: NavItem[] = [
     { label: "Dashboard", href: getDashboardPath(), icon: "dashboard" },
     { label: "Courses", href: getCoursesPath(), icon: "courses" },
-    { label: "Vocabulary", href: getVocabularyPath(), icon: "language" },
-    { label: "Grammar", href: getGrammarPath(), icon: "lessonContent" },
-    { label: "Past Papers", href: getPastPapersPath(), icon: "file" },
-    { label: "Mock Exams", href: getMockExamsPath(), icon: "exercise" },
+    { label: "Vocabulary", href: getVocabularyPath(), icon: "vocabulary" },
+    { label: "Grammar", href: getGrammarPath(), icon: "grammar" },
+    { label: "Past Papers", href: getPastPapersPath(), icon: "pastPapers" },
+    { label: "Mock Exams", href: getMockExamsPath(), icon: "mockExam" },
   ];
 
   const conditionalItems: NavItem[] = [];
@@ -118,8 +118,8 @@ export default function PlatformSidebar({
 
   const utilityItems: NavItem[] = [
     { label: "Overview", href: getAccountPath(), icon: "dashboard" },
-    { label: "Billing", href: getBillingPath(), icon: "courses" },
-    { label: "Profile", href: getProfilePath(), icon: "user" },
+    { label: "Billing", href: getBillingPath(), icon: "billing" },
+    { label: "Profile", href: getProfilePath(), icon: "student" },
     { label: "Settings", href: getSettingsPath(), icon: "settings" },
   ];
 
@@ -174,7 +174,7 @@ export default function PlatformSidebar({
                 aria-current={active ? "page" : undefined}
               >
                 <AppIcon
-                  icon={appIcons[item.icon]}
+                  icon={item.icon}
                   size={18}
                   className={
                     active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
@@ -201,7 +201,7 @@ export default function PlatformSidebar({
                   aria-current={active ? "page" : undefined}
                 >
                   <AppIcon
-                    icon={appIcons[item.icon]}
+                    icon={item.icon}
                     size={18}
                     className={
                       active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
@@ -231,7 +231,7 @@ export default function PlatformSidebar({
                   aria-current={active ? "page" : undefined}
                 >
                   <AppIcon
-                    icon={appIcons[item.icon]}
+                    icon={item.icon}
                     size={18}
                     className={
                       active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"

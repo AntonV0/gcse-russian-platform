@@ -30,7 +30,7 @@ function getStatusConfig(status: Status) {
       return {
         label: "Returned",
         tone: "info" as const,
-        icon: "next" as const,
+        icon: "back" as const,
       };
 
     case "not_started":

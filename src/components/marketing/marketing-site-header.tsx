@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import ThemeToggle from "@/components/ui/theme-toggle";
-import { appIcons } from "@/lib/shared/icons";
 
 type MarketingSiteHeaderProps = {
   user: {
@@ -111,7 +110,7 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
               onClick={() => setIsMobileMenuOpen((current) => !current)}
             >
               <AppIcon
-                icon={isMobileMenuOpen ? appIcons.cancel : appIcons.menu}
+                icon={isMobileMenuOpen ? "cancel" : "menu"}
                 size={18}
                 className="app-icon-button-icon"
               />

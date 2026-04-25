@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import type { AppIconKey } from "@/lib/shared/icons";
 import { uiLabPages } from "@/lib/ui/ui-lab";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -24,22 +25,22 @@ function getSectionLabelClass() {
   return "px-3 text-[11px] font-semibold uppercase tracking-[0.14em] app-text-soft";
 }
 
-function getUiLabItemIcon(label: string) {
+function getUiLabItemIcon(label: string): AppIconKey {
   const normalized = label.toLowerCase();
 
   if (normalized.includes("overview")) return "dashboard";
-  if (normalized.includes("admin")) return "settings";
+  if (normalized.includes("admin")) return "admin";
   if (normalized.includes("button")) return "pencil";
   if (normalized.includes("component")) return "component";
   if (normalized.includes("feedback")) return "feedback";
   if (normalized.includes("form")) return "forms";
-  if (normalized.includes("icon")) return "star";
+  if (normalized.includes("icon")) return "component";
   if (normalized.includes("layout")) return "layout";
   if (normalized.includes("lesson builder")) return "blocks";
   if (normalized.includes("lesson content")) return "lessons";
   if (normalized.includes("navigation")) return "navigation";
   if (normalized.includes("surface")) return "surfaces";
-  if (normalized.includes("table")) return "list";
+  if (normalized.includes("table")) return "table";
   if (normalized.includes("theme")) return "moon";
   if (normalized.includes("typography")) return "text";
 
@@ -129,7 +130,7 @@ export default function AdminSidebar() {
       <div className="shrink-0 border-b border-[var(--border)] px-4 py-4">
         <div className="flex items-center gap-3 px-3 py-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--background-muted)] text-[var(--brand-blue)]">
-            <AppIcon icon="settings" size={16} />
+            <AppIcon icon="admin" size={16} />
           </div>
 
           <div>
@@ -212,12 +213,12 @@ export default function AdminSidebar() {
             </Link>
 
             <Link href="/admin/vocabulary" className={getNavItemClass(isVocabulary)}>
-              <AppIcon icon="language" size={18} />
+              <AppIcon icon="vocabulary" size={18} />
               <span className="flex-1 text-left">Vocabulary</span>
             </Link>
 
             <Link href="/admin/grammar" className={getNavItemClass(isGrammar)}>
-              <AppIcon icon="lessonContent" size={18} />
+              <AppIcon icon="grammar" size={18} />
               <span className="flex-1 text-left">Grammar</span>
             </Link>
           </SidebarSection>
@@ -242,12 +243,12 @@ export default function AdminSidebar() {
 
           <SidebarSection title="Exams">
             <Link href="/admin/past-papers" className={getNavItemClass(isPastPapers)}>
-              <AppIcon icon="file" size={18} />
+              <AppIcon icon="pastPapers" size={18} />
               <span className="flex-1 text-left">Past Papers</span>
             </Link>
 
             <Link href="/admin/mock-exams" className={getNavItemClass(isMockExams)}>
-              <AppIcon icon="exercise" size={18} />
+              <AppIcon icon="mockExam" size={18} />
               <span className="flex-1 text-left">Mock Exams</span>
             </Link>
           </SidebarSection>
@@ -269,12 +270,12 @@ export default function AdminSidebar() {
 
           <SidebarSection title="Users">
             <Link href="/admin/students" className={getNavItemClass(isStudents)}>
-              <AppIcon icon="user" size={18} />
+              <AppIcon icon="student" size={18} />
               <span className="flex-1 text-left">Students</span>
             </Link>
 
             <Link href="/admin/teachers" className={getNavItemClass(isTeachers)}>
-              <AppIcon icon="users" size={18} />
+              <AppIcon icon="teacher" size={18} />
               <span className="flex-1 text-left">Teachers</span>
             </Link>
           </SidebarSection>

@@ -7,7 +7,6 @@ import ThemeToggle from "@/components/ui/theme-toggle";
 import LogoutButton from "@/components/layout/logout-button";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
-import { appIcons } from "@/lib/shared/icons";
 import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/access/routes";
 
 type SiteHeaderProps = {
@@ -134,7 +133,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
               onClick={() => setIsMobileMenuOpen((current) => !current)}
             >
               <AppIcon
-                icon={isMobileMenuOpen ? appIcons.cancel : appIcons.menu}
+                icon={isMobileMenuOpen ? "cancel" : "menu"}
                 size={18}
                 className="app-icon-button-icon"
               />

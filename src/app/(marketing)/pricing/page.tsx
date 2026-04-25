@@ -42,7 +42,7 @@ export default function MarketingPricingPage() {
             <Badge tone="success" icon="completed">
               Trial-first funnel
             </Badge>
-            <Badge tone="muted" icon="layers">
+            <Badge tone="muted" icon="pricing">
               Foundation and Higher
             </Badge>
           </>
@@ -90,7 +90,7 @@ export default function MarketingPricingPage() {
         description="Signed-in students can view exact billing and upgrade actions from their account area."
         tone="muted"
         actions={
-          <Button href="/account/billing" variant="secondary" icon="dashboard">
+          <Button href="/account/billing" variant="secondary" icon="billing">
             Open app billing
           </Button>
         }
