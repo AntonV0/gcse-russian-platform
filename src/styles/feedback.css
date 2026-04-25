@@ -13,7 +13,7 @@
   border: 1px solid var(--border-subtle);
   background: var(--surface-raised-bg);
   color: var(--text-secondary);
-  box-shadow: 0 8px 18px rgba(16, 32, 51, 0.08);
+  box-shadow: var(--control-shadow);
 }
 
 .app-empty-icon-brand {
@@ -45,14 +45,79 @@
 }
 
 .app-empty-icon-inverse {
-  border: 1px solid rgba(16, 32, 51, 0.12);
-  background: linear-gradient(
-    135deg,
-    rgba(16, 32, 51, 0.1) 0%,
-    rgba(255, 255, 255, 0.98) 100%
-  );
+  border: 1px solid var(--surface-accent-border);
+  background: var(--surface-brand-bg);
   color: var(--text-primary);
-  box-shadow: 0 10px 22px rgba(16, 32, 51, 0.1);
+  box-shadow: var(--surface-accent-shadow);
+}
+
+.app-feedback-banner,
+.app-question-feedback {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.35rem;
+  border: 1px solid var(--info-border);
+  background: var(--feedback-info-bg);
+  color: var(--info-text);
+  box-shadow: 0 10px 24px var(--info-shadow);
+  backdrop-filter: blur(1px);
+}
+
+.app-question-feedback {
+  border-radius: 1.4rem;
+}
+
+.app-feedback-banner::before,
+.app-question-feedback::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3.5rem;
+  pointer-events: none;
+  background: var(--feedback-sheen-gradient);
+}
+
+.app-feedback-banner-info,
+.app-question-feedback-info {
+  border-color: var(--info-border);
+  background: var(--feedback-info-bg);
+  color: var(--info-text);
+  box-shadow: 0 10px 24px var(--info-shadow);
+}
+
+.app-feedback-banner-success,
+.app-question-feedback-success {
+  border-color: var(--success-border);
+  background: var(--feedback-success-bg);
+  color: var(--success-text);
+  box-shadow: 0 10px 24px var(--success-shadow);
+}
+
+.app-feedback-banner-warning {
+  border-color: var(--warning-border);
+  background: var(--feedback-warning-bg);
+  color: var(--warning-text);
+  box-shadow: 0 10px 24px var(--warning-shadow);
+}
+
+.app-feedback-banner-danger,
+.app-question-feedback-danger {
+  border-color: var(--danger-border);
+  background: var(--feedback-danger-bg);
+  color: var(--danger-text);
+  box-shadow: 0 10px 24px var(--danger-shadow);
+}
+
+.app-feedback-icon {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 12%, transparent);
 }
 
 [data-theme="dark"] .app-empty-icon-default {
@@ -63,7 +128,7 @@
     var(--dark-control-bg) 100%
   );
   color: var(--text-secondary);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--control-shadow);
 }
 
 [data-theme="dark"] .app-empty-icon-brand {
@@ -95,12 +160,19 @@
 }
 
 [data-theme="dark"] .app-empty-icon-inverse {
-  border-color: color-mix(in srgb, var(--accent) 12%, transparent);
-  background: linear-gradient(
-    135deg,
-    var(--dark-control-bg-hover) 0%,
-    var(--dark-control-bg) 100%
-  );
+  border-color: var(--surface-accent-border);
+  background: var(--surface-brand-bg);
   color: var(--text-primary);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--surface-accent-shadow);
+}
+
+[data-theme="dark"] .app-feedback-banner,
+[data-theme="dark"] .app-question-feedback {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    0 16px 34px color-mix(in srgb, currentColor 8%, transparent);
+}
+
+[data-theme="dark"] .app-feedback-icon {
+  background: color-mix(in srgb, currentColor 12%, var(--dark-control-bg));
 }
