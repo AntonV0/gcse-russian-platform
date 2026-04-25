@@ -56,12 +56,21 @@ export type DbQuestionAcceptedAnswer = {
   notes: string | null;
 };
 
+const QUESTION_SET_SELECT =
+  "id, slug, title, description, instructions, source_type, is_template, template_type, created_at, updated_at";
+const QUESTION_SELECT =
+  "id, question_set_id, question_type, prompt, prompt_rich, explanation, difficulty, marks, audio_path, image_path, metadata, position, is_active, created_at, updated_at";
+const QUESTION_OPTION_SELECT =
+  "id, question_id, option_text, option_rich, is_correct, match_group, position";
+const QUESTION_ACCEPTED_ANSWER_SELECT =
+  "id, question_id, answer_text, normalized_answer, is_primary, case_sensitive, notes";
+
 export async function getQuestionSetBySlugDb(questionSetSlug: string) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("question_sets")
-    .select("*")
+    .select(QUESTION_SET_SELECT)
     .eq("slug", questionSetSlug)
     .maybeSingle();
 
@@ -81,7 +90,7 @@ export async function getQuestionsByQuestionSetIdDb(questionSetId: string) {
 
   const { data, error } = await supabase
     .from("questions")
-    .select("*")
+    .select(QUESTION_SELECT)
     .eq("question_set_id", questionSetId)
     .eq("is_active", true)
     .order("position", { ascending: true });
@@ -104,7 +113,7 @@ export async function getQuestionOptionsByQuestionIdsDb(questionIds: string[]) {
 
   const { data, error } = await supabase
     .from("question_options")
-    .select("*")
+    .select(QUESTION_OPTION_SELECT)
     .in("question_id", questionIds)
     .order("position", { ascending: true });
 
@@ -123,7 +132,7 @@ export async function getAcceptedAnswersByQuestionIdsDb(questionIds: string[]) {
 
   const { data, error } = await supabase
     .from("question_accepted_answers")
-    .select("*")
+    .select(QUESTION_ACCEPTED_ANSWER_SELECT)
     .in("question_id", questionIds);
 
   if (error) {
@@ -139,7 +148,7 @@ export async function getQuestionSetsDb() {
 
   const { data, error } = await supabase
     .from("question_sets")
-    .select("*")
+    .select(QUESTION_SET_SELECT)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -163,8 +172,10 @@ export async function loadQuestionSetBySlugDb(questionSetSlug: string) {
 
   const questions = await getQuestionsByQuestionSetIdDb(questionSet.id);
   const questionIds = questions.map((q) => q.id);
-  const options = await getQuestionOptionsByQuestionIdsDb(questionIds);
-  const acceptedAnswers = await getAcceptedAnswersByQuestionIdsDb(questionIds);
+  const [options, acceptedAnswers] = await Promise.all([
+    getQuestionOptionsByQuestionIdsDb(questionIds),
+    getAcceptedAnswersByQuestionIdsDb(questionIds),
+  ]);
 
   return {
     questionSet,
@@ -203,7 +214,7 @@ export async function getQuestionSetByIdDb(questionSetId: string) {
 
   const { data, error } = await supabase
     .from("question_sets")
-    .select("*")
+    .select(QUESTION_SET_SELECT)
     .eq("id", questionSetId)
     .maybeSingle();
 
@@ -225,7 +236,7 @@ export async function getQuestionsByQuestionSetIdIncludingInactiveDb(
 
   const { data, error } = await supabase
     .from("questions")
-    .select("*")
+    .select(QUESTION_SELECT)
     .eq("question_set_id", questionSetId)
     .order("position", { ascending: true });
 
@@ -245,7 +256,7 @@ export async function getQuestionByIdDb(questionId: string) {
 
   const { data, error } = await supabase
     .from("questions")
-    .select("*")
+    .select(QUESTION_SELECT)
     .eq("id", questionId)
     .maybeSingle();
 
@@ -265,7 +276,7 @@ export async function getQuestionOptionsByQuestionIdDb(questionId: string) {
 
   const { data, error } = await supabase
     .from("question_options")
-    .select("*")
+    .select(QUESTION_OPTION_SELECT)
     .eq("question_id", questionId)
     .order("position", { ascending: true });
 
@@ -285,7 +296,7 @@ export async function getAcceptedAnswersByQuestionIdDb(questionId: string) {
 
   const { data, error } = await supabase
     .from("question_accepted_answers")
-    .select("*")
+    .select(QUESTION_ACCEPTED_ANSWER_SELECT)
     .eq("question_id", questionId)
     .order("is_primary", { ascending: false })
     .order("answer_text", { ascending: true });
@@ -306,7 +317,7 @@ export async function getQuestionSetTemplatesDb() {
 
   const { data, error } = await supabase
     .from("question_sets")
-    .select("*")
+    .select(QUESTION_SET_SELECT)
     .eq("is_template", true)
     .order("template_type", { ascending: true })
     .order("title", { ascending: true });
