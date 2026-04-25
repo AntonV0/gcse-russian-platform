@@ -27,7 +27,10 @@ type LessonRendererProps = {
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-function isSectionVisible(section: LessonSection, currentVariant: LessonRendererVariant) {
+export function isSectionVisible(
+  section: LessonSection,
+  currentVariant: LessonRendererVariant
+) {
   if (section.variantVisibility === "shared") {
     return true;
   }
