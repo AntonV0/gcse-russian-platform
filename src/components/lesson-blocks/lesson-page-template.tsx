@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import LessonRenderer, {
+  isSectionVisible,
   type LessonRendererVariant,
 } from "@/components/lesson-blocks/lesson-renderer";
 import { LessonCompletionPanel } from "@/components/lesson-blocks/lesson-page-template/lesson-completion-panel";
@@ -18,7 +19,6 @@ import type { LessonSection } from "@/types/lesson";
 import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import {
   getLessonProgress,
-  getLessonSectionProgressSummary,
   getVisitedLessonSectionIds,
   markLessonSectionVisited,
 } from "@/lib/progress/progress";
@@ -67,19 +67,19 @@ export default async function LessonPageTemplate({
     return <main>Lesson not found.</main>;
   }
 
-  const requestedStepIndex = clampStepIndex(currentStep, sections.length);
-  const requestedSection = sections[requestedStepIndex];
-
-  await markLessonSectionVisited(lesson.id, requestedSection.id);
-
-  const visitedIds = new Set(await getVisitedLessonSectionIds(lesson.id));
-  const progressSummary = await getLessonSectionProgressSummary(
-    lesson.id,
-    sections.length
+  const currentVariant = getLessonRendererVariant(variantSlug);
+  const visibleSections = sections.filter((section) =>
+    isSectionVisible(section, currentVariant)
   );
 
-  const maxVisitedIndex = getMaxVisitedIndex(sections, visitedIds);
-  const allowedMaxIndex = getAllowedMaxIndex(sections.length, maxVisitedIndex);
+  if (visibleSections.length === 0) {
+    return <main>Lesson has no sections available for this course variant.</main>;
+  }
+
+  const requestedStepIndex = clampStepIndex(currentStep, visibleSections.length);
+  const visitedIdsBeforeVisit = new Set(await getVisitedLessonSectionIds(lesson.id));
+  const maxVisitedIndex = getMaxVisitedIndex(visibleSections, visitedIdsBeforeVisit);
+  const allowedMaxIndex = getAllowedMaxIndex(visibleSections.length, maxVisitedIndex);
   const effectiveStepIndex = Math.min(requestedStepIndex, allowedMaxIndex);
 
   if (effectiveStepIndex !== requestedStepIndex) {
@@ -94,11 +94,23 @@ export default async function LessonPageTemplate({
     );
   }
 
-  const currentSection = sections[effectiveStepIndex];
+  const currentSection = visibleSections[effectiveStepIndex];
+  await markLessonSectionVisited(lesson.id, currentSection.id);
+
+  const visitedIds = new Set(await getVisitedLessonSectionIds(lesson.id));
+  const visitedVisibleCount = visibleSections.reduce(
+    (count, section) => (visitedIds.has(section.id) ? count + 1 : count),
+    0
+  );
+  const progressSummary = {
+    visitedCount: visitedVisibleCount,
+    totalSections: visibleSections.length,
+    percent: Math.round((visitedVisibleCount / visibleSections.length) * 100),
+    allVisited: visitedVisibleCount >= visibleSections.length,
+  };
   const moduleHref = getModulePath(course.slug, variantSlug, moduleSlug);
   const currentStepNumber = effectiveStepIndex + 1;
-  const isFinalStep = effectiveStepIndex === sections.length - 1;
-  const currentVariant = getLessonRendererVariant(variantSlug);
+  const isFinalStep = effectiveStepIndex === visibleSections.length - 1;
 
   return (
     <main className="space-y-6">
@@ -116,7 +128,7 @@ export default async function LessonPageTemplate({
             <span className="app-pill app-pill-info">{course.title}</span>
             <span className="app-pill app-pill-muted">{module.title}</span>
             <span className="app-pill app-pill-muted">
-              Step {currentStepNumber} of {sections.length}
+              Step {currentStepNumber} of {visibleSections.length}
             </span>
           </div>
 
@@ -133,7 +145,7 @@ export default async function LessonPageTemplate({
         <div className="space-y-6">
           <StepMetaBar
             currentStepNumber={currentStepNumber}
-            totalSteps={sections.length}
+            totalSteps={visibleSections.length}
             sectionKind={currentSection.sectionKind}
             sectionDescription={currentSection.description}
             visitedPercent={progressSummary.percent}
@@ -150,7 +162,7 @@ export default async function LessonPageTemplate({
           <SectionPager
             currentStepIndex={effectiveStepIndex}
             allowedMaxIndex={allowedMaxIndex}
-            totalSteps={sections.length}
+            totalSteps={visibleSections.length}
             courseSlug={courseSlug}
             variantSlug={variantSlug}
             moduleSlug={moduleSlug}
@@ -173,7 +185,7 @@ export default async function LessonPageTemplate({
 
         <aside className="xl:sticky xl:top-6 xl:self-start">
           <StepTracker
-            sections={sections}
+            sections={visibleSections}
             currentStepIndex={effectiveStepIndex}
             allowedMaxIndex={allowedMaxIndex}
             visitedSectionIds={visitedIds}
