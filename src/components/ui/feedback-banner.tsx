@@ -22,30 +22,26 @@ function getToneConfig(tone: FeedbackBannerTone) {
     case "success":
       return {
         icon: "completed" as const,
-        wrapperClass:
-          "border-[var(--success-border)] bg-[linear-gradient(135deg,var(--success-surface-strong)_0%,var(--success-surface)_100%)] text-[var(--success-text)] shadow-[0_10px_24px_var(--success-shadow)]",
+        wrapperClass: "app-feedback-banner-success",
       };
 
     case "warning":
       return {
         icon: "warning" as const,
-        wrapperClass:
-          "border-[var(--warning-border)] bg-[linear-gradient(135deg,var(--warning-surface-strong)_0%,var(--warning-surface)_100%)] text-[var(--warning-text)] shadow-[0_10px_24px_var(--warning-shadow)]",
+        wrapperClass: "app-feedback-banner-warning",
       };
 
     case "danger":
       return {
         icon: "alert" as const,
-        wrapperClass:
-          "border-[var(--danger-border)] bg-[linear-gradient(135deg,var(--danger-surface-strong)_0%,var(--danger-surface)_100%)] text-[var(--danger-text)] shadow-[0_10px_24px_var(--danger-shadow)]",
+        wrapperClass: "app-feedback-banner-danger",
       };
 
     case "info":
     default:
       return {
         icon: "info" as const,
-        wrapperClass:
-          "border-[var(--info-border)] bg-[linear-gradient(135deg,var(--info-surface-strong)_0%,var(--info-surface)_100%)] text-[var(--info-text)] shadow-[0_10px_24px_var(--info-shadow)]",
+        wrapperClass: "app-feedback-banner-info",
       };
   }
 }
@@ -82,15 +78,12 @@ export default function FeedbackBanner({
 
       <div
         className={[
-          "relative overflow-hidden rounded-[1.35rem] border px-4 py-3.5 sm:px-5 sm:py-4",
-          "backdrop-blur-[1px]",
+          "app-feedback-banner px-4 py-3.5 sm:px-5 sm:py-4",
           wrapperClass,
         ].join(" ")}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-white)_12%,transparent)_0%,color-mix(in_srgb,var(--brand-white)_0%,transparent)_100%)]" />
-
         <div className="relative flex items-start gap-3">
-          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-current/10">
+          <div className="app-feedback-icon mt-0.5">
             <AppIcon icon={resolvedIcon} size={17} />
           </div>
 

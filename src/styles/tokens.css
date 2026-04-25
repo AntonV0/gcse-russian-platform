@@ -46,6 +46,16 @@
   --accent-rgb: 37, 99, 235;
   --control-border: var(--border);
   --control-border-strong: var(--border-strong);
+  --control-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
+    0 8px 18px color-mix(in srgb, var(--text-primary) 4%, transparent);
+  --control-shadow-hover:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    0 10px 22px color-mix(in srgb, var(--text-primary) 6%, transparent);
+  --control-shadow-focus:
+    0 0 0 4px var(--accent-ring),
+    0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    0 10px 22px color-mix(in srgb, var(--text-primary) 6%, transparent);
 
   /* ========= Brand colours ========= */
   --brand-blue: var(--accent-fill);
@@ -218,6 +228,31 @@
     color-mix(in srgb, var(--accent) 10%, transparent) 0%,
     color-mix(in srgb, var(--accent) 0%, transparent) 100%
   );
+  --feedback-sheen-gradient: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--brand-white) 14%, transparent) 0%,
+    color-mix(in srgb, var(--brand-white) 0%, transparent) 100%
+  );
+  --feedback-info-bg: linear-gradient(
+    135deg,
+    var(--info-surface-strong) 0%,
+    var(--info-surface) 100%
+  );
+  --feedback-success-bg: linear-gradient(
+    135deg,
+    var(--success-surface-strong) 0%,
+    var(--success-surface) 100%
+  );
+  --feedback-warning-bg: linear-gradient(
+    135deg,
+    var(--warning-surface-strong) 0%,
+    var(--warning-surface) 100%
+  );
+  --feedback-danger-bg: linear-gradient(
+    135deg,
+    var(--danger-surface-strong) 0%,
+    var(--danger-surface) 100%
+  );
   --danger-gradient-soft: linear-gradient(
     180deg,
     color-mix(in srgb, var(--danger) 9%, var(--background-elevated)) 0%,
@@ -306,6 +341,16 @@
   --accent-rgb: 79, 140, 255;
   --control-border: color-mix(in srgb, var(--accent) 10%, var(--dark-surface-border));
   --control-border-strong: color-mix(in srgb, var(--accent) 30%, var(--dark-surface-border));
+  --control-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22),
+    0 10px 22px rgba(0, 0, 0, 0.2);
+  --control-shadow-hover:
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    0 12px 26px rgba(0, 0, 0, 0.24);
+  --control-shadow-focus:
+    0 0 0 4px var(--accent-ring),
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    0 12px 26px rgba(0, 0, 0, 0.24);
 
   --brand-blue: var(--accent-fill);
   --brand-blue-hover: var(--accent-fill-hover);

@@ -25,18 +25,8 @@ export default function QuestionFeedback({
     : acceptedAnswerTexts.filter((answer) => answer !== correctAnswerText);
 
   const wrapperClass = isCorrect
-    ? [
-        "border-[var(--success-border)]",
-        "bg-[linear-gradient(135deg,var(--success-surface-strong)_0%,var(--success-surface)_100%)]",
-        "text-[var(--success-text)]",
-        "shadow-[0_10px_24px_var(--success-shadow)]",
-      ].join(" ")
-    : [
-        "border-[var(--danger-border)]",
-        "bg-[linear-gradient(135deg,var(--danger-surface-strong)_0%,var(--danger-surface)_100%)]",
-        "text-[var(--danger-text)]",
-        "shadow-[0_10px_24px_var(--danger-shadow)]",
-      ].join(" ");
+    ? "app-question-feedback-success"
+    : "app-question-feedback-danger";
 
   return (
     <div className="dev-marker-host relative">
@@ -49,12 +39,10 @@ export default function QuestionFeedback({
 
       <div
         className={[
-          "relative overflow-hidden rounded-[1.4rem] border p-4",
+          "app-question-feedback p-4",
           wrapperClass,
         ].join(" ")}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_100%)]" />
-
         <div className="relative">
           <div className="flex items-center gap-2 font-semibold tracking-[-0.01em]">
             <AppIcon icon={isCorrect ? "success" : "error"} size={17} />
