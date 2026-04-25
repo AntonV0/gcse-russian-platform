@@ -12,7 +12,7 @@ type MultipleChoiceOption = {
 type MultipleChoiceBlockProps = {
   question: string;
   options: MultipleChoiceOption[];
-  correctOptionId: string;
+  correctOptionId?: string;
   explanation?: string;
   audioUrl?: string | null;
   audioMaxPlays?: number;
@@ -21,6 +21,7 @@ type MultipleChoiceBlockProps = {
   audioHideNativeControls?: boolean;
   selectedOptionId?: string | null;
   hasSubmitted?: boolean;
+  isCorrect?: boolean;
   isSubmitting?: boolean;
   onSelectOption?: (optionId: string) => void;
   onSubmit?: () => void;
@@ -32,7 +33,7 @@ type MultipleChoiceBlockProps = {
 export default function MultipleChoiceBlock({
   question,
   options,
-  correctOptionId,
+  correctOptionId = "",
   explanation,
   audioUrl = null,
   audioMaxPlays,
@@ -41,6 +42,7 @@ export default function MultipleChoiceBlock({
   audioHideNativeControls = false,
   selectedOptionId,
   hasSubmitted,
+  isCorrect,
   isSubmitting = false,
   onSelectOption,
   onSubmit,
@@ -59,9 +61,11 @@ export default function MultipleChoiceBlock({
   const resolvedHasSubmitted =
     hasSubmitted !== undefined ? hasSubmitted : internalHasSubmitted;
 
-  const isCorrect = useMemo(() => {
+  const computedIsCorrect = useMemo(() => {
     return resolvedSelectedOptionId === correctOptionId;
   }, [resolvedSelectedOptionId, correctOptionId]);
+
+  const resolvedIsCorrect = isCorrect !== undefined ? isCorrect : computedIsCorrect;
 
   function handleSelect(optionId: string) {
     if (resolvedHasSubmitted || isSubmitting) return;
@@ -96,7 +100,7 @@ export default function MultipleChoiceBlock({
       feedback={
         resolvedHasSubmitted ? (
           <QuestionFeedback
-            isCorrect={isCorrect}
+            isCorrect={resolvedIsCorrect}
             explanation={explanation}
             statusLabel={feedbackStatusLabel}
             correctAnswerText={feedbackCorrectAnswerText}

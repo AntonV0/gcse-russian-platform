@@ -8,7 +8,7 @@ type TranslationDirection = "to_russian" | "to_english";
 
 type TranslationBlockProps = {
   question: string;
-  acceptedAnswers: string[];
+  acceptedAnswers?: string[];
   explanation?: string;
   placeholder?: string;
   value?: string;
@@ -65,7 +65,7 @@ function getDefaultInstruction(params: {
 
 export default function TranslationBlock({
   question,
-  acceptedAnswers,
+  acceptedAnswers = [],
   explanation,
   placeholder = "Type your translation",
   value,

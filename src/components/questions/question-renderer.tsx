@@ -1,6 +1,10 @@
 import TrackedMultipleChoiceBlock from "@/components/questions/tracked-multiple-choice-block";
 import TrackedShortAnswerBlock from "@/components/questions/tracked-short-answer-block";
-import type { RuntimeQuestion } from "@/lib/questions/question-engine";
+import {
+  tokenizeSentenceBuilderText,
+  type RuntimeQuestion,
+  type RuntimeTextQuestion,
+} from "@/lib/questions/question-engine";
 import { getPublicAudioUrl } from "@/lib/shared/media";
 
 type QuestionRendererProps = {
@@ -135,12 +139,39 @@ function getSelectionGroupsMetadata(
   return groups.length > 0 ? groups : undefined;
 }
 
-function getValidationOptions(metadata: Record<string, unknown>) {
-  return {
-    ignorePunctuation: getBooleanMetadata(metadata, "ignorePunctuation") ?? false,
-    ignoreArticles: getBooleanMetadata(metadata, "ignoreArticles") ?? false,
-    collapseWhitespace: getBooleanMetadata(metadata, "collapseWhitespace") ?? true,
-  };
+function shuffleTokensForQuestion(tokens: string[], questionId: string) {
+  const shuffled = [...tokens];
+  let seed = [...questionId].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    seed = (seed * 9301 + 49297) % 233280;
+    const swapIndex = seed % (index + 1);
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+
+  return shuffled;
+}
+
+function getSentenceBuilderWordBank(question: RuntimeTextQuestion) {
+  const metadataWordBank = getStringArrayMetadata(question.metadata, "wordBank");
+
+  if (metadataWordBank) {
+    return metadataWordBank;
+  }
+
+  const primaryAnswer =
+    question.acceptedAnswers.find((answer) => answer.isPrimary) ??
+    question.acceptedAnswers[0] ??
+    null;
+
+  if (!primaryAnswer) {
+    return undefined;
+  }
+
+  return shuffleTokensForQuestion(
+    tokenizeSentenceBuilderText(primaryAnswer.text),
+    question.id
+  );
 }
 
 export default async function QuestionRenderer({
@@ -150,7 +181,6 @@ export default async function QuestionRenderer({
   const audioUrl = await getPublicAudioUrl(question.audioPath);
 
   const answerStrategy = getAnswerStrategy(question.metadata);
-  const validationOptions = getValidationOptions(question.metadata);
 
   const listeningUi = {
     maxPlays: getNumberMetadata(question.metadata, "maxPlays"),
@@ -174,8 +204,6 @@ export default async function QuestionRenderer({
             id: option.id,
             text: option.text,
           }))}
-          correctOptionId={question.correctOptionId ?? ""}
-          explanation={question.explanation ?? undefined}
           audioUrl={audioUrl}
           audioMaxPlays={listeningUi.maxPlays}
           audioListeningMode={listeningUi.listeningMode}
@@ -191,15 +219,12 @@ export default async function QuestionRenderer({
           lessonId={lessonId}
           question={question.prompt}
           questionType="short_answer"
-          acceptedAnswers={question.acceptedAnswers}
-          explanation={question.explanation ?? undefined}
           placeholder={
             getStringMetadata(question.metadata, "placeholder") ?? "Type your answer"
           }
           audioUrl={audioUrl}
           listeningUi={listeningUi}
           answerStrategy={answerStrategy}
-          validationOptions={validationOptions}
         />
       );
 
@@ -210,15 +235,12 @@ export default async function QuestionRenderer({
           lessonId={lessonId}
           question={question.prompt}
           questionType="translation"
-          acceptedAnswers={question.acceptedAnswers}
-          explanation={question.explanation ?? undefined}
           placeholder={
             getStringMetadata(question.metadata, "placeholder") ?? "Type your translation"
           }
           audioUrl={audioUrl}
           listeningUi={listeningUi}
           answerStrategy={answerStrategy}
-          validationOptions={validationOptions}
           translationUi={{
             direction: getTranslationDirection(question.metadata),
             sourceLanguageLabel: getStringMetadata(
@@ -233,7 +255,7 @@ export default async function QuestionRenderer({
             placeholder: getStringMetadata(question.metadata, "placeholder"),
           }}
           sentenceBuilderUi={{
-            wordBank: getStringArrayMetadata(question.metadata, "wordBank"),
+            wordBank: getSentenceBuilderWordBank(question),
           }}
           selectionBasedUi={{
             groups: getSelectionGroupsMetadata(question.metadata),
