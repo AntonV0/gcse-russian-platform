@@ -5,6 +5,8 @@ import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import Button from "@/components/ui/button";
 import Card, { CardBody } from "@/components/ui/card";
+import IconButton from "@/components/ui/icon-button";
+import LoadingButton from "@/components/ui/loading-button";
 
 const pageNavItems = [
   { id: "dev-markers", label: "Dev markers" },
@@ -466,6 +468,24 @@ export default async function AdminUiButtonsPage() {
               </div>
             </CardBody>
           </Card>
+
+          <Card>
+            <CardBody className="p-4">
+              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                Shared primitives
+              </div>
+              <form className="flex flex-wrap gap-3">
+                <LoadingButton
+                  idleLabel="Save with LoadingButton"
+                  pendingLabel="Saving..."
+                  idleIcon="save"
+                  variant="primary"
+                />
+                <IconButton icon="settings" label="Shared icon settings" />
+                <IconButton icon="search" label="Shared icon search" variant="quiet" />
+              </form>
+            </CardBody>
+          </Card>
         </div>
       </UiLabSection>
 
@@ -787,7 +807,6 @@ export default async function AdminUiButtonsPage() {
 
       <UiLabFutureSection
         items={[
-          "LoadingButton for server action pending states.",
           "SplitButton for create-and-add-another admin flows.",
           "SegmentedControl for compact mode or variant switching.",
           "CommandButton for keyboard-aware editor actions.",

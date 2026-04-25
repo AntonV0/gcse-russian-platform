@@ -3,8 +3,12 @@ import AppIcon from "@/components/ui/app-icon";
 
 const footerLinks = [
   { href: "/marketing/gcse-russian-course", label: "Course" },
+  { href: "/marketing/resources", label: "Resources" },
   { href: "/marketing/edexcel-gcse-russian", label: "Edexcel guide" },
   { href: "/marketing/gcse-russian-exam-guide", label: "Exam guide" },
+  { href: "/marketing/gcse-russian-past-papers", label: "Past papers" },
+  { href: "/marketing/gcse-russian-grammar", label: "Grammar" },
+  { href: "/marketing/gcse-russian-vocabulary", label: "Vocabulary" },
   { href: "/marketing/russian-gcse-private-candidate", label: "Private candidates" },
   { href: "/marketing/online-gcse-russian-lessons", label: "Online lessons" },
   { href: "/marketing/pricing", label: "Pricing" },

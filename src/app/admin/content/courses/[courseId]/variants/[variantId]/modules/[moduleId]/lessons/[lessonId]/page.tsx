@@ -1,6 +1,7 @@
 import BackNav from "@/components/ui/back-nav";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
@@ -68,7 +69,21 @@ export default async function AdminLessonDetailPage({
     module.course_variant_id !== variant.id ||
     lesson.module_id !== module.id
   ) {
-    return <main>Lesson not found.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="search"
+          iconTone="brand"
+          title="Lesson not found"
+          description="This lesson could not be found in the selected course structure."
+          action={
+            <Button href="/admin/content" variant="primary" icon="back">
+              Back to content
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
   const [sections, templateOptions, vocabularySets] = await Promise.all([

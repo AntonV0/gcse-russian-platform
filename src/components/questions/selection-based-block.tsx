@@ -2,6 +2,7 @@
 
 import QuestionCard from "@/components/questions/question-card";
 import QuestionFeedback from "@/components/questions/question-feedback";
+import Button from "@/components/ui/button";
 
 export type SelectionGroup = {
   id: string;
@@ -187,23 +188,27 @@ export default function SelectionBasedBlock({
       )}
 
       <div className="flex flex-wrap gap-3">
-        <button
+        <Button
           type="button"
           onClick={onSubmit}
           disabled={!canSubmit}
-          className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+          variant="primary"
+          size="sm"
+          icon={isSubmitting ? "pending" : "confirm"}
         >
           {hasSubmitted ? "Submitted" : isSubmitting ? "Saving..." : "Check answer"}
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
           onClick={onReset}
           disabled={!canReset}
-          className="app-btn-base app-btn-secondary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+          variant="secondary"
+          size="sm"
+          icon="refresh"
         >
           Reset
-        </button>
+        </Button>
       </div>
     </QuestionCard>
   );
