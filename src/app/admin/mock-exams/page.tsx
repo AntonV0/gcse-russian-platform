@@ -104,9 +104,14 @@ export default async function AdminMockExamsPage({
           </>
         }
         actions={
-          <Button href="/mock-exams" variant="secondary" icon="preview">
-            Student view
-          </Button>
+          <>
+            <Button href="/admin/mock-exams/review" variant="primary" icon="edit">
+              Review attempts
+            </Button>
+            <Button href="/mock-exams" variant="secondary" icon="preview">
+              Student view
+            </Button>
+          </>
         }
       />
 

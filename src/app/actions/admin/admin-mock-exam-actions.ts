@@ -7,6 +7,7 @@ import {
   deleteMockExamQuestionAction as deleteMockExamQuestion,
   deleteMockExamSectionAction as deleteMockExamSection,
   deleteMockExamSetAction as deleteMockExamSet,
+  markMockExamAttemptAction as markMockExamAttempt,
   updateMockExamQuestionAction as updateMockExamQuestion,
   updateMockExamSectionAction as updateMockExamSection,
   updateMockExamSetAction as updateMockExamSet,
@@ -46,4 +47,8 @@ export async function updateMockExamQuestionAction(formData: FormData) {
 
 export async function deleteMockExamQuestionAction(formData: FormData) {
   return deleteMockExamQuestion(formData);
+}
+
+export async function markMockExamAttemptAction(formData: FormData) {
+  return markMockExamAttempt(formData);
 }

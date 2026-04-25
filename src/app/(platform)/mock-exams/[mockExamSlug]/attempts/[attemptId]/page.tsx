@@ -1,5 +1,6 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
 import MockExamResponseField from "@/components/mock-exams/mock-exam-response-field";
+import MockExamTimerPanel from "@/components/mock-exams/mock-exam-timer-panel";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
@@ -9,6 +10,7 @@ import SectionCard from "@/components/ui/section-card";
 import { saveMockExamAttemptResponsesAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
 import { getCurrentUser } from "@/lib/auth/auth";
 import {
+  getMockExamScoreByAttemptIdDb,
   getMockExamSectionTypeLabel,
   getMockExamTierLabel,
   loadMockExamAttemptDb,
@@ -39,10 +41,18 @@ export default async function MockExamAttemptPage({
   }
 
   const isDraft = attempt.status === "draft";
+  const score = isDraft ? null : await getMockExamScoreByAttemptIdDb(attempt.id);
   const questionCount = sections.reduce(
     (total, section) => total + (questionsBySectionId[section.id]?.length ?? 0),
     0
   );
+  const markedResponseCount = Object.values(responsesByQuestionId).filter(
+    (response) => response.awarded_marks !== null
+  ).length;
+  const predictedGrade =
+    typeof score?.score_payload.predictedGrade === "string"
+      ? score.score_payload.predictedGrade
+      : "";
 
   return (
     <main className="space-y-4">
@@ -87,10 +97,68 @@ export default async function MockExamAttemptPage({
         title={isDraft ? "Draft attempt" : "Attempt submitted"}
         description={
           isDraft
-            ? "You can save draft responses or submit this attempt for later marking. Automatic scoring is not enabled for this foundation version."
-            : "This attempt has been submitted. Editing is locked until a future review workflow is added."
+            ? "Save draft responses while you work, then submit when you are ready for marking. Objective questions can be auto-marked on submission."
+            : attempt.status === "marked"
+              ? "This attempt has been marked. Review your score, feedback, and question-level comments below."
+              : "This attempt has been submitted. Objective marks may be visible now; longer answers may still be awaiting teacher review."
         }
       />
+
+      <MockExamTimerPanel
+        startedAt={attempt.started_at}
+        timeLimitMinutes={attempt.time_limit_minutes_snapshot}
+        isDraft={isDraft}
+      />
+
+      {!isDraft ? (
+        <SectionCard
+          title="Results"
+          description="Score and marking status for this attempt."
+          tone="student"
+          density="compact"
+        >
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                Score
+              </div>
+              <div className="mt-1 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+                {attempt.awarded_marks ?? "-"} / {attempt.total_marks_snapshot}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                Marking
+              </div>
+              <div className="mt-1 text-sm text-[var(--text-primary)]">
+                {markedResponseCount} / {questionCount} question
+                {questionCount === 1 ? "" : "s"} marked
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                Predicted grade
+              </div>
+              <div className="mt-1 text-sm text-[var(--text-primary)]">
+                {predictedGrade || "Pending teacher review"}
+              </div>
+            </div>
+          </div>
+
+          {attempt.feedback || score?.feedback ? (
+            <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                Feedback
+              </div>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                {attempt.feedback ?? score?.feedback}
+              </p>
+            </div>
+          ) : null}
+        </SectionCard>
+      ) : null}
 
       {sections.length === 0 ? (
         <SectionCard
@@ -153,9 +221,14 @@ export default async function MockExamAttemptPage({
 
                             {response?.awarded_marks !== null &&
                             response?.awarded_marks !== undefined ? (
-                              <Badge tone="info">
-                                Auto-marked: {response.awarded_marks} / {question.marks}
-                              </Badge>
+                              <div className="flex flex-wrap gap-2">
+                                <Badge tone="info">
+                                  Mark: {response.awarded_marks} / {question.marks}
+                                </Badge>
+                                {response.feedback ? (
+                                  <Badge tone="muted">{response.feedback}</Badge>
+                                ) : null}
+                              </div>
                             ) : null}
                           </div>
                         );

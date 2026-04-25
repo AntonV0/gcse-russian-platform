@@ -114,6 +114,26 @@ export type DbMockExamResponse = {
   updated_at: string;
 };
 
+export type DbMockExamScore = {
+  id: string;
+  attempt_id: string;
+  total_marks: number;
+  awarded_marks: number;
+  score_payload: Record<string, unknown>;
+  feedback: string | null;
+  marked_by: string | null;
+  marked_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MockExamProfileSummary = {
+  id: string;
+  full_name: string | null;
+  display_name: string | null;
+  email: string | null;
+};
+
 export type LoadedMockExamDb = {
   exam: DbMockExamSet | null;
   sections: DbMockExamSection[];
@@ -123,6 +143,19 @@ export type LoadedMockExamDb = {
 export type LoadedMockExamAttemptDb = LoadedMockExamDb & {
   attempt: DbMockExamAttempt | null;
   responsesByQuestionId: Record<string, DbMockExamResponse>;
+};
+
+export type MockExamAttemptReviewListItem = {
+  attempt: DbMockExamAttempt;
+  exam: DbMockExamSet | null;
+  student: MockExamProfileSummary | null;
+  responseCount: number;
+  markedResponseCount: number;
+};
+
+export type LoadedMockExamAttemptReviewDb = LoadedMockExamAttemptDb & {
+  student: MockExamProfileSummary | null;
+  score: DbMockExamScore | null;
 };
 
 export type MockExamFilters = {
@@ -416,6 +449,34 @@ function normalizeMockExamResponse(row: unknown): DbMockExamResponse {
   };
 }
 
+function normalizeMockExamScore(row: unknown): DbMockExamScore {
+  const record = row as Partial<DbMockExamScore>;
+
+  return {
+    id: String(record.id),
+    attempt_id: String(record.attempt_id),
+    total_marks: Number(record.total_marks ?? 0),
+    awarded_marks: Number(record.awarded_marks ?? 0),
+    score_payload: normalizeRecord(record.score_payload),
+    feedback: record.feedback ?? null,
+    marked_by: record.marked_by ?? null,
+    marked_at: record.marked_at ?? null,
+    created_at: String(record.created_at),
+    updated_at: String(record.updated_at),
+  };
+}
+
+function normalizeProfileSummary(row: unknown): MockExamProfileSummary {
+  const record = row as Partial<MockExamProfileSummary>;
+
+  return {
+    id: String(record.id),
+    full_name: record.full_name ?? null,
+    display_name: record.display_name ?? null,
+    email: record.email ?? null,
+  };
+}
+
 function applyMockExamFilters(exams: DbMockExamSet[], filters?: MockExamFilters) {
   const paperNumber =
     filters?.paperNumber && filters.paperNumber !== "all"
@@ -671,6 +732,40 @@ export async function getMockExamResponsesByAttemptIdDb(attemptId: string) {
   return (data ?? []).map(normalizeMockExamResponse);
 }
 
+export async function getMockExamScoreByAttemptIdDb(attemptId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("mock_exam_scores")
+    .select("*")
+    .eq("attempt_id", attemptId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching mock exam score:", { attemptId, error });
+    return null;
+  }
+
+  return data ? normalizeMockExamScore(data) : null;
+}
+
+export async function getProfileSummaryByIdDb(userId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, display_name, email")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching profile summary:", { userId, error });
+    return null;
+  }
+
+  return data ? normalizeProfileSummary(data) : null;
+}
+
 export async function getCurrentUserMockExamAttemptsDb(
   mockExamId: string,
   userId: string
@@ -694,6 +789,44 @@ export async function getCurrentUserMockExamAttemptsDb(
   }
 
   return (data ?? []).map(normalizeMockExamAttempt);
+}
+
+export async function getMockExamAttemptsForAdminReviewDb() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("mock_exam_attempts")
+    .select("*")
+    .order("started_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching mock exam attempts for admin review:", { error });
+    return [];
+  }
+
+  const attempts = (data ?? []).map(normalizeMockExamAttempt);
+
+  const items = await Promise.all(
+    attempts.map(async (attempt) => {
+      const [exam, student, responses] = await Promise.all([
+        getMockExamSetByIdDb(attempt.mock_exam_id),
+        getProfileSummaryByIdDb(attempt.user_id),
+        getMockExamResponsesByAttemptIdDb(attempt.id),
+      ]);
+
+      return {
+        attempt,
+        exam,
+        student,
+        responseCount: responses.length,
+        markedResponseCount: responses.filter(
+          (response) => response.awarded_marks !== null
+        ).length,
+      };
+    })
+  );
+
+  return items satisfies MockExamAttemptReviewListItem[];
 }
 
 export async function loadMockExamAttemptDb(
@@ -720,6 +853,31 @@ export async function loadMockExamAttemptDb(
     ...loadedExam,
     attempt,
     responsesByQuestionId: groupResponsesByQuestionId(responses),
+  };
+}
+
+export async function loadMockExamAttemptReviewDb(
+  attemptId: string
+): Promise<LoadedMockExamAttemptReviewDb> {
+  const loadedAttempt = await loadMockExamAttemptDb(attemptId);
+
+  if (!loadedAttempt.attempt) {
+    return {
+      ...loadedAttempt,
+      student: null,
+      score: null,
+    };
+  }
+
+  const [student, score] = await Promise.all([
+    getProfileSummaryByIdDb(loadedAttempt.attempt.user_id),
+    getMockExamScoreByAttemptIdDb(loadedAttempt.attempt.id),
+  ]);
+
+  return {
+    ...loadedAttempt,
+    student,
+    score,
   };
 }
 

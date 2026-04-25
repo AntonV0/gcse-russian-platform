@@ -74,6 +74,15 @@ function fullMarksIfCorrect(question: DbMockExamQuestion, isCorrect: boolean): M
   };
 }
 
+function hasAttemptTimeExpired(startedAt: string, timeLimitMinutes: number | null) {
+  if (!timeLimitMinutes) return false;
+
+  const startedAtTime = new Date(startedAt).getTime();
+  if (!Number.isFinite(startedAtTime)) return false;
+
+  return Date.now() > startedAtTime + timeLimitMinutes * 60 * 1000;
+}
+
 function extractQuestionResponse(
   question: DbMockExamQuestion,
   formData: FormData
@@ -350,7 +359,12 @@ export async function saveMockExamAttemptResponsesAction(formData: FormData) {
   const questions = sections.flatMap((section) =>
     questionsBySectionId[section.id] ?? []
   );
-  const submitIntent = getTrimmedString(formData, "submitIntent");
+  const requestedSubmitIntent = getTrimmedString(formData, "submitIntent");
+  const submitIntent =
+    requestedSubmitIntent === "submit" ||
+    hasAttemptTimeExpired(attempt.started_at, attempt.time_limit_minutes_snapshot)
+      ? "submit"
+      : "save";
 
   const rows = questions.map((question) => {
     const extractedResponse = extractQuestionResponse(question, formData);
@@ -400,6 +414,8 @@ export async function saveMockExamAttemptResponsesAction(formData: FormData) {
         feedback:
           autoMarkedRows.length > 0
             ? "Objective questions were auto-marked. Manual review may still be needed."
+            : hasAttemptTimeExpired(attempt.started_at, attempt.time_limit_minutes_snapshot)
+              ? "Submitted after the time limit elapsed. Manual review may still be needed."
             : null,
         updated_at: new Date().toISOString(),
       })

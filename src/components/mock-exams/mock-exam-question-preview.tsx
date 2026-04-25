@@ -1,4 +1,5 @@
 import Badge from "@/components/ui/badge";
+import AudioPlayer from "@/components/questions/audio-player";
 import type { DbMockExamQuestion } from "@/lib/mock-exams/mock-exam-helpers-db";
 import { getMockExamQuestionTypeLabel } from "@/lib/mock-exams/mock-exam-helpers-db";
 
@@ -16,6 +17,10 @@ function getNumberArray(value: unknown) {
   return value.filter((item): item is number => typeof item === "number");
 }
 
+function getNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
 function getStringArray(value: unknown) {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is string => typeof item === "string");
@@ -27,6 +32,35 @@ function getRecordArray(value: unknown) {
   return value.filter(
     (item): item is Record<string, unknown> =>
       Boolean(item) && typeof item === "object" && !Array.isArray(item)
+  );
+}
+
+function RenderMedia({ question }: { question: DbMockExamQuestion }) {
+  const audioUrl = getString(question.data.audioUrl);
+  const imageUrl = getString(question.data.imageUrl);
+
+  if (!audioUrl && !imageUrl) return null;
+
+  return (
+    <div className="space-y-3">
+      {audioUrl ? (
+        <AudioPlayer
+          src={audioUrl}
+          maxPlays={getNumber(question.data.audioMaxPlays)}
+          listeningMode={question.question_type === "listening_comprehension"}
+        />
+      ) : null}
+
+      {imageUrl ? (
+        <figure className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background-muted)]">
+          <img
+            src={imageUrl}
+            alt="Mock exam visual prompt"
+            className="max-h-[420px] w-full object-contain"
+          />
+        </figure>
+      ) : null}
+    </div>
   );
 }
 
@@ -316,6 +350,7 @@ export default function MockExamQuestionPreview({
         <Badge tone="muted">{question.marks} mark(s)</Badge>
       </div>
 
+      <RenderMedia question={question} />
       <RenderQuestionSpecificPreview question={question} />
     </div>
   );
