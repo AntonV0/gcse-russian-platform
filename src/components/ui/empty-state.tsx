@@ -74,7 +74,7 @@ export default function EmptyState({
           "px-5 py-8 text-center shadow-[0_10px_24px_color-mix(in_srgb,var(--text-primary)_5%,transparent)] sm:px-6 sm:py-9",
         ].join(" ")}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-blue)_6%,transparent)_0%,color-mix(in_srgb,var(--brand-blue)_0%,transparent)_100%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 [background:var(--accent-sheen-gradient)]" />
 
         {icon ? (
           <div className="relative mb-5 flex justify-center">

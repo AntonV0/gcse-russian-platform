@@ -204,29 +204,29 @@ export default async function DashboardPage() {
               <DashboardCard title="Learning snapshot" className="h-full">
                 <div className="space-y-4">
                   <div className="grid gap-3">
-                    <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                      <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                    <div className="app-stat-tile">
+                      <div className="app-stat-label">
                         Completed lessons
                       </div>
-                      <div className="font-semibold text-[var(--text-primary)]">
+                      <div className="app-stat-value">
                         {String(progressSummary.completedLessons)}
                       </div>
                     </div>
 
-                    <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                      <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                    <div className="app-stat-tile">
+                      <div className="app-stat-label">
                         Course path
                       </div>
-                      <div className="font-semibold text-[var(--text-primary)]">
+                      <div className="app-stat-value">
                         {getVariantLabel(dashboard.variant)}
                       </div>
                     </div>
 
-                    <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                      <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                    <div className="app-stat-tile">
+                      <div className="app-stat-label">
                         Access
                       </div>
-                      <div className="font-semibold text-[var(--text-primary)]">
+                      <div className="app-stat-value">
                         {getAccessLabel(dashboard.accessMode)}
                       </div>
                     </div>

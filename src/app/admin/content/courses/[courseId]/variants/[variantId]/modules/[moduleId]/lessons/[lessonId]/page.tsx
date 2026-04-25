@@ -3,6 +3,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import AdminLessonBuilder from "@/components/admin/admin-lesson-builder";
 import {
@@ -125,9 +126,7 @@ export default async function AdminLessonDetailPage({
               {lesson.slug}
             </Badge>
             <Badge tone="muted">{lesson.lesson_type}</Badge>
-            <Badge tone={lesson.is_published ? "info" : "muted"} icon="preview">
-              {lesson.is_published ? "Published" : "Draft"}
-            </Badge>
+            <PublishStatusBadge isPublished={lesson.is_published} />
             <Badge tone={lesson.is_trial_visible ? "success" : "muted"} icon="help">
               {lesson.is_trial_visible ? "Trial" : "No Trial"}
             </Badge>

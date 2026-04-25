@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
+import AppShell from "@/components/layout/app-shell";
 import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import {
   DEFAULT_OG_IMAGE_PATH,
@@ -137,7 +138,7 @@ export default async function RootLayout({
           initialAccentPreference={initialAccentPreference}
         >
           <DevMarkerProvider isAdmin={isAdmin}>
-            {children}
+            <AppShell user={user}>{children}</AppShell>
           </DevMarkerProvider>
         </ThemeProvider>
       </body>

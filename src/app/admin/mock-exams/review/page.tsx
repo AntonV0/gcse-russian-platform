@@ -12,33 +12,19 @@ import {
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import TableShell from "@/components/ui/table-shell";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getMockExamAttemptsForAdminReviewDb,
   getMockExamTierLabel,
-  type MockExamAttemptStatus,
   type MockExamProfileSummary,
 } from "@/lib/mock-exams/mock-exam-helpers-db";
 
 function getProfileLabel(profile: MockExamProfileSummary | null) {
   if (!profile) return "Unknown student";
   return profile.full_name || profile.display_name || profile.email || "Unnamed student";
-}
-
-function getStatusTone(status: MockExamAttemptStatus) {
-  switch (status) {
-    case "marked":
-      return "success";
-    case "submitted":
-      return "warning";
-    case "abandoned":
-      return "danger";
-    case "draft":
-    default:
-      return "muted";
-  }
 }
 
 export default async function AdminMockExamReviewPage() {
@@ -64,10 +50,10 @@ export default async function AdminMockExamReviewPage() {
         description="Review submitted mock exams, adjust objective marks where needed, add manual marks, and publish final feedback."
         badges={
           <>
-            <Badge tone="warning" icon="pending">
+            <Badge tone="info" icon="submitted">
               {submittedCount} awaiting review
             </Badge>
-            <Badge tone="success" icon="confirm">
+            <Badge tone="success" icon="marked">
               {markedCount} marked
             </Badge>
             <Badge tone="muted" icon="history">
@@ -98,15 +84,15 @@ export default async function AdminMockExamReviewPage() {
           title="Awaiting review"
           value={submittedCount}
           description="Submitted attempts not fully marked yet."
-          icon="pending"
-          tone="warning"
+          icon="submitted"
+          tone="info"
           compact
         />
         <SummaryStatCard
           title="Marked"
           value={markedCount}
           description="Attempts with final marks and feedback."
-          icon="confirm"
+          icon="marked"
           tone="success"
           compact
         />
@@ -126,7 +112,7 @@ export default async function AdminMockExamReviewPage() {
         {attempts.length === 0 ? (
           <div className="p-5">
             <EmptyState
-              icon="exercise"
+              icon="mockExam"
               iconTone="brand"
               title="No attempts yet"
               description="Student attempts will appear here once mock exams are started."
@@ -168,7 +154,7 @@ export default async function AdminMockExamReviewPage() {
                       </div>
                       {item.exam ? (
                         <div className="flex flex-wrap gap-2">
-                          <Badge tone="muted" icon="file">
+                          <Badge tone="muted" icon="mockExam">
                             Paper {item.exam.paper_number}
                           </Badge>
                           <Badge tone="muted" icon="school">
@@ -180,9 +166,7 @@ export default async function AdminMockExamReviewPage() {
                   </DataTableCell>
 
                   <DataTableCell>
-                    <Badge tone={getStatusTone(item.attempt.status)} icon="pending">
-                      {item.attempt.status}
-                    </Badge>
+                    <AttemptStatusBadge status={item.attempt.status} />
                   </DataTableCell>
 
                   <DataTableCell>

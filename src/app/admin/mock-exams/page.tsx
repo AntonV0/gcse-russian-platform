@@ -16,6 +16,7 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import TableShell from "@/components/ui/table-shell";
 import TableToolbar from "@/components/ui/table-toolbar";
@@ -92,13 +93,13 @@ export default async function AdminMockExamsPage({
         description="Create original GCSE-style mock exam sets separate from official Pearson past paper links."
         badges={
           <>
-            <Badge tone="info" icon="exercise">
+            <Badge tone="info" icon="mockExam">
               Original content
             </Badge>
             <Badge tone="muted" icon="list">
               {allExams.length} exam{allExams.length === 1 ? "" : "s"}
             </Badge>
-            <Badge tone="success" icon="preview">
+            <Badge tone="success" icon="published">
               {publishedCount} published
             </Badge>
           </>
@@ -262,7 +263,7 @@ export default async function AdminMockExamsPage({
         {exams.length === 0 ? (
           <div className="p-5">
             <EmptyState
-              icon="exercise"
+              icon="mockExam"
               iconTone="brand"
               title="No mock exams found"
               description="Create the first mock exam set, or clear the current filters."
@@ -318,12 +319,7 @@ export default async function AdminMockExamsPage({
                   </DataTableCell>
 
                   <DataTableCell>
-                    <Badge
-                      tone={exam.is_published ? "success" : "warning"}
-                      icon={exam.is_published ? "preview" : "pending"}
-                    >
-                      {exam.is_published ? "Published" : "Draft"}
-                    </Badge>
+                    <PublishStatusBadge isPublished={exam.is_published} />
                   </DataTableCell>
 
                   <DataTableCell>

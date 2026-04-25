@@ -4,6 +4,7 @@ import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -157,7 +158,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
               GCSE Russian
             </Badge>
             {canSeeDrafts && draftCount > 0 ? (
-              <Badge tone="warning" icon="edit">
+              <Badge tone="warning" icon="draft">
                 {draftCount} draft visible to staff
               </Badge>
             ) : null}
@@ -252,7 +253,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
                     <Badge tone="info" icon="school">
                       {getVocabularyTierLabel(vocabularySet.tier)}
                     </Badge>
-                    <Badge tone="muted" icon="vocabulary">
+                    <Badge tone="muted" icon="vocabularySet">
                       {getVocabularyListModeLabel(vocabularySet.list_mode)}
                     </Badge>
                     <Badge tone="muted" className="capitalize">
@@ -263,9 +264,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
                       {vocabularySet.item_count === 1 ? "" : "s"}
                     </Badge>
                     {!vocabularySet.is_published ? (
-                      <Badge tone="warning" icon="edit">
-                        Draft
-                      </Badge>
+                      <PublishStatusBadge isPublished={vocabularySet.is_published} />
                     ) : null}
                     {canSeeDrafts && shouldShowCoverageBadges(vocabularySet.list_mode) ? (
                       <VocabularySetCoverageBadges

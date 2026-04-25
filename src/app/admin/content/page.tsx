@@ -1,3 +1,4 @@
+import ActiveStatusBadge from "@/components/ui/active-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -5,6 +6,7 @@ import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
@@ -24,8 +26,12 @@ export default async function AdminContentPage() {
         description="Manage courses, variants, modules, and lessons from one central admin workspace."
         badges={
           <>
-            <Badge tone="info">Content structure</Badge>
-            <Badge tone="muted">Courses → Variants → Modules → Lessons</Badge>
+            <Badge tone="info" icon="courses">
+              Content structure
+            </Badge>
+            <Badge tone="muted" icon="layers">
+              Courses → Variants → Modules → Lessons
+            </Badge>
           </>
         }
         actions={
@@ -70,25 +76,11 @@ export default async function AdminContentPage() {
                           {course.slug}
                         </Badge>
 
-                        {course.is_active ? (
-                          <Badge tone="success" icon="completed">
-                            Active
-                          </Badge>
-                        ) : (
-                          <Badge tone="warning" icon="pending">
-                            Inactive
-                          </Badge>
-                        )}
-
-                        {course.is_published ? (
-                          <Badge tone="info" icon="preview">
-                            Published
-                          </Badge>
-                        ) : (
-                          <Badge tone="muted" icon="help">
-                            Unpublished
-                          </Badge>
-                        )}
+                        <ActiveStatusBadge isActive={course.is_active} />
+                        <PublishStatusBadge
+                          isPublished={course.is_published}
+                          draftLabel="Unpublished"
+                        />
                       </>
                     }
                     actions={

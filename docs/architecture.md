@@ -73,10 +73,12 @@ Responsibilities:
 
 Route groups separate public marketing pages from authenticated platform pages:
 
-- `(marketing)` contains landing, pricing, blog, about, FAQ, and auth entry pages
+- `(marketing)` contains temporary `/marketing/*` marketing pages and auth entry pages
 - `(platform)` contains authenticated LMS pages and uses the platform sidebar layout
 
-This keeps clean URLs while preparing for future `www` and `app` subdomain routing.
+The app-facing landing page remains at `/` during local/single-domain development.
+Future host-based routing can map `www.gcserussian.com` to marketing root URLs and
+`app.gcserussian.com` to the app root.
 
 ---
 

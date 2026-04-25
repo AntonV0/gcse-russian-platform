@@ -16,6 +16,7 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import TableShell from "@/components/ui/table-shell";
 import TableToolbar from "@/components/ui/table-toolbar";
@@ -121,13 +122,13 @@ export default async function AdminPastPapersPage({
         description="Manage official Pearson Edexcel GCSE Russian 1RU0 past paper resource links. Store metadata and official URLs only, not Pearson paper content."
         badges={
           <>
-            <Badge tone="info" icon="file">
+            <Badge tone="info" icon="pastPapers">
               Pearson links
             </Badge>
             <Badge tone="muted" icon="list">
               {allResources.length} resource{allResources.length === 1 ? "" : "s"}
             </Badge>
-            <Badge tone="success" icon="preview">
+            <Badge tone="success" icon="published">
               {publishedCount} published
             </Badge>
           </>
@@ -369,7 +370,7 @@ export default async function AdminPastPapersPage({
         {resources.length === 0 ? (
           <div className="p-5">
             <EmptyState
-              icon="file"
+              icon="pastPapers"
               iconTone="brand"
               title="No past paper resources found"
               description="Add the first Pearson resource link, or clear the current filters."
@@ -493,12 +494,7 @@ export default async function AdminPastPapersPage({
 
                     <DataTableCell>
                       <div className="space-y-2">
-                        <Badge
-                          tone={resource.is_published ? "success" : "warning"}
-                          icon={resource.is_published ? "preview" : "pending"}
-                        >
-                          {resource.is_published ? "Published" : "Draft"}
-                        </Badge>
+                        <PublishStatusBadge isPublished={resource.is_published} />
                         <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                           <input
                             form={formId}

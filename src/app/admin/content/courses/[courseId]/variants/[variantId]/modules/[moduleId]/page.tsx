@@ -4,6 +4,7 @@ import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import ExpandableAdminFormPanel from "@/components/admin/expandable-admin-form-panel";
 import DangerZone from "@/components/ui/danger-zone";
@@ -80,9 +81,7 @@ export default async function AdminModuleDetailPage({
               {module.slug}
             </Badge>
             <Badge tone="muted">Position {module.position}</Badge>
-            <Badge tone={module.is_published ? "info" : "muted"} icon="preview">
-              {module.is_published ? "Published" : "Draft"}
-            </Badge>
+            <PublishStatusBadge isPublished={module.is_published} />
           </>
         }
         actions={
@@ -132,12 +131,7 @@ export default async function AdminModuleDetailPage({
                           {lesson.slug}
                         </Badge>
                         <Badge tone="muted">Position {lesson.position}</Badge>
-                        <Badge
-                          tone={lesson.is_published ? "info" : "muted"}
-                          icon="preview"
-                        >
-                          {lesson.is_published ? "Published" : "Draft"}
-                        </Badge>
+                        <PublishStatusBadge isPublished={lesson.is_published} />
                         <Badge
                           tone={lesson.is_trial_visible ? "success" : "muted"}
                           icon="help"

@@ -1,10 +1,12 @@
 import BackNav from "@/components/ui/back-nav";
+import ActiveStatusBadge from "@/components/ui/active-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
 import { getCourseByIdDb, getVariantByIdDb } from "@/lib/courses/course-helpers-db";
@@ -55,15 +57,8 @@ export default async function AdminVariantEditPage({
               {variant.slug}
             </Badge>
             <Badge tone="muted">Position {variant.position}</Badge>
-            <Badge
-              tone={variant.is_active ? "success" : "warning"}
-              icon={variant.is_active ? "completed" : "pending"}
-            >
-              {variant.is_active ? "Active" : "Inactive"}
-            </Badge>
-            <Badge tone={variant.is_published ? "info" : "muted"} icon="preview">
-              {variant.is_published ? "Published" : "Draft"}
-            </Badge>
+            <ActiveStatusBadge isActive={variant.is_active} />
+            <PublishStatusBadge isPublished={variant.is_published} />
           </>
         }
         actions={

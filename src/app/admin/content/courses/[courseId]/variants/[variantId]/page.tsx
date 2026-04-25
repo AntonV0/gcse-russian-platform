@@ -1,9 +1,11 @@
 import BackNav from "@/components/ui/back-nav";
+import ActiveStatusBadge from "@/components/ui/active-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import ExpandableAdminFormPanel from "@/components/admin/expandable-admin-form-panel";
 import DangerZone from "@/components/ui/danger-zone";
@@ -68,15 +70,8 @@ export default async function AdminVariantDetailPage({
             <Badge tone="muted" icon="file">
               {variant.slug}
             </Badge>
-            <Badge
-              tone={variant.is_active ? "success" : "warning"}
-              icon={variant.is_active ? "completed" : "pending"}
-            >
-              {variant.is_active ? "Active" : "Inactive"}
-            </Badge>
-            <Badge tone={variant.is_published ? "info" : "muted"} icon="preview">
-              {variant.is_published ? "Published" : "Draft"}
-            </Badge>
+            <ActiveStatusBadge isActive={variant.is_active} />
+            <PublishStatusBadge isPublished={variant.is_published} />
           </>
         }
         actions={
@@ -126,12 +121,7 @@ export default async function AdminVariantDetailPage({
                           {module.slug}
                         </Badge>
                         <Badge tone="muted">Position {module.position}</Badge>
-                        <Badge
-                          tone={module.is_published ? "info" : "muted"}
-                          icon="preview"
-                        >
-                          {module.is_published ? "Published" : "Draft"}
-                        </Badge>
+                        <PublishStatusBadge isPublished={module.is_published} />
                       </>
                     }
                     actions={

@@ -13,6 +13,7 @@ import {
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import TableShell from "@/components/ui/table-shell";
 import TableToolbar from "@/components/ui/table-toolbar";
@@ -71,13 +72,13 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
         description="Create structured grammar sets, points, examples, and flexible JSON-backed grammar tables."
         badges={
           <>
-            <Badge tone="info" icon="lessonContent">
+            <Badge tone="info" icon="grammar">
               Grammar CMS
             </Badge>
             <Badge tone="muted" icon="list">
               {grammarSets.length} set{grammarSets.length === 1 ? "" : "s"}
             </Badge>
-            <Badge tone="success" icon="preview">
+            <Badge tone="success" icon="published">
               {publishedCount} published
             </Badge>
           </>
@@ -144,7 +145,7 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
         {grammarSets.length === 0 ? (
           <div className="p-5">
             <EmptyState
-              icon="lessonContent"
+              icon="grammar"
               iconTone="brand"
               title="No grammar sets found"
               description="Create the first grammar set, or clear the current filters."
@@ -201,12 +202,7 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
                   <DataTableCell>{grammarSet.point_count}</DataTableCell>
 
                   <DataTableCell>
-                    <Badge
-                      tone={grammarSet.is_published ? "success" : "warning"}
-                      icon={grammarSet.is_published ? "preview" : "pending"}
-                    >
-                      {grammarSet.is_published ? "Published" : "Draft"}
-                    </Badge>
+                    <PublishStatusBadge isPublished={grammarSet.is_published} />
                   </DataTableCell>
 
                   <DataTableCell>

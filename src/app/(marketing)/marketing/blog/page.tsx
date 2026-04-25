@@ -1,7 +1,19 @@
+import type { Metadata } from "next";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
+import { buildPublicMetadata, noIndexRobots } from "@/lib/seo/site";
+
+export const metadata: Metadata = {
+  ...buildPublicMetadata({
+    title: "GCSE Russian Resources",
+    description:
+      "Future GCSE Russian revision guidance, exam advice, course updates, and resource articles.",
+    path: "/marketing/blog",
+  }),
+  robots: noIndexRobots,
+};
 
 export default function MarketingBlogPage() {
   return (

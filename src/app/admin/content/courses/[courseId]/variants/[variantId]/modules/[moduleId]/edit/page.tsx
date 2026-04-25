@@ -5,6 +5,7 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
 import {
@@ -69,9 +70,7 @@ export default async function AdminModuleEditPage({ params }: AdminModuleEditPag
               {module.slug}
             </Badge>
             <Badge tone="muted">Position {module.position}</Badge>
-            <Badge tone={module.is_published ? "info" : "muted"} icon="preview">
-              {module.is_published ? "Published" : "Draft"}
-            </Badge>
+            <PublishStatusBadge isPublished={module.is_published} />
           </>
         }
         actions={

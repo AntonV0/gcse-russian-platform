@@ -9,6 +9,7 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -79,7 +80,7 @@ export default async function AdminMockExamDetailPage({
         description={exam.description ?? "Build an original GCSE-style mock exam."}
         badges={
           <>
-            <Badge tone="info" icon="file">
+            <Badge tone="info" icon="mockExam">
               {exam.paper_name}
             </Badge>
             <Badge tone="muted" icon="school">
@@ -91,12 +92,7 @@ export default async function AdminMockExamDetailPage({
             <Badge tone="muted" icon="question">
               {questionCount} question{questionCount === 1 ? "" : "s"}
             </Badge>
-            <Badge
-              tone={exam.is_published ? "success" : "warning"}
-              icon={exam.is_published ? "preview" : "pending"}
-            >
-              {exam.is_published ? "Published" : "Draft"}
-            </Badge>
+            <PublishStatusBadge isPublished={exam.is_published} />
           </>
         }
         actions={

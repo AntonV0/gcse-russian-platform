@@ -1,8 +1,17 @@
+import type { Metadata } from "next";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import Card, { CardBody } from "@/components/ui/card";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
+import { buildPublicMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "GCSE Russian Course Pricing",
+  description:
+    "Compare Foundation and Higher GCSE Russian course access, start with a trial account, and upgrade securely from inside the app when ready.",
+  path: "/marketing/pricing",
+});
 
 const plans = [
   {
@@ -39,7 +48,7 @@ export default function MarketingPricingPage() {
         description="Most students should begin with a trial account. The marketing pricing page explains the available pathways, while exact checkout and upgrade options are handled securely inside the app."
         badges={
           <>
-            <Badge tone="success" icon="completed">
+            <Badge tone="success" icon="unlocked">
               Trial-first funnel
             </Badge>
             <Badge tone="muted" icon="pricing">

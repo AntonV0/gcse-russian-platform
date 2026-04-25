@@ -17,10 +17,10 @@ export function getDueDateStatus(dueAt: string | null) {
 export function getDueDateClass(status: string) {
   switch (status) {
     case "overdue":
-      return "text-red-600 font-medium";
+      return "text-[var(--danger-text)] font-medium";
     case "soon":
-      return "text-yellow-600 font-medium";
+      return "text-[var(--warning-text)] font-medium";
     default:
-      return "text-gray-600";
+      return "text-[var(--text-muted)]";
   }
 }

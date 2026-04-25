@@ -144,40 +144,40 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     {completedCount} of {totalLessons}
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[var(--background-muted)]">
+                <div className="app-progress-track">
                   <div
-                    className="h-full rounded-full [background:var(--accent-progress-gradient)]"
+                    className="app-progress-bar"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-                <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">
                     Progress
                   </div>
-                  <div className="font-semibold text-[var(--text-primary)]">
+                  <div className="app-stat-value">
                     {completedCount} / {totalLessons}
                   </div>
                 </div>
 
-                <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">
                     Next step
                   </div>
-                  <div className="font-semibold text-[var(--text-primary)]">
+                  <div className="app-stat-value">
                     {firstAccessibleIncompleteLesson
                       ? firstAccessibleIncompleteLesson.title
                       : "Module complete"}
                   </div>
                 </div>
 
-                <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">
                     Access
                   </div>
-                  <div className="font-semibold text-[var(--text-primary)]">
+                  <div className="app-stat-value">
                     Step by step
                   </div>
                 </div>

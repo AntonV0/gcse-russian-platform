@@ -54,9 +54,9 @@ export function StepMetaBar({
           </div>
         </div>
 
-        <div className="h-2 overflow-hidden rounded-full bg-[var(--background-muted)]">
+        <div className="app-progress-track">
           <div
-            className="h-full rounded-full bg-[var(--brand-blue)] transition-all"
+            className="app-progress-bar"
             style={{ width: `${visitedPercent}%` }}
           />
         </div>

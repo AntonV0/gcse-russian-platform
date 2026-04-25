@@ -1,4 +1,5 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
+import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -40,9 +41,7 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
     (total, section) => total + (questionsBySectionId[section.id]?.length ?? 0),
     0
   );
-  const attempts = user
-    ? await getCurrentUserMockExamAttemptsDb(exam.id, user.id)
-    : [];
+  const attempts = user ? await getCurrentUserMockExamAttemptsDb(exam.id, user.id) : [];
 
   return (
     <main className="space-y-4">
@@ -53,19 +52,17 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
         description={exam.description ?? "Original GCSE-style mock exam."}
         badges={
           <>
-            <Badge tone="info" icon="file">
+            <Badge tone="info" icon="mockExam">
               {exam.paper_name}
             </Badge>
             <Badge tone="muted" icon="school">
               {getMockExamTierLabel(exam.tier)}
             </Badge>
             <Badge tone="muted" icon="pending">
-              {exam.time_limit_minutes
-                ? `${exam.time_limit_minutes} minutes`
-                : "Untimed"}
+              {exam.time_limit_minutes ? `${exam.time_limit_minutes} minutes` : "Untimed"}
             </Badge>
             <Badge tone="muted">{exam.total_marks} marks</Badge>
-            <Badge tone="success" icon="exercise">
+            <Badge tone="success" icon="exam">
               Attemptable
             </Badge>
           </>
@@ -81,7 +78,7 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
             <Button href="/mock-exams" variant="secondary" icon="back">
               Mock exams
             </Button>
-            <Button href="/past-papers" variant="secondary" icon="file">
+            <Button href="/past-papers" variant="secondary" icon="pastPapers">
               Past papers
             </Button>
           </>
@@ -114,12 +111,7 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
                 }
                 badges={
                   <>
-                    <Badge
-                      tone={attempt.status === "marked" ? "success" : "warning"}
-                      icon="pending"
-                    >
-                      {attempt.status}
-                    </Badge>
+                    <AttemptStatusBadge status={attempt.status} />
                     <Badge tone="muted">
                       {attempt.awarded_marks ?? "-"} / {attempt.total_marks_snapshot}
                     </Badge>

@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
+import { buildPublicMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "About GCSE Russian",
+  description:
+    "Learn about the GCSE Russian Course Platform, a focused online learning product for Pearson Edexcel GCSE Russian students and Volna learners.",
+  path: "/marketing/about",
+});
 
 const principles = [
   {

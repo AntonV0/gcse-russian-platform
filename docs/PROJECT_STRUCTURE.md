@@ -36,6 +36,7 @@ src/
     favicon.ico
     globals.css
     layout.tsx
+    page.tsx
 
     (platform)/
       layout.tsx
@@ -100,16 +101,21 @@ src/
 
     (marketing)/
       layout.tsx
-      page.tsx
 
-      about/
+      marketing/
         page.tsx
 
-      blog/
-        page.tsx
+        about/
+          page.tsx
 
-      faq/
-        page.tsx
+        blog/
+          page.tsx
+
+        faq/
+          page.tsx
+
+        pricing/
+          page.tsx
 
       (auth)/
         layout.tsx
@@ -117,9 +123,6 @@ src/
           page.tsx
         signup/
           page.tsx
-
-      pricing/
-        page.tsx
 
     actions/
       shared/
@@ -712,16 +715,18 @@ supabase/
 ### Marketing and platform route groups
 
 - `src/app/(marketing)/`  
-  Public marketing route group for homepage, pricing, blog, about, FAQ, and auth
-  entry points.
+  Public marketing route group for marketing pages and auth entry points.
+  During local/single-domain development, marketing pages live under
+  `/marketing/*` so `/` can remain the app-facing landing page.
 
 - `src/app/(platform)/`  
   Authenticated LMS route group for dashboard, courses, account, assignments,
   vocabulary, grammar, past papers, mock exams, and teacher workflows.
 
 - `src/app/(platform)/account/billing/page.tsx`  
-  Signed-in billing and Stripe checkout page. Public `/pricing` remains
-  marketing-first and trial-focused.
+  Signed-in billing and Stripe checkout page. Public `/marketing/pricing`
+  remains marketing-first and trial-focused until host-based routing maps
+  marketing pages to `www.gcserussian.com`.
 
 - `src/components/marketing/`  
   Marketing-only site chrome for public pages.

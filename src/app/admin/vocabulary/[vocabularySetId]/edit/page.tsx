@@ -4,6 +4,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import Input from "@/components/ui/input";
+import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import { updateVocabularySetAction } from "@/app/actions/admin/admin-vocabulary-actions";
@@ -91,12 +92,7 @@ export default async function EditVocabularySetPage({
                 Editing set
               </Badge>
 
-              <Badge
-                tone={vocabularySet.is_published ? "success" : "warning"}
-                icon={vocabularySet.is_published ? "success" : "info"}
-              >
-                {vocabularySet.is_published ? "Published" : "Draft"}
-              </Badge>
+              <PublishStatusBadge isPublished={vocabularySet.is_published} />
             </div>
 
             <div className="space-y-2">

@@ -27,8 +27,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="overflow-x-clip bg-[var(--background-muted)]">
       <AdminRouteTracker />
 
-      <div className="grid min-h-screen grid-cols-[272px_minmax(0,1fr)]">
-        <div className="sticky top-0 h-screen border-r border-[var(--border)] bg-[var(--background-elevated)]">
+      <div className="grid min-h-[calc(100vh-var(--site-header-height))] grid-cols-[272px_minmax(0,1fr)]">
+        <div className="sticky top-[var(--site-header-height)] h-[calc(100vh-var(--site-header-height))] border-r border-[var(--border)] bg-[var(--background-elevated)]">
           <AdminSidebar />
         </div>
 
