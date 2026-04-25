@@ -60,22 +60,22 @@ const revisionSteps = [
 
 const relatedLinks = [
   {
-    title: "Pearson Edexcel GCSE Russian",
-    description: "Read the specification-focused overview for qualification code 1RU0.",
-    href: "/marketing/edexcel-gcse-russian",
-    icon: "school" as const,
+    title: "GCSE Russian listening exam guide",
+    description: "Prepare for Paper 1 with audio strategy and vocabulary recognition.",
+    href: "/marketing/gcse-russian-listening-exam",
+    icon: "listening" as const,
   },
   {
-    title: "Online GCSE Russian course",
-    description: "See how guided lessons connect grammar, vocabulary, and exam practice.",
-    href: "/marketing/gcse-russian-course",
-    icon: "courses" as const,
+    title: "GCSE Russian speaking exam guide",
+    description: "Plan role play, picture-based task, and conversation practice.",
+    href: "/marketing/gcse-russian-speaking-exam",
+    icon: "speaking" as const,
   },
   {
-    title: "Russian GCSE private candidate guide",
-    description: "Understand preparation needs for students arranging their own exam entry.",
-    href: "/marketing/russian-gcse-private-candidate",
-    icon: "userCheck" as const,
+    title: "GCSE Russian writing exam guide",
+    description: "Build translation, accuracy, and extended-answer habits.",
+    href: "/marketing/gcse-russian-writing-exam",
+    icon: "write" as const,
   },
 ];
 
