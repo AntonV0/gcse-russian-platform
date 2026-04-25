@@ -15,7 +15,6 @@ import {
   getVocabularyDisplayVariantLabel,
   getVocabularyItemCoverageByItemIdsDb,
   getVocabularyListModeLabel,
-  getVocabularyProductiveReceptiveLabel,
   getVocabularySetTypeLabel,
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
@@ -34,6 +33,30 @@ function getItemBadgeTone(item: DbVocabularyItem) {
   if (item.source_type === "spec_required") return "info";
   if (item.priority === "extension") return "warning";
   return "muted";
+}
+
+function getItemSourceLabel(item: DbVocabularyItem) {
+  switch (item.source_type) {
+    case "spec_required":
+      return "Exam specification";
+    case "extended":
+      return "Extended";
+    case "custom":
+      return "Custom";
+  }
+}
+
+function getItemStudyUseLabel(item: DbVocabularyItem) {
+  switch (item.productive_receptive) {
+    case "productive":
+      return "Speaking and writing";
+    case "receptive":
+      return "Listening and reading";
+    case "both":
+      return "All skills";
+    default:
+      return null;
+  }
 }
 
 function CoverageBadge({
@@ -84,10 +107,14 @@ function VocabularyItemCoverageBadges({
 function VocabularyItemRow({
   item,
   coverage,
+  showStaffMetadata,
 }: {
   item: DbVocabularyItem;
   coverage: DbVocabularyItemCoverage | null;
+  showStaffMetadata: boolean;
 }) {
+  const studyUseLabel = getItemStudyUseLabel(item);
+
   return (
     <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -107,14 +134,15 @@ function VocabularyItemRow({
 
         <div className="flex shrink-0 flex-col gap-2 md:items-end">
           <div className="flex flex-wrap gap-2 md:justify-end">
-            <Badge tone={getItemBadgeTone(item)}>
-              {item.source_type.replaceAll("_", " ")}
-            </Badge>
+            <Badge tone={getItemBadgeTone(item)}>{getItemSourceLabel(item)}</Badge>
             <Badge tone="muted">{item.part_of_speech.replaceAll("_", " ")}</Badge>
             <Badge tone="muted">{getVocabularyTierLabel(item.tier)}</Badge>
+            {studyUseLabel ? <Badge tone="muted">{studyUseLabel}</Badge> : null}
           </div>
 
-          <VocabularyItemCoverageBadges item={item} coverage={coverage} />
+          {showStaffMetadata ? (
+            <VocabularyItemCoverageBadges item={item} coverage={coverage} />
+          ) : null}
         </div>
       </div>
 
@@ -150,10 +178,12 @@ function VocabularyItemSection({
   title,
   items,
   itemCoverageById,
+  showStaffMetadata,
 }: {
   title: string;
   items: DbVocabularyItem[];
   itemCoverageById: Map<string, DbVocabularyItemCoverage>;
+  showStaffMetadata: boolean;
 }) {
   if (items.length === 0) return null;
 
@@ -172,6 +202,7 @@ function VocabularyItemSection({
             key={`${item.vocabulary_list_id ?? item.vocabulary_set_id}-${item.id}`}
             item={item}
             coverage={itemCoverageById.get(item.id) ?? null}
+            showStaffMetadata={showStaffMetadata}
           />
         ))}
       </div>
@@ -182,7 +213,8 @@ function VocabularyItemSection({
 export default async function VocabularySetPage({ params }: VocabularySetPageProps) {
   const { vocabularySetRef } = await params;
   const dashboard = await getDashboardInfo();
-  const { vocabularySet, lists, items } = await loadVocabularySetByRefDb(vocabularySetRef);
+  const { vocabularySet, lists, items } =
+    await loadVocabularySetByRefDb(vocabularySetRef);
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
 
   if (!vocabularySet || (!vocabularySet.is_published && !canSeeDrafts)) {
@@ -190,9 +222,9 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
   }
 
   const groupedItems = groupVocabularyItemsBySource(items);
-  const itemCoverageById = await getVocabularyItemCoverageByItemIdsDb(
-    items.map((item) => item.id)
-  );
+  const itemCoverageById: Map<string, DbVocabularyItemCoverage> = canSeeDrafts
+    ? await getVocabularyItemCoverageByItemIdsDb(items.map((item) => item.id))
+    : new Map();
 
   return (
     <main className="space-y-4">
@@ -237,7 +269,7 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <SectionCard
           title="Vocabulary items"
-          description="Study the Russian, English, examples, and notes in this set."
+          description="Study the Russian, English, examples, and notes without leaving this page."
           tone="student"
         >
           {items.length === 0 ? (
@@ -253,16 +285,19 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
                 title="Specification vocabulary"
                 items={groupedItems.specRequired}
                 itemCoverageById={itemCoverageById}
+                showStaffMetadata={canSeeDrafts}
               />
               <VocabularyItemSection
                 title="Extended vocabulary"
                 items={groupedItems.extended}
                 itemCoverageById={itemCoverageById}
+                showStaffMetadata={canSeeDrafts}
               />
               <VocabularyItemSection
                 title="Custom vocabulary"
                 items={groupedItems.custom}
                 itemCoverageById={itemCoverageById}
+                showStaffMetadata={canSeeDrafts}
               />
             </div>
           )}
@@ -277,18 +312,12 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
                   value: getVocabularyTierLabel(vocabularySet.tier),
                 },
                 {
-                  label: "Mode",
+                  label: "Source",
                   value: getVocabularyListModeLabel(vocabularySet.list_mode),
                 },
                 {
                   label: "Type",
                   value: getVocabularySetTypeLabel(vocabularySet.set_type),
-                },
-                {
-                  label: "Display",
-                  value: getVocabularyDisplayVariantLabel(
-                    vocabularySet.default_display_variant
-                  ),
                 },
                 {
                   label: "Theme",
@@ -299,33 +328,41 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
                   value: getVocabularyTopicLabel(vocabularySet.topic_key),
                 },
                 {
-                  label: "Lists",
-                  value: lists.length,
-                },
-                {
                   label: "Items",
                   value: items.length,
                 },
+                ...(canSeeDrafts
+                  ? [
+                      {
+                        label: "Lists",
+                        value: lists.length,
+                      },
+                      {
+                        label: "Display",
+                        value: getVocabularyDisplayVariantLabel(
+                          vocabularySet.default_display_variant
+                        ),
+                      },
+                    ]
+                  : []),
               ]}
             />
           </PanelCard>
 
           <PanelCard
-            title="Learning notes"
-            description="Item metadata can help you decide what to prioritise."
+            title="How to use this set"
+            description="A quick revision rhythm for this vocabulary."
             tone="student"
           >
             <div className="space-y-3 text-sm leading-6 text-[var(--text-secondary)]">
               <p>
-                Productive vocabulary is especially useful for speaking and writing.
-                Receptive vocabulary mainly supports listening and reading.
+                Start by covering the English and saying the Russian out loud, then
+                reverse it and check the examples for natural exam-style usage.
               </p>
               <p>
-                This set marks item status as{" "}
-                {items.length > 0
-                  ? getVocabularyProductiveReceptiveLabel(items[0].productive_receptive)
-                  : "unknown"}{" "}
-                where that metadata is available.
+                Badges show whether a word is best for production, recognition, or
+                all skills, so you can prioritise speaking, writing, listening, and
+                reading practice deliberately.
               </p>
             </div>
           </PanelCard>
