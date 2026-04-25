@@ -156,7 +156,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
                   className={[
                     "rounded-xl px-3 py-2 text-sm transition",
                     activeMap[item.href]
-                      ? "bg-[var(--brand-blue-soft)] font-medium text-[var(--accent-on-soft)]"
+                      ? "font-medium [background:var(--accent-gradient-selected)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]"
                       : "hover:bg-[var(--background-muted)]",
                   ].join(" ")}
                   aria-current={activeMap[item.href] ? "page" : undefined}

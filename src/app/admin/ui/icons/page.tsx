@@ -53,7 +53,7 @@ function DemoSizeRules() {
       {sizes.map((size) => (
         <Card key={size} className="p-4 text-center">
           <div className="mb-3 flex justify-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--brand-blue)]">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
               <AppIcon icon="navigation" size={size} />
             </span>
           </div>
@@ -106,7 +106,7 @@ function DemoIconWithLabelPatterns() {
             key={row.label}
             className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--brand-blue)]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
               <AppIcon icon={row.icon} size={18} />
             </span>
             <span className="min-w-0 flex-1 truncate font-medium text-[var(--text-primary)]">

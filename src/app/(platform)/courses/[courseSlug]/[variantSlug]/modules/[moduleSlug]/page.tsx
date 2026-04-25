@@ -146,7 +146,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-[var(--background-muted)]">
                   <div
-                    className="h-full rounded-full bg-[var(--brand-blue)]"
+                    className="h-full rounded-full [background:var(--accent-progress-gradient)]"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>

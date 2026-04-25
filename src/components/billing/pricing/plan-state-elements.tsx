@@ -37,7 +37,7 @@ export function LockedOption({ label, message }: { label: string; message: strin
 
 export function DiscountBadge({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-[color-mix(in_srgb,var(--brand-blue)_12%,transparent)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-blue)]">
+    <span className="inline-flex items-center rounded-full border border-[var(--accent-selected-border)] [background:var(--accent-gradient-selected)] px-2.5 py-1 text-[11px] font-semibold text-[var(--accent-on-soft)]">
       {label}
     </span>
   );
@@ -97,7 +97,7 @@ export function ActionGroup({
     variant === "compact"
       ? "space-y-2.5"
       : variant === "highlight"
-        ? "space-y-3 rounded-xl border border-[color-mix(in_srgb,var(--brand-blue)_16%,transparent)] bg-[color-mix(in_srgb,var(--brand-blue)_4%,transparent)] p-3"
+        ? "space-y-3 rounded-xl border border-[var(--accent-selected-border)] [background:var(--accent-gradient-selected)] p-3 shadow-[0_10px_24px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
         : "space-y-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)]/40 p-3";
 
   return (
@@ -127,7 +127,7 @@ export function UpgradeOffer({
   const upgradeMessage = getUpgradeMessage(quote, targetStandardLabel);
 
   return (
-    <div className="space-y-2.5 rounded-xl border border-[color-mix(in_srgb,var(--brand-blue)_16%,transparent)] bg-[color-mix(in_srgb,var(--brand-blue)_4%,transparent)] p-3">
+    <div className="space-y-2.5 rounded-xl border border-[var(--accent-selected-border)] [background:var(--accent-gradient-selected)] p-3 shadow-[0_10px_24px_color-mix(in_srgb,var(--accent)_10%,transparent)]">
       <DiscountBadgeRow quote={quote} targetPrice={targetPrice} />
       {children}
       {savings ? (

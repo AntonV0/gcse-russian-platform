@@ -62,7 +62,7 @@ export default function UiLabShell({
                     className={[
                       "rounded-2xl border px-3.5 py-3 transition",
                       isActive
-                        ? "border-[color-mix(in_srgb,var(--brand-blue)_24%,transparent)] bg-[color-mix(in_srgb,var(--brand-blue)_8%,transparent)] shadow-[0_8px_20px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]"
+                        ? "app-selected-surface"
                         : "border-[var(--border)] bg-[var(--background-elevated)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]",
                     ].join(" ")}
                   >

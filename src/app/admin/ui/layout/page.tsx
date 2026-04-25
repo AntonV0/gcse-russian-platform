@@ -269,7 +269,7 @@ function DemoDensityComparison() {
     <div className="grid gap-4 md:grid-cols-3">
       {patterns.map((item) => (
         <Card key={item.title} className="h-full p-4">
-          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] text-[var(--brand-blue)]">
+          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
             <AppIcon icon={item.icon} size={18} />
           </div>
           <div className="mb-2 font-semibold text-[var(--text-primary)]">

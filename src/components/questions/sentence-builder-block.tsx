@@ -106,7 +106,7 @@ export default function SentenceBuilderBlock({
                 type="button"
                 onClick={() => onRemoveToken(index)}
                 disabled={hasSubmitted || isSubmitting}
-                className="rounded-full border border-[var(--accent-fill)] bg-[var(--accent-fill)] px-3 py-1.5 text-sm text-[var(--accent-on-fill)] transition hover:bg-[var(--accent-fill-hover)] disabled:cursor-default"
+                className="app-choice-chip app-choice-chip-selected px-3 py-1.5 text-sm disabled:cursor-default"
               >
                 {token}
               </button>
@@ -132,7 +132,7 @@ export default function SentenceBuilderBlock({
                 type="button"
                 onClick={() => onAddToken(index)}
                 disabled={hasSubmitted || isSubmitting}
-                className="rounded-full border border-[var(--border)] bg-[var(--background-muted)] px-3 py-1.5 text-sm transition hover:bg-[var(--background-muted)] disabled:cursor-default"
+                className="app-choice-chip px-3 py-1.5 text-sm disabled:cursor-default"
               >
                 {token}
               </button>

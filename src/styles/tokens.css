@@ -3,7 +3,9 @@
   --background: #f6f8fb;
   --background-elevated: #ffffff;
   --background-muted: #eef3f9;
+  --background-soft-accent: var(--accent-soft);
   --background-soft-blue: #edf4ff;
+  --background-soft-danger: #fff2f2;
   --background-soft-red: #fff2f2;
 
   --text-primary: #102033;
@@ -179,22 +181,53 @@
   --transition-slow: 320ms ease;
 
   /* ========= Gradients ========= */
-  --gradient-brand-soft: linear-gradient(
+  --accent-gradient-fill: linear-gradient(
     135deg,
-    rgba(var(--accent-rgb), 0.08) 0%,
-    rgba(255, 255, 255, 1) 45%,
-    rgba(217, 75, 82, 0.06) 100%
+    var(--accent-fill) 0%,
+    color-mix(in srgb, var(--accent-fill) 88%, var(--accent-fill-hover)) 58%,
+    var(--accent-fill-hover) 100%
   );
-  --gradient-blue-soft: linear-gradient(
+  --accent-gradient-fill-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-fill-hover) 92%, var(--accent-fill)) 0%,
+    var(--accent-fill-hover) 100%
+  );
+  --accent-gradient-soft: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 11%, var(--background-elevated)) 0%,
+    var(--background-elevated) 58%,
+    color-mix(in srgb, var(--accent) 5%, var(--background-elevated)) 100%
+  );
+  --accent-gradient-soft-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 16%, var(--background-elevated)) 0%,
+    color-mix(in srgb, var(--accent) 4%, var(--background-elevated)) 100%
+  );
+  --accent-gradient-selected: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 14%, var(--background-elevated)) 0%,
+    var(--accent-selected-bg) 100%
+  );
+  --accent-progress-gradient: linear-gradient(
+    90deg,
+    var(--accent-fill) 0%,
+    var(--accent-fill-hover) 100%
+  );
+  --accent-sheen-gradient: linear-gradient(
     180deg,
-    rgba(var(--accent-rgb), 0.08) 0%,
-    rgba(255, 255, 255, 1) 100%
+    color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 0%, transparent) 100%
   );
-  --gradient-red-soft: linear-gradient(
+  --danger-gradient-soft: linear-gradient(
     180deg,
-    rgba(217, 75, 82, 0.08) 0%,
-    rgba(255, 255, 255, 1) 100%
+    color-mix(in srgb, var(--danger) 9%, var(--background-elevated)) 0%,
+    var(--background-elevated) 100%
   );
+  --gradient-brand-soft: var(--accent-gradient-soft);
+  --gradient-accent-soft: var(--accent-gradient-soft);
+  --gradient-blue-soft: var(--accent-gradient-soft);
+  --gradient-danger-soft: var(--danger-gradient-soft);
+  --gradient-red-soft: var(--danger-gradient-soft);
 }
 
 /* ========= Dark mode ========= */
@@ -228,7 +261,9 @@
     var(--accent) var(--accent-muted-strength),
     var(--dark-surface-muted)
   );
+  --background-soft-accent: var(--accent-soft);
   --background-soft-blue: var(--accent-soft);
+  --background-soft-danger: color-mix(in srgb, var(--danger) 18%, var(--dark-surface-muted));
   --background-soft-red: color-mix(in srgb, var(--danger) 18%, var(--dark-surface-muted));
 
   --text-primary: #f3f7ff;

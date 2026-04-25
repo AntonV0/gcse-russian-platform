@@ -236,7 +236,7 @@ function DemoMiniPreview({
   return (
     <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
       <div className="mb-3 flex items-center gap-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--background-muted)] text-[var(--brand-blue)]">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
           <AppIcon icon={icon} size={18} />
         </span>
         <div className="font-semibold text-[var(--text-primary)]">{title}</div>
@@ -364,7 +364,7 @@ export default async function AdminUiOverviewPage() {
               contentClassName="pt-1"
             >
               <div className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--background-elevated)] text-[var(--brand-blue)]">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
                   <AppIcon icon={item.icon} size={18} />
                 </span>
                 <div className="text-sm app-text-muted">

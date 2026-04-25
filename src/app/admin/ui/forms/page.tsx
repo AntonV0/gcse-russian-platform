@@ -868,7 +868,7 @@ export default async function AdminUiFormsPage() {
           <Card>
             <CardBody className="p-4">
               <div className="mb-2 flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--brand-blue-soft)] text-[var(--brand-blue)]">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
                   <AppIcon icon="completed" size={16} />
                 </span>
                 <div className="font-semibold text-[var(--text-primary)]">

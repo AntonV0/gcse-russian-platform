@@ -48,7 +48,7 @@ export default function ThemeAccentSelector() {
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-selected-bg)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_10%,transparent)]">
           <AppIcon icon="palette" size={18} />
         </span>
 
@@ -75,18 +75,28 @@ export default function ThemeAccentSelector() {
                 "app-focus-ring min-h-20 rounded-2xl border p-3 text-left transition",
                 "hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
                 isActive
-                  ? "border-[var(--accent-selected-border)] bg-[var(--accent-selected-bg)] shadow-[0_1px_2px_rgba(0,0,0,0.22),0_0_0_1px_var(--accent-glow),0_14px_32px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
+                  ? "app-selected-surface"
                   : "border-[var(--border)] bg-[var(--background-elevated)] hover:border-[var(--border-strong)]",
               ].join(" ")}
               aria-pressed={isActive}
             >
               <span className="flex items-center gap-2">
                 <span
-                  className="h-5 w-5 shrink-0 rounded-full ring-2 ring-[var(--background-elevated)] shadow-[0_0_0_1px_color-mix(in_srgb,var(--text-primary)_16%,transparent)]"
+                  className={[
+                    "h-5 w-5 shrink-0 rounded-full ring-2 ring-[var(--background-elevated)] shadow-[0_0_0_1px_color-mix(in_srgb,var(--text-primary)_16%,transparent)]",
+                    isActive
+                      ? "outline outline-2 outline-offset-2 outline-[var(--accent-selected-border)]"
+                      : "",
+                  ].join(" ")}
                   style={{ backgroundColor: option.swatch }}
                   aria-hidden="true"
                 />
-                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                <span
+                  className={[
+                    "text-sm font-semibold",
+                    isActive ? "text-[var(--accent-on-soft)]" : "text-[var(--text-primary)]",
+                  ].join(" ")}
+                >
                   {option.label}
                 </span>
               </span>
@@ -95,7 +105,7 @@ export default function ThemeAccentSelector() {
                 className={[
                   "mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
                   isActive
-                    ? "bg-[color-mix(in_srgb,var(--accent)_10%,var(--background-elevated))] text-[var(--accent-on-soft)]"
+                    ? "[background:var(--accent-gradient-fill)] text-[var(--accent-on-fill)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_16%,transparent)]"
                     : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
                 ].join(" ")}
               >

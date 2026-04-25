@@ -612,7 +612,7 @@ function TableGuidance() {
         <Card key={rule.title}>
           <CardBody className="p-4">
             <div className="flex items-start gap-3">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--brand-blue-soft)] text-[var(--brand-blue)]">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
                 <AppIcon icon={rule.icon} size={16} />
               </span>
 

@@ -131,10 +131,8 @@ export default function SelectionBasedBlock({
                         onClick={() => onSelectOption(group.id, option)}
                         disabled={hasSubmitted || isSubmitting}
                         className={[
-                          "rounded-full border px-3 py-1.5 text-sm transition",
-                          isSelected
-                            ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
-                            : "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]",
+                          "app-choice-chip px-3 py-1.5 text-sm",
+                          isSelected ? "app-choice-chip-selected" : "",
                           hasSubmitted || isSubmitting
                             ? "cursor-default"
                             : "cursor-pointer",
@@ -171,10 +169,8 @@ export default function SelectionBasedBlock({
                       onClick={() => onSelectOption(group.id, option)}
                       disabled={hasSubmitted || isSubmitting}
                       className={[
-                        "rounded-full border px-3 py-1.5 text-sm transition",
-                        isSelected
-                          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
-                          : "border-[var(--border)] bg-[var(--background-elevated)] hover:bg-[var(--background-muted)]",
+                        "app-choice-chip px-3 py-1.5 text-sm",
+                        isSelected ? "app-choice-chip-selected" : "",
                         hasSubmitted || isSubmitting
                           ? "cursor-default"
                           : "cursor-pointer",
