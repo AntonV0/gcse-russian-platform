@@ -240,7 +240,7 @@ export default async function ProfilePage({
                   className={[
                     "app-card flex cursor-pointer flex-col items-center gap-3 p-5 text-center transition",
                     isSelected
-                      ? "ring-2 ring-[var(--brand-blue)]"
+                      ? "app-selected-surface"
                       : "hover:-translate-y-0.5",
                   ].join(" ")}
                 >
@@ -267,7 +267,7 @@ export default async function ProfilePage({
                     className={[
                       "rounded-full px-3 py-1 text-xs font-medium",
                       isSelected
-                        ? "bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)]"
+                        ? "[background:var(--accent-gradient-fill)] text-[var(--accent-on-fill)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_16%,transparent)]"
                         : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
                     ].join(" ")}
                   >

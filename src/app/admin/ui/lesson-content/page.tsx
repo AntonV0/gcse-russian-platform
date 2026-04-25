@@ -148,7 +148,7 @@ export default async function AdminUiLessonContentPage() {
 
           <LessonContentBlock label="Image" title="Classroom prompt">
             <div className="flex items-center gap-4 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-elevated)] p-4">
-              <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--brand-blue)]">
+              <span className="flex h-14 w-14 items-center justify-center rounded-2xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
                 <AppIcon icon="image" size={24} />
               </span>
               <p className="text-sm app-text-muted">

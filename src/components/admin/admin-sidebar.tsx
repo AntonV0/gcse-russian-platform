@@ -16,7 +16,7 @@ function getNavItemClass(isActive: boolean, isSubItem = false) {
     "group flex w-full items-center gap-3 text-sm leading-5 transition-all duration-150",
     isSubItem ? "px-3 py-2" : "px-3 py-2.5",
     isActive
-      ? "border-l-2 border-[var(--brand-blue)] bg-[var(--background-muted)] font-medium text-[var(--text-primary)]"
+      ? "border-l-2 border-[var(--accent-fill)] [background:var(--accent-gradient-selected)] font-medium text-[var(--accent-on-soft)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
       : "text-[var(--text-secondary)] hover:bg-[var(--background-muted)]/70 hover:text-[var(--text-primary)]",
   ].join(" ");
 }
@@ -129,7 +129,7 @@ export default function AdminSidebar() {
 
       <div className="shrink-0 border-b border-[var(--border)] px-4 py-4">
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--background-muted)] text-[var(--brand-blue)]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
             <AppIcon icon="admin" size={16} />
           </div>
 

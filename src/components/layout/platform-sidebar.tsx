@@ -44,9 +44,9 @@ function isActive(pathname: string | undefined, href: string) {
 
 function itemClass(active: boolean) {
   return [
-    "group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition app-focus-ring",
+    "group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-transparent px-3 py-2.5 text-sm font-medium transition app-focus-ring",
     active
-      ? "bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)] shadow-sm ring-1 ring-[var(--brand-blue)]/10"
+      ? "app-selected-surface before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-r-full before:[background:var(--accent-gradient-fill)]"
       : "text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
   ].join(" ");
 }
@@ -55,7 +55,7 @@ function mobileItemClass(active: boolean) {
   return [
     "inline-flex shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 text-sm font-medium transition app-focus-ring",
     active
-      ? "border-[var(--brand-blue)] bg-[var(--brand-blue-soft)] text-[var(--accent-on-soft)]"
+      ? "app-selected-surface"
       : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
   ].join(" ");
 }

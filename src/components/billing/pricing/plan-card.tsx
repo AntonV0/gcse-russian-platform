@@ -27,7 +27,9 @@ export default function PlanCard({
     <div
       className={[
         "dev-marker-host relative app-card flex h-full flex-col overflow-hidden",
-        isHighlight ? "ring-2 ring-[color:var(--brand-blue)] shadow-lg" : "",
+        isHighlight
+          ? "border-[var(--accent-selected-border)] [background:var(--accent-gradient-selected)] shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_10%,transparent),0_18px_42px_color-mix(in_srgb,var(--accent)_14%,transparent)] before:absolute before:inset-x-0 before:top-0 before:h-1 before:[background:var(--accent-progress-gradient)]"
+          : "",
       ].join(" ")}
     >
       {SHOW_UI_DEBUG ? (
@@ -86,7 +88,7 @@ export default function PlanCard({
           <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
             {features.map((feature) => (
               <li key={feature} className="flex items-start gap-2.5">
-                <span className="mt-0.5 text-[var(--brand-blue)]">
+                <span className="mt-0.5 text-[var(--accent-ink)]">
                   <AppIcon icon="completed" size={14} />
                 </span>
                 <span className="leading-6">{feature}</span>

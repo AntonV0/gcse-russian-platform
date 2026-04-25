@@ -21,7 +21,7 @@ function getStateClass(state: NonNullable<AdminRowProps["state"]>) {
       return "border-[var(--border-strong)] bg-[var(--background-muted)] shadow-[0_10px_20px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]";
 
     case "selected":
-      return "border-[color-mix(in_srgb,var(--brand-blue)_24%,transparent)] bg-[color-mix(in_srgb,var(--brand-blue)_8%,transparent)] shadow-[0_10px_20px_color-mix(in_srgb,var(--brand-blue)_8%,transparent)]";
+      return "app-selected-surface";
 
     case "disabled":
       return "border-[var(--border-subtle)] bg-[var(--background-muted)] opacity-60";
@@ -63,7 +63,7 @@ export default function AdminRow({
 
       <div
         className={[
-          "rounded-2xl border transition-[border-color,background-color,box-shadow,opacity]",
+          "relative overflow-hidden rounded-2xl border transition-[border-color,background-color,box-shadow,opacity]",
           compact ? "px-3 py-2.5" : "px-4 py-3",
           nested ? "rounded-xl" : "",
           getStateClass(state),

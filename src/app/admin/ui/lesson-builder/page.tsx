@@ -63,7 +63,7 @@ function SectionSidebarRow({
       className={[
         "rounded-2xl border px-3 py-3 transition",
         active
-          ? "border-[var(--brand-blue)] bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] shadow-[0_10px_20px_color-mix(in_srgb,var(--brand-blue)_10%,transparent)]"
+          ? "app-selected-surface"
           : "border-[var(--border)] bg-[var(--background-elevated)]",
         dropTarget ? "ring-2 ring-[color-mix(in_srgb,var(--success)_40%,transparent)]" : "",
       ]
@@ -104,9 +104,9 @@ function BlockRow({
       className={[
         "rounded-2xl border px-3 py-3 transition",
         selected
-          ? "border-[var(--brand-blue)] bg-[color-mix(in_srgb,var(--brand-blue)_10%,transparent)] shadow-[0_10px_20px_color-mix(in_srgb,var(--brand-blue)_10%,transparent)]"
+          ? "app-selected-surface"
           : "border-[var(--border)] bg-[var(--background-elevated)]",
-        dropTarget ? "ring-2 ring-[color-mix(in_srgb,var(--brand-blue)_36%,transparent)]" : "",
+        dropTarget ? "ring-2 ring-[var(--accent-ring)]" : "",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -240,7 +240,7 @@ export default async function AdminUiLessonBuilderPage() {
                         className={[
                           "rounded-xl border px-3 py-2 text-sm font-semibold transition",
                           index === 0 && group === "Teaching"
-                            ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--brand-blue)_20%,transparent)]"
+                            ? "app-selected-surface-strong"
                             : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)]",
                         ].join(" ")}
                       >

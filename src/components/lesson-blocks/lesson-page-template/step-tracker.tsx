@@ -62,7 +62,7 @@ export function StepTracker({
           const isUnlocked = index <= allowedMaxIndex;
 
           const className = isActive
-            ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
+            ? "app-selected-surface-strong"
             : isVisited
               ? "border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text)] hover:bg-[var(--success-surface-strong)]"
               : isUnlocked
@@ -107,7 +107,7 @@ export function StepTracker({
           const isUnlocked = index <= allowedMaxIndex;
 
           const className = isActive
-            ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
+            ? "app-selected-surface"
             : isVisited
               ? "border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text-strong)] hover:bg-[var(--success-surface-strong)]"
               : isUnlocked
@@ -115,7 +115,7 @@ export function StepTracker({
                 : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]";
 
           const descriptionClass = isActive
-            ? "text-[var(--accent-on-fill)] opacity-80"
+            ? "text-[var(--accent-on-soft)] opacity-80"
             : isVisited
               ? "text-[var(--success-text)]"
               : isUnlocked

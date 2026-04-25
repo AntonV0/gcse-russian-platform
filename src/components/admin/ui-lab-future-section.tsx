@@ -23,7 +23,7 @@ export default function UiLabFutureSection({
           <Card key={item}>
             <CardBody className="p-4">
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-blue-soft)] text-[var(--brand-blue)]">
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
                   <AppIcon icon="idea" size={15} />
                 </span>
                 <div className="min-w-0">
