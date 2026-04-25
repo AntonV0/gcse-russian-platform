@@ -10,6 +10,10 @@ import {
   getTrimmedString,
 } from "./shared";
 
+function usesOptionsTable(questionType: string) {
+  return questionType === "multiple_choice" || questionType === "multiple_response";
+}
+
 export async function duplicateQuestionAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
 
@@ -75,7 +79,7 @@ export async function duplicateQuestionAction(formData: FormData) {
     throw new Error("Failed to duplicate question");
   }
 
-  if (duplicatedQuestion.question_type === "multiple_choice") {
+  if (usesOptionsTable(duplicatedQuestion.question_type)) {
     const { data: sourceOptions, error: sourceOptionsError } = await supabase
       .from("question_options")
       .select("*")
@@ -239,7 +243,7 @@ export async function duplicateQuestionSetAction(formData: FormData) {
       continue;
     }
 
-    if (sourceQuestion.question_type === "multiple_choice") {
+    if (usesOptionsTable(sourceQuestion.question_type)) {
       const { data: sourceOptions, error: sourceOptionsError } = await supabase
         .from("question_options")
         .select("*")
@@ -403,7 +407,7 @@ export async function createQuestionSetFromTemplateAction(formData: FormData) {
 
     if (!newQuestionId) continue;
 
-    if (sourceQuestion.question_type === "multiple_choice") {
+    if (usesOptionsTable(sourceQuestion.question_type)) {
       const { data: sourceOptions, error: sourceOptionsError } = await supabase
         .from("question_options")
         .select("*")
