@@ -26,7 +26,7 @@ function renderExplanation(explanation: string | null) {
         icon="text"
         iconTone="default"
         title="No explanation yet"
-        description="This grammar point is published, but the full explanation has not been added."
+        description="This explanation is being prepared. Check the examples and tables for now."
       />
     );
   }
@@ -65,7 +65,7 @@ function renderExplanation(explanation: string | null) {
             <ul key={`${block}-${index}`} className="space-y-2 text-sm leading-7 text-[var(--text-secondary)]">
               {items.map((item) => (
                 <li key={item} className="flex gap-3">
-                  <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--brand-blue)]" />
+                  <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-fill)]" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -101,7 +101,7 @@ function RussianExampleText({
   return (
     <>
       {before}
-      <mark className="rounded-md bg-[var(--brand-blue-soft)] px-1 py-0.5 text-[var(--accent-on-soft)]">
+      <mark className="rounded-md [background:var(--accent-gradient-selected)] px-1 py-0.5 text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
         {highlight}
       </mark>
       {after}
@@ -121,6 +121,10 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
   if (!grammarSet || !grammarPoint || !canDashboardAccessGrammarSet(grammarSet, dashboard)) {
     notFound();
   }
+
+  const relatedVocabularyHref = grammarSet.theme_key
+    ? `/vocabulary?themeKey=${encodeURIComponent(grammarSet.theme_key)}`
+    : "/vocabulary";
 
   return (
     <main className="space-y-4">
@@ -191,7 +195,7 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
                 icon="language"
                 iconTone="default"
                 title="No examples yet"
-                description="Examples will appear here once they are added in the grammar CMS."
+                description="Examples are being prepared for this grammar point."
               />
             ) : (
               <div className="grid gap-3">
@@ -246,16 +250,19 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
           </PanelCard>
 
           <PanelCard
-            title="Related learning"
-            description="Lesson and practice links will connect here when those integrations are added."
+            title="Next steps"
+            description="Keep this rule connected to the rest of your revision."
             tone="student"
           >
             <div className="flex flex-col gap-3">
-              <Button href="/courses" variant="secondary" icon="lessons">
-                Lessons
+              <Button href={`/grammar/${grammarSet.slug}`} variant="secondary" icon="back">
+                Back to this set
               </Button>
-              <Button href="/dashboard" variant="secondary" icon="exercise">
-                Practice
+              <Button href={relatedVocabularyHref} variant="secondary" icon="vocabulary">
+                Related vocabulary
+              </Button>
+              <Button href="/courses" variant="secondary" icon="lessons">
+                Course lessons
               </Button>
             </div>
           </PanelCard>
