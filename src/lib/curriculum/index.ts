@@ -8,3 +8,4 @@ export * from "./topics";
 export * from "./grammar-tags";
 export * from "./vocabulary-tags";
 export * from "./content-purpose";
+export * from "./question-taxonomy";
