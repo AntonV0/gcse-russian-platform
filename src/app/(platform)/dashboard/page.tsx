@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import AppIcon from "@/components/ui/app-icon";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -225,11 +226,11 @@ export default async function DashboardPage() {
                       GCSE Russian
                     </Badge>
 
-                    <Badge tone="muted" icon="layers">
+                    <Badge tone="muted" icon="learning">
                       {getVariantLabel(dashboard.variant)}
                     </Badge>
 
-                    <Badge tone="muted" icon="userCheck">
+                    <Badge tone="muted" icon="student">
                       {getAccessLabel(dashboard.accessMode)}
                     </Badge>
                   </div>
@@ -354,7 +355,7 @@ export default async function DashboardPage() {
                   className="inline-flex items-center gap-2 font-medium app-brand-text"
                 >
                   Open courses
-                  <span aria-hidden="true">→</span>
+                  <AppIcon icon="next" size={14} />
                 </Link>
               </div>
             </DashboardCard>
@@ -371,7 +372,7 @@ export default async function DashboardPage() {
                   className="inline-flex items-center gap-2 font-medium app-brand-text"
                 >
                   Open vocabulary
-                  <span aria-hidden="true">→</span>
+                  <AppIcon icon="next" size={14} />
                 </Link>
               </div>
             </DashboardCard>
@@ -388,7 +389,7 @@ export default async function DashboardPage() {
                   className="inline-flex items-center gap-2 font-medium app-brand-text"
                 >
                   Open grammar
-                  <span aria-hidden="true">→</span>
+                  <AppIcon icon="next" size={14} />
                 </Link>
               </div>
             </DashboardCard>
@@ -407,7 +408,7 @@ export default async function DashboardPage() {
                   className="inline-flex items-center gap-2 font-medium app-brand-text"
                 >
                   Open past papers
-                  <span aria-hidden="true">→</span>
+                  <AppIcon icon="next" size={14} />
                 </Link>
               </div>
             </DashboardCard>
@@ -426,7 +427,7 @@ export default async function DashboardPage() {
                       className="inline-flex items-center gap-2 font-medium app-brand-text"
                     >
                       View assignments
-                      <span aria-hidden="true">→</span>
+                      <AppIcon icon="next" size={14} />
                     </Link>
                   </>
                 ) : (
@@ -441,7 +442,7 @@ export default async function DashboardPage() {
                       className="inline-flex items-center gap-2 font-medium app-brand-text"
                     >
                       Explore online classes
-                      <span aria-hidden="true">→</span>
+                      <AppIcon icon="next" size={14} />
                     </Link>
                   </>
                 )}
@@ -482,15 +483,15 @@ export default async function DashboardPage() {
                   Browse courses
                 </Button>
 
-                <Button href="/vocabulary" variant="secondary" icon="language">
+                <Button href="/vocabulary" variant="secondary" icon="vocabulary">
                   Vocabulary
                 </Button>
 
-                <Button href="/grammar" variant="secondary" icon="lessonContent">
+                <Button href="/grammar" variant="secondary" icon="grammar">
                   Grammar
                 </Button>
 
-                <Button href="/past-papers" variant="secondary" icon="file">
+                <Button href="/past-papers" variant="secondary" icon="pastPapers">
                   Past papers
                 </Button>
 
@@ -518,7 +519,7 @@ export default async function DashboardPage() {
           <section className="app-surface-brand app-section-padding-lg">
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon="users">
+                <Badge tone="info" icon="teacher">
                   Teacher workspace
                 </Badge>
                 <Badge tone="muted" icon="school">
@@ -570,7 +571,7 @@ export default async function DashboardPage() {
                   className="inline-flex items-center gap-2 font-medium app-brand-text"
                 >
                   Open teacher assignments
-                  <span aria-hidden="true">→</span>
+                  <AppIcon icon="next" size={14} />
                 </Link>
               </div>
             </DashboardCard>
@@ -597,7 +598,7 @@ export default async function DashboardPage() {
           <section className="app-surface-brand app-section-padding-lg">
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon="dashboard">
+                <Badge tone="info" icon="admin">
                   Admin workspace
                 </Badge>
               </div>

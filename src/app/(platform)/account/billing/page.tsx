@@ -36,7 +36,7 @@ export default async function BillingPage() {
       <section className="app-surface-brand px-4 py-5 md:px-6 md:py-7">
         <div className="mx-auto max-w-5xl space-y-5">
           <div className="space-y-3 text-center">
-            <Badge tone="info" icon="info">
+            <Badge tone="info" icon="billing">
               Account billing
             </Badge>
 
@@ -139,15 +139,15 @@ export default async function BillingPage() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
                 >
-                  <AppIcon icon="next" size={14} />
                   Open public pricing
+                  <AppIcon icon="externalLink" size={14} />
                 </Link>
 
                 <Link
                   href="/account"
                   className="inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] hover:underline"
                 >
-                  <AppIcon icon="next" size={14} />
+                  <AppIcon icon="back" size={14} />
                   Back to account
                 </Link>
               </div>

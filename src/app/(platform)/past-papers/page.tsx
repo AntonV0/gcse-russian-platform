@@ -2,6 +2,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import AppIcon from "@/components/ui/app-icon";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
@@ -88,13 +89,13 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
         description="Browse official Pearson Edexcel GCSE Russian 1RU0 resource links by series, paper, tier, and resource type."
         badges={
           <>
-            <Badge tone="info" icon="file">
+            <Badge tone="info" icon="pastPapers">
               Pearson Edexcel 1RU0
             </Badge>
             <Badge tone="muted" icon="school">
               GCSE Russian
             </Badge>
-            <Badge tone="success" icon="preview">
+            <Badge tone="success" icon="externalLink">
               Official links only
             </Badge>
           </>
@@ -104,7 +105,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             <Button href="/dashboard" variant="secondary" icon="dashboard">
               Dashboard
             </Button>
-            <Button href="/mock-exams" variant="secondary" icon="exercise">
+            <Button href="/mock-exams" variant="secondary" icon="mockExam">
               Mock exams
             </Button>
           </>
@@ -222,7 +223,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
                           </div>
 
                           <div className="flex flex-wrap gap-2">
-                            <Badge tone="info" icon="file">
+                            <Badge tone="info" icon="pastPapers">
                               Paper {resource.paper_number}
                             </Badge>
                             <Badge tone="muted" icon="school">
@@ -232,7 +233,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
                               {getPastPaperResourceTypeLabel(resource.resource_type)}
                             </Badge>
                             {resource.is_official ? (
-                              <Badge tone="success" icon="preview">
+                              <Badge tone="success" icon="externalLink">
                                 Official
                               </Badge>
                             ) : null}
@@ -243,9 +244,10 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
                           href={resource.official_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="app-btn-base app-btn-primary min-h-10 rounded-2xl px-4 py-2.5 text-sm"
+                          className="app-btn-base app-btn-primary min-h-10 gap-2 rounded-2xl px-4 py-2.5 text-sm"
                         >
                           Open Pearson resource
+                          <AppIcon icon="externalLink" size={14} />
                         </a>
                       </div>
                     </div>

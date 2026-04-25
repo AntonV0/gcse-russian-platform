@@ -138,7 +138,10 @@ export default function LessonSectionEditor(props: {
       >
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <Badge tone={section.is_published ? "success" : "warning"}>
+            <Badge
+              tone={section.is_published ? "success" : "warning"}
+              icon={section.is_published ? "published" : "draft"}
+            >
               {section.is_published ? "Published" : "Draft"}
             </Badge>
             <Badge tone="muted">{section.section_kind}</Badge>

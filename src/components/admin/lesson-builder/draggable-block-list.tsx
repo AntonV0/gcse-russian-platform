@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ChevronDown, ChevronUp, Copy, Eye, EyeOff, GripVertical } from "lucide-react";
 import {
   duplicateBlockAction,
   moveBlockAction,
@@ -26,6 +25,7 @@ import {
   getLessonBlockPreview,
 } from "@/lib/lessons/lesson-blocks";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import AppIcon from "@/components/ui/app-icon";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
@@ -187,7 +187,7 @@ export default function DraggableBlockList(props: {
                     className="inline-flex h-5 w-5 items-center justify-center text-[var(--text-muted)]"
                     aria-hidden="true"
                   >
-                    <GripVertical size={14} />
+                    <AppIcon icon="reorder" size={14} />
                   </span>
 
                   <span className="text-sm font-semibold text-[var(--text-primary)]">
@@ -198,7 +198,10 @@ export default function DraggableBlockList(props: {
                     {getLessonBlockGroupLabel(block.block_type)}
                   </Badge>
 
-                  <Badge tone={block.is_published ? "success" : "warning"}>
+                  <Badge
+                    tone={block.is_published ? "success" : "warning"}
+                    icon={block.is_published ? "published" : "draft"}
+                  >
                     {block.is_published ? "Published" : "Draft"}
                   </Badge>
 
@@ -220,7 +223,7 @@ export default function DraggableBlockList(props: {
                     title="Duplicate block"
                     disabled={isPending}
                   >
-                    <Copy size={13} />
+                    <AppIcon icon="duplicate" size={13} />
                   </BlockIconButton>
                 </form>
 
@@ -234,7 +237,7 @@ export default function DraggableBlockList(props: {
                     title="Move block up"
                     disabled={blockIndex === 0 || isPending}
                   >
-                    <ChevronUp size={14} />
+                    <AppIcon icon="up" size={14} />
                   </BlockIconButton>
                 </form>
 
@@ -251,7 +254,7 @@ export default function DraggableBlockList(props: {
                     title={block.is_published ? "Unpublish block" : "Publish block"}
                     disabled={isPending}
                   >
-                    {block.is_published ? <EyeOff size={13} /> : <Eye size={13} />}
+                    <AppIcon icon={block.is_published ? "hidden" : "preview"} size={13} />
                   </BlockIconButton>
                 </form>
 
@@ -265,7 +268,7 @@ export default function DraggableBlockList(props: {
                     title="Move block down"
                     disabled={blockIndex === props.section.blocks.length - 1 || isPending}
                   >
-                    <ChevronDown size={14} />
+                    <AppIcon icon="down" size={14} />
                   </BlockIconButton>
                 </form>
               </div>

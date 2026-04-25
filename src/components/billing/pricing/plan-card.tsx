@@ -1,4 +1,5 @@
 import Badge from "@/components/ui/badge";
+import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type PlanCardProps = {
@@ -85,7 +86,9 @@ export default function PlanCard({
           <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
             {features.map((feature) => (
               <li key={feature} className="flex items-start gap-2.5">
-                <span className="mt-0.5 text-[var(--brand-blue)]">✓</span>
+                <span className="mt-0.5 text-[var(--brand-blue)]">
+                  <AppIcon icon="completed" size={14} />
+                </span>
                 <span className="leading-6">{feature}</span>
               </li>
             ))}

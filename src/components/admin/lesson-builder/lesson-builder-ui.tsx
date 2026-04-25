@@ -178,7 +178,7 @@ export function ToolbarButton({
       onClick={onClick}
       className={`inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition ${
         isActive
-          ? "border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--accent)_18%,transparent)]"
+          ? "border-[var(--accent-fill)] [background:var(--accent-gradient-fill)] text-[var(--accent-on-fill)] shadow-[0_10px_22px_color-mix(in_srgb,var(--accent)_18%,transparent)]"
           : "border-[var(--border)] bg-[var(--surface-plain-bg)] text-[var(--text-primary)] shadow-[var(--shadow-xs)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-muted-bg)]"
       }`}
     >

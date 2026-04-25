@@ -150,7 +150,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
         description="Browse GCSE Russian vocabulary sets from the database, with filters for tier, source mode, and theme."
         badges={
           <>
-            <Badge tone="info" icon="language">
+            <Badge tone="info" icon="vocabulary">
               Vocabulary hub
             </Badge>
             <Badge tone="muted" icon="school">
@@ -168,7 +168,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             <Button href="/dashboard" variant="secondary" icon="dashboard">
               Dashboard
             </Button>
-            <Button href="/grammar" variant="secondary" icon="lessonContent">
+            <Button href="/grammar" variant="secondary" icon="grammar">
               Grammar
             </Button>
           </>
@@ -234,7 +234,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
       >
         {vocabularySets.length === 0 ? (
           <EmptyState
-            icon="language"
+            icon="vocabulary"
             iconTone="brand"
             title="No vocabulary sets found"
             description="Try clearing filters, or publish vocabulary sets in admin so students can see them."
@@ -252,7 +252,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
                     <Badge tone="info" icon="school">
                       {getVocabularyTierLabel(vocabularySet.tier)}
                     </Badge>
-                    <Badge tone="muted" icon="language">
+                    <Badge tone="muted" icon="vocabulary">
                       {getVocabularyListModeLabel(vocabularySet.list_mode)}
                     </Badge>
                     <Badge tone="muted" className="capitalize">

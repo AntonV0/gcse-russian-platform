@@ -58,7 +58,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
         description="Review GCSE Russian grammar through structured sets, explanations, examples, and reference tables."
         badges={
           <>
-            <Badge tone="info" icon="lessonContent">
+            <Badge tone="info" icon="grammar">
               Grammar hub
             </Badge>
             <Badge tone="muted" icon="school">
@@ -71,7 +71,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             <Button href="/dashboard" variant="secondary" icon="dashboard">
               Dashboard
             </Button>
-            <Button href="/vocabulary" variant="secondary" icon="language">
+            <Button href="/vocabulary" variant="secondary" icon="vocabulary">
               Vocabulary
             </Button>
           </>
