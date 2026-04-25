@@ -10,7 +10,7 @@ import { getCourseProgressSummary } from "@/lib/progress/progress";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
 function formatLabel(value: string | null) {
-  if (!value) return "—";
+  if (!value) return "-";
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
@@ -26,65 +26,6 @@ function getAccessLabel(accessMode: "trial" | "full" | "volna" | null) {
   if (accessMode === "full") return "Full access";
   if (accessMode === "trial") return "Trial access";
   return "Volna access";
-}
-
-function getStudentIntro(variant: "foundation" | "higher" | "volna" | null) {
-  if (variant === "foundation") {
-    return "You are currently on the Foundation learning path, with structured lessons and revision support designed to build confidence step by step.";
-  }
-
-  if (variant === "higher") {
-    return "You are currently on the Higher learning path, with more advanced language work, exam preparation, and deeper revision support.";
-  }
-
-  if (variant === "volna") {
-    return "You are currently using the Volna student learning experience, with teacher-led support, assignments, and guided progress.";
-  }
-
-  return "Your account is ready, but no active GCSE Russian variant has been detected yet.";
-}
-
-function getStudentPrimaryAction(
-  variant: "foundation" | "higher" | "volna" | null,
-  accessMode: "trial" | "full" | "volna" | null
-) {
-  if (accessMode === "volna") {
-    return {
-      href: "/assignments",
-      label: "Open assignments",
-      icon: "assignments" as const,
-    };
-  }
-
-  if (variant) {
-    return {
-      href: "/courses",
-      label: "Continue learning",
-      icon: "next" as const,
-    };
-  }
-
-  return {
-    href: "/courses",
-    label: "Browse courses",
-    icon: "courses" as const,
-  };
-}
-
-function getStudentSecondaryAction(accessMode: "trial" | "full" | "volna" | null) {
-  if (accessMode === "volna") {
-    return {
-      href: "/courses",
-      label: "Open lessons",
-      icon: "courses" as const,
-    };
-  }
-
-  return {
-    href: "/online-classes",
-    label: "Explore online classes",
-    icon: "school" as const,
-  };
 }
 
 function getProgressMessage(
@@ -107,7 +48,7 @@ function getProgressMessage(
     return "Start your first lesson to begin building progress on your current course path.";
   }
 
-  return "Keep going — steady lesson progress builds stronger confidence for GCSE Russian.";
+  return "Keep going - steady lesson progress builds stronger confidence for GCSE Russian.";
 }
 
 function getNextStep(
@@ -179,8 +120,6 @@ export default async function DashboardPage() {
       : { completedLessons: 0 };
 
   const welcomeName = profile?.full_name ? `, ${profile.full_name}` : "";
-  const primaryAction = getStudentPrimaryAction(dashboard.variant, dashboard.accessMode);
-  const secondaryAction = getStudentSecondaryAction(dashboard.accessMode);
   const nextStep = getNextStep(
     dashboard.variant,
     dashboard.accessMode,
@@ -236,42 +175,47 @@ export default async function DashboardPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <h2 className="app-title max-w-3xl">Your student hub</h2>
+                    <h2 className="app-title max-w-3xl">
+                      {progressSummary.completedLessons > 0
+                        ? "Continue where you left off"
+                        : "Start your GCSE Russian path"}
+                    </h2>
                     <p className="app-subtitle max-w-2xl">
-                      {getStudentIntro(dashboard.variant)}
+                      {nextStep.description}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <Button
-                    href={primaryAction.href}
-                    variant="primary"
-                    icon={primaryAction.icon}
-                  >
-                    {primaryAction.label}
+                  <Button href={nextStep.href} variant="primary" icon={nextStep.icon}>
+                    {nextStep.label}
                   </Button>
 
-                  <Button
-                    href={secondaryAction.href}
-                    variant="secondary"
-                    icon={secondaryAction.icon}
-                  >
-                    {secondaryAction.label}
+                  <Button href="/vocabulary" variant="secondary" icon="vocabulary">
+                    Revise vocabulary
                   </Button>
 
-                  <Button href="/profile" variant="secondary" icon="user">
-                    View profile
+                  <Button href="/grammar" variant="secondary" icon="grammar">
+                    Review grammar
                   </Button>
                 </div>
               </div>
 
-              <DashboardCard title="At a glance" className="h-full">
+              <DashboardCard title="Learning snapshot" className="h-full">
                 <div className="space-y-4">
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-3">
                     <div className="rounded-xl bg-[var(--background-muted)] p-3">
                       <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                        Variant
+                        Completed lessons
+                      </div>
+                      <div className="font-semibold text-[var(--text-primary)]">
+                        {String(progressSummary.completedLessons)}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl bg-[var(--background-muted)] p-3">
+                      <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
+                        Course path
                       </div>
                       <div className="font-semibold text-[var(--text-primary)]">
                         {getVariantLabel(dashboard.variant)}
@@ -286,68 +230,24 @@ export default async function DashboardPage() {
                         {getAccessLabel(dashboard.accessMode)}
                       </div>
                     </div>
-
-                    <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                      <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                        Completed lessons
-                      </div>
-                      <div className="font-semibold text-[var(--text-primary)]">
-                        {String(progressSummary.completedLessons)}
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl bg-[var(--background-muted)] p-3">
-                      <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
-                        Account
-                      </div>
-                      <div className="font-semibold text-[var(--text-primary)]">
-                        {user?.email ?? "Not logged in"}
-                      </div>
-                    </div>
                   </div>
 
                   <p className="text-sm app-text-muted">
-                    This dashboard will continue growing into the main place for progress,
-                    resources, revision, and next steps.
+                    {getProgressMessage(
+                      dashboard.accessMode,
+                      progressSummary.completedLessons
+                    )}
                   </p>
                 </div>
               </DashboardCard>
             </div>
           </section>
 
-          <section className="grid gap-4 md:grid-cols-2">
-            <DashboardCard title="Your progress">
-              <div className="space-y-3">
-                <div className="text-2xl font-semibold text-[var(--text-primary)]">
-                  {progressSummary.completedLessons} lessons completed
-                </div>
-
-                <p className="text-sm app-text-muted">
-                  {getProgressMessage(
-                    dashboard.accessMode,
-                    progressSummary.completedLessons
-                  )}
-                </p>
-              </div>
-            </DashboardCard>
-
-            <DashboardCard title={nextStep.title}>
-              <div className="space-y-3">
-                <p>{nextStep.description}</p>
-
-                <Button href={nextStep.href} variant="secondary" icon={nextStep.icon}>
-                  {nextStep.label}
-                </Button>
-              </div>
-            </DashboardCard>
-          </section>
-
           <section className="grid gap-4 md:grid-cols-3">
-            <DashboardCard title="Courses">
+            <DashboardCard title="Course path">
               <div className="space-y-3">
                 <p>
-                  Continue through your lesson structure, revisit modules, and keep your
-                  GCSE Russian study moving forward.
+                  Continue lessons in order and keep your GCSE Russian progress moving.
                 </p>
 
                 <Link
@@ -360,11 +260,10 @@ export default async function DashboardPage() {
               </div>
             </DashboardCard>
 
-            <DashboardCard title="Vocabulary">
+            <DashboardCard title="Vocabulary revision">
               <div className="space-y-3">
                 <p>
-                  Build topic vocabulary, revise key words, and prepare for reading,
-                  writing, listening, and speaking tasks.
+                  Review topic vocabulary for reading, writing, listening, and speaking.
                 </p>
 
                 <Link
@@ -377,11 +276,10 @@ export default async function DashboardPage() {
               </div>
             </DashboardCard>
 
-            <DashboardCard title="Grammar">
+            <DashboardCard title="Grammar reference">
               <div className="space-y-3">
                 <p>
-                  Review grammar explanations, sentence patterns, and language rules that
-                  support stronger exam performance.
+                  Check grammar explanations, sentence patterns, and exam-useful rules.
                 </p>
 
                 <Link
@@ -396,11 +294,11 @@ export default async function DashboardPage() {
           </section>
 
           <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-            <DashboardCard title="Past papers and exam practice">
+            <DashboardCard title="Exam practice">
               <div className="space-y-3">
                 <p>
-                  Practice with exam-style material, revision tasks, and future past paper
-                  tools designed to support GCSE preparation.
+                  Use past papers and exam-style material when you are ready to test
+                  recall under more realistic conditions.
                 </p>
 
                 <Link
@@ -413,7 +311,9 @@ export default async function DashboardPage() {
               </div>
             </DashboardCard>
 
-            <DashboardCard title="Important">
+            <DashboardCard
+              title={dashboard.accessMode === "volna" ? "Assignments" : "Live support"}
+            >
               <div className="space-y-3">
                 {dashboard.accessMode === "volna" ? (
                   <>
@@ -434,7 +334,7 @@ export default async function DashboardPage() {
                   <>
                     <p>
                       Looking for live support as well as self-study? Explore Volna
-                      School’s online GCSE Russian classes.
+                      School&apos;s online GCSE Russian classes.
                     </p>
 
                     <Link
@@ -450,67 +350,6 @@ export default async function DashboardPage() {
             </DashboardCard>
           </section>
 
-          <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-            <DashboardCard title="Your account">
-              <div className="space-y-2">
-                <div>
-                  <span className="font-medium text-[var(--text-primary)]">Email:</span>{" "}
-                  {user?.email ?? "Not logged in"}
-                </div>
-
-                <div>
-                  <span className="font-medium text-[var(--text-primary)]">Role:</span>{" "}
-                  {formatLabel(dashboard.role)}
-                </div>
-
-                <div>
-                  <span className="font-medium text-[var(--text-primary)]">
-                    Learning variant:
-                  </span>{" "}
-                  {getVariantLabel(dashboard.variant)}
-                </div>
-
-                <div>
-                  <span className="font-medium text-[var(--text-primary)]">Access:</span>{" "}
-                  {getAccessLabel(dashboard.accessMode)}
-                </div>
-              </div>
-            </DashboardCard>
-
-            <DashboardCard title="Quick actions">
-              <div className="flex flex-col gap-3">
-                <Button href="/courses" variant="secondary" icon="courses">
-                  Browse courses
-                </Button>
-
-                <Button href="/vocabulary" variant="secondary" icon="vocabulary">
-                  Vocabulary
-                </Button>
-
-                <Button href="/grammar" variant="secondary" icon="grammar">
-                  Grammar
-                </Button>
-
-                <Button href="/past-papers" variant="secondary" icon="pastPapers">
-                  Past papers
-                </Button>
-
-                {dashboard.accessMode === "volna" ? (
-                  <Button href="/assignments" variant="secondary" icon="assignments">
-                    Open assignments
-                  </Button>
-                ) : (
-                  <Button href="/online-classes" variant="secondary" icon="school">
-                    Online classes
-                  </Button>
-                )}
-
-                <Button href="/settings" variant="secondary" icon="settings">
-                  Settings
-                </Button>
-              </div>
-            </DashboardCard>
-          </section>
         </>
       ) : null}
 
