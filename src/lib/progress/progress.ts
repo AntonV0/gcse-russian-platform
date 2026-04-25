@@ -16,7 +16,7 @@ export async function getLessonProgress(
 
   const { data, error } = await supabase
     .from("lesson_progress")
-    .select("*")
+    .select("id, completed")
     .eq("user_id", user.id)
     .eq("course_slug", courseSlug)
     .eq("variant_slug", variantSlug)
@@ -43,22 +43,22 @@ export async function getCourseProgressSummary(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { count, error } = await supabase
     .from("lesson_progress")
-    .select("id")
+    .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .eq("course_slug", courseSlug)
     .eq("variant_slug", variantSlug)
     .eq("completed", true);
 
-  if (error || !data) {
+  if (error) {
     return {
       completedLessons: 0,
     };
   }
 
   return {
-    completedLessons: data.length,
+    completedLessons: count ?? 0,
   };
 }
 
@@ -85,7 +85,7 @@ export async function getLessonSectionProgress(
 
   const { data, error } = await supabase
     .from("lesson_section_progress")
-    .select("*")
+    .select("id, user_id, lesson_id, section_id, first_visited_at, last_visited_at, visit_count, created_at, updated_at")
     .eq("user_id", user.id)
     .eq("lesson_id", lessonId);
 

@@ -7,212 +7,15 @@ import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
-import { getModuleProgress } from "@/lib/progress/progress-module";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
-import { getLessonsByModuleIdDb, loadVariantPageData } from "@/lib/courses/course-helpers-db";
-import { getLessonAccessState } from "@/lib/access/access";
-import { getLessonPath } from "@/lib/access/routes";
-
-function formatLabel(value: string | null) {
-  if (!value) return "-";
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function getVariantLabel(variant: "foundation" | "higher" | "volna" | null) {
-  if (!variant) return "No active variant";
-  if (variant === "volna") return "Volna";
-  if (variant === "foundation") return "Foundation";
-  return "Higher";
-}
-
-function getAccessLabel(accessMode: "trial" | "full" | "volna" | null) {
-  if (!accessMode) return "No active access";
-  if (accessMode === "full") return "Full access";
-  if (accessMode === "trial") return "Trial access";
-  return "Volna access";
-}
-
-function getProgressMessage(
-  accessMode: "trial" | "full" | "volna" | null,
-  completedLessons: number
-) {
-  if (accessMode === "trial") {
-    return "You are currently exploring the platform with trial access. Use this time to sample lessons, resources, and the overall learning experience.";
-  }
-
-  if (accessMode === "volna") {
-    if (completedLessons === 0) {
-      return "Your learning is guided through lessons and assignments. Start with your assigned work and lesson content.";
-    }
-
-    return "Your learning is guided through lessons and assignments. Keep following your teacher-led path and build steady progress.";
-  }
-
-  if (completedLessons === 0) {
-    return "Start your first lesson to begin building progress on your current course path.";
-  }
-
-  return "Keep going - steady lesson progress builds stronger confidence for GCSE Russian.";
-}
-
-type StudentLearningPlan = {
-  totalLessons: number;
-  completedLessons: number;
-  progressPercent: number;
-  nextLesson: {
-    title: string;
-    moduleTitle: string;
-    href: string;
-    estimatedMinutes: number | null;
-  } | null;
-};
-
-async function getStudentLearningPlan(
-  variant: "foundation" | "higher" | "volna" | null,
-  completedLessons: number
-): Promise<StudentLearningPlan> {
-  if (!variant) {
-    return {
-      totalLessons: 0,
-      completedLessons,
-      progressPercent: 0,
-      nextLesson: null,
-    };
-  }
-
-  const { course, modules } = await loadVariantPageData("gcse-russian", variant);
-
-  if (!course || modules.length === 0) {
-    return {
-      totalLessons: 0,
-      completedLessons,
-      progressPercent: 0,
-      nextLesson: null,
-    };
-  }
-
-  const lessonsByModule = await Promise.all(
-    modules.map(async (courseModule) => ({
-      module: courseModule,
-      lessons: await getLessonsByModuleIdDb(courseModule.id),
-      progress: await getModuleProgress(course.slug, variant, courseModule.slug),
-    }))
-  );
-
-  const totalLessons = lessonsByModule.reduce(
-    (count, entry) => count + entry.lessons.length,
-    0
-  );
-  const progressPercent =
-    totalLessons > 0 ? Math.min(100, Math.round((completedLessons / totalLessons) * 100)) : 0;
-
-  for (const entry of lessonsByModule) {
-    const completedLessonSlugs = new Set(
-      entry.progress.filter((progress) => progress.completed).map((progress) => progress.lesson_slug)
-    );
-
-    for (const lesson of entry.lessons) {
-      if (completedLessonSlugs.has(lesson.slug)) continue;
-
-      const accessState = await getLessonAccessState(
-        course.slug,
-        variant,
-        entry.module.slug,
-        lesson.slug
-      );
-
-      if (accessState !== "accessible") continue;
-
-      return {
-        totalLessons,
-        completedLessons,
-        progressPercent,
-        nextLesson: {
-          title: lesson.title,
-          moduleTitle: entry.module.title,
-          href: getLessonPath(course.slug, variant, entry.module.slug, lesson.slug),
-          estimatedMinutes: lesson.estimated_minutes,
-        },
-      };
-    }
-  }
-
-  return {
-    totalLessons,
-    completedLessons,
-    progressPercent,
-    nextLesson: null,
-  };
-}
-
-function getNextStep(
-  variant: "foundation" | "higher" | "volna" | null,
-  accessMode: "trial" | "full" | "volna" | null,
-  completedLessons: number,
-  learningPlan: StudentLearningPlan
-) {
-  if (accessMode === "volna") {
-    return {
-      title: "Continue your guided work",
-      description:
-        "Open your assignments and continue through the lesson content linked to your teacher-led learning.",
-      href: "/assignments",
-      label: "Open assignments",
-      icon: "assignments" as const,
-    };
-  }
-
-  if (learningPlan.nextLesson) {
-    return {
-      title: completedLessons > 0 ? "Continue where you left off" : "Start your first lesson",
-      description: `${learningPlan.nextLesson.moduleTitle}: ${learningPlan.nextLesson.title}`,
-      href: learningPlan.nextLesson.href,
-      label: completedLessons > 0 ? "Continue lesson" : "Start lesson",
-      icon: "next" as const,
-    };
-  }
-
-  if (accessMode === "trial") {
-    return {
-      title: "Explore the platform",
-      description:
-        "Browse lessons, vocabulary, grammar, and past papers to see how the full learning experience is structured.",
-      href: "/courses",
-      label: "Explore lessons",
-      icon: "courses" as const,
-    };
-  }
-
-  if (variant && completedLessons > 0) {
-    return {
-      title: "Keep your momentum going",
-      description:
-        "Continue your current course path and keep building progress through lessons and revision resources.",
-      href: "/courses",
-      label: "Continue learning",
-      icon: "next" as const,
-    };
-  }
-
-  if (variant) {
-    return {
-      title: "Start your course path",
-      description:
-        "Begin working through your lessons and use the platform as your main GCSE Russian study hub.",
-      href: "/courses",
-      label: "Start learning",
-      icon: "courses" as const,
-    };
-  }
-
-  return {
-    title: "Get started",
-    description: "Browse available course content and begin exploring the platform.",
-    href: "/courses",
-    label: "Browse courses",
-    icon: "courses" as const,
-  };
-}
+import {
+  formatDashboardLabel,
+  getDashboardAccessLabel,
+  getDashboardNextStep,
+  getDashboardProgressMessage,
+  getDashboardVariantLabel,
+  getStudentLearningPlan,
+} from "@/lib/dashboard/learning-plan";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -237,7 +40,7 @@ export default async function DashboardPage() {
         };
 
   const welcomeName = profile?.full_name ? `, ${profile.full_name}` : "";
-  const nextStep = getNextStep(
+  const nextStep = getDashboardNextStep(
     dashboard.variant,
     dashboard.accessMode,
     progressSummary.completedLessons,
@@ -284,11 +87,11 @@ export default async function DashboardPage() {
                     </Badge>
 
                     <Badge tone="muted" icon="learning">
-                      {getVariantLabel(dashboard.variant)}
+                      {getDashboardVariantLabel(dashboard.variant)}
                     </Badge>
 
                     <Badge tone="muted" icon="student">
-                      {getAccessLabel(dashboard.accessMode)}
+                      {getDashboardAccessLabel(dashboard.accessMode)}
                     </Badge>
                   </div>
 
@@ -366,7 +169,7 @@ export default async function DashboardPage() {
                   </div>
 
                   <p className="text-sm app-text-muted">
-                    {getProgressMessage(
+                    {getDashboardProgressMessage(
                       dashboard.accessMode,
                       progressSummary.completedLessons
                     )}
@@ -520,14 +323,14 @@ export default async function DashboardPage() {
           </section>
 
           <section className="grid gap-4 md:grid-cols-3">
-            <DashboardCard title="Role">{formatLabel(dashboard.role)}</DashboardCard>
+            <DashboardCard title="Role">{formatDashboardLabel(dashboard.role)}</DashboardCard>
 
             <DashboardCard title="Variant">
-              {getVariantLabel(dashboard.variant)}
+              {getDashboardVariantLabel(dashboard.variant)}
             </DashboardCard>
 
             <DashboardCard title="Access">
-              {getAccessLabel(dashboard.accessMode)}
+              {getDashboardAccessLabel(dashboard.accessMode)}
             </DashboardCard>
           </section>
 
@@ -557,7 +360,7 @@ export default async function DashboardPage() {
 
                 <div>
                   <span className="font-medium text-[var(--text-primary)]">Role:</span>{" "}
-                  {formatLabel(dashboard.role)}
+                  {formatDashboardLabel(dashboard.role)}
                 </div>
               </div>
             </DashboardCard>
@@ -600,14 +403,14 @@ export default async function DashboardPage() {
           </section>
 
           <section className="grid gap-4 md:grid-cols-3">
-            <DashboardCard title="Role">{formatLabel(dashboard.role)}</DashboardCard>
+            <DashboardCard title="Role">{formatDashboardLabel(dashboard.role)}</DashboardCard>
 
             <DashboardCard title="Variant">
-              {getVariantLabel(dashboard.variant)}
+              {getDashboardVariantLabel(dashboard.variant)}
             </DashboardCard>
 
             <DashboardCard title="Access">
-              {getAccessLabel(dashboard.accessMode)}
+              {getDashboardAccessLabel(dashboard.accessMode)}
             </DashboardCard>
           </section>
         </>

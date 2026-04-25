@@ -31,12 +31,13 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   const resolvedSearchParams = await searchParams;
   const currentStep = resolvedSearchParams?.step;
 
-  const { course, module, lesson } = await loadLessonPageData(
+  const lessonPageData = await loadLessonPageData(
     courseSlug,
     variantSlug,
     moduleSlug,
     lessonSlug
   );
+  const { course, module, lesson } = lessonPageData;
 
   if (!course || !module || !lesson) {
     return (
@@ -152,6 +153,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
       lessonSlug={lessonSlug}
       sections={lessonContent.sections}
       currentStep={currentStep}
+      lessonPageData={lessonPageData}
     />
   );
 }

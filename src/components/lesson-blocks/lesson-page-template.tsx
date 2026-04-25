@@ -33,6 +33,7 @@ type LessonPageTemplateProps = {
   lessonSlug: string;
   sections: LessonSection[];
   currentStep?: string;
+  lessonPageData?: Awaited<ReturnType<typeof loadLessonPageData>>;
 };
 
 function getLessonRendererVariant(variantSlug: string): LessonRendererVariant {
@@ -50,13 +51,11 @@ export default async function LessonPageTemplate({
   lessonSlug,
   sections,
   currentStep,
+  lessonPageData,
 }: LessonPageTemplateProps) {
-  const { course, module, lesson, previousLesson, nextLesson } = await loadLessonPageData(
-    courseSlug,
-    variantSlug,
-    moduleSlug,
-    lessonSlug
-  );
+  const { course, module, lesson, previousLesson, nextLesson } =
+    lessonPageData ??
+    (await loadLessonPageData(courseSlug, variantSlug, moduleSlug, lessonSlug));
 
   const progress = await getLessonProgress(
     courseSlug,
@@ -126,9 +125,14 @@ export default async function LessonPageTemplate({
   }
 
   const currentSection = visibleSections[effectiveStepIndex];
-  await markLessonSectionVisited(lesson.id, currentSection.id);
-
-  const visitedIds = new Set(await getVisitedLessonSectionIds(lesson.id));
+  const didMarkCurrentSection = await markLessonSectionVisited(
+    lesson.id,
+    currentSection.id
+  );
+  const visitedIds = new Set(visitedIdsBeforeVisit);
+  if (didMarkCurrentSection) {
+    visitedIds.add(currentSection.id);
+  }
   const visitedVisibleCount = visibleSections.reduce(
     (count, section) => (visitedIds.has(section.id) ? count + 1 : count),
     0

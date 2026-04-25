@@ -400,3 +400,32 @@ The product needs to support:
 ### Result
 
 Public pages can grow independently from platform workflows. When host-based routing is introduced, `www.gcserussian.com` can map marketing pages back to root-level marketing URLs and `app.gcserussian.com` can keep the app-facing root experience.
+
+---
+
+## 25. Why use domain folders with compatibility facades?
+
+### Decision
+
+Large feature areas should move from broad `*-helpers-db.ts` and `admin-*` files
+toward focused domain folders, while keeping small compatibility facades during
+the transition.
+
+### Why
+
+Fast-growing systems such as vocabulary, mock exams, and dashboard orchestration
+were becoming difficult to scan when types, labels, parsing, data access, and
+page logic lived in one file.
+
+### Key Choices
+
+- Keep old import paths working while refactors are in progress.
+- Prefer new imports from focused domain paths.
+- Move route pages toward thin data-loading shells.
+- Move parsing and serialization helpers into domain modules.
+- Do not rename applied Supabase migrations purely for tidiness.
+
+### Result
+
+The codebase can become more modular without forcing risky all-at-once import
+changes across the app.

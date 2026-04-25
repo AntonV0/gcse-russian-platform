@@ -9,7 +9,10 @@ import {
   MarketingRelatedLinks,
   MarketingStepList,
 } from "@/components/marketing/marketing-page-sections";
+import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
+import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
+import { buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Russian GCSE Private Candidate Guide",
@@ -95,7 +98,28 @@ const relatedLinks = [
 
 export default function RussianGcsePrivateCandidatePage() {
   return (
-    <div className="space-y-8 py-8 md:py-12">
+    <>
+      <JsonLd
+        data={buildLearningResourceJsonLd({
+          name: "Russian GCSE Private Candidate Guide",
+          description:
+            "A practical guide for Russian GCSE private candidates and families planning exam preparation, course structure, online lessons, and exam-centre questions.",
+          path: "/marketing/russian-gcse-private-candidate",
+          keywords: ["Russian GCSE private candidate", "Russian GCSE exam centre", "GCSE Russian preparation"],
+          relatedLinks,
+        })}
+      />
+      <MarketingBreadcrumbs
+        items={[
+          { label: "Home", href: "/marketing" },
+          { label: "Resources", href: "/marketing/resources" },
+          {
+            label: "Private candidates",
+            href: "/marketing/russian-gcse-private-candidate",
+          },
+        ]}
+      />
+      <div className="space-y-8 py-8 md:py-12">
       <PageIntroPanel
         tone="brand"
         eyebrow="Private candidates"
@@ -155,6 +179,7 @@ export default function RussianGcsePrivateCandidatePage() {
         secondaryHref="/marketing/gcse-russian-course"
         secondaryLabel="View course"
       />
-    </div>
+      </div>
+    </>
   );
 }

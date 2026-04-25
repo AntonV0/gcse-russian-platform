@@ -15,6 +15,8 @@ export default function GcseRussianVocabularyPage() {
       eyebrow="GCSE Russian vocabulary"
       title="GCSE Russian vocabulary guide"
       description="Vocabulary revision works best when students know which words they need to recognise, which they need to produce, and how vocabulary connects to exam tasks."
+      path="/marketing/gcse-russian-vocabulary"
+      keywords={["GCSE Russian vocabulary", "Edexcel Russian vocabulary", "Russian GCSE word list"]}
       badges={[
         { label: "Vocabulary revision", icon: "vocabulary", tone: "info" },
         { label: "Themes and topics", icon: "vocabularySet" },

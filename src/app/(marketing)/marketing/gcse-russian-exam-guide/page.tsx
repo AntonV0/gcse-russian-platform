@@ -8,7 +8,10 @@ import {
   MarketingRelatedLinks,
   MarketingStepList,
 } from "@/components/marketing/marketing-page-sections";
+import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
+import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
+import { buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "GCSE Russian Exam Guide",
@@ -81,7 +84,25 @@ const relatedLinks = [
 
 export default function GcseRussianExamGuidePage() {
   return (
-    <div className="space-y-8 py-8 md:py-12">
+    <>
+      <JsonLd
+        data={buildLearningResourceJsonLd({
+          name: "GCSE Russian Exam Guide",
+          description:
+            "A practical GCSE Russian exam guide covering listening, speaking, reading, writing, Foundation and Higher tiers, and structured preparation.",
+          path: "/marketing/gcse-russian-exam-guide",
+          keywords: ["GCSE Russian exam", "Edexcel Russian GCSE", "Russian GCSE revision"],
+          relatedLinks,
+        })}
+      />
+      <MarketingBreadcrumbs
+        items={[
+          { label: "Home", href: "/marketing" },
+          { label: "Resources", href: "/marketing/resources" },
+          { label: "Exam guide", href: "/marketing/gcse-russian-exam-guide" },
+        ]}
+      />
+      <div className="space-y-8 py-8 md:py-12">
       <PageIntroPanel
         tone="brand"
         eyebrow="GCSE Russian exam guide"
@@ -157,6 +178,7 @@ export default function GcseRussianExamGuidePage() {
         secondaryHref="/marketing/pricing"
         secondaryLabel="Compare access"
       />
-    </div>
+      </div>
+    </>
   );
 }

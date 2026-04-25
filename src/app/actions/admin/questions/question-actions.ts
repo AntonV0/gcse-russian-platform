@@ -10,6 +10,7 @@ import {
   getOptionalString,
   getQuestionTypeMetadataDefaults,
   getTrimmedString,
+  parseOneBasedIndexList,
   parseJsonObject,
   parseLineList,
 } from "./shared";
@@ -17,11 +18,24 @@ import {
 function validateQuestionType(questionType: string) {
   if (
     questionType !== "multiple_choice" &&
+    questionType !== "multiple_response" &&
     questionType !== "short_answer" &&
-    questionType !== "translation"
+    questionType !== "translation" &&
+    questionType !== "matching" &&
+    questionType !== "ordering" &&
+    questionType !== "word_bank_gap_fill" &&
+    questionType !== "categorisation"
   ) {
     throw new Error("Unsupported question type");
   }
+}
+
+function usesOptionsTable(questionType: string) {
+  return questionType === "multiple_choice" || questionType === "multiple_response";
+}
+
+function usesAcceptedAnswersTable(questionType: string) {
+  return questionType === "short_answer" || questionType === "translation";
 }
 
 function getQuestionMetadata(formData: FormData, questionType: string) {
@@ -103,18 +117,20 @@ export async function createQuestionAction(formData: FormData) {
     );
   }
 
-  if (questionType === "multiple_choice") {
+  if (usesOptionsTable(questionType)) {
     const options = parseLineList(getTrimmedString(formData, "optionsText"));
-    const correctOptionIndex = Number(getTrimmedString(formData, "correctOptionIndex"));
+    const correctOptionIndexes =
+      questionType === "multiple_response"
+        ? parseOneBasedIndexList(getTrimmedString(formData, "correctOptionIndexes"))
+        : [Number(getTrimmedString(formData, "correctOptionIndex")) - 1];
 
     if (options.length < 2) {
-      throw new Error("Multiple choice questions need at least 2 options");
+      throw new Error("Choice questions need at least 2 options");
     }
 
     if (
-      !Number.isInteger(correctOptionIndex) ||
-      correctOptionIndex < 1 ||
-      correctOptionIndex > options.length
+      correctOptionIndexes.length === 0 ||
+      correctOptionIndexes.some((index) => index < 0 || index >= options.length)
     ) {
       throw new Error("Correct option index is invalid");
     }
@@ -122,7 +138,7 @@ export async function createQuestionAction(formData: FormData) {
     const optionRows = options.map((optionText, index) => ({
       question_id: question.id,
       option_text: optionText,
-      is_correct: index + 1 === correctOptionIndex,
+      is_correct: correctOptionIndexes.includes(index),
       position: index + 1,
     }));
 
@@ -134,7 +150,7 @@ export async function createQuestionAction(formData: FormData) {
       console.error("Error creating question options:", optionsError);
       throw new Error("Failed to create question options");
     }
-  } else {
+  } else if (usesAcceptedAnswersTable(questionType)) {
     const acceptedAnswers = parseLineList(
       getTrimmedString(formData, "acceptedAnswersText")
     );
@@ -213,18 +229,20 @@ export async function updateQuestionAction(formData: FormData) {
     );
   }
 
-  if (questionType === "multiple_choice") {
+  if (usesOptionsTable(questionType)) {
     const options = parseLineList(getTrimmedString(formData, "optionsText"));
-    const correctOptionIndex = Number(getTrimmedString(formData, "correctOptionIndex"));
+    const correctOptionIndexes =
+      questionType === "multiple_response"
+        ? parseOneBasedIndexList(getTrimmedString(formData, "correctOptionIndexes"))
+        : [Number(getTrimmedString(formData, "correctOptionIndex")) - 1];
 
     if (options.length < 2) {
-      throw new Error("Multiple choice questions need at least 2 options");
+      throw new Error("Choice questions need at least 2 options");
     }
 
     if (
-      !Number.isInteger(correctOptionIndex) ||
-      correctOptionIndex < 1 ||
-      correctOptionIndex > options.length
+      correctOptionIndexes.length === 0 ||
+      correctOptionIndexes.some((index) => index < 0 || index >= options.length)
     ) {
       throw new Error("Correct option index is invalid");
     }
@@ -242,7 +260,7 @@ export async function updateQuestionAction(formData: FormData) {
     const optionRows = options.map((optionText, index) => ({
       question_id: questionId,
       option_text: optionText,
-      is_correct: index + 1 === correctOptionIndex,
+      is_correct: correctOptionIndexes.includes(index),
       position: index + 1,
     }));
 
@@ -264,7 +282,7 @@ export async function updateQuestionAction(formData: FormData) {
       console.error("Error clearing accepted answers for MCQ:", deleteAnswersError);
       throw new Error("Failed to clear accepted answers");
     }
-  } else {
+  } else if (usesAcceptedAnswersTable(questionType)) {
     const acceptedAnswers = parseLineList(
       getTrimmedString(formData, "acceptedAnswersText")
     );
@@ -308,6 +326,32 @@ export async function updateQuestionAction(formData: FormData) {
 
     if (deleteOptionsError) {
       console.error("Error clearing MCQ options for text question:", deleteOptionsError);
+      throw new Error("Failed to clear question options");
+    }
+  } else {
+    const { error: deleteAnswersError } = await supabase
+      .from("question_accepted_answers")
+      .delete()
+      .eq("question_id", questionId);
+
+    if (deleteAnswersError) {
+      console.error(
+        "Error clearing accepted answers for structured question:",
+        deleteAnswersError
+      );
+      throw new Error("Failed to clear accepted answers");
+    }
+
+    const { error: deleteOptionsError } = await supabase
+      .from("question_options")
+      .delete()
+      .eq("question_id", questionId);
+
+    if (deleteOptionsError) {
+      console.error(
+        "Error clearing options for structured question:",
+        deleteOptionsError
+      );
       throw new Error("Failed to clear question options");
     }
   }

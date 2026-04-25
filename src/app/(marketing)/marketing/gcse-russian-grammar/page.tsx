@@ -15,6 +15,8 @@ export default function GcseRussianGrammarPage() {
       eyebrow="GCSE Russian grammar"
       title="GCSE Russian grammar guide"
       description="Grammar is not a separate extra: it affects every GCSE Russian paper. Students need enough control to understand meaning and produce accurate Russian."
+      path="/marketing/gcse-russian-grammar"
+      keywords={["GCSE Russian grammar", "Russian grammar GCSE", "Edexcel Russian grammar"]}
       badges={[
         { label: "Grammar revision", icon: "grammar", tone: "info" },
         { label: "All four skills", icon: "exam" },

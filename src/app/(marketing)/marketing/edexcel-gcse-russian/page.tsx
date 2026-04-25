@@ -8,7 +8,10 @@ import {
   MarketingFeatureGrid,
   MarketingRelatedLinks,
 } from "@/components/marketing/marketing-page-sections";
+import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
+import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
+import { buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Pearson Edexcel GCSE Russian Guide",
@@ -81,7 +84,25 @@ const relatedLinks = [
 
 export default function EdexcelGcseRussianPage() {
   return (
-    <div className="space-y-8 py-8 md:py-12">
+    <>
+      <JsonLd
+        data={buildLearningResourceJsonLd({
+          name: "Pearson Edexcel GCSE Russian 1RU0 Guide",
+          description:
+            "A clear guide to Pearson Edexcel GCSE Russian 1RU0, including the four papers, Foundation and Higher tiers, and course preparation.",
+          path: "/marketing/edexcel-gcse-russian",
+          keywords: ["Pearson Edexcel GCSE Russian", "1RU0", "Edexcel Russian GCSE"],
+          relatedLinks,
+        })}
+      />
+      <MarketingBreadcrumbs
+        items={[
+          { label: "Home", href: "/marketing" },
+          { label: "Resources", href: "/marketing/resources" },
+          { label: "Edexcel GCSE Russian", href: "/marketing/edexcel-gcse-russian" },
+        ]}
+      />
+      <div className="space-y-8 py-8 md:py-12">
       <PageIntroPanel
         tone="brand"
         eyebrow="Pearson Edexcel GCSE Russian"
@@ -155,6 +176,7 @@ export default function EdexcelGcseRussianPage() {
         secondaryHref="/marketing/gcse-russian-exam-guide"
         secondaryLabel="Read exam guide"
       />
-    </div>
+      </div>
+    </>
   );
 }

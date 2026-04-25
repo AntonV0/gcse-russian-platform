@@ -1,4 +1,5 @@
 import TrackedMultipleChoiceBlock from "@/components/questions/tracked-multiple-choice-block";
+import TrackedDigitalInteractionBlock from "@/components/questions/tracked-digital-interaction-block";
 import TrackedShortAnswerBlock from "@/components/questions/tracked-short-answer-block";
 import {
   tokenizeSentenceBuilderText,
@@ -265,6 +266,23 @@ export default async function QuestionRenderer({
                 ? "inline_gaps"
                 : "grouped",
           }}
+        />
+      );
+
+    case "multiple_response":
+    case "matching":
+    case "ordering":
+    case "word_bank_gap_fill":
+    case "categorisation":
+      return (
+        <TrackedDigitalInteractionBlock
+          question={question}
+          lessonId={lessonId}
+          audioUrl={audioUrl}
+          audioMaxPlays={listeningUi.maxPlays}
+          audioListeningMode={listeningUi.listeningMode}
+          audioAutoPlay={listeningUi.autoPlay}
+          audioHideNativeControls={listeningUi.hideNativeControls}
         />
       );
   }

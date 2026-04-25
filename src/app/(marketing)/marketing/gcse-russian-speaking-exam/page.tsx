@@ -15,6 +15,8 @@ export default function GcseRussianSpeakingExamPage() {
       eyebrow="Paper 2: Speaking"
       title="GCSE Russian speaking exam guide"
       description="Speaking preparation needs confidence, accuracy, pronunciation, and the ability to respond naturally. It is one of the strongest reasons to combine platform study with teacher support."
+      path="/marketing/gcse-russian-speaking-exam"
+      keywords={["GCSE Russian speaking", "Paper 2 speaking", "Russian speaking exam"]}
       badges={[
         { label: "Paper 2", icon: "speaking", tone: "info" },
         { label: "Role play and conversation", icon: "chat" },

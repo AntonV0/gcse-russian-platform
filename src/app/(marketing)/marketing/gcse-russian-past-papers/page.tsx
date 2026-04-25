@@ -15,6 +15,8 @@ export default function GcseRussianPastPapersPage() {
       eyebrow="GCSE Russian past papers"
       title="GCSE Russian past papers and revision strategy"
       description="Past papers are useful, but they work best when students know how to review mistakes, connect gaps to lessons, and practise before using full exam papers."
+      path="/marketing/gcse-russian-past-papers"
+      keywords={["GCSE Russian past papers", "Edexcel Russian past papers", "Russian GCSE revision"]}
       badges={[
         { label: "Official resources", icon: "pastPapers", tone: "info" },
         { label: "Pearson Edexcel 1RU0", icon: "school" },

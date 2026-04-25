@@ -9,7 +9,10 @@ import {
   MarketingRelatedLinks,
   MarketingStepList,
 } from "@/components/marketing/marketing-page-sections";
+import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
+import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
+import { buildCourseJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Online GCSE Russian Course",
@@ -95,8 +98,23 @@ const relatedLinks = [
 
 export default function GcseRussianCoursePage() {
   return (
-    <div className="space-y-8 py-8 md:py-12">
-      <PageIntroPanel
+    <>
+      <JsonLd
+        data={buildCourseJsonLd({
+          name: "Online GCSE Russian Course",
+          description:
+            "A structured online GCSE Russian course for Pearson Edexcel 1RU0 students, with Foundation and Higher pathways, guided lessons, grammar, vocabulary, and exam practice.",
+          path: "/marketing/gcse-russian-course",
+        })}
+      />
+      <MarketingBreadcrumbs
+        items={[
+          { label: "Home", href: "/marketing" },
+          { label: "Course", href: "/marketing/gcse-russian-course" },
+        ]}
+      />
+      <div className="space-y-8 py-8 md:py-12">
+        <PageIntroPanel
         tone="brand"
         eyebrow="Online GCSE Russian course"
         title="A structured online GCSE Russian course"
@@ -162,6 +180,7 @@ export default function GcseRussianCoursePage() {
         title="Ready to try the GCSE Russian course?"
         description="Create a trial account first, explore the app, and upgrade inside the platform when the course is the right fit."
       />
-    </div>
+      </div>
+    </>
   );
 }

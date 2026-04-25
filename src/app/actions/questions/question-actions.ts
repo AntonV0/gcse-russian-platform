@@ -3,7 +3,10 @@
 import {
   buildRuntimeQuestion,
   type QuestionFeedbackResult,
+  type RuntimeQuestion,
+  type RuntimeTextQuestion,
   validateMultipleChoiceAnswer,
+  validateStructuredAnswer,
   validateTextAnswer,
 } from "@/lib/questions/question-engine";
 import {
@@ -18,6 +21,7 @@ type SubmitQuestionAttemptInput = {
   lessonId?: string | null;
   selectedOptionId?: string | null;
   submittedText?: string | null;
+  submittedPayload?: Record<string, unknown> | null;
 };
 
 export type SubmitQuestionAttemptActionResult =
@@ -58,6 +62,10 @@ function toPublicFeedback(result: QuestionFeedbackResult): QuestionFeedbackResul
     correctAnswerText: result.correctAnswerText,
     acceptedAnswerTexts: result.acceptedAnswerTexts,
   };
+}
+
+function isRuntimeTextQuestion(question: RuntimeQuestion): question is RuntimeTextQuestion {
+  return question.type === "short_answer" || question.type === "translation";
 }
 
 export async function submitQuestionAttemptAction(
@@ -107,7 +115,7 @@ export async function submitQuestionAttemptAction(
       acceptedAnswerTexts: result.acceptedAnswerTexts,
       questionType: runtimeQuestion.type,
     };
-  } else {
+  } else if (isRuntimeTextQuestion(runtimeQuestion)) {
     const answerText = input.submittedText?.trim();
 
     if (!answerText) {
@@ -125,6 +133,28 @@ export async function submitQuestionAttemptAction(
       answer: input.submittedText ?? "",
       normalizedAnswer: result.normalizedSubmittedText,
       matchedAnswerId: result.matchedAnswer?.id ?? null,
+      statusLabel: result.statusLabel,
+      correctAnswerText: result.correctAnswerText,
+      acceptedAnswerTexts: result.acceptedAnswerTexts,
+      questionType: runtimeQuestion.type,
+    };
+  } else {
+    const payload = input.submittedPayload;
+
+    if (!payload) {
+      return { success: false, error: "missing_answer" };
+    }
+
+    const result = validateStructuredAnswer({
+      question: runtimeQuestion,
+      submittedPayload: payload,
+      options: getValidationOptions(runtimeQuestion.metadata),
+    });
+
+    feedback = toPublicFeedback(result);
+    submittedText = null;
+    submittedPayload = {
+      ...payload,
       statusLabel: result.statusLabel,
       correctAnswerText: result.correctAnswerText,
       acceptedAnswerTexts: result.acceptedAnswerTexts,

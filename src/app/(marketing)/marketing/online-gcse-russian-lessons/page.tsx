@@ -8,7 +8,10 @@ import {
   MarketingFeatureGrid,
   MarketingRelatedLinks,
 } from "@/components/marketing/marketing-page-sections";
+import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
+import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
+import { buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Online GCSE Russian Lessons",
@@ -76,7 +79,25 @@ const relatedLinks = [
 
 export default function OnlineGcseRussianLessonsPage() {
   return (
-    <div className="space-y-8 py-8 md:py-12">
+    <>
+      <JsonLd
+        data={buildLearningResourceJsonLd({
+          name: "Online GCSE Russian Lessons",
+          description:
+            "A guide to online GCSE Russian lessons and teacher-supported preparation alongside the GCSE Russian course platform.",
+          path: "/marketing/online-gcse-russian-lessons",
+          keywords: ["online GCSE Russian lessons", "GCSE Russian tutor", "Russian GCSE classes"],
+          relatedLinks,
+        })}
+      />
+      <MarketingBreadcrumbs
+        items={[
+          { label: "Home", href: "/marketing" },
+          { label: "Resources", href: "/marketing/resources" },
+          { label: "Online lessons", href: "/marketing/online-gcse-russian-lessons" },
+        ]}
+      />
+      <div className="space-y-8 py-8 md:py-12">
       <PageIntroPanel
         tone="brand"
         eyebrow="Online GCSE Russian lessons"
@@ -130,6 +151,7 @@ export default function OnlineGcseRussianLessonsPage() {
         secondaryHref="/marketing/gcse-russian-course"
         secondaryLabel="View course"
       />
-    </div>
+      </div>
+    </>
   );
 }

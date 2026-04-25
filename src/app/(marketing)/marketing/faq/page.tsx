@@ -3,7 +3,10 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
+import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
+import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
+import { buildFaqJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "GCSE Russian Course FAQ",
@@ -32,7 +35,15 @@ const faqs = [
 
 export default function MarketingFaqPage() {
   return (
-    <div className="space-y-8 py-8 md:py-12">
+    <>
+      <JsonLd data={buildFaqJsonLd(faqs)} />
+      <MarketingBreadcrumbs
+        items={[
+          { label: "Home", href: "/marketing" },
+          { label: "FAQ", href: "/marketing/faq" },
+        ]}
+      />
+      <div className="space-y-8 py-8 md:py-12">
       <PageIntroPanel
         tone="neutral"
         eyebrow="FAQ"
@@ -61,6 +72,7 @@ export default function MarketingFaqPage() {
           />
         ))}
       </section>
-    </div>
+      </div>
+    </>
   );
 }
