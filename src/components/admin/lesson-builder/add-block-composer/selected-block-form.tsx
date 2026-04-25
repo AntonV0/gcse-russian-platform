@@ -19,8 +19,8 @@ import {
   BuilderHiddenFields,
   PendingSubmitButton,
   BUILDER_PRIMARY_BUTTON_CLASS,
-  BUILDER_SECONDARY_BUTTON_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
+import Button from "@/components/ui/button";
 import { getDefaultBlockData, getLessonBlockLabel } from "@/lib/lessons/lesson-blocks";
 import { AddAudioBlockForm, AddImageBlockForm } from "./media-block-forms";
 import {
@@ -54,13 +54,14 @@ export function SelectedBlockForm(props: SelectedBlockFormProps) {
           </div>
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={props.onClear}
-          className={BUILDER_SECONDARY_BUTTON_CLASS}
+          variant="secondary"
+          size="sm"
         >
           Clear
-        </button>
+        </Button>
       </div>
 
       {props.selectedNewBlockType === "header" && (

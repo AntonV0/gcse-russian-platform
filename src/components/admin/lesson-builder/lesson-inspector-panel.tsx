@@ -37,6 +37,7 @@ import {
   getLessonBlockPreview,
 } from "@/lib/lessons/lesson-blocks";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import Button from "@/components/ui/button";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
@@ -169,13 +170,15 @@ export default function LessonInspectorPanel(props: {
               <input type="hidden" name="sectionId" value={props.section.id} />
               <input type="hidden" name="blockId" value={props.block.id} />
               <input type="hidden" name="direction" value="up" />
-              <button
+              <Button
                 type="submit"
                 disabled={props.blockIndex === 0}
-                className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
+                variant="secondary"
+                size="sm"
+                className="w-full"
               >
                 Move block up
-              </button>
+              </Button>
             </form>
 
             <form action={moveBlockAction}>
@@ -183,25 +186,29 @@ export default function LessonInspectorPanel(props: {
               <input type="hidden" name="sectionId" value={props.section.id} />
               <input type="hidden" name="blockId" value={props.block.id} />
               <input type="hidden" name="direction" value="down" />
-              <button
+              <Button
                 type="submit"
                 disabled={props.blockIndex === props.section.blocks.length - 1}
-                className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
+                variant="secondary"
+                size="sm"
+                className="w-full"
               >
                 Move block down
-              </button>
+              </Button>
             </form>
 
             <form action={duplicateBlockAction}>
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="sectionId" value={props.section.id} />
               <input type="hidden" name="blockId" value={props.block.id} />
-              <button
+              <Button
                 type="submit"
-                className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
+                variant="secondary"
+                size="sm"
+                className="w-full"
               >
                 Duplicate block
-              </button>
+              </Button>
             </form>
 
             <form action={toggleBlockPublishedAction}>
@@ -212,12 +219,14 @@ export default function LessonInspectorPanel(props: {
                 name="nextState"
                 value={props.block.is_published ? "draft" : "published"}
               />
-              <button
+              <Button
                 type="submit"
-                className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
+                variant="secondary"
+                size="sm"
+                className="w-full"
               >
                 {props.block.is_published ? "Unpublish block" : "Publish block"}
-              </button>
+              </Button>
             </form>
 
             <form action={deleteBlockAction}>
@@ -276,13 +285,15 @@ export default function LessonInspectorPanel(props: {
 
         <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
           <div>Select a block in the center column to edit its content here.</div>
-          <button
+          <Button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className={`mt-3 ${BUILDER_SECONDARY_BUTTON_CLASS}`}
+            variant="secondary"
+            size="sm"
+            className="mt-3"
           >
             Back to top
-          </button>
+          </Button>
         </div>
 
         <div className="grid gap-2">
@@ -290,34 +301,38 @@ export default function LessonInspectorPanel(props: {
             <BuilderHiddenFields {...props.routeFields} />
             <input type="hidden" name="sectionId" value={props.section.id} />
             <input type="hidden" name="direction" value="up" />
-            <button
+            <Button
               type="submit"
               disabled={props.sectionIndex === 0}
-              className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
+              variant="secondary"
+              size="sm"
+              className="w-full"
             >
               Move section up
-            </button>
+            </Button>
           </form>
 
           <form action={moveSectionAction}>
             <BuilderHiddenFields {...props.routeFields} />
             <input type="hidden" name="sectionId" value={props.section.id} />
             <input type="hidden" name="direction" value="down" />
-            <button
+            <Button
               type="submit"
               disabled={props.sectionIndex === props.totalSections - 1}
-              className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}
+              variant="secondary"
+              size="sm"
+              className="w-full"
             >
               Move section down
-            </button>
+            </Button>
           </form>
 
           <form action={duplicateSectionAction}>
             <BuilderHiddenFields {...props.routeFields} />
             <input type="hidden" name="sectionId" value={props.section.id} />
-            <button type="submit" className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}>
+            <Button type="submit" variant="secondary" size="sm" className="w-full">
               Duplicate section
-            </button>
+            </Button>
           </form>
 
           <form action={toggleSectionPublishedAction}>
@@ -328,9 +343,9 @@ export default function LessonInspectorPanel(props: {
               name="nextState"
               value={props.section.is_published ? "draft" : "published"}
             />
-            <button type="submit" className={`w-full ${BUILDER_SECONDARY_BUTTON_CLASS}`}>
+            <Button type="submit" variant="secondary" size="sm" className="w-full">
               {props.section.is_published ? "Unpublish section" : "Publish section"}
-            </button>
+            </Button>
           </form>
 
           <form action={deleteSectionAction}>

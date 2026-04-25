@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
+import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
 import LessonRenderer, {
   isSectionVisible,
   type LessonRendererVariant,
@@ -64,16 +66,45 @@ export default async function LessonPageTemplate({
   );
 
   if (!course || !module || !lesson) {
-    return <main>Lesson not found.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="search"
+          iconTone="brand"
+          title="Lesson not found"
+          description="This lesson could not be found. Return to the module and choose an available lesson."
+          action={
+            <Button href={getModulePath(courseSlug, variantSlug, moduleSlug)} variant="primary" icon="back">
+              Back to module
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
+  const moduleHref = getModulePath(course.slug, variantSlug, moduleSlug);
   const currentVariant = getLessonRendererVariant(variantSlug);
   const visibleSections = sections.filter((section) =>
     isSectionVisible(section, currentVariant)
   );
 
   if (visibleSections.length === 0) {
-    return <main>Lesson has no sections available for this course variant.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="lessonContent"
+          iconTone="brand"
+          title="No sections for this course path"
+          description="This lesson exists, but none of its sections are available for the current course variant."
+          action={
+            <Button href={moduleHref} variant="primary" icon="back">
+              Back to module
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
   const requestedStepIndex = clampStepIndex(currentStep, visibleSections.length);
@@ -108,7 +139,6 @@ export default async function LessonPageTemplate({
     percent: Math.round((visitedVisibleCount / visibleSections.length) * 100),
     allVisited: visitedVisibleCount >= visibleSections.length,
   };
-  const moduleHref = getModulePath(course.slug, variantSlug, moduleSlug);
   const currentStepNumber = effectiveStepIndex + 1;
   const isFinalStep = effectiveStepIndex === visibleSections.length - 1;
 

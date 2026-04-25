@@ -7,7 +7,11 @@ import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
+import { getModuleProgress } from "@/lib/progress/progress-module";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { getLessonsByModuleIdDb, loadVariantPageData } from "@/lib/courses/course-helpers-db";
+import { getLessonAccessState } from "@/lib/access/access";
+import { getLessonPath } from "@/lib/access/routes";
 
 function formatLabel(value: string | null) {
   if (!value) return "-";
@@ -51,10 +55,101 @@ function getProgressMessage(
   return "Keep going - steady lesson progress builds stronger confidence for GCSE Russian.";
 }
 
+type StudentLearningPlan = {
+  totalLessons: number;
+  completedLessons: number;
+  progressPercent: number;
+  nextLesson: {
+    title: string;
+    moduleTitle: string;
+    href: string;
+    estimatedMinutes: number | null;
+  } | null;
+};
+
+async function getStudentLearningPlan(
+  variant: "foundation" | "higher" | "volna" | null,
+  completedLessons: number
+): Promise<StudentLearningPlan> {
+  if (!variant) {
+    return {
+      totalLessons: 0,
+      completedLessons,
+      progressPercent: 0,
+      nextLesson: null,
+    };
+  }
+
+  const { course, modules } = await loadVariantPageData("gcse-russian", variant);
+
+  if (!course || modules.length === 0) {
+    return {
+      totalLessons: 0,
+      completedLessons,
+      progressPercent: 0,
+      nextLesson: null,
+    };
+  }
+
+  const lessonsByModule = await Promise.all(
+    modules.map(async (courseModule) => ({
+      module: courseModule,
+      lessons: await getLessonsByModuleIdDb(courseModule.id),
+      progress: await getModuleProgress(course.slug, variant, courseModule.slug),
+    }))
+  );
+
+  const totalLessons = lessonsByModule.reduce(
+    (count, entry) => count + entry.lessons.length,
+    0
+  );
+  const progressPercent =
+    totalLessons > 0 ? Math.min(100, Math.round((completedLessons / totalLessons) * 100)) : 0;
+
+  for (const entry of lessonsByModule) {
+    const completedLessonSlugs = new Set(
+      entry.progress.filter((progress) => progress.completed).map((progress) => progress.lesson_slug)
+    );
+
+    for (const lesson of entry.lessons) {
+      if (completedLessonSlugs.has(lesson.slug)) continue;
+
+      const accessState = await getLessonAccessState(
+        course.slug,
+        variant,
+        entry.module.slug,
+        lesson.slug
+      );
+
+      if (accessState !== "accessible") continue;
+
+      return {
+        totalLessons,
+        completedLessons,
+        progressPercent,
+        nextLesson: {
+          title: lesson.title,
+          moduleTitle: entry.module.title,
+          href: getLessonPath(course.slug, variant, entry.module.slug, lesson.slug),
+          estimatedMinutes: lesson.estimated_minutes,
+        },
+      };
+    }
+  }
+
+  return {
+    totalLessons,
+    completedLessons,
+    progressPercent,
+    nextLesson: null,
+  };
+}
+
 function getNextStep(
   variant: "foundation" | "higher" | "volna" | null,
   accessMode: "trial" | "full" | "volna" | null,
-  completedLessons: number
+  completedLessons: number,
+  learningPlan: StudentLearningPlan
 ) {
   if (accessMode === "volna") {
     return {
@@ -64,6 +159,16 @@ function getNextStep(
       href: "/assignments",
       label: "Open assignments",
       icon: "assignments" as const,
+    };
+  }
+
+  if (learningPlan.nextLesson) {
+    return {
+      title: completedLessons > 0 ? "Continue where you left off" : "Start your first lesson",
+      description: `${learningPlan.nextLesson.moduleTitle}: ${learningPlan.nextLesson.title}`,
+      href: learningPlan.nextLesson.href,
+      label: completedLessons > 0 ? "Continue lesson" : "Start lesson",
+      icon: "next" as const,
     };
   }
 
@@ -118,12 +223,25 @@ export default async function DashboardPage() {
     dashboard.variant && dashboard.role === "student"
       ? await getCourseProgressSummary("gcse-russian", dashboard.variant)
       : { completedLessons: 0 };
+  const learningPlan =
+    dashboard.role === "student"
+      ? await getStudentLearningPlan(
+          dashboard.variant,
+          progressSummary.completedLessons
+        )
+      : {
+          totalLessons: 0,
+          completedLessons: progressSummary.completedLessons,
+          progressPercent: 0,
+          nextLesson: null,
+        };
 
   const welcomeName = profile?.full_name ? `, ${profile.full_name}` : "";
   const nextStep = getNextStep(
     dashboard.variant,
     dashboard.accessMode,
-    progressSummary.completedLessons
+    progressSummary.completedLessons,
+    learningPlan
   );
 
   return (
@@ -175,11 +293,7 @@ export default async function DashboardPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <h2 className="app-title max-w-3xl">
-                      {progressSummary.completedLessons > 0
-                        ? "Continue where you left off"
-                        : "Start your GCSE Russian path"}
-                    </h2>
+                    <h2 className="app-title max-w-3xl">{nextStep.title}</h2>
                     <p className="app-subtitle max-w-2xl">
                       {nextStep.description}
                     </p>
@@ -203,6 +317,23 @@ export default async function DashboardPage() {
 
               <DashboardCard title="Learning snapshot" className="h-full">
                 <div className="space-y-4">
+                  <div>
+                    <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                      <span className="font-medium text-[var(--text-primary)]">
+                        {learningPlan.progressPercent}% complete
+                      </span>
+                      <span className="app-text-muted">
+                        {progressSummary.completedLessons} of {learningPlan.totalLessons || "-"}
+                      </span>
+                    </div>
+                    <div className="app-progress-track">
+                      <div
+                        className="app-progress-bar"
+                        style={{ width: `${learningPlan.progressPercent}%` }}
+                      />
+                    </div>
+                  </div>
+
                   <div className="grid gap-3">
                     <div className="app-stat-tile">
                       <div className="app-stat-label">
@@ -215,19 +346,21 @@ export default async function DashboardPage() {
 
                     <div className="app-stat-tile">
                       <div className="app-stat-label">
-                        Course path
+                        Next lesson
                       </div>
                       <div className="app-stat-value">
-                        {getVariantLabel(dashboard.variant)}
+                        {learningPlan.nextLesson?.title ?? "Choose a lesson"}
                       </div>
                     </div>
 
                     <div className="app-stat-tile">
                       <div className="app-stat-label">
-                        Access
+                        Study time
                       </div>
                       <div className="app-stat-value">
-                        {getAccessLabel(dashboard.accessMode)}
+                        {learningPlan.nextLesson?.estimatedMinutes
+                          ? `${learningPlan.nextLesson.estimatedMinutes} min`
+                          : "Self-paced"}
                       </div>
                     </div>
                   </div>

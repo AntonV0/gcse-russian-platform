@@ -242,13 +242,13 @@ export function groupVocabularyItemsBySource(items: DbVocabularyItem[]) {
 export function getVocabularyListModeLabel(listMode: DbVocabularyListMode) {
   switch (listMode) {
     case "spec_only":
-      return "Spec only";
+      return "Exam list";
     case "extended_only":
-      return "Extended only";
+      return "Extra practice";
     case "spec_and_extended":
-      return "Spec + extended";
+      return "Exam + extra";
     case "custom":
-      return "Custom";
+      return "Custom set";
     default:
       return listMode;
   }
