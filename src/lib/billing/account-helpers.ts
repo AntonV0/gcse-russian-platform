@@ -133,6 +133,22 @@ function buildUpgradeSummary(params: {
   return parts.join(" · ");
 }
 
+function isGrantCurrentlyValid(grant: GrantRow, now = new Date()): boolean {
+  if (!grant.is_active) {
+    return false;
+  }
+
+  if (grant.starts_at && new Date(grant.starts_at) > now) {
+    return false;
+  }
+
+  if (grant.ends_at && new Date(grant.ends_at) < now) {
+    return false;
+  }
+
+  return true;
+}
+
 export async function getCurrentPlanSummaryForUserDb(
   userId: string
 ): Promise<CurrentPlanSummary> {
@@ -183,7 +199,10 @@ export async function getCurrentPlanSummaryForUserDb(
     lifetime: higherLifetimeUpgrade,
   };
 
-  const typedGrants = (grants ?? []) as GrantRow[];
+  const now = new Date();
+  const typedGrants = ((grants ?? []) as GrantRow[]).filter((grant) =>
+    isGrantCurrentlyValid(grant, now)
+  );
 
   if (typedGrants.length === 0) {
     return {
