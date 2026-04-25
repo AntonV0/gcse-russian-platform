@@ -13,6 +13,7 @@ import {
   canDashboardAccessMockExam,
   getCurrentUserMockExamAttemptsDb,
   getMockExamSectionTypeLabel,
+  getStudentSafeMockExamQuestion,
   getMockExamTierLabel,
   loadMockExamBySlugDb,
 } from "@/lib/mock-exams/mock-exam-helpers-db";
@@ -180,13 +181,18 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
                   />
                 ) : (
                   <div className="space-y-3">
-                    {questions.map((question, questionIndex) => (
-                      <MockExamQuestionPreview
-                        key={question.id}
-                        question={question}
-                        index={questionIndex}
-                      />
-                    ))}
+                    {questions.map((question, questionIndex) => {
+                      const studentSafeQuestion =
+                        getStudentSafeMockExamQuestion(question);
+
+                      return (
+                        <MockExamQuestionPreview
+                          key={question.id}
+                          question={studentSafeQuestion}
+                          index={questionIndex}
+                        />
+                      );
+                    })}
                   </div>
                 )}
               </SectionCard>
