@@ -3,14 +3,46 @@ import type { Metadata } from "next";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import {
+  DEFAULT_OG_IMAGE_PATH,
+  DEFAULT_SEO_DESCRIPTION,
+  DEFAULT_SEO_TITLE,
+  PUBLIC_SITE_NAME,
+  getPublicSiteUrl,
+} from "@/lib/seo/site";
+import {
   ThemeProvider,
   type AccentPreference,
   type ThemePreference,
 } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
-  title: "GCSE Russian Course Platform",
-  description: "Online GCSE Russian learning platform",
+  metadataBase: getPublicSiteUrl(),
+  applicationName: PUBLIC_SITE_NAME,
+  title: {
+    default: DEFAULT_SEO_TITLE,
+    template: `%s | ${PUBLIC_SITE_NAME}`,
+  },
+  description: DEFAULT_SEO_DESCRIPTION,
+  openGraph: {
+    title: DEFAULT_SEO_TITLE,
+    description: DEFAULT_SEO_DESCRIPTION,
+    siteName: PUBLIC_SITE_NAME,
+    type: "website",
+    images: [
+      {
+        url: getPublicSiteUrl(DEFAULT_OG_IMAGE_PATH),
+        width: 1200,
+        height: 630,
+        alt: "GCSE Russian online course",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: DEFAULT_SEO_TITLE,
+    description: DEFAULT_SEO_DESCRIPTION,
+    images: [getPublicSiteUrl(DEFAULT_OG_IMAGE_PATH)],
+  },
 };
 
 function getThemePreference(value: unknown): ThemePreference | null {

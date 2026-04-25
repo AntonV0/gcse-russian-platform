@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import AdminSidebar from "@/components/admin/admin-sidebar";
 import AdminRouteTracker from "@/components/admin/admin-route-tracker";
+import { noIndexRobots } from "@/lib/seo/site";
+
+export const metadata: Metadata = {
+  robots: noIndexRobots,
+};
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
