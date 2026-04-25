@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripeClient, getStripeWebhookSecret } from "@/lib/billing/stripe";
-import { handleCheckoutSessionCompleted } from "@/lib/billing/webhook-handlers";
+import {
+  handleCheckoutSessionCompleted,
+  handleStripeSubscriptionLifecycle,
+} from "@/lib/billing/webhook-handlers";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
@@ -25,13 +28,26 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    if (event.type !== "checkout.session.completed") {
-      return new NextResponse("OK", { status: 200 });
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+
+        await handleCheckoutSessionCompleted(session);
+        break;
+      }
+
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+
+        await handleStripeSubscriptionLifecycle(subscription);
+        break;
+      }
+
+      default:
+        break;
     }
-
-    const session = event.data.object as Stripe.Checkout.Session;
-
-    await handleCheckoutSessionCompleted(session);
 
     return new NextResponse("OK", { status: 200 });
   } catch (error) {
