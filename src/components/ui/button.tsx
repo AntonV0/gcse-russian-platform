@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import {
   getButtonClassName,
@@ -29,6 +30,7 @@ type ButtonAsButtonProps = BaseProps &
 
 type ButtonAsLinkProps = BaseProps & {
   href: string;
+  title?: string;
 };
 
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
@@ -53,6 +55,10 @@ function getResolvedAriaLabel({
   }
 
   return undefined;
+}
+
+function getResolvedTitle({ ariaLabel, title }: { ariaLabel?: string; title?: string }) {
+  return ariaLabel ?? title;
 }
 
 function ButtonInner({
@@ -134,6 +140,10 @@ export default function Button(props: ButtonProps) {
     children,
     iconOnly,
   });
+  const resolvedTitle = getResolvedTitle({
+    ariaLabel: resolvedAriaLabel,
+    title: "title" in props ? props.title : undefined,
+  });
 
   const mergedClassName = getButtonClassName({
     variant,
@@ -142,6 +152,17 @@ export default function Button(props: ButtonProps) {
     className,
     disabled,
   });
+
+  useEffect(() => {
+    if (!SHOW_UI_DEBUG || !iconOnly || resolvedAriaLabel) {
+      return;
+    }
+
+    console.warn(
+      "Button rendered with iconOnly=true but no ariaLabel. Add ariaLabel for screen reader users.",
+      { icon, variant, size }
+    );
+  }, [icon, iconOnly, resolvedAriaLabel, size, variant]);
 
   if ("href" in props && props.href) {
     return (
@@ -152,7 +173,7 @@ export default function Button(props: ButtonProps) {
           href={props.href}
           className={mergedClassName}
           aria-label={resolvedAriaLabel}
-          title={resolvedAriaLabel}
+          title={resolvedTitle}
         >
           <ButtonInner
             icon={icon}
@@ -179,6 +200,7 @@ export default function Button(props: ButtonProps) {
   delete buttonProps.iconOnly;
   delete buttonProps.ariaLabel;
   delete buttonProps.children;
+  delete buttonProps.title;
 
   return (
     <span className="dev-marker-host relative inline-flex max-w-full">
@@ -188,7 +210,7 @@ export default function Button(props: ButtonProps) {
         {...buttonProps}
         className={mergedClassName}
         aria-label={resolvedAriaLabel}
-        title={resolvedAriaLabel}
+        title={resolvedTitle}
       >
         <ButtonInner
           icon={icon}
