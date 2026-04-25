@@ -2,8 +2,12 @@ import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 
 const footerLinks = [
+  { href: "/marketing/gcse-russian-course", label: "Course" },
+  { href: "/marketing/edexcel-gcse-russian", label: "Edexcel guide" },
+  { href: "/marketing/gcse-russian-exam-guide", label: "Exam guide" },
+  { href: "/marketing/russian-gcse-private-candidate", label: "Private candidates" },
+  { href: "/marketing/online-gcse-russian-lessons", label: "Online lessons" },
   { href: "/marketing/pricing", label: "Pricing" },
-  { href: "/marketing/blog", label: "Blog" },
   { href: "/marketing/about", label: "About" },
   { href: "/marketing/faq", label: "FAQ" },
   { href: "/login", label: "Log in" },

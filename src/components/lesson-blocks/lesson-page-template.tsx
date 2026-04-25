@@ -183,7 +183,7 @@ export default async function LessonPageTemplate({
           ) : null}
         </div>
 
-        <aside className="xl:sticky xl:top-6 xl:self-start">
+        <aside className="xl:sticky xl:top-[var(--sticky-site-offset)] xl:self-start">
           <StepTracker
             sections={visibleSections}
             currentStepIndex={effectiveStepIndex}

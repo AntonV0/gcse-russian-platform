@@ -1,7 +1,5 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
-import AppShell from "@/components/layout/app-shell";
 import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import {
   DEFAULT_OG_IMAGE_PATH,
@@ -10,11 +8,7 @@ import {
   PUBLIC_SITE_NAME,
   getPublicSiteUrl,
 } from "@/lib/seo/site";
-import {
-  ThemeProvider,
-  type AccentPreference,
-  type ThemePreference,
-} from "@/components/providers/theme-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
   metadataBase: getPublicSiteUrl(),
@@ -46,36 +40,11 @@ export const metadata: Metadata = {
   },
 };
 
-function getThemePreference(value: unknown): ThemePreference | null {
-  return value === "light" || value === "dark" || value === "system" ? value : null;
-}
-
-function getAccentPreference(value: unknown): AccentPreference | null {
-  return value === "blue" ||
-    value === "purple" ||
-    value === "pink" ||
-    value === "red" ||
-    value === "orange" ||
-    value === "yellow" ||
-    value === "green" ||
-    value === "teal" ||
-    value === "brown" ||
-    value === "slate"
-    ? value
-    : null;
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getCurrentUser();
-  const profile = user ? await getCurrentProfile() : null;
-  const isAdmin = Boolean(profile?.is_admin);
-  const initialThemePreference = getThemePreference(profile?.theme_preference);
-  const initialAccentPreference = getAccentPreference(profile?.accent_preference);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -84,7 +53,7 @@ export default async function RootLayout({
             __html: `
 (function () {
   try {
-    const profileTheme = ${JSON.stringify(initialThemePreference)};
+    const profileTheme = null;
     const stored = localStorage.getItem("theme");
     const system = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const preference =
@@ -113,7 +82,7 @@ export default async function RootLayout({
       "brown",
       "slate",
     ]);
-    const profileAccent = ${JSON.stringify(initialAccentPreference)};
+    const profileAccent = null;
     const storedAccent = localStorage.getItem("accent");
     const accent =
       accentOptions.has(profileAccent)
@@ -133,13 +102,8 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen">
-        <ThemeProvider
-          initialThemePreference={initialThemePreference}
-          initialAccentPreference={initialAccentPreference}
-        >
-          <DevMarkerProvider isAdmin={isAdmin}>
-            <AppShell user={user}>{children}</AppShell>
-          </DevMarkerProvider>
+        <ThemeProvider>
+          <DevMarkerProvider isAdmin={false}>{children}</DevMarkerProvider>
         </ThemeProvider>
       </body>
     </html>

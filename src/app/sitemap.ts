@@ -13,6 +13,31 @@ const publicRoutes = [
     priority: 0.8,
   },
   {
+    path: "/marketing/gcse-russian-course",
+    changeFrequency: "weekly",
+    priority: 0.95,
+  },
+  {
+    path: "/marketing/edexcel-gcse-russian",
+    changeFrequency: "monthly",
+    priority: 0.85,
+  },
+  {
+    path: "/marketing/gcse-russian-exam-guide",
+    changeFrequency: "monthly",
+    priority: 0.85,
+  },
+  {
+    path: "/marketing/russian-gcse-private-candidate",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/marketing/online-gcse-russian-lessons",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
     path: "/marketing/about",
     changeFrequency: "monthly",
     priority: 0.5,

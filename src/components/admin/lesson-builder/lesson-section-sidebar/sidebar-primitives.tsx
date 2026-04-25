@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import AppIcon from "@/components/ui/app-icon";
+import IconButton from "@/components/ui/icon-button";
 import type { LessonSection } from "@/components/admin/lesson-builder/lesson-builder-types";
+import type { AppIconKey } from "@/lib/shared/icons";
 
 export const VARIANT_VISIBILITY_OPTIONS = [
   { value: "shared", label: "Shared", short: "S", tone: "muted" as const },
@@ -38,7 +40,7 @@ export function getVariantVisibilityMeta(value: LessonSection["variant_visibilit
 }
 
 export function SidebarIconButton(props: {
-  children: React.ReactNode;
+  icon: AppIconKey;
   ariaLabel: string;
   title: string;
   disabled?: boolean;
@@ -46,20 +48,16 @@ export function SidebarIconButton(props: {
   className?: string;
 }) {
   return (
-    <button
+    <IconButton
       type={props.type ?? "submit"}
-      aria-label={props.ariaLabel}
+      icon={props.icon}
+      label={props.ariaLabel}
       title={props.title}
       disabled={props.disabled}
-      className={[
-        "flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] transition-[background-color,border-color,box-shadow] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] disabled:opacity-50",
-        props.className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      {props.children}
-    </button>
+      variant="secondary"
+      size="sm"
+      className={["h-7 w-7 rounded-lg", props.className].filter(Boolean).join(" ")}
+    />
   );
 }
 

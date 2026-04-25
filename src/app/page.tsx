@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AppShell from "@/components/layout/app-shell";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -91,8 +92,9 @@ const audience: AudienceItem[] = [
 
 export default function AppHomePage() {
   return (
-    <PageContainer>
-      <div className="space-y-8 py-8 md:py-12">
+    <AppShell user={null}>
+      <PageContainer>
+        <div className="space-y-8 py-8 md:py-12">
             <section className="app-surface-brand app-section-padding-lg overflow-hidden">
               <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.92fr)] lg:items-start">
                 <div className="space-y-6">
@@ -236,7 +238,8 @@ export default function AppHomePage() {
                 ))}
               </div>
             </section>
-      </div>
-    </PageContainer>
+        </div>
+      </PageContainer>
+    </AppShell>
   );
 }

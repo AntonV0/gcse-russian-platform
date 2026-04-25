@@ -260,12 +260,11 @@ export function SectionList(props: SectionListProps) {
                         <BuilderHiddenFields {...props.routeFields} />
                         <input type="hidden" name="sectionId" value={section.id} />
                         <SidebarIconButton
+                          icon="duplicate"
                           ariaLabel="Duplicate section"
                           title="Duplicate section"
                           disabled={isPending || !!props.draggedBlockContext}
-                        >
-                          <AppIcon icon="duplicate" size={13} />
-                        </SidebarIconButton>
+                        />
                       </form>
 
                       <form action={toggleSectionPublishedAction} className="block">
@@ -277,6 +276,7 @@ export function SectionList(props: SectionListProps) {
                           value={section.is_published ? "draft" : "published"}
                         />
                         <SidebarIconButton
+                          icon={section.is_published ? "hidden" : "preview"}
                           ariaLabel={
                             section.is_published
                               ? "Unpublish section"
@@ -288,12 +288,7 @@ export function SectionList(props: SectionListProps) {
                               : "Publish section"
                           }
                           disabled={isPending || !!props.draggedBlockContext}
-                        >
-                          <AppIcon
-                            icon={section.is_published ? "hidden" : "preview"}
-                            size={13}
-                          />
-                        </SidebarIconButton>
+                        />
                       </form>
                     </div>
 
@@ -303,6 +298,7 @@ export function SectionList(props: SectionListProps) {
                         <input type="hidden" name="sectionId" value={section.id} />
                         <input type="hidden" name="direction" value="up" />
                         <SidebarIconButton
+                          icon="up"
                           ariaLabel="Move section up"
                           title="Move section up"
                           disabled={
@@ -310,9 +306,7 @@ export function SectionList(props: SectionListProps) {
                             isPending ||
                             !!props.draggedBlockContext
                           }
-                        >
-                          <AppIcon icon="up" size={14} />
-                        </SidebarIconButton>
+                        />
                       </form>
 
                       <form action={moveSectionAction} className="block">
@@ -320,6 +314,7 @@ export function SectionList(props: SectionListProps) {
                         <input type="hidden" name="sectionId" value={section.id} />
                         <input type="hidden" name="direction" value="down" />
                         <SidebarIconButton
+                          icon="down"
                           ariaLabel="Move section down"
                           title="Move section down"
                           disabled={
@@ -327,9 +322,7 @@ export function SectionList(props: SectionListProps) {
                             isPending ||
                             !!props.draggedBlockContext
                           }
-                        >
-                          <AppIcon icon="down" size={14} />
-                        </SidebarIconButton>
+                        />
                       </form>
                     </div>
                   </div>

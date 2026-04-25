@@ -26,6 +26,8 @@ import {
 } from "@/lib/lessons/lesson-blocks";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import AppIcon from "@/components/ui/app-icon";
+import IconButton from "@/components/ui/icon-button";
+import type { AppIconKey } from "@/lib/shared/icons";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
@@ -43,26 +45,27 @@ function getBlockGroupTone(
 }
 
 function BlockIconButton({
-  children,
+  icon,
   ariaLabel,
   title,
   disabled,
 }: {
-  children: React.ReactNode;
+  icon: AppIconKey;
   ariaLabel: string;
   title: string;
   disabled?: boolean;
 }) {
   return (
-    <button
+    <IconButton
       type="submit"
-      aria-label={ariaLabel}
+      icon={icon}
+      label={ariaLabel}
       title={title}
       disabled={disabled}
-      className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,32,51,0.04)] transition-[background-color,border-color,box-shadow] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)] disabled:opacity-50"
-    >
-      {children}
-    </button>
+      variant="secondary"
+      size="sm"
+      className="h-7 w-7 rounded-lg"
+    />
   );
 }
 
@@ -219,12 +222,11 @@ export default function DraggableBlockList(props: {
                   <input type="hidden" name="sectionId" value={props.section.id} />
                   <input type="hidden" name="blockId" value={block.id} />
                   <BlockIconButton
+                    icon="duplicate"
                     ariaLabel="Duplicate block"
                     title="Duplicate block"
                     disabled={isPending}
-                  >
-                    <AppIcon icon="duplicate" size={13} />
-                  </BlockIconButton>
+                  />
                 </form>
 
                 <form action={moveBlockAction}>
@@ -233,12 +235,11 @@ export default function DraggableBlockList(props: {
                   <input type="hidden" name="blockId" value={block.id} />
                   <input type="hidden" name="direction" value="up" />
                   <BlockIconButton
+                    icon="up"
                     ariaLabel="Move block up"
                     title="Move block up"
                     disabled={blockIndex === 0 || isPending}
-                  >
-                    <AppIcon icon="up" size={14} />
-                  </BlockIconButton>
+                  />
                 </form>
 
                 <form action={toggleBlockPublishedAction}>
@@ -250,12 +251,11 @@ export default function DraggableBlockList(props: {
                     value={block.is_published ? "draft" : "published"}
                   />
                   <BlockIconButton
+                    icon={block.is_published ? "hidden" : "preview"}
                     ariaLabel={block.is_published ? "Unpublish block" : "Publish block"}
                     title={block.is_published ? "Unpublish block" : "Publish block"}
                     disabled={isPending}
-                  >
-                    <AppIcon icon={block.is_published ? "hidden" : "preview"} size={13} />
-                  </BlockIconButton>
+                  />
                 </form>
 
                 <form action={moveBlockAction}>
@@ -264,12 +264,11 @@ export default function DraggableBlockList(props: {
                   <input type="hidden" name="blockId" value={block.id} />
                   <input type="hidden" name="direction" value="down" />
                   <BlockIconButton
+                    icon="down"
                     ariaLabel="Move block down"
                     title="Move block down"
                     disabled={blockIndex === props.section.blocks.length - 1 || isPending}
-                  >
-                    <AppIcon icon="down" size={14} />
-                  </BlockIconButton>
+                  />
                 </form>
               </div>
             </div>
