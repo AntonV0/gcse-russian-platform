@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Button from "@/components/ui/button";
 
 type AudioPlayerProps = {
   src: string;
@@ -120,14 +121,16 @@ export default function AudioPlayer({
           </audio>
 
           {useCustomPlayFlow ? (
-            <button
+            <Button
               type="button"
               onClick={handlePlayClick}
               disabled={remainingPlays === 0}
-              className="app-btn-base app-btn-secondary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+              variant="secondary"
+              size="sm"
+              icon="audio"
             >
               Play audio
-            </button>
+            </Button>
           ) : null}
         </div>
       )}

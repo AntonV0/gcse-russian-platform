@@ -38,6 +38,46 @@ const publicRoutes = [
     priority: 0.8,
   },
   {
+    path: "/marketing/resources",
+    changeFrequency: "weekly",
+    priority: 0.85,
+  },
+  {
+    path: "/marketing/gcse-russian-listening-exam",
+    changeFrequency: "monthly",
+    priority: 0.75,
+  },
+  {
+    path: "/marketing/gcse-russian-speaking-exam",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/marketing/gcse-russian-reading-exam",
+    changeFrequency: "monthly",
+    priority: 0.75,
+  },
+  {
+    path: "/marketing/gcse-russian-writing-exam",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/marketing/gcse-russian-grammar",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/marketing/gcse-russian-vocabulary",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/marketing/gcse-russian-past-papers",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
     path: "/marketing/about",
     changeFrequency: "monthly",
     priority: 0.5,

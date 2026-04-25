@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import QuestionCard from "@/components/questions/question-card";
 import QuestionFeedback from "@/components/questions/question-feedback";
+import Button from "@/components/ui/button";
 
 type MultipleChoiceOption = {
   id: string;
@@ -141,18 +142,20 @@ export default function MultipleChoiceBlock({
       </div>
 
       <div>
-        <button
+        <Button
           type="button"
           onClick={handleSubmit}
           disabled={!resolvedSelectedOptionId || resolvedHasSubmitted || isSubmitting}
-          className="app-btn-base app-btn-primary px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+          variant="primary"
+          size="sm"
+          icon={isSubmitting ? "pending" : "confirm"}
         >
           {resolvedHasSubmitted
             ? "Submitted"
             : isSubmitting
               ? "Saving..."
               : "Check answer"}
-        </button>
+        </Button>
       </div>
     </QuestionCard>
   );

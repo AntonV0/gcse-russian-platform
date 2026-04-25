@@ -41,6 +41,12 @@ const pathways = [
 
 const guideLinks = [
   {
+    title: "GCSE Russian resources",
+    description: "Browse exam paper guides, grammar, vocabulary, and past-paper revision strategy.",
+    href: "/marketing/resources",
+    icon: "lessonContent" as const,
+  },
+  {
     title: "Online GCSE Russian course",
     description: "See how the structured course supports Edexcel GCSE Russian preparation.",
     href: "/marketing/gcse-russian-course",
@@ -69,12 +75,6 @@ const guideLinks = [
     description: "Explore teacher-supported learning alongside the course platform.",
     href: "/marketing/online-gcse-russian-lessons",
     icon: "school" as const,
-  },
-  {
-    title: "Pricing",
-    description: "Compare Foundation and Higher access and start with trial-first onboarding.",
-    href: "/marketing/pricing",
-    icon: "pricing" as const,
   },
 ];
 

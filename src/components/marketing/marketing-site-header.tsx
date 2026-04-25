@@ -17,9 +17,9 @@ type MarketingSiteHeaderProps = {
 const navItems = [
   { href: "/marketing", label: "Home" },
   { href: "/marketing/gcse-russian-course", label: "Course" },
+  { href: "/marketing/resources", label: "Resources" },
   { href: "/marketing/gcse-russian-exam-guide", label: "Exam guide" },
   { href: "/marketing/russian-gcse-private-candidate", label: "Private candidates" },
-  { href: "/marketing/online-gcse-russian-lessons", label: "Lessons" },
   { href: "/marketing/pricing", label: "Pricing" },
   { href: "/marketing/faq", label: "FAQ" },
 ];

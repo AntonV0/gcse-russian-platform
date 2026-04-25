@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import QuestionCard from "@/components/questions/question-card";
 import QuestionFeedback from "@/components/questions/question-feedback";
+import Button from "@/components/ui/button";
 
 type ShortAnswerBlockProps = {
   question: string;
@@ -131,20 +132,22 @@ export default function ShortAnswerBlock({
           </p>
         ) : null}
 
-        <button
+        <Button
           type="button"
           onClick={handleSubmit}
           disabled={
             !resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked
           }
-          className="app-btn-base app-btn-primary px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+          variant="primary"
+          size="sm"
+          icon={isSubmitting ? "pending" : "confirm"}
         >
           {resolvedHasSubmitted
             ? "Submitted"
             : isSubmitting
               ? "Saving..."
               : "Check answer"}
-        </button>
+        </Button>
       </div>
     </QuestionCard>
   );
