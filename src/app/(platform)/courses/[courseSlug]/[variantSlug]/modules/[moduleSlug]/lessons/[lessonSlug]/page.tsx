@@ -1,10 +1,12 @@
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
+import LockedContentCard from "@/components/ui/locked-content-card";
 import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import { canUserAccessLesson } from "@/lib/access/access";
 import { loadLessonContentByLessonIdDb } from "@/lib/lessons/lesson-content-helpers-db";
-import { getVariantPath } from "@/lib/access/routes";
+import { getModulePath, getVariantPath } from "@/lib/access/routes";
 
 type LessonPageProps = {
   params: Promise<{
@@ -37,7 +39,21 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   );
 
   if (!course || !module || !lesson) {
-    return <main>Lesson not found.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="search"
+          iconTone="brand"
+          title="Lesson not found"
+          description="This lesson could not be found. Return to your course path and choose an available lesson."
+          action={
+            <Button href="/courses" variant="primary" icon="courses">
+              Browse courses
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
   const canAccess = await canUserAccessLesson(
@@ -68,8 +84,8 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
               <div className="space-y-2">
                 <h1 className="app-title max-w-3xl">{lesson.title}</h1>
                 <p className="app-subtitle max-w-2xl">
-                  This lesson is not currently available on your account. Continue through
-                  your course path to unlock more content or review your access.
+                  This lesson is locked for now. Continue through the module first, or
+                  review your course access if you expected this lesson to be available.
                 </p>
               </div>
 
@@ -88,22 +104,16 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
               </div>
             </div>
 
-            <div className="app-card p-5">
-              <h2 className="mb-2 text-base font-semibold text-[var(--text-primary)]">
-                Access guidance
-              </h2>
-
-              <div className="space-y-3 text-sm app-text-muted">
-                <p>
-                  Lessons in this course may unlock progressively depending on your
-                  current progress and access mode.
-                </p>
-                <p>
-                  Complete earlier lessons first, or return to your course dashboard to
-                  continue from the recommended next step.
-                </p>
-              </div>
-            </div>
+            <LockedContentCard
+              title="Unlock this lesson"
+              description="Lessons may unlock as you complete earlier work, and some lessons require the right course access. Start with the module path so the next available step is clear."
+              accessLabel={getVariantLabel(variantSlug)}
+              statusLabel="Locked"
+              primaryActionHref={getModulePath(courseSlug, variantSlug, moduleSlug)}
+              primaryActionLabel="Back to module"
+              secondaryActionHref="/account/billing"
+              secondaryActionLabel="Review access"
+            />
           </div>
         </section>
       </main>
@@ -113,7 +123,25 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   const lessonContent = await loadLessonContentByLessonIdDb(lesson.id);
 
   if (lessonContent.sections.length === 0) {
-    return <main>Lesson content not found.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="lessonContent"
+          iconTone="brand"
+          title="Lesson content is not ready yet"
+          description="The lesson exists, but no published content is available right now. Return to the module and choose another lesson."
+          action={
+            <Button
+              href={getModulePath(courseSlug, variantSlug, moduleSlug)}
+              variant="primary"
+              icon="back"
+            >
+              Back to module
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
   return (

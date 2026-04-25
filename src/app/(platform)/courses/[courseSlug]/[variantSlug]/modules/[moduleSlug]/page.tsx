@@ -34,6 +34,8 @@ export default async function ModulePage({ params }: ModulePageProps) {
   const completedMap = new Map(progress.map((p) => [p.lesson_slug, p.completed]));
   const completedCount = progress.filter((p) => p.completed).length;
   const totalLessons = lessons.length;
+  const progressPercent =
+    totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   const lessonAccessEntries = await Promise.all(
     lessons.map(async (lesson) => {
@@ -119,6 +121,23 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
           <DashboardCard title="Module progress" className="h-full">
             <div className="space-y-4">
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                  <span className="font-medium text-[var(--text-primary)]">
+                    {progressPercent}% complete
+                  </span>
+                  <span className="app-text-muted">
+                    {completedCount} of {totalLessons}
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-[var(--background-muted)]">
+                  <div
+                    className="h-full rounded-full bg-[var(--brand-blue)]"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+
               <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
                 <div className="rounded-xl bg-[var(--background-muted)] p-3">
                   <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
@@ -145,14 +164,14 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     Access
                   </div>
                   <div className="font-semibold text-[var(--text-primary)]">
-                    Progressive
+                    Step by step
                   </div>
                 </div>
               </div>
 
               <p className="text-sm app-text-muted">
-                Lessons unlock progressively, so students are guided through the module
-                instead of jumping ahead without context.
+                Follow the next available lesson first. Completed lessons stay available
+                for revision.
               </p>
             </div>
           </DashboardCard>
@@ -220,7 +239,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                   </div>
 
                   <div className="pt-1 text-sm font-medium app-brand-text">
-                    {canAccessLesson ? "Open lesson →" : "Locked until previous progress"}
+                    {canAccessLesson ? "Open lesson" : "Locked until previous progress"}
                   </div>
                 </div>
               </DashboardCard>

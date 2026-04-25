@@ -10,7 +10,9 @@ type LockedContentCardProps = {
   description: string;
   accessLabel?: string;
   statusLabel?: string;
+  primaryActionHref?: string;
   primaryActionLabel?: string;
+  secondaryActionHref?: string;
   secondaryActionLabel?: string;
   className?: string;
 };
@@ -22,7 +24,9 @@ export default function LockedContentCard({
   description,
   accessLabel = "Full access",
   statusLabel = "Locked",
+  primaryActionHref,
   primaryActionLabel = "Unlock full course",
+  secondaryActionHref,
   secondaryActionLabel = "Compare access",
   className,
 }: LockedContentCardProps) {
@@ -73,12 +77,30 @@ export default function LockedContentCard({
           <p className="text-sm leading-6 text-[var(--text-secondary)]">{description}</p>
 
           <div className="flex flex-wrap gap-2.5">
-            <Button variant="inverse" icon="next" iconPosition="right">
-              {primaryActionLabel}
-            </Button>
-            <Button variant="secondary" icon="preview">
-              {secondaryActionLabel}
-            </Button>
+            {primaryActionHref ? (
+              <Button
+                href={primaryActionHref}
+                variant="inverse"
+                icon="next"
+                iconPosition="right"
+              >
+                {primaryActionLabel}
+              </Button>
+            ) : (
+              <Button variant="inverse" icon="next" iconPosition="right">
+                {primaryActionLabel}
+              </Button>
+            )}
+
+            {secondaryActionHref ? (
+              <Button href={secondaryActionHref} variant="secondary" icon="preview">
+                {secondaryActionLabel}
+              </Button>
+            ) : (
+              <Button variant="secondary" icon="preview">
+                {secondaryActionLabel}
+              </Button>
+            )}
           </div>
         </CardBody>
       </Card>
