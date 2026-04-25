@@ -55,7 +55,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
         tone="student"
         eyebrow="Grammar"
         title="Grammar"
-        description="Review GCSE Russian grammar through structured sets, explanations, examples, and reference tables."
+        description="Find GCSE Russian grammar by topic and tier, then open clear explanations, examples, and reference tables."
         badges={
           <>
             <Badge tone="info" icon="grammar">
@@ -80,12 +80,16 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
 
       <SectionCard
         title="Find grammar"
-        description="Search by keyword or filter by tier and theme."
+        description="Search by keyword, then narrow by tier or topic."
         tone="student"
       >
         <form className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="w-full lg:max-w-xs">
-            <Input name="search" defaultValue={params.search ?? ""} placeholder="Search grammar..." />
+            <Input
+              name="search"
+              defaultValue={params.search ?? ""}
+              placeholder="Search grammar..."
+            />
           </div>
 
           <div className="w-full lg:max-w-[190px]">
@@ -101,7 +105,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             <Input
               name="themeKey"
               defaultValue={params.themeKey ?? ""}
-              placeholder="Theme key"
+              placeholder="Topic"
             />
           </div>
 
