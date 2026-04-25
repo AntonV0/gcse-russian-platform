@@ -13,6 +13,8 @@ import {
   getVocabularySetsDb,
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
+  type DbVocabularyListMode,
+  type DbVocabularySetCoverageSummary,
   type VocabularySetFilters,
 } from "@/lib/vocabulary/vocabulary-helpers-db";
 
@@ -53,6 +55,75 @@ function normalizeListModeFilter(value?: string): VocabularySetFilters["listMode
 
 function getVocabularySetHref(vocabularySet: { id: string; slug: string | null }) {
   return `/vocabulary/${vocabularySet.slug ?? vocabularySet.id}`;
+}
+
+function shouldShowCoverageBadges(listMode: DbVocabularyListMode) {
+  return (
+    listMode === "spec_only" ||
+    listMode === "extended_only" ||
+    listMode === "spec_and_extended"
+  );
+}
+
+function getCoverageTone(usedItems: number, totalItems: number) {
+  if (totalItems === 0 || usedItems === 0) return "danger";
+  if (usedItems === totalItems) return "success";
+  if (usedItems < totalItems / 2) return "warning";
+  return "info";
+}
+
+function CoverageRatioBadge({
+  label,
+  usedItems,
+  totalItems,
+}: {
+  label: string;
+  usedItems: number;
+  totalItems: number;
+}) {
+  return (
+    <Badge
+      tone={getCoverageTone(usedItems, totalItems)}
+      icon={usedItems > 0 ? "success" : "cancel"}
+    >
+      {label} {usedItems}/{totalItems}
+    </Badge>
+  );
+}
+
+function VocabularySetCoverageBadges({
+  coverageSummary,
+}: {
+  coverageSummary: DbVocabularySetCoverageSummary;
+}) {
+  const totalItems = coverageSummary.totalItems;
+
+  if (totalItems === 0) return null;
+
+  return (
+    <>
+      <CoverageRatioBadge
+        label="Foundation"
+        usedItems={coverageSummary.foundationUsedItems}
+        totalItems={totalItems}
+      />
+      <CoverageRatioBadge
+        label="Higher"
+        usedItems={coverageSummary.higherUsedItems}
+        totalItems={totalItems}
+      />
+      <CoverageRatioBadge
+        label="Volna"
+        usedItems={coverageSummary.volnaUsedItems}
+        totalItems={totalItems}
+      />
+      <CoverageRatioBadge
+        label="Custom list"
+        usedItems={coverageSummary.customListUsedItems}
+        totalItems={totalItems}
+      />
+    </>
+  );
 }
 
 export default async function VocabularyPage({ searchParams }: VocabularyPageProps) {
@@ -195,6 +266,11 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
                       <Badge tone="warning" icon="edit">
                         Draft
                       </Badge>
+                    ) : null}
+                    {shouldShowCoverageBadges(vocabularySet.list_mode) ? (
+                      <VocabularySetCoverageBadges
+                        coverageSummary={vocabularySet.coverage_summary}
+                      />
                     ) : null}
                   </>
                 }

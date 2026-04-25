@@ -200,10 +200,19 @@ export type DbVocabularySetUsageStats = {
   usedInVolna: boolean;
 };
 
+export type DbVocabularySetCoverageSummary = {
+  totalItems: number;
+  foundationUsedItems: number;
+  higherUsedItems: number;
+  volnaUsedItems: number;
+  customListUsedItems: number;
+};
+
 export type DbVocabularySetListItem = DbVocabularySet & {
   item_count: number;
   list_count: number;
   usage_stats: DbVocabularySetUsageStats;
+  coverage_summary: DbVocabularySetCoverageSummary;
 };
 
 export type LoadedVocabularySetDetailDb = {
@@ -735,6 +744,39 @@ export async function getVocabularyItemCoverageByItemIdsDb(vocabularyItemIds: st
   );
 }
 
+export async function getVocabularySetCoverageSummaryBySetIdDb(vocabularySetId: string) {
+  const items = await getVocabularyItemsBySetIdDb(vocabularySetId);
+  const uniqueItems = Array.from(
+    new Map(items.map((item) => [item.id, item])).values()
+  );
+  const itemCoverageById = await getVocabularyItemCoverageByItemIdsDb(
+    uniqueItems.map((item) => item.id)
+  );
+
+  return uniqueItems.reduce<DbVocabularySetCoverageSummary>(
+    (summary, item) => {
+      const coverage = itemCoverageById.get(item.id);
+
+      return {
+        totalItems: summary.totalItems + 1,
+        foundationUsedItems:
+          summary.foundationUsedItems + (coverage?.used_in_foundation ? 1 : 0),
+        higherUsedItems: summary.higherUsedItems + (coverage?.used_in_higher ? 1 : 0),
+        volnaUsedItems: summary.volnaUsedItems + (coverage?.used_in_volna ? 1 : 0),
+        customListUsedItems:
+          summary.customListUsedItems + (coverage?.used_in_custom_list ? 1 : 0),
+      };
+    },
+    {
+      totalItems: 0,
+      foundationUsedItems: 0,
+      higherUsedItems: 0,
+      volnaUsedItems: 0,
+      customListUsedItems: 0,
+    }
+  );
+}
+
 export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
   const lists = await getVocabularyListsBySetIdDb(vocabularySetId);
 
@@ -902,10 +944,11 @@ async function attachVocabularyCountsAndUsage(
 ): Promise<DbVocabularySetListItem[]> {
   const enriched = await Promise.all(
     vocabularySets.map(async (vocabularySet) => {
-      const [itemCount, listCount, usageStats] = await Promise.all([
+      const [itemCount, listCount, usageStats, coverageSummary] = await Promise.all([
         getVocabularyItemCountBySetIdDb(vocabularySet.id),
         getVocabularyListCountBySetIdDb(vocabularySet.id),
         getVocabularySetUsageStatsBySetIdDb(vocabularySet.id),
+        getVocabularySetCoverageSummaryBySetIdDb(vocabularySet.id),
       ]);
 
       return {
@@ -913,6 +956,7 @@ async function attachVocabularyCountsAndUsage(
         item_count: itemCount,
         list_count: listCount,
         usage_stats: usageStats,
+        coverage_summary: coverageSummary,
       };
     })
   );

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -908,9 +909,13 @@ function VocabularyItemCard({
             <input type="hidden" name="vocabularyItemId" value={item.id} />
             <input type="hidden" name="vocabularySetId" value={vocabularySetId} />
 
-            <Button variant="danger" size="sm" icon="delete">
+            <AdminConfirmButton
+              variant="danger"
+              icon="delete"
+              confirmMessage={`Delete ${item.russian}? This removes it from this vocabulary set and any linked lists.`}
+            >
               Delete item
-            </Button>
+            </AdminConfirmButton>
           </form>
         </div>
       </div>
