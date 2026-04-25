@@ -13,10 +13,14 @@ import {
   updateVocabularyItemAction,
 } from "@/app/actions/admin/admin-vocabulary-items-actions";
 import {
+  getRequiredVocabularyCoverageVariants,
+  getVocabularyCoverageVariantCount,
+  getVocabularyCoverageVariantLabel,
   getVocabularyItemCoverageByItemIdsDb,
   getVocabularyListModeLabel,
   getVocabularyProductiveReceptiveLabel,
   getVocabularyTierLabel,
+  getVocabularyCoverageVariantUsed,
   loadVocabularySetByIdDb,
   type DbVocabularyItemCoverage,
   type DbVocabularyItem,
@@ -68,59 +72,18 @@ function getDefaultItemTier(setTier: DbVocabularyTier) {
     : "unknown";
 }
 
-function getRequiredLessonCoverageKeys(tier: DbVocabularyTier) {
-  if (tier === "foundation") {
-    return ["foundation"] as const;
-  }
-
-  if (tier === "higher") {
-    return ["higher", "volna"] as const;
-  }
-
-  return ["foundation", "higher", "volna"] as const;
-}
-
-function getLessonCoverageValue(
-  coverage: DbVocabularyItemCoverage | null,
-  key: "foundation" | "higher" | "volna"
-) {
-  if (!coverage) return false;
-
-  switch (key) {
-    case "foundation":
-      return coverage.used_in_foundation;
-    case "higher":
-      return coverage.used_in_higher;
-    case "volna":
-      return coverage.used_in_volna;
-    default:
-      return false;
-  }
-}
-
-function getLessonCoverageLabel(key: "foundation" | "higher" | "volna") {
-  switch (key) {
-    case "foundation":
-      return "Foundation";
-    case "higher":
-      return "Higher";
-    case "volna":
-      return "Volna";
-    default:
-      return key;
-  }
-}
-
 function CoverageBadge({
   label,
   isUsed,
+  count,
 }: {
   label: string;
   isUsed: boolean;
+  count?: number;
 }) {
   return (
     <Badge tone={isUsed ? "success" : "danger"} icon={isUsed ? "success" : "cancel"}>
-      {label}
+      {count && count > 0 ? `${label} ${count}` : label}
     </Badge>
   );
 }
@@ -132,21 +95,23 @@ function VocabularyItemCoverageBadges({
   item: DbVocabularyItem;
   coverage: DbVocabularyItemCoverage | null;
 }) {
-  const lessonCoverageKeys = getRequiredLessonCoverageKeys(item.tier);
+  const lessonCoverageVariants = getRequiredVocabularyCoverageVariants(item.tier);
 
   return (
     <div className="flex flex-wrap gap-2">
-      {lessonCoverageKeys.map((key) => (
+      {lessonCoverageVariants.map((variant) => (
         <CoverageBadge
-          key={key}
-          label={getLessonCoverageLabel(key)}
-          isUsed={getLessonCoverageValue(coverage, key)}
+          key={variant}
+          label={getVocabularyCoverageVariantLabel(variant)}
+          isUsed={getVocabularyCoverageVariantUsed(coverage, variant)}
+          count={getVocabularyCoverageVariantCount(coverage, variant)}
         />
       ))}
 
       <CoverageBadge
         label="Custom list"
         isUsed={Boolean(coverage?.used_in_custom_list)}
+        count={coverage?.custom_list_occurrences ?? 0}
       />
     </div>
   );
