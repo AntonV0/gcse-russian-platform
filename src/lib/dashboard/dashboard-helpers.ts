@@ -10,6 +10,8 @@ export type DashboardInfo = {
 
 type DashboardGrantRow = {
   access_mode: string;
+  starts_at: string | null;
+  ends_at: string | null;
   products:
     | {
         code: string | null;
@@ -23,6 +25,18 @@ type DashboardGrantRow = {
 function getProductCodeFromGrant(grant: DashboardGrantRow): string | null {
   const product = Array.isArray(grant.products) ? grant.products[0] : grant.products;
   return product?.code ?? null;
+}
+
+function isGrantCurrentlyValid(grant: DashboardGrantRow, now = new Date()): boolean {
+  if (grant.starts_at && new Date(grant.starts_at) > now) {
+    return false;
+  }
+
+  if (grant.ends_at && new Date(grant.ends_at) < now) {
+    return false;
+  }
+
+  return true;
 }
 
 export const getDashboardInfo = cache(
@@ -72,6 +86,8 @@ export const getDashboardInfo = cache(
       .select(
         `
       access_mode,
+      starts_at,
+      ends_at,
       products (
         code
       )
@@ -88,7 +104,18 @@ export const getDashboardInfo = cache(
       };
     }
 
-    const typedGrants = grants as DashboardGrantRow[];
+    const now = new Date();
+    const typedGrants = (grants as DashboardGrantRow[]).filter((grant) =>
+      isGrantCurrentlyValid(grant, now)
+    );
+
+    if (typedGrants.length === 0) {
+      return {
+        role: "student",
+        variant: null,
+        accessMode: null,
+      };
+    }
 
     for (const grant of typedGrants) {
       if (grant.access_mode === "volna") {
