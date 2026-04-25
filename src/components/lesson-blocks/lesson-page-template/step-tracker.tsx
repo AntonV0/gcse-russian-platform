@@ -115,7 +115,7 @@ export function StepTracker({
                 : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-muted)]";
 
           const descriptionClass = isActive
-            ? "text-blue-100"
+            ? "text-[var(--accent-on-fill)] opacity-80"
             : isVisited
               ? "text-green-700"
               : isUnlocked

@@ -17,13 +17,13 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
       return [
         "app-btn-variant-primary border border-transparent !text-[var(--accent-on-fill)]",
         "bg-[linear-gradient(135deg,var(--accent-fill)_0%,var(--accent-fill)_58%,var(--accent-fill-hover)_100%)]",
-        "shadow-[0_12px_28px_color-mix(in_srgb,var(--brand-blue)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--brand-blue)_16%,transparent)]",
+        "shadow-[0_12px_28px_color-mix(in_srgb,var(--accent)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--accent)_16%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:brightness-[1.08]",
               "hover:saturate-[1.06]",
-              "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--brand-blue)_34%,transparent),0_6px_14px_color-mix(in_srgb,var(--brand-blue)_22%,transparent)]",
+              "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--accent)_34%,transparent),0_6px_14px_color-mix(in_srgb,var(--accent)_22%,transparent)]",
             ].join(" "),
       ].join(" ");
 
@@ -125,23 +125,26 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
 
     case "accent":
       return [
-        "app-btn-variant-accent border border-transparent !text-[var(--brand-white)]",
-        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-red)_70%,var(--brand-white))_0%,var(--brand-red)_56%,var(--brand-red-hover)_100%)]",
-        "shadow-[0_12px_28px_color-mix(in_srgb,var(--brand-red)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--brand-red)_16%,transparent)]",
+        "app-btn-variant-accent border border-transparent !text-[var(--accent-on-fill)]",
+        "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent-fill)_86%,var(--brand-white))_0%,var(--accent-fill)_56%,var(--accent-fill-hover)_100%)]",
+        "shadow-[0_12px_28px_color-mix(in_srgb,var(--accent)_26%,transparent),0_3px_8px_color-mix(in_srgb,var(--accent)_15%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:brightness-[1.08]",
               "hover:saturate-[1.06]",
-              "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--brand-red)_34%,transparent),0_6px_14px_color-mix(in_srgb,var(--brand-red)_20%,transparent)]",
+              "hover:shadow-[0_18px_40px_color-mix(in_srgb,var(--accent)_32%,transparent),0_6px_14px_color-mix(in_srgb,var(--accent)_20%,transparent)]",
             ].join(" "),
       ].join(" ");
 
     case "inverse":
       return [
         "app-btn-variant-inverse border border-transparent !text-[var(--brand-white)]",
-        "bg-[linear-gradient(135deg,var(--text-primary)_0%,color-mix(in_srgb,var(--text-primary)_92%,var(--brand-blue))_58%,color-mix(in_srgb,var(--text-primary)_84%,var(--brand-blue))_100%)]",
-        "[html[data-theme=dark]_&]:bg-[linear-gradient(135deg,var(--text-inverse)_0%,color-mix(in_srgb,var(--text-inverse)_90%,var(--brand-blue))_58%,color-mix(in_srgb,var(--text-inverse)_80%,var(--brand-blue))_100%)]",
+        "bg-[linear-gradient(135deg,var(--text-primary)_0%,color-mix(in_srgb,var(--text-primary)_92%,var(--accent-fill))_58%,color-mix(in_srgb,var(--text-primary)_84%,var(--accent-fill))_100%)]",
+        "[html[data-theme=dark]_&]:border-[var(--accent-selected-border)]",
+        "[html[data-theme=dark]_&]:!text-[var(--accent-on-soft)]",
+        "[html[data-theme=dark]_&]:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_11%,var(--dark-control-bg))_0%,color-mix(in_srgb,var(--accent)_5%,var(--dark-control-bg-hover))_100%)]",
+        "[html[data-theme=dark]_&]:shadow-[0_1px_2px_rgba(0,0,0,0.22),0_0_0_1px_var(--accent-glow),0_14px_32px_color-mix(in_srgb,var(--accent)_10%,transparent)]",
         "shadow-[0_12px_26px_color-mix(in_srgb,var(--text-primary)_28%,transparent),0_3px_8px_color-mix(in_srgb,var(--text-primary)_14%,transparent)]",
         disabled
           ? "opacity-60"
@@ -149,6 +152,9 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
               "hover:brightness-[1.10]",
               "hover:saturate-[1.03]",
               "hover:shadow-[0_18px_36px_color-mix(in_srgb,var(--text-primary)_34%,transparent),0_6px_14px_color-mix(in_srgb,var(--text-primary)_18%,transparent)]",
+              "[html[data-theme=dark]_&]:hover:border-[color-mix(in_srgb,var(--accent)_34%,var(--dark-surface-border))]",
+              "[html[data-theme=dark]_&]:hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_16%,var(--dark-control-bg))_0%,color-mix(in_srgb,var(--accent)_7%,var(--dark-surface-strong))_100%)]",
+              "[html[data-theme=dark]_&]:hover:shadow-[0_1px_2px_rgba(0,0,0,0.24),0_0_0_1px_color-mix(in_srgb,var(--accent)_20%,transparent),0_18px_38px_color-mix(in_srgb,var(--accent)_15%,transparent)]",
             ].join(" "),
       ].join(" ");
 
