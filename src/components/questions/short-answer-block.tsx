@@ -6,7 +6,7 @@ import QuestionFeedback from "@/components/questions/question-feedback";
 
 type ShortAnswerBlockProps = {
   question: string;
-  acceptedAnswers: string[];
+  acceptedAnswers?: string[];
   explanation?: string;
   placeholder?: string;
   value?: string;
@@ -33,7 +33,7 @@ function normalizeAnswer(value: string) {
 
 export default function ShortAnswerBlock({
   question,
-  acceptedAnswers,
+  acceptedAnswers = [],
   explanation,
   placeholder = "Type your answer",
   value,

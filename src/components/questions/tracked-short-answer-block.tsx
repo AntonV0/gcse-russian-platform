@@ -8,14 +8,9 @@ import SelectionBasedBlock, {
   type SelectionGroup,
 } from "@/components/questions/selection-based-block";
 import {
-  type RuntimeAcceptedAnswer,
-  type RuntimeTextQuestion,
-  type TextValidationOptions,
-  tokenizeSentenceBuilderText,
-  validateSentenceBuilderAnswer,
-  validateTextAnswer,
-} from "@/lib/questions/question-engine";
-import { submitQuestionAttemptAction } from "@/app/actions/questions/question-actions";
+  submitQuestionAttemptAction,
+  type SubmitQuestionAttemptActionResult,
+} from "@/app/actions/questions/question-actions";
 
 type TranslationDirection = "to_russian" | "to_english";
 
@@ -55,34 +50,22 @@ type TrackedShortAnswerBlockProps = {
   lessonId?: string | null;
   question: string;
   questionType?: "short_answer" | "translation";
-  acceptedAnswers: RuntimeAcceptedAnswer[];
   explanation?: string;
   placeholder?: string;
   translationUi?: TranslationUiConfig;
   sentenceBuilderUi?: SentenceBuilderUiConfig;
   selectionBasedUi?: SelectionBasedUiConfig;
-  validationOptions?: TextValidationOptions;
   audioUrl?: string | null;
   listeningUi?: ListeningUiConfig;
   answerStrategy?: AnswerStrategy;
 };
 
-function buildSentenceBuilderTokenPool(params: {
-  answers: RuntimeAcceptedAnswer[];
-  customWordBank?: string[];
-}) {
+function buildSentenceBuilderTokenPool(params: { customWordBank?: string[] }) {
   if (params.customWordBank && params.customWordBank.length > 0) {
     return [...params.customWordBank];
   }
 
-  const primaryAnswer =
-    params.answers.find((answer) => answer.isPrimary) ?? params.answers[0] ?? null;
-
-  if (!primaryAnswer) {
-    return [];
-  }
-
-  return tokenizeSentenceBuilderText(primaryAnswer.text);
+  return [];
 }
 
 function buildSelectionBasedSubmittedText(params: {
@@ -100,13 +83,11 @@ export default function TrackedShortAnswerBlock({
   lessonId = null,
   question,
   questionType = "short_answer",
-  acceptedAnswers,
   explanation,
   placeholder = "Type your answer",
   translationUi,
   sentenceBuilderUi,
   selectionBasedUi,
-  validationOptions,
   audioUrl = null,
   listeningUi,
   answerStrategy = "text_input",
@@ -114,10 +95,9 @@ export default function TrackedShortAnswerBlock({
   const initialSentenceBuilderTokens = useMemo(
     () =>
       buildSentenceBuilderTokenPool({
-        answers: acceptedAnswers,
         customWordBank: sentenceBuilderUi?.wordBank,
       }),
-    [acceptedAnswers, sentenceBuilderUi?.wordBank]
+    [sentenceBuilderUi?.wordBank]
   );
 
   const selectionGroups = selectionBasedUi?.groups ?? [];
@@ -129,49 +109,15 @@ export default function TrackedShortAnswerBlock({
   );
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [audioCompleted, setAudioCompleted] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState<SubmitQuestionAttemptActionResult | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const runtimeQuestion: RuntimeTextQuestion = {
-    id: questionId,
-    questionSetId: "",
-    type: questionType,
-    prompt: question,
-    promptRich: null,
-    explanation: explanation ?? null,
-    difficulty: null,
-    marks: 1,
-    audioPath: null,
-    imagePath: null,
-    metadata: {},
-    position: 0,
-    isActive: true,
-    createdAt: "",
-    updatedAt: "",
-    acceptedAnswers,
-  };
-
-  const textResult = validateTextAnswer({
-    question: runtimeQuestion,
-    submittedText: value,
-    options: validationOptions,
-  });
-
-  const sentenceBuilderResult = validateSentenceBuilderAnswer({
-    question: runtimeQuestion,
-    submittedTokens: selectedTokens,
-    options: validationOptions,
-  });
+  const submitted = result?.success === true;
+  const feedback = result?.success === true ? result.feedback : null;
 
   const selectionBasedSubmittedText = buildSelectionBasedSubmittedText({
     groups: selectionGroups,
     selectedOptions,
-  });
-
-  const selectionBasedResult = validateTextAnswer({
-    question: runtimeQuestion,
-    submittedText: selectionBasedSubmittedText,
-    options: validationOptions,
   });
 
   const sentenceBuilderInstruction = useMemo(() => {
@@ -202,89 +148,55 @@ export default function TrackedShortAnswerBlock({
     !listeningUi?.requireAudioCompletionBeforeSubmit || audioCompleted;
 
   async function handleSubmitText() {
-    if (!value.trim() || submitted || !audioGatePassed) return;
-
-    setSubmitted(true);
+    if (!value.trim() || submitted || isPending || !audioGatePassed) return;
 
     startTransition(async () => {
-      await submitQuestionAttemptAction({
+      const actionResult = await submitQuestionAttemptAction({
         questionId,
         lessonId,
         submittedText: value,
-        submittedPayload: {
-          answer: value,
-          normalizedAnswer: textResult.normalizedSubmittedText,
-          matchedAnswerId: textResult.matchedAnswer?.id ?? null,
-          correctAnswerText: textResult.correctAnswerText,
-          acceptedAnswerTexts: textResult.acceptedAnswerTexts,
-          statusLabel: textResult.statusLabel,
-          questionType,
-          answerStrategy,
-          validationOptions,
-        },
-        isCorrect: textResult.isCorrect,
-        awardedMarks: textResult.isCorrect ? runtimeQuestion.marks : 0,
-        feedback: textResult.feedback,
       });
+
+      setResult(actionResult);
     });
   }
 
   async function handleSubmitSentenceBuilder() {
-    if (selectedTokens.length === 0 || submitted || !audioGatePassed) return;
+    if (selectedTokens.length === 0 || submitted || isPending || !audioGatePassed) {
+      return;
+    }
 
-    setSubmitted(true);
+    const submittedText = selectedTokens.join(" ");
 
     startTransition(async () => {
-      await submitQuestionAttemptAction({
+      const actionResult = await submitQuestionAttemptAction({
         questionId,
         lessonId,
-        submittedText: sentenceBuilderResult.submittedText,
-        submittedPayload: {
-          selectedTokens,
-          availableTokens,
-          normalizedAnswer: sentenceBuilderResult.normalizedSubmittedText,
-          matchedAnswerId: sentenceBuilderResult.matchedAnswer?.id ?? null,
-          correctAnswerText: sentenceBuilderResult.correctAnswerText,
-          acceptedAnswerTexts: sentenceBuilderResult.acceptedAnswerTexts,
-          statusLabel: sentenceBuilderResult.statusLabel,
-          questionType,
-          answerStrategy,
-          validationOptions,
-        },
-        isCorrect: sentenceBuilderResult.isCorrect,
-        awardedMarks: sentenceBuilderResult.isCorrect ? runtimeQuestion.marks : 0,
-        feedback: sentenceBuilderResult.feedback,
+        submittedText,
       });
+
+      setResult(actionResult);
     });
   }
 
   async function handleSubmitSelectionBased() {
-    if (selectionBasedSubmittedText.length === 0 || submitted || !audioGatePassed) {
+    if (
+      selectionBasedSubmittedText.length === 0 ||
+      submitted ||
+      isPending ||
+      !audioGatePassed
+    ) {
       return;
     }
 
-    setSubmitted(true);
-
     startTransition(async () => {
-      await submitQuestionAttemptAction({
+      const actionResult = await submitQuestionAttemptAction({
         questionId,
         lessonId,
         submittedText: selectionBasedSubmittedText,
-        submittedPayload: {
-          selectedOptions,
-          normalizedAnswer: selectionBasedResult.normalizedSubmittedText,
-          matchedAnswerId: selectionBasedResult.matchedAnswer?.id ?? null,
-          correctAnswerText: selectionBasedResult.correctAnswerText,
-          acceptedAnswerTexts: selectionBasedResult.acceptedAnswerTexts,
-          statusLabel: selectionBasedResult.statusLabel,
-          questionType,
-          answerStrategy,
-          validationOptions,
-        },
-        isCorrect: selectionBasedResult.isCorrect,
-        awardedMarks: selectionBasedResult.isCorrect ? runtimeQuestion.marks : 0,
-        feedback: selectionBasedResult.feedback,
       });
+
+      setResult(actionResult);
     });
   }
 
@@ -314,7 +226,6 @@ export default function TrackedShortAnswerBlock({
     setSelectedTokens([]);
     setAvailableTokens(
       buildSentenceBuilderTokenPool({
-        answers: acceptedAnswers,
         customWordBank: sentenceBuilderUi?.wordBank,
       })
     );
@@ -348,17 +259,17 @@ export default function TrackedShortAnswerBlock({
         onAudioPlaybackCompleted={() => setAudioCompleted(true)}
         availableTokens={availableTokens}
         selectedTokens={selectedTokens}
-        explanation={explanation}
+        explanation={feedback?.feedback ?? explanation}
         hasSubmitted={submitted}
-        isCorrect={sentenceBuilderResult.isCorrect}
+        isCorrect={feedback?.isCorrect}
         isSubmitting={isPending}
         onAddToken={handleAddToken}
         onRemoveToken={handleRemoveToken}
         onReset={handleResetSentenceBuilder}
         onSubmit={handleSubmitSentenceBuilder}
-        feedbackStatusLabel={sentenceBuilderResult.statusLabel}
-        feedbackCorrectAnswerText={sentenceBuilderResult.correctAnswerText}
-        feedbackAcceptedAnswerTexts={sentenceBuilderResult.acceptedAnswerTexts}
+        feedbackStatusLabel={feedback?.statusLabel}
+        feedbackCorrectAnswerText={feedback?.correctAnswerText}
+        feedbackAcceptedAnswerTexts={feedback?.acceptedAnswerTexts}
         sourceLanguageLabel={translationUi?.sourceLanguageLabel}
         targetLanguageLabel={translationUi?.targetLanguageLabel}
       />
@@ -378,16 +289,16 @@ export default function TrackedShortAnswerBlock({
         onAudioPlaybackCompleted={() => setAudioCompleted(true)}
         groups={selectionGroups}
         selectedOptions={selectedOptions}
-        explanation={explanation}
+        explanation={feedback?.feedback ?? explanation}
         hasSubmitted={submitted}
-        isCorrect={selectionBasedResult.isCorrect}
+        isCorrect={feedback?.isCorrect}
         isSubmitting={isPending}
         onSelectOption={handleSelectOption}
         onReset={handleResetSelectionBased}
         onSubmit={handleSubmitSelectionBased}
-        feedbackStatusLabel={selectionBasedResult.statusLabel}
-        feedbackCorrectAnswerText={selectionBasedResult.correctAnswerText}
-        feedbackAcceptedAnswerTexts={selectionBasedResult.acceptedAnswerTexts}
+        feedbackStatusLabel={feedback?.statusLabel}
+        feedbackCorrectAnswerText={feedback?.correctAnswerText}
+        feedbackAcceptedAnswerTexts={feedback?.acceptedAnswerTexts}
         sourceLanguageLabel={translationUi?.sourceLanguageLabel}
         targetLanguageLabel={translationUi?.targetLanguageLabel}
         displayMode={selectionBasedUi?.displayMode}
@@ -408,12 +319,11 @@ export default function TrackedShortAnswerBlock({
     return (
       <TranslationBlock
         question={question}
-        acceptedAnswers={acceptedAnswers.map((a) => a.text)}
-        explanation={explanation}
+        explanation={feedback?.feedback ?? explanation}
         placeholder={translationUi?.placeholder ?? placeholder}
         value={value}
         hasSubmitted={submitted}
-        isCorrect={textResult.isCorrect}
+        isCorrect={feedback?.isCorrect}
         isSubmitting={isPending}
         onValueChange={setValue}
         onSubmit={handleSubmitText}
@@ -421,9 +331,9 @@ export default function TrackedShortAnswerBlock({
         sourceLanguageLabel={translationUi?.sourceLanguageLabel}
         targetLanguageLabel={translationUi?.targetLanguageLabel}
         instruction={translationUi?.instruction}
-        feedbackStatusLabel={textResult.statusLabel}
-        feedbackCorrectAnswerText={textResult.correctAnswerText}
-        feedbackAcceptedAnswerTexts={textResult.acceptedAnswerTexts}
+        feedbackStatusLabel={feedback?.statusLabel}
+        feedbackCorrectAnswerText={feedback?.correctAnswerText}
+        feedbackAcceptedAnswerTexts={feedback?.acceptedAnswerTexts}
         audioUrl={audioUrl}
         audioMaxPlays={listeningUi?.maxPlays}
         audioListeningMode={listeningUi?.listeningMode}
@@ -438,18 +348,17 @@ export default function TrackedShortAnswerBlock({
   return (
     <ShortAnswerBlock
       question={question}
-      acceptedAnswers={acceptedAnswers.map((a) => a.text)}
-      explanation={explanation}
+      explanation={feedback?.feedback ?? explanation}
       placeholder={placeholder}
       value={value}
       hasSubmitted={submitted}
-      isCorrect={textResult.isCorrect}
+      isCorrect={feedback?.isCorrect}
       isSubmitting={isPending}
       onValueChange={setValue}
       onSubmit={handleSubmitText}
-      feedbackStatusLabel={textResult.statusLabel}
-      feedbackCorrectAnswerText={textResult.correctAnswerText}
-      feedbackAcceptedAnswerTexts={textResult.acceptedAnswerTexts}
+      feedbackStatusLabel={feedback?.statusLabel}
+      feedbackCorrectAnswerText={feedback?.correctAnswerText}
+      feedbackAcceptedAnswerTexts={feedback?.acceptedAnswerTexts}
       audioUrl={audioUrl}
       audioMaxPlays={listeningUi?.maxPlays}
       audioListeningMode={listeningUi?.listeningMode}

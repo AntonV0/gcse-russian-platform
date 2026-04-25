@@ -3,18 +3,15 @@
 import { useState, useTransition } from "react";
 import MultipleChoiceBlock from "@/components/questions/multiple-choice-block";
 import {
-  type RuntimeMultipleChoiceQuestion,
-  validateMultipleChoiceAnswer,
-} from "@/lib/questions/question-engine";
-import { submitQuestionAttemptAction } from "@/app/actions/questions/question-actions";
+  submitQuestionAttemptAction,
+  type SubmitQuestionAttemptActionResult,
+} from "@/app/actions/questions/question-actions";
 
 type TrackedMultipleChoiceBlockProps = {
   questionId: string;
   lessonId?: string | null;
   question: string;
   options: { id: string; text: string }[];
-  correctOptionId: string;
-  explanation?: string;
   audioUrl?: string | null;
   audioMaxPlays?: number;
   audioListeningMode?: boolean;
@@ -27,8 +24,6 @@ export default function TrackedMultipleChoiceBlock({
   lessonId = null,
   question,
   options,
-  correctOptionId,
-  explanation,
   audioUrl = null,
   audioMaxPlays,
   audioListeningMode = false,
@@ -36,62 +31,23 @@ export default function TrackedMultipleChoiceBlock({
   audioHideNativeControls = false,
 }: TrackedMultipleChoiceBlockProps) {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState<SubmitQuestionAttemptActionResult | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const runtimeQuestion: RuntimeMultipleChoiceQuestion = {
-    id: questionId,
-    questionSetId: "",
-    type: "multiple_choice",
-    prompt: question,
-    promptRich: null,
-    explanation: explanation ?? null,
-    difficulty: null,
-    marks: 1,
-    audioPath: null,
-    imagePath: null,
-    metadata: {},
-    position: 0,
-    isActive: true,
-    createdAt: "",
-    updatedAt: "",
-    options: options.map((option, index) => ({
-      id: option.id,
-      text: option.text,
-      isCorrect: option.id === correctOptionId,
-      position: index,
-    })),
-    correctOptionId: correctOptionId || null,
-  };
-
-  const result = validateMultipleChoiceAnswer({
-    question: runtimeQuestion,
-    selectedOptionId,
-  });
+  const submitted = result?.success === true;
+  const feedback = result?.success === true ? result.feedback : null;
 
   async function handleSubmit() {
-    if (!selectedOptionId || submitted) return;
-
-    setSubmitted(true);
+    if (!selectedOptionId || submitted || isPending) return;
 
     startTransition(async () => {
-      await submitQuestionAttemptAction({
+      const actionResult = await submitQuestionAttemptAction({
         questionId,
         lessonId,
-        submittedText: null,
-        submittedPayload: {
-          selectedOptionId,
-          selectedOptionText: result.selectedOptionText,
-          correctOptionId: result.correctOptionId,
-          correctAnswerText: result.correctAnswerText,
-          acceptedAnswerTexts: result.acceptedAnswerTexts,
-          statusLabel: result.statusLabel,
-          questionType: "multiple_choice",
-        },
-        isCorrect: result.isCorrect,
-        awardedMarks: result.isCorrect ? runtimeQuestion.marks : 0,
-        feedback: result.feedback,
+        selectedOptionId,
       });
+
+      setResult(actionResult);
     });
   }
 
@@ -99,8 +55,7 @@ export default function TrackedMultipleChoiceBlock({
     <MultipleChoiceBlock
       question={question}
       options={options}
-      correctOptionId={correctOptionId}
-      explanation={explanation}
+      explanation={feedback?.feedback ?? undefined}
       audioUrl={audioUrl}
       audioMaxPlays={audioMaxPlays}
       audioListeningMode={audioListeningMode}
@@ -109,11 +64,12 @@ export default function TrackedMultipleChoiceBlock({
       selectedOptionId={selectedOptionId}
       hasSubmitted={submitted}
       isSubmitting={isPending}
+      isCorrect={feedback?.isCorrect}
       onSelectOption={setSelectedOptionId}
       onSubmit={handleSubmit}
-      feedbackStatusLabel={result.statusLabel}
-      feedbackCorrectAnswerText={result.correctAnswerText}
-      feedbackAcceptedAnswerTexts={result.acceptedAnswerTexts}
+      feedbackStatusLabel={feedback?.statusLabel}
+      feedbackCorrectAnswerText={feedback?.correctAnswerText}
+      feedbackAcceptedAnswerTexts={feedback?.acceptedAnswerTexts}
     />
   );
 }
