@@ -75,7 +75,8 @@ export default function GcseRussianTutorPage() {
       relatedLinks={[
         {
           title: "Online GCSE Russian lessons",
-          description: "See how teacher-supported lessons can fit alongside the platform.",
+          description:
+            "See how teacher-supported lessons can fit alongside the platform.",
           href: "/online-gcse-russian-lessons",
           icon: "school",
         },
@@ -90,6 +91,28 @@ export default function GcseRussianTutorPage() {
           description: "Understand what families should check before committing.",
           href: "/gcse-russian-for-parents",
           icon: "users",
+        },
+      ]}
+      faqs={[
+        {
+          question: "Is a GCSE Russian tutor better than an online course?",
+          answer:
+            "They solve different problems. A tutor gives live feedback and accountability; a course gives structure, practice, and a route students can follow between lessons.",
+        },
+        {
+          question: "When should families add live lessons?",
+          answer:
+            "Live lessons are especially useful when a student needs speaking practice, writing correction, grammar explanation, or a regular external routine.",
+        },
+        {
+          question: "Can the course support tutoring?",
+          answer:
+            "Yes. A structured course can give tutors and families a clearer view of what the student has covered and what still needs work.",
+        },
+        {
+          question: "What should parents ask a GCSE Russian tutor?",
+          answer:
+            "Ask about Pearson Edexcel 1RU0 experience, speaking preparation, writing feedback, private-candidate awareness, and how homework will connect to exam skills.",
         },
       ]}
       ctaTitle="Compare support with a trial account"

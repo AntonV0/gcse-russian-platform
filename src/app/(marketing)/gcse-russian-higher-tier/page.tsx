@@ -92,6 +92,28 @@ export default function GcseRussianHigherTierPage() {
           icon: "grammar",
         },
       ]}
+      faqs={[
+        {
+          question: "Who should consider Higher tier GCSE Russian?",
+          answer:
+            "Higher is usually best for students who can handle wider vocabulary, more complex grammar, longer answers, and less predictable exam language.",
+        },
+        {
+          question: "What makes Higher tier preparation different?",
+          answer:
+            "Higher preparation needs more flexible language production, stronger translation accuracy, extended speaking and writing, and more precise review of recurring errors.",
+        },
+        {
+          question: "Should Higher students memorise model answers?",
+          answer:
+            "Model answers can help with range, but students should adapt language actively. Fixed memorisation can fall apart when the prompt changes.",
+        },
+        {
+          question: "How can students improve Higher writing marks?",
+          answer:
+            "They should combine accurate tenses, varied structures, developed opinions, clear time frames, topic vocabulary, and careful correction of endings and spelling.",
+        },
+      ]}
       ctaTitle="Prepare for Higher tier with structure"
       ctaDescription="Use the course platform to connect grammar, vocabulary, exam practice, and progress tracking across the full GCSE Russian course."
     />

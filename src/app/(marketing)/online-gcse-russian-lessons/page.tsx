@@ -5,13 +5,15 @@ import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import {
   MarketingCtaBand,
+  MarketingFaqSection,
   MarketingFeatureGrid,
   MarketingRelatedLinks,
+  type MarketingFaqItem,
 } from "@/components/marketing/marketing-page-sections";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
-import { buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Online GCSE Russian Lessons",
@@ -56,6 +58,29 @@ const classFit = [
   },
 ];
 
+const lessonFaqs: MarketingFaqItem[] = [
+  {
+    question: "Who benefits most from online GCSE Russian lessons?",
+    answer:
+      "Students who need speaking practice, writing feedback, grammar explanation, accountability, or private-candidate guidance often benefit most.",
+  },
+  {
+    question: "Can online lessons work alongside the course platform?",
+    answer:
+      "Yes. The platform can provide lesson structure and practice, while live teaching adds explanation, correction, and a weekly rhythm.",
+  },
+  {
+    question: "Are online lessons necessary for every student?",
+    answer:
+      "No. Some students can work independently with a structured course. Others need live support, especially for speaking and writing.",
+  },
+  {
+    question: "How do online lessons help with speaking?",
+    answer:
+      "A teacher can prompt spontaneous answers, correct pronunciation, practise role plays and picture tasks, and build confidence under exam-style pressure.",
+  },
+];
+
 const relatedLinks = [
   {
     title: "Online GCSE Russian course",
@@ -87,18 +112,21 @@ export default function OnlineGcseRussianLessonsPage() {
   return (
     <>
       <JsonLd
-        data={buildLearningResourceJsonLd({
-          name: "Online GCSE Russian Lessons",
-          description:
-            "A guide to online GCSE Russian lessons and teacher-supported preparation alongside the GCSE Russian course platform.",
-          path: "/online-gcse-russian-lessons",
-          keywords: [
-            "online GCSE Russian lessons",
-            "GCSE Russian tutor",
-            "Russian GCSE classes",
-          ],
-          relatedLinks,
-        })}
+        data={[
+          buildLearningResourceJsonLd({
+            name: "Online GCSE Russian Lessons",
+            description:
+              "A guide to online GCSE Russian lessons and teacher-supported preparation alongside the GCSE Russian course platform.",
+            path: "/online-gcse-russian-lessons",
+            keywords: [
+              "online GCSE Russian lessons",
+              "GCSE Russian tutor",
+              "Russian GCSE classes",
+            ],
+            relatedLinks,
+          }),
+          buildFaqJsonLd(lessonFaqs),
+        ]}
       />
       <MarketingBreadcrumbs
         items={[
@@ -158,6 +186,12 @@ export default function OnlineGcseRussianLessonsPage() {
         <MarketingFeatureGrid items={classFit} tone="muted" />
 
         <MarketingRelatedLinks links={relatedLinks} />
+
+        <MarketingFaqSection
+          title="Online lesson questions"
+          description="Use these answers to decide whether teacher-supported learning should sit alongside the course platform."
+          items={lessonFaqs}
+        />
 
         <MarketingCtaBand
           title="Start with the platform, add teaching when useful"
