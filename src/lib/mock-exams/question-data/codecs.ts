@@ -1,248 +1,35 @@
 import type { MockExamQuestionType } from "@/lib/mock-exams/mock-exam-helpers-db";
-import { getMockExamQuestionDesignBridge } from "@/lib/questions/question-system-bridge";
 import {
   createListeningTaskMetadata,
   createReadingTaskMetadata,
-  type LongResponseMarkingMetadata,
-  type ResponseWorkflowMetadata,
 } from "@/lib/questions/task-metadata";
+import {
+  buildMarkingMetadata,
+  buildResponseWorkflow,
+  withQuestionDesign,
+} from "./metadata";
+import type { MockExamQuestionDataState } from "./state";
+import {
+  csvNumberList,
+  fieldsFromText,
+  fieldsToText,
+  getNumberArray,
+  getRecord,
+  getRecordArray,
+  getString,
+  getStringArray,
+  labelledRecordsToText,
+  lineList,
+  linesToString,
+  numberToString,
+  optionalPositiveNumber,
+  optionalString,
+  parseJsonObject,
+  rolePlayPromptsFromText,
+  rolePlayPromptsToText,
+} from "./text-codec-utils";
 
-export type MockExamQuestionDataState = {
-  text: string;
-  sourceText: string;
-  audioUrl: string;
-  imageUrl: string;
-  scenario: string;
-  theme: string;
-  optionsText: string;
-  correctAnswersText: string;
-  acceptedAnswersText: string;
-  promptsText: string;
-  statementsText: string;
-  answersText: string;
-  itemsText: string;
-  correctOrderText: string;
-  bulletsText: string;
-  wordBankText: string;
-  fieldsText: string;
-  markGuidance: string;
-  minWordCount: string;
-  recommendedWordCount: string;
-  expectedSentences: string;
-  childQuestionSetSlug: string;
-  replayLimit: string;
-  timeLimitSeconds: string;
-  responseMode: string;
-  uploadRequired: string;
-  allowTypedDraft: string;
-  allowAudioRecording: string;
-  criteriaText: string;
-  levelDescriptorsText: string;
-  markSchemeReference: string;
-  wordCountGuidance: string;
-  aiMarkingNotes: string;
-};
-
-function parseJsonObject(raw: string | undefined) {
-  if (!raw) return {};
-
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
-      ? (parsed as Record<string, unknown>)
-      : {};
-  } catch {
-    return {};
-  }
-}
-
-function getString(value: unknown) {
-  return typeof value === "string" ? value : "";
-}
-
-function getStringArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-  return value.filter((item): item is string => typeof item === "string");
-}
-
-function getNumberArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-  return value.filter((item): item is number => typeof item === "number");
-}
-
-function getRecordArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-  return value.filter(
-    (item): item is Record<string, unknown> =>
-      Boolean(item) && typeof item === "object" && !Array.isArray(item)
-  );
-}
-
-function getRecord(value: unknown) {
-  return value && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {};
-}
-
-function linesToString(values: string[]) {
-  return values.join("\n");
-}
-
-function lineList(value: string) {
-  return value
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
-
-function csvNumberList(value: string) {
-  return value
-    .split(",")
-    .map((item) => Number(item.trim()))
-    .filter((item) => Number.isInteger(item) && item >= 0);
-}
-
-function optionalPositiveNumber(value: string) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
-}
-
-function optionalString(value: string) {
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
-function optionalBoolean(value: string) {
-  if (value === "true") return true;
-  if (value === "false") return false;
-  return undefined;
-}
-
-function numberToString(value: unknown) {
-  return typeof value === "number" && Number.isFinite(value) ? String(value) : "";
-}
-
-function fieldsToText(fields: Record<string, unknown>[]) {
-  return fields
-    .map((field) => {
-      const prompt = getString(field.prompt);
-      const acceptedAnswers = getStringArray(field.acceptedAnswers).join(";");
-      return [prompt, acceptedAnswers].filter(Boolean).join("|");
-    })
-    .join("\n");
-}
-
-function fieldsFromText(value: string) {
-  return lineList(value).map((line) => {
-    const [prompt, acceptedAnswersRaw] = line.split("|");
-    return {
-      prompt: prompt?.trim() ?? "",
-      acceptedAnswers: (acceptedAnswersRaw ?? "")
-        .split(";")
-        .map((answer) => answer.trim())
-        .filter(Boolean),
-    };
-  });
-}
-
-function rolePlayPromptsToText(prompts: Record<string, unknown>[]) {
-  return prompts
-    .map((prompt) => {
-      const text = getString(prompt.text);
-      const type = getString(prompt.type) || "question";
-      return [text, type].filter(Boolean).join("|");
-    })
-    .join("\n");
-}
-
-function rolePlayPromptsFromText(value: string) {
-  return lineList(value).map((line) => {
-    const [text, type] = line.split("|");
-    const normalizedType = type?.trim() || "question";
-    return {
-      text: text?.trim() ?? "",
-      type: ["question", "request", "unexpected"].includes(normalizedType)
-        ? normalizedType
-        : "question",
-    };
-  });
-}
-
-function labelledRecordsToText(records: Record<string, unknown>[]) {
-  return records
-    .map((record) => {
-      const label = getString(record.label);
-      const description = getString(record.description);
-      const marks = typeof record.marks === "number" ? String(record.marks) : "";
-      return [label, description, marks].filter(Boolean).join("|");
-    })
-    .join("\n");
-}
-
-function labelledRecordsFromText(value: string) {
-  return lineList(value).map((line) => {
-    const [label, description, marksRaw] = line.split("|");
-    const marks = optionalPositiveNumber(marksRaw ?? "");
-
-    return {
-      label: label?.trim() ?? "",
-      description: description?.trim() ?? "",
-      ...(marks ? { marks } : {}),
-    };
-  });
-}
-
-function buildMarkingMetadata(state: MockExamQuestionDataState) {
-  const criteria = labelledRecordsFromText(state.criteriaText);
-  const levelDescriptors = labelledRecordsFromText(state.levelDescriptorsText);
-
-  const metadata: LongResponseMarkingMetadata = {
-    ...(criteria.length > 0 ? { criteria } : {}),
-    ...(levelDescriptors.length > 0 ? { levelDescriptors } : {}),
-    ...(optionalString(state.markSchemeReference)
-      ? { markSchemeReference: optionalString(state.markSchemeReference) }
-      : {}),
-    ...(optionalString(state.wordCountGuidance)
-      ? { wordCountGuidance: optionalString(state.wordCountGuidance) }
-      : {}),
-    ...(optionalString(state.aiMarkingNotes)
-      ? { aiMarkingNotes: optionalString(state.aiMarkingNotes) }
-      : {}),
-  };
-
-  return Object.keys(metadata).length > 0 ? metadata : undefined;
-}
-
-function buildResponseWorkflow(
-  state: MockExamQuestionDataState,
-  defaults: ResponseWorkflowMetadata
-) {
-  return {
-    ...defaults,
-    ...(optionalString(state.responseMode)
-      ? { responseMode: state.responseMode as ResponseWorkflowMetadata["responseMode"] }
-      : {}),
-    ...(optionalBoolean(state.uploadRequired) !== undefined
-      ? { uploadRequired: optionalBoolean(state.uploadRequired) }
-      : {}),
-    ...(optionalBoolean(state.allowTypedDraft) !== undefined
-      ? { allowTypedDraft: optionalBoolean(state.allowTypedDraft) }
-      : {}),
-    ...(optionalBoolean(state.allowAudioRecording) !== undefined
-      ? { allowAudioRecording: optionalBoolean(state.allowAudioRecording) }
-      : {}),
-  };
-}
-
-function withQuestionDesign(
-  questionType: MockExamQuestionType,
-  data: Record<string, unknown>
-) {
-  return {
-    ...data,
-    questionDesign: getMockExamQuestionDesignBridge(questionType),
-  };
-}
+export type { MockExamQuestionDataState } from "./state";
 
 export function parseMockExamQuestionData(raw: string | undefined) {
   return stateFromData(parseJsonObject(raw));
