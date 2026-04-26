@@ -1,5 +1,6 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import AppIcon from "@/components/ui/app-icon";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
@@ -8,6 +9,7 @@ import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
+import { getButtonClassName } from "@/components/ui/button-styles";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getPublishedVocabularySetsDb,
@@ -111,10 +113,12 @@ function CoverageRatioBadge({
 
 function VocabularySetCoverageBadges({
   coverageSummary,
+  fallbackTotalItems,
 }: {
   coverageSummary: DbVocabularySetCoverageSummary;
+  fallbackTotalItems: number;
 }) {
-  const totalItems = coverageSummary.totalItems;
+  const totalItems = coverageSummary.totalItems || fallbackTotalItems;
 
   if (totalItems === 0) return null;
 
@@ -144,44 +148,58 @@ function VocabularySetCoverageBadges({
   );
 }
 
-const VOCABULARY_THEME_SECTIONS = {
-  high_frequency_language: {
+type VocabularyThemeSectionDefinition = {
+  keys: readonly string[];
+  order: number;
+  title: string;
+};
+
+const VOCABULARY_THEME_SECTION_DEFINITIONS: VocabularyThemeSectionDefinition[] = [
+  {
+    keys: ["high_frequency_language"],
     order: 1,
     title: "Section 1: High-frequency language",
   },
-  identity_and_culture: {
+  {
+    keys: ["identity_and_culture"],
     order: 2,
     title: "Section 2: Identity and culture",
   },
-  local_area_holiday_and_travel: {
+  {
+    keys: ["local_area_holiday_travel", "local_area_holiday_and_travel"],
     order: 3,
     title: "Section 3: Local area, holiday and travel",
   },
-  school: {
+  {
+    keys: ["school"],
     order: 4,
     title: "Section 4: School",
   },
-  future_aspirations_study_and_work: {
+  {
+    keys: ["future_aspirations_study_work", "future_aspirations_study_and_work"],
     order: 5,
     title: "Section 5: Future aspirations, study and work",
   },
-  international_global_dimension: {
+  {
+    keys: ["international_global_dimension"],
     order: 6,
     title: "Section 6: International and global dimension",
   },
-} as const;
+] as const;
+
+function getVocabularyThemeSectionByKey(themeKey: string | null) {
+  const normalizedThemeKey = normalizeVocabularyKey(themeKey);
+
+  return VOCABULARY_THEME_SECTION_DEFINITIONS.find((section) =>
+    normalizedThemeKey ? section.keys.includes(normalizedThemeKey) : false
+  );
+}
 
 function getVocabularySectionTitle(vocabularySet: {
   import_key: string | null;
   theme_key: string | null;
 }) {
-  const normalizedThemeKey = normalizeVocabularyKey(vocabularySet.theme_key);
-  const section =
-    normalizedThemeKey && normalizedThemeKey in VOCABULARY_THEME_SECTIONS
-      ? VOCABULARY_THEME_SECTIONS[
-          normalizedThemeKey as keyof typeof VOCABULARY_THEME_SECTIONS
-        ]
-      : null;
+  const section = getVocabularyThemeSectionByKey(vocabularySet.theme_key);
 
   if (section) {
     return section.title;
@@ -201,7 +219,11 @@ function getVocabularySectionTitle(vocabularySet: {
 }
 
 function getVocabularySectionOrder(sectionTitle: string) {
-  const matchingSection = Object.values(VOCABULARY_THEME_SECTIONS).find(
+  if (sectionTitle === "Custom Vocabulary") {
+    return 1000;
+  }
+
+  const matchingSection = VOCABULARY_THEME_SECTION_DEFINITIONS.find(
     (section) => section.title === sectionTitle
   );
 
@@ -209,7 +231,7 @@ function getVocabularySectionOrder(sectionTitle: string) {
     return matchingSection.order;
   }
 
-  return 99;
+  return 900;
 }
 
 function groupVocabularySetsBySection(
@@ -228,6 +250,24 @@ function groupVocabularySetsBySection(
       (a, b) =>
         getVocabularySectionOrder(a.title) - getVocabularySectionOrder(b.title) ||
         a.title.localeCompare(b.title)
+  );
+}
+
+function SectionToggleButton() {
+  return (
+    <span
+      className={getButtonClassName({
+        variant: "secondary",
+        size: "sm",
+        className: "pointer-events-none",
+      })}
+      aria-hidden="true"
+    >
+      <span className="shrink-0">
+        <AppIcon icon="next" size={16} />
+      </span>
+      <span className="truncate">Open</span>
+    </span>
   );
 }
 
@@ -266,6 +306,7 @@ function VocabularySetBadges({
         <span className="flex basis-full flex-wrap gap-2 pt-1">
           <VocabularySetCoverageBadges
             coverageSummary={vocabularySet.coverage_summary}
+            fallbackTotalItems={vocabularySet.item_count}
           />
         </span>
       ) : null}
@@ -415,9 +456,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
                     </span>
                   </span>
 
-                  <Badge tone="muted" icon="next" className="group-open:rotate-90">
-                    Open
-                  </Badge>
+                  <SectionToggleButton />
                 </summary>
 
                 <div className="mt-4 grid gap-3">
