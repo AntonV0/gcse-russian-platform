@@ -78,6 +78,31 @@ const publicRoutes = [
     priority: 0.8,
   },
   {
+    path: "/marketing/gcse-russian-revision",
+    changeFrequency: "monthly",
+    priority: 0.85,
+  },
+  {
+    path: "/marketing/gcse-russian-foundation-tier",
+    changeFrequency: "monthly",
+    priority: 0.75,
+  },
+  {
+    path: "/marketing/gcse-russian-higher-tier",
+    changeFrequency: "monthly",
+    priority: 0.75,
+  },
+  {
+    path: "/marketing/gcse-russian-tutor",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/marketing/gcse-russian-for-parents",
+    changeFrequency: "monthly",
+    priority: 0.75,
+  },
+  {
     path: "/marketing/about",
     changeFrequency: "monthly",
     priority: 0.5,

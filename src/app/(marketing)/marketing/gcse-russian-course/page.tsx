@@ -89,6 +89,18 @@ const relatedLinks = [
     icon: "exam" as const,
   },
   {
+    title: "GCSE Russian Foundation tier",
+    description: "Understand how Foundation preparation can stay focused and measurable.",
+    href: "/marketing/gcse-russian-foundation-tier",
+    icon: "layers" as const,
+  },
+  {
+    title: "GCSE Russian Higher tier",
+    description: "See how Higher tier preparation uses range, accuracy, and exam technique.",
+    href: "/marketing/gcse-russian-higher-tier",
+    icon: "layers" as const,
+  },
+  {
     title: "Russian GCSE private candidate guide",
     description: "Learn how the course can support students arranging their own exam entry.",
     href: "/marketing/russian-gcse-private-candidate",
@@ -115,71 +127,71 @@ export default function GcseRussianCoursePage() {
       />
       <div className="space-y-8 py-8 md:py-12">
         <PageIntroPanel
-        tone="brand"
-        eyebrow="Online GCSE Russian course"
-        title="A structured online GCSE Russian course"
-        description="Prepare for Pearson Edexcel GCSE Russian with a guided platform that combines course lessons, vocabulary, grammar, exam-style practice, and progress tracking."
-        badges={
-          <>
-            <Badge tone="info" icon="school">
-              Pearson Edexcel 1RU0
-            </Badge>
-            <Badge tone="muted" icon="layers">
-              Foundation and Higher
-            </Badge>
-            <Badge tone="success" icon="unlocked">
-              Trial-first access
-            </Badge>
-          </>
-        }
-        actions={
-          <>
-            <Button href="/signup" variant="primary" icon="create">
-              Start trial
-            </Button>
-            <Button href="/marketing/pricing" variant="secondary" icon="pricing">
-              View pricing
-            </Button>
-          </>
-        }
-      />
+          tone="brand"
+          eyebrow="Online GCSE Russian course"
+          title="A structured online GCSE Russian course"
+          description="Prepare for Pearson Edexcel GCSE Russian with a guided platform that combines course lessons, vocabulary, grammar, exam-style practice, and progress tracking."
+          badges={
+            <>
+              <Badge tone="info" icon="school">
+                Pearson Edexcel 1RU0
+              </Badge>
+              <Badge tone="muted" icon="layers">
+                Foundation and Higher
+              </Badge>
+              <Badge tone="success" icon="unlocked">
+                Trial-first access
+              </Badge>
+            </>
+          }
+          actions={
+            <>
+              <Button href="/signup" variant="primary" icon="create">
+                Start trial
+              </Button>
+              <Button href="/marketing/pricing" variant="secondary" icon="pricing">
+                View pricing
+              </Button>
+            </>
+          }
+        />
 
-      <MarketingFeatureGrid items={courseFit} />
+        <MarketingFeatureGrid items={courseFit} />
 
-      <MarketingStepList
-        title="How the course works"
-        description="The public site explains the offer. The app handles learning, practice, progress, and billing."
-        steps={courseSteps}
-      />
+        <MarketingStepList
+          title="How the course works"
+          description="The public site explains the offer. The app handles learning, practice, progress, and billing."
+          steps={courseSteps}
+        />
 
-      <SectionCard
-        title="What the course is designed to cover"
-        description="The platform is being built around the real GCSE Russian journey: language knowledge, exam skills, and tier-aware progression."
-        tone="brand"
-      >
-        <div className="grid gap-3 md:grid-cols-3">
-          {courseCoverage.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
-            >
-              <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-                {item.title}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
-                {item.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </SectionCard>
+        <SectionCard
+          title="What the course is designed to cover"
+          description="The platform is being built around the real GCSE Russian journey: language knowledge, exam skills, and tier-aware progression."
+          tone="brand"
+        >
+          <div className="grid gap-3 md:grid-cols-3">
+            {courseCoverage.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+              >
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
 
-      <MarketingRelatedLinks links={relatedLinks} />
+        <MarketingRelatedLinks links={relatedLinks} />
 
-      <MarketingCtaBand
-        title="Ready to try the GCSE Russian course?"
-        description="Create a trial account first, explore the app, and upgrade inside the platform when the course is the right fit."
-      />
+        <MarketingCtaBand
+          title="Ready to try the GCSE Russian course?"
+          description="Create a trial account first, explore the app, and upgrade inside the platform when the course is the right fit."
+        />
       </div>
     </>
   );

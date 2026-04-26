@@ -80,6 +80,24 @@ const relatedLinks = [
     href: "/marketing/gcse-russian-writing-exam",
     icon: "write" as const,
   },
+  {
+    title: "GCSE Russian Foundation tier",
+    description: "Understand the tier route for core language and familiar exam tasks.",
+    href: "/marketing/gcse-russian-foundation-tier",
+    icon: "layers" as const,
+  },
+  {
+    title: "GCSE Russian Higher tier",
+    description: "Plan Higher tier preparation for range, accuracy, and extended responses.",
+    href: "/marketing/gcse-russian-higher-tier",
+    icon: "layers" as const,
+  },
+  {
+    title: "GCSE Russian revision guide",
+    description: "Turn the exam overview into a practical revision plan.",
+    href: "/marketing/gcse-russian-revision",
+    icon: "calendar" as const,
+  },
 ];
 
 export default function GcseRussianExamGuidePage() {
@@ -103,81 +121,81 @@ export default function GcseRussianExamGuidePage() {
         ]}
       />
       <div className="space-y-8 py-8 md:py-12">
-      <PageIntroPanel
-        tone="brand"
-        eyebrow="GCSE Russian exam guide"
-        title="How the GCSE Russian exam works"
-        description="GCSE Russian preparation needs all four skills: listening, speaking, reading, and writing. This page gives students and parents a clear starting point before they move into structured practice."
-        badges={
-          <>
-            <Badge tone="info" icon="exam">
-              Listening, speaking, reading, writing
+        <PageIntroPanel
+          tone="brand"
+          eyebrow="GCSE Russian exam guide"
+          title="How the GCSE Russian exam works"
+          description="GCSE Russian preparation needs all four skills: listening, speaking, reading, and writing. This page gives students and parents a clear starting point before they move into structured practice."
+          badges={
+            <>
+              <Badge tone="info" icon="exam">
+                Listening, speaking, reading, writing
+              </Badge>
+              <Badge tone="muted" icon="layers">
+                Foundation and Higher
+              </Badge>
+              <Badge tone="muted" icon="school">
+                Edexcel 1RU0
+              </Badge>
+            </>
+          }
+          actions={
+            <>
+              <Button href="/signup" variant="primary" icon="create">
+                Start trial
+              </Button>
+              <Button href="/marketing/gcse-russian-course" variant="secondary" icon="courses">
+                View course
+              </Button>
+            </>
+          }
+        />
+
+        <SectionCard
+          title="The four skills students need to prepare"
+          description="A good revision plan should not treat GCSE Russian as only vocabulary memorisation. Each paper needs a different kind of practice."
+          tone="student"
+        >
+          <div className="grid gap-3 md:grid-cols-2">
+            {examSkills.map((skill) => (
+              <div
+                key={skill.title}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+              >
+                <h3 className="font-semibold text-[var(--text-primary)]">{skill.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                  {skill.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <MarketingStepList
+          title="A practical revision sequence"
+          description="The platform is designed to move students from understanding the exam to practising in a structured way."
+          steps={revisionSteps}
+        />
+
+        <SectionCard
+          title="Where the app fits"
+          description="Public guides can explain the exam, but practice, progress tracking, attempts, and lesson content belong inside the logged-in LMS."
+          tone="brand"
+          actions={
+            <Badge tone="success" icon="locked">
+              Practice lives in the app
             </Badge>
-            <Badge tone="muted" icon="layers">
-              Foundation and Higher
-            </Badge>
-            <Badge tone="muted" icon="school">
-              Edexcel 1RU0
-            </Badge>
-          </>
-        }
-        actions={
-          <>
-            <Button href="/signup" variant="primary" icon="create">
-              Start trial
-            </Button>
-            <Button href="/marketing/gcse-russian-course" variant="secondary" icon="courses">
-              View course
-            </Button>
-          </>
-        }
-      />
+          }
+        />
 
-      <SectionCard
-        title="The four skills students need to prepare"
-        description="A good revision plan should not treat GCSE Russian as only vocabulary memorisation. Each paper needs a different kind of practice."
-        tone="student"
-      >
-        <div className="grid gap-3 md:grid-cols-2">
-          {examSkills.map((skill) => (
-            <div
-              key={skill.title}
-              className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
-            >
-              <h3 className="font-semibold text-[var(--text-primary)]">{skill.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
-                {skill.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </SectionCard>
+        <MarketingRelatedLinks links={relatedLinks} />
 
-      <MarketingStepList
-        title="A practical revision sequence"
-        description="The platform is designed to move students from understanding the exam to practising in a structured way."
-        steps={revisionSteps}
-      />
-
-      <SectionCard
-        title="Where the app fits"
-        description="Public guides can explain the exam, but practice, progress tracking, attempts, and lesson content belong inside the logged-in LMS."
-        tone="brand"
-        actions={
-          <Badge tone="success" icon="locked">
-            Practice lives in the app
-          </Badge>
-        }
-      />
-
-      <MarketingRelatedLinks links={relatedLinks} />
-
-      <MarketingCtaBand
-        title="Start preparing with structure"
-        description="A trial account lets students explore the platform before choosing the full access route that matches their level."
-        secondaryHref="/marketing/pricing"
-        secondaryLabel="Compare access"
-      />
+        <MarketingCtaBand
+          title="Start preparing with structure"
+          description="A trial account lets students explore the platform before choosing the full access route that matches their level."
+          secondaryHref="/marketing/pricing"
+          secondaryLabel="Compare access"
+        />
       </div>
     </>
   );

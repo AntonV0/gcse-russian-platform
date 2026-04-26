@@ -62,10 +62,40 @@ const resourceLinks = [
     icon: "pastPapers" as const,
   },
   {
+    title: "GCSE Russian revision guide",
+    description: "Build a weekly revision plan across vocabulary, grammar, papers, and feedback.",
+    href: "/marketing/gcse-russian-revision",
+    icon: "calendar" as const,
+  },
+  {
+    title: "GCSE Russian Foundation tier",
+    description: "Focus Foundation preparation on secure core language and familiar exam tasks.",
+    href: "/marketing/gcse-russian-foundation-tier",
+    icon: "layers" as const,
+  },
+  {
+    title: "GCSE Russian Higher tier",
+    description: "Prepare Higher tier students for range, accuracy, translation, and extended answers.",
+    href: "/marketing/gcse-russian-higher-tier",
+    icon: "layers" as const,
+  },
+  {
     title: "Russian GCSE private candidate guide",
     description: "Plan course preparation alongside exam-centre and speaking-arrangement questions.",
     href: "/marketing/russian-gcse-private-candidate",
     icon: "userCheck" as const,
+  },
+  {
+    title: "GCSE Russian tutor or online course?",
+    description: "Compare tutor support, online lessons, and structured course access.",
+    href: "/marketing/gcse-russian-tutor",
+    icon: "school" as const,
+  },
+  {
+    title: "GCSE Russian guide for parents",
+    description: "Help families understand the exam, course structure, private entry, and support options.",
+    href: "/marketing/gcse-russian-for-parents",
+    icon: "users" as const,
   },
 ];
 
@@ -89,48 +119,48 @@ export default function GcseRussianResourcesPage() {
         ]}
       />
       <div className="space-y-8 py-8 md:py-12">
-      <PageIntroPanel
-        tone="brand"
-        eyebrow="GCSE Russian resources"
-        title="Evergreen GCSE Russian guides"
-        description="Use these public guides to understand the exam, plan revision, and decide when to move into structured practice inside the course platform."
-        badges={
-          <>
-            <Badge tone="info" icon="school">
-              Pearson Edexcel 1RU0
-            </Badge>
-            <Badge tone="muted" icon="exam">
-              Paper guides
-            </Badge>
-            <Badge tone="muted" icon="vocabulary">
-              Grammar and vocabulary
-            </Badge>
-          </>
-        }
-        actions={
-          <>
-            <Button href="/signup" variant="primary" icon="create">
-              Start trial
-            </Button>
-            <Button href="/marketing/gcse-russian-course" variant="secondary" icon="courses">
-              View course
-            </Button>
-          </>
-        }
-      />
+        <PageIntroPanel
+          tone="brand"
+          eyebrow="GCSE Russian resources"
+          title="Evergreen GCSE Russian guides"
+          description="Use these public guides to understand the exam, plan revision, and decide when to move into structured practice inside the course platform."
+          badges={
+            <>
+              <Badge tone="info" icon="school">
+                Pearson Edexcel 1RU0
+              </Badge>
+              <Badge tone="muted" icon="exam">
+                Paper guides
+              </Badge>
+              <Badge tone="muted" icon="vocabulary">
+                Grammar and vocabulary
+              </Badge>
+            </>
+          }
+          actions={
+            <>
+              <Button href="/signup" variant="primary" icon="create">
+                Start trial
+              </Button>
+              <Button href="/marketing/gcse-russian-course" variant="secondary" icon="courses">
+                View course
+              </Button>
+            </>
+          }
+        />
 
-      <MarketingRelatedLinks
-        title="Choose a guide"
-        description="Each public page answers a specific search question, then links into trial access when the student is ready to practise."
-        links={resourceLinks}
-      />
+        <MarketingRelatedLinks
+          title="Choose a guide"
+          description="Each public page answers a specific search question, then links into trial access when the student is ready to practise."
+          links={resourceLinks}
+        />
 
-      <MarketingCtaBand
-        title="Use the guides, then practise in the app"
-        description="The public site explains what to study. The app provides structured lessons, practice, progress tracking, and account-based course access."
-        secondaryHref="/marketing/gcse-russian-exam-guide"
-        secondaryLabel="Exam guide"
-      />
+        <MarketingCtaBand
+          title="Use the guides, then practise in the app"
+          description="The public site explains what to study. The app provides structured lessons, practice, progress tracking, and account-based course access."
+          secondaryHref="/marketing/gcse-russian-exam-guide"
+          secondaryLabel="Exam guide"
+        />
       </div>
     </>
   );
