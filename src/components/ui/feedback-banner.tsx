@@ -1,5 +1,3 @@
-"use client";
-
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { AppIconValue } from "@/components/ui/app-icon";

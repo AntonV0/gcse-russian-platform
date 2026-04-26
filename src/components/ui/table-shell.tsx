@@ -1,5 +1,3 @@
-"use client";
-
 import Card, { CardHeader } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
