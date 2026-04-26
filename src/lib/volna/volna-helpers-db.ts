@@ -19,6 +19,10 @@ export type DbTeachingGroupMember = {
   joined_at: string;
 };
 
+const TEACHING_GROUP_SELECT =
+  "id, name, course_id, course_variant_id, academic_year, is_active, created_by, created_at";
+const TEACHING_GROUP_MEMBER_SELECT = "group_id, user_id, member_role, joined_at";
+
 export async function getCurrentUserTeachingGroupMembershipsDb() {
   const supabase = await createClient();
 
@@ -30,7 +34,7 @@ export async function getCurrentUserTeachingGroupMembershipsDb() {
 
   const { data, error } = await supabase
     .from("teaching_group_members")
-    .select("*")
+    .select(TEACHING_GROUP_MEMBER_SELECT)
     .eq("user_id", user.id);
 
   if (error) {
@@ -50,7 +54,7 @@ export async function getTeachingGroupsForCurrentUserDb() {
 
   const { data, error } = await supabase
     .from("teaching_groups")
-    .select("*")
+    .select(TEACHING_GROUP_SELECT)
     .in("id", groupIds)
     .eq("is_active", true);
 
@@ -78,7 +82,7 @@ export async function getCurrentUserVolnaGroupsDb() {
     .from("teaching_groups")
     .select(
       `
-      *,
+      ${TEACHING_GROUP_SELECT},
       course_variants!left (
         slug
       )

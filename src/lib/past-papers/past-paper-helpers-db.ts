@@ -46,6 +46,9 @@ export type PastPaperResourceFilters = {
   published?: "all" | "published" | "draft" | null;
 };
 
+const PAST_PAPER_RESOURCE_SELECT =
+  "id, title, exam_series, paper_number, paper_name, tier, resource_type, official_url, source_label, is_official, sort_order, is_published, is_trial_visible, requires_paid_access, available_in_volna, created_at, updated_at";
+
 export const pastPaperPaperNames: PastPaperPaperName[] = [
   "Paper 1 Listening",
   "Paper 2 Speaking",
@@ -223,7 +226,7 @@ export async function getPastPaperResourcesDb(filters?: PastPaperResourceFilters
 
   const { data, error } = await supabase
     .from("past_paper_resources")
-    .select("*")
+    .select(PAST_PAPER_RESOURCE_SELECT)
     .order("exam_series", { ascending: false })
     .order("paper_number", { ascending: true })
     .order("tier", { ascending: true })
@@ -245,7 +248,7 @@ export async function getPublishedPastPaperResourcesDb(
 
   const { data, error } = await supabase
     .from("past_paper_resources")
-    .select("*")
+    .select(PAST_PAPER_RESOURCE_SELECT)
     .eq("is_published", true)
     .order("exam_series", { ascending: false })
     .order("paper_number", { ascending: true })
