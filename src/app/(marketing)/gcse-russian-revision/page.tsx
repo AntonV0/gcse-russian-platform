@@ -71,6 +71,43 @@ export default function GcseRussianRevisionPage() {
             },
           ],
         },
+        {
+          title: "A weekly GCSE Russian revision cycle",
+          description:
+            "The best revision plans repeat the same core rhythm so students build fluency without losing sight of exam technique.",
+          items: [
+            {
+              title: "Day 1: vocabulary retrieval",
+              description:
+                "Review one theme, then test recall both ways: Russian to English and English to Russian.",
+            },
+            {
+              title: "Day 2: grammar in sentences",
+              description:
+                "Practise one grammar point in short sentences before using it in translation or writing.",
+            },
+            {
+              title: "Day 3: listening or reading",
+              description:
+                "Use one receptive task to practise speed, question language, distractors, and inference.",
+            },
+            {
+              title: "Day 4: speaking or writing",
+              description:
+                "Produce Russian from memory, then correct accuracy, range, word order, and endings.",
+            },
+            {
+              title: "Day 5: mistake review",
+              description:
+                "Turn mistakes into a short action list instead of simply recording a score.",
+            },
+            {
+              title: "Weekend: mixed practice",
+              description:
+                "Bring vocabulary, grammar, and exam tasks together in a short timed session.",
+            },
+          ],
+        },
       ]}
       relatedLinks={[
         {
@@ -90,6 +127,28 @@ export default function GcseRussianRevisionPage() {
           description: "Turn revision topics into guided lessons and practice.",
           href: "/gcse-russian-course",
           icon: "courses",
+        },
+      ]}
+      faqs={[
+        {
+          question: "How early should GCSE Russian revision start?",
+          answer:
+            "Students should start steady revision well before the exam season because vocabulary, grammar, listening confidence, and speaking fluency need repeated practice.",
+        },
+        {
+          question: "Should revision begin with past papers?",
+          answer:
+            "Not usually. Past papers are most useful after students have enough vocabulary and grammar to learn from the result rather than simply feel exposed by it.",
+        },
+        {
+          question: "What should students revise every week?",
+          answer:
+            "A balanced week should include vocabulary retrieval, one grammar focus, one listening or reading task, one speaking or writing task, and a short mistake review.",
+        },
+        {
+          question: "How can parents tell whether revision is working?",
+          answer:
+            "Look for evidence of retrieval, corrected mistakes, repeated practice, and improved confidence across papers, not just time spent with notes open.",
         },
       ]}
       ctaTitle="Turn revision into a weekly plan"

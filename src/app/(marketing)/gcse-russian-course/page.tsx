@@ -5,14 +5,16 @@ import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import {
   MarketingCtaBand,
+  MarketingFaqSection,
   MarketingFeatureGrid,
   MarketingRelatedLinks,
   MarketingStepList,
+  type MarketingFaqItem,
 } from "@/components/marketing/marketing-page-sections";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
-import { buildCourseJsonLd } from "@/lib/seo/structured-data";
+import { buildCourseJsonLd, buildFaqJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Online GCSE Russian Course",
@@ -75,6 +77,62 @@ const courseCoverage = [
   },
 ];
 
+const courseIncludes = [
+  {
+    title: "Lesson pathways",
+    description:
+      "Students follow a course order instead of piecing together isolated worksheets, videos, and vocabulary lists.",
+  },
+  {
+    title: "Theme-based vocabulary",
+    description:
+      "Vocabulary work connects to GCSE themes so words are practised in the contexts students meet in exam tasks.",
+  },
+  {
+    title: "Grammar in exam use",
+    description:
+      "Grammar is treated as a tool for understanding questions, translating accurately, and producing stronger Russian.",
+  },
+  {
+    title: "Paper-by-paper preparation",
+    description:
+      "Listening, speaking, reading, and writing are introduced as separate skills with their own practice routines.",
+  },
+  {
+    title: "Private-candidate support",
+    description:
+      "Families arranging exam entry can use public guidance while the course gives the student a structured study route.",
+  },
+  {
+    title: "Trial-to-upgrade flow",
+    description:
+      "Students can create a trial account first, then upgrade from billing when the course is the right fit.",
+  },
+];
+
+const courseFaqs: MarketingFaqItem[] = [
+  {
+    question: "Is this course for Pearson Edexcel GCSE Russian?",
+    answer:
+      "Yes. The public guidance and course structure are focused on Pearson Edexcel GCSE Russian 1RU0, including Foundation and Higher preparation.",
+  },
+  {
+    question: "Can a private candidate use the course?",
+    answer:
+      "Yes. The course can support preparation, but private candidates still need to arrange exam entry, deadlines, and speaking assessment details with an exam centre.",
+  },
+  {
+    question: "Does the course replace live lessons?",
+    answer:
+      "Not always. Some students can study independently with a structured platform, while others benefit from live teacher support for speaking, writing, and accountability.",
+  },
+  {
+    question: "Should students choose Foundation or Higher first?",
+    answer:
+      "Students should choose the pathway that matches their current level and exam target. Families can use the Foundation and Higher guides to compare the demands.",
+  },
+];
+
 const relatedLinks = [
   {
     title: "Pearson Edexcel GCSE Russian",
@@ -114,12 +172,15 @@ export default function GcseRussianCoursePage() {
   return (
     <>
       <JsonLd
-        data={buildCourseJsonLd({
-          name: "Online GCSE Russian Course",
-          description:
-            "A structured online GCSE Russian course for Pearson Edexcel 1RU0 students, with Foundation and Higher pathways, guided lessons, grammar, vocabulary, and exam practice.",
-          path: "/gcse-russian-course",
-        })}
+        data={[
+          buildCourseJsonLd({
+            name: "Online GCSE Russian Course",
+            description:
+              "A structured online GCSE Russian course for Pearson Edexcel 1RU0 students, with Foundation and Higher pathways, guided lessons, grammar, vocabulary, and exam practice.",
+            path: "/gcse-russian-course",
+          }),
+          buildFaqJsonLd(courseFaqs),
+        ]}
       />
       <MarketingBreadcrumbs
         items={[
@@ -188,7 +249,35 @@ export default function GcseRussianCoursePage() {
           </div>
         </SectionCard>
 
+        <SectionCard
+          title="What students get from a structured course"
+          description="The course is intended to turn GCSE Russian preparation into a clear routine: learn, practise, review, and return to the next lesson."
+          tone="muted"
+        >
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {courseIncludes.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+              >
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
         <MarketingRelatedLinks links={relatedLinks} />
+
+        <MarketingFaqSection
+          title="GCSE Russian course questions"
+          description="Practical answers for families deciding whether a structured online course is the right next step."
+          items={courseFaqs}
+        />
 
         <MarketingCtaBand
           title="Ready to try the GCSE Russian course?"
