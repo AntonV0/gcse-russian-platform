@@ -3,7 +3,7 @@ import { getPublicSiteUrl } from "@/lib/seo/site";
 
 const publicRoutes = [
   {
-    path: "/",
+    path: "/marketing",
     changeFrequency: "weekly",
     priority: 1,
   },

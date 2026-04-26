@@ -21,67 +21,78 @@ export const metadata: Metadata = buildPublicMetadata({
 const resourceLinks = [
   {
     title: "GCSE Russian listening exam guide",
-    description: "Prepare for Paper 1 with audio habits, question strategy, and revision planning.",
+    description:
+      "Prepare for Paper 1 with audio habits, question strategy, and revision planning.",
     href: "/gcse-russian-listening-exam",
     icon: "listening" as const,
   },
   {
     title: "GCSE Russian speaking exam guide",
-    description: "Understand role play, picture-based tasks, conversation, and confidence building.",
+    description:
+      "Understand role play, picture-based tasks, conversation, and confidence building.",
     href: "/gcse-russian-speaking-exam",
     icon: "speaking" as const,
   },
   {
     title: "GCSE Russian reading exam guide",
-    description: "Build comprehension, vocabulary recognition, inference, and translation skills.",
+    description:
+      "Build comprehension, vocabulary recognition, inference, and translation skills.",
     href: "/gcse-russian-reading-exam",
     icon: "lessonContent" as const,
   },
   {
     title: "GCSE Russian writing exam guide",
-    description: "Plan accurate written Russian, translation practice, opinions, and longer answers.",
+    description:
+      "Plan accurate written Russian, translation practice, opinions, and longer answers.",
     href: "/gcse-russian-writing-exam",
     icon: "write" as const,
   },
   {
     title: "GCSE Russian grammar guide",
-    description: "See how grammar supports all four papers and how to revise it systematically.",
+    description:
+      "See how grammar supports all four papers and how to revise it systematically.",
     href: "/gcse-russian-grammar",
     icon: "grammar" as const,
   },
   {
     title: "GCSE Russian vocabulary guide",
-    description: "Organise vocabulary by theme, tier, and productive or receptive exam use.",
+    description:
+      "Organise vocabulary by theme, tier, and productive or receptive exam use.",
     href: "/gcse-russian-vocabulary",
     icon: "vocabulary" as const,
   },
   {
     title: "GCSE Russian past papers",
-    description: "Use official Pearson resources as part of a wider revision and mock-exam plan.",
+    description:
+      "Use official Pearson resources as part of a wider revision and mock-exam plan.",
     href: "/gcse-russian-past-papers",
     icon: "pastPapers" as const,
   },
   {
     title: "GCSE Russian revision guide",
-    description: "Build a weekly revision plan across vocabulary, grammar, papers, and feedback.",
+    description:
+      "Build a weekly revision plan across vocabulary, grammar, papers, and feedback.",
     href: "/gcse-russian-revision",
     icon: "calendar" as const,
   },
   {
     title: "GCSE Russian Foundation tier",
-    description: "Focus Foundation preparation on secure core language and familiar exam tasks.",
+    description:
+      "Focus Foundation preparation on secure core language and familiar exam tasks.",
     href: "/gcse-russian-foundation-tier",
     icon: "layers" as const,
   },
   {
     title: "GCSE Russian Higher tier",
-    description: "Prepare Higher tier students for range, accuracy, translation, and extended answers.",
+    description:
+      "Prepare Higher tier students for range, accuracy, translation, and extended answers.",
     href: "/gcse-russian-higher-tier",
     icon: "layers" as const,
   },
   {
     title: "Russian GCSE private candidate guide",
-    description: "Plan course preparation alongside exam-centre and speaking-arrangement questions.",
+    description:
+      "Plan course preparation alongside exam-centre and speaking-arrangement questions.",
     href: "/russian-gcse-private-candidate",
     icon: "userCheck" as const,
   },
@@ -93,7 +104,8 @@ const resourceLinks = [
   },
   {
     title: "GCSE Russian guide for parents",
-    description: "Help families understand the exam, course structure, private entry, and support options.",
+    description:
+      "Help families understand the exam, course structure, private entry, and support options.",
     href: "/gcse-russian-for-parents",
     icon: "users" as const,
   },
@@ -108,13 +120,17 @@ export default function GcseRussianResourcesPage() {
           description:
             "Evergreen GCSE Russian resources for Pearson Edexcel 1RU0 students, including exam paper guides, grammar, vocabulary, past papers, and private-candidate preparation.",
           path: "/resources",
-          keywords: ["GCSE Russian resources", "Edexcel Russian GCSE", "Russian GCSE revision"],
+          keywords: [
+            "GCSE Russian resources",
+            "Edexcel Russian GCSE",
+            "Russian GCSE revision",
+          ],
           relatedLinks: resourceLinks,
         })}
       />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/" },
+          { label: "Home", href: "/marketing" },
           { label: "Resources", href: "/resources" },
         ]}
       />

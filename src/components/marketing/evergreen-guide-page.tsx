@@ -93,7 +93,7 @@ export default function EvergreenGuidePage({
       />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/" },
+          { label: "Home", href: "/marketing" },
           { label: "Resources", href: "/resources" },
           { label: title, href: path },
         ]}

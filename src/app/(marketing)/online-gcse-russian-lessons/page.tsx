@@ -92,13 +92,17 @@ export default function OnlineGcseRussianLessonsPage() {
           description:
             "A guide to online GCSE Russian lessons and teacher-supported preparation alongside the GCSE Russian course platform.",
           path: "/online-gcse-russian-lessons",
-          keywords: ["online GCSE Russian lessons", "GCSE Russian tutor", "Russian GCSE classes"],
+          keywords: [
+            "online GCSE Russian lessons",
+            "GCSE Russian tutor",
+            "Russian GCSE classes",
+          ],
           relatedLinks,
         })}
       />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/" },
+          { label: "Home", href: "/marketing" },
           { label: "Resources", href: "/resources" },
           { label: "Online lessons", href: "/online-gcse-russian-lessons" },
         ]}
@@ -127,7 +131,11 @@ export default function OnlineGcseRussianLessonsPage() {
               <Button href="/signup" variant="primary" icon="create">
                 Start trial
               </Button>
-              <Button href="https://volnaschool.com" variant="secondary" icon="externalLink">
+              <Button
+                href="https://volnaschool.com"
+                variant="secondary"
+                icon="externalLink"
+              >
                 Visit Volna School
               </Button>
             </>

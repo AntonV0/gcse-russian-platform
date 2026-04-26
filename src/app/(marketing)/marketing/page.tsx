@@ -12,7 +12,7 @@ export const metadata: Metadata = buildPublicMetadata({
   title: "GCSE Russian Online Course",
   description:
     "A structured online GCSE Russian course for Pearson Edexcel 1RU0 students, with guided lessons, vocabulary, grammar, exam practice, and progress tracking.",
-  path: "/",
+  path: "/marketing",
 });
 
 const highlights = [

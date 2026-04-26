@@ -105,13 +105,17 @@ export default function RussianGcsePrivateCandidatePage() {
           description:
             "A practical guide for Russian GCSE private candidates and families planning exam preparation, course structure, online lessons, and exam-centre questions.",
           path: "/russian-gcse-private-candidate",
-          keywords: ["Russian GCSE private candidate", "Russian GCSE exam centre", "GCSE Russian preparation"],
+          keywords: [
+            "Russian GCSE private candidate",
+            "Russian GCSE exam centre",
+            "GCSE Russian preparation",
+          ],
           relatedLinks,
         })}
       />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/" },
+          { label: "Home", href: "/marketing" },
           { label: "Resources", href: "/resources" },
           {
             label: "Private candidates",
@@ -120,65 +124,69 @@ export default function RussianGcsePrivateCandidatePage() {
         ]}
       />
       <div className="space-y-8 py-8 md:py-12">
-      <PageIntroPanel
-        tone="brand"
-        eyebrow="Private candidates"
-        title="Russian GCSE private candidate preparation"
-        description="Private candidates need more than resources: they need a clear preparation route, exam awareness, and a plan for speaking, writing, grammar, vocabulary, and exam-centre arrangements."
-        badges={
-          <>
-            <Badge tone="info" icon="userCheck">
-              Private candidate support
+        <PageIntroPanel
+          tone="brand"
+          eyebrow="Private candidates"
+          title="Russian GCSE private candidate preparation"
+          description="Private candidates need more than resources: they need a clear preparation route, exam awareness, and a plan for speaking, writing, grammar, vocabulary, and exam-centre arrangements."
+          badges={
+            <>
+              <Badge tone="info" icon="userCheck">
+                Private candidate support
+              </Badge>
+              <Badge tone="muted" icon="school">
+                GCSE Russian
+              </Badge>
+              <Badge tone="muted" icon="layers">
+                Foundation and Higher
+              </Badge>
+            </>
+          }
+          actions={
+            <>
+              <Button href="/signup" variant="primary" icon="create">
+                Start trial
+              </Button>
+              <Button
+                href="/online-gcse-russian-lessons"
+                variant="secondary"
+                icon="school"
+              >
+                Online lessons
+              </Button>
+            </>
+          }
+        />
+
+        <MarketingFeatureGrid items={candidateQuestions} />
+
+        <MarketingStepList
+          title="A sensible preparation path"
+          description="Private-candidate preparation should connect exam logistics with a practical learning routine."
+          steps={supportSteps}
+        />
+
+        <MarketingFeatureGrid items={trustPoints} tone="muted" />
+
+        <SectionCard
+          title="Important note about exam entry"
+          description="This platform can support GCSE Russian preparation, but families should confirm exam entry, deadlines, speaking arrangements, and centre availability directly with their chosen exam centre."
+          tone="brand"
+          actions={
+            <Badge tone="warning" icon="info">
+              Check centre arrangements
             </Badge>
-            <Badge tone="muted" icon="school">
-              GCSE Russian
-            </Badge>
-            <Badge tone="muted" icon="layers">
-              Foundation and Higher
-            </Badge>
-          </>
-        }
-        actions={
-          <>
-            <Button href="/signup" variant="primary" icon="create">
-              Start trial
-            </Button>
-            <Button href="/online-gcse-russian-lessons" variant="secondary" icon="school">
-              Online lessons
-            </Button>
-          </>
-        }
-      />
+          }
+        />
 
-      <MarketingFeatureGrid items={candidateQuestions} />
+        <MarketingRelatedLinks links={relatedLinks} />
 
-      <MarketingStepList
-        title="A sensible preparation path"
-        description="Private-candidate preparation should connect exam logistics with a practical learning routine."
-        steps={supportSteps}
-      />
-
-      <MarketingFeatureGrid items={trustPoints} tone="muted" />
-
-      <SectionCard
-        title="Important note about exam entry"
-        description="This platform can support GCSE Russian preparation, but families should confirm exam entry, deadlines, speaking arrangements, and centre availability directly with their chosen exam centre."
-        tone="brand"
-        actions={
-          <Badge tone="warning" icon="info">
-            Check centre arrangements
-          </Badge>
-        }
-      />
-
-      <MarketingRelatedLinks links={relatedLinks} />
-
-      <MarketingCtaBand
-        title="Give private-candidate preparation a structure"
-        description="Start with trial access, review the course flow, and decide whether self-study or live teacher support is the right next step."
-        secondaryHref="/gcse-russian-course"
-        secondaryLabel="View course"
-      />
+        <MarketingCtaBand
+          title="Give private-candidate preparation a structure"
+          description="Start with trial access, review the course flow, and decide whether self-study or live teacher support is the right next step."
+          secondaryHref="/gcse-russian-course"
+          secondaryLabel="View course"
+        />
       </div>
     </>
   );

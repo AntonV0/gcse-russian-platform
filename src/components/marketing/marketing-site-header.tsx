@@ -15,7 +15,7 @@ type MarketingSiteHeaderProps = {
 };
 
 const navItems = [
-  { href: "/", label: "Home" },
+  { href: "/marketing", label: "Home" },
   { href: "/gcse-russian-course", label: "Course" },
   { href: "/resources", label: "Resources" },
   { href: "/gcse-russian-exam-guide", label: "Exam guide" },
@@ -25,8 +25,8 @@ const navItems = [
 ];
 
 function isNavActive(pathname: string, href: string) {
-  if (href === "/") {
-    return pathname === "/";
+  if (href === "/marketing") {
+    return pathname === "/marketing";
   }
 
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -51,7 +51,7 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <Link
-            href="/"
+            href="/marketing"
             className="app-brand-lockup shrink-0"
             onClick={closeMobileMenu}
           >
@@ -147,7 +147,12 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
             <div className="my-3 border-t border-[var(--border)]" />
 
             {user ? (
-              <Button href="/dashboard" variant="primary" className="w-full" icon="dashboard">
+              <Button
+                href="/dashboard"
+                variant="primary"
+                className="w-full"
+                icon="dashboard"
+              >
                 Open app
               </Button>
             ) : (

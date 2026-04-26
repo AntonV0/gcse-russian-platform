@@ -88,7 +88,8 @@ const relatedLinks = [
   },
   {
     title: "GCSE Russian Higher tier",
-    description: "Plan Higher tier preparation for range, accuracy, and extended responses.",
+    description:
+      "Plan Higher tier preparation for range, accuracy, and extended responses.",
     href: "/gcse-russian-higher-tier",
     icon: "layers" as const,
   },
@@ -109,13 +110,17 @@ export default function GcseRussianExamGuidePage() {
           description:
             "A practical GCSE Russian exam guide covering listening, speaking, reading, writing, Foundation and Higher tiers, and structured preparation.",
           path: "/gcse-russian-exam-guide",
-          keywords: ["GCSE Russian exam", "Edexcel Russian GCSE", "Russian GCSE revision"],
+          keywords: [
+            "GCSE Russian exam",
+            "Edexcel Russian GCSE",
+            "Russian GCSE revision",
+          ],
           relatedLinks,
         })}
       />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/" },
+          { label: "Home", href: "/marketing" },
           { label: "Resources", href: "/resources" },
           { label: "Exam guide", href: "/gcse-russian-exam-guide" },
         ]}
@@ -162,7 +167,9 @@ export default function GcseRussianExamGuidePage() {
                 key={skill.title}
                 className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
               >
-                <h3 className="font-semibold text-[var(--text-primary)]">{skill.title}</h3>
+                <h3 className="font-semibold text-[var(--text-primary)]">
+                  {skill.title}
+                </h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
                   {skill.description}
                 </p>
