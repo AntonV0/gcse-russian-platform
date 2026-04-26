@@ -81,7 +81,7 @@ export default function CardListItem({
         interactive={Boolean(href)}
         className={["p-4", className].filter(Boolean).join(" ")}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           {href ? (
             <Link
               href={href}
@@ -93,7 +93,11 @@ export default function CardListItem({
             content
           )}
 
-          {actions ? <div className="shrink-0">{actions}</div> : null}
+          {actions ? (
+            <div className="app-mobile-action-stack shrink-0 sm:flex sm:justify-end">
+              {actions}
+            </div>
+          ) : null}
         </div>
       </Card>
     </div>

@@ -31,12 +31,27 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="overflow-x-clip bg-[var(--background-muted)]">
           <AdminRouteTracker />
 
-          <div className="grid min-h-[calc(100vh-var(--site-header-height))] grid-cols-[272px_minmax(0,1fr)]">
-            <div className="sticky top-[var(--site-header-height)] h-[calc(100vh-var(--site-header-height))] border-r border-[var(--border)] bg-[var(--background-elevated)]">
+          <div className="border-b border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 lg:hidden">
+            <details className="app-card overflow-hidden">
+              <summary className="app-focus-ring flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[var(--text-primary)]">
+                <span>Admin navigation</span>
+                <span className="text-xs font-medium uppercase tracking-[0.12em] app-text-soft">
+                  Menu
+                </span>
+              </summary>
+
+              <div className="max-h-[72vh] overflow-y-auto border-t border-[var(--border-subtle)]">
+                <AdminSidebar />
+              </div>
+            </details>
+          </div>
+
+          <div className="grid min-h-[calc(100vh-var(--site-header-height))] lg:grid-cols-[272px_minmax(0,1fr)]">
+            <div className="sticky top-[var(--site-header-height)] hidden h-[calc(100vh-var(--site-header-height))] border-r border-[var(--border)] bg-[var(--background-elevated)] lg:block">
               <AdminSidebar />
             </div>
 
-            <main className="min-w-0 px-5 py-5 md:px-7 md:py-6 xl:px-10 2xl:px-14">
+            <main className="min-w-0 px-4 py-4 sm:px-5 md:px-7 md:py-6 xl:px-10 2xl:px-14">
               {children}
             </main>
           </div>

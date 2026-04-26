@@ -176,7 +176,7 @@ export function MarketingCtaBand({
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3 lg:justify-end">
+        <div className="app-mobile-action-stack flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:justify-end">
           <Button href={primaryHref} variant="primary" icon="create">
             {primaryLabel}
           </Button>
