@@ -1,13 +1,19 @@
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type NoteBlockProps = {
   title: string;
   content: string;
+  headingLevel?: HeadingLevel;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-export default function NoteBlock({ title, content }: NoteBlockProps) {
+export default function NoteBlock({
+  title,
+  content,
+  headingLevel = 3,
+}: NoteBlockProps) {
   return (
     <section className="dev-marker-host relative rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-6 shadow-sm">
       {SHOW_UI_DEBUG ? (
@@ -31,11 +37,11 @@ export default function NoteBlock({ title, content }: NoteBlockProps) {
         <span className="app-pill app-pill-info">Note</span>
       </div>
 
-      <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">{title}</h2>
+      <Heading level={headingLevel} className="mb-2 app-heading-subsection">
+        {title}
+      </Heading>
 
-      <p className="whitespace-pre-wrap leading-7 text-[var(--text-secondary)]">
-        {content}
-      </p>
+      <p className="app-text-body-muted whitespace-pre-wrap">{content}</p>
     </section>
   );
 }

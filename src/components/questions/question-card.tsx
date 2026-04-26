@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 import AudioPlayer from "@/components/questions/audio-player";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type QuestionCardProps = {
   heading?: string;
   instruction?: string;
   prompt: string;
+  headingLevel?: HeadingLevel;
   audioUrl?: string | null;
   audioMaxPlays?: number;
   audioListeningMode?: boolean;
@@ -22,6 +24,7 @@ export default function QuestionCard({
   heading = "Question",
   instruction,
   prompt,
+  headingLevel = 3,
   audioUrl,
   audioMaxPlays,
   audioListeningMode = false,
@@ -68,7 +71,9 @@ export default function QuestionCard({
             </p>
           ) : null}
 
-          <h2 className="text-lg font-semibold text-[var(--text-primary)]">{prompt}</h2>
+          <Heading level={headingLevel} className="app-question-prompt">
+            {prompt}
+          </Heading>
         </div>
 
         {audioUrl ? (

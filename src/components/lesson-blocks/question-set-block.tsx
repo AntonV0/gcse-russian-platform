@@ -1,11 +1,13 @@
 import { loadRuntimeQuestionSetBySlugDb } from "@/lib/questions/question-helpers-db";
 import QuestionRenderer from "@/components/questions/question-renderer";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type QuestionSetBlockProps = {
   title?: string;
   questionSetSlug: string;
   lessonId?: string | null;
+  headingLevel?: HeadingLevel;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -14,6 +16,7 @@ export default async function QuestionSetBlock({
   title,
   questionSetSlug,
   lessonId = null,
+  headingLevel = 3,
 }: QuestionSetBlockProps) {
   const { questionSet, questions } =
     await loadRuntimeQuestionSetBySlugDb(questionSetSlug);
@@ -54,18 +57,20 @@ export default async function QuestionSetBlock({
         </div>
 
         {title ? (
-          <h2 className="text-2xl font-semibold text-[var(--text-primary)]">{title}</h2>
+          <Heading level={headingLevel} className="app-heading-subsection">
+            {title}
+          </Heading>
         ) : null}
 
         {questionSet.instructions ? (
-          <p className="text-sm app-text-muted">{questionSet.instructions}</p>
+          <p className="app-text-body-muted">{questionSet.instructions}</p>
         ) : null}
       </div>
 
       <div className="space-y-5">
         {questions.map((question, index) => (
           <div key={question.id} className="space-y-3">
-            <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
+            <div className="app-text-meta">
               Question {index + 1}
             </div>
 
