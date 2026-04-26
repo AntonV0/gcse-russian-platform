@@ -193,6 +193,12 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             iconTone="brand"
             title="No mock exams found"
             description="Try clearing filters, or check back once mock exams have been published."
+            visual={
+              <VisualPlaceholder
+                category="mockExam"
+                ariaLabel="Mock exam empty state placeholder"
+              />
+            }
           />
         ) : (
           <div className="grid gap-3">

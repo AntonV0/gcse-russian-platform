@@ -156,6 +156,12 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             iconTone="brand"
             title="No grammar sets found"
             description="Try clearing filters, or check back once more grammar content has been published."
+            visual={
+              <VisualPlaceholder
+                category="grammar"
+                ariaLabel="Grammar empty state placeholder"
+              />
+            }
           />
         ) : (
           <div className="grid gap-3">

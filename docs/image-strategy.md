@@ -29,6 +29,9 @@ placeholders in the GCSE Russian Course Platform.
 - Past papers and mock exams also use intro placeholders to distinguish official
   resource browsing from platform-created practice without adding visual noise to
   filters or question lists.
+- Grammar, past papers, and mock exams use matching empty-state visuals when
+  filters return no results. Keep these limited to no-content states so regular
+  study views stay focused.
 
 ## Placement Rules
 

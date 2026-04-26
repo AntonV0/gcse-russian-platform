@@ -200,6 +200,12 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             iconTone="brand"
             title="No past paper resources found"
             description="Try clearing filters, or check back once more official links have been published."
+            visual={
+              <VisualPlaceholder
+                category="pastPapers"
+                ariaLabel="Past paper empty state placeholder"
+              />
+            }
           />
         ) : (
           <div className="space-y-5">
