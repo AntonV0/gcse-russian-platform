@@ -74,12 +74,12 @@ export default function AdminRow({
       >
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="font-semibold leading-6 text-[var(--text-primary)]">
+            <div className="app-heading-card">
               {title}
             </div>
 
             {description ? (
-              <div className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+              <div className="mt-1 app-text-body-muted">
                 {description}
               </div>
             ) : null}

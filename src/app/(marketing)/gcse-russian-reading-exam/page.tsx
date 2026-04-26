@@ -67,6 +67,28 @@ export default function GcseRussianReadingExamPage() {
             },
           ],
         },
+        {
+          title: "Reading exam habits",
+          description:
+            "Reading improves when students stop treating every unknown word as a blocker.",
+          items: [
+            {
+              title: "Scan before translating",
+              description:
+                "Students should identify names, places, time phrases, negatives, and question words before trying to translate a full passage.",
+            },
+            {
+              title: "Use grammar clues",
+              description:
+                "Verb tense, case endings, and agreement can reveal who is doing what even when one word is unfamiliar.",
+            },
+            {
+              title: "Check English answers",
+              description:
+                "For comprehension and translation into English, the answer must make sense in English and match the detail of the Russian.",
+            },
+          ],
+        },
       ]}
       relatedLinks={[
         {
@@ -83,9 +105,27 @@ export default function GcseRussianReadingExamPage() {
         },
         {
           title: "GCSE Russian past papers",
-          description: "Use official resources to practise reading under exam conditions.",
+          description:
+            "Use official resources to practise reading under exam conditions.",
           href: "/gcse-russian-past-papers",
           icon: "pastPapers",
+        },
+      ]}
+      faqs={[
+        {
+          question: "How should students revise for GCSE Russian reading?",
+          answer:
+            "They should combine theme vocabulary, grammar recognition, question-first reading, translation practice, and review of unknown words after each task.",
+        },
+        {
+          question: "Is reading only vocabulary memorisation?",
+          answer:
+            "No. Vocabulary matters, but grammar, inference, negatives, time markers, and careful question reading can change the answer.",
+        },
+        {
+          question: "How can students handle unknown words?",
+          answer:
+            "They should use context, word families, cognates, grammar clues, and the question focus before deciding whether the unknown word is essential.",
         },
       ]}
       ctaTitle="Make reading practice less random"

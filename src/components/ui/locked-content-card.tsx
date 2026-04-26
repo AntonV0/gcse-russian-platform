@@ -54,10 +54,10 @@ export default function LockedContentCard({
         <CardBody className="space-y-4 px-5 py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+              <div className="mb-1 app-text-meta">
                 Access / funnel
               </div>
-              <h3 className="font-semibold leading-6 text-[var(--text-primary)]">
+              <h3 className="app-heading-card">
                 {title}
               </h3>
             </div>
@@ -72,7 +72,7 @@ export default function LockedContentCard({
             </div>
           </div>
 
-          <p className="text-sm leading-6 text-[var(--text-secondary)]">{description}</p>
+          <p className="app-text-body-muted">{description}</p>
 
           <div className="flex flex-wrap gap-2.5">
             {primaryActionHref ? (

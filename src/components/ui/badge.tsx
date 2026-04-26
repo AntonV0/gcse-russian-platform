@@ -78,7 +78,7 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
       className={[
         "dev-marker-host relative inline-flex max-w-full items-center rounded-full px-3 py-1.5",
         "min-h-[1.9rem] align-middle",
-        "text-[0.76rem] font-semibold tracking-[-0.01em]",
+        "text-[0.76rem] font-semibold",
         getToneClass(tone),
         className,
       ]

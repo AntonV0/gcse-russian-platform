@@ -67,6 +67,28 @@ export default function GcseRussianListeningExamPage() {
             },
           ],
         },
+        {
+          title: "Common listening mistakes to fix",
+          description:
+            "Listening marks often improve when students practise the small habits that stop avoidable errors.",
+          items: [
+            {
+              title: "Ignoring the question wording",
+              description:
+                "Students should underline what the question asks before the audio starts so they listen for the right detail.",
+            },
+            {
+              title: "Falling for distractors",
+              description:
+                "GCSE audio can mention more than one option, so students need to listen for correction, contrast, and final opinion.",
+            },
+            {
+              title: "Missing time markers",
+              description:
+                "Words such as yesterday, next year, usually, never, and after school can completely change the answer.",
+            },
+          ],
+        },
       ]}
       relatedLinks={[
         {
@@ -86,6 +108,23 @@ export default function GcseRussianListeningExamPage() {
           description: "Move from guide reading into structured practice.",
           href: "/gcse-russian-course",
           icon: "courses",
+        },
+      ]}
+      faqs={[
+        {
+          question: "How can students improve GCSE Russian listening?",
+          answer:
+            "They should combine topic vocabulary, repeated audio practice, question-first listening, and careful review of distractors and missed details.",
+        },
+        {
+          question: "Should listening practice use transcripts?",
+          answer:
+            "Transcripts are useful after an attempt. Students should first listen under realistic conditions, then use the transcript to diagnose vocabulary and sound patterns.",
+        },
+        {
+          question: "What makes listening hard at Higher tier?",
+          answer:
+            "Higher listening can include less predictable vocabulary, faster processing, more inference, and distractors that require students to follow the whole meaning.",
         },
       ]}
       ctaTitle="Practise listening with structure"

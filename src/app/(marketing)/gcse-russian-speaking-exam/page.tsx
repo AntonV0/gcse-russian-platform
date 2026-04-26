@@ -67,6 +67,28 @@ export default function GcseRussianSpeakingExamPage() {
             },
           ],
         },
+        {
+          title: "Speaking practice routine",
+          description:
+            "Students should practise short answers, developed answers, and repair strategies before the speaking window.",
+          items: [
+            {
+              title: "Build answer banks",
+              description:
+                "Prepare flexible phrases for opinions, reasons, preferences, time frames, and asking simple questions.",
+            },
+            {
+              title: "Practise prompt changes",
+              description:
+                "Students should rehearse how to adapt when the question changes rather than relying on one memorised paragraph.",
+            },
+            {
+              title: "Record and review",
+              description:
+                "Short recordings help students notice pronunciation, hesitation, missing verbs, and answers that are too brief.",
+            },
+          ],
+        },
       ]}
       relatedLinks={[
         {
@@ -86,6 +108,23 @@ export default function GcseRussianSpeakingExamPage() {
           description: "Pair speaking confidence with stronger written accuracy.",
           href: "/gcse-russian-writing-exam",
           icon: "write",
+        },
+      ]}
+      faqs={[
+        {
+          question: "When is the GCSE Russian speaking exam?",
+          answer:
+            "Pearson Edexcel GCSE Russian speaking is completed in the April/May assessment window, before the main written papers.",
+        },
+        {
+          question: "Can students prepare speaking without a teacher?",
+          answer:
+            "They can practise vocabulary and answer structures independently, but live feedback is valuable for pronunciation, spontaneous responses, and confidence.",
+        },
+        {
+          question: "What should private candidates check for speaking?",
+          answer:
+            "They should confirm with the exam centre how speaking will be arranged, who conducts it, what deadlines apply, and what preparation is expected.",
         },
       ]}
       ctaTitle="Build speaking confidence before exam season"
