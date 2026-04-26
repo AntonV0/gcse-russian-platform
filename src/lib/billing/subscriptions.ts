@@ -31,6 +31,9 @@ export type UpsertSubscriptionInput = {
   canceledAt?: Date | string | null;
 };
 
+const SUBSCRIPTION_SELECT =
+  "id, user_id, product_id, price_id, provider, provider_customer_id, provider_subscription_id, status, current_period_start, current_period_end, cancel_at_period_end, canceled_at, created_at, updated_at";
+
 function toIsoOrNull(value?: Date | string | null): string | null {
   if (!value) return null;
   return value instanceof Date ? value.toISOString() : value;
@@ -47,7 +50,7 @@ export async function getSubscriptionByIdDb(
 
   const { data, error } = await supabase
     .from("subscriptions")
-    .select("*")
+    .select(SUBSCRIPTION_SELECT)
     .eq("id", subscriptionId)
     .single();
 
@@ -69,7 +72,7 @@ export async function getSubscriptionByProviderSubscriptionIdDb(
 
   const { data, error } = await supabase
     .from("subscriptions")
-    .select("*")
+    .select(SUBSCRIPTION_SELECT)
     .eq("provider_subscription_id", providerSubscriptionId)
     .maybeSingle();
 
@@ -92,7 +95,7 @@ export async function getUserProductSubscriptionsDb(
 
   const { data, error } = await supabase
     .from("subscriptions")
-    .select("*")
+    .select(SUBSCRIPTION_SELECT)
     .eq("user_id", userId)
     .eq("product_id", productId)
     .order("updated_at", { ascending: false });
@@ -160,7 +163,7 @@ export async function upsertSubscriptionDb(
       .from("subscriptions")
       .update(payload)
       .eq("id", existing.id)
-      .select("*")
+      .select(SUBSCRIPTION_SELECT)
       .single();
 
     if (error) {
@@ -178,7 +181,7 @@ export async function upsertSubscriptionDb(
   const { data, error } = await supabase
     .from("subscriptions")
     .insert(payload)
-    .select("*")
+    .select(SUBSCRIPTION_SELECT)
     .single();
 
   if (error) {
@@ -207,7 +210,7 @@ export async function cancelSubscriptionByProviderSubscriptionIdDb(
       updated_at: new Date().toISOString(),
     })
     .eq("provider_subscription_id", providerSubscriptionId)
-    .select("*")
+    .select(SUBSCRIPTION_SELECT)
     .single();
 
   if (error) {
@@ -229,7 +232,7 @@ export async function getActiveUserSubscriptionsDb(
 
   const { data, error } = await supabase
     .from("subscriptions")
-    .select("*")
+    .select(SUBSCRIPTION_SELECT)
     .eq("user_id", userId)
     .order("updated_at", { ascending: false });
 

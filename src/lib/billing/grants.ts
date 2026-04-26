@@ -28,6 +28,9 @@ export type GrantProductAccessInput = {
   grantedBy?: string | null;
 };
 
+const USER_ACCESS_GRANT_SELECT =
+  "id, user_id, product_id, price_id, access_mode, source, starts_at, ends_at, is_active, granted_by, created_at";
+
 function toIsoOrNull(value?: Date | string | null): string | null {
   if (!value) return null;
   return value instanceof Date ? value.toISOString() : value;
@@ -55,7 +58,7 @@ export async function getUserProductGrantsDb(
 
   const { data, error } = await supabase
     .from("user_access_grants")
-    .select("*")
+    .select(USER_ACCESS_GRANT_SELECT)
     .eq("user_id", userId)
     .eq("product_id", productId)
     .order("created_at", { ascending: false });
@@ -206,7 +209,7 @@ export async function grantProductAccessDb(
   const { data, error } = await supabase
     .from("user_access_grants")
     .insert(insertPayload)
-    .select("*")
+    .select(USER_ACCESS_GRANT_SELECT)
     .single();
 
   if (error) {
@@ -229,7 +232,7 @@ export async function deactivateGrantByIdDb(
     .from("user_access_grants")
     .update({ is_active: false })
     .eq("id", grantId)
-    .select("*")
+    .select(USER_ACCESS_GRANT_SELECT)
     .single();
 
   if (error) {
@@ -253,7 +256,7 @@ export async function setGrantEndDateDb(
     .from("user_access_grants")
     .update({ ends_at: toIsoOrNull(endsAt) })
     .eq("id", grantId)
-    .select("*")
+    .select(USER_ACCESS_GRANT_SELECT)
     .single();
 
   if (error) {
