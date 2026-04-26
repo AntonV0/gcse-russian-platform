@@ -62,7 +62,7 @@ export async function getProductsForCourseVariantDb(
 
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select("id, code, name, product_type, course_id, course_variant_id, is_active, created_at")
     .eq("course_id", course.id)
     .eq("course_variant_id", variant.id)
     .eq("is_active", true);
@@ -98,7 +98,7 @@ export async function getCurrentUserAccessGrantsDb(userId?: string) {
 
   const { data, error } = await supabase
     .from("user_access_grants")
-    .select("*")
+    .select("id, user_id, product_id, access_mode, source, starts_at, ends_at, is_active, granted_by, created_at")
     .eq("user_id", currentUserId)
     .eq("is_active", true);
 

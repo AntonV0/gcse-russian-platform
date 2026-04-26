@@ -20,7 +20,7 @@ export const getCurrentProfile = cache(async function getCurrentProfile() {
 
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("*")
+    .select("id, email, full_name, display_name, avatar_key, is_admin, is_teacher")
     .eq("id", user.id)
     .single();
 
@@ -62,7 +62,7 @@ export const getCurrentCourseAccess = cache(async function getCurrentCourseAcces
   // 2. Fallback to the old table during migration
   const { data: access, error } = await supabase
     .from("user_course_access")
-    .select("*")
+    .select("user_id, course_slug, course_variant, access_mode")
     .eq("user_id", user.id)
     .eq("course_slug", courseSlug)
     .eq("course_variant", variantSlug)

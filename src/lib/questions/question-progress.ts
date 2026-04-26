@@ -53,7 +53,7 @@ export async function recordQuestionAttempt({
 
   const { data: existingProgress, error: progressReadError } = await supabase
     .from("question_progress")
-    .select("*")
+    .select("total_attempts, correct_attempts, best_score")
     .eq("user_id", user.id)
     .eq("question_id", questionId)
     .maybeSingle();
