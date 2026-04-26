@@ -1,145 +1,31 @@
+import {
+  ASPECTS,
+  DISPLAY_VARIANTS,
+  GENDERS,
+  ITEM_TYPES,
+  LIST_MODES,
+  PARTS_OF_SPEECH,
+  PRIORITIES,
+  PRODUCTIVE_RECEPTIVE,
+  REVIEW_STATUSES,
+  SET_TYPES,
+  SOURCE_TYPES,
+  TIERS,
+} from "./import-manifest-constants";
 import type {
-  DbVocabularyAspect,
-  DbVocabularyDisplayVariant,
-  DbVocabularyGender,
-  DbVocabularyItemPriority,
-  DbVocabularyItemSourceType,
-  DbVocabularyItemType,
-  DbVocabularyListMode,
-  DbVocabularyPartOfSpeech,
-  DbVocabularyProductiveReceptive,
-  DbVocabularySetType,
-  DbVocabularyTier,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+  VocabularyManifestValidationIssue,
+  VocabularyManifestValidationResult,
+} from "./import-manifest-types";
 
-export type VocabularyManifestReviewStatus = "draft" | "reviewed" | "approved";
-
-export type VocabularyImportManifest = {
-  sourceKey: string;
-  sourceTitle: string;
-  sourceVersion: string;
-  reviewStatus: VocabularyManifestReviewStatus;
-  sets: VocabularyManifestSet[];
-};
-
-export type VocabularyManifestSet = {
-  importKey: string;
-  slug: string;
-  title: string;
-  description?: string | null;
-  setType: DbVocabularySetType;
-  themeKey?: string | null;
-  topicKey?: string | null;
-  tier: DbVocabularyTier;
-  listMode: DbVocabularyListMode;
-  defaultDisplayVariant: DbVocabularyDisplayVariant;
-  isPublished: boolean;
-  sortOrder: number;
-  lists: VocabularyManifestList[];
-};
-
-export type VocabularyManifestList = {
-  importKey: string;
-  slug: string;
-  title: string;
-  description?: string | null;
-  themeKey?: string | null;
-  topicKey?: string | null;
-  categoryKey?: string | null;
-  subcategoryKey?: string | null;
-  tier: DbVocabularyTier;
-  listMode: DbVocabularyListMode;
-  defaultDisplayVariant: DbVocabularyDisplayVariant;
-  isPublished: boolean;
-  sortOrder: number;
-  sourceSectionRef?: string | null;
-  items: VocabularyManifestItem[];
-};
-
-export type VocabularyManifestItem = {
-  importKey: string;
-  canonicalKey?: string | null;
-  russian: string;
-  english: string;
-  transliteration?: string | null;
-  itemType: DbVocabularyItemType;
-  sourceType: DbVocabularyItemSourceType;
-  priority: DbVocabularyItemPriority;
-  partOfSpeech: DbVocabularyPartOfSpeech;
-  gender: DbVocabularyGender;
-  plural?: string | null;
-  productiveReceptive: DbVocabularyProductiveReceptive;
-  tier: DbVocabularyTier;
-  themeKey?: string | null;
-  topicKey?: string | null;
-  categoryKey?: string | null;
-  subcategoryKey?: string | null;
-  aspect: DbVocabularyAspect;
-  caseGoverned?: string | null;
-  isReflexive: boolean;
-  notes?: string | null;
-  exampleRu?: string | null;
-  exampleEn?: string | null;
-  audioPath?: string | null;
-  sourceSectionRef?: string | null;
-  position: number;
-};
-
-export type VocabularyManifestValidationIssue = {
-  path: string;
-  message: string;
-};
-
-export type VocabularyManifestValidationResult = {
-  valid: boolean;
-  issues: VocabularyManifestValidationIssue[];
-  summary: {
-    setCount: number;
-    listCount: number;
-    itemCount: number;
-  };
-};
-
-const REVIEW_STATUSES = ["draft", "reviewed", "approved"] as const;
-const TIERS = ["foundation", "higher", "both", "unknown"] as const;
-const LIST_MODES = ["spec_only", "extended_only", "spec_and_extended", "custom"] as const;
-const SET_TYPES = [
-  "specification",
-  "core",
-  "theme",
-  "phrase_bank",
-  "exam_prep",
-  "lesson_custom",
-] as const;
-const DISPLAY_VARIANTS = ["single_column", "two_column", "compact_cards"] as const;
-const ITEM_TYPES = ["word", "phrase"] as const;
-const SOURCE_TYPES = ["spec_required", "extended", "custom"] as const;
-const PRIORITIES = ["core", "extension"] as const;
-const PARTS_OF_SPEECH = [
-  "noun",
-  "verb",
-  "adjective",
-  "adverb",
-  "pronoun",
-  "preposition",
-  "conjunction",
-  "number",
-  "phrase",
-  "interjection",
-  "other",
-  "unknown",
-] as const;
-const GENDERS = [
-  "masculine",
-  "feminine",
-  "neuter",
-  "plural_only",
-  "common",
-  "not_applicable",
-  "unknown",
-] as const;
-const PRODUCTIVE_RECEPTIVE = ["productive", "receptive", "both", "unknown"] as const;
-const ASPECTS = ["perfective", "imperfective", "both", "not_applicable", "unknown"] as const;
+export type {
+  VocabularyImportManifest,
+  VocabularyManifestItem,
+  VocabularyManifestList,
+  VocabularyManifestReviewStatus,
+  VocabularyManifestSet,
+  VocabularyManifestValidationIssue,
+  VocabularyManifestValidationResult,
+} from "./import-manifest-types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
@@ -397,3 +283,4 @@ export function validateVocabularyImportManifest(
     },
   };
 }
+
