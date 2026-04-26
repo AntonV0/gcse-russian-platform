@@ -39,39 +39,39 @@ export default function MarketingFaqPage() {
       <JsonLd data={buildFaqJsonLd(faqs)} />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/" },
+          { label: "Home", href: "/marketing" },
           { label: "FAQ", href: "/faq" },
         ]}
       />
       <div className="space-y-8 py-8 md:py-12">
-      <PageIntroPanel
-        tone="neutral"
-        eyebrow="FAQ"
-        title="Common questions"
-        description="A small starter FAQ for the public site. This can grow into a fuller SEO and support section later."
-        badges={
-          <Badge tone="muted" icon="info">
-            Public site scaffold
-          </Badge>
-        }
-        actions={
-          <Button href="/signup" variant="primary" icon="create">
-            Start trial
-          </Button>
-        }
-      />
+        <PageIntroPanel
+          tone="neutral"
+          eyebrow="FAQ"
+          title="Common questions"
+          description="A small starter FAQ for the public site. This can grow into a fuller SEO and support section later."
+          badges={
+            <Badge tone="muted" icon="info">
+              Public site scaffold
+            </Badge>
+          }
+          actions={
+            <Button href="/signup" variant="primary" icon="create">
+              Start trial
+            </Button>
+          }
+        />
 
-      <section className="grid gap-4">
-        {faqs.map((item) => (
-          <SectionCard
-            key={item.question}
-            title={item.question}
-            description={item.answer}
-            tone="muted"
-            density="compact"
-          />
-        ))}
-      </section>
+        <section className="grid gap-4">
+          {faqs.map((item) => (
+            <SectionCard
+              key={item.question}
+              title={item.question}
+              description={item.answer}
+              tone="muted"
+              density="compact"
+            />
+          ))}
+        </section>
       </div>
     </>
   );

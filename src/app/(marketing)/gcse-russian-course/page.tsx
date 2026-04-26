@@ -96,13 +96,15 @@ const relatedLinks = [
   },
   {
     title: "GCSE Russian Higher tier",
-    description: "See how Higher tier preparation uses range, accuracy, and exam technique.",
+    description:
+      "See how Higher tier preparation uses range, accuracy, and exam technique.",
     href: "/gcse-russian-higher-tier",
     icon: "layers" as const,
   },
   {
     title: "Russian GCSE private candidate guide",
-    description: "Learn how the course can support students arranging their own exam entry.",
+    description:
+      "Learn how the course can support students arranging their own exam entry.",
     href: "/russian-gcse-private-candidate",
     icon: "userCheck" as const,
   },
@@ -121,7 +123,7 @@ export default function GcseRussianCoursePage() {
       />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/" },
+          { label: "Home", href: "/marketing" },
           { label: "Course", href: "/gcse-russian-course" },
         ]}
       />

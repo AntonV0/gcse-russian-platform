@@ -121,7 +121,7 @@ export default async function MarketingPricingPage() {
       />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/" },
+          { label: "Home", href: "/marketing" },
           { label: "Pricing", href: "/pricing" },
         ]}
       />
