@@ -81,6 +81,19 @@ function normalizeRecord(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
+const MOCK_EXAM_SET_SELECT =
+  "id, title, slug, description, paper_number, paper_name, tier, time_limit_minutes, total_marks, is_published, sort_order, is_trial_visible, requires_paid_access, available_in_volna, created_at, updated_at";
+const MOCK_EXAM_SECTION_SELECT =
+  "id, mock_exam_id, title, instructions, section_type, sort_order, created_at, updated_at";
+const MOCK_EXAM_QUESTION_SELECT =
+  "id, section_id, question_type, prompt, data, marks, sort_order, created_at, updated_at";
+const MOCK_EXAM_ATTEMPT_SELECT =
+  "id, mock_exam_id, user_id, status, started_at, submitted_at, time_limit_minutes_snapshot, total_marks_snapshot, awarded_marks, feedback, created_at, updated_at";
+const MOCK_EXAM_RESPONSE_SELECT =
+  "id, attempt_id, question_id, response_text, response_payload, awarded_marks, feedback, is_flagged, created_at, updated_at";
+const MOCK_EXAM_SCORE_SELECT =
+  "id, attempt_id, total_marks, awarded_marks, score_payload, feedback, marked_by, marked_at, created_at, updated_at";
+
 const studentHiddenQuestionDataKeys = new Set([
   "acceptedAnswers",
   "answers",
@@ -326,7 +339,7 @@ export async function getMockExamSetsDb(filters?: MockExamFilters) {
 
   const { data, error } = await supabase
     .from("mock_exam_sets")
-    .select("*")
+    .select(MOCK_EXAM_SET_SELECT)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
 
@@ -343,7 +356,7 @@ export async function getPublishedMockExamSetsDb(filters?: MockExamFilters) {
 
   const { data, error } = await supabase
     .from("mock_exam_sets")
-    .select("*")
+    .select(MOCK_EXAM_SET_SELECT)
     .eq("is_published", true)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
@@ -364,7 +377,7 @@ export async function getMockExamSetByIdDb(mockExamId: string) {
 
   const { data, error } = await supabase
     .from("mock_exam_sets")
-    .select("*")
+    .select(MOCK_EXAM_SET_SELECT)
     .eq("id", mockExamId)
     .maybeSingle();
 
@@ -381,7 +394,7 @@ export async function getMockExamSetBySlugDb(mockExamSlug: string) {
 
   const { data, error } = await supabase
     .from("mock_exam_sets")
-    .select("*")
+    .select(MOCK_EXAM_SET_SELECT)
     .eq("slug", mockExamSlug)
     .maybeSingle();
 
@@ -398,7 +411,7 @@ export async function getMockExamSectionsDb(mockExamId: string) {
 
   const { data, error } = await supabase
     .from("mock_exam_sections")
-    .select("*")
+    .select(MOCK_EXAM_SECTION_SELECT)
     .eq("mock_exam_id", mockExamId)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
@@ -418,7 +431,7 @@ export async function getMockExamQuestionsBySectionIdsDb(sectionIds: string[]) {
 
   const { data, error } = await supabase
     .from("mock_exam_questions")
-    .select("*")
+    .select(MOCK_EXAM_QUESTION_SELECT)
     .in("section_id", sectionIds)
     .order("sort_order", { ascending: true });
 
@@ -484,7 +497,7 @@ export async function getMockExamAttemptByIdDb(attemptId: string) {
 
   const { data, error } = await supabase
     .from("mock_exam_attempts")
-    .select("*")
+    .select(MOCK_EXAM_ATTEMPT_SELECT)
     .eq("id", attemptId)
     .maybeSingle();
 
@@ -501,7 +514,7 @@ export async function getMockExamResponsesByAttemptIdDb(attemptId: string) {
 
   const { data, error } = await supabase
     .from("mock_exam_responses")
-    .select("*")
+    .select(MOCK_EXAM_RESPONSE_SELECT)
     .eq("attempt_id", attemptId);
 
   if (error) {
@@ -517,7 +530,7 @@ export async function getMockExamScoreByAttemptIdDb(attemptId: string) {
 
   const { data, error } = await supabase
     .from("mock_exam_scores")
-    .select("*")
+    .select(MOCK_EXAM_SCORE_SELECT)
     .eq("attempt_id", attemptId)
     .maybeSingle();
 
@@ -554,7 +567,7 @@ export async function getCurrentUserMockExamAttemptsDb(
 
   const { data, error } = await supabase
     .from("mock_exam_attempts")
-    .select("*")
+    .select(MOCK_EXAM_ATTEMPT_SELECT)
     .eq("mock_exam_id", mockExamId)
     .eq("user_id", userId)
     .order("started_at", { ascending: false });
@@ -576,7 +589,7 @@ export async function getMockExamAttemptsForAdminReviewDb() {
 
   const { data, error } = await supabase
     .from("mock_exam_attempts")
-    .select("*")
+    .select(MOCK_EXAM_ATTEMPT_SELECT)
     .order("started_at", { ascending: false });
 
   if (error) {
