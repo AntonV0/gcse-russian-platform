@@ -65,6 +65,12 @@ const guideLinks = [
     icon: "exam" as const,
   },
   {
+    title: "GCSE Russian revision guide",
+    description: "Build a practical revision plan across vocabulary, grammar, and exam papers.",
+    href: "/marketing/gcse-russian-revision",
+    icon: "calendar" as const,
+  },
+  {
     title: "Russian GCSE private candidates",
     description: "Plan preparation for students arranging their own exam entry.",
     href: "/marketing/russian-gcse-private-candidate",
@@ -75,6 +81,12 @@ const guideLinks = [
     description: "Explore teacher-supported learning alongside the course platform.",
     href: "/marketing/online-gcse-russian-lessons",
     icon: "school" as const,
+  },
+  {
+    title: "GCSE Russian guide for parents",
+    description: "Understand course support, private entry, revision, and trial access.",
+    href: "/marketing/gcse-russian-for-parents",
+    icon: "users" as const,
   },
 ];
 
