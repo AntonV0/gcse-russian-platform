@@ -262,6 +262,26 @@ export default function AdminLessonBuilderWorkspace({
         />
       ) : null}
 
+      <section className="app-card border-[var(--warning-border)] bg-[var(--warning-surface)] p-4 lg:hidden">
+        <div className="space-y-2">
+          <Badge tone="warning" icon="warning">
+            Best on tablet or desktop
+          </Badge>
+          <div>
+            <Heading
+              level={2}
+              className="text-sm font-semibold text-[var(--warning-text-strong)]"
+            >
+              Lesson authoring needs extra room
+            </Heading>
+            <p className="mt-1 text-sm text-[var(--warning-text)]">
+              The builder remains available on this screen, but section ordering,
+              block editing, and inspector controls are easier with a wider workspace.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="grid gap-3 md:grid-cols-2">
         <CompactBuilderStat
           label="Sections"

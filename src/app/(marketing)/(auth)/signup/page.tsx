@@ -38,6 +38,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               id="fullName"
               name="fullName"
               type="text"
+              autoComplete="name"
               required
               className="app-form-control app-form-input"
             />
@@ -51,6 +52,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               id="email"
               name="email"
               type="email"
+              autoComplete="email"
               required
               className="app-form-control app-form-input"
             />
@@ -64,6 +66,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               id="password"
               name="password"
               type="password"
+              autoComplete="new-password"
               required
               className="app-form-control app-form-input"
             />

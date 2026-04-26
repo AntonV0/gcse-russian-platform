@@ -196,6 +196,9 @@ export default function PlatformSidebar({
                 );
               })}
             </div>
+            <div className="mt-3 px-1">
+              <LogoutButton />
+            </div>
           </div>
         </nav>
       </div>
