@@ -1,5 +1,3 @@
-"use client";
-
 import Badge from "@/components/ui/badge";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
