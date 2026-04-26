@@ -179,11 +179,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                    <h3 className="app-heading-subsection">
                       {variant.title}
                     </h3>
 
-                    <p className="text-sm app-text-muted">
+                    <p className="app-text-body-muted">
                       {variant.description ??
                         "Open this path to view modules and continue learning."}
                     </p>

@@ -78,9 +78,9 @@ export default async function CoursesPage() {
               <Link key={course.id} href={`/courses/${course.slug}`}>
                 <DashboardCard className="h-full transition hover:scale-[1.01]">
                   <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">{course.title}</h3>
+                    <h3 className="app-heading-subsection">{course.title}</h3>
 
-                    <p className="text-sm app-text-muted">
+                    <p className="app-text-body-muted">
                       {course.description || "Start learning this course."}
                     </p>
 
