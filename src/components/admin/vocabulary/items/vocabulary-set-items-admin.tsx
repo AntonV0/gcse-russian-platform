@@ -113,10 +113,10 @@ export default function VocabularySetItemsAdmin({
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+              <h2 className="app-heading-section">
                 {vocabularySet.title}
               </h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-2 max-w-3xl app-text-body-muted">
                 {vocabularySet.description || "No description yet."}
               </p>
             </div>
@@ -167,17 +167,17 @@ export default function VocabularySetItemsAdmin({
 
       <section className="app-surface app-section-padding">
         <div className="mb-5 flex flex-col gap-2">
-          <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+          <h2 className="app-heading-subsection">
             Current items
           </h2>
-          <p className="text-sm leading-6 text-[var(--text-secondary)]">
+          <p className="app-text-body-muted">
             Items are collapsed by default so long sets stay scannable. Open one item when
             you need detailed editing.
           </p>
         </div>
 
         {items.length === 0 ? (
-          <div className="rounded-[1.4rem] border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-5 py-8 text-sm text-[var(--text-secondary)]">
+          <div className="rounded-[1.4rem] border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-5 py-8 app-text-body-muted">
             No items in this set yet. Use quick add or bulk add above to create the first
             entries.
           </div>
@@ -186,10 +186,10 @@ export default function VocabularySetItemsAdmin({
             {itemSections.map((section) => (
               <section key={section.key} className="space-y-4">
                 <div>
-                  <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                  <h3 className="app-heading-card">
                     {section.title}
                   </h3>
-                  <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                  <p className="mt-1 app-text-caption">
                     {section.description}
                   </p>
                 </div>

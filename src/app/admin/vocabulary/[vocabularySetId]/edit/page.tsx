@@ -7,37 +7,12 @@ import Input from "@/components/ui/input";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
+import {
+  VocabularyAdminFormField as FormField,
+  VocabularyAdminStatTile,
+} from "@/components/admin/vocabulary/items/primitives";
 import { updateVocabularySetAction } from "@/app/actions/admin/admin-vocabulary-actions";
 import { loadVocabularySetByIdDb } from "@/lib/vocabulary/vocabulary-helpers-db";
-
-function FormField({
-  label,
-  htmlFor,
-  hint,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <label
-        htmlFor={htmlFor}
-        className="block text-sm font-semibold text-[var(--text-primary)]"
-      >
-        {label}
-      </label>
-
-      {hint ? (
-        <p className="text-sm leading-6 text-[var(--text-secondary)]">{hint}</p>
-      ) : null}
-
-      {children}
-    </div>
-  );
-}
 
 function ToggleField({
   name,
@@ -96,10 +71,10 @@ export default async function EditVocabularySetPage({
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+              <h2 className="app-heading-section">
                 {vocabularySet.title}
               </h2>
-              <p className="max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="max-w-3xl app-text-body-muted">
                 Update the set metadata now. Item management can be added next as its own
                 dedicated flow.
               </p>
@@ -123,10 +98,10 @@ export default async function EditVocabularySetPage({
         <div className="space-y-4">
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-subsection">
                 Core details
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-2 app-text-body-muted">
                 Update the main metadata used by admin and future student-facing tools.
               </p>
             </div>
@@ -194,10 +169,10 @@ export default async function EditVocabularySetPage({
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-subsection">
                 Vocabulary settings
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-2 app-text-body-muted">
                 Control set structure, display defaults, and classification.
               </p>
             </div>
@@ -252,10 +227,10 @@ export default async function EditVocabularySetPage({
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-subsection">
                 Import metadata
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-2 app-text-body-muted">
                 Stable source metadata for repeatable manifest imports.
               </p>
             </div>
@@ -291,7 +266,7 @@ export default async function EditVocabularySetPage({
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-subsection">
                 Publication
               </h2>
             </div>
@@ -310,41 +285,29 @@ export default async function EditVocabularySetPage({
         <div className="space-y-4">
           <section className="app-surface app-section-padding">
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-card">
                 Current stats
               </h2>
 
               <div className="grid gap-3">
-                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.12em] app-text-soft">
-                    Items
-                  </div>
-                  <div className="mt-1 text-lg font-semibold text-[var(--text-primary)]">
-                    {items.length}
-                  </div>
-                </div>
+                <VocabularyAdminStatTile label="Items" value={items.length} />
+                <VocabularyAdminStatTile
+                  label="Total usage"
+                  value={usageStats.totalOccurrences}
+                />
 
                 <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.12em] app-text-soft">
-                    Total usage
-                  </div>
-                  <div className="mt-1 text-lg font-semibold text-[var(--text-primary)]">
-                    {usageStats.totalOccurrences}
-                  </div>
-                </div>
-
-                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.12em] app-text-soft">
+                  <div className="app-text-meta">
                     Variant usage
                   </div>
                   <div className="mt-3 space-y-2">
-                    <div className="text-sm text-[var(--text-secondary)]">
+                    <div className="app-text-caption">
                       Foundation: {usageStats.foundationOccurrences}
                     </div>
-                    <div className="text-sm text-[var(--text-secondary)]">
+                    <div className="app-text-caption">
                       Higher: {usageStats.higherOccurrences}
                     </div>
-                    <div className="text-sm text-[var(--text-secondary)]">
+                    <div className="app-text-caption">
                       Volna: {usageStats.volnaOccurrences}
                     </div>
                   </div>

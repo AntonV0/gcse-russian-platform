@@ -205,10 +205,10 @@ export default function VocabularyItemEditForm({
                 className="mt-1"
               />
               <span>
-                <span className="block text-sm font-semibold text-[var(--text-primary)]">
+                <span className="block app-label">
                   Reflexive verb
                 </span>
-                <span className="mt-1 block text-sm text-[var(--text-secondary)]">
+                <span className="mt-1 block app-text-caption">
                   Mark words such as заниматься or учиться.
                 </span>
               </span>

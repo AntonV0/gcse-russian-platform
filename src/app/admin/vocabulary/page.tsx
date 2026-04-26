@@ -249,13 +249,13 @@ export default async function AdminVocabularyPage({
                 <DataTableRow key={vocabularySet.id}>
                   <DataTableCell>
                     <div className="space-y-1">
-                      <div className="font-semibold text-[var(--text-primary)]">
+                      <div className="app-heading-card">
                         {vocabularySet.title}
                       </div>
-                      <div className="text-xs text-[var(--text-secondary)]">
+                      <div className="app-text-caption">
                         {vocabularySet.slug ?? vocabularySet.id}
                       </div>
-                      <div className="max-w-md text-sm text-[var(--text-secondary)]">
+                      <div className="max-w-md app-text-body-muted">
                         {vocabularySet.description ?? "No description yet."}
                       </div>
                       <div className="flex flex-wrap gap-2 pt-1">
@@ -282,10 +282,10 @@ export default async function AdminVocabularyPage({
                   </DataTableCell>
 
                   <DataTableCell>
-                    <div className="font-semibold text-[var(--text-primary)]">
+                    <div className="font-semibold app-text-detail">
                       {vocabularySet.item_count}
                     </div>
-                    <div className="text-xs text-[var(--text-secondary)]">
+                    <div className="app-text-caption">
                       {vocabularySet.list_count} list
                       {vocabularySet.list_count === 1 ? "" : "s"}
                     </div>

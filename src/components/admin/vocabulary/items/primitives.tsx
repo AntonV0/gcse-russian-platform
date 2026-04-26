@@ -13,16 +13,11 @@ export function VocabularyAdminFormField({
 }) {
   return (
     <div className="space-y-2">
-      <label
-        htmlFor={htmlFor}
-        className="block text-sm font-semibold text-[var(--text-primary)]"
-      >
+      <label htmlFor={htmlFor} className="block app-label">
         {label}
       </label>
 
-      {hint ? (
-        <p className="text-sm leading-6 text-[var(--text-secondary)]">{hint}</p>
-      ) : null}
+      {hint ? <p className="app-text-body-muted">{hint}</p> : null}
 
       {children}
     </div>
@@ -38,10 +33,10 @@ export function VocabularyAdminStatTile({
 }) {
   return (
     <div className="rounded-2xl bg-[var(--background-muted)] px-4 py-3">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] app-text-soft">
+      <div className="app-text-meta">
         {label}
       </div>
-      <div className="mt-1.5 text-base font-semibold text-[var(--text-primary)]">
+      <div className="mt-1.5 font-semibold app-text-detail">
         {value}
       </div>
     </div>
@@ -66,19 +61,19 @@ export function VocabularyAdminDisclosurePanel({
     >
       <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-3">
         <span>
-          <span className="block text-sm font-semibold text-[var(--text-primary)]">
+          <span className="block app-heading-card">
             {title}
           </span>
           {description ? (
-            <span className="mt-1 block text-sm leading-6 text-[var(--text-secondary)]">
+            <span className="mt-1 block app-text-body-muted">
               {description}
             </span>
           ) : null}
         </span>
-        <span className="text-sm font-semibold text-[var(--text-secondary)] group-open:hidden">
+        <span className="font-semibold app-text-caption group-open:hidden">
           Open
         </span>
-        <span className="hidden text-sm font-semibold text-[var(--text-secondary)] group-open:inline">
+        <span className="hidden font-semibold app-text-caption group-open:inline">
           Close
         </span>
       </summary>
