@@ -15,7 +15,7 @@ import {
 } from "@/lib/courses/course-helpers-db";
 import { getLessonSectionsWithBlocksDb } from "@/lib/lessons/lesson-admin-helpers-db";
 import { getLessonBuilderTemplateOptionsDb } from "@/lib/lessons/lesson-template-helpers-db";
-import { getVocabularySetsDb } from "@/lib/vocabulary/vocabulary-helpers-db";
+import { getVocabularySetOptionsDb } from "@/lib/vocabulary/vocabulary-helpers-db";
 
 type AdminLessonDetailPageProps = {
   params: Promise<{
@@ -89,26 +89,17 @@ export default async function AdminLessonDetailPage({
   const [sections, templateOptions, vocabularySets] = await Promise.all([
     getLessonSectionsWithBlocksDb(lesson.id),
     getLessonBuilderTemplateOptionsDb(),
-    getVocabularySetsDb(),
+    getVocabularySetOptionsDb(),
   ]);
 
-  const vocabularySetOptions = vocabularySets
-    .filter((set) => typeof set.slug === "string" && set.slug.trim().length > 0)
-    .sort((a, b) => {
-      if (a.is_published !== b.is_published) {
-        return a.is_published ? -1 : 1;
-      }
-
-      return a.title.localeCompare(b.title);
-    })
-    .map((set) => ({
-      id: set.id,
-      title: set.title,
-      slug: set.slug as string,
-      isPublished: set.is_published,
-      tier: set.tier,
-      listMode: set.list_mode,
-    }));
+  const vocabularySetOptions = vocabularySets.map((set) => ({
+    id: set.id,
+    title: set.title,
+    slug: set.slug as string,
+    isPublished: set.is_published,
+    tier: set.tier,
+    listMode: set.list_mode,
+  }));
 
   return (
     <main className="space-y-3">

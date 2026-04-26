@@ -221,6 +221,11 @@ export type DbVocabularySetListItem = DbVocabularySet & {
   coverage_summary: DbVocabularySetCoverageSummary;
 };
 
+export type DbVocabularySetOption = Pick<
+  DbVocabularySet,
+  "id" | "title" | "slug" | "is_published" | "tier" | "list_mode" | "sort_order"
+>;
+
 export type LoadedVocabularySetDetailDb = {
   vocabularySet: DbVocabularySet | null;
   vocabularyList: DbVocabularyList | null;
@@ -1457,6 +1462,39 @@ export async function getVocabularySetsDb(options?: {
 
 export async function getPublishedVocabularySetsDb(filters?: VocabularySetFilters) {
   return getVocabularySetsDb({ publishedOnly: true, filters });
+}
+
+export async function getVocabularySetOptionsDb(options?: {
+  publishedOnly?: boolean;
+}) {
+  const supabase = await createClient();
+  const data = await fetchSupabasePages<DbVocabularySetOption>({
+    queryFactory: () => {
+      let query = supabase
+        .from("vocabulary_sets")
+        .select("id, title, slug, is_published, tier, list_mode, sort_order")
+        .order("sort_order", { ascending: true })
+        .order("title", { ascending: true });
+
+      if (options?.publishedOnly) {
+        query = query.eq("is_published", true);
+      }
+
+      return query;
+    },
+    errorMessage: "Error fetching vocabulary set options:",
+    errorContext: { options },
+  });
+
+  return data
+    .filter((set) => typeof set.slug === "string" && set.slug.trim().length > 0)
+    .sort((a, b) => {
+      if (a.is_published !== b.is_published) {
+        return a.is_published ? -1 : 1;
+      }
+
+      return a.title.localeCompare(b.title);
+    });
 }
 
 export async function getVocabularySetThemeKeysDb(options?: {
