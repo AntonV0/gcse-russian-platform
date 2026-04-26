@@ -64,7 +64,7 @@ function BlockIconButton({
       disabled={disabled}
       variant="secondary"
       size="sm"
-      className="h-7 w-7 rounded-lg"
+      className="h-10 w-10 rounded-lg sm:h-8 sm:w-8"
     />
   );
 }
@@ -179,7 +179,7 @@ export default function DraggableBlockList(props: {
               isPending ? "opacity-70" : "",
             ].join(" ")}
           >
-            <div className="flex items-start gap-2 px-3 py-2.5">
+            <div className="flex flex-col items-start gap-3 px-3 py-3 sm:flex-row sm:gap-2 sm:py-2.5">
               <button
                 type="button"
                 onClick={() => props.onSelectBlock(isSelected ? null : block.id)}
@@ -216,7 +216,7 @@ export default function DraggableBlockList(props: {
                 </div>
               </button>
 
-              <div className="grid shrink-0 grid-cols-2 gap-1.5 self-start">
+              <div className="grid w-full shrink-0 grid-cols-4 gap-1.5 self-start sm:w-auto sm:grid-cols-2">
                 <form action={duplicateBlockAction}>
                   <BuilderHiddenFields {...props.routeFields} />
                   <input type="hidden" name="sectionId" value={props.section.id} />

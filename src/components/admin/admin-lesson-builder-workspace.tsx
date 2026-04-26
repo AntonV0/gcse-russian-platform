@@ -228,15 +228,15 @@ export default function AdminLessonBuilderWorkspace({
 
   const layoutClass = (() => {
     if (isSidebarOpen && isInspectorOpen) {
-      return "2xl:grid-cols-[320px_minmax(0,1fr)_300px] xl:grid-cols-[300px_minmax(0,1fr)_280px]";
+      return "lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)_280px] 2xl:grid-cols-[320px_minmax(0,1fr)_300px]";
     }
 
     if (isSidebarOpen && !isInspectorOpen) {
-      return "xl:grid-cols-[320px_minmax(0,1fr)]";
+      return "lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]";
     }
 
     if (!isSidebarOpen && isInspectorOpen) {
-      return "xl:grid-cols-[minmax(0,1fr)_300px]";
+      return "lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px]";
     }
 
     return "xl:grid-cols-[minmax(0,1fr)]";
@@ -359,7 +359,7 @@ export default function AdminLessonBuilderWorkspace({
         </div>
       </CompactDisclosure>
 
-      <section className="app-surface sticky z-10 p-4 backdrop-blur-md top-[calc(var(--site-header-height)+12px)]">
+      <section className="app-surface z-10 p-4 backdrop-blur-md lg:sticky lg:top-[calc(var(--site-header-height)+12px)]">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0">
             <div className="text-sm font-semibold text-[var(--text-primary)]">
@@ -377,7 +377,7 @@ export default function AdminLessonBuilderWorkspace({
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="app-mobile-action-stack flex flex-wrap gap-2">
             <ToolbarButton
               onClick={() => setIsSidebarOpen((value) => !value)}
               isActive={isSidebarOpen}
@@ -410,7 +410,7 @@ export default function AdminLessonBuilderWorkspace({
 
       <section className={`grid items-start gap-4 ${layoutClass}`}>
         {isSidebarOpen ? (
-          <aside className="min-w-0 xl:sticky xl:top-[calc(var(--site-header-height)+84px)] xl:self-start">
+          <aside className="min-w-0 lg:sticky lg:top-[calc(var(--site-header-height)+84px)] lg:self-start">
             <div className="app-card p-4">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Sections</p>
@@ -460,7 +460,14 @@ export default function AdminLessonBuilderWorkspace({
         </div>
 
         {isInspectorOpen ? (
-          <aside className="min-w-0 xl:sticky xl:top-[calc(var(--site-header-height)+84px)] xl:self-start">
+          <aside
+            className={[
+              "min-w-0 lg:sticky lg:top-[calc(var(--site-header-height)+84px)] lg:self-start",
+              isSidebarOpen && isInspectorOpen ? "lg:col-span-2 xl:col-span-1" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
             <div className="app-card p-4">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Inspector</p>
