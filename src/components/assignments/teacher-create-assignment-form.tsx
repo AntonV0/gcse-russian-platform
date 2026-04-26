@@ -306,7 +306,7 @@ export default function TeacherCreateAssignmentForm({
         tone="default"
         contentClassName="space-y-6"
       >
-        <div className="flex justify-end">
+        <div className="app-mobile-action-stack flex justify-end">
         <Button href="/teacher/assignments" variant="quiet" size="sm" icon="back">
           Back to assignments
         </Button>
@@ -377,7 +377,7 @@ export default function TeacherCreateAssignmentForm({
             {availableLessons.map((lesson) => (
               <label
                 key={lesson.id}
-                className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 transition hover:border-[var(--border-strong)]"
+                className="flex min-h-11 cursor-pointer items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 transition hover:border-[var(--border-strong)]"
               >
                 <input
                   type="checkbox"
@@ -413,7 +413,7 @@ export default function TeacherCreateAssignmentForm({
             {questionSets.map((questionSet) => (
               <label
                 key={questionSet.id}
-                className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 transition hover:border-[var(--border-strong)]"
+                className="flex min-h-11 cursor-pointer items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 transition hover:border-[var(--border-strong)]"
               >
                 <input
                   type="checkbox"
@@ -463,7 +463,7 @@ export default function TeacherCreateAssignmentForm({
               return (
                 <div
                   key={`${item.type}-${index}`}
-                  className="flex items-start justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 text-sm"
+                  className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 text-sm sm:flex-row"
                 >
                   <div>
                     <p className="font-medium text-[var(--text-primary)]">
@@ -474,7 +474,7 @@ export default function TeacherCreateAssignmentForm({
                     ) : null}
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div className="app-mobile-action-stack flex w-full flex-wrap gap-2 sm:w-auto">
                     <Button
                       type="button"
                       onClick={() => moveItem(index, "up")}
@@ -515,7 +515,7 @@ export default function TeacherCreateAssignmentForm({
 
         {error ? <FeedbackBanner tone="danger" description={error} /> : null}
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="app-mobile-action-stack flex flex-wrap items-center gap-3">
         <Button
           type="button"
           onClick={handleSubmit}

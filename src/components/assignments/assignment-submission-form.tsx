@@ -182,7 +182,7 @@ export default function AssignmentSubmissionForm({
               setSaved(false);
               setUploadError(null);
             }}
-            className="block w-full text-sm text-[var(--text-secondary)] disabled:opacity-50"
+            className="app-file-input"
           />
 
           {selectedFile ? (
@@ -205,18 +205,20 @@ export default function AssignmentSubmissionForm({
         <FeedbackBanner tone="danger" description={uploadError} />
       ) : null}
 
-      <Button
-        type="button"
-        onClick={handleSubmit}
-        disabled={isPending || !canSubmit || isLocked}
-        variant="primary"
-      >
-        {isPending
-          ? "Submitting..."
-          : initialValue || initialFilePath
-            ? "Update submission"
-            : "Submit homework"}
-      </Button>
+      <div className="app-mobile-action-stack flex">
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isPending || !canSubmit || isLocked}
+          variant="primary"
+        >
+          {isPending
+            ? "Submitting..."
+            : initialValue || initialFilePath
+              ? "Update submission"
+              : "Submit homework"}
+        </Button>
+      </div>
 
       {saved ? (
         <FeedbackBanner tone="success" description="Submission saved successfully." />

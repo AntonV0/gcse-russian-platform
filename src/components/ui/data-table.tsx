@@ -37,8 +37,8 @@ export function DataTable({ children, className }: DataTableProps) {
         />
       ) : null}
 
-      <div className="max-w-full overflow-x-auto overscroll-x-contain">
-        <table className="min-w-[640px] w-full border-collapse text-sm">
+      <div className="max-w-full overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
+        <table className="w-full min-w-[640px] border-collapse text-sm">
           {children}
         </table>
       </div>
@@ -88,7 +88,7 @@ export function DataTableHeaderCell({ children, className }: DataTableSectionPro
   return (
     <th
       className={[
-        "px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)] sm:px-5",
+        "whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)] sm:px-5",
         className,
       ]
         .filter(Boolean)
@@ -102,7 +102,7 @@ export function DataTableHeaderCell({ children, className }: DataTableSectionPro
 export function DataTableCell({ children, className }: DataTableSectionProps) {
   return (
     <td
-      className={["px-4 py-4 align-middle text-[var(--text-secondary)] sm:px-5", className]
+      className={["px-4 py-4 align-middle text-[var(--text-secondary)] sm:px-5 [overflow-wrap:anywhere]", className]
         .filter(Boolean)
         .join(" ")}
     >
@@ -118,7 +118,7 @@ export function DataTableCompactHeaderCell({
   return (
     <th
       className={[
-        "px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]",
+        "whitespace-nowrap px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]",
         className,
       ]
         .filter(Boolean)
@@ -132,7 +132,7 @@ export function DataTableCompactHeaderCell({
 export function DataTableCompactCell({ children, className }: DataTableSectionProps) {
   return (
     <td
-      className={["px-4 py-3 align-middle text-[var(--text-secondary)]", className]
+      className={["px-4 py-3 align-middle text-[var(--text-secondary)] [overflow-wrap:anywhere]", className]
         .filter(Boolean)
         .join(" ")}
     >

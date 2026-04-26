@@ -6,6 +6,7 @@ type InlineActionsProps = {
   children: React.ReactNode;
   className?: string;
   align?: "start" | "end" | "between";
+  stackOnMobile?: boolean;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -28,6 +29,7 @@ export default function InlineActions({
   children,
   className,
   align = "start",
+  stackOnMobile = false,
 }: InlineActionsProps) {
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
@@ -50,9 +52,12 @@ export default function InlineActions({
 
       <div
         className={[
+          stackOnMobile ? "app-mobile-action-stack" : "",
           "flex flex-wrap items-center gap-2 sm:gap-3",
           getAlignClass(align),
-        ].join(" ")}
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
         {children}
       </div>

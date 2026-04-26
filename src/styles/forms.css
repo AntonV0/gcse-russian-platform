@@ -199,6 +199,55 @@
   color: var(--text-secondary);
 }
 
+.app-file-input {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  border-radius: 1rem;
+  border: 1px solid var(--control-border);
+  background: var(--surface-raised-bg);
+  color: var(--text-secondary);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  box-shadow: var(--control-shadow);
+}
+
+.app-file-input::file-selector-button {
+  min-height: 2rem;
+  margin-right: 0.75rem;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: var(--background-muted);
+  color: var(--text-primary);
+  padding: 0.35rem 0.75rem;
+  font: inherit;
+  font-weight: 650;
+}
+
+.app-file-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 639px) {
+  .app-form-input,
+  .app-form-select,
+  .app-form-textarea,
+  .app-file-input {
+    font-size: 1rem;
+  }
+
+  .app-form-input,
+  .app-form-select {
+    min-height: 3rem;
+  }
+
+  .app-form-field {
+    min-width: 0;
+  }
+}
+
 [data-theme="dark"] .app-form-control {
   border-color: var(--control-border);
   background: linear-gradient(

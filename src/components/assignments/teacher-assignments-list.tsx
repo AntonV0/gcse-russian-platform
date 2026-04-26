@@ -181,8 +181,8 @@ export default function TeacherAssignmentsList({
 
       <PanelCard tone="student" density="compact">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end">
-          <FormField label="Filter">
+        <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-end">
+          <FormField label="Filter" className="w-full md:min-w-56">
             <Select
               value={filter}
               onChange={(e) => setFilter(e.target.value as TeacherFilterValue)}
@@ -198,7 +198,7 @@ export default function TeacherAssignmentsList({
             </Select>
           </FormField>
 
-          <FormField label="Sort by">
+          <FormField label="Sort by" className="w-full md:min-w-48">
             <Select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as TeacherSortValue)}
@@ -273,7 +273,7 @@ export default function TeacherAssignmentsList({
                     </>
                   }
                   actions={
-                    <InlineActions align="end">
+                    <InlineActions align="end" stackOnMobile>
                       <Badge tone={submissionCount > 0 ? "info" : "muted"} icon="upload">
                         {submissionCount} submitted
                       </Badge>
