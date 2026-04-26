@@ -1,4 +1,4 @@
-import type { MockExamQuestionType } from "@/lib/mock-exams/db";
+import type { MockExamQuestionType } from "@/lib/mock-exams/types";
 
 export const mockExamQuestionDataTemplates: Record<MockExamQuestionType, string> = {
   multiple_choice: JSON.stringify(
