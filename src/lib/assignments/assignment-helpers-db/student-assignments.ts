@@ -2,6 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { isCurrentUserAdminDb } from "./auth";
 import { getQuestionSetMetaByIdDb } from "./options";
+import {
+  ASSIGNMENT_ITEM_SELECT,
+  ASSIGNMENT_SELECT,
+  ASSIGNMENT_SUBMISSION_SELECT,
+} from "./types";
 import type {
   DbAssignment,
   DbAssignmentItem,
@@ -21,7 +26,7 @@ export async function getCurrentUserAssignmentsDb() {
   if (isAdmin) {
     const { data, error } = await supabase
       .from("assignments")
-      .select("*")
+      .select(ASSIGNMENT_SELECT)
       .order("due_at", { ascending: true });
 
     if (error) {
@@ -45,7 +50,7 @@ export async function getCurrentUserAssignmentsDb() {
 
   const { data, error } = await supabase
     .from("assignments")
-    .select("*")
+    .select(ASSIGNMENT_SELECT)
     .in("group_id", groupIds)
     .order("due_at", { ascending: true });
 
@@ -62,7 +67,7 @@ export async function getAssignmentItemsDb(assignmentId: string) {
 
   const { data, error } = await supabase
     .from("assignment_items")
-    .select("*")
+    .select(ASSIGNMENT_ITEM_SELECT)
     .eq("assignment_id", assignmentId)
     .order("position", { ascending: true });
 
@@ -83,7 +88,7 @@ export async function getCurrentUserAssignmentSubmissionDb(assignmentId: string)
 
   const { data, error } = await supabase
     .from("assignment_submissions")
-    .select("*")
+    .select(ASSIGNMENT_SUBMISSION_SELECT)
     .eq("assignment_id", assignmentId)
     .eq("student_user_id", user.id)
     .maybeSingle();

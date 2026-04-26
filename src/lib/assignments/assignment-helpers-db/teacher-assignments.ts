@@ -1,6 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { isCurrentUserAdminDb } from "./auth";
+import {
+  ASSIGNMENT_PROFILE_SELECT,
+  ASSIGNMENT_SELECT,
+  ASSIGNMENT_SUBMISSION_SELECT,
+} from "./types";
 import type {
   DbAssignment,
   DbAssignmentSubmission,
@@ -13,7 +18,7 @@ export async function getAssignmentByIdDb(assignmentId: string) {
 
   const { data, error } = await supabase
     .from("assignments")
-    .select("*")
+    .select(ASSIGNMENT_SELECT)
     .eq("id", assignmentId)
     .maybeSingle();
 
@@ -30,7 +35,7 @@ export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string)
 
   const { data, error } = await supabase
     .from("assignment_submissions")
-    .select("*")
+    .select(ASSIGNMENT_SUBMISSION_SELECT)
     .eq("assignment_id", assignmentId)
     .order("submitted_at", { ascending: false });
 
@@ -43,48 +48,41 @@ export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string)
   }
 
   const submissions = (data ?? []) as DbAssignmentSubmission[];
-
-  const detailed = await Promise.all(
-    submissions.map(async (submission) => {
-      const [
-        { data: student, error: studentError },
-        { data: reviewer, error: reviewerError },
-      ] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("id, full_name, display_name, email")
-          .eq("id", submission.student_user_id)
-          .maybeSingle(),
-        submission.reviewed_by
-          ? supabase
-              .from("profiles")
-              .select("id, full_name, display_name, email")
-              .eq("id", submission.reviewed_by)
-              .maybeSingle()
-          : Promise.resolve({ data: null, error: null }),
-      ]);
-
-      if (studentError) {
-        console.error("Error fetching student profile for submission:", {
-          submissionId: submission.id,
-          error: studentError,
-        });
-      }
-
-      if (reviewerError) {
-        console.error("Error fetching reviewer profile for submission:", {
-          submissionId: submission.id,
-          error: reviewerError,
-        });
-      }
-
-      return {
-        submission,
-        student: student ?? null,
-        reviewer: reviewer ?? null,
-      };
-    })
+  const profileIds = Array.from(
+    new Set(
+      submissions
+        .flatMap((submission) => [
+          submission.student_user_id,
+          submission.reviewed_by,
+        ])
+        .filter((profileId): profileId is string => Boolean(profileId))
+    )
   );
+
+  const { data: profiles, error: profileError } =
+    profileIds.length > 0
+      ? await supabase
+          .from("profiles")
+          .select(ASSIGNMENT_PROFILE_SELECT)
+          .in("id", profileIds)
+      : { data: [], error: null };
+
+  if (profileError) {
+    console.error("Error fetching profiles for assignment submissions:", {
+      assignmentId,
+      error: profileError,
+    });
+  }
+
+  const profilesById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+
+  const detailed = submissions.map((submission) => ({
+    submission,
+    student: profilesById.get(submission.student_user_id) ?? null,
+    reviewer: submission.reviewed_by
+      ? profilesById.get(submission.reviewed_by) ?? null
+      : null,
+  }));
 
   return detailed as TeacherSubmissionReviewCard[];
 }
@@ -103,7 +101,7 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
   if (isAdmin) {
     const { data, error } = await supabase
       .from("assignments")
-      .select("*")
+      .select(ASSIGNMENT_SELECT)
       .order("due_at", { ascending: true });
 
     if (error || !data) {
@@ -131,7 +129,7 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
 
     const { data, error: assignmentError } = await supabase
       .from("assignments")
-      .select("*")
+      .select(ASSIGNMENT_SELECT)
       .in("group_id", teacherGroupIds)
       .order("due_at", { ascending: true });
 
@@ -143,37 +141,43 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
     assignments = data as DbAssignment[];
   }
 
-  const results = await Promise.all(
-    assignments.map(async (assignment) => {
-      const [
-        { data: group },
-        { count: submissionCount },
-        { count: reviewedSubmissionCount },
-      ] = await Promise.all([
-        supabase
-          .from("teaching_groups")
-          .select("id, name")
-          .eq("id", assignment.group_id)
-          .maybeSingle(),
-        supabase
-          .from("assignment_submissions")
-          .select("*", { count: "exact", head: true })
-          .eq("assignment_id", assignment.id),
-        supabase
-          .from("assignment_submissions")
-          .select("*", { count: "exact", head: true })
-          .eq("assignment_id", assignment.id)
-          .eq("status", "reviewed"),
-      ]);
+  if (assignments.length === 0) {
+    return [];
+  }
 
-      return {
-        assignment,
-        group: group ?? null,
-        submissionCount: submissionCount ?? 0,
-        reviewedSubmissionCount: reviewedSubmissionCount ?? 0,
-      };
-    })
-  );
+  const groupIds = Array.from(new Set(assignments.map((assignment) => assignment.group_id)));
+  const assignmentIds = assignments.map((assignment) => assignment.id);
 
-  return results;
+  const [{ data: groups }, { data: submissions }] = await Promise.all([
+    supabase.from("teaching_groups").select("id, name").in("id", groupIds),
+    supabase
+      .from("assignment_submissions")
+      .select("assignment_id, status")
+      .in("assignment_id", assignmentIds),
+  ]);
+
+  const groupsById = new Map((groups ?? []).map((group) => [group.id, group]));
+  const submissionCounts = new Map<string, number>();
+  const reviewedSubmissionCounts = new Map<string, number>();
+
+  for (const submission of submissions ?? []) {
+    submissionCounts.set(
+      submission.assignment_id,
+      (submissionCounts.get(submission.assignment_id) ?? 0) + 1
+    );
+
+    if (submission.status === "reviewed") {
+      reviewedSubmissionCounts.set(
+        submission.assignment_id,
+        (reviewedSubmissionCounts.get(submission.assignment_id) ?? 0) + 1
+      );
+    }
+  }
+
+  return assignments.map((assignment) => ({
+    assignment,
+    group: groupsById.get(assignment.group_id) ?? null,
+    submissionCount: submissionCounts.get(assignment.id) ?? 0,
+    reviewedSubmissionCount: reviewedSubmissionCounts.get(assignment.id) ?? 0,
+  }));
 }
