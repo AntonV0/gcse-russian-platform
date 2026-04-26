@@ -50,7 +50,12 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
       case "vocabulary-set":
         return block.title
           ? joinPreview("Vocabulary set", block.title)
-          : joinPreview("Vocabulary set", block.vocabularySetSlug);
+          : joinPreview(
+              "Vocabulary set",
+              block.vocabularyListSlug
+                ? `${block.vocabularySetSlug} / ${block.vocabularyListSlug}`
+                : block.vocabularySetSlug
+            );
 
       case "question-set":
         return block.title
@@ -134,7 +139,13 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
         ? joinPreview("Vocabulary set", data.title)
         : typeof data.vocabularySetSlug === "string" &&
             data.vocabularySetSlug.trim().length > 0
-          ? joinPreview("Vocabulary set", data.vocabularySetSlug)
+          ? joinPreview(
+              "Vocabulary set",
+              typeof data.vocabularyListSlug === "string" &&
+                data.vocabularyListSlug.trim().length > 0
+                ? `${data.vocabularySetSlug} / ${data.vocabularyListSlug}`
+                : data.vocabularySetSlug
+            )
           : "Vocabulary set block";
 
     case "question-set":

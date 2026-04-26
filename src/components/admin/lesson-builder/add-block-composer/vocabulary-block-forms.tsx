@@ -69,10 +69,14 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
   const defaultData = getDefaultBlockData("vocabulary-set") as {
     title?: string;
     vocabularySetSlug?: string;
+    vocabularyListSlug?: string;
   };
 
   const [selectedSlug, setSelectedSlug] = useState<string>(
     props.vocabularySetOptions[0]?.slug ?? String(defaultData.vocabularySetSlug ?? "")
+  );
+  const [selectedListSlug, setSelectedListSlug] = useState<string>(
+    String(defaultData.vocabularyListSlug ?? "")
   );
 
   const selectedVocabularySet = useMemo(
@@ -112,7 +116,10 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
           name="vocabularySetSlug"
           required
           value={selectedSlug}
-          onChange={(event) => setSelectedSlug(event.target.value)}
+          onChange={(event) => {
+            setSelectedSlug(event.target.value);
+            setSelectedListSlug("");
+          }}
           className={BUILDER_SELECT_CLASS}
         >
           {props.vocabularySetOptions.map((option) => (
@@ -122,6 +129,23 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
             </option>
           ))}
         </select>
+
+        {selectedVocabularySet ? (
+          <select
+            name="vocabularyListSlug"
+            value={selectedListSlug}
+            onChange={(event) => setSelectedListSlug(event.target.value)}
+            className={BUILDER_SELECT_CLASS}
+          >
+            <option value="">All applicable lists for this course variant</option>
+            {selectedVocabularySet.lists.map((list) => (
+              <option key={list.id} value={list.slug}>
+                {list.title} - {list.slug}
+                {list.isPublished ? "" : " - draft"}
+              </option>
+            ))}
+          </select>
+        ) : null}
 
         {selectedVocabularySet ? (
           <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
@@ -141,6 +165,14 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
               <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
                 Mode: {selectedVocabularySet.listMode}
               </span>
+              {selectedListSlug ? (
+                <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
+                  List:{" "}
+                  {selectedVocabularySet.lists.find(
+                    (list) => list.slug === selectedListSlug
+                  )?.title ?? selectedListSlug}
+                </span>
+              ) : null}
             </div>
           </div>
         ) : null}

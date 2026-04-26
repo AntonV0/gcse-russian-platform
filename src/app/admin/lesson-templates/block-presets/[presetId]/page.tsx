@@ -249,6 +249,17 @@ function BlockFields({
               }
             />
           </FormField>
+          <FormField label="Vocabulary list slug">
+            <Input
+              name={name("vocabularyListSlug")}
+              placeholder="Optional specific list"
+              defaultValue={
+                typeof data?.vocabularyListSlug === "string"
+                  ? data.vocabularyListSlug
+                  : ""
+              }
+            />
+          </FormField>
         </div>
       );
 

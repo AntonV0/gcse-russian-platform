@@ -99,6 +99,14 @@ export default async function AdminLessonDetailPage({
     isPublished: set.is_published,
     tier: set.tier,
     listMode: set.list_mode,
+    lists: set.lists.map((list) => ({
+      id: list.id,
+      title: list.title,
+      slug: list.slug,
+      isPublished: list.is_published,
+      tier: list.tier,
+      listMode: list.list_mode,
+    })),
   }));
 
   return (

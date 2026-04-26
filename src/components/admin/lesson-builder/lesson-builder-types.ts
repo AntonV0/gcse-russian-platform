@@ -28,6 +28,14 @@ export type LessonBuilderVocabularySetOption = {
   isPublished: boolean;
   tier: string;
   listMode: string;
+  lists: {
+    id: string;
+    title: string;
+    slug: string;
+    isPublished: boolean;
+    tier: string;
+    listMode: string;
+  }[];
 };
 
 export type LessonSectionVariantVisibility =

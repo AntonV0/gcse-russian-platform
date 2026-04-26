@@ -17,6 +17,7 @@ import type { BlockEditorProps } from "./shared";
 type VocabularySetBlockEditorProps = BlockEditorProps & {
   defaultTitle: string;
   defaultSlug: string;
+  defaultListSlug: string;
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
 };
 
@@ -31,6 +32,9 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
       : `__missing__:${props.defaultSlug}`;
 
   const [selectedValue, setSelectedValue] = useState<string>(initialValue);
+  const [selectedListValue, setSelectedListValue] = useState<string>(
+    props.defaultListSlug
+  );
 
   const selectedVocabularySet = useMemo(() => {
     if (selectedValue.startsWith("__missing__:")) {
@@ -41,6 +45,14 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
       props.vocabularySetOptions.find((option) => option.slug === selectedValue) ?? null
     );
   }, [props.vocabularySetOptions, selectedValue]);
+  const selectedVocabularyList = selectedVocabularySet?.lists.find(
+    (list) => list.slug === selectedListValue
+  );
+  const hasMissingList =
+    Boolean(props.defaultListSlug) &&
+    selectedValue === props.defaultSlug &&
+    selectedListValue === props.defaultListSlug &&
+    !selectedVocabularyList;
 
   if (props.vocabularySetOptions.length === 0 && !props.defaultSlug) {
     return (
@@ -67,7 +79,10 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
         name="vocabularySetSlug"
         required
         value={selectedValue}
-        onChange={(event) => setSelectedValue(event.target.value)}
+        onChange={(event) => {
+          setSelectedValue(event.target.value);
+          setSelectedListValue("");
+        }}
         className={BUILDER_SELECT_CLASS}
       >
         {!hasMatchingOption && props.defaultSlug ? (
@@ -92,6 +107,35 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
       ) : null}
 
       {selectedVocabularySet ? (
+        <select
+          name="vocabularyListSlug"
+          value={selectedListValue}
+          onChange={(event) => setSelectedListValue(event.target.value)}
+          className={BUILDER_SELECT_CLASS}
+        >
+          <option value="">All applicable lists for this course variant</option>
+          {hasMissingList ? (
+            <option value={props.defaultListSlug}>
+              Missing list - {props.defaultListSlug}
+            </option>
+          ) : null}
+          {selectedVocabularySet.lists.map((list) => (
+            <option key={list.id} value={list.slug}>
+              {list.title} - {list.slug}
+              {list.isPublished ? "" : " - draft"}
+            </option>
+          ))}
+        </select>
+      ) : null}
+
+      {hasMissingList ? (
+        <div className="rounded-2xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] px-3 py-3 text-sm text-[var(--warning)]">
+          The currently linked vocabulary list slug no longer matches this set. Choose
+          another list or use the course-variant scope before saving.
+        </div>
+      ) : null}
+
+      {selectedVocabularySet ? (
         <div className={BUILDER_MUTED_INFO_BOX_CLASS}>
           <div className="font-medium text-[var(--text-primary)]">
             {selectedVocabularySet.title}
@@ -109,6 +153,11 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
             <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
               Mode: {selectedVocabularySet.listMode}
             </span>
+            {selectedVocabularyList ? (
+              <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
+                List: {selectedVocabularyList.title}
+              </span>
+            ) : null}
           </div>
         </div>
       ) : null}

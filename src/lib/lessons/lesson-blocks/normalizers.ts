@@ -106,9 +106,11 @@ export function normalizeQuestionSetBlockData(input: {
 export function normalizeVocabularySetBlockData(input: {
   title: unknown;
   vocabularySetSlug: unknown;
+  vocabularyListSlug?: unknown;
 }) {
   return {
     title: optionalString(input.title),
     vocabularySetSlug: requireString(input.vocabularySetSlug, "vocabularySetSlug"),
+    vocabularyListSlug: optionalString(input.vocabularyListSlug),
   };
 }

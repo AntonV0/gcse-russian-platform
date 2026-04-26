@@ -124,6 +124,7 @@ export function normalizeTemplateBlockData(
       return normalizeVocabularySetBlockData({
         title: getTrimmedString(formData, "title"),
         vocabularySetSlug: getTrimmedString(formData, "vocabularySetSlug"),
+        vocabularyListSlug: getTrimmedString(formData, "vocabularyListSlug"),
       });
 
     default:

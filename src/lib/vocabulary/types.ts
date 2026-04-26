@@ -237,10 +237,24 @@ export type DbVocabularySetListItem = DbVocabularySet & {
   coverage_summary: DbVocabularySetCoverageSummary;
 };
 
+export type DbVocabularySetOptionList = Pick<
+  DbVocabularyList,
+  | "id"
+  | "vocabulary_set_id"
+  | "title"
+  | "slug"
+  | "tier"
+  | "list_mode"
+  | "sort_order"
+  | "is_published"
+>;
+
 export type DbVocabularySetOption = Pick<
   DbVocabularySet,
   "id" | "title" | "slug" | "is_published" | "tier" | "list_mode" | "sort_order"
->;
+> & {
+  lists: DbVocabularySetOptionList[];
+};
 
 export type LoadedVocabularySetDetailDb = {
   vocabularySet: DbVocabularySet | null;
@@ -252,6 +266,7 @@ export type LoadedVocabularySetDetailDb = {
 
 export type VocabularySetLoadOptions = {
   scopeVariant?: DbVocabularyStudyVariant | "all" | null;
+  vocabularyListSlug?: string | null;
 };
 
 export type VocabularySetFilters = {

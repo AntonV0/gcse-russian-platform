@@ -95,6 +95,18 @@ export async function getVocabularyItemsBySetIdDb(
   options?: VocabularySetLoadOptions
 ) {
   const lists = await getVocabularyListsBySetIdDb(vocabularySetId);
+  const vocabularyListSlug = options?.vocabularyListSlug?.trim();
+
+  if (vocabularyListSlug) {
+    const explicitList = lists.find((list) => list.slug === vocabularyListSlug);
+
+    if (!explicitList) {
+      return [];
+    }
+
+    return getVocabularyItemsByListIdsDb([explicitList.id]);
+  }
+
   const scopedLists = filterVocabularyListsForStudyVariant(
     lists,
     options?.scopeVariant
