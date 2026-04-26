@@ -64,6 +64,8 @@ export type DbVocabularyUsageVariant = "foundation" | "higher" | "volna";
 
 export type DbVocabularyCoverageVariant = DbVocabularyUsageVariant;
 
+export type DbVocabularyStudyVariant = DbVocabularyUsageVariant;
+
 export type DbVocabularyUsageType =
   | "lesson_block"
   | "lesson_page"
@@ -202,6 +204,10 @@ export type DbVocabularySetUsageStats = {
 
 export type DbVocabularySetCoverageSummary = {
   totalItems: number;
+  foundationTotalItems: number;
+  higherTotalItems: number;
+  volnaTotalItems: number;
+  customListTotalItems: number;
   foundationUsedItems: number;
   higherUsedItems: number;
   volnaUsedItems: number;
@@ -221,6 +227,10 @@ export type LoadedVocabularySetDetailDb = {
   lists: DbVocabularyList[];
   items: DbVocabularyItem[];
   usageStats: DbVocabularySetUsageStats;
+};
+
+export type VocabularySetLoadOptions = {
+  scopeVariant?: DbVocabularyStudyVariant | "all" | null;
 };
 
 export type VocabularySetFilters = {
@@ -340,6 +350,76 @@ export function getRequiredVocabularyCoverageVariants(tier: DbVocabularyTier) {
   }
 
   return ["foundation", "higher", "volna"] as const;
+}
+
+export function getVocabularyListAppliesToStudyVariant(
+  listTier: DbVocabularyTier,
+  studyVariant: DbVocabularyStudyVariant
+) {
+  if (listTier === "both" || listTier === "unknown") {
+    return true;
+  }
+
+  if (studyVariant === "foundation") {
+    return listTier === "foundation";
+  }
+
+  return listTier === "foundation" || listTier === "higher";
+}
+
+export function getVocabularyItemAppliesToStudyVariant(
+  itemTier: DbVocabularyTier,
+  studyVariant: DbVocabularyStudyVariant
+) {
+  if (itemTier === "both" || itemTier === "unknown") {
+    return true;
+  }
+
+  if (studyVariant === "foundation") {
+    return itemTier === "foundation";
+  }
+
+  return itemTier === "foundation" || itemTier === "higher";
+}
+
+function filterVocabularyListsForStudyVariant(
+  lists: DbVocabularyList[],
+  studyVariant?: DbVocabularyStudyVariant | "all" | null
+) {
+  if (!studyVariant || studyVariant === "all") {
+    return lists;
+  }
+
+  return lists.filter((list) =>
+    getVocabularyListAppliesToStudyVariant(list.tier, studyVariant)
+  );
+}
+
+function getCoverageTotalItemIdsForVariant(params: {
+  lists: DbVocabularyList[];
+  listItems: Pick<DbVocabularyListItem, "vocabulary_list_id" | "vocabulary_item_id">[];
+  fallbackItems: Pick<DbVocabularyItem, "id" | "tier">[];
+  variant: DbVocabularyCoverageVariant;
+}) {
+  if (params.lists.length > 0) {
+    const listIds = new Set(
+      params.lists
+        .filter((list) => getVocabularyListAppliesToStudyVariant(list.tier, params.variant))
+        .map((list) => list.id)
+    );
+
+    return new Set(
+      params.listItems
+        .filter((listItem) => listIds.has(listItem.vocabulary_list_id))
+        .map((listItem) => listItem.vocabulary_item_id)
+    );
+  }
+
+  return new Set(
+    params.fallbackItems
+      .filter((item) => getVocabularyItemAppliesToStudyVariant(item.tier, params.variant))
+      .map((item) => item.id)
+  );
 }
 
 export function getVocabularyCoverageVariantLabel(
@@ -649,17 +729,28 @@ export async function ensureDefaultVocabularyListForSetDb(vocabularySet: DbVocab
 }
 
 export async function getVocabularyItemsByListIdDb(vocabularyListId: string) {
+  const items = await getVocabularyItemsByListIdsDb([vocabularyListId]);
+  return items;
+}
+
+export async function getVocabularyItemsByListIdsDb(vocabularyListIds: string[]) {
+  const uniqueVocabularyListIds = Array.from(new Set(vocabularyListIds));
+
+  if (uniqueVocabularyListIds.length === 0) {
+    return [];
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("vocabulary_list_items")
-    .select("position, vocabulary_items(*)")
-    .eq("vocabulary_list_id", vocabularyListId)
+    .select("position, vocabulary_list_id, vocabulary_items(*)")
+    .in("vocabulary_list_id", uniqueVocabularyListIds)
     .order("position", { ascending: true });
 
   if (error) {
-    console.error("Error fetching vocabulary items by list id:", {
-      vocabularyListId,
+    console.error("Error fetching vocabulary items by list ids:", {
+      vocabularyListIds: uniqueVocabularyListIds,
       error,
     });
     return [];
@@ -669,6 +760,7 @@ export async function getVocabularyItemsByListIdDb(vocabularyListId: string) {
     .map((row) => {
       const record = row as {
         position?: number;
+        vocabulary_list_id?: string;
         vocabulary_items?: Record<string, unknown> | Record<string, unknown>[] | null;
       };
       const joinedItem = Array.isArray(record.vocabulary_items)
@@ -679,22 +771,29 @@ export async function getVocabularyItemsByListIdDb(vocabularyListId: string) {
 
       return normalizeVocabularyItem({
         ...joinedItem,
-        vocabulary_list_id: vocabularyListId,
+        vocabulary_list_id: record.vocabulary_list_id ?? null,
         position: record.position ?? 0,
       });
     })
     .filter((item): item is DbVocabularyItem => Boolean(item));
 }
 
-export async function getVocabularyItemsBySetIdDb(vocabularySetId: string) {
+export async function getVocabularyItemsBySetIdDb(
+  vocabularySetId: string,
+  options?: VocabularySetLoadOptions
+) {
   const lists = await getVocabularyListsBySetIdDb(vocabularySetId);
+  const scopedLists = filterVocabularyListsForStudyVariant(
+    lists,
+    options?.scopeVariant
+  );
+
+  if (scopedLists.length > 0) {
+    return getVocabularyItemsByListIdsDb(scopedLists.map((list) => list.id));
+  }
 
   if (lists.length > 0) {
-    const groupedItems = await Promise.all(
-      lists.map((list) => getVocabularyItemsByListIdDb(list.id))
-    );
-
-    return groupedItems.flat();
+    return [];
   }
 
   const supabase = await createClient();
@@ -713,31 +812,50 @@ export async function getVocabularyItemsBySetIdDb(vocabularySetId: string) {
     return [];
   }
 
-  return (data ?? []).map(normalizeVocabularyItem);
+  const items = (data ?? []).map(normalizeVocabularyItem);
+
+  const scopeVariant = options?.scopeVariant;
+
+  if (!scopeVariant || scopeVariant === "all") {
+    return items;
+  }
+
+  return items.filter((item) =>
+    getVocabularyItemAppliesToStudyVariant(item.tier, scopeVariant)
+  );
 }
 
 export async function getVocabularyItemCoverageByItemIdsDb(vocabularyItemIds: string[]) {
-  if (vocabularyItemIds.length === 0) {
+  const uniqueVocabularyItemIds = Array.from(new Set(vocabularyItemIds));
+
+  if (uniqueVocabularyItemIds.length === 0) {
     return new Map<string, DbVocabularyItemCoverage>();
   }
 
   const supabase = await createClient();
+  const coverageRows: unknown[] = [];
+  const batchSize = 400;
 
-  const { data, error } = await supabase
-    .from("vocabulary_item_coverage")
-    .select("*")
-    .in("vocabulary_item_id", vocabularyItemIds);
+  for (let start = 0; start < uniqueVocabularyItemIds.length; start += batchSize) {
+    const batchIds = uniqueVocabularyItemIds.slice(start, start + batchSize);
+    const { data, error } = await supabase
+      .from("vocabulary_item_coverage")
+      .select("*")
+      .in("vocabulary_item_id", batchIds);
 
-  if (error) {
-    console.error("Error fetching vocabulary item coverage:", {
-      vocabularyItemIds,
-      error,
-    });
-    return new Map<string, DbVocabularyItemCoverage>();
+    if (error) {
+      console.error("Error fetching vocabulary item coverage:", {
+        vocabularyItemIds: batchIds,
+        error,
+      });
+      return new Map<string, DbVocabularyItemCoverage>();
+    }
+
+    coverageRows.push(...(data ?? []));
   }
 
   return new Map(
-    (data ?? []).map((row) => {
+    coverageRows.map((row) => {
       const coverage = normalizeVocabularyItemCoverage(row);
       return [coverage.vocabulary_item_id, coverage];
     })
@@ -745,36 +863,149 @@ export async function getVocabularyItemCoverageByItemIdsDb(vocabularyItemIds: st
 }
 
 export async function getVocabularySetCoverageSummaryBySetIdDb(vocabularySetId: string) {
-  const items = await getVocabularyItemsBySetIdDb(vocabularySetId);
+  const [lists, items] = await Promise.all([
+    getVocabularyListsBySetIdDb(vocabularySetId),
+    getVocabularyItemsBySetIdDb(vocabularySetId, { scopeVariant: "all" }),
+  ]);
   const uniqueItems = Array.from(
     new Map(items.map((item) => [item.id, item])).values()
   );
+  const listItems = items
+    .filter((item) => item.vocabulary_list_id)
+    .map((item) => ({
+      vocabulary_list_id: item.vocabulary_list_id as string,
+      vocabulary_item_id: item.id,
+    }));
   const itemCoverageById = await getVocabularyItemCoverageByItemIdsDb(
     uniqueItems.map((item) => item.id)
   );
 
-  return uniqueItems.reduce<DbVocabularySetCoverageSummary>(
-    (summary, item) => {
-      const coverage = itemCoverageById.get(item.id);
+  return buildVocabularySetCoverageSummary({
+    lists,
+    listItems,
+    items: uniqueItems,
+    itemCoverageById,
+  });
+}
 
-      return {
-        totalItems: summary.totalItems + 1,
-        foundationUsedItems:
-          summary.foundationUsedItems + (coverage?.used_in_foundation ? 1 : 0),
-        higherUsedItems: summary.higherUsedItems + (coverage?.used_in_higher ? 1 : 0),
-        volnaUsedItems: summary.volnaUsedItems + (coverage?.used_in_volna ? 1 : 0),
-        customListUsedItems:
-          summary.customListUsedItems + (coverage?.used_in_custom_list ? 1 : 0),
-      };
-    },
-    {
-      totalItems: 0,
-      foundationUsedItems: 0,
-      higherUsedItems: 0,
-      volnaUsedItems: 0,
-      customListUsedItems: 0,
-    }
+function createEmptyCoverageSummary(): DbVocabularySetCoverageSummary {
+  return {
+    totalItems: 0,
+    foundationTotalItems: 0,
+    higherTotalItems: 0,
+    volnaTotalItems: 0,
+    customListTotalItems: 0,
+    foundationUsedItems: 0,
+    higherUsedItems: 0,
+    volnaUsedItems: 0,
+    customListUsedItems: 0,
+  };
+}
+
+function buildVocabularySetCoverageSummary(params: {
+  lists: DbVocabularyList[];
+  listItems: Pick<DbVocabularyListItem, "vocabulary_list_id" | "vocabulary_item_id">[];
+  items: Pick<DbVocabularyItem, "id" | "tier">[];
+  itemCoverageById: Map<string, DbVocabularyItemCoverage>;
+}): DbVocabularySetCoverageSummary {
+  const uniqueItems = Array.from(
+    new Map(params.items.map((item) => [item.id, item])).values()
   );
+  const foundationItemIds = getCoverageTotalItemIdsForVariant({
+    lists: params.lists,
+    listItems: params.listItems,
+    fallbackItems: uniqueItems,
+    variant: "foundation",
+  });
+  const higherItemIds = getCoverageTotalItemIdsForVariant({
+    lists: params.lists,
+    listItems: params.listItems,
+    fallbackItems: uniqueItems,
+    variant: "higher",
+  });
+  const volnaItemIds = getCoverageTotalItemIdsForVariant({
+    lists: params.lists,
+    listItems: params.listItems,
+    fallbackItems: uniqueItems,
+    variant: "volna",
+  });
+
+  return {
+    totalItems: uniqueItems.length,
+    foundationTotalItems: foundationItemIds.size,
+    higherTotalItems: higherItemIds.size,
+    volnaTotalItems: volnaItemIds.size,
+    customListTotalItems: uniqueItems.length,
+    foundationUsedItems: Array.from(foundationItemIds).filter(
+      (itemId) => params.itemCoverageById.get(itemId)?.used_in_foundation
+    ).length,
+    higherUsedItems: Array.from(higherItemIds).filter(
+      (itemId) => params.itemCoverageById.get(itemId)?.used_in_higher
+    ).length,
+    volnaUsedItems: Array.from(volnaItemIds).filter(
+      (itemId) => params.itemCoverageById.get(itemId)?.used_in_volna
+    ).length,
+    customListUsedItems: uniqueItems.filter(
+      (item) => params.itemCoverageById.get(item.id)?.used_in_custom_list
+    ).length,
+  };
+}
+
+async function getVocabularyListItemsByListIdsDb(vocabularyListIds: string[]) {
+  const uniqueVocabularyListIds = Array.from(new Set(vocabularyListIds));
+
+  if (uniqueVocabularyListIds.length === 0) {
+    return [] as Pick<
+      DbVocabularyListItem,
+      "vocabulary_list_id" | "vocabulary_item_id" | "position"
+    >[];
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vocabulary_list_items")
+    .select("vocabulary_list_id, vocabulary_item_id, position")
+    .in("vocabulary_list_id", uniqueVocabularyListIds);
+
+  if (error) {
+    console.error("Error fetching vocabulary list items by list ids:", {
+      vocabularyListIds: uniqueVocabularyListIds,
+      error,
+    });
+    return [] as Pick<
+      DbVocabularyListItem,
+      "vocabulary_list_id" | "vocabulary_item_id" | "position"
+    >[];
+  }
+
+  return (data ?? []) as Pick<
+    DbVocabularyListItem,
+    "vocabulary_list_id" | "vocabulary_item_id" | "position"
+  >[];
+}
+
+async function getVocabularyItemsBySetIdsDb(vocabularySetIds: string[]) {
+  const uniqueVocabularySetIds = Array.from(new Set(vocabularySetIds));
+
+  if (uniqueVocabularySetIds.length === 0) {
+    return [] as DbVocabularyItem[];
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vocabulary_items")
+    .select("*")
+    .in("vocabulary_set_id", uniqueVocabularySetIds);
+
+  if (error) {
+    console.error("Error fetching vocabulary items by set ids:", {
+      vocabularySetIds: uniqueVocabularySetIds,
+      error,
+    });
+    return [] as DbVocabularyItem[];
+  }
+
+  return (data ?? []).map(normalizeVocabularyItem);
 }
 
 export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
@@ -851,7 +1082,8 @@ export async function getVocabularySetUsageStatsBySetIdDb(
 }
 
 export async function loadVocabularySetByIdDb(
-  vocabularySetId: string
+  vocabularySetId: string,
+  options?: VocabularySetLoadOptions
 ): Promise<LoadedVocabularySetDetailDb> {
   const vocabularySet = await getVocabularySetByIdDb(vocabularySetId);
 
@@ -876,7 +1108,7 @@ export async function loadVocabularySetByIdDb(
   const lists = await getVocabularyListsBySetIdDb(vocabularySet.id);
   const vocabularyList = lists[0] ?? null;
   const [items, usageStats] = await Promise.all([
-    getVocabularyItemsBySetIdDb(vocabularySet.id),
+    getVocabularyItemsBySetIdDb(vocabularySet.id, options),
     getVocabularySetUsageStatsBySetIdDb(vocabularySet.id),
   ]);
 
@@ -890,7 +1122,8 @@ export async function loadVocabularySetByIdDb(
 }
 
 export async function loadVocabularySetBySlugDb(
-  vocabularySetSlug: string
+  vocabularySetSlug: string,
+  options?: VocabularySetLoadOptions
 ): Promise<LoadedVocabularySetDb> {
   const vocabularySet = await getVocabularySetBySlugDb(vocabularySetSlug);
 
@@ -904,7 +1137,7 @@ export async function loadVocabularySetBySlugDb(
   }
 
   const lists = await getVocabularyListsBySetIdDb(vocabularySet.id);
-  const items = await getVocabularyItemsBySetIdDb(vocabularySet.id);
+  const items = await getVocabularyItemsBySetIdDb(vocabularySet.id, options);
 
   return {
     vocabularySet,
@@ -915,7 +1148,8 @@ export async function loadVocabularySetBySlugDb(
 }
 
 export async function loadVocabularySetByRefDb(
-  vocabularySetRef: string
+  vocabularySetRef: string,
+  options?: VocabularySetLoadOptions
 ): Promise<LoadedVocabularySetDb> {
   const vocabularySet = await getVocabularySetByRefDb(vocabularySetRef);
 
@@ -929,7 +1163,7 @@ export async function loadVocabularySetByRefDb(
   }
 
   const lists = await getVocabularyListsBySetIdDb(vocabularySet.id);
-  const items = await getVocabularyItemsBySetIdDb(vocabularySet.id);
+  const items = await getVocabularyItemsBySetIdDb(vocabularySet.id, options);
 
   return {
     vocabularySet,
@@ -942,26 +1176,114 @@ export async function loadVocabularySetByRefDb(
 async function attachVocabularyCountsAndUsage(
   vocabularySets: DbVocabularySet[]
 ): Promise<DbVocabularySetListItem[]> {
-  const enriched = await Promise.all(
-    vocabularySets.map(async (vocabularySet) => {
-      const [itemCount, listCount, usageStats, coverageSummary] = await Promise.all([
-        getVocabularyItemCountBySetIdDb(vocabularySet.id),
-        getVocabularyListCountBySetIdDb(vocabularySet.id),
-        getVocabularySetUsageStatsBySetIdDb(vocabularySet.id),
-        getVocabularySetCoverageSummaryBySetIdDb(vocabularySet.id),
-      ]);
+  if (vocabularySets.length === 0) {
+    return [];
+  }
 
-      return {
-        ...vocabularySet,
-        item_count: itemCount,
-        list_count: listCount,
-        usage_stats: usageStats,
-        coverage_summary: coverageSummary,
-      };
-    })
+  const supabase = await createClient();
+  const vocabularySetIds = vocabularySets.map((vocabularySet) => vocabularySet.id);
+
+  const [
+    { data: listRows, error: listError },
+    { data: usageRows, error: usageError },
+    setItems,
+  ] = await Promise.all([
+    supabase
+      .from("vocabulary_lists")
+      .select("*")
+      .in("vocabulary_set_id", vocabularySetIds),
+    supabase
+      .from("lesson_vocabulary_set_usages")
+      .select("*")
+      .in("vocabulary_set_id", vocabularySetIds),
+    getVocabularyItemsBySetIdsDb(vocabularySetIds),
+  ]);
+
+  if (listError) {
+    console.error("Error fetching vocabulary lists for set summaries:", {
+      vocabularySetIds,
+      error: listError,
+    });
+  }
+
+  if (usageError) {
+    console.error("Error fetching vocabulary usages for set summaries:", {
+      vocabularySetIds,
+      error: usageError,
+    });
+  }
+
+  const lists = ((listRows ?? []) as DbVocabularyList[]).sort(
+    (a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title)
+  );
+  const listItems = await getVocabularyListItemsByListIdsDb(
+    lists.map((list) => list.id)
+  );
+  const itemCoverageById = await getVocabularyItemCoverageByItemIdsDb(
+    setItems.map((item) => item.id)
   );
 
-  return enriched;
+  const listsBySetId = new Map<string, DbVocabularyList[]>();
+  const itemsBySetId = new Map<string, DbVocabularyItem[]>();
+  const listItemsBySetId = new Map<
+    string,
+    Pick<DbVocabularyListItem, "vocabulary_list_id" | "vocabulary_item_id">[]
+  >();
+  const usagesBySetId = new Map<string, DbLessonVocabularySetUsage[]>();
+  const setIdByListId = new Map(lists.map((list) => [list.id, list.vocabulary_set_id]));
+
+  for (const list of lists) {
+    const nextLists = listsBySetId.get(list.vocabulary_set_id) ?? [];
+    nextLists.push(list);
+    listsBySetId.set(list.vocabulary_set_id, nextLists);
+  }
+
+  for (const item of setItems) {
+    const nextItems = itemsBySetId.get(item.vocabulary_set_id) ?? [];
+    nextItems.push(item);
+    itemsBySetId.set(item.vocabulary_set_id, nextItems);
+  }
+
+  for (const listItem of listItems) {
+    const vocabularySetId = setIdByListId.get(listItem.vocabulary_list_id);
+    if (!vocabularySetId) continue;
+
+    const nextListItems = listItemsBySetId.get(vocabularySetId) ?? [];
+    nextListItems.push(listItem);
+    listItemsBySetId.set(vocabularySetId, nextListItems);
+  }
+
+  for (const usage of (usageRows ?? []) as DbLessonVocabularySetUsage[]) {
+    const nextUsages = usagesBySetId.get(usage.vocabulary_set_id) ?? [];
+    nextUsages.push(usage);
+    usagesBySetId.set(usage.vocabulary_set_id, nextUsages);
+  }
+
+  return vocabularySets.map((vocabularySet) => {
+    const setLists = listsBySetId.get(vocabularySet.id) ?? [];
+    const setItemsForSummary = itemsBySetId.get(vocabularySet.id) ?? [];
+    const setListItems = listItemsBySetId.get(vocabularySet.id) ?? [];
+    const uniqueItemCount =
+      setLists.length > 0
+        ? new Set(setListItems.map((listItem) => listItem.vocabulary_item_id)).size
+        : setItemsForSummary.length;
+
+    return {
+      ...vocabularySet,
+      item_count: uniqueItemCount,
+      list_count: setLists.length,
+      usage_stats: buildVocabularyUsageStats(usagesBySetId.get(vocabularySet.id) ?? []),
+      coverage_summary:
+        setItemsForSummary.length > 0
+          ? buildVocabularySetCoverageSummary({
+              lists: setLists,
+              listItems: setListItems,
+              items: setItemsForSummary,
+              itemCoverageById,
+            })
+          : createEmptyCoverageSummary(),
+    };
+  });
 }
 
 function applyVocabularySetFilters(
@@ -1049,4 +1371,38 @@ export async function getVocabularySetsDb(options?: {
 
 export async function getPublishedVocabularySetsDb(filters?: VocabularySetFilters) {
   return getVocabularySetsDb({ publishedOnly: true, filters });
+}
+
+export async function getVocabularySetThemeKeysDb(options?: {
+  publishedOnly?: boolean;
+}) {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("vocabulary_sets")
+    .select("theme_key")
+    .not("theme_key", "is", null)
+    .order("theme_key", { ascending: true });
+
+  if (options?.publishedOnly) {
+    query = query.eq("is_published", true);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching vocabulary theme keys:", {
+      options,
+      error,
+    });
+    return [];
+  }
+
+  return Array.from(
+    new Set(
+      (data ?? [])
+        .map((row) => row.theme_key)
+        .filter((themeKey): themeKey is string => Boolean(themeKey))
+    )
+  ).sort((a, b) => getVocabularyThemeLabel(a).localeCompare(getVocabularyThemeLabel(b)));
 }

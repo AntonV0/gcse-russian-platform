@@ -14,6 +14,62 @@ type LessonVocabularyLinkRow = {
   position: number;
 };
 
+type VocabularyListForUsageSync = {
+  id: string;
+  vocabulary_set_id: string;
+  slug: string | null;
+  tier: string | null;
+  sort_order: number | null;
+};
+
+function isListInVariantScope(
+  list: Pick<VocabularyListForUsageSync, "tier">,
+  variant: VocabularyUsageVariant
+) {
+  if (list.tier === "both" || list.tier === "unknown" || !list.tier) {
+    return true;
+  }
+
+  if (variant === "foundation") {
+    return list.tier === "foundation";
+  }
+
+  return list.tier === "foundation" || list.tier === "higher";
+}
+
+function getVocabularyListIdsForVariantScope(params: {
+  vocabularySetId: string;
+  vocabularyListSlug?: string;
+  variant: VocabularyUsageVariant;
+  lists: VocabularyListForUsageSync[];
+}) {
+  const setLists = params.lists
+    .filter((list) => list.vocabulary_set_id === params.vocabularySetId)
+    .sort(
+      (a, b) =>
+        Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
+        String(a.slug ?? "").localeCompare(String(b.slug ?? ""))
+    );
+
+  if (params.vocabularyListSlug) {
+    const explicitList = setLists.find((list) => list.slug === params.vocabularyListSlug);
+
+    if (explicitList) {
+      return [explicitList.id];
+    }
+  }
+
+  const scopedLists = setLists.filter((list) =>
+    isListInVariantScope(list, params.variant)
+  );
+
+  if (scopedLists.length > 0) {
+    return scopedLists.map((list) => list.id);
+  }
+
+  return setLists[0] ? [setLists[0].id] : [];
+}
+
 export function resolveVocabularyUsageVariantFromSlug(
   variantSlug: string
 ): VocabularyUsageVariant | null {
@@ -177,7 +233,7 @@ export async function syncLessonVocabularySetUsagesForLesson(params: {
 
       const { data: vocabularyLists, error: vocabularyListsError } = await supabase
         .from("vocabulary_lists")
-        .select("id, vocabulary_set_id, sort_order")
+        .select("id, vocabulary_set_id, slug, tier, sort_order")
         .in("vocabulary_set_id", vocabularySetIds)
         .order("sort_order", { ascending: true });
 
@@ -189,16 +245,12 @@ export async function syncLessonVocabularySetUsagesForLesson(params: {
         throw new Error("Failed to sync lesson vocabulary usage");
       }
 
-      const defaultListIdBySetId = new Map<string, string>();
-
-      for (const list of vocabularyLists ?? []) {
-        const setId =
-          typeof list.vocabulary_set_id === "string" ? list.vocabulary_set_id : "";
-
-        if (setId && !defaultListIdBySetId.has(setId) && typeof list.id === "string") {
-          defaultListIdBySetId.set(setId, list.id);
-        }
-      }
+      const typedVocabularyLists = (vocabularyLists ?? [])
+        .filter(
+          (list): list is VocabularyListForUsageSync =>
+            typeof list.id === "string" &&
+            typeof list.vocabulary_set_id === "string"
+        );
 
       const nextVocabularyLinkRows: LessonVocabularyLinkRow[] = [];
 
@@ -206,19 +258,40 @@ export async function syncLessonVocabularySetUsagesForLesson(params: {
         const vocabularySetId = setIdBySlug.get(blockLink.vocabularySetSlug);
         if (!vocabularySetId) continue;
 
-        const vocabularyListId = defaultListIdBySetId.get(vocabularySetId);
-
-        nextVocabularyLinkRows.push({
-          lesson_id: params.lessonId,
-          lesson_section_id: blockLink.sectionId,
-          lesson_block_id: blockLink.blockId,
-          link_type: vocabularyListId ? "list" : "set",
-          vocabulary_set_id: vocabularySetId,
-          vocabulary_list_id: vocabularyListId,
+        const vocabularyListIds = getVocabularyListIdsForVariantScope({
+          vocabularySetId,
+          vocabularyListSlug: blockLink.vocabularyListSlug,
           variant: params.variant,
-          usage_type: "lesson_block",
-          position: blockLink.position,
+          lists: typedVocabularyLists,
         });
+
+        if (vocabularyListIds.length === 0) {
+          nextVocabularyLinkRows.push({
+            lesson_id: params.lessonId,
+            lesson_section_id: blockLink.sectionId,
+            lesson_block_id: blockLink.blockId,
+            link_type: "set",
+            vocabulary_set_id: vocabularySetId,
+            variant: params.variant,
+            usage_type: "lesson_block",
+            position: blockLink.position,
+          });
+          continue;
+        }
+
+        for (const vocabularyListId of vocabularyListIds) {
+          nextVocabularyLinkRows.push({
+            lesson_id: params.lessonId,
+            lesson_section_id: blockLink.sectionId,
+            lesson_block_id: blockLink.blockId,
+            link_type: "list",
+            vocabulary_set_id: vocabularySetId,
+            vocabulary_list_id: vocabularyListId,
+            variant: params.variant,
+            usage_type: "lesson_block",
+            position: blockLink.position,
+          });
+        }
       }
 
       vocabularyLinkRows = nextVocabularyLinkRows;

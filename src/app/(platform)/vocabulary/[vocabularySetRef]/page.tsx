@@ -10,6 +10,7 @@ import SectionCard from "@/components/ui/section-card";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getRequiredVocabularyCoverageVariants,
+  getVocabularyListAppliesToStudyVariant,
   getVocabularyCoverageVariantCount,
   getVocabularyCoverageVariantLabel,
   getVocabularyCoverageVariantUsed,
@@ -24,6 +25,8 @@ import {
   loadVocabularySetByRefDb,
   type DbVocabularyItemCoverage,
   type DbVocabularyItem,
+  type DbVocabularyList,
+  type DbVocabularyStudyVariant,
 } from "@/lib/vocabulary/vocabulary-helpers-db";
 
 type VocabularySetPageProps = {
@@ -177,11 +180,13 @@ function VocabularyItemRow({
 
 function VocabularyItemSection({
   title,
+  description,
   items,
   itemCoverageById,
   showStaffMetadata,
 }: {
   title: string;
+  description?: string;
   items: DbVocabularyItem[];
   itemCoverageById: Map<string, DbVocabularyItemCoverage>;
   showStaffMetadata: boolean;
@@ -193,7 +198,7 @@ function VocabularyItemSection({
       <div>
         <h3 className="text-base font-semibold text-[var(--text-primary)]">{title}</h3>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          {items.length} item{items.length === 1 ? "" : "s"}
+          {description ?? `${items.length} item${items.length === 1 ? "" : "s"}`}
         </p>
       </div>
 
@@ -211,20 +216,132 @@ function VocabularyItemSection({
   );
 }
 
+function getVocabularyStudyVariant(
+  dashboardVariant: DbVocabularyStudyVariant | null,
+  canSeeDrafts: boolean
+): DbVocabularyStudyVariant | "all" {
+  if (canSeeDrafts) {
+    return "all";
+  }
+
+  return dashboardVariant ?? "foundation";
+}
+
+function getVisibleVocabularyLists(
+  lists: DbVocabularyList[],
+  studyVariant: DbVocabularyStudyVariant | "all"
+) {
+  if (studyVariant === "all") {
+    return lists;
+  }
+
+  return lists.filter((list) =>
+    getVocabularyListAppliesToStudyVariant(list.tier, studyVariant)
+  );
+}
+
+function getVocabularyListSectionTitle(
+  list: DbVocabularyList,
+  studyVariant: DbVocabularyStudyVariant | "all"
+) {
+  if (studyVariant === "higher" || studyVariant === "volna") {
+    if (list.tier === "foundation") {
+      return "Foundation tier";
+    }
+
+    if (list.tier === "higher") {
+      return "Higher tier extension";
+    }
+  }
+
+  return list.title;
+}
+
+function getVocabularyListSectionDescription(
+  list: DbVocabularyList,
+  itemCount: number,
+  studyVariant: DbVocabularyStudyVariant | "all"
+) {
+  if ((studyVariant === "higher" || studyVariant === "volna") && list.tier === "foundation") {
+    return `${itemCount} Foundation item${itemCount === 1 ? "" : "s"} included for Higher and Volna study`;
+  }
+
+  if (list.tier === "higher") {
+    return `${itemCount} Higher-extension item${itemCount === 1 ? "" : "s"}`;
+  }
+
+  return `${itemCount} item${itemCount === 1 ? "" : "s"}`;
+}
+
+function groupVocabularyItemsByList(
+  lists: DbVocabularyList[],
+  items: DbVocabularyItem[],
+  studyVariant: DbVocabularyStudyVariant | "all"
+) {
+  const itemListIds = new Set(items.map((item) => item.vocabulary_list_id).filter(Boolean));
+  const visibleLists = getVisibleVocabularyLists(lists, studyVariant).filter((list) =>
+    itemListIds.has(list.id)
+  );
+
+  if (visibleLists.length === 0) {
+    const groupedItems = groupVocabularyItemsBySource(items);
+    return [
+      {
+        key: "spec-required",
+        title: "Specification vocabulary",
+        description: `${groupedItems.specRequired.length} item${groupedItems.specRequired.length === 1 ? "" : "s"}`,
+        items: groupedItems.specRequired,
+      },
+      {
+        key: "extended",
+        title: "Extended vocabulary",
+        description: `${groupedItems.extended.length} item${groupedItems.extended.length === 1 ? "" : "s"}`,
+        items: groupedItems.extended,
+      },
+      {
+        key: "custom",
+        title: "Custom vocabulary",
+        description: `${groupedItems.custom.length} item${groupedItems.custom.length === 1 ? "" : "s"}`,
+        items: groupedItems.custom,
+      },
+    ].filter((section) => section.items.length > 0);
+  }
+
+  return visibleLists.map((list) => {
+    const listItems = items.filter((item) => item.vocabulary_list_id === list.id);
+
+    return {
+      key: list.id,
+      title: getVocabularyListSectionTitle(list, studyVariant),
+      description: getVocabularyListSectionDescription(
+        list,
+        listItems.length,
+        studyVariant
+      ),
+      items: listItems,
+    };
+  });
+}
+
 export default async function VocabularySetPage({ params }: VocabularySetPageProps) {
   const { vocabularySetRef } = await params;
   const dashboard = await getDashboardInfo();
-  const { vocabularySet, lists, items } =
-    await loadVocabularySetByRefDb(vocabularySetRef);
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
+  const studyVariant = getVocabularyStudyVariant(dashboard.variant, canSeeDrafts);
+  const { vocabularySet, lists, items } = await loadVocabularySetByRefDb(
+    vocabularySetRef,
+    { scopeVariant: studyVariant }
+  );
 
   if (!vocabularySet || (!vocabularySet.is_published && !canSeeDrafts)) {
     notFound();
   }
 
-  const groupedItems = groupVocabularyItemsBySource(items);
+  const itemSections = groupVocabularyItemsByList(lists, items, studyVariant);
   const itemCoverageById: Map<string, DbVocabularyItemCoverage> = canSeeDrafts
-    ? await getVocabularyItemCoverageByItemIdsDb(items.map((item) => item.id))
+    ? await getVocabularyItemCoverageByItemIdsDb(
+        Array.from(new Set(items.map((item) => item.id)))
+      )
     : new Map();
 
   return (
@@ -280,24 +397,16 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
             />
           ) : (
             <div className="space-y-6">
-              <VocabularyItemSection
-                title="Specification vocabulary"
-                items={groupedItems.specRequired}
-                itemCoverageById={itemCoverageById}
-                showStaffMetadata={canSeeDrafts}
-              />
-              <VocabularyItemSection
-                title="Extended vocabulary"
-                items={groupedItems.extended}
-                itemCoverageById={itemCoverageById}
-                showStaffMetadata={canSeeDrafts}
-              />
-              <VocabularyItemSection
-                title="Custom vocabulary"
-                items={groupedItems.custom}
-                itemCoverageById={itemCoverageById}
-                showStaffMetadata={canSeeDrafts}
-              />
+              {itemSections.map((section) => (
+                <VocabularyItemSection
+                  key={section.key}
+                  title={section.title}
+                  description={section.description}
+                  items={section.items}
+                  itemCoverageById={itemCoverageById}
+                  showStaffMetadata={canSeeDrafts}
+                />
+              ))}
             </div>
           )}
         </SectionCard>
