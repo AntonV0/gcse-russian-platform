@@ -16,6 +16,7 @@ type EmptyStateProps = {
   className?: string;
   icon?: AppIconValue;
   iconTone?: EmptyStateIconTone;
+  visual?: React.ReactNode;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -45,6 +46,7 @@ export default function EmptyState({
   className,
   icon,
   iconTone = "default",
+  visual,
 }: EmptyStateProps) {
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
@@ -54,14 +56,14 @@ export default function EmptyState({
           filePath="src/components/ui/empty-state.tsx"
           tier="semantic"
           componentRole="Empty, locked, or no-results state"
-          bestFor="No content yet, filtered no-results, locked sections, missing submissions, and first-step prompts."
+          bestFor="No content yet, filtered no-results, locked sections, missing submissions, first-step prompts, and optional neutral placeholder visuals."
           usageExamples={[
             "No lessons yet",
             "No matching vocabulary rows",
             "No assignments to review",
             "Higher tier content locked",
           ]}
-          notes="Use when the user needs orientation and a next action. Keep copy short; avoid using empty states as normal page decoration."
+          notes="Use when the user needs orientation and a next action. Keep copy and visuals short; avoid using empty states as normal page decoration."
         />
       ) : null}
 
@@ -73,6 +75,12 @@ export default function EmptyState({
         ].join(" ")}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 [background:var(--accent-sheen-gradient)]" />
+
+        {visual ? (
+          <div className="relative mb-5 flex justify-center">
+            {visual}
+          </div>
+        ) : null}
 
         {icon ? (
           <div className="relative mb-5 flex justify-center">
