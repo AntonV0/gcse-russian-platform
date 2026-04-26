@@ -1,5 +1,3 @@
-"use client";
-
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 

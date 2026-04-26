@@ -1,5 +1,3 @@
-"use client";
-
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type AdminRowProps = {

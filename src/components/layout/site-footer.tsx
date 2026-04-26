@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";

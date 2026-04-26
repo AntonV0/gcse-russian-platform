@@ -1,5 +1,3 @@
-"use client";
-
 import AppIcon from "@/components/ui/app-icon";
 import Card, { CardBody } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
