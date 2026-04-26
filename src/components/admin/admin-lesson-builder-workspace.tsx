@@ -24,6 +24,7 @@ import {
   BUILDER_SECONDARY_BUTTON_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading } from "@/components/ui/heading";
 import { getLessonBlockLabel, getLessonBlockPreview } from "@/lib/lessons/lesson-blocks";
 
 const LESSON_BUILDER_STORAGE_EVENT = "gcse-russian-lesson-builder-storage";
@@ -278,9 +279,9 @@ export default function AdminLessonBuilderWorkspace({
         <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-wide app-text-soft">Publish checks</p>
-            <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+            <Heading level={2} className="text-sm font-semibold text-[var(--text-primary)]">
               Content health
-            </h3>
+            </Heading>
           </div>
           <Badge
             tone={contentHealthChecks.every((check) => check.tone === "success") ? "success" : "warning"}
@@ -414,9 +415,9 @@ export default function AdminLessonBuilderWorkspace({
             <div className="app-card p-4">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Sections</p>
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                <Heading level={3} className="text-sm font-semibold text-[var(--text-primary)]">
                   Lesson structure
-                </h3>
+                </Heading>
               </div>
 
               <LessonSectionSidebar
@@ -438,9 +439,9 @@ export default function AdminLessonBuilderWorkspace({
           <div className="app-surface-strong p-4 md:p-5 xl:p-6">
             <div className="mb-4">
               <p className="text-xs uppercase tracking-wide app-text-soft">Builder</p>
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <Heading level={2} className="text-xl font-semibold text-[var(--text-primary)]">
                 Lesson content
-              </h2>
+              </Heading>
             </div>
 
             <LessonSectionEditor
@@ -471,9 +472,9 @@ export default function AdminLessonBuilderWorkspace({
             <div className="app-card p-4">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Inspector</p>
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                <Heading level={3} className="text-sm font-semibold text-[var(--text-primary)]">
                   Settings
-                </h3>
+                </Heading>
               </div>
 
               <LessonInspectorPanel
