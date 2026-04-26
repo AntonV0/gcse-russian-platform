@@ -4,6 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadVariantPageData } from "@/lib/courses/course-helpers-db";
 import { getCoursePath, getCoursesPath, getModulePath } from "@/lib/access/routes";
 
@@ -38,6 +39,12 @@ export default async function VariantPage({ params }: VariantPageProps) {
           iconTone="brand"
           title="Learning path not found"
           description="This learning path could not be found. Return to the course list and choose an available path."
+          visual={
+            <VisualPlaceholder
+              category="learningPath"
+              ariaLabel="Learning path not found placeholder"
+            />
+          }
           action={
             <Button href={getCoursesPath()} variant="primary" icon="courses">
               Courses
@@ -103,6 +110,12 @@ export default async function VariantPage({ params }: VariantPageProps) {
 
           <DashboardCard title="Path overview" className="h-full">
             <div className="space-y-4">
+              <VisualPlaceholder
+                category="learningPath"
+                ariaLabel="Learning path overview placeholder"
+                className="mx-auto"
+              />
+
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="app-stat-tile">
                   <div className="app-stat-label">
@@ -136,6 +149,12 @@ export default async function VariantPage({ params }: VariantPageProps) {
         <EmptyState
           title="No modules available yet"
           description="This learning path does not have any visible modules right now."
+          visual={
+            <VisualPlaceholder
+              category="learningPath"
+              ariaLabel="Modules empty state placeholder"
+            />
+          }
           action={
             <Button href={getCoursePath(course.slug)} variant="secondary" icon="back">
               Back to {course.title}

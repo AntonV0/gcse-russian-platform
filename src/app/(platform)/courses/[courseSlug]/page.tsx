@@ -4,6 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadCoursePageData } from "@/lib/courses/course-helpers-db";
 import { getCoursesPath, getVariantPath } from "@/lib/access/routes";
 
@@ -37,6 +38,12 @@ export default async function CoursePage({ params }: CoursePageProps) {
           iconTone="brand"
           title="Course not found"
           description="This course could not be found. Return to the course list and choose an available course."
+          visual={
+            <VisualPlaceholder
+              category="learningPath"
+              ariaLabel="Course not found placeholder"
+            />
+          }
           action={
             <Button href={getCoursesPath()} variant="primary" icon="courses">
               Courses
@@ -102,6 +109,12 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
           <DashboardCard title="Course overview" className="h-full">
             <div className="space-y-4">
+              <VisualPlaceholder
+                category="learningPath"
+                ariaLabel="Course overview placeholder"
+                className="mx-auto"
+              />
+
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="app-stat-tile">
                   <div className="app-stat-label">
@@ -135,6 +148,12 @@ export default async function CoursePage({ params }: CoursePageProps) {
         <EmptyState
           title="No learning paths available yet"
           description="This course has no visible paths at the moment."
+          visual={
+            <VisualPlaceholder
+              category="learningPath"
+              ariaLabel="Learning path empty state placeholder"
+            />
+          }
           action={
             <Button href={getCoursesPath()} variant="secondary" icon="back">
               Back to courses

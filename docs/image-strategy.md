@@ -32,6 +32,9 @@ placeholders in the GCSE Russian Course Platform.
 - Grammar, past papers, and mock exams use matching empty-state visuals when
   filters return no results. Keep these limited to no-content states so regular
   study views stay focused.
+- Course, path, and module pages use learning-path placeholders in intro
+  overview and empty states to support orientation without changing lesson cards
+  or progress controls.
 
 ## Placement Rules
 
