@@ -241,6 +241,61 @@ export type VocabularySetFilters = {
   published?: "all" | "published" | "draft" | null;
 };
 
+const SUPABASE_PAGE_SIZE = 1000;
+const SUPABASE_IN_BATCH_SIZE = 100;
+
+type SupabasePagedQuery<T> = {
+  range: (
+    from: number,
+    to: number
+  ) => PromiseLike<{
+    data: T[] | null;
+    error: unknown;
+  }>;
+};
+
+async function fetchSupabasePages<T>({
+  queryFactory,
+  errorMessage,
+  errorContext,
+}: {
+  queryFactory: () => SupabasePagedQuery<T>;
+  errorMessage: string;
+  errorContext: Record<string, unknown>;
+}) {
+  const rows: T[] = [];
+
+  for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
+    const to = from + SUPABASE_PAGE_SIZE - 1;
+    const { data, error } = await queryFactory().range(from, to);
+
+    if (error) {
+      console.error(errorMessage, {
+        ...errorContext,
+        error,
+      });
+      return [] as T[];
+    }
+
+    const pageRows = data ?? [];
+    rows.push(...pageRows);
+
+    if (pageRows.length < SUPABASE_PAGE_SIZE) {
+      return rows;
+    }
+  }
+}
+
+function chunkValues<T>(values: T[], batchSize = SUPABASE_IN_BATCH_SIZE) {
+  const chunks: T[][] = [];
+
+  for (let start = 0; start < values.length; start += batchSize) {
+    chunks.push(values.slice(start, start + batchSize));
+  }
+
+  return chunks;
+}
+
 export function groupVocabularyItemsBySource(items: DbVocabularyItem[]) {
   return {
     specRequired: items.filter((item) => item.source_type === "spec_required"),
@@ -742,38 +797,39 @@ export async function getVocabularyItemsByListIdsDb(vocabularyListIds: string[])
   }
 
   const supabase = await createClient();
+  const rows = (
+    await Promise.all(
+      chunkValues(uniqueVocabularyListIds).map((listIdBatch) =>
+        fetchSupabasePages<{
+          position?: number;
+          vocabulary_list_id?: string;
+          vocabulary_items?: Record<string, unknown> | Record<string, unknown>[] | null;
+        }>({
+          queryFactory: () =>
+            supabase
+              .from("vocabulary_list_items")
+              .select("position, vocabulary_list_id, vocabulary_items(*)")
+              .in("vocabulary_list_id", listIdBatch)
+              .order("position", { ascending: true }),
+          errorMessage: "Error fetching vocabulary items by list ids:",
+          errorContext: { vocabularyListIds: listIdBatch },
+        })
+      )
+    )
+  ).flat();
 
-  const { data, error } = await supabase
-    .from("vocabulary_list_items")
-    .select("position, vocabulary_list_id, vocabulary_items(*)")
-    .in("vocabulary_list_id", uniqueVocabularyListIds)
-    .order("position", { ascending: true });
-
-  if (error) {
-    console.error("Error fetching vocabulary items by list ids:", {
-      vocabularyListIds: uniqueVocabularyListIds,
-      error,
-    });
-    return [];
-  }
-
-  return (data ?? [])
+  return rows
     .map((row) => {
-      const record = row as {
-        position?: number;
-        vocabulary_list_id?: string;
-        vocabulary_items?: Record<string, unknown> | Record<string, unknown>[] | null;
-      };
-      const joinedItem = Array.isArray(record.vocabulary_items)
-        ? record.vocabulary_items[0]
-        : record.vocabulary_items;
+      const joinedItem = Array.isArray(row.vocabulary_items)
+        ? row.vocabulary_items[0]
+        : row.vocabulary_items;
 
       if (!joinedItem) return null;
 
       return normalizeVocabularyItem({
         ...joinedItem,
-        vocabulary_list_id: record.vocabulary_list_id ?? null,
-        position: record.position ?? 0,
+        vocabulary_list_id: row.vocabulary_list_id ?? null,
+        position: row.position ?? 0,
       });
     })
     .filter((item): item is DbVocabularyItem => Boolean(item));
@@ -781,22 +837,18 @@ export async function getVocabularyItemsByListIdsDb(vocabularyListIds: string[])
 
 async function getVocabularyItemsDirectBySetIdDb(vocabularySetId: string) {
   const supabase = await createClient();
+  const data = await fetchSupabasePages<Record<string, unknown>>({
+    queryFactory: () =>
+      supabase
+        .from("vocabulary_items")
+        .select("*")
+        .eq("vocabulary_set_id", vocabularySetId)
+        .order("position", { ascending: true }),
+    errorMessage: "Error fetching legacy vocabulary items by set id:",
+    errorContext: { vocabularySetId },
+  });
 
-  const { data, error } = await supabase
-    .from("vocabulary_items")
-    .select("*")
-    .eq("vocabulary_set_id", vocabularySetId)
-    .order("position", { ascending: true });
-
-  if (error) {
-    console.error("Error fetching legacy vocabulary items by set id:", {
-      vocabularySetId,
-      error,
-    });
-    return [];
-  }
-
-  return (data ?? []).map(normalizeVocabularyItem);
+  return data.map(normalizeVocabularyItem);
 }
 
 export async function getVocabularyItemsBySetIdDb(
@@ -991,23 +1043,25 @@ async function getVocabularyListItemsByListIdsDb(vocabularyListIds: string[]) {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("vocabulary_list_items")
-    .select("vocabulary_list_id, vocabulary_item_id, position")
-    .in("vocabulary_list_id", uniqueVocabularyListIds);
+  const rows = (
+    await Promise.all(
+      chunkValues(uniqueVocabularyListIds).map((listIdBatch) =>
+        fetchSupabasePages<
+          Pick<DbVocabularyListItem, "vocabulary_list_id" | "vocabulary_item_id" | "position">
+        >({
+          queryFactory: () =>
+            supabase
+              .from("vocabulary_list_items")
+              .select("vocabulary_list_id, vocabulary_item_id, position")
+              .in("vocabulary_list_id", listIdBatch),
+          errorMessage: "Error fetching vocabulary list items by list ids:",
+          errorContext: { vocabularyListIds: listIdBatch },
+        })
+      )
+    )
+  ).flat();
 
-  if (error) {
-    console.error("Error fetching vocabulary list items by list ids:", {
-      vocabularyListIds: uniqueVocabularyListIds,
-      error,
-    });
-    return [] as Pick<
-      DbVocabularyListItem,
-      "vocabulary_list_id" | "vocabulary_item_id" | "position"
-    >[];
-  }
-
-  return (data ?? []) as Pick<
+  return rows as Pick<
     DbVocabularyListItem,
     "vocabulary_list_id" | "vocabulary_item_id" | "position"
   >[];
@@ -1021,20 +1075,23 @@ async function getVocabularyItemsBySetIdsDb(vocabularySetIds: string[]) {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("vocabulary_items")
-    .select("*")
-    .in("vocabulary_set_id", uniqueVocabularySetIds);
+  const data = (
+    await Promise.all(
+      chunkValues(uniqueVocabularySetIds).map((setIdBatch) =>
+        fetchSupabasePages<Record<string, unknown>>({
+          queryFactory: () =>
+            supabase
+              .from("vocabulary_items")
+              .select("*")
+              .in("vocabulary_set_id", setIdBatch),
+          errorMessage: "Error fetching vocabulary items by set ids:",
+          errorContext: { vocabularySetIds: setIdBatch },
+        })
+      )
+    )
+  ).flat();
 
-  if (error) {
-    console.error("Error fetching vocabulary items by set ids:", {
-      vocabularySetIds: uniqueVocabularySetIds,
-      error,
-    });
-    return [] as DbVocabularyItem[];
-  }
-
-  return (data ?? []).map(normalizeVocabularyItem);
+  return data.map(normalizeVocabularyItem);
 }
 
 export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
