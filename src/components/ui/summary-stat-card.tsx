@@ -132,13 +132,13 @@ export default function SummaryStatCard({
               <div className="min-w-0 flex flex-1 items-center gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex min-w-0 items-center gap-3">
-                    <div className="truncate text-sm font-medium text-[var(--text-primary)]">
+                    <div className="truncate app-heading-card">
                       {title}
                     </div>
 
                     <div
                       className={[
-                        "shrink-0 font-semibold tracking-[-0.03em]",
+                        "shrink-0 font-semibold",
                         compact ? "text-[1.35rem]" : "text-[1.5rem]",
                         toneClasses.value,
                       ].join(" ")}
@@ -147,14 +147,14 @@ export default function SummaryStatCard({
                     </div>
 
                     {description ? (
-                      <p className="hidden min-w-0 truncate text-sm app-text-muted lg:block">
+                      <p className="hidden min-w-0 truncate app-text-caption lg:block">
                         {description}
                       </p>
                     ) : null}
                   </div>
 
                   {description ? (
-                    <p className="mt-1 text-sm app-text-muted lg:hidden">{description}</p>
+                    <p className="mt-1 app-text-caption lg:hidden">{description}</p>
                   ) : null}
                 </div>
 
@@ -175,13 +175,13 @@ export default function SummaryStatCard({
         <CardBody className={compact ? "p-4" : "p-5"}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium text-[var(--text-secondary)]">
+              <div className="app-text-caption">
                 {title}
               </div>
 
               <div
                 className={[
-                  "mt-2 font-semibold tracking-[-0.03em]",
+                  "mt-2 font-semibold",
                   compact ? "text-[1.75rem]" : "text-[2rem]",
                   toneClasses.value,
                 ].join(" ")}
@@ -206,7 +206,7 @@ export default function SummaryStatCard({
           {description || badge ? (
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               {description ? (
-                <p className="min-w-0 flex-1 text-sm leading-6 app-text-muted">
+                <p className="min-w-0 flex-1 app-text-body-muted">
                   {description}
                 </p>
               ) : (
