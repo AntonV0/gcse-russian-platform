@@ -9,7 +9,7 @@ import {
 import { getTrimmedString } from "@/app/actions/admin/admin-lesson-builder-shared";
 import {
   createValidatedBlock,
-  ensureVocabularySetExists,
+  ensureVocabularyListBelongsToSet,
   updateValidatedBlock,
 } from "./shared";
 
@@ -116,6 +116,7 @@ export async function createVocabularySetBlockAction(formData: FormData) {
   const sectionId = getTrimmedString(formData, "sectionId");
   const title = getTrimmedString(formData, "title");
   const vocabularySetSlug = getTrimmedString(formData, "vocabularySetSlug");
+  const vocabularyListSlug = getTrimmedString(formData, "vocabularyListSlug");
 
   if (!sectionId || !vocabularySetSlug) {
     throw new Error("Missing required fields");
@@ -126,11 +127,12 @@ export async function createVocabularySetBlockAction(formData: FormData) {
     sectionId,
     blockType: "vocabulary-set",
     buildData: async () => {
-      await ensureVocabularySetExists(vocabularySetSlug);
+      await ensureVocabularyListBelongsToSet(vocabularySetSlug, vocabularyListSlug);
 
       return normalizeVocabularySetBlockData({
         title,
         vocabularySetSlug,
+        vocabularyListSlug,
       });
     },
   });
@@ -143,6 +145,7 @@ export async function updateVocabularySetBlockAction(formData: FormData) {
   const blockId = getTrimmedString(formData, "blockId");
   const title = getTrimmedString(formData, "title");
   const vocabularySetSlug = getTrimmedString(formData, "vocabularySetSlug");
+  const vocabularyListSlug = getTrimmedString(formData, "vocabularyListSlug");
 
   if (!blockId || !vocabularySetSlug) {
     throw new Error("Missing required fields");
@@ -153,11 +156,12 @@ export async function updateVocabularySetBlockAction(formData: FormData) {
     blockId,
     blockType: "vocabulary-set",
     buildData: async () => {
-      await ensureVocabularySetExists(vocabularySetSlug);
+      await ensureVocabularyListBelongsToSet(vocabularySetSlug, vocabularyListSlug);
 
       return normalizeVocabularySetBlockData({
         title,
         vocabularySetSlug,
+        vocabularyListSlug,
       });
     },
   });

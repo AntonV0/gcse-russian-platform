@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { getVocabularySetBySlugDb } from "@/lib/vocabulary/vocabulary-helpers-db";
+import {
+  getVocabularyListsBySetIdDb,
+  getVocabularySetBySlugDb,
+} from "@/lib/vocabulary/vocabulary-helpers-db";
 import {
   finalizeLessonMutation,
   getNextBlockPosition,
@@ -142,4 +145,24 @@ export async function ensureVocabularySetExists(vocabularySetSlug: string) {
   }
 
   return vocabularySet;
+}
+
+export async function ensureVocabularyListBelongsToSet(
+  vocabularySetSlug: string,
+  vocabularyListSlug: string
+) {
+  const vocabularySet = await ensureVocabularySetExists(vocabularySetSlug);
+
+  if (!vocabularyListSlug) {
+    return null;
+  }
+
+  const lists = await getVocabularyListsBySetIdDb(vocabularySet.id);
+  const vocabularyList = lists.find((list) => list.slug === vocabularyListSlug);
+
+  if (!vocabularyList) {
+    throw new Error("Selected vocabulary list does not exist in this set");
+  }
+
+  return vocabularyList;
 }

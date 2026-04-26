@@ -74,6 +74,7 @@ export function getDefaultBlockData(
       return {
         title: "Vocabulary practice",
         vocabularySetSlug: "",
+        vocabularyListSlug: "",
       };
 
     default:

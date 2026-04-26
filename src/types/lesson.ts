@@ -76,6 +76,7 @@ export type VocabularySetLessonBlock = {
   type: "vocabulary-set";
   title?: string;
   vocabularySetSlug: string;
+  vocabularyListSlug?: string;
   displayVariant?: VocabularyDisplayVariant;
   showNotes?: boolean;
   showExamples?: boolean;

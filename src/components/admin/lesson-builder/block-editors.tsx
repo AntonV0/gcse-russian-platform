@@ -166,6 +166,7 @@ export function BlockEditPanel(props: {
           routeFields={props.routeFields}
           defaultTitle={getStringValue(props.block.data.title)}
           defaultSlug={getStringValue(props.block.data.vocabularySetSlug)}
+          defaultListSlug={getStringValue(props.block.data.vocabularyListSlug)}
           vocabularySetOptions={props.vocabularySetOptions}
         />
       );

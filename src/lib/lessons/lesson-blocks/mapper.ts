@@ -111,6 +111,7 @@ export function mapDbBlockToLessonBlock(row: DbLessonBlockLike): LessonBlock {
         ...normalizeVocabularySetBlockData({
           title: data.title,
           vocabularySetSlug: data.vocabularySetSlug,
+          vocabularyListSlug: data.vocabularyListSlug,
         }),
       };
 

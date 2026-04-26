@@ -172,6 +172,7 @@ export default function LessonRenderer({
                       key={index}
                       title={block.title}
                       vocabularySetSlug={block.vocabularySetSlug}
+                      vocabularyListSlug={block.vocabularyListSlug}
                       currentVariant={currentVariant}
                     />
                   );
