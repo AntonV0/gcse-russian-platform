@@ -138,8 +138,8 @@ export default async function AdminUiComponentsPage() {
 
       <UiLabSection
         id="brand-logo"
-        title="Brand logo directions"
-        description="Preview candidate logo marks before replacing production header, sidebar, and footer usage."
+        title="Brand logo system"
+        description="Preview the selected production logo direction and the alternate marks kept for comparison."
       >
         <div className="space-y-4">
           <div className="grid gap-4 xl:grid-cols-3">
@@ -233,14 +233,20 @@ export default async function AdminUiComponentsPage() {
                     className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
                   >
                     <div className="flex justify-center">
-                      <AppLogo mark={direction.mark} variant="icon" size="lg" />
+                      <AppLogo
+                        mark={direction.mark}
+                        variant="icon"
+                        size="lg"
+                        ariaLabel={`${direction.title} logo mark`}
+                      />
                     </div>
                   </div>
                 ))}
               </div>
 
               <p className="text-sm app-text-muted">
-                Production replacement should happen after selecting the preferred mark.
+                Dialogue book is the selected production direction; the other marks stay
+                here as comparison references.
               </p>
             </PanelCard>
           </div>
