@@ -1,4 +1,41 @@
 import { createClient } from "@/lib/supabase/server";
+import {
+  LESSON_VOCABULARY_SET_USAGE_SELECT,
+  VOCABULARY_ITEM_COVERAGE_SELECT,
+  VOCABULARY_ITEM_SELECT,
+  VOCABULARY_LIST_SELECT,
+  VOCABULARY_SET_SELECT,
+  VOCABULARY_SET_SUMMARY_SELECT,
+} from "@/lib/vocabulary/selects";
+import { getVocabularyThemeLabel } from "@/lib/vocabulary/labels";
+import {
+  buildVocabularyUsageStats,
+  filterVocabularyListsForStudyVariant,
+  getCoverageTotalItemIdsForVariant,
+  getVocabularyItemAppliesToStudyVariant,
+} from "@/lib/vocabulary/study-variants";
+
+export {
+  groupVocabularyItemsBySource,
+  getVocabularyDisplayVariantLabel,
+  getVocabularyListModeLabel,
+  getVocabularyProductiveReceptiveLabel,
+  getVocabularySetTypeLabel,
+  getVocabularyThemeLabel,
+  getVocabularyTierLabel,
+  getVocabularyTopicLabel,
+} from "@/lib/vocabulary/labels";
+export {
+  buildVocabularyUsageStats,
+  filterVocabularyListsForStudyVariant,
+  getCoverageTotalItemIdsForVariant,
+  getRequiredVocabularyCoverageVariants,
+  getVocabularyCoverageVariantCount,
+  getVocabularyCoverageVariantLabel,
+  getVocabularyCoverageVariantUsed,
+  getVocabularyItemAppliesToStudyVariant,
+  getVocabularyListAppliesToStudyVariant,
+} from "@/lib/vocabulary/study-variants";
 
 export type DbVocabularyTier = "foundation" | "higher" | "both" | "unknown";
 
@@ -267,19 +304,6 @@ export type VocabularySetFilters = {
 const SUPABASE_PAGE_SIZE = 1000;
 const SUPABASE_IN_BATCH_SIZE = 100;
 
-const VOCABULARY_SET_SELECT =
-  "id, slug, title, description, theme_key, topic_key, tier, list_mode, set_type, default_display_variant, is_published, sort_order, source_key, source_version, import_key, created_at, updated_at";
-const VOCABULARY_LIST_SELECT =
-  "id, vocabulary_set_id, slug, title, description, theme_key, topic_key, category_key, subcategory_key, tier, list_mode, default_display_variant, is_published, sort_order, source_key, source_version, source_section_ref, import_key, created_at, updated_at";
-const VOCABULARY_ITEM_SELECT =
-  "id, vocabulary_set_id, canonical_key, russian, english, transliteration, example_ru, example_en, audio_path, notes, item_type, source_type, priority, part_of_speech, gender, plural, productive_receptive, tier, theme_key, topic_key, category_key, subcategory_key, aspect, case_governed, is_reflexive, source_key, source_version, source_section_ref, import_key, position, created_at, updated_at";
-const VOCABULARY_ITEM_COVERAGE_SELECT =
-  "vocabulary_item_id, used_in_foundation, used_in_higher, used_in_volna, used_in_custom_list, foundation_occurrences, higher_occurrences, volna_occurrences, custom_list_occurrences";
-const VOCABULARY_SET_SUMMARY_SELECT =
-  "vocabulary_set_id, item_count, list_count, total_occurrences, foundation_occurrences, higher_occurrences, volna_occurrences, foundation_total_items, higher_total_items, volna_total_items, custom_list_total_items, foundation_used_items, higher_used_items, volna_used_items, custom_list_used_items";
-const LESSON_VOCABULARY_SET_USAGE_SELECT =
-  "id, lesson_id, vocabulary_set_id, variant, usage_type, created_at";
-
 type SupabasePagedQuery<T> = {
   range: (
     from: number,
@@ -330,264 +354,6 @@ function chunkValues<T>(values: T[], batchSize = SUPABASE_IN_BATCH_SIZE) {
   }
 
   return chunks;
-}
-
-export function groupVocabularyItemsBySource(items: DbVocabularyItem[]) {
-  return {
-    specRequired: items.filter((item) => item.source_type === "spec_required"),
-    extended: items.filter((item) => item.source_type === "extended"),
-    custom: items.filter((item) => item.source_type === "custom"),
-  };
-}
-
-export function getVocabularyListModeLabel(listMode: DbVocabularyListMode) {
-  switch (listMode) {
-    case "spec_only":
-      return "Exam list";
-    case "extended_only":
-      return "Extra practice";
-    case "spec_and_extended":
-      return "Exam + extra";
-    case "custom":
-      return "Custom set";
-    default:
-      return listMode;
-  }
-}
-
-export function getVocabularyTierLabel(tier: DbVocabularyTier) {
-  switch (tier) {
-    case "foundation":
-      return "Foundation";
-    case "higher":
-      return "Higher";
-    case "both":
-      return "Both tiers";
-    case "unknown":
-      return "Unknown tier";
-    default:
-      return tier;
-  }
-}
-
-export function getVocabularyProductiveReceptiveLabel(
-  value: DbVocabularyProductiveReceptive
-) {
-  switch (value) {
-    case "productive":
-      return "Productive";
-    case "receptive":
-      return "Receptive";
-    case "both":
-      return "Productive + receptive";
-    case "unknown":
-      return "Unknown";
-    default:
-      return value;
-  }
-}
-
-export function getVocabularySetTypeLabel(setType: DbVocabularySetType) {
-  switch (setType) {
-    case "specification":
-      return "Specification";
-    case "core":
-      return "Core";
-    case "theme":
-      return "Theme";
-    case "phrase_bank":
-      return "Phrase bank";
-    case "exam_prep":
-      return "Exam prep";
-    case "lesson_custom":
-      return "Lesson custom";
-    default:
-      return setType;
-  }
-}
-
-export function getVocabularyDisplayVariantLabel(
-  displayVariant: DbVocabularyDisplayVariant
-) {
-  switch (displayVariant) {
-    case "single_column":
-      return "Single column";
-    case "two_column":
-      return "Two column";
-    case "compact_cards":
-      return "Compact cards";
-    default:
-      return displayVariant;
-  }
-}
-
-export function getVocabularyThemeLabel(value: string | null) {
-  if (!value) return "General";
-  return value.replaceAll("_", " ").replaceAll("-", " ");
-}
-
-export function getVocabularyTopicLabel(value: string | null) {
-  if (!value) return "Mixed";
-  return value.replaceAll("_", " ").replaceAll("-", " ");
-}
-
-export function getRequiredVocabularyCoverageVariants(tier: DbVocabularyTier) {
-  if (tier === "foundation") {
-    return ["foundation", "higher", "volna"] as const;
-  }
-
-  if (tier === "higher") {
-    return ["higher", "volna"] as const;
-  }
-
-  return ["foundation", "higher", "volna"] as const;
-}
-
-export function getVocabularyListAppliesToStudyVariant(
-  listTier: DbVocabularyTier,
-  studyVariant: DbVocabularyStudyVariant
-) {
-  if (listTier === "both" || listTier === "unknown") {
-    return true;
-  }
-
-  if (studyVariant === "foundation") {
-    return listTier === "foundation";
-  }
-
-  return listTier === "foundation" || listTier === "higher";
-}
-
-export function getVocabularyItemAppliesToStudyVariant(
-  itemTier: DbVocabularyTier,
-  studyVariant: DbVocabularyStudyVariant
-) {
-  if (itemTier === "both" || itemTier === "unknown") {
-    return true;
-  }
-
-  if (studyVariant === "foundation") {
-    return itemTier === "foundation";
-  }
-
-  return itemTier === "foundation" || itemTier === "higher";
-}
-
-function filterVocabularyListsForStudyVariant(
-  lists: DbVocabularyList[],
-  studyVariant?: DbVocabularyStudyVariant | "all" | null
-) {
-  if (!studyVariant || studyVariant === "all") {
-    return lists;
-  }
-
-  return lists.filter((list) =>
-    getVocabularyListAppliesToStudyVariant(list.tier, studyVariant)
-  );
-}
-
-function getCoverageTotalItemIdsForVariant(params: {
-  lists: DbVocabularyList[];
-  listItems: Pick<DbVocabularyListItem, "vocabulary_list_id" | "vocabulary_item_id">[];
-  fallbackItems: Pick<DbVocabularyItem, "id" | "tier">[];
-  variant: DbVocabularyCoverageVariant;
-}) {
-  const fallbackItemIds = new Set(
-    params.fallbackItems
-      .filter((item) => getVocabularyItemAppliesToStudyVariant(item.tier, params.variant))
-      .map((item) => item.id)
-  );
-
-  if (params.lists.length === 0 || params.listItems.length === 0) {
-    return fallbackItemIds;
-  }
-
-  const listIds = new Set(
-    params.lists
-      .filter((list) => getVocabularyListAppliesToStudyVariant(list.tier, params.variant))
-      .map((list) => list.id)
-  );
-  const listItemIds = params.listItems
-    .filter((listItem) => listIds.has(listItem.vocabulary_list_id))
-    .map((listItem) => listItem.vocabulary_item_id);
-
-  return new Set([...fallbackItemIds, ...listItemIds]);
-}
-
-export function getVocabularyCoverageVariantLabel(
-  variant: DbVocabularyCoverageVariant
-) {
-  switch (variant) {
-    case "foundation":
-      return "Foundation";
-    case "higher":
-      return "Higher";
-    case "volna":
-      return "Volna";
-    default:
-      return variant;
-  }
-}
-
-export function getVocabularyCoverageVariantCount(
-  coverage: DbVocabularyItemCoverage | null,
-  variant: DbVocabularyCoverageVariant
-) {
-  if (!coverage) return 0;
-
-  switch (variant) {
-    case "foundation":
-      return coverage.foundation_occurrences;
-    case "higher":
-      return coverage.higher_occurrences;
-    case "volna":
-      return coverage.volna_occurrences;
-    default:
-      return 0;
-  }
-}
-
-export function getVocabularyCoverageVariantUsed(
-  coverage: DbVocabularyItemCoverage | null,
-  variant: DbVocabularyCoverageVariant
-) {
-  return getVocabularyCoverageVariantCount(coverage, variant) > 0;
-}
-
-export function buildVocabularyUsageStats(
-  usages: Pick<DbLessonVocabularySetUsage, "variant">[]
-): DbVocabularySetUsageStats {
-  let foundationOccurrences = 0;
-  let higherOccurrences = 0;
-  let volnaOccurrences = 0;
-
-  for (const usage of usages) {
-    switch (usage.variant) {
-      case "foundation":
-        foundationOccurrences += 1;
-        break;
-      case "higher":
-        higherOccurrences += 1;
-        break;
-      case "volna":
-        volnaOccurrences += 1;
-        break;
-      default:
-        break;
-    }
-  }
-
-  const totalOccurrences = foundationOccurrences + higherOccurrences + volnaOccurrences;
-
-  return {
-    totalOccurrences,
-    foundationOccurrences,
-    higherOccurrences,
-    volnaOccurrences,
-    usedInFoundation: foundationOccurrences > 0,
-    usedInHigher: higherOccurrences > 0,
-    usedInVolna: volnaOccurrences > 0,
-  };
 }
 
 function normalizeVocabularySet(row: unknown): DbVocabularySet {
