@@ -194,15 +194,23 @@ function VocabularyItemSection({
   if (items.length === 0) return null;
 
   return (
-    <div className="space-y-3">
-      <div>
-        <h3 className="text-base font-semibold text-[var(--text-primary)]">{title}</h3>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          {description ?? `${items.length} item${items.length === 1 ? "" : "s"}`}
-        </p>
-      </div>
+    <details className="group app-card p-4">
+      <summary className="app-focus-ring flex cursor-pointer list-none items-start justify-between gap-4 rounded-lg">
+        <span className="min-w-0">
+          <span className="block text-base font-semibold text-[var(--text-primary)]">
+            {title}
+          </span>
+          <span className="mt-1 block text-sm text-[var(--text-secondary)]">
+            {description ?? `${items.length} item${items.length === 1 ? "" : "s"}`}
+          </span>
+        </span>
 
-      <div className="grid gap-3">
+        <Badge tone="muted" icon="next" className="group-open:rotate-90">
+          Open
+        </Badge>
+      </summary>
+
+      <div className="mt-4 grid gap-3">
         {items.map((item) => (
           <VocabularyItemRow
             key={`${item.vocabulary_list_id ?? item.vocabulary_set_id}-${item.id}`}
@@ -212,7 +220,7 @@ function VocabularyItemSection({
           />
         ))}
       </div>
-    </div>
+    </details>
   );
 }
 
@@ -284,6 +292,31 @@ function groupVocabularyItemsByList(
   );
 
   if (visibleLists.length === 0) {
+    if (lists.length > 0) {
+      const tierSections = [
+        {
+          key: "foundation",
+          title: "Foundation tier",
+          description: `${items.filter((item) => item.tier === "foundation").length} Foundation item${items.filter((item) => item.tier === "foundation").length === 1 ? "" : "s"}`,
+          items: items.filter((item) => item.tier === "foundation"),
+        },
+        {
+          key: "higher",
+          title: "Higher tier extension",
+          description: `${items.filter((item) => item.tier === "higher").length} Higher-extension item${items.filter((item) => item.tier === "higher").length === 1 ? "" : "s"}`,
+          items: items.filter((item) => item.tier === "higher"),
+        },
+        {
+          key: "both",
+          title: "Both tiers",
+          description: `${items.filter((item) => item.tier === "both" || item.tier === "unknown").length} item${items.filter((item) => item.tier === "both" || item.tier === "unknown").length === 1 ? "" : "s"}`,
+          items: items.filter((item) => item.tier === "both" || item.tier === "unknown"),
+        },
+      ];
+
+      return tierSections.filter((section) => section.items.length > 0);
+    }
+
     const groupedItems = groupVocabularyItemsBySource(items);
     return [
       {

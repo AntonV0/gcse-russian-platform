@@ -82,6 +82,14 @@ function getTopicOptions(themeKeys: string[]) {
   }));
 }
 
+function normalizeVocabularyKey(value: string | null) {
+  return value?.replaceAll("-", "_") ?? null;
+}
+
+function toTitleCase(value: string) {
+  return value.replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 function CoverageRatioBadge({
   label,
   usedItems,
@@ -136,10 +144,49 @@ function VocabularySetCoverageBadges({
   );
 }
 
+const VOCABULARY_THEME_SECTIONS = {
+  high_frequency_language: {
+    order: 1,
+    title: "Section 1: High-frequency language",
+  },
+  identity_and_culture: {
+    order: 2,
+    title: "Section 2: Identity and culture",
+  },
+  local_area_holiday_and_travel: {
+    order: 3,
+    title: "Section 3: Local area, holiday and travel",
+  },
+  school: {
+    order: 4,
+    title: "Section 4: School",
+  },
+  future_aspirations_study_and_work: {
+    order: 5,
+    title: "Section 5: Future aspirations, study and work",
+  },
+  international_global_dimension: {
+    order: 6,
+    title: "Section 6: International and global dimension",
+  },
+} as const;
+
 function getVocabularySectionTitle(vocabularySet: {
   import_key: string | null;
   theme_key: string | null;
 }) {
+  const normalizedThemeKey = normalizeVocabularyKey(vocabularySet.theme_key);
+  const section =
+    normalizedThemeKey && normalizedThemeKey in VOCABULARY_THEME_SECTIONS
+      ? VOCABULARY_THEME_SECTIONS[
+          normalizedThemeKey as keyof typeof VOCABULARY_THEME_SECTIONS
+        ]
+      : null;
+
+  if (section) {
+    return section.title;
+  }
+
   const importKey = vocabularySet.import_key ?? "";
 
   if (importKey.startsWith("section-1:")) {
@@ -147,19 +194,21 @@ function getVocabularySectionTitle(vocabularySet: {
   }
 
   if (importKey.startsWith("section-2:")) {
-    return `Section 2: ${getVocabularyThemeLabel(vocabularySet.theme_key)}`;
+    return `Section 2: ${toTitleCase(getVocabularyThemeLabel(vocabularySet.theme_key))}`;
   }
 
-  return "Custom vocabulary";
+  return "Custom Vocabulary";
 }
 
 function getVocabularySectionOrder(sectionTitle: string) {
-  if (sectionTitle.startsWith("Section 1")) return 1;
-  if (sectionTitle.includes("identity and culture")) return 2;
-  if (sectionTitle.includes("local area")) return 3;
-  if (sectionTitle.includes("school")) return 4;
-  if (sectionTitle.includes("future aspirations")) return 5;
-  if (sectionTitle.includes("international global dimension")) return 6;
+  const matchingSection = Object.values(VOCABULARY_THEME_SECTIONS).find(
+    (section) => section.title === sectionTitle
+  );
+
+  if (matchingSection) {
+    return matchingSection.order;
+  }
+
   return 99;
 }
 
@@ -179,7 +228,49 @@ function groupVocabularySetsBySection(
       (a, b) =>
         getVocabularySectionOrder(a.title) - getVocabularySectionOrder(b.title) ||
         a.title.localeCompare(b.title)
-    );
+  );
+}
+
+function VocabularySetBadges({
+  vocabularySet,
+  canSeeDrafts,
+}: {
+  vocabularySet: Awaited<ReturnType<typeof getVocabularySetsDb>>[number];
+  canSeeDrafts: boolean;
+}) {
+  const showCoverageBadges =
+    canSeeDrafts && shouldShowCoverageBadges(vocabularySet.list_mode);
+
+  return (
+    <>
+      <span className="flex flex-wrap gap-2">
+        <Badge tone="info" icon="school">
+          {getVocabularyTierLabel(vocabularySet.tier)}
+        </Badge>
+        <Badge tone="muted" icon="vocabularySet">
+          {getVocabularyListModeLabel(vocabularySet.list_mode)}
+        </Badge>
+        <Badge tone="muted" className="capitalize">
+          {getVocabularyThemeLabel(vocabularySet.theme_key)}
+        </Badge>
+        <Badge tone="muted" icon="list">
+          {vocabularySet.item_count} item
+          {vocabularySet.item_count === 1 ? "" : "s"}
+        </Badge>
+        {!vocabularySet.is_published ? (
+          <PublishStatusBadge isPublished={vocabularySet.is_published} />
+        ) : null}
+      </span>
+
+      {showCoverageBadges ? (
+        <span className="flex basis-full flex-wrap gap-2 pt-1">
+          <VocabularySetCoverageBadges
+            coverageSummary={vocabularySet.coverage_summary}
+          />
+        </span>
+      ) : null}
+    </>
+  );
 }
 
 export default async function VocabularyPage({ searchParams }: VocabularyPageProps) {
@@ -313,17 +404,23 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
         ) : (
           <div className="space-y-6">
             {vocabularySetGroups.map((group) => (
-              <section key={group.title} className="space-y-3">
-                <div>
-                  <h3 className="text-base font-semibold text-[var(--text-primary)]">
-                    {group.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                    {group.sets.length} set{group.sets.length === 1 ? "" : "s"}
-                  </p>
-                </div>
+              <details key={group.title} className="group app-card p-4">
+                <summary className="app-focus-ring flex cursor-pointer list-none items-start justify-between gap-4 rounded-lg">
+                  <span className="min-w-0">
+                    <span className="block text-base font-semibold text-[var(--text-primary)]">
+                      {group.title}
+                    </span>
+                    <span className="mt-1 block text-sm text-[var(--text-secondary)]">
+                      {group.sets.length} set{group.sets.length === 1 ? "" : "s"}
+                    </span>
+                  </span>
 
-                <div className="grid gap-3">
+                  <Badge tone="muted" icon="next" className="group-open:rotate-90">
+                    Open
+                  </Badge>
+                </summary>
+
+                <div className="mt-4 grid gap-3">
                   {group.sets.map((vocabularySet) => (
                     <CardListItem
                       key={vocabularySet.id}
@@ -333,32 +430,10 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
                         vocabularySet.description ?? "Vocabulary set ready for study."
                       }
                       badges={
-                        <>
-                          <Badge tone="info" icon="school">
-                            {getVocabularyTierLabel(vocabularySet.tier)}
-                          </Badge>
-                          <Badge tone="muted" icon="vocabularySet">
-                            {getVocabularyListModeLabel(vocabularySet.list_mode)}
-                          </Badge>
-                          <Badge tone="muted" className="capitalize">
-                            {getVocabularyThemeLabel(vocabularySet.theme_key)}
-                          </Badge>
-                          <Badge tone="muted" icon="list">
-                            {vocabularySet.item_count} item
-                            {vocabularySet.item_count === 1 ? "" : "s"}
-                          </Badge>
-                          {!vocabularySet.is_published ? (
-                            <PublishStatusBadge
-                              isPublished={vocabularySet.is_published}
-                            />
-                          ) : null}
-                          {canSeeDrafts &&
-                          shouldShowCoverageBadges(vocabularySet.list_mode) ? (
-                            <VocabularySetCoverageBadges
-                              coverageSummary={vocabularySet.coverage_summary}
-                            />
-                          ) : null}
-                        </>
+                        <VocabularySetBadges
+                          vocabularySet={vocabularySet}
+                          canSeeDrafts={canSeeDrafts}
+                        />
                       }
                       actions={
                         <Button
@@ -373,7 +448,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
                     />
                   ))}
                 </div>
-              </section>
+              </details>
             ))}
           </div>
         )}
