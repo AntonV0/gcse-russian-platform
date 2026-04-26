@@ -11,6 +11,9 @@ export type DbAssignment = {
   updated_at: string;
 };
 
+export const ASSIGNMENT_SELECT =
+  "id, group_id, title, instructions, due_at, status, created_by, allow_file_upload, created_at, updated_at";
+
 export type DbAssignmentItem = {
   id: string;
   assignment_id: string;
@@ -20,6 +23,9 @@ export type DbAssignmentItem = {
   custom_prompt: string | null;
   position: number;
 };
+
+export const ASSIGNMENT_ITEM_SELECT =
+  "id, assignment_id, item_type, lesson_id, question_set_id, custom_prompt, position";
 
 export type AssignmentSubmissionStatus = "not_started" | "submitted" | "reviewed";
 
@@ -37,6 +43,11 @@ export type DbAssignmentSubmission = {
   reviewed_by: string | null;
   reviewed_at: string | null;
 };
+
+export const ASSIGNMENT_SUBMISSION_SELECT =
+  "id, assignment_id, student_user_id, status, submitted_text, submitted_file_path, submitted_file_name, submitted_at, mark, feedback, reviewed_by, reviewed_at";
+
+export const ASSIGNMENT_PROFILE_SELECT = "id, full_name, display_name, email";
 
 export type StudentAssignmentCard = {
   assignment: DbAssignment;
