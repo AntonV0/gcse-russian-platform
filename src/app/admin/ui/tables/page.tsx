@@ -153,6 +153,7 @@ function StandardTable() {
     <TableShell
       title="Standard admin table"
       description="Best for content management views where filtering, row scanning, and actions matter."
+      headingLevel={3}
       actions={
         <>
           <Badge tone="info">Default pattern</Badge>
@@ -219,6 +220,7 @@ function DenseTable() {
     <TableShell
       title="Dense table"
       description="Useful when rows are numerous, but should be used carefully to avoid making scanning harder."
+      headingLevel={3}
       actions={<Badge tone="warning">Compact pattern</Badge>}
     >
       <DataTable>
@@ -395,6 +397,7 @@ function HierarchyListPattern() {
     <TableShell
       title="Hierarchy and nested list pattern"
       description="Useful for module → lesson → block structures where content relationships matter more than strict table columns."
+      headingLevel={3}
       actions={<Badge tone="info">Core LMS pattern</Badge>}
     >
       <div className="space-y-3 p-5">
@@ -474,6 +477,7 @@ function TableEmptyState() {
     <TableShell
       title="Empty table state"
       description="Tables should not collapse into blank space when there is no data."
+      headingLevel={3}
     >
       <div className="p-5">
         <EmptyState
@@ -497,6 +501,7 @@ function FilteredEmptyState() {
     <TableShell
       title="Filtered-empty state"
       description="Use a different empty state when the table has data in general, but the current filters return nothing."
+      headingLevel={3}
     >
       <div className="border-b border-[var(--border)] px-5 py-4">
         <div className="flex flex-wrap items-center gap-2">

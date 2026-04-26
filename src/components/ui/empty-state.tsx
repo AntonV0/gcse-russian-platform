@@ -49,7 +49,7 @@ export default function EmptyState({
   icon,
   iconTone = "default",
   visual,
-  headingLevel = 2,
+  headingLevel = 3,
 }: EmptyStateProps) {
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
