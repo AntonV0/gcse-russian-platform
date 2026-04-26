@@ -41,25 +41,25 @@ const logoDirections: Array<{
   bestFor: string;
 }> = [
   {
-    mark: "dialogueBook",
-    title: "Dialogue book",
+    mark: "scholarDialogue",
+    title: "Scholar dialogue",
     description:
-      "A book form with a speech detail. The strongest education + language signal.",
-    bestFor: "Primary recommendation for production brand usage.",
+      "A more ownable book-and-speech mark with stronger silhouette and negative space.",
+    bestFor: "Best fit for a premium education platform with language at its core.",
   },
   {
-    mark: "languageGrid",
-    title: "Language grid",
+    mark: "cyrillicPath",
+    title: "Cyrillic path",
     description:
-      "Structured learning blocks with a communication detail. More modular and product-led.",
-    bestFor: "A sharper option if the platform should feel more system-like.",
+      "A subtle Cyrillic-inspired path mark. Distinctive without using flags or symbols.",
+    bestFor: "Best if the brand should feel more specific to Russian study.",
   },
   {
-    mark: "globeSpeech",
-    title: "Globe speech",
+    mark: "lessonPrism",
+    title: "Lesson prism",
     description:
-      "A global communication mark. Clear language-learning meaning, but more generic.",
-    bestFor: "Marketing-led language learning contexts.",
+      "A structured conversation tile with layered course-material cues.",
+    bestFor: "Best if the platform should feel more modular and product-led.",
   },
 ];
 
@@ -138,8 +138,8 @@ export default async function AdminUiComponentsPage() {
 
       <UiLabSection
         id="brand-logo"
-        title="Brand logo system"
-        description="Preview the selected production logo direction and the alternate marks kept for comparison."
+        title="Brand logo directions"
+        description="Preview bespoke SVG logo concepts before replacing production header, sidebar, and footer usage."
       >
         <div className="space-y-4">
           <div className="grid gap-4 xl:grid-cols-3">
@@ -181,7 +181,7 @@ export default async function AdminUiComponentsPage() {
             >
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/80 px-4 py-3">
                 <div className="flex items-center justify-between gap-4">
-                  <AppLogo mark="dialogueBook" variant="compact" size="md" />
+                  <AppLogo mark="scholarDialogue" variant="compact" size="md" />
                   <div className="hidden items-center gap-4 text-sm app-text-muted sm:flex">
                     <span>Dashboard</span>
                     <span>Courses</span>
@@ -195,7 +195,7 @@ export default async function AdminUiComponentsPage() {
                   <div className="mb-3 text-sm font-medium text-[var(--text-primary)]">
                     Accent tone
                   </div>
-                  <AppLogo mark="dialogueBook" variant="full" size="md" />
+                  <AppLogo mark="scholarDialogue" variant="full" size="md" />
                 </div>
 
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
@@ -203,7 +203,7 @@ export default async function AdminUiComponentsPage() {
                     Neutral tone
                   </div>
                   <AppLogo
-                    mark="dialogueBook"
+                    mark="scholarDialogue"
                     variant="full"
                     size="md"
                     tone="neutral"
@@ -219,7 +219,7 @@ export default async function AdminUiComponentsPage() {
             >
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-3 py-3">
                 <AppLogo
-                  mark="dialogueBook"
+                  mark="scholarDialogue"
                   variant="full"
                   size="md"
                   subtitle="Full access"
@@ -245,8 +245,8 @@ export default async function AdminUiComponentsPage() {
               </div>
 
               <p className="text-sm app-text-muted">
-                Dialogue book is the selected production direction; the other marks stay
-                here as comparison references.
+                Scholar dialogue is still the recommended direction, but production
+                replacement should wait until you choose the final mark.
               </p>
             </PanelCard>
           </div>
