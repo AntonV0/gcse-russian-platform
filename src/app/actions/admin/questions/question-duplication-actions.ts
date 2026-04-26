@@ -14,6 +14,14 @@ function usesOptionsTable(questionType: string) {
   return questionType === "multiple_choice" || questionType === "multiple_response";
 }
 
+const QUESTION_SET_DUPLICATE_SELECT =
+  "id, slug, title, description, instructions, source_type, is_template, template_type";
+const QUESTION_DUPLICATE_SELECT =
+  "id, question_set_id, question_type, prompt, explanation, marks, position, audio_path, image_path, metadata, is_active";
+const QUESTION_OPTION_DUPLICATE_SELECT = "option_text, is_correct, position";
+const QUESTION_ACCEPTED_ANSWER_DUPLICATE_SELECT =
+  "answer_text, normalized_answer, is_primary, case_sensitive, notes";
+
 export async function duplicateQuestionAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
 
@@ -32,7 +40,7 @@ export async function duplicateQuestionAction(formData: FormData) {
 
   const { data: sourceQuestion, error: sourceQuestionError } = await supabase
     .from("questions")
-    .select("*")
+    .select(QUESTION_DUPLICATE_SELECT)
     .eq("id", questionId)
     .eq("question_set_id", questionSetId)
     .maybeSingle();
@@ -82,7 +90,7 @@ export async function duplicateQuestionAction(formData: FormData) {
   if (usesOptionsTable(duplicatedQuestion.question_type)) {
     const { data: sourceOptions, error: sourceOptionsError } = await supabase
       .from("question_options")
-      .select("*")
+      .select(QUESTION_OPTION_DUPLICATE_SELECT)
       .eq("question_id", sourceQuestion.id)
       .order("position", { ascending: true });
 
@@ -111,7 +119,7 @@ export async function duplicateQuestionAction(formData: FormData) {
   } else {
     const { data: sourceAnswers, error: sourceAnswersError } = await supabase
       .from("question_accepted_answers")
-      .select("*")
+      .select(QUESTION_ACCEPTED_ANSWER_DUPLICATE_SELECT)
       .eq("question_id", sourceQuestion.id)
       .order("is_primary", { ascending: false });
 
@@ -161,7 +169,7 @@ export async function duplicateQuestionSetAction(formData: FormData) {
 
   const { data: sourceSet, error: sourceSetError } = await supabase
     .from("question_sets")
-    .select("*")
+    .select(QUESTION_SET_DUPLICATE_SELECT)
     .eq("id", questionSetId)
     .maybeSingle();
 
@@ -199,7 +207,7 @@ export async function duplicateQuestionSetAction(formData: FormData) {
 
   const { data: sourceQuestions, error: sourceQuestionsError } = await supabase
     .from("questions")
-    .select("*")
+    .select(QUESTION_DUPLICATE_SELECT)
     .eq("question_set_id", questionSetId)
     .order("position", { ascending: true });
 
@@ -246,7 +254,7 @@ export async function duplicateQuestionSetAction(formData: FormData) {
     if (usesOptionsTable(sourceQuestion.question_type)) {
       const { data: sourceOptions, error: sourceOptionsError } = await supabase
         .from("question_options")
-        .select("*")
+        .select(QUESTION_OPTION_DUPLICATE_SELECT)
         .eq("question_id", sourceQuestion.id)
         .order("position", { ascending: true });
 
@@ -275,7 +283,7 @@ export async function duplicateQuestionSetAction(formData: FormData) {
     } else {
       const { data: sourceAnswers, error: sourceAnswersError } = await supabase
         .from("question_accepted_answers")
-        .select("*")
+        .select(QUESTION_ACCEPTED_ANSWER_DUPLICATE_SELECT)
         .eq("question_id", sourceQuestion.id)
         .order("is_primary", { ascending: false });
 
@@ -334,7 +342,7 @@ export async function createQuestionSetFromTemplateAction(formData: FormData) {
 
   const { data: sourceSet, error: sourceSetError } = await supabase
     .from("question_sets")
-    .select("*")
+    .select(QUESTION_SET_DUPLICATE_SELECT)
     .eq("id", templateQuestionSetId)
     .eq("is_template", true)
     .maybeSingle();
@@ -365,7 +373,7 @@ export async function createQuestionSetFromTemplateAction(formData: FormData) {
 
   const { data: sourceQuestions, error: sourceQuestionsError } = await supabase
     .from("questions")
-    .select("*")
+    .select(QUESTION_DUPLICATE_SELECT)
     .eq("question_set_id", templateQuestionSetId)
     .order("position", { ascending: true });
 
@@ -410,7 +418,7 @@ export async function createQuestionSetFromTemplateAction(formData: FormData) {
     if (usesOptionsTable(sourceQuestion.question_type)) {
       const { data: sourceOptions, error: sourceOptionsError } = await supabase
         .from("question_options")
-        .select("*")
+        .select(QUESTION_OPTION_DUPLICATE_SELECT)
         .eq("question_id", sourceQuestion.id)
         .order("position", { ascending: true });
 
@@ -439,7 +447,7 @@ export async function createQuestionSetFromTemplateAction(formData: FormData) {
     } else {
       const { data: sourceAnswers, error: sourceAnswersError } = await supabase
         .from("question_accepted_answers")
-        .select("*")
+        .select(QUESTION_ACCEPTED_ANSWER_DUPLICATE_SELECT)
         .eq("question_id", sourceQuestion.id)
         .order("is_primary", { ascending: false });
 

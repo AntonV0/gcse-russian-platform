@@ -11,6 +11,10 @@ import {
   reorderTablePositions,
 } from "@/app/actions/admin/admin-lesson-builder-shared";
 
+const DUPLICATE_LESSON_SECTION_SELECT =
+  "title, description, section_kind, variant_visibility, canonical_section_key, settings";
+const DUPLICATE_LESSON_BLOCK_SELECT = "block_type, data, settings";
+
 export async function createSectionAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
@@ -64,7 +68,7 @@ export async function duplicateSectionAction(formData: FormData) {
 
   const { data: section, error: sectionError } = await supabase
     .from("lesson_sections")
-    .select("*")
+    .select(DUPLICATE_LESSON_SECTION_SELECT)
     .eq("id", sectionId)
     .single();
 
@@ -88,7 +92,7 @@ export async function duplicateSectionAction(formData: FormData) {
       canonical_section_key: section.canonical_section_key,
       settings: section.settings ?? {},
     })
-    .select("*")
+    .select("id")
     .single();
 
   if (insertSectionError || !newSection) {
@@ -98,7 +102,7 @@ export async function duplicateSectionAction(formData: FormData) {
 
   const { data: blocks, error: blocksError } = await supabase
     .from("lesson_blocks")
-    .select("*")
+    .select(DUPLICATE_LESSON_BLOCK_SELECT)
     .eq("lesson_section_id", sectionId)
     .order("position", { ascending: true });
 

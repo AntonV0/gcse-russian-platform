@@ -14,6 +14,8 @@ import {
 } from "@/app/actions/admin/admin-lesson-builder-shared";
 import { createBlockRow, type CreatableLessonBlockType } from "./shared";
 
+const DUPLICATE_LESSON_BLOCK_SELECT = "block_type, data, settings";
+
 export async function duplicateBlockAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) throw new Error("Unauthorized");
@@ -29,7 +31,7 @@ export async function duplicateBlockAction(formData: FormData) {
 
   const { data: block, error } = await supabase
     .from("lesson_blocks")
-    .select("*")
+    .select(DUPLICATE_LESSON_BLOCK_SELECT)
     .eq("id", blockId)
     .single();
 
