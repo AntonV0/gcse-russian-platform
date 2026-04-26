@@ -87,13 +87,13 @@ export default function FeedbackBanner({
 
           <div className="min-w-0 flex-1">
             {title ? (
-              <div className="font-semibold tracking-[-0.01em] text-[var(--text-primary)]">
+              <div className="app-heading-card">
                 {title}
               </div>
             ) : null}
 
             {description ? (
-              <p className={[title ? "mt-1" : "", "text-sm leading-6"].join(" ")}>
+              <p className={[title ? "mt-1" : "", "app-text-body-muted"].join(" ")}>
                 {description}
               </p>
             ) : null}

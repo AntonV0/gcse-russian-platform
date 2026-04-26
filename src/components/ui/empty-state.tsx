@@ -1,5 +1,6 @@
 import AppIcon, { type AppIconValue } from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type EmptyStateIconTone =
   | "default"
@@ -17,6 +18,7 @@ type EmptyStateProps = {
   icon?: AppIconValue;
   iconTone?: EmptyStateIconTone;
   visual?: React.ReactNode;
+  headingLevel?: HeadingLevel;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -47,6 +49,7 @@ export default function EmptyState({
   icon,
   iconTone = "default",
   visual,
+  headingLevel = 2,
 }: EmptyStateProps) {
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
@@ -91,12 +94,12 @@ export default function EmptyState({
         ) : null}
 
         <div className="relative mx-auto max-w-[32rem]">
-          <div className="text-[1.08rem] font-semibold tracking-[-0.02em] text-[var(--text-primary)] sm:text-[1.15rem]">
+          <Heading level={headingLevel} className="app-heading-subsection">
             {title}
-          </div>
+          </Heading>
 
           {description ? (
-            <p className="mt-2 text-sm leading-6 app-text-muted">{description}</p>
+            <p className="mt-2 app-text-body-muted">{description}</p>
           ) : null}
 
           {action ? <div className="mt-6 flex justify-center">{action}</div> : null}

@@ -1,11 +1,13 @@
 import Card, { CardHeader } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type TableShellProps = {
   title: string;
   description: string;
   children: React.ReactNode;
   actions?: React.ReactNode;
+  headingLevel?: HeadingLevel;
   className?: string;
 };
 
@@ -16,6 +18,7 @@ export default function TableShell({
   description,
   children,
   actions,
+  headingLevel = 2,
   className,
 }: TableShellProps) {
   return (
@@ -41,10 +44,10 @@ export default function TableShell({
         <CardHeader>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
-              <div className="font-semibold text-[var(--text-primary)]">{title}</div>
-              <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-                {description}
-              </p>
+              <Heading level={headingLevel} className="app-heading-card">
+                {title}
+              </Heading>
+              <p className="mt-1 app-text-body-muted">{description}</p>
             </div>
 
             {actions ? (
