@@ -107,7 +107,7 @@ export default function SentenceBuilderBlock({
                 type="button"
                 onClick={() => onRemoveToken(index)}
                 disabled={hasSubmitted || isSubmitting}
-                className="app-choice-chip app-choice-chip-selected px-3 py-1.5 text-sm disabled:cursor-default"
+                className="app-choice-chip app-choice-chip-selected px-3 py-2 text-sm disabled:cursor-default"
               >
                 {token}
               </button>
@@ -133,7 +133,7 @@ export default function SentenceBuilderBlock({
                 type="button"
                 onClick={() => onAddToken(index)}
                 disabled={hasSubmitted || isSubmitting}
-                className="app-choice-chip px-3 py-1.5 text-sm disabled:cursor-default"
+                className="app-choice-chip px-3 py-2 text-sm disabled:cursor-default"
               >
                 {token}
               </button>
@@ -146,7 +146,7 @@ export default function SentenceBuilderBlock({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="app-mobile-action-stack flex flex-wrap gap-3">
         <Button
           type="button"
           onClick={onSubmit}

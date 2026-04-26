@@ -121,6 +121,7 @@ export default function AudioPlayer({
           </audio>
 
           {useCustomPlayFlow ? (
+            <div className="app-mobile-action-stack flex">
             <Button
               type="button"
               onClick={handlePlayClick}
@@ -131,6 +132,7 @@ export default function AudioPlayer({
             >
               Play audio
             </Button>
+            </div>
           ) : null}
         </div>
       )}

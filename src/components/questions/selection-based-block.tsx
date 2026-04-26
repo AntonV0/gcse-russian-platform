@@ -132,7 +132,7 @@ export default function SelectionBasedBlock({
                         onClick={() => onSelectOption(group.id, option)}
                         disabled={hasSubmitted || isSubmitting}
                         className={[
-                          "app-choice-chip px-3 py-1.5 text-sm",
+                          "app-choice-chip px-3 py-2 text-sm",
                           isSelected ? "app-choice-chip-selected" : "",
                           hasSubmitted || isSubmitting
                             ? "cursor-default"
@@ -170,7 +170,7 @@ export default function SelectionBasedBlock({
                       onClick={() => onSelectOption(group.id, option)}
                       disabled={hasSubmitted || isSubmitting}
                       className={[
-                        "app-choice-chip px-3 py-1.5 text-sm",
+                        "app-choice-chip px-3 py-2 text-sm",
                         isSelected ? "app-choice-chip-selected" : "",
                         hasSubmitted || isSubmitting
                           ? "cursor-default"
@@ -187,7 +187,7 @@ export default function SelectionBasedBlock({
         </div>
       )}
 
-      <div className="flex flex-wrap gap-3">
+      <div className="app-mobile-action-stack flex flex-wrap gap-3">
         <Button
           type="button"
           onClick={onSubmit}

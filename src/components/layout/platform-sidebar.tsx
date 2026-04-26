@@ -53,7 +53,7 @@ function itemClass(active: boolean) {
 
 function mobileItemClass(active: boolean) {
   return [
-    "inline-flex shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 text-sm font-medium transition app-focus-ring",
+    "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 text-sm font-medium transition app-focus-ring",
     active
       ? "app-selected-surface"
       : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
@@ -156,7 +156,7 @@ export default function PlatformSidebar({
             <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
               Learn
             </div>
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+            <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
               {[...mainItems, ...conditionalItems].map((item) => {
                 const active = isActive(activePathname, item.href);
 
@@ -179,7 +179,7 @@ export default function PlatformSidebar({
             <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
               Account
             </div>
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+            <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
               {utilityItems.map((item) => {
                 const active = isActive(activePathname, item.href);
 
