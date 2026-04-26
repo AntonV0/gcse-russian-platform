@@ -1,95 +1,39 @@
 import { createClient } from "@/lib/supabase/server";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import type {
+  DbGrammarSet,
+  DbGrammarSetListItem,
+  GrammarSetFilters,
+  LoadedGrammarPointDetailDb,
+  LoadedGrammarSetDetailDb,
+} from "@/lib/grammar/types";
+import {
+  normalizeGrammarExample,
+  normalizeGrammarPoint,
+  normalizeGrammarSet,
+  normalizeGrammarTable,
+} from "@/lib/grammar/normalizers";
 
-export type DbGrammarTier = "foundation" | "higher" | "both" | "unknown";
-
-export type GrammarTableCell = string;
-export type GrammarTableColumns = string[];
-export type GrammarTableRows = string[][];
-
-export type DbGrammarSet = {
-  id: string;
-  slug: string;
-  title: string;
-  description: string | null;
-  theme_key: string | null;
-  topic_key: string | null;
-  tier: DbGrammarTier;
-  sort_order: number;
-  is_published: boolean;
-  is_trial_visible: boolean;
-  requires_paid_access: boolean;
-  available_in_volna: boolean;
-  source_key: string | null;
-  source_version: string | null;
-  import_key: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-export type DbGrammarPoint = {
-  id: string;
-  grammar_set_id: string;
-  slug: string;
-  title: string;
-  short_description: string | null;
-  full_explanation: string | null;
-  spec_reference: string | null;
-  grammar_tag_key: string | null;
-  category_key: string | null;
-  tier: DbGrammarTier;
-  sort_order: number;
-  is_published: boolean;
-  created_at: string;
-  updated_at: string;
-};
-
-export type DbGrammarExample = {
-  id: string;
-  grammar_point_id: string;
-  russian_text: string;
-  english_translation: string;
-  optional_highlight: string | null;
-  note: string | null;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-};
-
-export type DbGrammarTable = {
-  id: string;
-  grammar_point_id: string;
-  title: string;
-  columns: GrammarTableColumns;
-  rows: GrammarTableRows;
-  optional_note: string | null;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-};
-
-export type DbGrammarSetListItem = DbGrammarSet & {
-  point_count: number;
-};
-
-export type LoadedGrammarSetDetailDb = {
-  grammarSet: DbGrammarSet | null;
-  points: DbGrammarPoint[];
-};
-
-export type LoadedGrammarPointDetailDb = {
-  grammarSet: DbGrammarSet | null;
-  grammarPoint: DbGrammarPoint | null;
-  examples: DbGrammarExample[];
-  tables: DbGrammarTable[];
-};
-
-export type GrammarSetFilters = {
-  search?: string | null;
-  tier?: DbGrammarTier | "all" | null;
-  themeKey?: string | null;
-  published?: "all" | "published" | "draft" | null;
-};
+export type {
+  DbGrammarExample,
+  DbGrammarPoint,
+  DbGrammarSet,
+  DbGrammarSetListItem,
+  DbGrammarTable,
+  DbGrammarTier,
+  GrammarSetFilters,
+  GrammarTableCell,
+  GrammarTableColumns,
+  GrammarTableRows,
+  LoadedGrammarPointDetailDb,
+  LoadedGrammarSetDetailDb,
+} from "@/lib/grammar/types";
+export {
+  getGrammarCategoryLabel,
+  getGrammarThemeLabel,
+  getGrammarTierLabel,
+  getGrammarTopicLabel,
+} from "@/lib/grammar/labels";
 
 const GRAMMAR_SET_SELECT =
   "id, slug, title, description, theme_key, topic_key, tier, sort_order, is_published, is_trial_visible, requires_paid_access, available_in_volna, source_key, source_version, import_key, created_at, updated_at";
@@ -99,128 +43,6 @@ const GRAMMAR_EXAMPLE_SELECT =
   "id, grammar_point_id, russian_text, english_translation, optional_highlight, note, sort_order, created_at, updated_at";
 const GRAMMAR_TABLE_SELECT =
   "id, grammar_point_id, title, columns, rows, optional_note, sort_order, created_at, updated_at";
-
-export function getGrammarTierLabel(tier: DbGrammarTier) {
-  switch (tier) {
-    case "foundation":
-      return "Foundation";
-    case "higher":
-      return "Higher";
-    case "both":
-      return "Both tiers";
-    case "unknown":
-      return "Unknown tier";
-    default:
-      return tier;
-  }
-}
-
-export function getGrammarCategoryLabel(value: string | null) {
-  if (!value) return "Uncategorised";
-  return value.replaceAll("_", " ");
-}
-
-export function getGrammarThemeLabel(value: string | null) {
-  if (!value) return "General";
-  return value.replaceAll("_", " ");
-}
-
-export function getGrammarTopicLabel(value: string | null) {
-  if (!value) return "Mixed";
-  return value.replaceAll("_", " ");
-}
-
-function normalizeGrammarSet(row: unknown): DbGrammarSet {
-  const record = row as Partial<DbGrammarSet>;
-
-  return {
-    id: String(record.id),
-    slug: String(record.slug),
-    title: String(record.title),
-    description: record.description ?? null,
-    theme_key: record.theme_key ?? null,
-    topic_key: record.topic_key ?? null,
-    tier: record.tier ?? "both",
-    sort_order: Number(record.sort_order ?? 0),
-    is_published: Boolean(record.is_published),
-    is_trial_visible: Boolean(record.is_trial_visible),
-    requires_paid_access: Boolean(record.requires_paid_access),
-    available_in_volna: Boolean(record.available_in_volna),
-    source_key: record.source_key ?? null,
-    source_version: record.source_version ?? null,
-    import_key: record.import_key ?? null,
-    created_at: String(record.created_at),
-    updated_at: String(record.updated_at),
-  };
-}
-
-function normalizeGrammarPoint(row: unknown): DbGrammarPoint {
-  const record = row as Partial<DbGrammarPoint>;
-
-  return {
-    id: String(record.id),
-    grammar_set_id: String(record.grammar_set_id),
-    slug: String(record.slug),
-    title: String(record.title),
-    short_description: record.short_description ?? null,
-    full_explanation: record.full_explanation ?? null,
-    spec_reference: record.spec_reference ?? null,
-    grammar_tag_key: record.grammar_tag_key ?? null,
-    category_key: record.category_key ?? null,
-    tier: record.tier ?? "both",
-    sort_order: Number(record.sort_order ?? 0),
-    is_published: Boolean(record.is_published),
-    created_at: String(record.created_at),
-    updated_at: String(record.updated_at),
-  };
-}
-
-function normalizeGrammarExample(row: unknown): DbGrammarExample {
-  const record = row as Partial<DbGrammarExample>;
-
-  return {
-    id: String(record.id),
-    grammar_point_id: String(record.grammar_point_id),
-    russian_text: String(record.russian_text),
-    english_translation: String(record.english_translation),
-    optional_highlight: record.optional_highlight ?? null,
-    note: record.note ?? null,
-    sort_order: Number(record.sort_order ?? 0),
-    created_at: String(record.created_at),
-    updated_at: String(record.updated_at),
-  };
-}
-
-function normalizeStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-
-  return value.map((item) => String(item));
-}
-
-function normalizeStringMatrix(value: unknown): string[][] {
-  if (!Array.isArray(value)) return [];
-
-  return value.map((row) => {
-    if (!Array.isArray(row)) return [];
-    return row.map((cell) => String(cell));
-  });
-}
-
-function normalizeGrammarTable(row: unknown): DbGrammarTable {
-  const record = row as Partial<DbGrammarTable>;
-
-  return {
-    id: String(record.id),
-    grammar_point_id: String(record.grammar_point_id),
-    title: String(record.title),
-    columns: normalizeStringArray(record.columns),
-    rows: normalizeStringMatrix(record.rows),
-    optional_note: record.optional_note ?? null,
-    sort_order: Number(record.sort_order ?? 0),
-    created_at: String(record.created_at),
-    updated_at: String(record.updated_at),
-  };
-}
 
 async function attachGrammarPointCounts(
   grammarSets: DbGrammarSet[]
@@ -643,3 +465,4 @@ export async function loadGrammarPointBySlugsDb(
     tables,
   };
 }
+
