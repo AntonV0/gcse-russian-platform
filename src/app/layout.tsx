@@ -1,6 +1,5 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import {
   DEFAULT_OG_IMAGE_PATH,
   DEFAULT_SEO_DESCRIPTION,
@@ -102,9 +101,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen">
-        <ThemeProvider>
-          <DevMarkerProvider isAdmin={false}>{children}</DevMarkerProvider>
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
