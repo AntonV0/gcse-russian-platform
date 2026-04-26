@@ -26,10 +26,8 @@ export default function TextBlock({ content }: TextBlockProps) {
         />
       ) : null}
 
-      <div className="prose prose-neutral max-w-none">
-        <p className="whitespace-pre-wrap leading-7 text-[var(--text-secondary)]">
-          {content}
-        </p>
+      <div className="max-w-none">
+        <p className="app-lesson-prose whitespace-pre-wrap">{content}</p>
       </div>
     </section>
   );

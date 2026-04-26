@@ -6,6 +6,7 @@ import AppIcon from "@/components/ui/app-icon";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   filterPastPaperResourcesForDashboardAccess,
@@ -109,6 +110,13 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
               Mock exams
             </Button>
           </>
+        }
+        visual={
+          <VisualPlaceholder
+            category="pastPapers"
+            size="wide"
+            ariaLabel="Abstract past paper resource illustration"
+          />
         }
       />
 

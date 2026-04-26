@@ -119,7 +119,7 @@ export default async function AccountPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title">Your account overview</h2>
+              <h2 className="app-heading-hero">Your account overview</h2>
               <p className="app-subtitle max-w-2xl">
                 {getAccountSummaryText(dashboard.variant, dashboard.accessMode)}
               </p>
@@ -140,7 +140,7 @@ export default async function AccountPage() {
             </div>
           </div>
 
-          <DashboardCard title="At a glance" className="h-full">
+          <DashboardCard title="At a glance" headingLevel={3} className="h-full">
             <div className="space-y-4">
               <div className="app-stat-tile">
                 <div className="app-stat-label">

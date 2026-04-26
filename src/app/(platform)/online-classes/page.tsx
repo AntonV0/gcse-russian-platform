@@ -71,7 +71,7 @@ export default async function OnlineClassesPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title">Learn with a live teacher</h2>
+              <h2 className="app-heading-hero">Learn with a live teacher</h2>
               <p className="app-subtitle max-w-2xl">
                 Volna School’s online GCSE Russian classes can support students who want
                 more structure, expert teaching, and a clearer path through the course.

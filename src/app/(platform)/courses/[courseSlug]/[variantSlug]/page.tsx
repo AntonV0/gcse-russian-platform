@@ -75,7 +75,9 @@ export default async function VariantPage({ params }: VariantPageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title max-w-3xl">Choose your next module</h2>
+              <h2 className="app-heading-hero max-w-3xl">
+                Choose your next module
+              </h2>
               <p className="app-subtitle max-w-2xl">
                 Work through the modules in order to keep your learning structured and
                 easier to follow.

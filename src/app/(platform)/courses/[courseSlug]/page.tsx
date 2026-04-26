@@ -74,7 +74,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title max-w-3xl">Choose your learning path</h2>
+              <h2 className="app-heading-hero max-w-3xl">
+                Choose your learning path
+              </h2>
               <p className="app-subtitle max-w-2xl">
                 Start with the course path that matches your level and study goals, then
                 work through modules and lessons step by step.

@@ -10,6 +10,7 @@ import type {
   LoadedMockExamAttemptDb,
   LoadedMockExamAttemptReviewDb,
   LoadedMockExamDb,
+  MockExamAttemptStatus,
   MockExamAttemptReviewListItem,
   MockExamFilters,
   MockExamPaperName,

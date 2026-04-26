@@ -7,9 +7,7 @@ export function HeaderBlock({ content }: { content: string }) {
   return (
     <div className="space-y-2">
       <span className="app-pill app-pill-muted">Header</span>
-      <h3 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-        {content}
-      </h3>
+      <h3 className="app-heading-section">{content}</h3>
     </div>
   );
 }
@@ -18,7 +16,7 @@ export function SubheaderBlock({ content }: { content: string }) {
   return (
     <div className="space-y-2">
       <span className="app-pill app-pill-muted">Subheader</span>
-      <h4 className="text-xl font-semibold text-[var(--text-primary)]">{content}</h4>
+      <h4 className="app-heading-subsection">{content}</h4>
     </div>
   );
 }
@@ -51,9 +49,7 @@ export function CalloutBlock({ title, content }: { title?: string; content: stri
         <span className="app-pill app-pill-info">{title ?? "Callout"}</span>
       </div>
 
-      <p className="whitespace-pre-wrap leading-7 text-[var(--text-primary)]">
-        {content}
-      </p>
+      <p className="app-text-body whitespace-pre-wrap">{content}</p>
     </div>
   );
 }
@@ -82,9 +78,7 @@ export function ExamTipBlock({ title, content }: { title?: string; content: stri
         <span className="app-pill app-pill-warning">{title ?? "Exam tip"}</span>
       </div>
 
-      <p className="whitespace-pre-wrap leading-7 text-[var(--text-primary)]">
-        {content}
-      </p>
+      <p className="app-text-body whitespace-pre-wrap">{content}</p>
     </div>
   );
 }
@@ -128,7 +122,7 @@ export function ImageBlock({
       </div>
 
       {caption ? (
-        <figcaption className="text-sm app-text-muted">{caption}</figcaption>
+        <figcaption className="app-text-caption">{caption}</figcaption>
       ) : null}
     </figure>
   );
@@ -173,7 +167,7 @@ export function AudioBlock({
         Your browser does not support the audio element.
       </audio>
 
-      {caption ? <div className="text-sm app-text-muted">{caption}</div> : null}
+      {caption ? <div className="app-text-caption">{caption}</div> : null}
     </div>
   );
 }

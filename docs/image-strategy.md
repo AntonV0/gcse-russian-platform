@@ -26,6 +26,9 @@ placeholders in the GCSE Russian Course Platform.
   patterns before wider rollout.
 - The student vocabulary and grammar hubs use placeholder visuals in their
   intro panels as the first production placement test.
+- Past papers and mock exams also use intro placeholders to distinguish official
+  resource browsing from platform-created practice without adding visual noise to
+  filters or question lists.
 
 ## Placement Rules
 

@@ -1,5 +1,6 @@
 import Card, { CardBody, CardFooter, CardHeader } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type SectionCardTone = "default" | "admin" | "student" | "brand" | "muted";
 type SectionCardDensity = "default" | "compact";
@@ -16,6 +17,7 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
   footer?: React.ReactNode;
   tone?: SectionCardTone;
   density?: SectionCardDensity;
+  headingLevel?: HeadingLevel;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -86,6 +88,7 @@ export default function SectionCard({
   footer,
   tone = "default",
   density = "default",
+  headingLevel = 2,
   ...divProps
 }: Props) {
   const toneClasses = getToneClasses(tone);
@@ -131,7 +134,7 @@ export default function SectionCard({
         >
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0 space-y-1">
-              <h2 className="app-card-title">{title}</h2>
+              <Heading level={headingLevel} className="app-card-title">{title}</Heading>
               {description ? <p className="app-card-desc">{description}</p> : null}
             </div>
 

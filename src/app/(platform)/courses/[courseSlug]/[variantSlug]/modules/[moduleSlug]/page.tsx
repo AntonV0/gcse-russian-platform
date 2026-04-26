@@ -98,7 +98,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title max-w-3xl">Continue this module</h2>
+              <h2 className="app-heading-hero max-w-3xl">
+                Continue this module
+              </h2>
               <p className="app-subtitle max-w-2xl">
                 Follow the lesson sequence in order so your progress stays structured and
                 unlocked correctly.
@@ -131,7 +133,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
             </div>
           </div>
 
-          <DashboardCard title="Module progress" className="h-full">
+          <DashboardCard title="Module progress" headingLevel={3} className="h-full">
             <div className="space-y-4">
               <div>
                 <div className="mb-2 flex items-center justify-between gap-3 text-sm">

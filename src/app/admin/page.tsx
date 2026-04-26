@@ -33,6 +33,7 @@ function AdminLinkCard({ title, description, href, badge, ctaLabel }: AdminNavCa
       <PanelCard
         title={title}
         description={description}
+        headingLevel={3}
         density="compact"
         className="h-full min-h-[162px] transition-transform duration-200 hover:-translate-y-0.5"
         headerClassName="min-h-[92px]"
@@ -225,6 +226,7 @@ export default async function AdminPage() {
               <PanelCard
                 title="Content structure"
                 description="Core content totals across the platform."
+                headingLevel={3}
                 tone="muted"
                 density="compact"
                 contentClassName="space-y-3"
@@ -269,6 +271,7 @@ export default async function AdminPage() {
               <PanelCard
                 title="Users and access"
                 description="People totals and current access state."
+                headingLevel={3}
                 tone="muted"
                 density="compact"
                 contentClassName="space-y-3"

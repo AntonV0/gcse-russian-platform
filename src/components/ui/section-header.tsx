@@ -1,7 +1,10 @@
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
+
 type SectionHeaderProps = {
   title: string;
   description?: string;
   actions?: React.ReactNode;
+  headingLevel?: HeadingLevel;
   className?: string;
 };
 
@@ -9,6 +12,7 @@ export default function SectionHeader({
   title,
   description,
   actions,
+  headingLevel = 2,
   className,
 }: SectionHeaderProps) {
   return (
@@ -21,7 +25,9 @@ export default function SectionHeader({
         .join(" ")}
     >
       <div className="min-w-0">
-        <h2 className="app-section-title text-lg">{title}</h2>
+        <Heading level={headingLevel} className="app-section-title text-lg">
+          {title}
+        </Heading>
         {description ? (
           <p className="mt-1 text-sm app-text-muted">{description}</p>
         ) : null}

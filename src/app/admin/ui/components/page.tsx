@@ -113,6 +113,7 @@ export default async function AdminUiComponentsPage() {
         <div className="space-y-4">
           <PageIntroPanel
             tone="admin"
+            headingLevel={3}
             eyebrow="Content management"
             title="GCSE Russian course"
             description="Manage variants, modules, lessons, publishing state, and internal structure from one shared content area."
@@ -162,6 +163,7 @@ export default async function AdminUiComponentsPage() {
 
           <PageIntroPanel
             tone="student"
+            headingLevel={3}
             eyebrow="Continue learning"
             title="Theme 2: Local area, holiday and travel"
             description="Build confidence with vocabulary, listening, and exam-style practice through structured lessons and clear next steps."
@@ -185,6 +187,7 @@ export default async function AdminUiComponentsPage() {
 
           <PageIntroPanel
             tone="brand"
+            headingLevel={3}
             eyebrow="Full access"
             title="Unlock the complete GCSE Russian experience"
             description="Get structured lesson paths, progress tracking, premium revision support, and the full higher-tier learning journey."

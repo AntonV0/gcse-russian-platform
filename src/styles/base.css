@@ -79,21 +79,21 @@ h6 {
   margin: 0;
   color: var(--text-primary);
   line-height: 1.15;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 h1 {
-  font-size: clamp(1.9rem, 2.4vw, 2.8rem);
+  font-size: 1.9rem;
   font-weight: 800;
 }
 
 h2 {
-  font-size: clamp(1.4rem, 1.8vw, 2rem);
+  font-size: 1.4rem;
   font-weight: 700;
 }
 
 h3 {
-  font-size: clamp(1.1rem, 1.2vw, 1.35rem);
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
@@ -165,5 +165,33 @@ small {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.45rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  h1 {
+    font-size: 2.8rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.35rem;
   }
 }
