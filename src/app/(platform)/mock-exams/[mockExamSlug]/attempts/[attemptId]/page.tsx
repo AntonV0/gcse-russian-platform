@@ -1,5 +1,6 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
 import MockExamResponseField from "@/components/mock-exams/mock-exam-response-field";
+import MockExamResponseSummary from "@/components/mock-exams/mock-exam-response-summary";
 import MockExamTimerPanel from "@/components/mock-exams/mock-exam-timer-panel";
 import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import Badge from "@/components/ui/badge";
@@ -172,7 +173,11 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
           />
         </SectionCard>
       ) : (
-        <form action={saveMockExamAttemptResponsesAction} className="space-y-4">
+        <form
+          action={saveMockExamAttemptResponsesAction}
+          className="space-y-4"
+          encType="multipart/form-data"
+        >
           <input type="hidden" name="attemptId" value={attempt.id} />
 
           <div className="space-y-4">
@@ -213,11 +218,21 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
                               index={questionIndex}
                             />
 
-                            <MockExamResponseField
-                              question={studentSafeQuestion}
-                              response={response}
-                              disabled={!isDraft}
-                            />
+                            {isDraft ? (
+                              <MockExamResponseField
+                                question={studentSafeQuestion}
+                                response={response}
+                              />
+                            ) : (
+                              <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+                                <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                                  Your response
+                                </div>
+                                <div className="mt-2">
+                                  <MockExamResponseSummary response={response} />
+                                </div>
+                              </div>
+                            )}
 
                             {response?.awarded_marks !== null &&
                             response?.awarded_marks !== undefined ? (

@@ -36,9 +36,22 @@ function getRecordArray(value: unknown) {
   );
 }
 
+function getRecord(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function getTaskStimulus(question: DbMockExamQuestion) {
+  return getRecord(getRecord(question.data.taskContext).stimulus);
+}
+
 function RenderMedia({ question }: { question: DbMockExamQuestion }) {
-  const audioUrl = getString(question.data.audioUrl);
-  const imageUrl = getString(question.data.imageUrl);
+  const stimulus = getTaskStimulus(question);
+  const audioUrl = getString(question.data.audioUrl) || getString(stimulus.audioUrl);
+  const imageUrl = getString(question.data.imageUrl) || getString(stimulus.imageUrl);
+  const replayLimit =
+    getNumber(question.data.audioMaxPlays) ?? getNumber(stimulus.replayLimit);
 
   if (!audioUrl && !imageUrl) return null;
 
@@ -47,7 +60,7 @@ function RenderMedia({ question }: { question: DbMockExamQuestion }) {
       {audioUrl ? (
         <AudioPlayer
           src={audioUrl}
-          maxPlays={getNumber(question.data.audioMaxPlays)}
+          maxPlays={replayLimit}
           listeningMode={question.question_type === "listening_comprehension"}
         />
       ) : null}
@@ -98,13 +111,47 @@ function RenderOptions({ question }: { question: DbMockExamQuestion }) {
 }
 
 function RenderTextSource({ question }: { question: DbMockExamQuestion }) {
-  const text = getString(question.data.text) || getString(question.data.sourceText);
+  const stimulus = getTaskStimulus(question);
+  const text =
+    getString(question.data.text) ||
+    getString(question.data.sourceText) ||
+    getString(stimulus.text);
 
   if (!text) return null;
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3 text-sm leading-6 text-[var(--text-secondary)]">
       {text}
+    </div>
+  );
+}
+
+function RenderReadingListeningTask({ question }: { question: DbMockExamQuestion }) {
+  const taskContext = getRecord(question.data.taskContext);
+  const stimulus = getRecord(taskContext.stimulus);
+  const childQuestionSetSlug = getString(stimulus.childQuestionSetSlug);
+  const timeLimitSeconds = getNumber(taskContext.timeLimitSeconds);
+  const childInteractionTypes = getStringArray(taskContext.childInteractionTypes);
+
+  return (
+    <div className="space-y-3">
+      <RenderTextSource question={question} />
+
+      {childQuestionSetSlug || timeLimitSeconds || childInteractionTypes.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {childQuestionSetSlug ? (
+            <Badge tone="muted">Linked set: {childQuestionSetSlug}</Badge>
+          ) : null}
+          {timeLimitSeconds ? (
+            <Badge tone="muted">{Math.round(timeLimitSeconds / 60)} min task</Badge>
+          ) : null}
+          {childInteractionTypes.slice(0, 3).map((interactionType) => (
+            <Badge key={`${question.id}-${interactionType}`} tone="muted">
+              {interactionType.replaceAll("_", " ")}
+            </Badge>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -278,11 +325,7 @@ function RenderPhotoCard({ question }: { question: DbMockExamQuestion }) {
   );
 }
 
-function RenderQuestionSpecificPreview({
-  question,
-}: {
-  question: DbMockExamQuestion;
-}) {
+function RenderQuestionSpecificPreview({ question }: { question: DbMockExamQuestion }) {
   switch (question.question_type) {
     case "multiple_choice":
     case "multiple_response":
@@ -294,12 +337,18 @@ function RenderQuestionSpecificPreview({
     case "gap_fill":
     case "translation_into_english":
     case "translation_into_russian":
-    case "reading_comprehension":
-    case "listening_comprehension":
       return <RenderTextSource question={question} />;
 
+    case "reading_comprehension":
+    case "listening_comprehension":
+      return <RenderReadingListeningTask question={question} />;
+
     case "sequencing":
-      return <RenderPrompts question={{ ...question, data: { prompts: question.data.items } }} />;
+      return (
+        <RenderPrompts
+          question={{ ...question, data: { prompts: question.data.items } }}
+        />
+      );
 
     case "opinion_recognition":
     case "true_false_not_mentioned":
@@ -324,7 +373,11 @@ function RenderQuestionSpecificPreview({
       return <RenderPhotoCard question={question} />;
 
     case "sentence_builder":
-      return <RenderPrompts question={{ ...question, data: { prompts: question.data.wordBank } }} />;
+      return (
+        <RenderPrompts
+          question={{ ...question, data: { prompts: question.data.wordBank } }}
+        />
+      );
 
     case "short_answer":
     case "other":
