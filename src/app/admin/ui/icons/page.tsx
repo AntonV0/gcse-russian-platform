@@ -4,7 +4,7 @@ import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
 import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
-import AllIconsBrowser from "@/components/admin/all-icons-browser";
+import AllIconsBrowserSection from "@/components/admin/all-icons-browser-section";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -320,7 +320,7 @@ export default async function AdminUiIconsPage() {
         title="Full Lucide browser"
         description="Use this only when the curated app set does not already cover the meaning you need."
       >
-        <AllIconsBrowser />
+        <AllIconsBrowserSection />
       </UiLabSection>
 
       <UiLabFutureSection
