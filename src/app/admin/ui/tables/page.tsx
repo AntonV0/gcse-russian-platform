@@ -545,39 +545,47 @@ function DarkSurfaceTableTest() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
-        <div className="grid grid-cols-[minmax(0,1.4fr)_180px_160px_auto] gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-3 text-sm font-semibold text-white">
-          <div>Name</div>
-          <div>Status</div>
-          <div>Updated</div>
-          <div>Actions</div>
-        </div>
-
-        {demoRows.slice(0, 2).map((row) => (
-          <div
-            key={row.name}
-            className="grid grid-cols-[minmax(0,1.4fr)_180px_160px_auto] gap-3 border-b border-[rgba(255,255,255,0.06)] px-5 py-4 last:border-b-0"
-          >
-            <div>
-              <div className="font-medium text-white">{row.name}</div>
-              <div className="mt-1 text-sm text-[rgba(255,255,255,0.68)]">{row.type}</div>
+        <div className="overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
+          <div className="min-w-[640px]">
+            <div className="grid grid-cols-[minmax(0,1.4fr)_180px_160px_auto] gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-3 text-sm font-semibold text-white">
+              <div>Name</div>
+              <div>Status</div>
+              <div>Updated</div>
+              <div>Actions</div>
             </div>
 
-            <div>
-              <StatusBadge status={row.status} />
-            </div>
+            {demoRows.slice(0, 2).map((row) => (
+              <div
+                key={row.name}
+                className="grid grid-cols-[minmax(0,1.4fr)_180px_160px_auto] gap-3 border-b border-[rgba(255,255,255,0.06)] px-5 py-4 last:border-b-0"
+              >
+                <div>
+                  <div className="font-medium text-white">{row.name}</div>
+                  <div className="mt-1 text-sm text-[rgba(255,255,255,0.68)]">
+                    {row.type}
+                  </div>
+                </div>
 
-            <div className="text-sm text-[rgba(255,255,255,0.72)]">{row.updated}</div>
+                <div>
+                  <StatusBadge status={row.status} />
+                </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button variant="secondary" size="sm" icon="edit">
-                Edit
-              </Button>
-              <Button variant="quiet" size="sm" icon="next">
-                Open
-              </Button>
-            </div>
+                <div className="text-sm text-[rgba(255,255,255,0.72)]">
+                  {row.updated}
+                </div>
+
+                <div className="app-mobile-action-stack flex flex-wrap gap-2">
+                  <Button variant="secondary" size="sm" icon="edit">
+                    Edit
+                  </Button>
+                  <Button variant="quiet" size="sm" icon="next">
+                    Open
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
