@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { buildVocabularySetCoverageSummary } from "@/lib/vocabulary/coverage-summary";
+import { getVocabularyThemeLabel } from "@/lib/vocabulary/labels";
 import {
   chunkValues,
   fetchSupabasePages,
@@ -7,7 +9,6 @@ import {
   normalizeVocabularyItem,
   normalizeVocabularyItemCoverage,
   normalizeVocabularySet,
-  normalizeVocabularySetSummaryRow,
   slugifyVocabularyTitle,
 } from "@/lib/vocabulary/normalizers";
 import {
@@ -16,13 +17,14 @@ import {
   VOCABULARY_ITEM_SELECT,
   VOCABULARY_LIST_SELECT,
   VOCABULARY_SET_SELECT,
-  VOCABULARY_SET_SUMMARY_SELECT,
 } from "@/lib/vocabulary/selects";
-import { getVocabularyThemeLabel } from "@/lib/vocabulary/labels";
+import {
+  attachVocabularyCountsAndUsage,
+  applyVocabularySetFilters,
+} from "@/lib/vocabulary/set-listing";
 import {
   buildVocabularyUsageStats,
   filterVocabularyListsForStudyVariant,
-  getCoverageTotalItemIdsForVariant,
   getVocabularyItemAppliesToStudyVariant,
 } from "@/lib/vocabulary/study-variants";
 import type {
@@ -30,12 +32,8 @@ import type {
   DbVocabularyItem,
   DbVocabularyItemCoverage,
   DbVocabularyList,
-  DbVocabularyListItem,
   DbVocabularySet,
-  DbVocabularySetCoverageSummary,
-  DbVocabularySetListItem,
   DbVocabularySetOption,
-  DbVocabularySetSummaryRow,
   DbVocabularySetUsageStats,
   LoadedVocabularySetDb,
   LoadedVocabularySetDetailDb,
@@ -412,101 +410,6 @@ export async function getVocabularySetCoverageSummaryBySetIdDb(vocabularySetId: 
   });
 }
 
-function createEmptyCoverageSummary(): DbVocabularySetCoverageSummary {
-  return {
-    totalItems: 0,
-    foundationTotalItems: 0,
-    higherTotalItems: 0,
-    volnaTotalItems: 0,
-    customListTotalItems: 0,
-    foundationUsedItems: 0,
-    higherUsedItems: 0,
-    volnaUsedItems: 0,
-    customListUsedItems: 0,
-  };
-}
-
-function buildVocabularySetCoverageSummary(params: {
-  lists: DbVocabularyList[];
-  listItems: Pick<DbVocabularyListItem, "vocabulary_list_id" | "vocabulary_item_id">[];
-  items: Pick<DbVocabularyItem, "id" | "tier">[];
-  itemCoverageById: Map<string, DbVocabularyItemCoverage>;
-}): DbVocabularySetCoverageSummary {
-  const uniqueItems = Array.from(
-    new Map(params.items.map((item) => [item.id, item])).values()
-  );
-  const foundationItemIds = getCoverageTotalItemIdsForVariant({
-    lists: params.lists,
-    listItems: params.listItems,
-    fallbackItems: uniqueItems,
-    variant: "foundation",
-  });
-  const higherItemIds = getCoverageTotalItemIdsForVariant({
-    lists: params.lists,
-    listItems: params.listItems,
-    fallbackItems: uniqueItems,
-    variant: "higher",
-  });
-  const volnaItemIds = getCoverageTotalItemIdsForVariant({
-    lists: params.lists,
-    listItems: params.listItems,
-    fallbackItems: uniqueItems,
-    variant: "volna",
-  });
-
-  return {
-    totalItems: uniqueItems.length,
-    foundationTotalItems: foundationItemIds.size,
-    higherTotalItems: higherItemIds.size,
-    volnaTotalItems: volnaItemIds.size,
-    customListTotalItems: uniqueItems.length,
-    foundationUsedItems: Array.from(foundationItemIds).filter(
-      (itemId) => params.itemCoverageById.get(itemId)?.used_in_foundation
-    ).length,
-    higherUsedItems: Array.from(higherItemIds).filter(
-      (itemId) => params.itemCoverageById.get(itemId)?.used_in_higher
-    ).length,
-    volnaUsedItems: Array.from(volnaItemIds).filter(
-      (itemId) => params.itemCoverageById.get(itemId)?.used_in_volna
-    ).length,
-    customListUsedItems: uniqueItems.filter(
-      (item) => params.itemCoverageById.get(item.id)?.used_in_custom_list
-    ).length,
-  };
-}
-
-async function getVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds: string[]) {
-  const uniqueVocabularySetIds = Array.from(new Set(vocabularySetIds));
-
-  if (uniqueVocabularySetIds.length === 0) {
-    return new Map<string, DbVocabularySetSummaryRow>();
-  }
-
-  const supabase = await createClient();
-  const data = (
-    await Promise.all(
-      chunkValues(uniqueVocabularySetIds).map((setIdBatch) =>
-        fetchSupabasePages<Record<string, unknown>>({
-          queryFactory: () =>
-            supabase
-              .from("vocabulary_set_summaries")
-              .select(VOCABULARY_SET_SUMMARY_SELECT)
-              .in("vocabulary_set_id", setIdBatch),
-          errorMessage: "Error fetching vocabulary set summaries:",
-          errorContext: { vocabularySetIds: setIdBatch },
-        })
-      )
-    )
-  ).flat();
-
-  return new Map(
-    data.map((row) => {
-      const summary = normalizeVocabularySetSummaryRow(row);
-      return [summary.vocabulary_set_id, summary];
-    })
-  );
-}
-
 export async function getVocabularyItemCountBySetIdDb(vocabularySetId: string) {
   const lists = await getVocabularyListsBySetIdDb(vocabularySetId);
 
@@ -670,101 +573,6 @@ export async function loadVocabularySetByRefDb(
     lists,
     items,
   };
-}
-
-async function attachVocabularyCountsAndUsage(
-  vocabularySets: DbVocabularySet[]
-): Promise<DbVocabularySetListItem[]> {
-  if (vocabularySets.length === 0) {
-    return [];
-  }
-
-  const vocabularySetIds = vocabularySets.map((vocabularySet) => vocabularySet.id);
-  const summariesBySetId = await getVocabularySetSummaryRowsBySetIdsDb(
-    vocabularySetIds
-  );
-
-  return vocabularySets.map((vocabularySet) => {
-    const summary = summariesBySetId.get(vocabularySet.id);
-
-    return {
-      ...vocabularySet,
-      item_count: summary?.item_count ?? 0,
-      list_count: summary?.list_count ?? 0,
-      usage_stats: {
-        totalOccurrences: summary?.total_occurrences ?? 0,
-        foundationOccurrences: summary?.foundation_occurrences ?? 0,
-        higherOccurrences: summary?.higher_occurrences ?? 0,
-        volnaOccurrences: summary?.volna_occurrences ?? 0,
-        usedInFoundation: Boolean(summary?.foundation_occurrences),
-        usedInHigher: Boolean(summary?.higher_occurrences),
-        usedInVolna: Boolean(summary?.volna_occurrences),
-      },
-      coverage_summary: summary
-        ? {
-            totalItems: summary.item_count,
-            foundationTotalItems: summary.foundation_total_items,
-            higherTotalItems: summary.higher_total_items,
-            volnaTotalItems: summary.volna_total_items,
-            customListTotalItems: summary.custom_list_total_items,
-            foundationUsedItems: summary.foundation_used_items,
-            higherUsedItems: summary.higher_used_items,
-            volnaUsedItems: summary.volna_used_items,
-            customListUsedItems: summary.custom_list_used_items,
-          }
-        : createEmptyCoverageSummary(),
-    };
-  });
-}
-
-function applyVocabularySetFilters(
-  vocabularySets: DbVocabularySetListItem[],
-  filters?: VocabularySetFilters
-) {
-  const search = filters?.search?.trim().toLowerCase();
-  const tier = filters?.tier && filters.tier !== "all" ? filters.tier : null;
-  const themeKey = filters?.themeKey?.trim();
-  const listMode = filters?.listMode && filters.listMode !== "all" ? filters.listMode : null;
-  const published = filters?.published ?? "all";
-
-  return vocabularySets.filter((vocabularySet) => {
-    if (search) {
-      const haystack = [
-        vocabularySet.title,
-        vocabularySet.description,
-        vocabularySet.slug,
-        vocabularySet.theme_key,
-        vocabularySet.topic_key,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      if (!haystack.includes(search)) return false;
-    }
-
-    if (tier && vocabularySet.tier !== tier && vocabularySet.tier !== "both") {
-      return false;
-    }
-
-    if (themeKey && vocabularySet.theme_key !== themeKey) {
-      return false;
-    }
-
-    if (listMode && vocabularySet.list_mode !== listMode) {
-      return false;
-    }
-
-    if (published === "published" && !vocabularySet.is_published) {
-      return false;
-    }
-
-    if (published === "draft" && vocabularySet.is_published) {
-      return false;
-    }
-
-    return true;
-  });
 }
 
 export async function getVocabularySetsDb(options?: {
