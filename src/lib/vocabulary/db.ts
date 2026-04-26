@@ -1274,37 +1274,37 @@ async function attachVocabularyCountsAndUsage(
   const supabase = await createClient();
   const vocabularySetIds = vocabularySets.map((vocabularySet) => vocabularySet.id);
 
-  const [
-    { data: listRows, error: listError },
-    { data: usageRows, error: usageError },
-    setItems,
-  ] = await Promise.all([
-    supabase
-      .from("vocabulary_lists")
-      .select("*")
-      .in("vocabulary_set_id", vocabularySetIds),
-    supabase
-      .from("lesson_vocabulary_set_usages")
-      .select("*")
-      .in("vocabulary_set_id", vocabularySetIds),
+  const [listRows, usageRows, setItems] = await Promise.all([
+    Promise.all(
+      chunkValues(vocabularySetIds).map((setIdBatch) =>
+        fetchSupabasePages<DbVocabularyList>({
+          queryFactory: () =>
+            supabase
+              .from("vocabulary_lists")
+              .select("*")
+              .in("vocabulary_set_id", setIdBatch),
+          errorMessage: "Error fetching vocabulary lists for set summaries:",
+          errorContext: { vocabularySetIds: setIdBatch },
+        })
+      )
+    ).then((rows) => rows.flat()),
+    Promise.all(
+      chunkValues(vocabularySetIds).map((setIdBatch) =>
+        fetchSupabasePages<DbLessonVocabularySetUsage>({
+          queryFactory: () =>
+            supabase
+              .from("lesson_vocabulary_set_usages")
+              .select("*")
+              .in("vocabulary_set_id", setIdBatch),
+          errorMessage: "Error fetching vocabulary usages for set summaries:",
+          errorContext: { vocabularySetIds: setIdBatch },
+        })
+      )
+    ).then((rows) => rows.flat()),
     getVocabularyItemsBySetIdsDb(vocabularySetIds),
   ]);
 
-  if (listError) {
-    console.error("Error fetching vocabulary lists for set summaries:", {
-      vocabularySetIds,
-      error: listError,
-    });
-  }
-
-  if (usageError) {
-    console.error("Error fetching vocabulary usages for set summaries:", {
-      vocabularySetIds,
-      error: usageError,
-    });
-  }
-
-  const lists = ((listRows ?? []) as DbVocabularyList[]).sort(
+  const lists = listRows.sort(
     (a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title)
   );
   const listItems = await getVocabularyListItemsByListIdsDb(
@@ -1344,7 +1344,7 @@ async function attachVocabularyCountsAndUsage(
     listItemsBySetId.set(vocabularySetId, nextListItems);
   }
 
-  for (const usage of (usageRows ?? []) as DbLessonVocabularySetUsage[]) {
+  for (const usage of usageRows) {
     const nextUsages = usagesBySetId.get(usage.vocabulary_set_id) ?? [];
     nextUsages.push(usage);
     usagesBySetId.set(usage.vocabulary_set_id, nextUsages);
@@ -1432,32 +1432,49 @@ export async function getVocabularySetsDb(options?: {
   filters?: VocabularySetFilters;
 }) {
   const supabase = await createClient();
+  const filters = options?.filters;
+  const tier = filters?.tier && filters.tier !== "all" ? filters.tier : null;
+  const themeKey = filters?.themeKey?.trim();
+  const listMode = filters?.listMode && filters.listMode !== "all" ? filters.listMode : null;
+  const published = filters?.published ?? "all";
 
-  let query = supabase
-    .from("vocabulary_sets")
-    .select("*")
-    .order("sort_order", { ascending: true })
-    .order("title", { ascending: true });
+  const data = await fetchSupabasePages<Record<string, unknown>>({
+    queryFactory: () => {
+      let query = supabase
+        .from("vocabulary_sets")
+        .select("*")
+        .order("sort_order", { ascending: true })
+        .order("title", { ascending: true });
 
-  if (options?.publishedOnly) {
-    query = query.eq("is_published", true);
-  }
+      if (options?.publishedOnly || published === "published") {
+        query = query.eq("is_published", true);
+      } else if (published === "draft") {
+        query = query.eq("is_published", false);
+      }
 
-  const { data, error } = await query;
+      if (tier) {
+        query = query.in("tier", [tier, "both"]);
+      }
 
-  if (error) {
-    console.error("Error fetching vocabulary sets:", {
-      options,
-      error,
-    });
-    return [] as DbVocabularySetListItem[];
-  }
+      if (themeKey) {
+        query = query.eq("theme_key", themeKey);
+      }
+
+      if (listMode) {
+        query = query.eq("list_mode", listMode);
+      }
+
+      return query;
+    },
+    errorMessage: "Error fetching vocabulary sets:",
+    errorContext: { options },
+  });
 
   const withCounts = await attachVocabularyCountsAndUsage(
-    (data ?? []).map(normalizeVocabularySet)
+    data.map(normalizeVocabularySet)
   );
 
-  return applyVocabularySetFilters(withCounts, options?.filters);
+  return applyVocabularySetFilters(withCounts, filters);
 }
 
 export async function getPublishedVocabularySetsDb(filters?: VocabularySetFilters) {
@@ -1501,30 +1518,27 @@ export async function getVocabularySetThemeKeysDb(options?: {
   publishedOnly?: boolean;
 }) {
   const supabase = await createClient();
+  const data = await fetchSupabasePages<{ theme_key: string | null }>({
+    queryFactory: () => {
+      let query = supabase
+        .from("vocabulary_sets")
+        .select("theme_key")
+        .not("theme_key", "is", null)
+        .order("theme_key", { ascending: true });
 
-  let query = supabase
-    .from("vocabulary_sets")
-    .select("theme_key")
-    .not("theme_key", "is", null)
-    .order("theme_key", { ascending: true });
+      if (options?.publishedOnly) {
+        query = query.eq("is_published", true);
+      }
 
-  if (options?.publishedOnly) {
-    query = query.eq("is_published", true);
-  }
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.error("Error fetching vocabulary theme keys:", {
-      options,
-      error,
-    });
-    return [];
-  }
+      return query;
+    },
+    errorMessage: "Error fetching vocabulary theme keys:",
+    errorContext: { options },
+  });
 
   return Array.from(
     new Set(
-      (data ?? [])
+      data
         .map((row) => row.theme_key)
         .filter((themeKey): themeKey is string => Boolean(themeKey))
     )
