@@ -3,7 +3,7 @@ import type {
   DbQuestionAcceptedAnswer,
   DbQuestionOption,
   DbQuestionSet,
-} from "@/lib/questions/question-helpers-db";
+} from "@/lib/questions/question-db-types";
 import type {
   RuntimeAcceptedAnswer,
   RuntimeCategorisationQuestion,
