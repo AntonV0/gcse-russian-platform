@@ -19,6 +19,7 @@ export default function GrammarTableRenderer({ table }: GrammarTableRendererProp
     <PanelCard
       title={table.title}
       description={table.optional_note ?? undefined}
+      headingLevel={3}
       tone="student"
       contentClassName="p-0"
     >

@@ -36,10 +36,10 @@ function DemoPageHierarchy() {
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
           <div className="app-label">Subsection label</div>
-          <h3 className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
+          <h3 className="mt-2 app-heading-subsection">
             Section metadata
           </h3>
-          <p className="mt-2 text-sm app-text-muted">
+          <p className="mt-2 app-text-body-muted">
             Use compact supporting text to explain what the editor controls without
             overpowering the content.
           </p>
@@ -53,20 +53,20 @@ function DemoPageHierarchy() {
       >
         <div>
           <div className="app-label">Continue learning</div>
-          <h2 className="mt-2 text-[2rem] font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
+          <h2 className="mt-2 app-heading-hero">
             Theme 2: Local area, holiday and travel
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-6 app-text-muted">
+          <p className="mt-3 max-w-2xl app-text-body-muted">
             Student-facing typography should stay clear and reassuring, with a lighter
             sense of pacing than dense admin tools.
           </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
-          <div className="text-base font-semibold text-[var(--text-primary)]">
+          <div className="app-heading-card">
             Next lesson: Travel and tourist transactions
           </div>
-          <p className="mt-2 text-sm app-text-muted">
+          <p className="mt-2 app-text-body-muted">
             Card titles should feel strong enough to anchor a section without competing
             with the page title above.
           </p>
@@ -86,7 +86,7 @@ function DemoHierarchyScale() {
       >
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-5">
           <div className="app-label">Page label</div>
-          <div className="mt-2 app-title">GCSE Russian platform</div>
+          <div className="mt-2 app-heading-page">GCSE Russian platform</div>
           <p className="mt-3 max-w-2xl app-subtitle">
             The page title should feel clearly more important than anything beneath it.
           </p>
@@ -94,16 +94,16 @@ function DemoHierarchyScale() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
-            <div className="app-section-title">Section title</div>
-            <p className="mt-2 text-sm app-text-muted">
+            <div className="app-heading-section">Section title</div>
+            <p className="mt-2 app-text-body-muted">
               This is the main layer for page sections, grouped panels, and dashboard
               blocks.
             </p>
           </div>
 
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
-            <div className="app-card-title">Card title</div>
-            <p className="mt-2 text-sm app-text-muted">
+            <div className="app-heading-card">Card title</div>
+            <p className="mt-2 app-text-body-muted">
               Card titles should anchor a local area without competing with section
               titles.
             </p>
@@ -118,21 +118,21 @@ function DemoHierarchyScale() {
       >
         <div className="rounded-2xl border border-[var(--border)] p-4">
           <div className="app-label">Label example</div>
-          <p className="mt-2 text-sm app-text-muted">
+          <p className="mt-2 app-text-body-muted">
             Useful for framing a section or naming a control.
           </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] p-4">
-          <div className="text-sm font-medium text-[var(--text-primary)]">
+          <div className="app-heading-card">
             Metadata row
           </div>
-          <p className="mt-1 text-sm app-text-soft">Edited 2 hours ago · Higher tier</p>
+          <p className="mt-1 app-text-meta normal-case">Edited 2 hours ago · Higher tier</p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] p-4">
           <div className="app-form-description">Helper copy</div>
-          <p className="mt-2 text-sm app-text-muted">Should explain, not dominate.</p>
+          <p className="mt-2 app-text-helper">Should explain, not dominate.</p>
         </div>
       </PanelCard>
     </div>
@@ -144,7 +144,7 @@ function DemoTextRoles() {
     <div className="grid gap-4 lg:grid-cols-2">
       <Card className="p-5">
         <div className="mb-2 font-semibold text-[var(--text-primary)]">Primary body</div>
-        <p>
+        <p className="app-text-body">
           This is the standard reading style for body copy. It should stay readable across
           admin tools, dashboard cards, and learning pages without needing page-specific
           overrides.
@@ -155,7 +155,7 @@ function DemoTextRoles() {
         <div className="mb-2 font-semibold text-[var(--text-primary)]">
           Muted supporting copy
         </div>
-        <p className="app-text-muted">
+        <p className="app-text-body-muted">
           Use muted text for guidance, context, and supporting explanation. It should stay
           readable, but not compete with action labels or section titles.
         </p>
@@ -166,7 +166,7 @@ function DemoTextRoles() {
           Soft metadata and labels
         </div>
         <div className="app-label">Published yesterday</div>
-        <p className="mt-2 app-text-soft">
+        <p className="mt-2 app-text-caption">
           Soft text is best for low-priority metadata, timestamps, counters, and technical
           support detail.
         </p>
@@ -181,7 +181,7 @@ function DemoTextRoles() {
             <div className="font-medium text-[var(--text-primary)]">
               School and daily routine
             </div>
-            <div className="mt-1 text-sm app-text-muted">
+            <div className="mt-1 app-text-meta normal-case">
               Higher tier · 6 blocks · edited 2 hours ago
             </div>
           </div>
@@ -227,19 +227,19 @@ function DemoFormTypography() {
       >
         <div className="rounded-2xl border border-[var(--border)] p-4">
           <div className="app-form-label">Label</div>
-          <p className="mt-2 text-sm app-text-muted">Tells the user what the field is.</p>
+          <p className="mt-2 app-text-helper">Tells the user what the field is.</p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] p-4">
           <div className="app-form-description">Description</div>
-          <p className="mt-2 text-sm app-text-muted">
+          <p className="mt-2 app-text-helper">
             Explains where the value appears or why it matters.
           </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] p-4">
           <div className="app-form-message">Hint / status</div>
-          <p className="mt-2 text-sm app-text-muted">
+          <p className="mt-2 app-text-helper">
             Confirms, warns, or nudges without replacing the label.
           </p>
         </div>
@@ -258,19 +258,19 @@ function DemoToneComparison() {
       >
         <div>
           <div className="app-label">Inspector</div>
-          <div className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
+          <div className="mt-2 app-heading-subsection">
             Section visibility
           </div>
-          <p className="mt-2 text-sm app-text-muted">
+          <p className="mt-2 app-text-body-muted">
             Short, factual explanation for a repeat-use control.
           </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
-          <div className="text-sm font-medium text-[var(--text-primary)]">
+          <div className="app-heading-card">
             Variant visibility
           </div>
-          <div className="mt-1 text-sm app-text-soft">
+          <div className="mt-1 app-text-meta normal-case">
             shared · higher_only · volna_only
           </div>
         </div>
@@ -283,20 +283,20 @@ function DemoToneComparison() {
       >
         <div>
           <div className="app-label">Progress update</div>
-          <div className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
+          <div className="mt-2 app-heading-subsection">
             You are building strong exam vocabulary
           </div>
-          <p className="mt-2 text-sm leading-6 app-text-muted">
+          <p className="mt-2 app-text-body-muted">
             A student message can feel more human and motivating without changing the core
             typography system.
           </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-          <div className="text-sm font-medium text-[var(--text-primary)]">
+          <div className="app-heading-card">
             Suggested next step
           </div>
-          <div className="mt-1 text-sm app-text-muted">
+          <div className="mt-1 app-text-body-muted">
             Review Theme 1 vocabulary before starting the next listening task.
           </div>
         </div>
@@ -370,10 +370,12 @@ function DemoFontSystemPreview() {
             {example.kind === "title" ? (
               <div className="space-y-3">
                 <div className="app-label">English</div>
-                <div className="app-title">{example.english}</div>
+                <div className="app-heading-page">{example.english}</div>
 
                 <div className="app-label pt-2">Russian</div>
-                <div className="app-title">{example.russian}</div>
+                <div lang="ru" className="app-heading-page">
+                  {example.russian}
+                </div>
               </div>
             ) : null}
 
@@ -381,14 +383,14 @@ function DemoFontSystemPreview() {
               <div className="space-y-3">
                 <div>
                   <div className="app-label">English</div>
-                  <div className="mt-2 app-section-title text-[1.2rem]">
+                  <div className="mt-2 app-heading-section">
                     {example.english}
                   </div>
                 </div>
 
                 <div>
                   <div className="app-label">Russian</div>
-                  <div className="mt-2 app-section-title text-[1.2rem]">
+                  <div lang="ru" className="mt-2 app-heading-section">
                     {example.russian}
                   </div>
                 </div>
@@ -399,14 +401,14 @@ function DemoFontSystemPreview() {
               <div className="space-y-4">
                 <div>
                   <div className="app-label">English</div>
-                  <p className="mt-2 text-base leading-7 text-[var(--text-primary)]">
+                  <p className="mt-2 app-lesson-prose">
                     {example.english}
                   </p>
                 </div>
 
                 <div>
                   <div className="app-label">Russian</div>
-                  <p className="mt-2 text-base leading-7 text-[var(--text-primary)]">
+                  <p lang="ru" className="mt-2 app-russian-text">
                     {example.russian}
                   </p>
                 </div>
@@ -447,11 +449,11 @@ function DemoLessonContentTypography() {
       >
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
           <div className="app-label">New word</div>
-          <div className="mt-2 text-xl font-semibold text-[var(--text-primary)]">
+          <div lang="ru" className="mt-2 app-vocab-term">
             путешествовать
           </div>
-          <div className="mt-2 text-sm app-text-muted">to travel</div>
-          <p className="mt-3 text-sm leading-6 text-[var(--text-primary)]">
+          <div className="mt-2 app-text-caption">to travel</div>
+          <p className="mt-3 app-text-body">
             Use it when talking about holidays, transport, and future plans.
           </p>
         </div>
@@ -464,16 +466,22 @@ function DemoLessonContentTypography() {
       >
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
           <div className="app-label">Exam tip</div>
-          <div className="mt-2 text-base font-semibold text-[var(--text-primary)]">
+          <div className="mt-2 app-heading-card">
             Include a future time marker
           </div>
-          <p className="mt-2 text-sm leading-6 app-text-muted">
+          <p className="mt-2 app-text-body-muted">
             Add words like{" "}
-            <span className="font-medium text-[var(--text-primary)]">завтра</span>,{" "}
-            <span className="font-medium text-[var(--text-primary)]">
+            <span lang="ru" className="app-russian-text inline font-medium">
+              завтра
+            </span>,{" "}
+            <span lang="ru" className="app-russian-text inline font-medium">
               на следующей неделе
             </span>
-            , or <span className="font-medium text-[var(--text-primary)]">я буду</span> to
+            , or{" "}
+            <span lang="ru" className="app-russian-text inline font-medium">
+              я буду
+            </span>{" "}
+            to
             make your timeframe clear.
           </p>
         </div>
@@ -486,10 +494,10 @@ function DemoLessonContentTypography() {
       >
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
           <div className="app-label">Translate into Russian</div>
-          <p className="mt-2 text-base leading-7 text-[var(--text-primary)]">
+          <p className="mt-2 app-question-prompt">
             Next summer I am going to travel to Russia with my family.
           </p>
-          <div className="mt-4 rounded-xl border border-dashed border-[var(--border)] px-3 py-4 text-sm app-text-soft">
+          <div className="mt-4 rounded-xl border border-dashed border-[var(--border)] px-3 py-4 app-text-caption">
             Student answer area
           </div>
         </div>
@@ -512,7 +520,7 @@ function DemoTypographyRules() {
     <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {rules.map((rule) => (
         <Card key={rule} className="p-4">
-          <p className="text-sm app-text-muted">{rule}</p>
+          <p className="app-text-body-muted">{rule}</p>
         </Card>
       ))}
     </div>
