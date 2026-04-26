@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EvergreenGuidePage from "@/components/marketing/evergreen-guide-page";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -7,6 +8,11 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "A practical GCSE Russian revision guide for Pearson Edexcel 1RU0 students, covering planning, vocabulary, grammar, past papers, and exam skills.",
   path: "/gcse-russian-revision",
+  ogTitle: "GCSE Russian Revision Guide",
+  ogDescription:
+    "Build a weekly GCSE Russian revision plan across vocabulary, grammar, exam papers, and review.",
+  ogImagePath: getOgImagePath("revision"),
+  ogImageAlt: "GCSE Russian revision guide",
 });
 
 export default function GcseRussianRevisionPage() {

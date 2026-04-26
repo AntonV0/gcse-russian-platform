@@ -13,6 +13,7 @@ import {
 } from "@/components/marketing/marketing-page-sections";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
@@ -21,6 +22,11 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "A practical guide for Russian GCSE private candidates and families looking for exam preparation, course structure, online lessons, and exam-centre planning.",
   path: "/russian-gcse-private-candidate",
+  ogTitle: "Russian GCSE Private Candidate Guide",
+  ogDescription:
+    "Plan GCSE Russian preparation, tier choice, speaking support, and exam-centre questions.",
+  ogImagePath: getOgImagePath("private-candidates"),
+  ogImageAlt: "Russian GCSE private candidate guide",
 });
 
 const candidateQuestions = [

@@ -14,6 +14,7 @@ import {
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildCourseJsonLd, buildFaqJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -21,6 +22,11 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "Explore a structured online GCSE Russian course for Pearson Edexcel 1RU0, with Foundation and Higher pathways, guided lessons, grammar, vocabulary, and exam practice.",
   path: "/gcse-russian-course",
+  ogTitle: "Online GCSE Russian Course",
+  ogDescription:
+    "A structured Pearson Edexcel 1RU0 course with lessons, grammar, vocabulary, and exam practice.",
+  ogImagePath: getOgImagePath("course"),
+  ogImageAlt: "Online GCSE Russian Course",
 });
 
 const courseFit = [

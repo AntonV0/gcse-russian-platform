@@ -46,13 +46,23 @@ export function buildPublicMetadata({
   title = DEFAULT_SEO_TITLE,
   description = DEFAULT_SEO_DESCRIPTION,
   path = "/",
+  ogTitle,
+  ogDescription,
+  ogImagePath = DEFAULT_OG_IMAGE_PATH,
+  ogImageAlt = "GCSE Russian online course",
 }: {
   title?: string;
   description?: string;
   path?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImagePath?: string;
+  ogImageAlt?: string;
 } = {}): Metadata {
   const url = getPublicSiteUrl(path);
-  const imageUrl = getPublicSiteUrl(DEFAULT_OG_IMAGE_PATH);
+  const imageUrl = getPublicSiteUrl(ogImagePath);
+  const socialTitle = ogTitle ?? title;
+  const socialDescription = ogDescription ?? description;
 
   return {
     metadataBase: getPublicSiteUrl(),
@@ -62,8 +72,8 @@ export function buildPublicMetadata({
       canonical: url,
     },
     openGraph: {
-      title,
-      description,
+      title: socialTitle,
+      description: socialDescription,
       url,
       siteName: PUBLIC_SITE_NAME,
       type: "website",
@@ -72,14 +82,14 @@ export function buildPublicMetadata({
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: "GCSE Russian online course",
+          alt: ogImageAlt,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: socialTitle,
+      description: socialDescription,
       images: [imageUrl],
     },
   };

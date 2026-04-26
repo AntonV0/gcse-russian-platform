@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EvergreenGuidePage from "@/components/marketing/evergreen-guide-page";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -7,6 +8,11 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "Compare GCSE Russian tutors, online lessons, and structured course access for Pearson Edexcel 1RU0 preparation.",
   path: "/gcse-russian-tutor",
+  ogTitle: "GCSE Russian Tutor or Online Course?",
+  ogDescription:
+    "Compare tutor feedback, online lessons, independent study, and structured platform access.",
+  ogImagePath: getOgImagePath("tutor"),
+  ogImageAlt: "GCSE Russian tutor or online course guide",
 });
 
 export default function GcseRussianTutorPage() {

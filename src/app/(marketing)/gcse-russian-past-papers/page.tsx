@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EvergreenGuidePage from "@/components/marketing/evergreen-guide-page";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -7,6 +8,11 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "Use GCSE Russian past papers effectively with guidance on official Pearson resources, paper-by-paper revision, mock practice, and structured course preparation.",
   path: "/gcse-russian-past-papers",
+  ogTitle: "GCSE Russian Past Papers",
+  ogDescription:
+    "Use official Pearson materials, mocks, mark schemes, and mistake review more effectively.",
+  ogImagePath: getOgImagePath("past-papers"),
+  ogImageAlt: "GCSE Russian past papers and revision strategy",
 });
 
 export default function GcseRussianPastPapersPage() {
