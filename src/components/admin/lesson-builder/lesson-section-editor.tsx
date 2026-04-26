@@ -217,7 +217,7 @@ export default function LessonSectionEditor(props: {
               {section.blocks.length === 1 ? "" : "s"}
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row">
               <input
                 value={props.blockSearch}
                 onChange={(event) => props.onBlockSearchChange(event.target.value)}
@@ -349,7 +349,7 @@ export default function LessonSectionEditor(props: {
             />
           </MetadataField>
 
-          <div className="flex flex-wrap items-center gap-3 pt-1">
+          <div className="app-mobile-action-stack flex flex-wrap items-center gap-3 pt-1">
             <PendingSubmitButton
               idleLabel="Save section"
               pendingLabel="Saving section..."

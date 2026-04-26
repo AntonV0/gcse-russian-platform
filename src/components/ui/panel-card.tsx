@@ -141,7 +141,7 @@ export default function PanelCard({
               </div>
 
               {actions ? (
-                <div className="flex shrink-0 flex-wrap gap-2 md:justify-end">
+                <div className="app-mobile-action-stack flex shrink-0 flex-wrap gap-2 md:justify-end">
                   {actions}
                 </div>
               ) : null}

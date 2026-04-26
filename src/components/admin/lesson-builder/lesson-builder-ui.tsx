@@ -21,7 +21,7 @@ export const BUILDER_TEXTAREA_CLASS = "app-form-control app-form-textarea";
 export const BUILDER_SELECT_CLASS = "app-form-control app-form-select";
 
 export const BUILDER_SECONDARY_BUTTON_CLASS =
-  "app-btn-base app-btn-secondary min-h-9 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60";
+  "app-btn-base app-btn-secondary min-h-10 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60";
 
 export const BUILDER_PRIMARY_BUTTON_CLASS =
   "app-btn-base app-btn-primary min-h-10 px-3.5 py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-60";
@@ -265,7 +265,7 @@ export function CompactDisclosure({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex w-full items-start justify-between gap-3 px-5 py-4 text-left transition hover:bg-[var(--background-muted)]/45"
+        className="flex min-h-11 w-full items-start justify-between gap-3 px-4 py-4 text-left transition hover:bg-[var(--background-muted)]/45 sm:px-5"
       >
         <div className="min-w-0">
           <div className="text-sm font-semibold text-[var(--text-primary)]">{title}</div>
@@ -283,7 +283,7 @@ export function CompactDisclosure({
 
       {/* CONTENT */}
       {isOpen ? (
-        <div className="border-t border-[var(--border)] px-5 py-4">{children}</div>
+        <div className="border-t border-[var(--border)] px-4 py-4 sm:px-5">{children}</div>
       ) : null}
     </div>
   );

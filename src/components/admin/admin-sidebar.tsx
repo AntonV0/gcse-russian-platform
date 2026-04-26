@@ -14,7 +14,7 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 function getNavItemClass(isActive: boolean, isSubItem = false) {
   return [
     "group flex w-full items-center gap-3 text-sm leading-5 transition-all duration-150",
-    isSubItem ? "px-3 py-2" : "px-3 py-2.5",
+    isSubItem ? "min-h-10 px-3 py-2" : "min-h-11 px-3 py-2.5",
     isActive
       ? "border-l-2 border-[var(--accent-fill)] [background:var(--accent-gradient-selected)] font-medium text-[var(--accent-on-soft)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
       : "text-[var(--text-secondary)] hover:bg-[var(--background-muted)]/70 hover:text-[var(--text-primary)]",
