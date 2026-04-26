@@ -41,7 +41,7 @@ export default function DetailList({ items, className }: DetailListProps) {
             <dt className="app-text-meta">
               {item.label}
             </dt>
-            <dd className="mt-1 app-text-body">
+            <dd className="mt-1 app-text-detail">
               {item.value}
             </dd>
           </div>
