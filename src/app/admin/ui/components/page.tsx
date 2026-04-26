@@ -3,6 +3,7 @@ import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
 import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
+import AppLogo, { type AppLogoMark } from "@/components/ui/app-logo";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -23,6 +24,7 @@ import CheckboxField from "@/components/ui/checkbox-field";
 
 const pageNavItems = [
   { id: "inspection", label: "Inspection" },
+  { id: "brand-logo", label: "Logo" },
   { id: "intro-panels", label: "Intro panels" },
   { id: "headers", label: "Headers" },
   { id: "stats", label: "Stats" },
@@ -30,6 +32,35 @@ const pageNavItems = [
   { id: "lists", label: "Lists" },
   { id: "forms", label: "Forms" },
   { id: "future-components", label: "Future" },
+];
+
+const logoDirections: Array<{
+  mark: AppLogoMark;
+  title: string;
+  description: string;
+  bestFor: string;
+}> = [
+  {
+    mark: "dialogueBook",
+    title: "Dialogue book",
+    description:
+      "A book form with a speech detail. The strongest education + language signal.",
+    bestFor: "Primary recommendation for production brand usage.",
+  },
+  {
+    mark: "languageGrid",
+    title: "Language grid",
+    description:
+      "Structured learning blocks with a communication detail. More modular and product-led.",
+    bestFor: "A sharper option if the platform should feel more system-like.",
+  },
+  {
+    mark: "globeSpeech",
+    title: "Globe speech",
+    description:
+      "A global communication mark. Clear language-learning meaning, but more generic.",
+    bestFor: "Marketing-led language learning contexts.",
+  },
 ];
 
 export default async function AdminUiComponentsPage() {
@@ -101,6 +132,117 @@ export default async function AdminUiComponentsPage() {
                 Gives the UI Lab a stronger role as the internal design reference area.
               </p>
             </div>
+          </div>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="brand-logo"
+        title="Brand logo directions"
+        description="Preview candidate logo marks before replacing production header, sidebar, and footer usage."
+      >
+        <div className="space-y-4">
+          <div className="grid gap-4 xl:grid-cols-3">
+            {logoDirections.map((direction) => (
+              <div
+                key={direction.mark}
+                className="app-card flex h-full flex-col gap-5 p-5"
+              >
+                <div className="space-y-3">
+                  <AppLogo mark={direction.mark} size="lg" variant="full" />
+
+                  <div>
+                    <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                      {direction.title}
+                    </h3>
+                    <p className="mt-1 text-sm app-text-muted">
+                      {direction.description}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-auto rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-3 text-sm app-text-muted">
+                  {direction.bestFor}
+                </div>
+
+                <div className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3">
+                  <AppLogo mark={direction.mark} variant="icon" size="sm" />
+                  <AppLogo mark={direction.mark} variant="compact" size="sm" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+            <PanelCard
+              title="Header and theme checks"
+              description="The component keeps the existing footprint while allowing accent and neutral tones."
+              contentClassName="space-y-4"
+            >
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/80 px-4 py-3">
+                <div className="flex items-center justify-between gap-4">
+                  <AppLogo mark="dialogueBook" variant="compact" size="md" />
+                  <div className="hidden items-center gap-4 text-sm app-text-muted sm:flex">
+                    <span>Dashboard</span>
+                    <span>Courses</span>
+                    <span>Account</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+                  <div className="mb-3 text-sm font-medium text-[var(--text-primary)]">
+                    Accent tone
+                  </div>
+                  <AppLogo mark="dialogueBook" variant="full" size="md" />
+                </div>
+
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+                  <div className="mb-3 text-sm font-medium text-[var(--text-primary)]">
+                    Neutral tone
+                  </div>
+                  <AppLogo
+                    mark="dialogueBook"
+                    variant="full"
+                    size="md"
+                    tone="neutral"
+                  />
+                </div>
+              </div>
+            </PanelCard>
+
+            <PanelCard
+              title="Sidebar and compact checks"
+              description="Use subtitle support for platform sidebar contexts without forking the lockup."
+              contentClassName="space-y-4"
+            >
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-3 py-3">
+                <AppLogo
+                  mark="dialogueBook"
+                  variant="full"
+                  size="md"
+                  subtitle="Full access"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                {logoDirections.map((direction) => (
+                  <div
+                    key={direction.mark}
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+                  >
+                    <div className="flex justify-center">
+                      <AppLogo mark={direction.mark} variant="icon" size="lg" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-sm app-text-muted">
+                Production replacement should happen after selecting the preferred mark.
+              </p>
+            </PanelCard>
           </div>
         </div>
       </UiLabSection>
