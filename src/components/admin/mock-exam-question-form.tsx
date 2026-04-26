@@ -36,6 +36,24 @@ function TextLinesHint({ children }: { children: React.ReactNode }) {
   return <p className="text-xs leading-5 app-text-muted">{children}</p>;
 }
 
+const readingListeningQuestionTypes: MockExamQuestionType[] = [
+  "reading_comprehension",
+  "listening_comprehension",
+];
+
+const writingQuestionTypes: MockExamQuestionType[] = [
+  "writing_task",
+  "simple_sentences",
+  "short_paragraph",
+  "extended_writing",
+];
+
+const speakingQuestionTypes: MockExamQuestionType[] = [
+  "role_play",
+  "photo_card",
+  "conversation",
+];
+
 export default function MockExamQuestionForm({
   action,
   mockExamId,
@@ -55,22 +73,19 @@ export default function MockExamQuestionForm({
       defaultValues?.data ?? questionDataTemplates[initialQuestionType]
     )
   );
-  const generatedData = useMemo(
-    () => {
-      const data = buildMockExamQuestionData(questionType, state) as Record<
-        string,
-        unknown
-      >;
-      const markGuidance = state.markGuidance.trim();
+  const generatedData = useMemo(() => {
+    const data = buildMockExamQuestionData(questionType, state) as Record<
+      string,
+      unknown
+    >;
+    const markGuidance = state.markGuidance.trim();
 
-      if (markGuidance) {
-        data.markGuidance = markGuidance;
-      }
+    if (markGuidance) {
+      data.markGuidance = markGuidance;
+    }
 
-      return JSON.stringify(data, null, 2);
-    },
-    [questionType, state]
-  );
+    return JSON.stringify(data, null, 2);
+  }, [questionType, state]);
 
   function updateField<Key extends keyof MockExamQuestionDataState>(
     key: Key,
@@ -195,7 +210,9 @@ export default function MockExamQuestionForm({
               value={state.promptsText}
               onChange={(event) => updateField("promptsText", event.target.value)}
             />
-            <TextLinesHint>Use one line per prompt: text|question/request/unexpected</TextLinesHint>
+            <TextLinesHint>
+              Use one line per prompt: text|question/request/unexpected
+            </TextLinesHint>
           </FormField>
         </>
       ) : null}
@@ -221,7 +238,9 @@ export default function MockExamQuestionForm({
       {["reading_comprehension", "listening_comprehension", "gap_fill", "other"].includes(
         questionType
       ) ? (
-        <FormField label={questionType === "listening_comprehension" ? "Transcript" : "Text"}>
+        <FormField
+          label={questionType === "listening_comprehension" ? "Transcript" : "Text"}
+        >
           <Textarea
             rows={5}
             value={state.text}
@@ -237,6 +256,38 @@ export default function MockExamQuestionForm({
             onChange={(event) => updateField("audioUrl", event.target.value)}
           />
         </FormField>
+      ) : null}
+
+      {readingListeningQuestionTypes.includes(questionType) ? (
+        <div className="grid gap-4 md:grid-cols-3">
+          <FormField label="Child question set slug">
+            <Input
+              value={state.childQuestionSetSlug}
+              onChange={(event) =>
+                updateField("childQuestionSetSlug", event.target.value)
+              }
+              placeholder="optional-linked-question-set"
+            />
+          </FormField>
+          {questionType === "listening_comprehension" ? (
+            <FormField label="Replay limit">
+              <Input
+                type="number"
+                min="1"
+                value={state.replayLimit}
+                onChange={(event) => updateField("replayLimit", event.target.value)}
+              />
+            </FormField>
+          ) : null}
+          <FormField label="Time limit seconds">
+            <Input
+              type="number"
+              min="1"
+              value={state.timeLimitSeconds}
+              onChange={(event) => updateField("timeLimitSeconds", event.target.value)}
+            />
+          </FormField>
+        </div>
       ) : null}
 
       {["translation_into_english", "translation_into_russian"].includes(questionType) ? (
@@ -301,9 +352,7 @@ export default function MockExamQuestionForm({
         </>
       ) : null}
 
-      {["writing_task", "simple_sentences", "short_paragraph"].includes(
-        questionType
-      ) ? (
+      {["writing_task", "simple_sentences", "short_paragraph"].includes(questionType) ? (
         <FormField label="Bullet points">
           <Textarea
             rows={5}
@@ -313,9 +362,7 @@ export default function MockExamQuestionForm({
         </FormField>
       ) : null}
 
-      {["writing_task", "short_paragraph", "extended_writing"].includes(
-        questionType
-      ) ? (
+      {["writing_task", "short_paragraph", "extended_writing"].includes(questionType) ? (
         <div className="grid gap-4 md:grid-cols-2">
           <FormField label="Minimum word count">
             <Input
@@ -357,6 +404,113 @@ export default function MockExamQuestionForm({
             onChange={(event) => updateField("wordBankText", event.target.value)}
           />
         </FormField>
+      ) : null}
+
+      {[...writingQuestionTypes, ...speakingQuestionTypes].includes(questionType) ? (
+        <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
+          <div className="grid gap-4 md:grid-cols-3">
+            <FormField label="Response mode">
+              <Select
+                value={state.responseMode}
+                onChange={(event) => updateField("responseMode", event.target.value)}
+              >
+                <option value="">Default for type</option>
+                <option value="handwriting_upload">Handwriting upload</option>
+                <option value="typed_draft_optional">Typed draft optional</option>
+                <option value="tile_builder">Tile builder</option>
+                <option value="audio_recording">Audio recording</option>
+                <option value="teacher_marked_manual">Teacher marked manual</option>
+              </Select>
+            </FormField>
+            <FormField label="Upload required">
+              <Select
+                value={state.uploadRequired}
+                onChange={(event) => updateField("uploadRequired", event.target.value)}
+              >
+                <option value="">Default</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </Select>
+            </FormField>
+            <FormField label="Typed draft">
+              <Select
+                value={state.allowTypedDraft}
+                onChange={(event) => updateField("allowTypedDraft", event.target.value)}
+              >
+                <option value="">Default</option>
+                <option value="true">Allow</option>
+                <option value="false">Do not allow</option>
+              </Select>
+            </FormField>
+          </div>
+
+          {speakingQuestionTypes.includes(questionType) ? (
+            <FormField label="Audio recording">
+              <Select
+                value={state.allowAudioRecording}
+                onChange={(event) =>
+                  updateField("allowAudioRecording", event.target.value)
+                }
+              >
+                <option value="">Default</option>
+                <option value="true">Allow</option>
+                <option value="false">Do not allow</option>
+              </Select>
+            </FormField>
+          ) : null}
+
+          <FormField label="Criteria">
+            <Textarea
+              rows={4}
+              value={state.criteriaText}
+              onChange={(event) => updateField("criteriaText", event.target.value)}
+              placeholder="Content|How well the response communicates meaning|10"
+            />
+            <TextLinesHint>
+              Use one line per criterion: label|description|marks
+            </TextLinesHint>
+          </FormField>
+
+          <FormField label="Level descriptors">
+            <Textarea
+              rows={4}
+              value={state.levelDescriptorsText}
+              onChange={(event) =>
+                updateField("levelDescriptorsText", event.target.value)
+              }
+              placeholder="Level 3|Generally clear communication with minor errors|"
+            />
+            <TextLinesHint>
+              Use one line per descriptor: label|description|marks
+            </TextLinesHint>
+          </FormField>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField label="Mark scheme reference">
+              <Input
+                value={state.markSchemeReference}
+                onChange={(event) =>
+                  updateField("markSchemeReference", event.target.value)
+                }
+              />
+            </FormField>
+            <FormField label="Word count guidance">
+              <Input
+                value={state.wordCountGuidance}
+                onChange={(event) => updateField("wordCountGuidance", event.target.value)}
+              />
+            </FormField>
+          </div>
+
+          <FormField label="AI marking notes">
+            <Textarea
+              rows={3}
+              value={state.aiMarkingNotes}
+              onChange={(event) => updateField("aiMarkingNotes", event.target.value)}
+              placeholder="Future AI marking constraints, evidence expectations, or teacher override notes."
+            />
+          </FormField>
+        </div>
       ) : null}
 
       {["gap_fill", "note_completion"].includes(questionType) ? (

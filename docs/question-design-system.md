@@ -2,7 +2,7 @@
 title: "Question Design System (GCSE Russian Platform)"
 sourceType: "internal"
 isPublic: false
-status: phase_1_taxonomy
+status: phase_5_bridge_scaffold
 buildPriority: critical
 lastReviewed: "2026-04-25"
 ---
@@ -27,6 +27,28 @@ Phase 1 does not:
 - change student renderers
 - change marking behaviour
 - remove existing question types
+
+## Implementation Status
+
+Phase 1 is complete: the shared taxonomy and compatibility maps exist.
+
+Phase 2 is complete in the current codebase: question sets now support shared
+digital interactions for multiple response, matching, ordering, word-bank gap
+fill, and categorisation, with admin authoring and structured validation.
+
+Phase 3 is scaffolded: reading and listening tasks can now carry parent stimulus
+metadata, child question-set links, replay limits, and time limits in mock exam
+question data. This does not yet change student rendering.
+
+Phase 4 is scaffolded: writing and speaking mock tasks can now carry response
+workflow metadata and future AI/teacher marking metadata, including criteria,
+level descriptors, mark scheme references, and word-count guidance. This does
+not yet implement uploads or recording storage.
+
+Phase 5 is scaffolded: mock exam question types and reusable question-set types
+now have a shared bridge into the question design taxonomy. Mock exams still use
+their existing runtime renderer, but new records can preserve the shared
+interaction/task metadata needed for unification.
 
 ## Core Principle
 
@@ -330,4 +352,3 @@ Phase 5:
 
 - route mock exams and question sets through one shared engine
 - reduce duplicated marking/rendering logic
-
