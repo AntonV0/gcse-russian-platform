@@ -41,17 +41,17 @@ function renderExplanation(explanation: string | null) {
       {blocks.map((block, index) => {
         if (block.startsWith("### ")) {
           return (
-            <h3 key={`${block}-${index}`} className="text-lg font-semibold text-[var(--text-primary)]">
+            <h4 key={`${block}-${index}`} className="app-heading-subsection">
               {block.replace(/^###\s+/, "")}
-            </h3>
+            </h4>
           );
         }
 
         if (block.startsWith("## ")) {
           return (
-            <h2 key={`${block}-${index}`} className="text-xl font-semibold text-[var(--text-primary)]">
+            <h3 key={`${block}-${index}`} className="app-heading-section">
               {block.replace(/^##\s+/, "")}
-            </h2>
+            </h3>
           );
         }
 
@@ -62,7 +62,7 @@ function renderExplanation(explanation: string | null) {
             .filter(Boolean);
 
           return (
-            <ul key={`${block}-${index}`} className="space-y-2 text-sm leading-7 text-[var(--text-secondary)]">
+            <ul key={`${block}-${index}`} className="space-y-2 app-text-body-muted">
               {items.map((item) => (
                 <li key={item} className="flex gap-3">
                   <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-fill)]" />
@@ -74,7 +74,7 @@ function renderExplanation(explanation: string | null) {
         }
 
         return (
-          <p key={`${block}-${index}`} className="text-sm leading-7 text-[var(--text-secondary)]">
+          <p key={`${block}-${index}`} className="app-lesson-prose">
             {block}
           </p>
         );
@@ -171,10 +171,8 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
           {tables.length > 0 ? (
             <div className="space-y-3">
               <div>
-                <h2 className="text-xl font-semibold text-[var(--text-primary)]">
-                  Grammar tables
-                </h2>
-                <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                <h2 className="app-heading-section">Grammar tables</h2>
+                <p className="mt-1 app-text-body-muted">
                   Reference tables for forms, endings, or patterns.
                 </p>
               </div>
@@ -204,17 +202,17 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
                     key={example.id}
                     className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4"
                   >
-                    <div className="text-lg font-semibold leading-8 text-[var(--text-primary)]">
+                    <div lang="ru" className="app-russian-text text-lg font-semibold">
                       <RussianExampleText
                         text={example.russian_text}
                         highlight={example.optional_highlight}
                       />
                     </div>
-                    <div className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                    <div className="mt-2 app-text-body-muted">
                       {example.english_translation}
                     </div>
                     {example.note ? (
-                      <div className="mt-3 rounded-xl bg-[var(--background-muted)] px-3 py-2 text-sm leading-6 text-[var(--text-secondary)]">
+                      <div className="mt-3 rounded-xl bg-[var(--background-muted)] px-3 py-2 app-text-helper">
                         {example.note}
                       </div>
                     ) : null}
