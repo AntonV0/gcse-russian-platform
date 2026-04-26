@@ -164,6 +164,7 @@ export default async function SettingsPage({
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="new-password"
                 placeholder="Enter new password"
                 minLength={8}
                 required
@@ -175,6 +176,7 @@ export default async function SettingsPage({
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
+                autoComplete="new-password"
                 placeholder="Repeat new password"
                 minLength={8}
                 required

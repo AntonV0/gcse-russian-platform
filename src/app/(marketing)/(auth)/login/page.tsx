@@ -36,6 +36,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               id="email"
               name="email"
               type="email"
+              autoComplete="email"
               required
               className="app-form-control app-form-input"
             />
@@ -49,6 +50,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               id="password"
               name="password"
               type="password"
+              autoComplete="current-password"
               required
               className="app-form-control app-form-input"
             />
