@@ -1,128 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 
-export type VocabularyUsageVariant = "foundation" | "higher" | "volna";
+import { getVocabularyListIdsForVariantScope } from "./vocabulary-usage-list-scope";
+import type {
+  LessonVocabularyLinkRow,
+  VocabularyListForUsageSync,
+  VocabularyUsageVariant,
+} from "./vocabulary-usage-types";
 
-type LessonVocabularyLinkRow = {
-  lesson_id: string;
-  lesson_section_id: string;
-  lesson_block_id: string;
-  link_type: "set" | "list";
-  vocabulary_set_id?: string;
-  vocabulary_list_id?: string;
-  variant: VocabularyUsageVariant;
-  usage_type: "lesson_block";
-  position: number;
-};
-
-type VocabularyListForUsageSync = {
-  id: string;
-  vocabulary_set_id: string;
-  slug: string | null;
-  tier: string | null;
-  sort_order: number | null;
-};
-
-function isListInVariantScope(
-  list: Pick<VocabularyListForUsageSync, "tier">,
-  variant: VocabularyUsageVariant
-) {
-  if (list.tier === "both" || list.tier === "unknown" || !list.tier) {
-    return true;
-  }
-
-  if (variant === "foundation") {
-    return list.tier === "foundation";
-  }
-
-  return list.tier === "foundation" || list.tier === "higher";
-}
-
-function getVocabularyListIdsForVariantScope(params: {
-  vocabularySetId: string;
-  vocabularyListSlug?: string;
-  variant: VocabularyUsageVariant;
-  lists: VocabularyListForUsageSync[];
-}) {
-  const setLists = params.lists
-    .filter((list) => list.vocabulary_set_id === params.vocabularySetId)
-    .sort(
-      (a, b) =>
-        Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
-        String(a.slug ?? "").localeCompare(String(b.slug ?? ""))
-    );
-
-  if (params.vocabularyListSlug) {
-    const explicitList = setLists.find((list) => list.slug === params.vocabularyListSlug);
-
-    if (explicitList) {
-      return [explicitList.id];
-    }
-  }
-
-  const scopedLists = setLists.filter((list) =>
-    isListInVariantScope(list, params.variant)
-  );
-
-  if (scopedLists.length > 0) {
-    return scopedLists.map((list) => list.id);
-  }
-
-  return setLists[0] ? [setLists[0].id] : [];
-}
-
-export function resolveVocabularyUsageVariantFromSlug(
-  variantSlug: string
-): VocabularyUsageVariant | null {
-  const normalized = variantSlug.trim().toLowerCase();
-
-  if (!normalized) return null;
-  if (normalized === "foundation" || normalized.includes("foundation")) {
-    return "foundation";
-  }
-  if (normalized === "higher" || normalized.includes("higher")) {
-    return "higher";
-  }
-  if (normalized === "volna" || normalized.includes("volna")) {
-    return "volna";
-  }
-
-  return null;
-}
-
-export async function getVocabularyUsageVariantForLessonSync(params: {
-  variantSlug?: string | null;
-  variantId?: string | null;
-}): Promise<VocabularyUsageVariant | null> {
-  const fromSlug = resolveVocabularyUsageVariantFromSlug(params.variantSlug ?? "");
-
-  if (fromSlug) {
-    return fromSlug;
-  }
-
-  const variantId = params.variantId?.trim();
-
-  if (!variantId) {
-    return null;
-  }
-
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("course_variants")
-    .select("slug")
-    .eq("id", variantId)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Error resolving course variant for vocabulary usage sync:", error);
-    return null;
-  }
-
-  const slug =
-    data && typeof data.slug === "string" ? data.slug.trim().toLowerCase() : "";
-
-  return resolveVocabularyUsageVariantFromSlug(slug);
-}
+export type { VocabularyUsageVariant } from "./vocabulary-usage-types";
+export {
+  getVocabularyUsageVariantForLessonSync,
+  resolveVocabularyUsageVariantFromSlug,
+} from "./vocabulary-usage-variants";
 
 export async function syncLessonVocabularySetUsagesForLesson(params: {
   lessonId: string;
