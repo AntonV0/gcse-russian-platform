@@ -1,6 +1,9 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
 import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
+import ResponsivePreviewFrame, {
+  ResponsivePreviewSet,
+} from "@/components/admin/ui-lab-responsive-preview";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
@@ -353,6 +356,100 @@ function DemoResponsiveRules() {
   );
 }
 
+function PreviewPanel({
+  title,
+  description,
+  tone = "default",
+}: {
+  title: string;
+  description: string;
+  tone?: "default" | "muted" | "brand";
+}) {
+  const toneClass =
+    tone === "brand"
+      ? "app-surface-brand"
+      : tone === "muted"
+        ? "app-surface-muted"
+        : "app-card";
+
+  return (
+    <div className={`${toneClass} p-3`}>
+      <div className="text-sm font-semibold text-[var(--text-primary)]">{title}</div>
+      <p className="mt-1 text-xs leading-5 app-text-muted">{description}</p>
+    </div>
+  );
+}
+
+function DemoResponsivePreviewFrames() {
+  return (
+    <ResponsivePreviewSet>
+      <ResponsivePreviewFrame
+        title="Mobile stack"
+        viewport="390px"
+        description="Primary action first, secondary actions stacked, and no side rails."
+      >
+        <div className="space-y-3">
+          <PreviewPanel
+            title="Continue lesson"
+            description="Short, readable copy with a clear next action."
+            tone="brand"
+          />
+          <div className="grid gap-2">
+            <Button variant="primary" size="sm" icon="next">
+              Continue
+            </Button>
+            <Button variant="secondary" size="sm" icon="vocabulary">
+              Revise vocabulary
+            </Button>
+          </div>
+          <PreviewPanel
+            title="Progress"
+            description="Small supporting panels sit below the main flow."
+            tone="muted"
+          />
+        </div>
+      </ResponsivePreviewFrame>
+
+      <ResponsivePreviewFrame
+        title="Tablet workspace"
+        viewport="768px"
+        description="Use two-column layouts only when both columns remain comfortable."
+      >
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div className="space-y-2">
+            <PreviewPanel title="Navigation" description="Compact section list." />
+            <PreviewPanel title="Filters" description="Stacked controls." tone="muted" />
+          </div>
+          <div className="space-y-2">
+            <PreviewPanel
+              title="Primary editor"
+              description="Main work area gets the wider column."
+              tone="brand"
+            />
+            <PreviewPanel title="Action row" description="Buttons wrap before overflow." />
+          </div>
+        </div>
+      </ResponsivePreviewFrame>
+
+      <ResponsivePreviewFrame
+        title="Desktop layout"
+        viewport="1280px+"
+        description="Desktop can support a sidebar, main editor, and inspector."
+      >
+        <div className="grid gap-3 sm:grid-cols-[0.8fr_1.4fr_0.8fr]">
+          <PreviewPanel title="Sidebar" description="Structure and filters." />
+          <PreviewPanel
+            title="Main content"
+            description="Primary task surface."
+            tone="brand"
+          />
+          <PreviewPanel title="Inspector" description="Contextual settings." />
+        </div>
+      </ResponsivePreviewFrame>
+    </ResponsivePreviewSet>
+  );
+}
+
 export default async function AdminUiLayoutPage() {
   const canAccess = await requireAdminAccess();
 
@@ -496,7 +593,10 @@ export default async function AdminUiLayoutPage() {
         title="Responsive rules"
         description="Use these rules before creating page-specific exceptions."
       >
-        <DemoResponsiveRules />
+        <div className="space-y-4">
+          <DemoResponsiveRules />
+          <DemoResponsivePreviewFrames />
+        </div>
       </UiLabSection>
 
       <UiLabSection
@@ -547,7 +647,6 @@ export default async function AdminUiLayoutPage() {
       <UiLabFutureSection
         items={[
           "AppShell preview harness for admin, platform, and public layouts.",
-          "ResponsivePreviewFrame for desktop, tablet, and mobile comparisons.",
           "TwoPaneLayout for editors, inspectors, and review workflows.",
           "StickyActionBar for long forms and builder screens.",
           "MobileDrawerLayout for compact navigation and inspectors.",

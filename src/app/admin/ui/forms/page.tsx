@@ -228,7 +228,7 @@ function DemoDenseInspector() {
             </FormField>
           </div>
 
-          <div className="flex flex-wrap gap-3 pt-1">
+          <div className="app-mobile-action-stack flex flex-wrap gap-3 pt-1">
             <Button variant="secondary" icon="filter">
               Apply filters
             </Button>
@@ -317,7 +317,7 @@ function DemoBuilderRows() {
               defaultChecked
             />
 
-            <div className="flex flex-wrap items-end gap-3 xl:justify-end">
+            <div className="app-mobile-action-stack flex flex-wrap items-end gap-3 xl:justify-end">
               <Button variant="secondary" size="sm" icon="preview">
                 Preview
               </Button>
@@ -440,7 +440,7 @@ function DemoStateVariants() {
               Use this when the user has made edits but has not saved them yet.
             </p>
 
-            <div className="flex flex-wrap gap-3 pt-1">
+            <div className="app-mobile-action-stack flex flex-wrap gap-3 pt-1">
               <Button variant="primary" icon="completed">
                 Save changes
               </Button>
@@ -467,7 +467,7 @@ function DemoStateVariants() {
               A quieter state once the save action is complete.
             </p>
 
-            <div className="flex flex-wrap gap-3 pt-1">
+            <div className="app-mobile-action-stack flex flex-wrap gap-3 pt-1">
               <Button variant="primary" disabled icon="pending">
                 Saving...
               </Button>
@@ -507,7 +507,7 @@ function DemoFormLayouts() {
             />
           </FormField>
 
-          <div className="flex flex-wrap gap-3 pt-2">
+          <div className="app-mobile-action-stack flex flex-wrap gap-3 pt-2">
             <Button variant="primary" icon="completed">
               Save changes
             </Button>
@@ -686,7 +686,7 @@ function DemoSectionedEditForm() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="app-mobile-action-stack flex flex-wrap gap-3">
                 <Button variant="primary" icon="completed">
                   Save lesson
                 </Button>
