@@ -92,6 +92,28 @@ export default function GcseRussianFoundationTierPage() {
           icon: "calendar",
         },
       ]}
+      faqs={[
+        {
+          question: "Who should consider Foundation tier GCSE Russian?",
+          answer:
+            "Foundation is usually best for students who need secure core vocabulary, simpler sentence control, and confidence with familiar GCSE task types.",
+        },
+        {
+          question: "Can a Foundation student move towards Higher later?",
+          answer:
+            "Sometimes, but the decision should be based on evidence from vocabulary, grammar, translation, and exam-style tasks rather than hope alone.",
+        },
+        {
+          question: "What should Foundation students practise most?",
+          answer:
+            "They should practise high-frequency vocabulary, accurate short sentences, opinions with reasons, key tenses, listening/reading recognition, and short speaking or writing answers.",
+        },
+        {
+          question: "Is Foundation tier easier to revise for?",
+          answer:
+            "It is more accessible, but it still needs steady revision. Students can lose marks through weak vocabulary, uncertain grammar, poor timing, or not answering the exact task.",
+        },
+      ]}
       ctaTitle="Build Foundation confidence step by step"
       ctaDescription="Start with structured course access so students can practise core Russian regularly and see what still needs attention."
     />
