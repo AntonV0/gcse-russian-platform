@@ -91,6 +91,15 @@ export type GrammarSetFilters = {
   published?: "all" | "published" | "draft" | null;
 };
 
+const GRAMMAR_SET_SELECT =
+  "id, slug, title, description, theme_key, topic_key, tier, sort_order, is_published, is_trial_visible, requires_paid_access, available_in_volna, source_key, source_version, import_key, created_at, updated_at";
+const GRAMMAR_POINT_SELECT =
+  "id, grammar_set_id, slug, title, short_description, full_explanation, spec_reference, grammar_tag_key, category_key, tier, sort_order, is_published, created_at, updated_at";
+const GRAMMAR_EXAMPLE_SELECT =
+  "id, grammar_point_id, russian_text, english_translation, optional_highlight, note, sort_order, created_at, updated_at";
+const GRAMMAR_TABLE_SELECT =
+  "id, grammar_point_id, title, columns, rows, optional_note, sort_order, created_at, updated_at";
+
 export function getGrammarTierLabel(tier: DbGrammarTier) {
   switch (tier) {
     case "foundation":
@@ -216,30 +225,37 @@ function normalizeGrammarTable(row: unknown): DbGrammarTable {
 async function attachGrammarPointCounts(
   grammarSets: DbGrammarSet[]
 ): Promise<DbGrammarSetListItem[]> {
+  if (grammarSets.length === 0) {
+    return [];
+  }
+
   const supabase = await createClient();
+  const grammarSetIds = grammarSets.map((grammarSet) => grammarSet.id);
 
-  const enriched = await Promise.all(
-    grammarSets.map(async (grammarSet) => {
-      const { count, error } = await supabase
-        .from("grammar_points")
-        .select("id", { count: "exact", head: true })
-        .eq("grammar_set_id", grammarSet.id);
+  const { data, error } = await supabase
+    .from("grammar_points")
+    .select("grammar_set_id")
+    .in("grammar_set_id", grammarSetIds);
 
-      if (error) {
-        console.error("Error counting grammar points:", {
-          grammarSetId: grammarSet.id,
-          error,
-        });
-      }
+  if (error) {
+    console.error("Error counting grammar points:", { grammarSetIds, error });
+    return grammarSets.map((grammarSet) => ({
+      ...grammarSet,
+      point_count: 0,
+    }));
+  }
 
-      return {
-        ...grammarSet,
-        point_count: count ?? 0,
-      };
-    })
-  );
+  const counts = new Map<string, number>();
 
-  return enriched;
+  for (const row of data ?? []) {
+    const grammarSetId = String(row.grammar_set_id);
+    counts.set(grammarSetId, (counts.get(grammarSetId) ?? 0) + 1);
+  }
+
+  return grammarSets.map((grammarSet) => ({
+    ...grammarSet,
+    point_count: counts.get(grammarSet.id) ?? 0,
+  }));
 }
 
 function applySetFilters(grammarSets: DbGrammarSetListItem[], filters?: GrammarSetFilters) {
@@ -334,7 +350,7 @@ export async function getGrammarSetsDb(filters?: GrammarSetFilters) {
 
   const { data, error } = await supabase
     .from("grammar_sets")
-    .select("*")
+    .select(GRAMMAR_SET_SELECT)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
 
@@ -352,7 +368,7 @@ export async function getPublishedGrammarSetsDb(filters?: GrammarSetFilters) {
 
   const { data, error } = await supabase
     .from("grammar_sets")
-    .select("*")
+    .select(GRAMMAR_SET_SELECT)
     .eq("is_published", true)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
@@ -371,7 +387,7 @@ export async function getGrammarSetByIdDb(grammarSetId: string) {
 
   const { data, error } = await supabase
     .from("grammar_sets")
-    .select("*")
+    .select(GRAMMAR_SET_SELECT)
     .eq("id", grammarSetId)
     .maybeSingle();
 
@@ -388,7 +404,7 @@ export async function getGrammarSetBySlugDb(grammarSetSlug: string) {
 
   const { data, error } = await supabase
     .from("grammar_sets")
-    .select("*")
+    .select(GRAMMAR_SET_SELECT)
     .eq("slug", grammarSetSlug)
     .maybeSingle();
 
@@ -408,7 +424,7 @@ export async function getGrammarPointsBySetIdDb(
 
   let query = supabase
     .from("grammar_points")
-    .select("*")
+    .select(GRAMMAR_POINT_SELECT)
     .eq("grammar_set_id", grammarSetId)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
@@ -436,7 +452,7 @@ export async function getGrammarPointByIdDb(grammarPointId: string) {
 
   const { data, error } = await supabase
     .from("grammar_points")
-    .select("*")
+    .select(GRAMMAR_POINT_SELECT)
     .eq("id", grammarPointId)
     .maybeSingle();
 
@@ -456,7 +472,7 @@ export async function getGrammarPointBySlugForSetIdDb(
 
   const { data, error } = await supabase
     .from("grammar_points")
-    .select("*")
+    .select(GRAMMAR_POINT_SELECT)
     .eq("grammar_set_id", grammarSetId)
     .eq("slug", grammarPointSlug)
     .maybeSingle();
@@ -478,7 +494,7 @@ export async function getGrammarExamplesByPointIdDb(grammarPointId: string) {
 
   const { data, error } = await supabase
     .from("grammar_examples")
-    .select("*")
+    .select(GRAMMAR_EXAMPLE_SELECT)
     .eq("grammar_point_id", grammarPointId)
     .order("sort_order", { ascending: true });
 
@@ -495,7 +511,7 @@ export async function getGrammarTablesByPointIdDb(grammarPointId: string) {
 
   const { data, error } = await supabase
     .from("grammar_tables")
-    .select("*")
+    .select(GRAMMAR_TABLE_SELECT)
     .eq("grammar_point_id", grammarPointId)
     .order("sort_order", { ascending: true });
 
