@@ -79,7 +79,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-4 md:flex">
+          <div className="hidden items-center gap-4 lg:flex">
             <nav className="flex items-center gap-4 text-sm" aria-label="Main navigation">
               {navItems.map((item) => (
                 <Link
@@ -121,7 +121,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <ThemeToggle />
 
             <IconButton
@@ -135,7 +135,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
         </div>
 
         {isMobileMenuOpen ? (
-          <div className="mt-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 shadow-[var(--shadow-lg)] md:hidden">
+          <div className="mt-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 shadow-[var(--shadow-lg)] lg:hidden">
             <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wide app-text-soft">
               Navigation
             </div>
@@ -147,7 +147,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
                   href={item.href}
                   onClick={closeMobileMenu}
                   className={[
-                    "rounded-xl px-3 py-2 text-sm transition",
+                    "flex min-h-11 items-center rounded-xl px-3 py-2 text-sm transition",
                     activeMap[item.href]
                       ? "font-medium [background:var(--accent-gradient-selected)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]"
                       : "hover:bg-[var(--background-muted)]",

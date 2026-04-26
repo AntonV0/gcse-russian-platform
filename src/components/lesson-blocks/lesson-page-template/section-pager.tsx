@@ -73,16 +73,16 @@ export function SectionPager({
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="app-mobile-action-stack flex flex-col gap-3 sm:flex-row">
           {previousHref ? (
             <Link
               href={previousHref}
-              className="app-btn-base app-btn-secondary rounded-lg px-4 py-2 text-sm"
+              className="app-btn-base app-btn-secondary min-h-11 rounded-lg px-4 py-2 text-sm"
             >
               Previous section
             </Link>
           ) : (
-            <span className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
+            <span className="flex min-h-11 items-center justify-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
               Previous section
             </span>
           )}
@@ -90,12 +90,12 @@ export function SectionPager({
           {nextHref ? (
             <Link
               href={nextHref}
-              className="app-btn-base app-btn-primary rounded-lg px-4 py-2 text-sm"
+              className="app-btn-base app-btn-primary min-h-11 rounded-lg px-4 py-2 text-sm"
             >
               Next section
             </Link>
           ) : (
-            <span className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
+            <span className="flex min-h-11 items-center justify-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
               Next section
             </span>
           )}

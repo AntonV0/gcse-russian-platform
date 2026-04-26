@@ -44,7 +44,7 @@ export default function DashboardCard({
           .filter(Boolean)
           .join(" ")}
       >
-        <CardBody className="px-5 py-4">
+        <CardBody className="px-4 py-4 sm:px-5">
           {title ? (
             <Heading level={headingLevel} className="app-card-title">
               {title}

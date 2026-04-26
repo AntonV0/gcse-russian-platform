@@ -111,7 +111,7 @@ export function ImageBlock({
         />
       ) : null}
 
-      <div className="relative h-[320px] w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] sm:h-[420px] md:h-[500px]">
+      <div className="relative aspect-[4/3] max-h-[70vh] w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] sm:aspect-[16/10] md:aspect-[16/9]">
         <Image
           src={src}
           alt={alt ?? caption ?? "Lesson image"}

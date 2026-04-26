@@ -70,12 +70,14 @@
   font-size: 1rem;
   color: var(--text-primary);
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .app-text-body-muted {
   font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
 .app-text-detail {
@@ -111,6 +113,7 @@
   font-size: 1rem;
   color: var(--text-primary);
   line-height: 1.75;
+  overflow-wrap: anywhere;
 }
 
 .app-question-prompt {
@@ -119,6 +122,7 @@
   letter-spacing: 0;
   color: var(--text-primary);
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .app-russian-text {
@@ -127,6 +131,7 @@
   letter-spacing: 0;
   color: var(--text-primary);
   line-height: 1.75;
+  overflow-wrap: anywhere;
 }
 
 .app-vocab-term {
@@ -135,6 +140,7 @@
   letter-spacing: 0;
   color: var(--text-primary);
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .app-label {

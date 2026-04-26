@@ -29,12 +29,17 @@ type DbLessonBlockRow = {
   updated_at: string;
 };
 
+const LESSON_SECTION_SELECT =
+  "id, lesson_id, title, description, section_kind, position, is_published, variant_visibility, canonical_section_key, settings, created_at, updated_at";
+const LESSON_BLOCK_SELECT =
+  "id, lesson_section_id, block_type, position, is_published, data, settings, created_at, updated_at";
+
 export async function getLessonSectionsWithBlocksDb(lessonId: string) {
   const supabase = await createClient();
 
   const { data: sections, error: sectionsError } = await supabase
     .from("lesson_sections")
-    .select("*")
+    .select(LESSON_SECTION_SELECT)
     .eq("lesson_id", lessonId)
     .order("position", { ascending: true });
 
@@ -55,7 +60,7 @@ export async function getLessonSectionsWithBlocksDb(lessonId: string) {
 
   const { data: blocks, error: blocksError } = await supabase
     .from("lesson_blocks")
-    .select("*")
+    .select(LESSON_BLOCK_SELECT)
     .in("lesson_section_id", sectionIds)
     .order("position", { ascending: true });
 

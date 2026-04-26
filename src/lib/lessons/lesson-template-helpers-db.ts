@@ -58,12 +58,25 @@ export type DbLessonTemplateSection = {
   position: number;
 };
 
+const LESSON_BLOCK_PRESET_SELECT =
+  "id, slug, title, description, is_active, created_at, updated_at";
+const LESSON_BLOCK_PRESET_BLOCK_SELECT =
+  "id, lesson_block_preset_id, block_type, position, data, is_active, created_at, updated_at";
+const LESSON_SECTION_TEMPLATE_SELECT =
+  "id, slug, title, description, default_section_title, default_section_kind, is_active, created_at, updated_at";
+const LESSON_SECTION_TEMPLATE_PRESET_SELECT =
+  "lesson_section_template_id, lesson_block_preset_id, position";
+const LESSON_TEMPLATE_SELECT =
+  "id, slug, title, description, is_active, created_at, updated_at";
+const LESSON_TEMPLATE_SECTION_SELECT =
+  "id, lesson_template_id, lesson_section_template_id, title_override, section_kind_override, position";
+
 export async function getLessonBlockPresetsDb(): Promise<DbLessonBlockPreset[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("lesson_block_presets")
-    .select("*")
+    .select(LESSON_BLOCK_PRESET_SELECT)
     .order("title", { ascending: true });
 
   if (error) {
@@ -83,7 +96,7 @@ export async function getLessonBlockPresetBlocksDb(
 
   const { data, error } = await supabase
     .from("lesson_block_preset_blocks")
-    .select("*")
+    .select(LESSON_BLOCK_PRESET_BLOCK_SELECT)
     .in("lesson_block_preset_id", presetIds)
     .order("position", { ascending: true });
 
@@ -100,7 +113,7 @@ export async function getLessonSectionTemplatesDb(): Promise<DbLessonSectionTemp
 
   const { data, error } = await supabase
     .from("lesson_section_templates")
-    .select("*")
+    .select(LESSON_SECTION_TEMPLATE_SELECT)
     .order("title", { ascending: true });
 
   if (error) {
@@ -120,7 +133,7 @@ export async function getLessonSectionTemplatePresetsDb(
 
   const { data, error } = await supabase
     .from("lesson_section_template_presets")
-    .select("*")
+    .select(LESSON_SECTION_TEMPLATE_PRESET_SELECT)
     .in("lesson_section_template_id", templateIds)
     .order("position", { ascending: true });
 
@@ -137,7 +150,7 @@ export async function getLessonTemplatesDb(): Promise<DbLessonTemplate[]> {
 
   const { data, error } = await supabase
     .from("lesson_templates")
-    .select("*")
+    .select(LESSON_TEMPLATE_SELECT)
     .order("title", { ascending: true });
 
   if (error) {
@@ -157,7 +170,7 @@ export async function getLessonTemplateSectionsDb(
 
   const { data, error } = await supabase
     .from("lesson_template_sections")
-    .select("*")
+    .select(LESSON_TEMPLATE_SECTION_SELECT)
     .in("lesson_template_id", templateIds)
     .order("position", { ascending: true });
 
@@ -208,7 +221,7 @@ export async function getLessonBlockPresetByIdDb(
 
   const { data, error } = await supabase
     .from("lesson_block_presets")
-    .select("*")
+    .select(LESSON_BLOCK_PRESET_SELECT)
     .eq("id", presetId)
     .single();
 
@@ -227,7 +240,7 @@ export async function getLessonBlockPresetBlocksByPresetIdDb(
 
   const { data, error } = await supabase
     .from("lesson_block_preset_blocks")
-    .select("*")
+    .select(LESSON_BLOCK_PRESET_BLOCK_SELECT)
     .eq("lesson_block_preset_id", presetId)
     .order("position", { ascending: true });
 
@@ -258,7 +271,7 @@ export async function getLessonSectionTemplateByIdDb(
 
   const { data, error } = await supabase
     .from("lesson_section_templates")
-    .select("*")
+    .select(LESSON_SECTION_TEMPLATE_SELECT)
     .eq("id", templateId)
     .single();
 
@@ -277,7 +290,7 @@ export async function getLessonSectionTemplatePresetLinksByTemplateIdDb(
 
   const { data, error } = await supabase
     .from("lesson_section_template_presets")
-    .select("*")
+    .select(LESSON_SECTION_TEMPLATE_PRESET_SELECT)
     .eq("lesson_section_template_id", templateId)
     .order("position", { ascending: true });
 
@@ -310,7 +323,7 @@ export async function getLessonTemplateByIdDb(
 
   const { data, error } = await supabase
     .from("lesson_templates")
-    .select("*")
+    .select(LESSON_TEMPLATE_SELECT)
     .eq("id", templateId)
     .single();
 
@@ -329,7 +342,7 @@ export async function getLessonTemplateSectionsByTemplateIdDb(
 
   const { data, error } = await supabase
     .from("lesson_template_sections")
-    .select("*")
+    .select(LESSON_TEMPLATE_SECTION_SELECT)
     .eq("lesson_template_id", templateId)
     .order("position", { ascending: true });
 
@@ -379,25 +392,18 @@ export type LessonBuilderLessonTemplateOption = {
 };
 
 export async function getLessonBuilderTemplateOptionsDb() {
-  const [
-    blockPresets,
-    presetBlocks,
-    sectionTemplates,
-    sectionTemplatePresetLinks,
-    lessonTemplates,
-    lessonTemplateSections,
-  ] = await Promise.all([
+  const [blockPresets, sectionTemplates, lessonTemplates] = await Promise.all([
     getLessonBlockPresetsDb(),
-    getLessonBlockPresetBlocksDb(
-      (await getLessonBlockPresetsDb()).map((item) => item.id)
-    ),
     getLessonSectionTemplatesDb(),
-    getLessonSectionTemplatePresetsDb(
-      (await getLessonSectionTemplatesDb()).map((item) => item.id)
-    ),
     getLessonTemplatesDb(),
-    getLessonTemplateSectionsDb((await getLessonTemplatesDb()).map((item) => item.id)),
   ]);
+
+  const [presetBlocks, sectionTemplatePresetLinks, lessonTemplateSections] =
+    await Promise.all([
+      getLessonBlockPresetBlocksDb(blockPresets.map((item) => item.id)),
+      getLessonSectionTemplatePresetsDb(sectionTemplates.map((item) => item.id)),
+      getLessonTemplateSectionsDb(lessonTemplates.map((item) => item.id)),
+    ]);
 
   const presetBlockCountById = new Map<string, number>();
   for (const block of presetBlocks) {

@@ -37,8 +37,10 @@ export function DataTable({ children, className }: DataTableProps) {
         />
       ) : null}
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-sm">{children}</table>
+      <div className="max-w-full overflow-x-auto overscroll-x-contain">
+        <table className="min-w-[640px] w-full border-collapse text-sm">
+          {children}
+        </table>
       </div>
     </div>
   );
@@ -86,7 +88,7 @@ export function DataTableHeaderCell({ children, className }: DataTableSectionPro
   return (
     <th
       className={[
-        "px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]",
+        "px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)] sm:px-5",
         className,
       ]
         .filter(Boolean)
@@ -100,7 +102,7 @@ export function DataTableHeaderCell({ children, className }: DataTableSectionPro
 export function DataTableCell({ children, className }: DataTableSectionProps) {
   return (
     <td
-      className={["px-5 py-4 align-middle text-[var(--text-secondary)]", className]
+      className={["px-4 py-4 align-middle text-[var(--text-secondary)] sm:px-5", className]
         .filter(Boolean)
         .join(" ")}
     >

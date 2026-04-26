@@ -57,7 +57,7 @@ export default async function AssignmentsPage() {
         />
 
         {assignmentCards.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryStatCard
               title="Total"
               value={counts.all}
@@ -121,7 +121,7 @@ export default async function AssignmentsPage() {
                         </p>
                       ) : null}
 
-                      <div className="grid gap-4 md:grid-cols-3">
+                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         <div>
                             <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                               Due date

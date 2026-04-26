@@ -217,7 +217,7 @@
 }
 
 .app-btn-icon-only {
-  min-width: 2.25rem;
+  min-width: 2.5rem;
 }
 
 .app-btn-icon-only:hover {
@@ -459,4 +459,18 @@
     inset 0 1px 0 color-mix(in srgb, var(--brand-white) 14%, transparent),
     0 14px 30px color-mix(in srgb, var(--accent) 22%, transparent),
     0 2px 7px rgba(0, 0, 0, 0.24);
+}
+
+@media (max-width: 639px) {
+  .app-mobile-action-stack > .dev-marker-host,
+  .app-mobile-action-stack > a,
+  .app-mobile-action-stack > button,
+  .app-mobile-action-stack > span {
+    width: 100%;
+  }
+
+  .app-mobile-action-stack .app-btn-surface-fix,
+  .app-mobile-action-stack .app-btn-base {
+    width: 100%;
+  }
 }
