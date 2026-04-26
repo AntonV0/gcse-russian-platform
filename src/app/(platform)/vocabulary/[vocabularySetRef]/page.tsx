@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import { getButtonClassName } from "@/components/ui/button-styles";
 import DetailList from "@/components/ui/detail-list";
 import EmptyState from "@/components/ui/empty-state";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
@@ -108,6 +110,24 @@ function VocabularyItemCoverageBadges({
   );
 }
 
+function SectionToggleButton() {
+  return (
+    <span
+      className={getButtonClassName({
+        variant: "secondary",
+        size: "sm",
+        className: "pointer-events-none",
+      })}
+      aria-hidden="true"
+    >
+      <span className="shrink-0">
+        <AppIcon icon="next" size={16} />
+      </span>
+      <span className="truncate">Open</span>
+    </span>
+  );
+}
+
 function VocabularyItemRow({
   item,
   coverage,
@@ -205,9 +225,7 @@ function VocabularyItemSection({
           </span>
         </span>
 
-        <Badge tone="muted" icon="next" className="group-open:rotate-90">
-          Open
-        </Badge>
+        <SectionToggleButton />
       </summary>
 
       <div className="mt-4 grid gap-3">
