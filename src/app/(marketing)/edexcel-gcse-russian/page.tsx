@@ -5,13 +5,15 @@ import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import {
   MarketingCtaBand,
+  MarketingFaqSection,
   MarketingFeatureGrid,
   MarketingRelatedLinks,
+  type MarketingFaqItem,
 } from "@/components/marketing/marketing-page-sections";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
-import { buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Pearson Edexcel GCSE Russian Guide",
@@ -61,6 +63,75 @@ const tierNotes = [
   },
 ];
 
+const qualificationFacts = [
+  {
+    title: "Four equal skills",
+    description:
+      "Listening, speaking, reading, and writing are each assessed as a separate paper and each contributes 25% of the qualification.",
+  },
+  {
+    title: "One tier across all papers",
+    description:
+      "Students are entered for either Foundation or Higher across the qualification, so tier choice should be planned before the exam series.",
+  },
+  {
+    title: "No dictionaries",
+    description:
+      "Pearson's specification states that dictionaries are not permitted in the papers, including during speaking preparation time.",
+  },
+  {
+    title: "Speaking happens earlier",
+    description:
+      "The speaking assessment is completed in the April/May window, with the other papers taken in the May/June exam series.",
+  },
+];
+
+const paperDetails = [
+  {
+    title: "Paper 1: Listening",
+    description:
+      "Paper codes 1RU0/1F and 1RU0/1H. Foundation is 35 minutes including reading time; Higher is 45 minutes including reading time.",
+  },
+  {
+    title: "Paper 2: Speaking",
+    description:
+      "Paper codes 1RU0/2F and 1RU0/2H. Students complete a role play, picture-based task, and conversation.",
+  },
+  {
+    title: "Paper 3: Reading",
+    description:
+      "Paper codes 1RU0/3F and 1RU0/3H. Students answer comprehension questions and translate from Russian into English.",
+  },
+  {
+    title: "Paper 4: Writing",
+    description:
+      "Paper codes 1RU0/4F and 1RU0/4H. Students produce written Russian and translate from English into Russian.",
+  },
+];
+
+const edexcelFaqs: MarketingFaqItem[] = [
+  {
+    question: "What is the GCSE Russian qualification code?",
+    answer:
+      "Pearson Edexcel GCSE Russian uses qualification code 1RU0. Individual papers use 1RU0 with paper and tier suffixes such as 1RU0/1F or 1RU0/4H.",
+  },
+  {
+    question: "Can students mix Foundation and Higher papers?",
+    answer:
+      "No. Pearson's GCSE Russian specification says students must be entered for a single tier across all papers.",
+  },
+  {
+    question: "Are dictionaries allowed in GCSE Russian?",
+    answer:
+      "No. The Pearson specification states that dictionaries are not permitted, including during the preparation time for the speaking paper.",
+  },
+  {
+    question: "Why does the speaking paper need early preparation?",
+    answer:
+      "Speaking is completed in the April/May assessment window, so students should not leave speaking practice until the final written-paper revision period.",
+  },
+];
+
 const relatedLinks = [
   {
     title: "Online GCSE Russian course",
@@ -87,14 +158,17 @@ export default function EdexcelGcseRussianPage() {
   return (
     <>
       <JsonLd
-        data={buildLearningResourceJsonLd({
-          name: "Pearson Edexcel GCSE Russian 1RU0 Guide",
-          description:
-            "A clear guide to Pearson Edexcel GCSE Russian 1RU0, including the four papers, Foundation and Higher tiers, and course preparation.",
-          path: "/edexcel-gcse-russian",
-          keywords: ["Pearson Edexcel GCSE Russian", "1RU0", "Edexcel Russian GCSE"],
-          relatedLinks,
-        })}
+        data={[
+          buildLearningResourceJsonLd({
+            name: "Pearson Edexcel GCSE Russian 1RU0 Guide",
+            description:
+              "A clear guide to Pearson Edexcel GCSE Russian 1RU0, including the four papers, Foundation and Higher tiers, and course preparation.",
+            path: "/edexcel-gcse-russian",
+            keywords: ["Pearson Edexcel GCSE Russian", "1RU0", "Edexcel Russian GCSE"],
+            relatedLinks,
+          }),
+          buildFaqJsonLd(edexcelFaqs),
+        ]}
       />
       <MarketingBreadcrumbs
         items={[
@@ -159,6 +233,58 @@ export default function EdexcelGcseRussianPage() {
         <MarketingFeatureGrid items={tierNotes} tone="muted" />
 
         <SectionCard
+          title="Qualification details students should know"
+          description="These details affect revision planning, tier choice, and when students need to be ready for speaking."
+          tone="brand"
+        >
+          <div className="grid gap-3 md:grid-cols-2">
+            {qualificationFacts.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+              >
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          title="Paper codes and preparation focus"
+          description="Use the codes to recognise official materials and the preparation focus to plan the student's weekly work."
+          tone="muted"
+          actions={
+            <a
+              href="https://qualifications.pearson.com/en/qualifications/edexcel-gcses/russian-2017.html"
+              className="app-nav-link"
+            >
+              Pearson qualification page
+            </a>
+          }
+        >
+          <div className="grid gap-3 md:grid-cols-2">
+            {paperDetails.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+              >
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard
           title="How the platform supports Edexcel preparation"
           description="The public pages give context. The logged-in app provides the learning sequence, practice, progress tracking, and account-specific access."
           tone="brand"
@@ -170,6 +296,12 @@ export default function EdexcelGcseRussianPage() {
         />
 
         <MarketingRelatedLinks links={relatedLinks} />
+
+        <MarketingFaqSection
+          title="Edexcel GCSE Russian questions"
+          description="The details that most often affect planning, tier choice, and revision timing."
+          items={edexcelFaqs}
+        />
 
         <MarketingCtaBand
           title="Turn the specification into a study plan"

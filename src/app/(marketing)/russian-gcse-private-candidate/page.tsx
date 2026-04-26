@@ -5,14 +5,16 @@ import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import {
   MarketingCtaBand,
+  MarketingFaqSection,
   MarketingFeatureGrid,
   MarketingRelatedLinks,
   MarketingStepList,
+  type MarketingFaqItem,
 } from "@/components/marketing/marketing-page-sections";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { buildPublicMetadata } from "@/lib/seo/site";
-import { buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Russian GCSE Private Candidate Guide",
@@ -75,6 +77,52 @@ const trustPoints = [
   },
 ];
 
+const examCentreChecklist = [
+  {
+    title: "Confirm candidate acceptance",
+    description:
+      "Ask whether the centre accepts private candidates for Pearson Edexcel GCSE Russian and which entry option they can offer.",
+  },
+  {
+    title: "Ask about speaking arrangements",
+    description:
+      "Speaking is often the hardest part to arrange privately, so families should ask early about teacher-examiner and recording arrangements.",
+  },
+  {
+    title: "Check deadlines and fees",
+    description:
+      "Entry deadlines, late fees, access arrangements, and centre administration costs can vary, so these should be confirmed directly.",
+  },
+  {
+    title: "Match tier to preparation",
+    description:
+      "Foundation or Higher should be chosen before the speaking assessment, then revision should stay aligned to that tier.",
+  },
+];
+
+const privateCandidateFaqs: MarketingFaqItem[] = [
+  {
+    question: "Can this platform enter a student for GCSE Russian?",
+    answer:
+      "No. The platform supports preparation. Families still need to arrange exam entry and confirm all requirements directly with an exam centre.",
+  },
+  {
+    question: "When should private candidates look for an exam centre?",
+    answer:
+      "As early as possible. Centre availability, fees, deadlines, and speaking arrangements can vary, and speaking is completed before the written papers.",
+  },
+  {
+    question: "Is GCSE Russian suitable for heritage speakers?",
+    answer:
+      "Often, yes, but heritage speakers still need exam preparation: formal writing, translation accuracy, grammar control, and paper-specific technique.",
+  },
+  {
+    question: "What support is most useful for private candidates?",
+    answer:
+      "A structured course helps with coverage and routine. Live support is especially useful when speaking confidence, writing feedback, or accountability is needed.",
+  },
+];
+
 const relatedLinks = [
   {
     title: "Online GCSE Russian course",
@@ -100,18 +148,21 @@ export default function RussianGcsePrivateCandidatePage() {
   return (
     <>
       <JsonLd
-        data={buildLearningResourceJsonLd({
-          name: "Russian GCSE Private Candidate Guide",
-          description:
-            "A practical guide for Russian GCSE private candidates and families planning exam preparation, course structure, online lessons, and exam-centre questions.",
-          path: "/russian-gcse-private-candidate",
-          keywords: [
-            "Russian GCSE private candidate",
-            "Russian GCSE exam centre",
-            "GCSE Russian preparation",
-          ],
-          relatedLinks,
-        })}
+        data={[
+          buildLearningResourceJsonLd({
+            name: "Russian GCSE Private Candidate Guide",
+            description:
+              "A practical guide for Russian GCSE private candidates and families planning exam preparation, course structure, online lessons, and exam-centre questions.",
+            path: "/russian-gcse-private-candidate",
+            keywords: [
+              "Russian GCSE private candidate",
+              "Russian GCSE exam centre",
+              "GCSE Russian preparation",
+            ],
+            relatedLinks,
+          }),
+          buildFaqJsonLd(privateCandidateFaqs),
+        ]}
       />
       <MarketingBreadcrumbs
         items={[
@@ -169,6 +220,28 @@ export default function RussianGcsePrivateCandidatePage() {
         <MarketingFeatureGrid items={trustPoints} tone="muted" />
 
         <SectionCard
+          title="Exam centre checklist"
+          description="The course can organise preparation, but the exam centre controls entry, fees, deadlines, and assessment arrangements."
+          tone="student"
+        >
+          <div className="grid gap-3 md:grid-cols-2">
+            {examCentreChecklist.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+              >
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard
           title="Important note about exam entry"
           description="This platform can support GCSE Russian preparation, but families should confirm exam entry, deadlines, speaking arrangements, and centre availability directly with their chosen exam centre."
           tone="brand"
@@ -180,6 +253,12 @@ export default function RussianGcsePrivateCandidatePage() {
         />
 
         <MarketingRelatedLinks links={relatedLinks} />
+
+        <MarketingFaqSection
+          title="Private candidate questions"
+          description="The practical questions families should settle before relying on a revision plan alone."
+          items={privateCandidateFaqs}
+        />
 
         <MarketingCtaBand
           title="Give private-candidate preparation a structure"

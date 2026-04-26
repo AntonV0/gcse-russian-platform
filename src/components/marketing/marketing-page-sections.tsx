@@ -17,6 +17,11 @@ type LinkItem = {
   icon?: AppIconKey;
 };
 
+export type MarketingFaqItem = {
+  question: string;
+  answer: string;
+};
+
 export function MarketingFeatureGrid({
   items,
   tone = "student",
@@ -108,6 +113,38 @@ export function MarketingRelatedLinks({
               </Button>
             </CardBody>
           </Card>
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+export function MarketingFaqSection({
+  title = "Common questions",
+  description = "Short answers to the questions families usually ask before choosing the next step.",
+  items,
+}: {
+  title?: string;
+  description?: string;
+  items: MarketingFaqItem[];
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <SectionCard title={title} description={description} tone="student">
+      <div className="grid gap-3 md:grid-cols-2">
+        {items.map((item) => (
+          <div
+            key={item.question}
+            className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+          >
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+              {item.question}
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              {item.answer}
+            </p>
+          </div>
         ))}
       </div>
     </SectionCard>

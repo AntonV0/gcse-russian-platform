@@ -4,12 +4,14 @@ import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import {
   MarketingCtaBand,
+  MarketingFaqSection,
   MarketingRelatedLinks,
+  type MarketingFaqItem,
 } from "@/components/marketing/marketing-page-sections";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import type { AppIconKey } from "@/lib/shared/icons";
-import { buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
 export type GuideSection = {
   title: string;
@@ -50,6 +52,7 @@ type EvergreenGuidePageProps = {
   };
   sections: GuideSection[];
   relatedLinks: GuideRelatedLink[];
+  faqs?: MarketingFaqItem[];
   ctaTitle: string;
   ctaDescription: string;
   ctaSecondaryHref?: string;
@@ -75,6 +78,7 @@ export default function EvergreenGuidePage({
   },
   sections,
   relatedLinks,
+  faqs = [],
   ctaTitle,
   ctaDescription,
   ctaSecondaryHref = "/gcse-russian-course",
@@ -83,13 +87,16 @@ export default function EvergreenGuidePage({
   return (
     <>
       <JsonLd
-        data={buildLearningResourceJsonLd({
-          name: title,
-          description,
-          path,
-          keywords,
-          relatedLinks,
-        })}
+        data={[
+          buildLearningResourceJsonLd({
+            name: title,
+            description,
+            path,
+            keywords,
+            relatedLinks,
+          }),
+          ...(faqs.length > 0 ? [buildFaqJsonLd(faqs)] : []),
+        ]}
       />
       <MarketingBreadcrumbs
         items={[
@@ -159,6 +166,8 @@ export default function EvergreenGuidePage({
         ))}
 
         <MarketingRelatedLinks links={relatedLinks} />
+
+        <MarketingFaqSection items={faqs} />
 
         <MarketingCtaBand
           title={ctaTitle}
