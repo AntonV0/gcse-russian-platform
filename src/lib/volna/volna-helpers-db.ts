@@ -100,13 +100,21 @@ export async function getCurrentUserVolnaGroupsDb() {
   }
 
   type VolnaGroupRow = DbTeachingGroup & {
-    course_variants?: {
-      slug: string | null;
-    } | null;
+    course_variants?:
+      | {
+          slug: string | null;
+        }
+      | {
+          slug: string | null;
+        }[]
+      | null;
   };
 
-  const volnaGroups = ((groups ?? []) as VolnaGroupRow[]).filter((group) => {
-    const variantSlug = group.course_variants?.slug;
+  const volnaGroups = ((groups ?? []) as unknown as VolnaGroupRow[]).filter((group) => {
+    const courseVariant = Array.isArray(group.course_variants)
+      ? group.course_variants[0]
+      : group.course_variants;
+    const variantSlug = courseVariant?.slug;
     return variantSlug === "volna";
   }) as DbTeachingGroup[];
 
