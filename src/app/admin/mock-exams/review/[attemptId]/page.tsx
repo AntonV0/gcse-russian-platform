@@ -1,4 +1,5 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
+import MockExamMarkingAssistant from "@/components/mock-exams/mock-exam-marking-assistant";
 import MockExamResponseSummary from "@/components/mock-exams/mock-exam-response-summary";
 import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import Badge from "@/components/ui/badge";
@@ -303,6 +304,12 @@ export default async function AdminMockExamAttemptReviewPage({
                             </FormField>
                           </div>
 
+                          <MockExamMarkingAssistant
+                            question={question}
+                            response={response}
+                            disabled={!canMark}
+                          />
+
                           <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                             <input
                               type="checkbox"
@@ -342,6 +349,28 @@ export default async function AdminMockExamAttemptReviewPage({
                   name="overallFeedback"
                   rows={4}
                   defaultValue={attempt.feedback ?? score?.feedback ?? ""}
+                  disabled={!canMark}
+                />
+              </FormField>
+            </div>
+
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+              <FormField label="AI summary">
+                <Textarea
+                  name="aiSummary"
+                  rows={3}
+                  defaultValue={getString(score?.score_payload.aiSummary)}
+                  placeholder="Optional summary of AI-assisted marking signals across the attempt."
+                  disabled={!canMark}
+                />
+              </FormField>
+
+              <FormField label="Moderation notes">
+                <Textarea
+                  name="teacherModerationNotes"
+                  rows={3}
+                  defaultValue={getString(score?.score_payload.teacherModerationNotes)}
+                  placeholder="Teacher notes explaining accepted, edited, or rejected AI suggestions."
                   disabled={!canMark}
                 />
               </FormField>
