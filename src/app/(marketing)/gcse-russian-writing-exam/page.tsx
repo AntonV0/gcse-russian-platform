@@ -67,6 +67,28 @@ export default function GcseRussianWritingExamPage() {
             },
           ],
         },
+        {
+          title: "Writing checklist before submission",
+          description:
+            "A short checking routine helps students catch errors that cost marks even when the ideas are good.",
+          items: [
+            {
+              title: "Check task coverage",
+              description:
+                "Students should answer every bullet point and avoid spending too much time on a favourite prepared paragraph.",
+            },
+            {
+              title: "Check verbs and endings",
+              description:
+                "Tense, person, case, agreement, and spelling should be checked before adding more ambitious language.",
+            },
+            {
+              title: "Add range with control",
+              description:
+                "Connectives, opinions, reasons, comparisons, and time frames help, but only when the sentence remains accurate.",
+            },
+          ],
+        },
       ]}
       relatedLinks={[
         {
@@ -86,6 +108,23 @@ export default function GcseRussianWritingExamPage() {
           description: "Use teacher support for correction and writing confidence.",
           href: "/online-gcse-russian-lessons",
           icon: "school",
+        },
+      ]}
+      faqs={[
+        {
+          question: "How can students improve GCSE Russian writing?",
+          answer:
+            "They should practise accurate core sentences, translation into Russian, theme vocabulary, varied opinions, and a final checking routine.",
+        },
+        {
+          question: "Should students memorise writing paragraphs?",
+          answer:
+            "Prepared language can help, but students need to adapt it to the task. Memorised paragraphs can miss bullet points or sound irrelevant.",
+        },
+        {
+          question: "What does teacher feedback help with?",
+          answer:
+            "Teacher feedback is useful for repeated grammar errors, sentence range, spelling, task coverage, and choosing language that fits the student's tier.",
         },
       ]}
       ctaTitle="Turn grammar and vocabulary into written answers"

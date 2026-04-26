@@ -16,7 +16,11 @@ export default function GcseRussianGrammarPage() {
       title="GCSE Russian grammar guide"
       description="Grammar is not a separate extra: it affects every GCSE Russian paper. Students need enough control to understand meaning and produce accurate Russian."
       path="/gcse-russian-grammar"
-      keywords={["GCSE Russian grammar", "Russian grammar GCSE", "Edexcel Russian grammar"]}
+      keywords={[
+        "GCSE Russian grammar",
+        "Russian grammar GCSE",
+        "Edexcel Russian grammar",
+      ]}
       badges={[
         { label: "Grammar revision", icon: "grammar", tone: "info" },
         { label: "All four skills", icon: "exam" },
@@ -67,6 +71,28 @@ export default function GcseRussianGrammarPage() {
             },
           ],
         },
+        {
+          title: "Grammar to prioritise first",
+          description:
+            "Students do not need to master every rule at once. Start with the grammar that appears across papers.",
+          items: [
+            {
+              title: "Tense and time",
+              description:
+                "Present, past, future, time phrases, and common verbs help students understand and produce answers across all four papers.",
+            },
+            {
+              title: "Cases in common phrases",
+              description:
+                "Cases matter most when they change meaning in places, movement, possession, descriptions, and simple sentence patterns.",
+            },
+            {
+              title: "Opinions and reasons",
+              description:
+                "Students need reliable ways to give preferences, reasons, comparisons, and justifications in speaking and writing.",
+            },
+          ],
+        },
       ]}
       relatedLinks={[
         {
@@ -86,6 +112,23 @@ export default function GcseRussianGrammarPage() {
           description: "Practise grammar inside a structured learning sequence.",
           href: "/gcse-russian-course",
           icon: "courses",
+        },
+      ]}
+      faqs={[
+        {
+          question: "Which Russian grammar matters most for GCSE?",
+          answer:
+            "Students should prioritise tense, common cases, agreement, negatives, question words, opinions, reasons, and sentence structures used in exam tasks.",
+        },
+        {
+          question: "Should grammar be revised separately?",
+          answer:
+            "Short focused grammar practice helps, but students should quickly apply it in translation, reading, speaking, and writing.",
+        },
+        {
+          question: "How can students stop repeating grammar mistakes?",
+          answer:
+            "They should keep a small error log, practise the exact pattern again, and revisit it in a later writing or translation task.",
         },
       ]}
       ctaTitle="Practise grammar in context"

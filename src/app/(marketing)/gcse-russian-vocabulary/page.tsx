@@ -16,7 +16,11 @@ export default function GcseRussianVocabularyPage() {
       title="GCSE Russian vocabulary guide"
       description="Vocabulary revision works best when students know which words they need to recognise, which they need to produce, and how vocabulary connects to exam tasks."
       path="/gcse-russian-vocabulary"
-      keywords={["GCSE Russian vocabulary", "Edexcel Russian vocabulary", "Russian GCSE word list"]}
+      keywords={[
+        "GCSE Russian vocabulary",
+        "Edexcel Russian vocabulary",
+        "Russian GCSE word list",
+      ]}
       badges={[
         { label: "Vocabulary revision", icon: "vocabulary", tone: "info" },
         { label: "Themes and topics", icon: "vocabularySet" },
@@ -67,6 +71,28 @@ export default function GcseRussianVocabularyPage() {
             },
           ],
         },
+        {
+          title: "Vocabulary revision methods that work",
+          description:
+            "Students need more than rereading lists. The method should match whether the word must be recognised or produced.",
+          items: [
+            {
+              title: "Active recall",
+              description:
+                "For speaking and writing, students should recall Russian from English and use the word in a short sentence.",
+            },
+            {
+              title: "Mixed-topic review",
+              description:
+                "Once words feel familiar, mix themes so students can handle less predictable exam texts and audio.",
+            },
+            {
+              title: "Mistake-based lists",
+              description:
+                "Words missed in past papers, listening tasks, and writing corrections should return to the next revision cycle.",
+            },
+          ],
+        },
       ]}
       relatedLinks={[
         {
@@ -86,6 +112,23 @@ export default function GcseRussianVocabularyPage() {
           description: "Use past papers to find vocabulary gaps before the exam.",
           href: "/gcse-russian-past-papers",
           icon: "pastPapers",
+        },
+      ]}
+      faqs={[
+        {
+          question: "How should GCSE Russian vocabulary be organised?",
+          answer:
+            "Use themes, tier, and purpose: some words need active production for speaking and writing, while others mainly need recognition.",
+        },
+        {
+          question: "Is a vocabulary list enough?",
+          answer:
+            "No. Lists are a starting point, but students need retrieval, examples, listening/reading recognition, and sentence practice.",
+        },
+        {
+          question: "How often should vocabulary be reviewed?",
+          answer:
+            "Short repeated reviews work best. Students should revisit difficult words across several weeks and connect them to exam tasks.",
         },
       ]}
       ctaTitle="Move from word lists to active revision"

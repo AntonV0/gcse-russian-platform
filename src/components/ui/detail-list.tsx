@@ -38,10 +38,10 @@ export default function DetailList({ items, className }: DetailListProps) {
             key={item.label}
             className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/55 px-3 py-2.5"
           >
-            <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+            <dt className="app-text-meta">
               {item.label}
             </dt>
-            <dd className="mt-1 text-sm leading-6 text-[var(--text-primary)]">
+            <dd className="mt-1 app-text-body">
               {item.value}
             </dd>
           </div>

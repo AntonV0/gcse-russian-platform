@@ -71,6 +71,28 @@ export default function GcseRussianForParentsPage() {
             },
           ],
         },
+        {
+          title: "What to check each month",
+          description:
+            "Parents can support progress with a light-touch review that keeps preparation visible.",
+          items: [
+            {
+              title: "Coverage",
+              description:
+                "Check whether the student has worked across vocabulary, grammar, listening, reading, speaking, and writing.",
+            },
+            {
+              title: "Confidence",
+              description:
+                "Ask which paper feels strongest, which feels weakest, and what the next small action is.",
+            },
+            {
+              title: "Logistics",
+              description:
+                "For private candidates, keep exam centre, tier, deadlines, and speaking arrangements separate from revision tasks.",
+            },
+          ],
+        },
       ]}
       relatedLinks={[
         {
@@ -90,6 +112,23 @@ export default function GcseRussianForParentsPage() {
           description: "Help the student turn exam preparation into a routine.",
           href: "/gcse-russian-revision",
           icon: "calendar",
+        },
+      ]}
+      faqs={[
+        {
+          question: "How can parents help with GCSE Russian?",
+          answer:
+            "Parents can protect study time, check that progress is happening, ask about weak papers, and arrange extra support when speaking or writing needs feedback.",
+        },
+        {
+          question: "Do parents need to know Russian?",
+          answer:
+            "No. Parents can still support routine, accountability, exam-centre planning, and choosing the right course or teacher support.",
+        },
+        {
+          question: "When should families consider online lessons?",
+          answer:
+            "Online lessons are useful when the student needs speaking practice, writing correction, grammar explanation, or a regular external routine.",
         },
       ]}
       ctaTitle="Start with a low-pressure trial"

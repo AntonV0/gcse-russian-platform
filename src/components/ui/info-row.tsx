@@ -11,7 +11,7 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 export default function InfoRow({ label, value, className }: InfoRowProps) {
   return (
     <div
-      className={["dev-marker-host relative text-sm leading-6", className]
+      className={["dev-marker-host relative app-text-body-muted", className]
         .filter(Boolean)
         .join(" ")}
     >
@@ -32,7 +32,7 @@ export default function InfoRow({ label, value, className }: InfoRowProps) {
         />
       ) : null}
       <span className="font-semibold text-[var(--text-primary)]">{label}:</span>{" "}
-      <span className="text-[var(--text-secondary)]">{value}</span>
+      <span>{value}</span>
     </div>
   );
 }

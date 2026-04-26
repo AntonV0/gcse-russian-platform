@@ -3,12 +3,14 @@
 import Badge from "@/components/ui/badge";
 import Card, { CardBody } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type StatusSummaryCardProps = {
   title: string;
   description: string;
   badgeTone: "default" | "info" | "success" | "warning" | "danger" | "muted";
   badgeLabel: string;
+  headingLevel?: HeadingLevel;
   className?: string;
 };
 
@@ -19,6 +21,7 @@ export default function StatusSummaryCard({
   description,
   badgeTone,
   badgeLabel,
+  headingLevel = 3,
   className,
 }: StatusSummaryCardProps) {
   return (
@@ -43,13 +46,13 @@ export default function StatusSummaryCard({
       <Card className={className}>
         <CardBody className="p-4">
           <div className="mb-3 flex items-start justify-between gap-3">
-            <div className="min-w-0 font-semibold text-[var(--text-primary)]">
+            <Heading level={headingLevel} className="min-w-0 app-heading-card">
               {title}
-            </div>
+            </Heading>
             <Badge tone={badgeTone}>{badgeLabel}</Badge>
           </div>
 
-          <p className="text-sm leading-6 app-text-muted">{description}</p>
+          <p className="app-text-body-muted">{description}</p>
         </CardBody>
       </Card>
     </div>

@@ -2,12 +2,14 @@
 
 import Card, { CardBody, CardHeader } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type DangerZoneProps = {
   title?: string;
   description?: string;
   action?: React.ReactNode;
   children?: React.ReactNode;
+  headingLevel?: HeadingLevel;
   className?: string;
 };
 
@@ -18,6 +20,7 @@ export default function DangerZone({
   description,
   action,
   children,
+  headingLevel = 2,
   className,
 }: DangerZoneProps) {
   return (
@@ -43,9 +46,11 @@ export default function DangerZone({
         <CardHeader className="border-b-[color-mix(in_srgb,var(--danger)_18%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--danger)_8%,transparent)_0%,color-mix(in_srgb,var(--danger)_2%,transparent)_100%)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0">
-              <h2 className="font-semibold text-[var(--danger)]">{title}</h2>
+              <Heading level={headingLevel} className="app-heading-card text-[var(--danger)]">
+                {title}
+              </Heading>
               {description ? (
-                <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                <p className="mt-1 app-text-body-muted">
                   {description}
                 </p>
               ) : null}
@@ -58,7 +63,7 @@ export default function DangerZone({
         </CardHeader>
 
         {children ? (
-          <CardBody className="space-y-3 text-sm leading-6 text-[var(--text-primary)]">
+          <CardBody className="space-y-3 app-text-body">
             {children}
           </CardBody>
         ) : null}

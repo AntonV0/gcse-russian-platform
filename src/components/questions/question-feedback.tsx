@@ -44,7 +44,7 @@ export default function QuestionFeedback({
         ].join(" ")}
       >
         <div className="relative">
-          <div className="flex items-center gap-2 font-semibold tracking-[-0.01em]">
+          <div className="flex items-center gap-2 text-base font-semibold leading-6">
             <AppIcon icon={isCorrect ? "success" : "error"} size={17} />
             <p>{statusLabel ?? (isCorrect ? "Correct." : "Not quite.")}</p>
           </div>

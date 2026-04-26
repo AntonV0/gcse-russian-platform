@@ -28,12 +28,12 @@ function CardListItemContent({
         {icon ? <div className="mt-0.5 shrink-0">{icon}</div> : null}
 
         <div className="min-w-0">
-          <div className="font-semibold leading-6 text-[var(--text-primary)]">
+          <div className="app-heading-card">
             {title}
           </div>
 
           {subtitle ? (
-            <div className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+            <div className="mt-1 app-text-body-muted">
               {subtitle}
             </div>
           ) : null}
