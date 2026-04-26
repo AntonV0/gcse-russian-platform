@@ -5,6 +5,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -62,6 +63,12 @@ export default async function DashboardPage() {
         <EmptyState
           title="You are not signed in"
           description="Log in to view your dashboard, learning progress, and course access."
+          visual={
+            <VisualPlaceholder
+              category="learningPath"
+              ariaLabel="Dashboard sign-in placeholder"
+            />
+          }
           action={
             <div className="flex flex-wrap gap-3">
               <Button href="/login" variant="primary" icon="user">

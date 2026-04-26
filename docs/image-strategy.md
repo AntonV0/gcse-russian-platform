@@ -35,6 +35,8 @@ placeholders in the GCSE Russian Course Platform.
 - Course, path, and module pages use learning-path placeholders in intro
   overview and empty states to support orientation without changing lesson cards
   or progress controls.
+- Dashboard guest state and online classes use single supportive placeholders
+  where they clarify sign-in or live-teaching context.
 
 ## Placement Rules
 

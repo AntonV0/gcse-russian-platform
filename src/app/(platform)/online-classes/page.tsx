@@ -3,6 +3,7 @@ import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
@@ -95,6 +96,12 @@ export default async function OnlineClassesPage() {
 
           <DashboardCard title="Who this is for">
             <div className="space-y-3">
+              <VisualPlaceholder
+                category="school"
+                ariaLabel="Online classes placeholder"
+                className="mx-auto"
+              />
+
               {isVolnaStudent ? (
                 <>
                   <p>
