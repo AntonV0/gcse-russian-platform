@@ -114,7 +114,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="app-mobile-action-stack flex flex-wrap gap-3">
               {firstAccessibleIncompleteLesson ? (
                 <Button
                   href={getLessonPath(

@@ -44,10 +44,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 2.5rem;
+  max-width: 100%;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--background-elevated);
   color: var(--text-primary);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-align: center;
   box-shadow: var(--shadow-xs);
   transition:
     transform var(--transition-fast),

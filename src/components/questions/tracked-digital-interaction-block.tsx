@@ -44,7 +44,7 @@ function ToggleChip({
       onClick={onClick}
       disabled={disabled}
       className={[
-        "app-choice-chip px-3 py-1.5 text-sm",
+        "app-choice-chip px-3 py-2 text-sm",
         selected ? "app-choice-chip-selected" : "",
         disabled ? "cursor-default" : "cursor-pointer",
       ].join(" ")}
@@ -135,16 +135,18 @@ export default function TrackedDigitalInteractionBlock({
           ))}
         </div>
 
-        <Button
-          type="button"
-          onClick={() => submitPayload({ selectedOptionIds })}
-          disabled={!canSubmit}
-          variant="primary"
-          size="sm"
-          icon={isPending ? "pending" : "confirm"}
-        >
-          {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
-        </Button>
+        <div className="app-mobile-action-stack flex">
+          <Button
+            type="button"
+            onClick={() => submitPayload({ selectedOptionIds })}
+            disabled={!canSubmit}
+            variant="primary"
+            size="sm"
+            icon={isPending ? "pending" : "confirm"}
+          >
+            {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
+          </Button>
+        </div>
       </>
     );
   }
@@ -186,16 +188,18 @@ export default function TrackedDigitalInteractionBlock({
           ))}
         </div>
 
-        <Button
-          type="button"
-          onClick={() => submitPayload({ matches })}
-          disabled={!canSubmit}
-          variant="primary"
-          size="sm"
-          icon={isPending ? "pending" : "confirm"}
-        >
-          {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
-        </Button>
+        <div className="app-mobile-action-stack flex">
+          <Button
+            type="button"
+            onClick={() => submitPayload({ matches })}
+            disabled={!canSubmit}
+            variant="primary"
+            size="sm"
+            icon={isPending ? "pending" : "confirm"}
+          >
+            {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
+          </Button>
+        </div>
       </>
     );
   }
@@ -256,7 +260,7 @@ export default function TrackedDigitalInteractionBlock({
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="app-mobile-action-stack flex flex-wrap gap-2">
           <Button
             type="button"
             onClick={() => submitPayload({ order: selectedOrder })}
@@ -325,16 +329,18 @@ export default function TrackedDigitalInteractionBlock({
           ))}
         </div>
 
-        <Button
-          type="button"
-          onClick={() => submitPayload({ gaps: gapAnswers })}
-          disabled={!canSubmit}
-          variant="primary"
-          size="sm"
-          icon={isPending ? "pending" : "confirm"}
-        >
-          {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
-        </Button>
+        <div className="app-mobile-action-stack flex">
+          <Button
+            type="button"
+            onClick={() => submitPayload({ gaps: gapAnswers })}
+            disabled={!canSubmit}
+            variant="primary"
+            size="sm"
+            icon={isPending ? "pending" : "confirm"}
+          >
+            {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
+          </Button>
+        </div>
       </>
     );
   }
@@ -376,16 +382,18 @@ export default function TrackedDigitalInteractionBlock({
           ))}
         </div>
 
-        <Button
-          type="button"
-          onClick={() => submitPayload({ categories: categoryAnswers })}
-          disabled={!canSubmit}
-          variant="primary"
-          size="sm"
-          icon={isPending ? "pending" : "confirm"}
-        >
-          {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
-        </Button>
+        <div className="app-mobile-action-stack flex">
+          <Button
+            type="button"
+            onClick={() => submitPayload({ categories: categoryAnswers })}
+            disabled={!canSubmit}
+            variant="primary"
+            size="sm"
+            icon={isPending ? "pending" : "confirm"}
+          >
+            {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
+          </Button>
+        </div>
       </>
     );
   }

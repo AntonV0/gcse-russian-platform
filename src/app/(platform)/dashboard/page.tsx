@@ -110,7 +110,7 @@ export default async function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="app-mobile-action-stack flex flex-wrap gap-3">
                   <Button href={nextStep.href} variant="primary" icon={nextStep.icon}>
                     {nextStep.label}
                   </Button>
@@ -321,7 +321,7 @@ export default async function DashboardPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="app-mobile-action-stack flex flex-wrap gap-3">
                 <Button href="/teacher/assignments" variant="primary" icon="assignments">
                   Open assignments
                 </Button>
@@ -397,7 +397,7 @@ export default async function DashboardPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="app-mobile-action-stack flex flex-wrap gap-3">
                 <Button href="/admin" variant="primary" icon="dashboard">
                   Open admin
                 </Button>

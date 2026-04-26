@@ -419,7 +419,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             </Select>
           </div>
 
-          <div className="flex shrink-0 flex-wrap gap-2 md:col-span-2 xl:col-span-1 xl:flex-nowrap xl:justify-end">
+          <div className="app-mobile-action-stack flex shrink-0 flex-wrap gap-2 md:col-span-2 xl:col-span-1 xl:flex-nowrap xl:justify-end">
             <Button type="submit" variant="primary" icon="search">
               Search
             </Button>

@@ -123,6 +123,9 @@ export default function ShortAnswerBlock({
           onChange={(event) => handleChange(event.target.value)}
           disabled={resolvedHasSubmitted || isSubmitting}
           placeholder={placeholder}
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           className="app-form-control app-form-input"
         />
 
@@ -132,22 +135,24 @@ export default function ShortAnswerBlock({
           </p>
         ) : null}
 
-        <Button
-          type="button"
-          onClick={handleSubmit}
-          disabled={
-            !resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked
-          }
-          variant="primary"
-          size="sm"
-          icon={isSubmitting ? "pending" : "confirm"}
-        >
-          {resolvedHasSubmitted
-            ? "Submitted"
-            : isSubmitting
-              ? "Saving..."
-              : "Check answer"}
-        </Button>
+        <div className="app-mobile-action-stack flex">
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={
+              !resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked
+            }
+            variant="primary"
+            size="sm"
+            icon={isSubmitting ? "pending" : "confirm"}
+          >
+            {resolvedHasSubmitted
+              ? "Submitted"
+              : isSubmitting
+                ? "Saving..."
+                : "Check answer"}
+          </Button>
+        </div>
       </div>
     </QuestionCard>
   );

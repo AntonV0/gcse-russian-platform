@@ -121,7 +121,7 @@ export default function MultipleChoiceBlock({
               onClick={() => handleSelect(option.id)}
               disabled={resolvedHasSubmitted || isSubmitting}
               className={[
-                "w-full rounded-xl border px-4 py-3 text-left transition",
+                "min-h-12 w-full rounded-xl border px-4 py-3 text-left transition",
                 isSelected
                   ? "border-[var(--accent-selected-border)] bg-[var(--accent-selected-bg)] text-[var(--accent-on-soft)]"
                   : "border-[var(--border)] bg-[var(--surface-plain-bg)] hover:bg-[var(--surface-muted-bg)]",
@@ -134,14 +134,14 @@ export default function MultipleChoiceBlock({
                 <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-semibold">
                   {String.fromCharCode(65 + index)}
                 </span>
-                <span>{option.text}</span>
+                <span className="min-w-0 [overflow-wrap:anywhere]">{option.text}</span>
               </div>
             </button>
           );
         })}
       </div>
 
-      <div>
+      <div className="app-mobile-action-stack flex">
         <Button
           type="button"
           onClick={handleSubmit}
