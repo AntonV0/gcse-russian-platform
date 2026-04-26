@@ -180,11 +180,11 @@ export default async function VariantPage({ params }: VariantPageProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                    <h3 className="app-heading-subsection">
                       {module.title}
                     </h3>
 
-                    <p className="text-sm app-text-muted">
+                    <p className="app-text-body-muted">
                       {module.description ??
                         "Open this module to view lessons and continue learning."}
                     </p>

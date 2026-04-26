@@ -63,10 +63,10 @@ export function MarketingStepList({
                 {index + 1}
               </span>
               <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                <h3 className="app-heading-card">
                   {step.title}
                 </h3>
-                <p className="text-sm leading-6 text-[var(--text-secondary)]">
+                <p className="app-text-body-muted">
                   {step.description}
                 </p>
               </div>
@@ -101,10 +101,10 @@ export function MarketingRelatedLinks({
                 ) : null}
               </div>
               <div>
-                <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                <h3 className="app-heading-card">
                   {link.title}
                 </h3>
-                <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                <p className="mt-1 app-text-body-muted">
                   {link.description}
                 </p>
               </div>
@@ -138,10 +138,10 @@ export function MarketingFaqSection({
             key={item.question}
             className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
           >
-            <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+            <h3 className="app-heading-card">
               {item.question}
             </h3>
-            <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+            <p className="mt-2 app-text-body-muted">
               {item.answer}
             </p>
           </div>
@@ -171,7 +171,7 @@ export function MarketingCtaBand({
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)] lg:items-center">
         <div className="space-y-2">
           <h2 className="app-section-title text-xl">{title}</h2>
-          <p className="max-w-2xl text-sm leading-6 text-[var(--text-secondary)]">
+          <p className="max-w-2xl app-text-body-muted">
             {description}
           </p>
         </div>

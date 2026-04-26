@@ -256,11 +256,11 @@ export default async function ModulePage({ params }: ModulePageProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                    <h3 className="app-heading-subsection">
                       {lesson.title}
                     </h3>
 
-                    <p className="text-sm app-text-muted">
+                    <p className="app-text-body-muted">
                       {lesson.summary ?? "Open this lesson to continue your learning."}
                     </p>
                   </div>
