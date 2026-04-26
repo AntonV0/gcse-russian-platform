@@ -1,4 +1,4 @@
-import type { DbQuestionSet } from "@/lib/questions/question-helpers-db";
+import type { DbQuestionSet } from "@/lib/questions/question-db-types";
 
 export type SupportedQuestionType =
   | "multiple_choice"
