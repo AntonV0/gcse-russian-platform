@@ -17,6 +17,9 @@ import {
   getTrimmedString,
 } from "@/app/actions/shared/form-data";
 
+const VOCABULARY_SET_SELECT =
+  "id, slug, title, description, theme_key, topic_key, tier, list_mode, set_type, default_display_variant, is_published, sort_order, source_key, source_version, import_key, created_at, updated_at";
+
 function getOptionalNonNegativeNumber(formData: FormData, key: string) {
   const raw = getTrimmedString(formData, key);
 
@@ -132,7 +135,7 @@ export async function createVocabularySetAction(formData: FormData) {
       source_version: sourceVersion,
       import_key: importKey,
     })
-    .select("*")
+    .select(VOCABULARY_SET_SELECT)
     .single();
 
   if (error) {
