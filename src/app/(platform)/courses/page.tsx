@@ -4,6 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getCoursesDb } from "@/lib/courses/course-helpers-db";
 
 export default async function CoursesPage() {
@@ -17,27 +18,37 @@ export default async function CoursesPage() {
       />
 
       <section className="app-surface-brand app-section-padding-lg">
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            <Badge tone="info" icon="school">
-              GCSE Russian
-            </Badge>
-            <Badge tone="muted" icon="layers">
-              Foundation and Higher
-            </Badge>
-            <Badge tone="muted" icon="audio">
-              Lessons, practice, progress
-            </Badge>
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(220px,320px)] xl:items-start">
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <Badge tone="info" icon="school">
+                GCSE Russian
+              </Badge>
+              <Badge tone="muted" icon="layers">
+                Foundation and Higher
+              </Badge>
+              <Badge tone="muted" icon="audio">
+                Lessons, practice, progress
+              </Badge>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="app-heading-hero max-w-3xl">
+                Start or continue your course
+              </h2>
+              <p className="app-subtitle max-w-2xl">
+                Structured GCSE Russian learning with lessons, listening practice,
+                translation, and exam-style questions.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <h2 className="app-heading-hero max-w-3xl">
-              Start or continue your course
-            </h2>
-            <p className="app-subtitle max-w-2xl">
-              Structured GCSE Russian learning with lessons, listening practice,
-              translation, and exam-style questions.
-            </p>
+          <div className="flex justify-center xl:justify-end">
+            <VisualPlaceholder
+              category="learningPath"
+              size="wide"
+              ariaLabel="Abstract course pathway illustration"
+            />
           </div>
         </div>
       </section>
@@ -48,6 +59,12 @@ export default async function CoursesPage() {
           iconTone="brand"
           title="No courses available yet"
           description="There are no visible courses right now. Return to your dashboard and check again later."
+          visual={
+            <VisualPlaceholder
+              category="learningPath"
+              ariaLabel="Course empty state placeholder"
+            />
+          }
           action={
             <Button href="/dashboard" variant="primary" icon="dashboard">
               Dashboard

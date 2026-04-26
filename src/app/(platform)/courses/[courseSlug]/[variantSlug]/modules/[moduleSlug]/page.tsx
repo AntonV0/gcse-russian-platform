@@ -4,6 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadModulePageData } from "@/lib/courses/course-helpers-db";
 import { getCoursesPath, getVariantPath, getLessonPath } from "@/lib/access/routes";
 import { getModuleProgress } from "@/lib/progress/progress-module";
@@ -35,6 +36,12 @@ export default async function ModulePage({ params }: ModulePageProps) {
           iconTone="brand"
           title="Module not found"
           description="This module could not be found. Return to the course list and choose an available module."
+          visual={
+            <VisualPlaceholder
+              category="learningPath"
+              ariaLabel="Module not found placeholder"
+            />
+          }
           action={
             <Button href={getCoursesPath()} variant="primary" icon="courses">
               Courses
@@ -196,6 +203,12 @@ export default async function ModulePage({ params }: ModulePageProps) {
         <EmptyState
           title="No lessons available yet"
           description="This module does not contain any visible lessons right now."
+          visual={
+            <VisualPlaceholder
+              category="learningPath"
+              ariaLabel="Lessons empty state placeholder"
+            />
+          }
           action={
             <Button
               href={getVariantPath(course.slug, variantSlug)}
