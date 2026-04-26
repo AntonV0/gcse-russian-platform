@@ -5,25 +5,23 @@ import type {
   DbQuestionSet,
 } from "@/lib/questions/question-helpers-db";
 import type {
-  MultipleChoiceValidationResult,
   RuntimeAcceptedAnswer,
   RuntimeCategorisationQuestion,
   RuntimeMatchingQuestion,
-  RuntimeMultipleChoiceQuestion,
   RuntimeOrderingQuestion,
   RuntimeQuestion,
   RuntimeQuestionBase,
   RuntimeQuestionOption,
   RuntimeQuestionSet,
-  RuntimeStructuredQuestion,
-  RuntimeTextQuestion,
   RuntimeWordBankGapFillQuestion,
-  SentenceBuilderValidationResult,
-  StructuredValidationResult,
   SupportedQuestionType,
-  TextValidationOptions,
-  TextValidationResult,
 } from "@/lib/questions/runtime-types";
+import {
+  getNumberArray,
+  getRecordArray,
+  getStringArray,
+  normalizeFreeTextAnswer,
+} from "@/lib/questions/question-answer-utils";
 
 export type {
   MultipleChoiceValidationResult,
@@ -54,62 +52,16 @@ export type {
   TextValidationResult,
 } from "@/lib/questions/runtime-types";
 
-function collapseWhitespace(value: string) {
-  return value.replace(/\s+/g, " ").trim();
-}
-
-function stripPunctuation(value: string) {
-  return value.replace(/[.,/#!$%^&*;:{}=\-_`~()?"'«»“”[\]\\|<>…]/g, " ");
-}
-
-function stripEnglishArticles(value: string) {
-  return value.replace(/\b(a|an|the)\b/gi, " ");
-}
-
-export function normalizeFreeTextAnswer(value: string, options?: TextValidationOptions) {
-  let result = value.toLowerCase();
-
-  if (options?.ignorePunctuation) {
-    result = stripPunctuation(result);
-  }
-
-  if (options?.ignoreArticles) {
-    result = stripEnglishArticles(result);
-  }
-
-  if (options?.collapseWhitespace !== false) {
-    result = collapseWhitespace(result);
-  } else {
-    result = result.trim();
-  }
-
-  return result;
-}
-
-function dedupeTexts(values: string[]) {
-  const seen = new Set<string>();
-  const result: string[] = [];
-
-  for (const value of values) {
-    const normalized = normalizeFreeTextAnswer(value);
-
-    if (normalized.length === 0 || seen.has(normalized)) {
-      continue;
-    }
-
-    seen.add(normalized);
-    result.push(value);
-  }
-
-  return result;
-}
-
-export function tokenizeSentenceBuilderText(value: string) {
-  return collapseWhitespace(value)
-    .split(" ")
-    .map((token) => token.trim())
-    .filter(Boolean);
-}
+export {
+  normalizeFreeTextAnswer,
+  tokenizeSentenceBuilderText,
+} from "@/lib/questions/question-answer-utils";
+export {
+  validateMultipleChoiceAnswer,
+  validateSentenceBuilderAnswer,
+  validateStructuredAnswer,
+  validateTextAnswer,
+} from "@/lib/questions/question-validation";
 
 export function mapSupportedQuestionType(
   questionType: string
@@ -127,30 +79,6 @@ export function mapSupportedQuestionType(
     default:
       return null;
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function getStringArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-
-  return value.filter(
-    (item): item is string => typeof item === "string" && item.trim().length > 0
-  );
-}
-
-function getNumberArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-
-  return value.filter((item): item is number => Number.isInteger(item) && item >= 0);
-}
-
-function getRecordArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-
-  return value.filter(isRecord);
 }
 
 function createIndexedItems(values: string[], prefix: string) {
@@ -377,15 +305,6 @@ export function buildRuntimeQuestion(question: {
   };
 }
 
-function sameStringSet(left: string[], right: string[]) {
-  if (left.length !== right.length) return false;
-
-  const normalizedLeft = [...left].sort();
-  const normalizedRight = [...right].sort();
-
-  return normalizedLeft.every((value, index) => value === normalizedRight[index]);
-}
-
 export function buildRuntimeQuestionSet(params: {
   questionSet: DbQuestionSet;
   questions: DbQuestion[];
@@ -410,212 +329,4 @@ export function buildRuntimeQuestionSet(params: {
   };
 }
 
-export function validateMultipleChoiceAnswer(params: {
-  question: RuntimeMultipleChoiceQuestion;
-  selectedOptionId: string | null;
-}): MultipleChoiceValidationResult {
-  const { question, selectedOptionId } = params;
 
-  const selectedOption =
-    question.options.find((option) => option.id === selectedOptionId) ?? null;
-
-  const correctOption =
-    question.options.find((option) => option.id === question.correctOptionId) ?? null;
-
-  const isCorrect =
-    Boolean(selectedOptionId) && selectedOptionId === question.correctOptionId;
-
-  return {
-    isCorrect,
-    selectedOptionId,
-    selectedOptionText: selectedOption?.text ?? null,
-    correctOptionId: question.correctOptionId,
-    feedback: question.explanation,
-    statusLabel: isCorrect ? "Correct." : "Not quite.",
-    correctAnswerText: isCorrect ? null : (correctOption?.text ?? null),
-    acceptedAnswerTexts: correctOption?.text ? [correctOption.text] : [],
-  };
-}
-
-export function validateTextAnswer(params: {
-  question: RuntimeTextQuestion;
-  submittedText: string;
-  options?: TextValidationOptions;
-}): TextValidationResult {
-  const submittedText = params.submittedText;
-  const normalizedSubmittedText = normalizeFreeTextAnswer(submittedText, params.options);
-
-  const matchedAnswer =
-    params.question.acceptedAnswers.find((answer) => {
-      if (answer.caseSensitive) {
-        return collapseWhitespace(submittedText) === collapseWhitespace(answer.text);
-      }
-
-      const normalizedAnswer = normalizeFreeTextAnswer(answer.text, params.options);
-
-      return normalizedSubmittedText === normalizedAnswer;
-    }) ?? null;
-
-  const acceptedAnswerTexts = dedupeTexts(
-    params.question.acceptedAnswers.map((answer) => answer.text)
-  );
-
-  const primaryAnswer =
-    params.question.acceptedAnswers.find((answer) => answer.isPrimary) ??
-    params.question.acceptedAnswers[0] ??
-    null;
-
-  const isCorrect = matchedAnswer !== null;
-
-  return {
-    isCorrect,
-    submittedText,
-    normalizedSubmittedText,
-    matchedAnswer,
-    feedback: params.question.explanation,
-    statusLabel: isCorrect ? "Correct." : "Not quite.",
-    correctAnswerText: isCorrect ? null : (primaryAnswer?.text ?? null),
-    acceptedAnswerTexts: isCorrect ? [] : acceptedAnswerTexts,
-  };
-}
-
-export function validateStructuredAnswer(params: {
-  question: RuntimeStructuredQuestion;
-  submittedPayload: Record<string, unknown>;
-  options?: TextValidationOptions;
-}): StructuredValidationResult {
-  const { question, submittedPayload } = params;
-  let isCorrect = false;
-  let correctAnswerText: string | null = null;
-
-  switch (question.type) {
-    case "multiple_response": {
-      const selectedOptionIds = getStringArray(submittedPayload.selectedOptionIds);
-      isCorrect = sameStringSet(selectedOptionIds, question.correctOptionIds);
-      correctAnswerText = question.options
-        .filter((option) => question.correctOptionIds.includes(option.id))
-        .map((option) => option.text)
-        .join(", ");
-      break;
-    }
-
-    case "matching": {
-      const matches = isRecord(submittedPayload.matches) ? submittedPayload.matches : {};
-      isCorrect =
-        question.prompts.length > 0 &&
-        question.prompts.every((prompt) => {
-          return matches[prompt.id] === question.correctMatches[prompt.id];
-        });
-      correctAnswerText = question.prompts
-        .map((prompt) => {
-          const option = question.options.find(
-            (item) => item.id === question.correctMatches[prompt.id]
-          );
-          return option ? `${prompt.text}: ${option.text}` : null;
-        })
-        .filter((value): value is string => Boolean(value))
-        .join("; ");
-      break;
-    }
-
-    case "ordering": {
-      const order = getStringArray(submittedPayload.order);
-      isCorrect =
-        question.correctOrder.length > 0 &&
-        order.length === question.correctOrder.length &&
-        order.every((itemId, index) => itemId === question.correctOrder[index]);
-      correctAnswerText = question.correctOrder
-        .map((itemId) => question.items.find((item) => item.id === itemId)?.text)
-        .filter((value): value is string => Boolean(value))
-        .join(" ");
-      break;
-    }
-
-    case "word_bank_gap_fill": {
-      const gaps = isRecord(submittedPayload.gaps) ? submittedPayload.gaps : {};
-      isCorrect =
-        question.gaps.length > 0 &&
-        question.gaps.every((gap) => {
-          const submitted = normalizeFreeTextAnswer(String(gaps[gap.id] ?? ""), params.options);
-          return gap.acceptedAnswers.some(
-            (answer) => normalizeFreeTextAnswer(answer, params.options) === submitted
-          );
-        });
-      correctAnswerText = question.gaps
-        .map((gap) => `${gap.label}: ${gap.acceptedAnswers[0] ?? ""}`)
-        .join("; ");
-      break;
-    }
-
-    case "categorisation": {
-      const categories = isRecord(submittedPayload.categories)
-        ? submittedPayload.categories
-        : {};
-      isCorrect =
-        question.items.length > 0 &&
-        question.items.every((item) => categories[item.id] === item.categoryId);
-      correctAnswerText = question.items
-        .map((item) => {
-          const category = question.categories.find(
-            (entry) => entry.id === item.categoryId
-          );
-          return category ? `${item.text}: ${category.label}` : null;
-        })
-        .filter((value): value is string => Boolean(value))
-        .join("; ");
-      break;
-    }
-  }
-
-  return {
-    isCorrect,
-    submittedPayload,
-    feedback: question.explanation,
-    statusLabel: isCorrect ? "Correct." : "Not quite.",
-    correctAnswerText: isCorrect ? null : correctAnswerText,
-    acceptedAnswerTexts: isCorrect || !correctAnswerText ? [] : [correctAnswerText],
-  };
-}
-
-export function validateSentenceBuilderAnswer(params: {
-  question: RuntimeTextQuestion;
-  submittedTokens: string[];
-  options?: TextValidationOptions;
-}): SentenceBuilderValidationResult {
-  const submittedText = params.submittedTokens.join(" ");
-  const normalizedSubmittedText = normalizeFreeTextAnswer(submittedText, params.options);
-
-  const matchedAnswer =
-    params.question.acceptedAnswers.find((answer) => {
-      const normalizedAnswer = normalizeFreeTextAnswer(answer.text, params.options);
-      return normalizedSubmittedText === normalizedAnswer;
-    }) ?? null;
-
-  const primaryAnswer =
-    params.question.acceptedAnswers.find((answer) => answer.isPrimary) ??
-    params.question.acceptedAnswers[0] ??
-    null;
-
-  const acceptedAnswerTexts = dedupeTexts(
-    params.question.acceptedAnswers.map((answer) => answer.text)
-  );
-
-  const expectedTokens = primaryAnswer
-    ? tokenizeSentenceBuilderText(primaryAnswer.text)
-    : [];
-
-  const isCorrect = matchedAnswer !== null;
-
-  return {
-    isCorrect,
-    submittedText,
-    normalizedSubmittedText,
-    submittedTokens: params.submittedTokens,
-    expectedTokens,
-    matchedAnswer,
-    feedback: params.question.explanation,
-    statusLabel: isCorrect ? "Correct." : "Not quite.",
-    correctAnswerText: isCorrect ? null : (primaryAnswer?.text ?? null),
-    acceptedAnswerTexts: isCorrect ? [] : acceptedAnswerTexts,
-  };
-}
