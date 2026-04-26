@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Badge from "@/components/ui/badge";
 import AudioPlayer from "@/components/questions/audio-player";
 import type { DbMockExamQuestion } from "@/lib/mock-exams/mock-exam-helpers-db";
@@ -53,9 +54,13 @@ function RenderMedia({ question }: { question: DbMockExamQuestion }) {
 
       {imageUrl ? (
         <figure className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background-muted)]">
-          <img
+          <Image
             src={imageUrl}
             alt="Mock exam visual prompt"
+            width={1200}
+            height={800}
+            sizes="(max-width: 768px) 100vw, 900px"
+            unoptimized
             className="max-h-[420px] w-full object-contain"
           />
         </figure>
