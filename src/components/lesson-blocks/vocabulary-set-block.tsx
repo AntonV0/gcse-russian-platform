@@ -3,18 +3,23 @@ import {
   getVocabularyListModeLabel,
   getVocabularyTierLabel,
   loadVocabularySetBySlugDb,
+  type DbVocabularyStudyVariant,
 } from "@/lib/vocabulary/vocabulary-helpers-db";
 
 type VocabularySetBlockProps = {
   title?: string;
   vocabularySetSlug: string;
+  currentVariant: DbVocabularyStudyVariant;
 };
 
 export default async function VocabularySetBlock({
   title,
   vocabularySetSlug,
+  currentVariant,
 }: VocabularySetBlockProps) {
-  const { vocabularySet, items } = await loadVocabularySetBySlugDb(vocabularySetSlug);
+  const { vocabularySet, items } = await loadVocabularySetBySlugDb(vocabularySetSlug, {
+    scopeVariant: currentVariant,
+  });
 
   if (!vocabularySet) {
     return (
@@ -32,6 +37,7 @@ export default async function VocabularySetBlock({
       meta={[
         getVocabularyTierLabel(vocabularySet.tier),
         getVocabularyListModeLabel(vocabularySet.list_mode),
+        currentVariant === "volna" ? "Volna tier" : getVocabularyTierLabel(currentVariant),
         vocabularySet.is_published ? "Published set" : "Draft set",
       ]}
       items={items.map((item) => ({

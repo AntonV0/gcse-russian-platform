@@ -7,10 +7,12 @@ import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getPublishedVocabularySetsDb,
   getVocabularyListModeLabel,
+  getVocabularySetThemeKeysDb,
   getVocabularySetsDb,
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
@@ -73,15 +75,11 @@ function getCoverageTone(usedItems: number, totalItems: number) {
   return "info";
 }
 
-function getTopicOptions(
-  vocabularySets: Awaited<ReturnType<typeof getVocabularySetsDb>>
-) {
-  return [...new Set(vocabularySets.map((set) => set.theme_key).filter(Boolean))]
-    .sort((a, b) => getVocabularyThemeLabel(a).localeCompare(getVocabularyThemeLabel(b)))
-    .map((themeKey) => ({
-      value: themeKey as string,
-      label: getVocabularyThemeLabel(themeKey as string),
-    }));
+function getTopicOptions(themeKeys: string[]) {
+  return themeKeys.map((themeKey) => ({
+    value: themeKey,
+    label: getVocabularyThemeLabel(themeKey),
+  }));
 }
 
 function CoverageRatioBadge({
@@ -117,25 +115,71 @@ function VocabularySetCoverageBadges({
       <CoverageRatioBadge
         label="Foundation"
         usedItems={coverageSummary.foundationUsedItems}
-        totalItems={totalItems}
+        totalItems={coverageSummary.foundationTotalItems || totalItems}
       />
       <CoverageRatioBadge
         label="Higher"
         usedItems={coverageSummary.higherUsedItems}
-        totalItems={totalItems}
+        totalItems={coverageSummary.higherTotalItems || totalItems}
       />
       <CoverageRatioBadge
         label="Volna"
         usedItems={coverageSummary.volnaUsedItems}
-        totalItems={totalItems}
+        totalItems={coverageSummary.volnaTotalItems || totalItems}
       />
       <CoverageRatioBadge
         label="Custom list"
         usedItems={coverageSummary.customListUsedItems}
-        totalItems={totalItems}
+        totalItems={coverageSummary.customListTotalItems || totalItems}
       />
     </>
   );
+}
+
+function getVocabularySectionTitle(vocabularySet: {
+  import_key: string | null;
+  theme_key: string | null;
+}) {
+  const importKey = vocabularySet.import_key ?? "";
+
+  if (importKey.startsWith("section-1:")) {
+    return "Section 1: High-frequency language";
+  }
+
+  if (importKey.startsWith("section-2:")) {
+    return `Section 2: ${getVocabularyThemeLabel(vocabularySet.theme_key)}`;
+  }
+
+  return "Custom vocabulary";
+}
+
+function getVocabularySectionOrder(sectionTitle: string) {
+  if (sectionTitle.startsWith("Section 1")) return 1;
+  if (sectionTitle.includes("identity and culture")) return 2;
+  if (sectionTitle.includes("local area")) return 3;
+  if (sectionTitle.includes("school")) return 4;
+  if (sectionTitle.includes("future aspirations")) return 5;
+  if (sectionTitle.includes("international global dimension")) return 6;
+  return 99;
+}
+
+function groupVocabularySetsBySection(
+  vocabularySets: Awaited<ReturnType<typeof getVocabularySetsDb>>
+) {
+  const groups = new Map<string, typeof vocabularySets>();
+
+  for (const vocabularySet of vocabularySets) {
+    const sectionTitle = getVocabularySectionTitle(vocabularySet);
+    groups.set(sectionTitle, [...(groups.get(sectionTitle) ?? []), vocabularySet]);
+  }
+
+  return Array.from(groups.entries())
+    .map(([title, sets]) => ({ title, sets }))
+    .sort(
+      (a, b) =>
+        getVocabularySectionOrder(a.title) - getVocabularySectionOrder(b.title) ||
+        a.title.localeCompare(b.title)
+    );
 }
 
 export default async function VocabularyPage({ searchParams }: VocabularyPageProps) {
@@ -148,14 +192,15 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
     themeKey: params.themeKey ?? null,
   };
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
-  const [vocabularySets, allVisibleVocabularySets] = await Promise.all([
+  const [vocabularySets, themeKeys] = await Promise.all([
     canSeeDrafts
       ? getVocabularySetsDb({ filters })
       : getPublishedVocabularySetsDb(filters),
-    canSeeDrafts ? getVocabularySetsDb() : getPublishedVocabularySetsDb(),
+    getVocabularySetThemeKeysDb({ publishedOnly: !canSeeDrafts }),
   ]);
   const draftCount = vocabularySets.filter((set) => !set.is_published).length;
-  const topicOptions = getTopicOptions(allVisibleVocabularySets);
+  const topicOptions = getTopicOptions(themeKeys);
+  const vocabularySetGroups = groupVocabularySetsBySection(vocabularySets);
 
   return (
     <main className="space-y-4">
@@ -188,6 +233,13 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
               Grammar
             </Button>
           </>
+        }
+        visual={
+          <VisualPlaceholder
+            category="vocabulary"
+            size="wide"
+            ariaLabel="Abstract vocabulary card illustration"
+          />
         }
       />
 
@@ -259,49 +311,69 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             description="Try clearing filters, or publish vocabulary sets in admin so students can see them."
           />
         ) : (
-          <div className="grid gap-3">
-            {vocabularySets.map((vocabularySet) => (
-              <CardListItem
-                key={vocabularySet.id}
-                href={getVocabularySetHref(vocabularySet)}
-                title={vocabularySet.title}
-                subtitle={vocabularySet.description ?? "Vocabulary set ready for study."}
-                badges={
-                  <>
-                    <Badge tone="info" icon="school">
-                      {getVocabularyTierLabel(vocabularySet.tier)}
-                    </Badge>
-                    <Badge tone="muted" icon="vocabularySet">
-                      {getVocabularyListModeLabel(vocabularySet.list_mode)}
-                    </Badge>
-                    <Badge tone="muted" className="capitalize">
-                      {getVocabularyThemeLabel(vocabularySet.theme_key)}
-                    </Badge>
-                    <Badge tone="muted" icon="list">
-                      {vocabularySet.item_count} item
-                      {vocabularySet.item_count === 1 ? "" : "s"}
-                    </Badge>
-                    {!vocabularySet.is_published ? (
-                      <PublishStatusBadge isPublished={vocabularySet.is_published} />
-                    ) : null}
-                    {canSeeDrafts && shouldShowCoverageBadges(vocabularySet.list_mode) ? (
-                      <VocabularySetCoverageBadges
-                        coverageSummary={vocabularySet.coverage_summary}
-                      />
-                    ) : null}
-                  </>
-                }
-                actions={
-                  <Button
-                    href={getVocabularySetHref(vocabularySet)}
-                    variant="quiet"
-                    size="sm"
-                    icon="next"
-                    iconOnly
-                    ariaLabel={`Open ${vocabularySet.title}`}
-                  />
-                }
-              />
+          <div className="space-y-6">
+            {vocabularySetGroups.map((group) => (
+              <section key={group.title} className="space-y-3">
+                <div>
+                  <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                    {group.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                    {group.sets.length} set{group.sets.length === 1 ? "" : "s"}
+                  </p>
+                </div>
+
+                <div className="grid gap-3">
+                  {group.sets.map((vocabularySet) => (
+                    <CardListItem
+                      key={vocabularySet.id}
+                      href={getVocabularySetHref(vocabularySet)}
+                      title={vocabularySet.title}
+                      subtitle={
+                        vocabularySet.description ?? "Vocabulary set ready for study."
+                      }
+                      badges={
+                        <>
+                          <Badge tone="info" icon="school">
+                            {getVocabularyTierLabel(vocabularySet.tier)}
+                          </Badge>
+                          <Badge tone="muted" icon="vocabularySet">
+                            {getVocabularyListModeLabel(vocabularySet.list_mode)}
+                          </Badge>
+                          <Badge tone="muted" className="capitalize">
+                            {getVocabularyThemeLabel(vocabularySet.theme_key)}
+                          </Badge>
+                          <Badge tone="muted" icon="list">
+                            {vocabularySet.item_count} item
+                            {vocabularySet.item_count === 1 ? "" : "s"}
+                          </Badge>
+                          {!vocabularySet.is_published ? (
+                            <PublishStatusBadge
+                              isPublished={vocabularySet.is_published}
+                            />
+                          ) : null}
+                          {canSeeDrafts &&
+                          shouldShowCoverageBadges(vocabularySet.list_mode) ? (
+                            <VocabularySetCoverageBadges
+                              coverageSummary={vocabularySet.coverage_summary}
+                            />
+                          ) : null}
+                        </>
+                      }
+                      actions={
+                        <Button
+                          href={getVocabularySetHref(vocabularySet)}
+                          variant="quiet"
+                          size="sm"
+                          icon="next"
+                          iconOnly
+                          ariaLabel={`Open ${vocabularySet.title}`}
+                        />
+                      }
+                    />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}

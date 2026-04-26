@@ -11,6 +11,7 @@ import {
 } from "@/components/admin/vocabulary/items/primitives";
 import VocabularyItemCard from "@/components/admin/vocabulary/items/vocabulary-item-card";
 import {
+  getVocabularyListAppliesToStudyVariant,
   getVocabularyListModeLabel,
   getVocabularyTierLabel,
   type DbVocabularyItem,
@@ -19,6 +20,57 @@ import {
   type DbVocabularySet,
   type DbVocabularySetUsageStats,
 } from "@/lib/vocabulary/vocabulary-helpers-db";
+
+function getAdminListSectionTitle(list: DbVocabularyList) {
+  if (list.tier === "foundation") {
+    return "Foundation tier";
+  }
+
+  if (list.tier === "higher") {
+    return "Higher tier extension";
+  }
+
+  return list.title;
+}
+
+function groupAdminItemsByList(lists: DbVocabularyList[], items: DbVocabularyItem[]) {
+  const itemListIds = new Set(items.map((item) => item.vocabulary_list_id).filter(Boolean));
+  const visibleLists = lists.filter((list) => itemListIds.has(list.id));
+
+  if (visibleLists.length === 0) {
+    return [
+      {
+        key: "all-items",
+        title: "All items",
+        description: `${items.length} item${items.length === 1 ? "" : "s"}`,
+        items,
+      },
+    ];
+  }
+
+  return visibleLists.map((list) => {
+    const listItems = items.filter((item) => item.vocabulary_list_id === list.id);
+    const higherCumulativeNote =
+      list.tier === "higher" &&
+      lists.some((candidate) =>
+        getVocabularyListAppliesToStudyVariant(candidate.tier, "higher")
+      )
+        ? "Higher and Volna students also need the Foundation section above."
+        : null;
+
+    return {
+      key: list.id,
+      title: getAdminListSectionTitle(list),
+      description: [
+        `${listItems.length} item${listItems.length === 1 ? "" : "s"}`,
+        higherCumulativeNote,
+      ]
+        .filter(Boolean)
+        .join(" "),
+      items: listItems,
+    };
+  });
+}
 
 export default function VocabularySetItemsAdmin({
   vocabularySet,
@@ -36,6 +88,7 @@ export default function VocabularySetItemsAdmin({
   itemCoverageById: Map<string, DbVocabularyItemCoverage>;
 }) {
   const defaultTier = getDefaultVocabularyItemTier(vocabularySet.tier);
+  const itemSections = groupAdminItemsByList(lists, items);
 
   return (
     <main className="space-y-8">
@@ -129,16 +182,33 @@ export default function VocabularySetItemsAdmin({
             entries.
           </div>
         ) : (
-          <div className="space-y-4">
-            {items.map((item) => (
-              <VocabularyItemCard
-                key={item.id}
-                item={item}
-                vocabularySetId={vocabularySet.id}
-                vocabularyListId={item.vocabulary_list_id ?? vocabularyList?.id ?? null}
-                defaultTier={defaultTier}
-                coverage={itemCoverageById.get(item.id) ?? null}
-              />
+          <div className="space-y-8">
+            {itemSections.map((section) => (
+              <section key={section.key} className="space-y-4">
+                <div>
+                  <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                    {section.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                    {section.description}
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {section.items.map((item) => (
+                    <VocabularyItemCard
+                      key={item.id}
+                      item={item}
+                      vocabularySetId={vocabularySet.id}
+                      vocabularyListId={
+                        item.vocabulary_list_id ?? vocabularyList?.id ?? null
+                      }
+                      defaultTier={defaultTier}
+                      coverage={itemCoverageById.get(item.id) ?? null}
+                    />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}

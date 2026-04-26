@@ -87,16 +87,14 @@ export default function LessonRenderer({
           className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/60 p-4 md:p-6"
         >
           <div className="space-y-2">
-            <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
+            <div className="app-text-meta">
               {section.sectionKind.replaceAll("_", " ")}
             </div>
 
-            <h2 className="text-2xl font-semibold text-[var(--text-primary)]">
-              {section.title}
-            </h2>
+            <h2 className="app-heading-section">{section.title}</h2>
 
             {section.description ? (
-              <p className="text-sm app-text-muted">{section.description}</p>
+              <p className="app-text-body-muted">{section.description}</p>
             ) : null}
           </div>
 
@@ -174,6 +172,7 @@ export default function LessonRenderer({
                       key={index}
                       title={block.title}
                       vocabularySetSlug={block.vocabularySetSlug}
+                      currentVariant={currentVariant}
                     />
                   );
 
