@@ -910,20 +910,10 @@ export async function getVocabularyItemsBySetIdDb(
     const listItems = await getVocabularyItemsByListIdsDb(
       scopedLists.map((list) => list.id)
     );
-    const fallbackItems = await getVocabularyItemsDirectBySetIdDb(vocabularySetId);
-    const scopeVariant = options?.scopeVariant;
-    const scopedFallbackItems =
-      !scopeVariant || scopeVariant === "all"
-        ? fallbackItems
-        : fallbackItems.filter((item) =>
-            getVocabularyItemAppliesToStudyVariant(item.tier, scopeVariant)
-          );
 
-    if (listItems.length >= scopedFallbackItems.length) {
+    if (listItems.length > 0) {
       return listItems;
     }
-
-    return scopedFallbackItems;
   }
 
   if (lists.length > 0) {
