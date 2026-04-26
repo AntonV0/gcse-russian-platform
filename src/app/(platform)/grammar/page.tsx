@@ -6,6 +6,7 @@ import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import {
   filterGrammarSetsForDashboardAccess,
   getGrammarThemeLabel,
@@ -89,6 +90,13 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
               Vocabulary
             </Button>
           </>
+        }
+        visual={
+          <VisualPlaceholder
+            category="grammar"
+            size="wide"
+            ariaLabel="Abstract grammar diagram illustration"
+          />
         }
       />
 

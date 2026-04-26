@@ -475,6 +475,7 @@ src/
       table-toolbar.tsx
       textarea.tsx
       theme-toggle.tsx
+      visual-placeholder.tsx
 
   lib/
     access/
@@ -602,6 +603,7 @@ src/
 docs/
   architecture.md
   decisions.md
+  image-strategy.md
   PROJECT_STRUCTURE.md
   ui-system-guidelines.md
 

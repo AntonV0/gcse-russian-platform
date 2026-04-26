@@ -1,4 +1,5 @@
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type PageIntroPanelTone = "admin" | "student" | "brand" | "neutral";
 
@@ -8,8 +9,10 @@ type PageIntroPanelProps = {
   eyebrow?: string;
   badges?: React.ReactNode;
   actions?: React.ReactNode;
+  visual?: React.ReactNode;
   children?: React.ReactNode;
   tone?: PageIntroPanelTone;
+  headingLevel?: HeadingLevel;
   className?: string;
   contentClassName?: string;
 };
@@ -39,11 +42,46 @@ export default function PageIntroPanel({
   eyebrow,
   badges,
   actions,
+  visual,
   children,
   tone = "admin",
+  headingLevel = 1,
   className,
   contentClassName,
 }: PageIntroPanelProps) {
+  const headerContent = (
+    <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+      <div className="min-w-0 flex-1">
+        {eyebrow ? (
+          <div className="text-[0.78rem] font-semibold uppercase tracking-[0.12em] app-text-soft">
+            {eyebrow}
+          </div>
+        ) : null}
+
+        <Heading
+          level={headingLevel}
+          className={eyebrow ? "mt-2.5 app-title" : "app-title"}
+        >
+          {title}
+        </Heading>
+
+        {description ? (
+          <p className="mt-3 max-w-3xl app-text-lede">{description}</p>
+        ) : null}
+
+        {badges ? <div className="mt-4 flex flex-wrap gap-2">{badges}</div> : null}
+      </div>
+
+      {actions ? (
+        <div className="flex shrink-0 flex-wrap gap-2.5 xl:justify-end">
+          {actions}
+        </div>
+      ) : null}
+    </div>
+  );
+
+  const supportingContent = children ? <div className="mt-5">{children}</div> : null;
+
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
       {SHOW_UI_DEBUG ? (
@@ -52,14 +90,14 @@ export default function PageIntroPanel({
           filePath="src/components/ui/page-intro-panel.tsx"
           tier="container"
           componentRole="Premium top-of-page context panel"
-          bestFor="Important page introductions that need title, explanation, badges, actions, and optional supporting content."
+          bestFor="Important page introductions that need title, explanation, badges, actions, optional visuals, and supporting content."
           usageExamples={[
             "Student dashboard intro",
             "Admin overview header",
             "Course landing context panel",
             "Upgrade or access explanation panel",
           ]}
-          notes="Use this when a page needs more presence than PageHeader. Avoid using it repeatedly on the same page or for small subsections."
+          notes="Use this when a page needs more presence than PageHeader. Keep visuals restrained and meaningful; avoid using it repeatedly on the same page or for small subsections."
         />
       ) : null}
 
@@ -72,33 +110,23 @@ export default function PageIntroPanel({
           .filter(Boolean)
           .join(" ")}
       >
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-          <div className="min-w-0 flex-1">
-            {eyebrow ? (
-              <div className="text-[0.78rem] font-semibold uppercase tracking-[0.12em] app-text-soft">
-                {eyebrow}
-              </div>
-            ) : null}
-
-            <h1 className={eyebrow ? "mt-2.5 app-title" : "app-title"}>{title}</h1>
-
-            {description ? (
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-secondary)] sm:text-base sm:leading-7">
-                {description}
-              </p>
-            ) : null}
-
-            {badges ? <div className="mt-4 flex flex-wrap gap-2">{badges}</div> : null}
-          </div>
-
-          {actions ? (
-            <div className="flex shrink-0 flex-wrap gap-2.5 xl:justify-end">
-              {actions}
+        {visual ? (
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(220px,320px)] xl:items-start">
+            <div className="min-w-0">
+              {headerContent}
+              {supportingContent}
             </div>
-          ) : null}
-        </div>
 
-        {children ? <div className="mt-5">{children}</div> : null}
+            <div className="flex justify-center xl:justify-end">
+              {visual}
+            </div>
+          </div>
+        ) : (
+          <>
+            {headerContent}
+            {supportingContent}
+          </>
+        )}
       </section>
     </div>
   );

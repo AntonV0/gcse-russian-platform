@@ -15,6 +15,7 @@ Project architecture notes are kept in `docs/`:
 
 - `docs/architecture.md`
 - `docs/decisions.md`
+- `docs/image-strategy.md`
 - `docs/PROJECT_STRUCTURE.md`
 - `docs/ui-system-guidelines.md`
 

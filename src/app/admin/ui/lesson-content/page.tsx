@@ -11,13 +11,16 @@ import Card, { CardBody } from "@/components/ui/card";
 import EmptyState from "@/components/ui/empty-state";
 import LessonSurfaceCard from "@/components/ui/lesson-surface-card";
 import LockedContentCard from "@/components/ui/locked-content-card";
+import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import PracticeSurfaceCard from "@/components/ui/practice-surface-card";
 import Surface from "@/components/ui/surface";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 
 const pageNavItems = [
   { id: "lesson-surfaces", label: "Lesson surfaces" },
   { id: "content-blocks", label: "Content blocks" },
+  { id: "visual-strategy", label: "Visual strategy" },
   { id: "practice-blocks", label: "Practice blocks" },
   { id: "progression", label: "Progression states" },
   { id: "future-components", label: "Future" },
@@ -167,6 +170,74 @@ export default async function AdminUiLessonContentPage() {
               <Badge tone="info">Listening</Badge>
             </div>
           </LessonContentBlock>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="visual-strategy"
+        title="Visual strategy"
+        description="Use visuals as learning support and orientation, not decoration. These placeholders reserve layout space before real GCSE Russian images are added."
+      >
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)]">
+          <PageIntroPanel
+            tone="student"
+            headingLevel={3}
+            eyebrow="Student visual slot"
+            title="A calm visual can support page context"
+            description="Intro visuals should reinforce the learning area, fit the theme tokens, and stay secondary to the title, badges, and actions."
+            badges={
+              <>
+                <Badge tone="info" icon="image">
+                  Optional visual
+                </Badge>
+                <Badge tone="muted">No asset required yet</Badge>
+              </>
+            }
+            visual={
+              <VisualPlaceholder
+                category="learningPath"
+                size="wide"
+                ariaLabel="Abstract learning path placeholder"
+              />
+            }
+          />
+
+          <div className="grid gap-4">
+            <EmptyState
+              title="Visual empty state"
+              description="Use a neutral placeholder when an empty state needs warmth, but keep the action and explanation clear."
+              visual={
+                <VisualPlaceholder
+                  category="emptyState"
+                  ariaLabel="Neutral empty state placeholder"
+                />
+              }
+            />
+
+            <PanelCard
+              title="Category placeholders"
+              description="Reusable placeholders can stand in for future vocabulary, grammar, and topic images."
+              tone="muted"
+            >
+              <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+                <VisualPlaceholder
+                  category="vocabulary"
+                  ariaLabel="Vocabulary placeholder"
+                  className="mx-auto"
+                />
+                <VisualPlaceholder
+                  category="grammar"
+                  ariaLabel="Grammar placeholder"
+                  className="mx-auto"
+                />
+                <VisualPlaceholder
+                  category="school"
+                  ariaLabel="School topic placeholder"
+                  className="mx-auto"
+                />
+              </div>
+            </PanelCard>
+          </div>
         </div>
       </UiLabSection>
 
