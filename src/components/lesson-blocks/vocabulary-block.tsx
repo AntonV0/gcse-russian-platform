@@ -1,4 +1,5 @@
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type VocabularyItem = {
   russian: string;
@@ -11,6 +12,7 @@ type VocabularyBlockProps = {
   eyebrow?: string;
   description?: string;
   meta?: string[];
+  headingLevel?: HeadingLevel;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -21,6 +23,7 @@ export default function VocabularyBlock({
   eyebrow = "Vocabulary",
   description,
   meta = [],
+  headingLevel = 3,
 }: VocabularyBlockProps) {
   return (
     <section className="dev-marker-host relative app-card app-section-padding">
@@ -58,12 +61,12 @@ export default function VocabularyBlock({
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <Heading level={headingLevel} className="app-heading-subsection">
                 {title}
-              </h2>
+              </Heading>
 
               {description ? (
-                <p className="max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
+                <p className="max-w-3xl app-text-body-muted">
                   {description}
                 </p>
               ) : null}
@@ -92,7 +95,7 @@ export default function VocabularyBlock({
                 className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3"
               >
                 <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-4">
-                  <span className="font-semibold text-[var(--text-primary)]">
+                  <span lang="ru" className="app-vocab-term">
                     {item.russian}
                   </span>
                   <span className="text-[var(--text-secondary)]">{item.english}</span>

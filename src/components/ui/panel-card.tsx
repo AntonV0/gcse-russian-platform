@@ -1,7 +1,6 @@
-"use client";
-
 import Card, { CardBody, CardFooter, CardHeader } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type PanelCardTone = "default" | "admin" | "student" | "brand" | "muted";
 type PanelCardDensity = "default" | "compact";
@@ -18,6 +17,7 @@ type PanelCardProps = {
   footer?: React.ReactNode;
   tone?: PanelCardTone;
   density?: PanelCardDensity;
+  headingLevel?: HeadingLevel;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -88,6 +88,7 @@ export default function PanelCard({
   footer,
   tone = "default",
   density = "default",
+  headingLevel = 2,
 }: PanelCardProps) {
   const toneClasses = getToneClasses(tone);
   const densityClasses = getDensityClasses(density);
@@ -131,7 +132,11 @@ export default function PanelCard({
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="min-w-0 space-y-1">
-                {title ? <h2 className="app-card-title">{title}</h2> : null}
+                {title ? (
+                  <Heading level={headingLevel} className="app-card-title">
+                    {title}
+                  </Heading>
+                ) : null}
                 {description ? <p className="app-card-desc">{description}</p> : null}
               </div>
 

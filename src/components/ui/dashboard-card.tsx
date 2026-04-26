@@ -1,9 +1,11 @@
 import Card, { CardBody } from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type DashboardCardProps = {
   title?: string;
   children: React.ReactNode;
+  headingLevel?: HeadingLevel;
   className?: string;
 };
 
@@ -12,6 +14,7 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 export default function DashboardCard({
   title,
   children,
+  headingLevel = 2,
   className,
 }: DashboardCardProps) {
   return (
@@ -42,7 +45,11 @@ export default function DashboardCard({
           .join(" ")}
       >
         <CardBody className="px-5 py-4">
-          {title ? <h2 className="app-card-title">{title}</h2> : null}
+          {title ? (
+            <Heading level={headingLevel} className="app-card-title">
+              {title}
+            </Heading>
+          ) : null}
           <div className={[title ? "mt-2.5" : "", "text-sm app-text-muted"].join(" ")}>
             {children}
           </div>
