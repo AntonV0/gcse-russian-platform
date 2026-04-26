@@ -15,13 +15,13 @@ type MarketingSiteHeaderProps = {
 };
 
 const navItems = [
-  { href: "/marketing", label: "Home" },
-  { href: "/marketing/gcse-russian-course", label: "Course" },
-  { href: "/marketing/resources", label: "Resources" },
-  { href: "/marketing/gcse-russian-exam-guide", label: "Exam guide" },
-  { href: "/marketing/russian-gcse-private-candidate", label: "Private candidates" },
-  { href: "/marketing/pricing", label: "Pricing" },
-  { href: "/marketing/faq", label: "FAQ" },
+  { href: "/", label: "Home" },
+  { href: "/gcse-russian-course", label: "Course" },
+  { href: "/resources", label: "Resources" },
+  { href: "/gcse-russian-exam-guide", label: "Exam guide" },
+  { href: "/russian-gcse-private-candidate", label: "Private candidates" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 function isNavActive(pathname: string, href: string) {
@@ -51,7 +51,7 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <Link
-            href="/marketing"
+            href="/"
             className="app-brand-lockup shrink-0"
             onClick={closeMobileMenu}
           >

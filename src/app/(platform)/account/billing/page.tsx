@@ -178,7 +178,7 @@ export default async function BillingPage() {
 
               <div className="flex flex-wrap gap-3 md:shrink-0 md:justify-end">
                 <Link
-                  href="/marketing/pricing"
+                  href="/pricing"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent-ink)] hover:underline"

@@ -119,7 +119,7 @@ export function MarketingCtaBand({
   description,
   primaryHref = "/signup",
   primaryLabel = "Start trial",
-  secondaryHref = "/marketing/pricing",
+  secondaryHref = "/pricing",
   secondaryLabel = "View pricing",
 }: {
   title: string;

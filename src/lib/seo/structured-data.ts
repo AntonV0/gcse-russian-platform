@@ -57,7 +57,7 @@ export function buildBreadcrumbJsonLd(items: BreadcrumbItem[]) {
 export function buildCourseJsonLd({
   name = DEFAULT_SEO_TITLE,
   description = DEFAULT_SEO_DESCRIPTION,
-  path = "/marketing/gcse-russian-course",
+  path = "/gcse-russian-course",
 }: {
   name?: string;
   description?: string;
@@ -132,6 +132,45 @@ export function buildFaqJsonLd(items: FaqItem[]) {
         "@type": "Answer",
         text: item.answer,
       },
+    })),
+  };
+}
+
+export function buildProductOfferJsonLd({
+  name,
+  description,
+  path,
+  offers,
+}: {
+  name: string;
+  description: string;
+  path: string;
+  offers: {
+    name: string;
+    price: number;
+    priceCurrency?: string;
+    availability?: string;
+  }[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    description,
+    url: getPublicSiteUrl(path).toString(),
+    brand: {
+      "@type": "Organization",
+      name: PUBLIC_SITE_NAME,
+      url: getPublicSiteUrl().toString(),
+    },
+    category: "Online GCSE course",
+    offers: offers.map((offer) => ({
+      "@type": "Offer",
+      name: offer.name,
+      price: offer.price,
+      priceCurrency: offer.priceCurrency ?? "GBP",
+      availability: offer.availability ?? "https://schema.org/InStock",
+      url: getPublicSiteUrl(path).toString(),
     })),
   };
 }

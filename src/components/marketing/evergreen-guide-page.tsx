@@ -69,7 +69,7 @@ export default function EvergreenGuidePage({
     icon: "create",
   },
   secondaryAction = {
-    href: "/marketing/gcse-russian-course",
+    href: "/gcse-russian-course",
     label: "View course",
     icon: "courses",
   },
@@ -77,7 +77,7 @@ export default function EvergreenGuidePage({
   relatedLinks,
   ctaTitle,
   ctaDescription,
-  ctaSecondaryHref = "/marketing/gcse-russian-course",
+  ctaSecondaryHref = "/gcse-russian-course",
   ctaSecondaryLabel = "View course",
 }: EvergreenGuidePageProps) {
   return (
@@ -93,8 +93,8 @@ export default function EvergreenGuidePage({
       />
       <MarketingBreadcrumbs
         items={[
-          { label: "Home", href: "/marketing" },
-          { label: "Resources", href: "/marketing/resources" },
+          { label: "Home", href: "/" },
+          { label: "Resources", href: "/resources" },
           { label: title, href: path },
         ]}
       />
@@ -107,11 +107,7 @@ export default function EvergreenGuidePage({
           badges={
             <>
               {badges.map((badge) => (
-                <Badge
-                  key={badge.label}
-                  tone={badge.tone ?? "muted"}
-                  icon={badge.icon}
-                >
+                <Badge key={badge.label} tone={badge.tone ?? "muted"} icon={badge.icon}>
                   {badge.label}
                 </Badge>
               ))}
