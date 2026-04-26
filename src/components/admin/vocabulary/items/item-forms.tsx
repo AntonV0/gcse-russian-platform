@@ -25,10 +25,10 @@ export function NewVocabularyItemForm({
   return (
     <section className="app-surface app-section-padding">
       <div className="mb-5 flex flex-col gap-2">
-        <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+        <h2 className="app-heading-subsection">
           Quick add item
         </h2>
-        <p className="text-sm leading-6 text-[var(--text-secondary)]">
+        <p className="app-text-body-muted">
           Add the essentials first. Open optional sections only when this item needs extra
           metadata.
         </p>
@@ -156,10 +156,10 @@ export function NewVocabularyItemForm({
             <label className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
               <input type="checkbox" name="isReflexive" value="true" className="mt-1" />
               <span>
-                <span className="block text-sm font-semibold text-[var(--text-primary)]">
+                <span className="block app-label">
                   Reflexive verb
                 </span>
-                <span className="mt-1 block text-sm text-[var(--text-secondary)]">
+                <span className="mt-1 block app-text-caption">
                   Mark words such as Ð·Ð°Ð½Ð¸Ð¼Ð°Ñ‚ÑŒÑÑ or ÑƒÑ‡Ð¸Ñ‚ÑŒÑÑ.
                 </span>
               </span>
@@ -243,8 +243,8 @@ export function BulkVocabularyItemForm({
   return (
     <section className="app-surface app-section-padding">
       <div className="mb-5 flex flex-col gap-2">
-        <h2 className="text-xl font-semibold text-[var(--text-primary)]">Bulk add</h2>
-        <p className="text-sm leading-6 text-[var(--text-secondary)]">
+        <h2 className="app-heading-subsection">Bulk add</h2>
+        <p className="app-text-body-muted">
           Paste one pair per line. Use a tab, pipe, or comma between Russian and English.
         </p>
       </div>

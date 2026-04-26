@@ -5,36 +5,8 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
+import { VocabularyAdminFormField as FormField } from "@/components/admin/vocabulary/items/primitives";
 import { createVocabularySetAction } from "@/app/actions/admin/admin-vocabulary-actions";
-
-function FormField({
-  label,
-  htmlFor,
-  hint,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <label
-        htmlFor={htmlFor}
-        className="block text-sm font-semibold text-[var(--text-primary)]"
-      >
-        {label}
-      </label>
-
-      {hint ? (
-        <p className="text-sm leading-6 text-[var(--text-secondary)]">{hint}</p>
-      ) : null}
-
-      {children}
-    </div>
-  );
-}
 
 function ToggleField({
   name,
@@ -82,10 +54,10 @@ export default function CreateVocabularySetPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+              <h2 className="app-heading-section">
                 Create a reusable vocabulary set
               </h2>
-              <p className="max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="max-w-3xl app-text-body-muted">
                 Start with the core metadata. Item-level add, edit, reorder, and delete
                 can come next once the set exists.
               </p>
@@ -107,10 +79,10 @@ export default function CreateVocabularySetPage() {
         <div className="space-y-4">
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-subsection">
                 Core details
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-2 app-text-body-muted">
                 These fields define how the vocabulary set is identified and organised.
               </p>
             </div>
@@ -190,10 +162,10 @@ export default function CreateVocabularySetPage() {
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-subsection">
                 Vocabulary settings
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-2 app-text-body-muted">
                 These settings control what kind of set this is and how it should behave.
               </p>
             </div>
@@ -260,10 +232,10 @@ export default function CreateVocabularySetPage() {
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-subsection">
                 Import metadata
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-2 app-text-body-muted">
                 Optional fields used by the future idempotent vocabulary importer.
               </p>
             </div>
@@ -287,10 +259,10 @@ export default function CreateVocabularySetPage() {
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-subsection">
                 Publication
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-2 app-text-body-muted">
                 Decide whether the set should start as a draft or be visible immediately.
               </p>
             </div>
@@ -309,21 +281,21 @@ export default function CreateVocabularySetPage() {
         <div className="space-y-4">
           <section className="app-surface app-section-padding">
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+              <h2 className="app-heading-card">
                 Before you save
               </h2>
 
               <div className="space-y-3">
-                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 text-sm leading-6 text-[var(--text-secondary)]">
+                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 app-text-body-muted">
                   Create the set first, then add vocabulary items and usage links after.
                 </div>
 
-                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 text-sm leading-6 text-[var(--text-secondary)]">
+                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 app-text-body-muted">
                   Slug, theme key, and topic key can stay blank if you are not ready to
                   structure them yet.
                 </div>
 
-                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 text-sm leading-6 text-[var(--text-secondary)]">
+                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 app-text-body-muted">
                   Draft is the safer default while the set is still being built.
                 </div>
               </div>

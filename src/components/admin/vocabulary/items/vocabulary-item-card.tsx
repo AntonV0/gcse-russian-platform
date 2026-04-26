@@ -59,17 +59,17 @@ export default function VocabularyItemCard({
             </div>
 
             <div className="mt-3">
-              <h2 className="text-xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
+              <h4 className="app-vocab-term">
                 {item.russian}
-              </h2>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">{item.english}</p>
+              </h4>
+              <p className="mt-1 app-text-body-muted">{item.english}</p>
             </div>
           </div>
 
-          <div className="text-sm font-semibold text-[var(--text-secondary)] group-open:hidden">
+          <div className="font-semibold app-text-caption group-open:hidden">
             Edit
           </div>
-          <div className="hidden text-sm font-semibold text-[var(--text-secondary)] group-open:block">
+          <div className="hidden font-semibold app-text-caption group-open:block">
             Close
           </div>
         </div>
@@ -91,7 +91,7 @@ export default function VocabularyItemCard({
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] app-text-soft">
+          <div className="app-text-meta">
             Usage coverage
           </div>
           <div className="mt-3">
