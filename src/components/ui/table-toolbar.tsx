@@ -31,7 +31,8 @@ export default function TableToolbar({ children, className }: TableToolbarProps)
 
       <div
         className={[
-          "flex flex-col gap-3 border-b border-[var(--border-subtle)] bg-[var(--background-muted)]/45 px-5 py-4",
+          "min-w-0 border-b border-[var(--border-subtle)] bg-[var(--background-muted)]/45 px-4 py-4 sm:px-5",
+          "flex flex-col gap-3",
           "lg:flex-row lg:items-center lg:justify-between",
           className,
         ]
