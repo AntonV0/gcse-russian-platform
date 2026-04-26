@@ -2,6 +2,11 @@ import { getActiveUserProductGrantDb, type DbUserAccessGrant } from "@/lib/billi
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PRODUCT_CODES, type DbPrice, type DbProduct } from "./types";
 
+const PRODUCT_SELECT =
+  "id, code, name, product_type, course_id, course_variant_id, is_active, created_at";
+const PRICE_SELECT =
+  "id, product_id, billing_type, interval_unit, interval_count, amount_gbp, stripe_price_id, is_active, created_at";
+
 export async function getActiveProductByCodeDb(
   productCode: string
 ): Promise<DbProduct | null> {
@@ -9,7 +14,7 @@ export async function getActiveProductByCodeDb(
 
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select(PRODUCT_SELECT)
     .eq("code", productCode)
     .eq("is_active", true)
     .maybeSingle();
@@ -30,7 +35,7 @@ export async function getProductByIdDb(productId: string): Promise<DbProduct | n
 
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select(PRODUCT_SELECT)
     .eq("id", productId)
     .single();
 
@@ -50,7 +55,7 @@ export async function getActivePricesForProductDb(productId: string): Promise<Db
 
   const { data, error } = await supabase
     .from("prices")
-    .select("*")
+    .select(PRICE_SELECT)
     .eq("product_id", productId)
     .eq("is_active", true)
     .order("amount_gbp", { ascending: true });
@@ -71,7 +76,7 @@ export async function getActivePriceByIdDb(priceId: string): Promise<DbPrice | n
 
   const { data, error } = await supabase
     .from("prices")
-    .select("*")
+    .select(PRICE_SELECT)
     .eq("id", priceId)
     .eq("is_active", true)
     .single();
@@ -94,7 +99,7 @@ export async function getActivePriceByStripePriceIdDb(
 
   const { data, error } = await supabase
     .from("prices")
-    .select("*")
+    .select(PRICE_SELECT)
     .eq("stripe_price_id", stripePriceId)
     .eq("is_active", true)
     .single();
