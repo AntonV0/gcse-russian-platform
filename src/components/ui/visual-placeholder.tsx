@@ -8,6 +8,8 @@ type VisualPlaceholderCategory =
   | "listening"
   | "speaking"
   | "writing"
+  | "pastPapers"
+  | "mockExam"
   | "travel"
   | "food"
   | "school"
@@ -29,6 +31,8 @@ const categoryIcons: Record<VisualPlaceholderCategory, AppIconKey> = {
   listening: "listening",
   speaking: "speaking",
   writing: "write",
+  pastPapers: "pastPapers",
+  mockExam: "mockExam",
   travel: "navigation",
   food: "vocabularySet",
   school: "school",

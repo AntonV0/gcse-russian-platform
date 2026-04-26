@@ -123,7 +123,7 @@ export default async function ProfilePage({
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <h2 className="app-title">Personalise your profile</h2>
+              <h2 className="app-heading-hero">Personalise your profile</h2>
               <p className="app-subtitle max-w-2xl">
                 Choose a preset avatar and update the name shown around your student area.
                 Profile is where you manage your personal identity details, while Settings

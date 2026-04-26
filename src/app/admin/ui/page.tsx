@@ -148,7 +148,7 @@ function OverviewHero({
           <Badge tone="muted">Admin · Student · Teacher</Badge>
         </div>
 
-        <h2 className="mt-4 app-title max-w-3xl">
+        <h2 className="mt-4 app-heading-hero max-w-3xl">
           A working UI reference for the full GCSE Russian platform
         </h2>
 

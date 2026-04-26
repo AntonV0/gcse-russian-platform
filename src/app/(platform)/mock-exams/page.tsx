@@ -6,6 +6,7 @@ import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   filterMockExamsForDashboardAccess,
@@ -82,6 +83,13 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
               Dashboard
             </Button>
           </>
+        }
+        visual={
+          <VisualPlaceholder
+            category="mockExam"
+            size="wide"
+            ariaLabel="Abstract mock exam practice illustration"
+          />
         }
       />
 

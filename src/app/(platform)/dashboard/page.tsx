@@ -96,7 +96,7 @@ export default async function DashboardPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <h2 className="app-title max-w-3xl">{nextStep.title}</h2>
+                    <h2 className="app-heading-hero max-w-3xl">{nextStep.title}</h2>
                     <p className="app-subtitle max-w-2xl">
                       {nextStep.description}
                     </p>
@@ -118,7 +118,11 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              <DashboardCard title="Learning snapshot" className="h-full">
+              <DashboardCard
+                title="Learning snapshot"
+                headingLevel={3}
+                className="h-full"
+              >
                 <div className="space-y-4">
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-3 text-sm">
@@ -303,7 +307,7 @@ export default async function DashboardPage() {
               </div>
 
               <div className="space-y-2">
-                <h2 className="app-title max-w-3xl">Teacher dashboard</h2>
+                <h2 className="app-heading-hero max-w-3xl">Teacher dashboard</h2>
                 <p className="app-subtitle max-w-2xl">
                   Manage assignments, review submissions, and support students through
                   their teacher-led learning workflow.
@@ -379,7 +383,7 @@ export default async function DashboardPage() {
               </div>
 
               <div className="space-y-2">
-                <h2 className="app-title max-w-3xl">Admin control center</h2>
+                <h2 className="app-heading-hero max-w-3xl">Admin control center</h2>
                 <p className="app-subtitle max-w-2xl">
                   Open content, question, template, user, and lesson-builder tools from
                   one place.

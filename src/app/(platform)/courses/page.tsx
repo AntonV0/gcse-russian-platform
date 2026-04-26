@@ -31,7 +31,9 @@ export default async function CoursesPage() {
           </div>
 
           <div className="space-y-2">
-            <h2 className="app-title max-w-3xl">Start or continue your course</h2>
+            <h2 className="app-heading-hero max-w-3xl">
+              Start or continue your course
+            </h2>
             <p className="app-subtitle max-w-2xl">
               Structured GCSE Russian learning with lessons, listening practice,
               translation, and exam-style questions.

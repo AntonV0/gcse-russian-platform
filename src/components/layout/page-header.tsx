@@ -1,14 +1,21 @@
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type PageHeaderProps = {
   title: string;
   description?: string;
+  headingLevel?: HeadingLevel;
   className?: string;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-export default function PageHeader({ title, description, className }: PageHeaderProps) {
+export default function PageHeader({
+  title,
+  description,
+  headingLevel = 1,
+  className,
+}: PageHeaderProps) {
   return (
     <div
       className={["dev-marker-host relative app-header-block mb-8 space-y-2", className]
@@ -32,11 +39,9 @@ export default function PageHeader({ title, description, className }: PageHeader
         />
       ) : null}
 
-      <h1 className="app-title">{title}</h1>
+      <Heading level={headingLevel} className="app-title">{title}</Heading>
       {description ? (
-        <p className="max-w-3xl text-sm leading-6 text-[var(--text-secondary)] sm:text-base sm:leading-7">
-          {description}
-        </p>
+        <p className="max-w-3xl app-text-lede">{description}</p>
       ) : null}
     </div>
   );

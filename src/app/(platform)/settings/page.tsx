@@ -77,7 +77,9 @@ export default async function SettingsPage({
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-title">Security, appearance, and preferences</h2>
+              <h2 className="app-heading-hero">
+                Security, appearance, and preferences
+              </h2>
               <p className="app-subtitle max-w-2xl">
                 Settings is where you manage how your account behaves. Password changes
                 are available now, and appearance and preference tools can grow here
@@ -100,7 +102,11 @@ export default async function SettingsPage({
             </div>
           </div>
 
-          <DashboardCard title="Account summary" className="h-full">
+          <DashboardCard
+            title="Account summary"
+            headingLevel={3}
+            className="h-full"
+          >
             <div className="space-y-3">
               <div>
                 <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
