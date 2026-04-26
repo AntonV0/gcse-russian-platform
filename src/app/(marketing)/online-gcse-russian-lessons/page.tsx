@@ -12,6 +12,7 @@ import {
 } from "@/components/marketing/marketing-page-sections";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
@@ -20,6 +21,11 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "Explore online GCSE Russian lessons and teacher-supported preparation for students who want structured guidance alongside the GCSE Russian course platform.",
   path: "/online-gcse-russian-lessons",
+  ogTitle: "Online GCSE Russian Lessons",
+  ogDescription:
+    "Live teacher support, speaking practice, writing feedback, and a structured course platform.",
+  ogImagePath: getOgImagePath("lessons"),
+  ogImageAlt: "Online GCSE Russian lessons",
 });
 
 const lessonBenefits = [

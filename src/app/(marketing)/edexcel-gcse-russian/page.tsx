@@ -12,6 +12,7 @@ import {
 } from "@/components/marketing/marketing-page-sections";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 
@@ -20,6 +21,11 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "A clear guide to Pearson Edexcel GCSE Russian 1RU0, including the four papers, Foundation and Higher tiers, and how the course platform supports preparation.",
   path: "/edexcel-gcse-russian",
+  ogTitle: "Pearson Edexcel GCSE Russian 1RU0",
+  ogDescription:
+    "Understand the four papers, Foundation and Higher tiers, speaking window, and course preparation.",
+  ogImagePath: getOgImagePath("edexcel"),
+  ogImageAlt: "Pearson Edexcel GCSE Russian 1RU0 guide",
 });
 
 const paperOverview = [

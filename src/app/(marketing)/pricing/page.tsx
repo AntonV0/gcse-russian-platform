@@ -8,6 +8,7 @@ import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { PRODUCT_CODES } from "@/lib/billing/catalog";
 import { formatPriceLabel } from "@/lib/billing/pricing-ui";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 import { buildFaqJsonLd, buildProductOfferJsonLd } from "@/lib/seo/structured-data";
 
@@ -16,6 +17,11 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "Compare Foundation and Higher GCSE Russian course access, start with a trial account, and upgrade securely from inside the app when ready.",
   path: "/pricing",
+  ogTitle: "GCSE Russian Course Pricing",
+  ogDescription:
+    "Compare Foundation and Higher access with trial-first signup and secure in-app checkout.",
+  ogImagePath: getOgImagePath("pricing"),
+  ogImageAlt: "GCSE Russian course pricing",
 });
 
 const pricingFaqs = [
