@@ -1,4 +1,5 @@
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
+import MockExamResponseSummary from "@/components/mock-exams/mock-exam-response-summary";
 import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -16,7 +17,6 @@ import {
   getMockExamSectionTypeLabel,
   getMockExamTierLabel,
   loadMockExamAttemptReviewDb,
-  type DbMockExamResponse,
   type MockExamProfileSummary,
 } from "@/lib/mock-exams/mock-exam-helpers-db";
 
@@ -32,13 +32,6 @@ type AdminMockExamAttemptReviewPageProps = {
 function getProfileLabel(profile: MockExamProfileSummary | null) {
   if (!profile) return "Unknown student";
   return profile.full_name || profile.display_name || profile.email || "Unnamed student";
-}
-
-function getPayloadPreview(response?: DbMockExamResponse) {
-  if (!response) return "No response saved.";
-  if (response.response_text) return response.response_text;
-  if (Object.keys(response.response_payload).length === 0) return "No response saved.";
-  return JSON.stringify(response.response_payload, null, 2);
 }
 
 function getString(value: unknown) {
@@ -57,16 +50,21 @@ export default async function AdminMockExamAttemptReviewPage({
 
   const { attemptId } = await params;
   const query = (await searchParams) ?? {};
-  const { attempt, exam, sections, questionsBySectionId, responsesByQuestionId, student, score } =
-    await loadMockExamAttemptReviewDb(attemptId);
+  const {
+    attempt,
+    exam,
+    sections,
+    questionsBySectionId,
+    responsesByQuestionId,
+    student,
+    score,
+  } = await loadMockExamAttemptReviewDb(attemptId);
 
   if (!attempt || !exam) {
     return <main>Mock exam attempt not found.</main>;
   }
 
-  const questions = sections.flatMap((section) =>
-    questionsBySectionId[section.id] ?? []
-  );
+  const questions = sections.flatMap((section) => questionsBySectionId[section.id] ?? []);
   const responseCount = Object.keys(responsesByQuestionId).length;
   const markedResponseCount = Object.values(responsesByQuestionId).filter(
     (response) => response.awarded_marks !== null
@@ -100,7 +98,11 @@ export default async function AdminMockExamAttemptReviewPage({
             <Button href="/admin/mock-exams/review" variant="secondary" icon="back">
               Review queue
             </Button>
-            <Button href={`/mock-exams/${exam.slug}/attempts/${attempt.id}`} variant="secondary" icon="preview">
+            <Button
+              href={`/mock-exams/${exam.slug}/attempts/${attempt.id}`}
+              variant="secondary"
+              icon="preview"
+            >
               Student result
             </Button>
           </>
@@ -187,12 +189,12 @@ export default async function AdminMockExamAttemptReviewPage({
         >
           <div className="space-y-3 text-sm leading-6 text-[var(--text-secondary)]">
             <p>
-              Objective responses may already have auto-marked scores. Manual marks
-              can override them before the attempt is finalised.
+              Objective responses may already have auto-marked scores. Manual marks can
+              override them before the attempt is finalised.
             </p>
             <p>
-              Writing, speaking, role play, photo card, and translation responses
-              need teacher judgement and original Volna/platform mark guidance.
+              Writing, speaking, role play, photo card, and translation responses need
+              teacher judgement and original Volna/platform mark guidance.
             </p>
           </div>
         </PanelCard>
@@ -268,9 +270,9 @@ export default async function AdminMockExamAttemptReviewPage({
                             <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
                               Student response
                             </div>
-                            <pre className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[var(--text-secondary)]">
-                              {getPayloadPreview(response)}
-                            </pre>
+                            <div className="mt-2">
+                              <MockExamResponseSummary response={response} />
+                            </div>
                           </div>
 
                           <div className="grid gap-4 lg:grid-cols-[160px_minmax(0,1fr)]">

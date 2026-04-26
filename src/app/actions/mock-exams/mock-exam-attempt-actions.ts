@@ -6,6 +6,7 @@ import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   canDashboardAccessMockExam,
   type DbMockExamQuestion,
+  type DbMockExamResponse,
   getMockExamSetBySlugDb,
   loadMockExamAttemptDb,
 } from "@/lib/mock-exams/mock-exam-helpers-db";
@@ -15,6 +16,14 @@ import { getTrimmedString } from "@/app/actions/shared/form-data";
 type ExtractedResponse = {
   responseText: string | null;
   responsePayload: Record<string, unknown>;
+};
+
+type StoredMockExamResponseFile = {
+  bucket: "mock-exam-responses";
+  path: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
 };
 
 type MarkResult = {
@@ -48,6 +57,12 @@ function getRecordArray(value: unknown) {
   );
 }
 
+function getRecord(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
 function parseIndexList(value: string) {
   return value
     .split(",")
@@ -67,7 +82,156 @@ function sameNumberList(a: number[], b: number[]) {
   return a.every((value, index) => value === b[index]);
 }
 
-function fullMarksIfCorrect(question: DbMockExamQuestion, isCorrect: boolean): MarkResult {
+function sanitizeFileName(fileName: string) {
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "-");
+}
+
+function isUsableFile(value: unknown): value is File {
+  return value instanceof File && value.size > 0;
+}
+
+function getExistingStoredFile(
+  response: DbMockExamResponse | undefined,
+  key: "file" | "audio"
+) {
+  const value = response?.response_payload[key];
+  const record = getRecord(value);
+
+  if (
+    record.bucket === "mock-exam-responses" &&
+    typeof record.path === "string" &&
+    typeof record.fileName === "string" &&
+    typeof record.mimeType === "string" &&
+    typeof record.sizeBytes === "number"
+  ) {
+    return record as StoredMockExamResponseFile;
+  }
+
+  return null;
+}
+
+async function uploadMockExamResponseFile(params: {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  attemptId: string;
+  questionId: string;
+  userId: string;
+  file: File;
+  prefix: "writing" | "speaking";
+}) {
+  const safeFileName = sanitizeFileName(params.file.name || `${params.prefix}-response`);
+  const path = [
+    params.attemptId,
+    params.userId,
+    params.questionId,
+    `${Date.now()}-${safeFileName}`,
+  ].join("/");
+
+  const { error } = await params.supabase.storage
+    .from("mock-exam-responses")
+    .upload(path, params.file, {
+      contentType: params.file.type || "application/octet-stream",
+      upsert: false,
+    });
+
+  if (error) {
+    console.error("Error uploading mock exam response file:", {
+      attemptId: params.attemptId,
+      questionId: params.questionId,
+      error,
+    });
+    throw new Error(`Failed to upload response file: ${error.message}`);
+  }
+
+  return {
+    bucket: "mock-exam-responses",
+    path,
+    fileName: params.file.name || safeFileName,
+    mimeType: params.file.type || "application/octet-stream",
+    sizeBytes: params.file.size,
+  } satisfies StoredMockExamResponseFile;
+}
+
+function parseAudioDataUrl(value: string) {
+  const match = value.match(/^data:(audio\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    mimeType: match[1],
+    bytes: Buffer.from(match[2], "base64"),
+  };
+}
+
+function extensionForMimeType(mimeType: string) {
+  if (mimeType.includes("mpeg")) return "mp3";
+  if (mimeType.includes("wav")) return "wav";
+  if (mimeType.includes("ogg")) return "ogg";
+  if (mimeType.includes("mp4")) return "m4a";
+  return "webm";
+}
+
+async function uploadMockExamAudioDataUrl(params: {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  attemptId: string;
+  questionId: string;
+  userId: string;
+  dataUrl: string;
+}) {
+  const parsed = parseAudioDataUrl(params.dataUrl);
+
+  if (!parsed) {
+    return null;
+  }
+
+  const extension = extensionForMimeType(parsed.mimeType);
+  const fileName = `recording-${Date.now()}.${extension}`;
+  const path = [params.attemptId, params.userId, params.questionId, fileName].join("/");
+
+  const { error } = await params.supabase.storage
+    .from("mock-exam-responses")
+    .upload(path, parsed.bytes, {
+      contentType: parsed.mimeType,
+      upsert: false,
+    });
+
+  if (error) {
+    console.error("Error uploading mock exam audio recording:", {
+      attemptId: params.attemptId,
+      questionId: params.questionId,
+      error,
+    });
+    throw new Error(`Failed to upload audio recording: ${error.message}`);
+  }
+
+  return {
+    bucket: "mock-exam-responses",
+    path,
+    fileName,
+    mimeType: parsed.mimeType,
+    sizeBytes: parsed.bytes.byteLength,
+  } satisfies StoredMockExamResponseFile;
+}
+
+const writingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
+  "writing_task",
+  "simple_sentences",
+  "short_paragraph",
+  "extended_writing",
+  "translation_into_russian",
+]);
+
+const speakingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
+  "role_play",
+  "photo_card",
+  "conversation",
+]);
+
+function fullMarksIfCorrect(
+  question: DbMockExamQuestion,
+  isCorrect: boolean
+): MarkResult {
   return {
     awardedMarks: isCorrect ? question.marks : 0,
     feedback: isCorrect ? "Auto-marked correct." : "Auto-marked incorrect.",
@@ -83,16 +247,19 @@ function hasAttemptTimeExpired(startedAt: string, timeLimitMinutes: number | nul
   return Date.now() > startedAtTime + timeLimitMinutes * 60 * 1000;
 }
 
-function extractQuestionResponse(
+async function extractQuestionResponse(
   question: DbMockExamQuestion,
-  formData: FormData
-): ExtractedResponse {
+  formData: FormData,
+  params: {
+    attemptId: string;
+    userId: string;
+    supabase: Awaited<ReturnType<typeof createClient>>;
+    existingResponse?: DbMockExamResponse;
+  }
+): Promise<ExtractedResponse> {
   switch (question.question_type) {
     case "multiple_choice": {
-      const selectedOption = getTrimmedString(
-        formData,
-        `response_choice_${question.id}`
-      );
+      const selectedOption = getTrimmedString(formData, `response_choice_${question.id}`);
 
       return {
         responseText: selectedOption ? `Option ${Number(selectedOption) + 1}` : null,
@@ -120,7 +287,10 @@ function extractQuestionResponse(
       const responseParts: string[] = [];
 
       prompts.forEach((prompt, index) => {
-        const value = getTrimmedString(formData, `response_match_${question.id}_${index}`);
+        const value = getTrimmedString(
+          formData,
+          `response_match_${question.id}_${index}`
+        );
         responsePayload[`match_${index}`] = value;
         if (value) responseParts.push(`${prompt}: ${Number(value) + 1}`);
       });
@@ -174,9 +344,13 @@ function extractQuestionResponse(
       const responseParts: string[] = [];
 
       fields.forEach((field, index) => {
-        const value = getTrimmedString(formData, `response_field_${question.id}_${index}`);
+        const value = getTrimmedString(
+          formData,
+          `response_field_${question.id}_${index}`
+        );
         responsePayload[`field_${index}`] = value;
-        const prompt = typeof field.prompt === "string" ? field.prompt : `Answer ${index + 1}`;
+        const prompt =
+          typeof field.prompt === "string" ? field.prompt : `Answer ${index + 1}`;
         if (value) responseParts.push(`${prompt}: ${value}`);
       });
 
@@ -187,6 +361,82 @@ function extractQuestionResponse(
     }
 
     default: {
+      if (writingResponseTypes.has(question.question_type)) {
+        const planningNotes = getTrimmedString(
+          formData,
+          `response_planning_notes_${question.id}`
+        );
+        const typedDraft = getTrimmedString(formData, `response_draft_${question.id}`);
+        const file = formData.get(`response_file_${question.id}`);
+        const uploadedFile = isUsableFile(file)
+          ? await uploadMockExamResponseFile({
+              supabase: params.supabase,
+              attemptId: params.attemptId,
+              questionId: question.id,
+              userId: params.userId,
+              file,
+              prefix: "writing",
+            })
+          : getExistingStoredFile(params.existingResponse, "file");
+
+        return {
+          responseText:
+            typedDraft ||
+            planningNotes ||
+            (uploadedFile ? `Uploaded file: ${uploadedFile.fileName}` : null),
+          responsePayload: {
+            responseMode: "writing_upload",
+            planningNotes,
+            typedDraft,
+            ...(uploadedFile ? { file: uploadedFile } : {}),
+          },
+        };
+      }
+
+      if (speakingResponseTypes.has(question.question_type)) {
+        const prepNotes = getTrimmedString(
+          formData,
+          `response_prep_notes_${question.id}`
+        );
+        const audioData = getTrimmedString(
+          formData,
+          `response_audio_data_${question.id}`
+        );
+        const audioFile = formData.get(`response_audio_file_${question.id}`);
+        const uploadedAudioFromFile = isUsableFile(audioFile)
+          ? await uploadMockExamResponseFile({
+              supabase: params.supabase,
+              attemptId: params.attemptId,
+              questionId: question.id,
+              userId: params.userId,
+              file: audioFile,
+              prefix: "speaking",
+            })
+          : null;
+        const uploadedAudio =
+          uploadedAudioFromFile ??
+          (audioData
+            ? await uploadMockExamAudioDataUrl({
+                supabase: params.supabase,
+                attemptId: params.attemptId,
+                questionId: question.id,
+                userId: params.userId,
+                dataUrl: audioData,
+              })
+            : getExistingStoredFile(params.existingResponse, "audio"));
+
+        return {
+          responseText:
+            prepNotes ||
+            (uploadedAudio ? `Audio response: ${uploadedAudio.fileName}` : null),
+          responsePayload: {
+            responseMode: "speaking_recording",
+            prepNotes,
+            ...(uploadedAudio ? { audio: uploadedAudio } : {}),
+          },
+        };
+      }
+
       const responseText = getTrimmedString(formData, `response_text_${question.id}`);
 
       return {
@@ -197,7 +447,10 @@ function extractQuestionResponse(
   }
 }
 
-function markQuestion(question: DbMockExamQuestion, response: ExtractedResponse): MarkResult {
+function markQuestion(
+  question: DbMockExamQuestion,
+  response: ExtractedResponse
+): MarkResult {
   switch (question.question_type) {
     case "multiple_choice": {
       const selectedOption = Number(response.responsePayload.selectedOption);
@@ -258,8 +511,12 @@ function markQuestion(question: DbMockExamQuestion, response: ExtractedResponse)
       const isCorrect =
         fields.length > 0 &&
         fields.every((field, index) => {
-          const acceptedAnswers = getStringArray(field.acceptedAnswers).map(normalizeAnswer);
-          const submitted = normalizeAnswer(String(response.responsePayload[`field_${index}`] ?? ""));
+          const acceptedAnswers = getStringArray(field.acceptedAnswers).map(
+            normalizeAnswer
+          );
+          const submitted = normalizeAnswer(
+            String(response.responsePayload[`field_${index}`] ?? "")
+          );
           return acceptedAnswers.includes(submitted);
         });
 
@@ -345,7 +602,7 @@ export async function saveMockExamAttemptResponsesAction(formData: FormData) {
     redirect("/login");
   }
 
-  const { attempt, exam, sections, questionsBySectionId } =
+  const { attempt, exam, sections, questionsBySectionId, responsesByQuestionId } =
     await loadMockExamAttemptDb(attemptId);
 
   if (!attempt || !exam || attempt.user_id !== user.id) {
@@ -356,42 +613,44 @@ export async function saveMockExamAttemptResponsesAction(formData: FormData) {
     throw new Error("Only draft attempts can be edited");
   }
 
-  const questions = sections.flatMap((section) =>
-    questionsBySectionId[section.id] ?? []
-  );
+  const questions = sections.flatMap((section) => questionsBySectionId[section.id] ?? []);
   const requestedSubmitIntent = getTrimmedString(formData, "submitIntent");
   const submitIntent =
     requestedSubmitIntent === "submit" ||
     hasAttemptTimeExpired(attempt.started_at, attempt.time_limit_minutes_snapshot)
       ? "submit"
       : "save";
-
-  const rows = questions.map((question) => {
-    const extractedResponse = extractQuestionResponse(question, formData);
-    const markResult =
-      submitIntent === "submit"
-        ? markQuestion(question, extractedResponse)
-        : { awardedMarks: null, feedback: null };
-
-    return {
-      attempt_id: attempt.id,
-      question_id: question.id,
-      response_text: extractedResponse.responseText,
-      response_payload: extractedResponse.responsePayload,
-      awarded_marks: markResult.awardedMarks,
-      feedback: markResult.feedback,
-      updated_at: new Date().toISOString(),
-    };
-  });
-
   const supabase = await createClient();
 
-  if (rows.length > 0) {
-    const { error } = await supabase
-      .from("mock_exam_responses")
-      .upsert(rows, {
-        onConflict: "attempt_id,question_id",
+  const rows = await Promise.all(
+    questions.map(async (question) => {
+      const extractedResponse = await extractQuestionResponse(question, formData, {
+        attemptId: attempt.id,
+        userId: user.id,
+        supabase,
+        existingResponse: responsesByQuestionId[question.id],
       });
+      const markResult =
+        submitIntent === "submit"
+          ? markQuestion(question, extractedResponse)
+          : { awardedMarks: null, feedback: null };
+
+      return {
+        attempt_id: attempt.id,
+        question_id: question.id,
+        response_text: extractedResponse.responseText,
+        response_payload: extractedResponse.responsePayload,
+        awarded_marks: markResult.awardedMarks,
+        feedback: markResult.feedback,
+        updated_at: new Date().toISOString(),
+      };
+    })
+  );
+
+  if (rows.length > 0) {
+    const { error } = await supabase.from("mock_exam_responses").upsert(rows, {
+      onConflict: "attempt_id,question_id",
+    });
 
     if (error) {
       console.error("Error saving mock exam responses:", { attemptId, error });
@@ -414,9 +673,12 @@ export async function saveMockExamAttemptResponsesAction(formData: FormData) {
         feedback:
           autoMarkedRows.length > 0
             ? "Objective questions were auto-marked. Manual review may still be needed."
-            : hasAttemptTimeExpired(attempt.started_at, attempt.time_limit_minutes_snapshot)
+            : hasAttemptTimeExpired(
+                  attempt.started_at,
+                  attempt.time_limit_minutes_snapshot
+                )
               ? "Submitted after the time limit elapsed. Manual review may still be needed."
-            : null,
+              : null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", attempt.id)

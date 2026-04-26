@@ -1,5 +1,6 @@
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import MockExamAudioRecorder from "@/components/mock-exams/mock-exam-audio-recorder";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import type {
@@ -38,6 +39,30 @@ function getPayloadStringArray(value: unknown) {
 function getStoredText(response?: DbMockExamResponse) {
   return response?.response_text ?? "";
 }
+
+function hasStoredFile(response?: DbMockExamResponse) {
+  const file = response?.response_payload.file;
+  return Boolean(file && typeof file === "object" && !Array.isArray(file));
+}
+
+function hasStoredAudio(response?: DbMockExamResponse) {
+  const audio = response?.response_payload.audio;
+  return Boolean(audio && typeof audio === "object" && !Array.isArray(audio));
+}
+
+const writingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
+  "writing_task",
+  "simple_sentences",
+  "short_paragraph",
+  "extended_writing",
+  "translation_into_russian",
+]);
+
+const speakingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
+  "role_play",
+  "photo_card",
+  "conversation",
+]);
 
 export default function MockExamResponseField({
   question,
@@ -115,7 +140,10 @@ export default function MockExamResponseField({
             >
               <option value="">Choose match</option>
               {options.map((option, optionIndex) => (
-                <option key={`${question.id}-match-option-${optionIndex}`} value={optionIndex}>
+                <option
+                  key={`${question.id}-match-option-${optionIndex}`}
+                  value={optionIndex}
+                >
                   {option}
                 </option>
               ))}
@@ -200,6 +228,91 @@ export default function MockExamResponseField({
             </FormField>
           );
         })}
+      </div>
+    );
+  }
+
+  if (writingResponseTypes.has(question.question_type)) {
+    const typedDraft = getPayloadString(payload.typedDraft);
+    const planningNotes = getPayloadString(payload.planningNotes);
+
+    return (
+      <div className="grid gap-4">
+        <FormField label="Planning notes">
+          <Textarea
+            name={`response_planning_notes_${question.id}`}
+            rows={3}
+            defaultValue={planningNotes}
+            disabled={disabled}
+            placeholder="Optional English planning notes."
+          />
+        </FormField>
+
+        <FormField label="Typed draft">
+          <Textarea
+            name={`response_draft_${question.id}`}
+            rows={6}
+            defaultValue={typedDraft || getStoredText(response)}
+            disabled={disabled}
+            placeholder="Optional draft. Handwritten Russian can be uploaded below."
+          />
+        </FormField>
+
+        <FormField
+          label="Upload handwritten work"
+          hint="Accepted formats: JPG, PNG, WEBP, PDF."
+        >
+          <Input
+            name={`response_file_${question.id}`}
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf"
+            disabled={disabled}
+          />
+          {hasStoredFile(response) ? (
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              Existing upload saved.
+            </p>
+          ) : null}
+        </FormField>
+      </div>
+    );
+  }
+
+  if (speakingResponseTypes.has(question.question_type)) {
+    const prepNotes = getPayloadString(payload.prepNotes);
+
+    return (
+      <div className="grid gap-4">
+        <FormField label="Prep notes">
+          <Textarea
+            name={`response_prep_notes_${question.id}`}
+            rows={4}
+            defaultValue={prepNotes}
+            disabled={disabled}
+            placeholder="Optional English prep notes."
+          />
+        </FormField>
+
+        <FormField label="Recorded response">
+          <MockExamAudioRecorder questionId={question.id} disabled={disabled} />
+          {hasStoredAudio(response) ? (
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              Existing recording saved.
+            </p>
+          ) : null}
+        </FormField>
+
+        <FormField
+          label="Upload audio file"
+          hint="Use this if recording in the browser is not available."
+        >
+          <Input
+            name={`response_audio_file_${question.id}`}
+            type="file"
+            accept="audio/*"
+            disabled={disabled}
+          />
+        </FormField>
       </div>
     );
   }
