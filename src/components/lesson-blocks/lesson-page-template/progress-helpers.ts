@@ -63,3 +63,10 @@ export function getAllowedMaxIndex(totalSteps: number, maxVisitedIndex: number) 
   if (totalSteps <= 0) return 0;
   return Math.min(maxVisitedIndex + 1, totalSteps - 1);
 }
+
+export function getEffectiveStepIndex(
+  requestedStepIndex: number,
+  allowedMaxIndex: number
+) {
+  return Math.min(requestedStepIndex, allowedMaxIndex);
+}
