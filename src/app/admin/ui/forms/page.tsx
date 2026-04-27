@@ -23,6 +23,61 @@ const pageNavItems = [
   { id: "future-components", label: "Future" },
 ];
 
+const courseVariantOptions = [
+  { value: "foundation", label: "Foundation" },
+  { value: "higher", label: "Higher" },
+  { value: "volna", label: "Volna" },
+];
+
+const variantFilterOptions = [
+  { value: "all", label: "All variants" },
+  ...courseVariantOptions,
+];
+
+const allVariantFilterOptions = [
+  { value: "all-variants", label: "All variants" },
+  ...courseVariantOptions,
+];
+
+const blockTypeOptions = [
+  { value: "content", label: "content" },
+  { value: "practice", label: "practice" },
+  { value: "summary", label: "summary" },
+];
+
+const contentStatusOptions = [
+  { value: "draft", label: "Draft" },
+  { value: "published", label: "Published" },
+  { value: "review", label: "Needs review" },
+];
+
+const sectionedStatusOptions = [
+  { value: "draft", label: "Draft" },
+  { value: "review", label: "In review" },
+  { value: "published", label: "Published" },
+];
+
+const allStatusFilterOptions = [
+  { value: "all-statuses", label: "All statuses" },
+  ...contentStatusOptions,
+];
+
+function SelectOptions({
+  options,
+}: {
+  options: Array<{ value: string; label: string }>;
+}) {
+  return (
+    <>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </>
+  );
+}
+
 function DemoBasicFields() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -51,9 +106,7 @@ function DemoBasicFields() {
         hint="This should match the access-aware platform structure."
       >
         <Select defaultValue="higher">
-          <option value="foundation">Foundation</option>
-          <option value="higher">Higher</option>
-          <option value="volna">Volna</option>
+          <SelectOptions options={courseVariantOptions} />
         </Select>
       </FormField>
 
@@ -212,18 +265,13 @@ function DemoDenseInspector() {
 
             <FormField label="Variant">
               <Select defaultValue="higher">
-                <option value="all">All variants</option>
-                <option value="foundation">Foundation</option>
-                <option value="higher">Higher</option>
-                <option value="volna">Volna</option>
+                <SelectOptions options={variantFilterOptions} />
               </Select>
             </FormField>
 
             <FormField label="Status">
               <Select defaultValue="draft">
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-                <option value="review">Needs review</option>
+                <SelectOptions options={contentStatusOptions} />
               </Select>
             </FormField>
           </div>
@@ -267,9 +315,7 @@ function DemoDenseInspector() {
 
           <FormField label="Block type">
             <Select defaultValue="content">
-              <option value="content">content</option>
-              <option value="practice">practice</option>
-              <option value="summary">summary</option>
+              <SelectOptions options={blockTypeOptions} />
             </Select>
           </FormField>
         </CardBody>
@@ -298,9 +344,7 @@ function DemoBuilderRows() {
 
             <FormField label="Type">
               <Select defaultValue="practice">
-                <option value="content">content</option>
-                <option value="practice">practice</option>
-                <option value="summary">summary</option>
+                <SelectOptions options={blockTypeOptions} />
               </Select>
             </FormField>
 
@@ -345,17 +389,11 @@ function DemoBuilderRows() {
             <Input placeholder="Search by title or slug" />
 
             <Select defaultValue="all-variants">
-              <option value="all-variants">All variants</option>
-              <option value="foundation">Foundation</option>
-              <option value="higher">Higher</option>
-              <option value="volna">Volna</option>
+              <SelectOptions options={allVariantFilterOptions} />
             </Select>
 
             <Select defaultValue="all-statuses">
-              <option value="all-statuses">All statuses</option>
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="review">Needs review</option>
+              <SelectOptions options={allStatusFilterOptions} />
             </Select>
 
             <div className="flex gap-3">
@@ -399,9 +437,7 @@ function DemoStateVariants() {
               hint="Disabled controls should still remain readable."
             >
               <Select disabled defaultValue="higher">
-                <option value="foundation">Foundation</option>
-                <option value="higher">Higher</option>
-                <option value="volna">Volna</option>
+                <SelectOptions options={courseVariantOptions} />
               </Select>
             </FormField>
 
@@ -546,9 +582,7 @@ function DemoFormLayouts() {
 
           <FormField label="Kind" hint="Keep option labels short and scannable.">
             <Select defaultValue="content">
-              <option value="content">content</option>
-              <option value="practice">practice</option>
-              <option value="summary">summary</option>
+              <SelectOptions options={blockTypeOptions} />
             </Select>
           </FormField>
         </CardBody>
@@ -648,17 +682,13 @@ function DemoSectionedEditForm() {
               <div className="space-y-4">
                 <FormField label="Variant">
                   <Select defaultValue="higher">
-                    <option value="foundation">Foundation</option>
-                    <option value="higher">Higher</option>
-                    <option value="volna">Volna</option>
+                    <SelectOptions options={courseVariantOptions} />
                   </Select>
                 </FormField>
 
                 <FormField label="Status">
                   <Select defaultValue="draft">
-                    <option value="draft">Draft</option>
-                    <option value="review">In review</option>
-                    <option value="published">Published</option>
+                    <SelectOptions options={sectionedStatusOptions} />
                   </Select>
                 </FormField>
 
@@ -732,9 +762,7 @@ function DemoDarkSurfaceFormCheck() {
 
         <FormField label="Status" success="Selected status is valid for this workflow.">
           <Select defaultValue="draft">
-            <option value="draft">Draft</option>
-            <option value="review">In review</option>
-            <option value="published">Published</option>
+            <SelectOptions options={sectionedStatusOptions} />
           </Select>
         </FormField>
 
