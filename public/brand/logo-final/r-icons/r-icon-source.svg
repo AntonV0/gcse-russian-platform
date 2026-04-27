@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="rgba(16,32,51,0.12)" flood-opacity="0.42"/>
+    </filter>
+  </defs>
+  <g filter="url(#softShadow)">
+    <path d="M356 112C324 86 281 73 238 78C147 88 79 166 84 258C88 330 134 389 198 413" fill="none" stroke="#102033" stroke-width="23" stroke-linecap="round"/>
+    <path d="M358 112C393 143 414 185 416 231" fill="none" stroke="#102033" stroke-width="23" stroke-linecap="round"/>
+    <text x="166" y="323" fill="#102033" font-family="Georgia, 'Times New Roman', serif" font-size="236" font-weight="700" letter-spacing="-10">R</text>
+    <path d="M126 377C170 346 214 348 260 379C305 410 351 406 390 366" fill="none" stroke="#1d4ed8" stroke-width="21" stroke-linecap="round"/>
+    <path d="M127 399C172 374 216 377 261 402C306 427 350 424 391 388" fill="none" stroke="#1d4ed8" stroke-width="13" stroke-linecap="round" opacity="0.45"/>
+    <circle cx="386" cy="315" r="22" fill="#d94b52" stroke="#ffffff" stroke-width="7"/>
+  </g>
+</svg>

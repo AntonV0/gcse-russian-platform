@@ -3,7 +3,7 @@ import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
 import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
-import AppLogo, { type AppLogoMark } from "@/components/ui/app-logo";
+import AppLogo, { type AppLogoVariant } from "@/components/ui/app-logo";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -35,31 +35,28 @@ const pageNavItems = [
 ];
 
 const logoDirections: Array<{
-  mark: AppLogoMark;
+  variant: AppLogoVariant;
   title: string;
   description: string;
   bestFor: string;
 }> = [
   {
-    mark: "scholarDialogue",
-    title: "Scholar dialogue",
-    description:
-      "A more ownable book-and-speech mark with stronger silhouette and negative space.",
-    bestFor: "Best fit for a premium education platform with language at its core.",
+    variant: "full",
+    title: "Platform lockup",
+    description: "Primary app and marketing lockup using the approved learner mark.",
+    bestFor: "Best for headers, sidebars, footers, and compact platform chrome.",
   },
   {
-    mark: "cyrillicPath",
-    title: "Cyrillic path",
-    description:
-      "A subtle Cyrillic-inspired path mark. Distinctive without using flags or symbols.",
-    bestFor: "Best if the brand should feel more specific to Russian study.",
+    variant: "domain",
+    title: "Domain lockup",
+    description: "GCSERussian.com lockup with the full-width speech-tail underline.",
+    bestFor: "Best for marketing placements, social graphics, and domain-led material.",
   },
   {
-    mark: "lessonPrism",
-    title: "Lesson prism",
-    description:
-      "A structured conversation tile with layered course-material cues.",
-    bestFor: "Best if the platform should feel more modular and product-led.",
+    variant: "icon",
+    title: "Favicon mark",
+    description: "Icon-only learner mark exported for browser tabs and app icons.",
+    bestFor: "Best for favicons, small mobile contexts, and future app shortcuts.",
   },
 ];
 
@@ -145,19 +142,17 @@ export default async function AdminUiComponentsPage() {
           <div className="grid gap-4 xl:grid-cols-3">
             {logoDirections.map((direction) => (
               <div
-                key={direction.mark}
+                key={direction.variant}
                 className="app-card flex h-full flex-col gap-5 p-5"
               >
                 <div className="space-y-3">
-                  <AppLogo mark={direction.mark} size="lg" variant="full" />
+                  <AppLogo variant={direction.variant} size="lg" />
 
                   <div>
                     <h3 className="text-base font-semibold text-[var(--text-primary)]">
                       {direction.title}
                     </h3>
-                    <p className="mt-1 text-sm app-text-muted">
-                      {direction.description}
-                    </p>
+                    <p className="mt-1 text-sm app-text-muted">{direction.description}</p>
                   </div>
                 </div>
 
@@ -166,8 +161,7 @@ export default async function AdminUiComponentsPage() {
                 </div>
 
                 <div className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3">
-                  <AppLogo mark={direction.mark} variant="icon" size="sm" />
-                  <AppLogo mark={direction.mark} variant="compact" size="sm" />
+                  <AppLogo variant={direction.variant} size="sm" />
                 </div>
               </div>
             ))}
@@ -181,7 +175,7 @@ export default async function AdminUiComponentsPage() {
             >
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)]/80 px-4 py-3">
                 <div className="flex items-center justify-between gap-4">
-                  <AppLogo mark="scholarDialogue" variant="compact" size="md" />
+                  <AppLogo size="md" />
                   <div className="hidden items-center gap-4 text-sm app-text-muted sm:flex">
                     <span>Dashboard</span>
                     <span>Courses</span>
@@ -193,21 +187,16 @@ export default async function AdminUiComponentsPage() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
                   <div className="mb-3 text-sm font-medium text-[var(--text-primary)]">
-                    Accent tone
+                    Full lockup
                   </div>
-                  <AppLogo mark="scholarDialogue" variant="full" size="md" />
+                  <AppLogo size="md" />
                 </div>
 
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
                   <div className="mb-3 text-sm font-medium text-[var(--text-primary)]">
-                    Neutral tone
+                    Domain lockup
                   </div>
-                  <AppLogo
-                    mark="scholarDialogue"
-                    variant="full"
-                    size="md"
-                    tone="neutral"
-                  />
+                  <AppLogo variant="domain" size="md" />
                 </div>
               </div>
             </PanelCard>
@@ -218,24 +207,18 @@ export default async function AdminUiComponentsPage() {
               contentClassName="space-y-4"
             >
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-3 py-3">
-                <AppLogo
-                  mark="scholarDialogue"
-                  variant="full"
-                  size="md"
-                  subtitle="Full access"
-                />
+                <AppLogo size="md" subtitle="Full access" />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 {logoDirections.map((direction) => (
                   <div
-                    key={direction.mark}
+                    key={direction.variant}
                     className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
                   >
                     <div className="flex justify-center">
                       <AppLogo
-                        mark={direction.mark}
-                        variant="icon"
+                        variant={direction.variant}
                         size="lg"
                         ariaLabel={`${direction.title} logo mark`}
                       />

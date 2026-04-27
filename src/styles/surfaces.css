@@ -361,6 +361,175 @@
   gap: 0.75rem;
 }
 
+.app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-blue.png");
+  --app-logo-navy: var(--text-primary);
+  --app-logo-blue: var(--accent-ink);
+  --app-logo-blue-strong: var(--accent-fill);
+  --app-logo-red: var(--brand-red);
+  --app-logo-muted: var(--text-muted);
+}
+
+.app-logo-icon {
+  background-image: var(--app-logo-icon);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.app-logo-wordmark {
+  display: inline-flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding-top: 0.06em;
+}
+
+.app-logo-textline {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+  font-weight: 760;
+  line-height: 0.95;
+  letter-spacing: 0;
+  color: var(--app-logo-navy);
+  text-rendering: geometricPrecision;
+}
+
+.app-logo-textline-domain {
+  font-weight: 770;
+}
+
+.app-logo-gcse {
+  color: var(--app-logo-navy);
+}
+
+.app-logo-russian {
+  margin-left: 0.18em;
+  color: var(--app-logo-blue);
+  letter-spacing: 0.01em;
+}
+
+.app-logo-textline-domain .app-logo-russian {
+  margin-left: 0;
+}
+
+.app-logo-dotcom {
+  color: var(--app-logo-muted);
+  font-size: 0.76em;
+  font-weight: 680;
+  letter-spacing: 0;
+}
+
+.app-logo-underline {
+  display: block;
+  width: 100%;
+  margin-top: 0.08em;
+  overflow: visible;
+  color: var(--app-logo-blue-strong);
+}
+
+.app-logo-underline path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.app-logo-subtitle {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-blue.png");
+  --app-logo-navy: var(--text-primary);
+  --app-logo-blue: color-mix(in srgb, var(--accent) 52%, white);
+  --app-logo-blue-strong: color-mix(in srgb, var(--accent) 62%, white);
+  --app-logo-muted: color-mix(in srgb, var(--text-secondary) 74%, white);
+}
+
+[data-accent="blue"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-blue.png");
+}
+
+[data-accent="purple"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-purple.png");
+}
+
+[data-accent="pink"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-pink.png");
+}
+
+[data-accent="red"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-red.png");
+}
+
+[data-accent="orange"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-orange.png");
+}
+
+[data-accent="yellow"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-yellow.png");
+}
+
+[data-accent="green"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-green.png");
+}
+
+[data-accent="teal"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-teal.png");
+}
+
+[data-accent="brown"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-brown.png");
+}
+
+[data-accent="slate"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-slate.png");
+}
+
+[data-theme="dark"][data-accent="blue"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-blue.png");
+}
+
+[data-theme="dark"][data-accent="purple"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-purple.png");
+}
+
+[data-theme="dark"][data-accent="pink"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-pink.png");
+}
+
+[data-theme="dark"][data-accent="red"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-red.png");
+}
+
+[data-theme="dark"][data-accent="orange"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-orange.png");
+}
+
+[data-theme="dark"][data-accent="yellow"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-yellow.png");
+}
+
+[data-theme="dark"][data-accent="green"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-green.png");
+}
+
+[data-theme="dark"][data-accent="teal"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-teal.png");
+}
+
+[data-theme="dark"][data-accent="brown"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-brown.png");
+}
+
+[data-theme="dark"][data-accent="slate"] .app-logo {
+  --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-slate.png");
+}
+
 .app-brand-mark {
   display: inline-flex;
   height: 2rem;
