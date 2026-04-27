@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireCurrentUserCanManageAssignmentSubmission } from "@/lib/auth/teacher-assignment-permissions";
 
 type ReviewAssignmentSubmissionInput = {
   submissionId: string;
@@ -24,13 +25,26 @@ export async function reviewAssignmentSubmissionAction({
     return { success: false, error: "not_authenticated" as const };
   }
 
+  if (!submissionId) {
+    return { success: false, error: "missing_submission_id" as const };
+  }
+
+  const permission = await requireCurrentUserCanManageAssignmentSubmission(
+    supabase,
+    submissionId
+  );
+
+  if (!permission.success) {
+    return { success: false, error: permission.error };
+  }
+
   const { error } = await supabase
     .from("assignment_submissions")
     .update({
       status: "reviewed",
       mark,
       feedback,
-      reviewed_by: user.id,
+      reviewed_by: permission.userId,
       reviewed_at: new Date().toISOString(),
     })
     .eq("id", submissionId);
@@ -53,6 +67,19 @@ export async function reopenAssignmentSubmissionAction(submissionId: string) {
 
   if (userError || !user) {
     return { success: false, error: "not_authenticated" as const };
+  }
+
+  if (!submissionId) {
+    return { success: false, error: "missing_submission_id" as const };
+  }
+
+  const permission = await requireCurrentUserCanManageAssignmentSubmission(
+    supabase,
+    submissionId
+  );
+
+  if (!permission.success) {
+    return { success: false, error: permission.error };
   }
 
   const { error } = await supabase

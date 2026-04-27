@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireCurrentUserCanManageTeachingGroupAssignments } from "@/lib/auth/teacher-assignment-permissions";
 
 type CreateTeacherAssignmentItemInput =
   | { type: "lesson"; lessonId: string }
@@ -60,6 +61,15 @@ export async function createTeacherAssignmentAction({
     return { success: false, error: "missing_items" as const };
   }
 
+  const permission = await requireCurrentUserCanManageTeachingGroupAssignments(
+    supabase,
+    groupId
+  );
+
+  if (!permission.success) {
+    return { success: false, error: permission.error };
+  }
+
   const { data: assignment, error: assignmentError } = await supabase
     .from("assignments")
     .insert({
@@ -68,7 +78,7 @@ export async function createTeacherAssignmentAction({
       instructions: instructions?.trim() || null,
       due_at: dueAt || null,
       status: "published",
-      created_by: user.id,
+      created_by: permission.userId,
       allow_file_upload: allowFileUpload,
     })
     .select("id")
