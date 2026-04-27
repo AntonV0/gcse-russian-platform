@@ -211,6 +211,10 @@
   position: relative;
 }
 
+.app-site-header.dev-marker-host {
+  position: sticky;
+}
+
 .dev-marker-anchor {
   position: absolute;
   top: 0.38rem;

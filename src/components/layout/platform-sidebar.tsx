@@ -243,11 +243,14 @@ export default function PlatformSidebar({
                   <AppIcon
                     icon={item.icon}
                     size={18}
-                    className={
-                      active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
-                    }
+                    className={[
+                      "shrink-0",
+                      active
+                        ? "text-[var(--accent-on-soft)]"
+                        : "text-[var(--text-muted)]",
+                    ].join(" ")}
                   />
-                  <span>{item.label}</span>
+                  <span className="min-w-0 flex-1 truncate">{item.label}</span>
                 </Link>
               );
             })}
@@ -270,13 +273,14 @@ export default function PlatformSidebar({
                     <AppIcon
                       icon={item.icon}
                       size={18}
-                      className={
+                      className={[
+                        "shrink-0",
                         active
                           ? "text-[var(--accent-on-soft)]"
-                          : "text-[var(--text-muted)]"
-                      }
+                          : "text-[var(--text-muted)]",
+                      ].join(" ")}
                     />
-                    <span>{item.label}</span>
+                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
                   </Link>
                 );
               })}
@@ -302,13 +306,14 @@ export default function PlatformSidebar({
                     <AppIcon
                       icon={item.icon}
                       size={18}
-                      className={
+                      className={[
+                        "shrink-0",
                         active
                           ? "text-[var(--accent-on-soft)]"
-                          : "text-[var(--text-muted)]"
-                      }
+                          : "text-[var(--text-muted)]",
+                      ].join(" ")}
                     />
-                    <span>{item.label}</span>
+                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
                   </Link>
                 );
               })}

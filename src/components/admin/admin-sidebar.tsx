@@ -15,6 +15,7 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 function getNavItemClass(isActive: boolean, isSubItem = false) {
   return [
     "group flex w-full items-center gap-3 text-sm leading-5 transition-all duration-150",
+    "min-w-0 overflow-hidden",
     isSubItem ? "min-h-10 px-3 py-2" : "min-h-11 px-3 py-2.5",
     isActive
       ? "border-l-2 border-[var(--accent-fill)] [background:var(--accent-gradient-selected)] font-medium text-[var(--accent-on-soft)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
@@ -138,8 +139,8 @@ export default function AdminSidebar() {
         <nav className="flex flex-col gap-5">
           <SidebarSection title="Overview">
             <Link href="/admin" className={getNavItemClass(isDashboard)}>
-              <AppIcon icon="dashboard" size={18} />
-              <span className="flex-1 text-left">Dashboard</span>
+              <AppIcon icon="dashboard" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Dashboard</span>
             </Link>
           </SidebarSection>
 
@@ -155,15 +156,15 @@ export default function AdminSidebar() {
               aria-controls="admin-ui-lab-section"
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                <AppIcon icon="uiLab" size={18} />
-                <span className="flex-1 text-left text-sm font-inherit text-[var(--text-primary)]">
+                <AppIcon icon="uiLab" size={18} className="shrink-0" />
+                <span className="min-w-0 flex-1 truncate text-left text-sm font-inherit text-[var(--text-primary)]">
                   UI Lab
                 </span>
               </div>
               <AppIcon
                 icon={showUiSection ? "down" : "next"}
                 size={16}
-                className="text-[var(--text-primary)]"
+                className="shrink-0 text-[var(--text-primary)]"
               />
             </button>
 
@@ -181,8 +182,14 @@ export default function AdminSidebar() {
                       href={item.href}
                       className={getNavItemClass(isActive, true)}
                     >
-                      <AppIcon icon={getUiLabItemIcon(item.label)} size={16} />
-                      <span className="flex-1 text-left">{item.label}</span>
+                      <AppIcon
+                        icon={getUiLabItemIcon(item.label)}
+                        size={16}
+                        className="shrink-0"
+                      />
+                      <span className="min-w-0 flex-1 truncate text-left">
+                        {item.label}
+                      </span>
                     </Link>
                   );
                 })}
@@ -192,26 +199,30 @@ export default function AdminSidebar() {
 
           <SidebarSection title="Content">
             <Link href="/admin/content" className={getNavItemClass(isContent)}>
-              <AppIcon icon="courses" size={18} />
-              <span className="flex-1 text-left">Courses / Modules / Lessons</span>
+              <AppIcon icon="courses" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">
+                Courses / Modules / Lessons
+              </span>
             </Link>
 
             <Link
               href="/admin/lesson-templates"
               className={getNavItemClass(isLessonTemplates)}
             >
-              <AppIcon icon="file" size={18} />
-              <span className="flex-1 text-left">Lesson Templates</span>
+              <AppIcon icon="file" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">
+                Lesson Templates
+              </span>
             </Link>
 
             <Link href="/admin/vocabulary" className={getNavItemClass(isVocabulary)}>
-              <AppIcon icon="vocabulary" size={18} />
-              <span className="flex-1 text-left">Vocabulary</span>
+              <AppIcon icon="vocabulary" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Vocabulary</span>
             </Link>
 
             <Link href="/admin/grammar" className={getNavItemClass(isGrammar)}>
-              <AppIcon icon="grammar" size={18} />
-              <span className="flex-1 text-left">Grammar</span>
+              <AppIcon icon="grammar" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Grammar</span>
             </Link>
           </SidebarSection>
 
@@ -220,55 +231,55 @@ export default function AdminSidebar() {
               href="/admin/question-sets"
               className={getNavItemClass(isQuestionSets && !isQuestionTemplates)}
             >
-              <AppIcon icon="help" size={18} />
-              <span className="flex-1 text-left">Question Sets</span>
+              <AppIcon icon="help" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Question Sets</span>
             </Link>
 
             <Link
               href="/admin/question-sets/templates"
               className={getNavItemClass(isQuestionTemplates)}
             >
-              <AppIcon icon="file" size={18} />
-              <span className="flex-1 text-left">Templates</span>
+              <AppIcon icon="file" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Templates</span>
             </Link>
           </SidebarSection>
 
           <SidebarSection title="Exams">
             <Link href="/admin/past-papers" className={getNavItemClass(isPastPapers)}>
-              <AppIcon icon="pastPapers" size={18} />
-              <span className="flex-1 text-left">Past Papers</span>
+              <AppIcon icon="pastPapers" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Past Papers</span>
             </Link>
 
             <Link href="/admin/mock-exams" className={getNavItemClass(isMockExams)}>
-              <AppIcon icon="mockExam" size={18} />
-              <span className="flex-1 text-left">Mock Exams</span>
+              <AppIcon icon="mockExam" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Mock Exams</span>
             </Link>
           </SidebarSection>
 
           <SidebarSection title="Teaching">
             <Link href="/teacher/assignments" className={getNavItemClass(isAssignments)}>
-              <AppIcon icon="assignments" size={18} />
-              <span className="flex-1 text-left">Assignments</span>
+              <AppIcon icon="assignments" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Assignments</span>
             </Link>
 
             <Link
               href="/admin/teaching-groups"
               className={getNavItemClass(isTeachingGroups)}
             >
-              <AppIcon icon="users" size={18} />
-              <span className="flex-1 text-left">Teaching Groups</span>
+              <AppIcon icon="users" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Teaching Groups</span>
             </Link>
           </SidebarSection>
 
           <SidebarSection title="Users">
             <Link href="/admin/students" className={getNavItemClass(isStudents)}>
-              <AppIcon icon="student" size={18} />
-              <span className="flex-1 text-left">Students</span>
+              <AppIcon icon="student" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Students</span>
             </Link>
 
             <Link href="/admin/teachers" className={getNavItemClass(isTeachers)}>
-              <AppIcon icon="teacher" size={18} />
-              <span className="flex-1 text-left">Teachers</span>
+              <AppIcon icon="teacher" size={18} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">Teachers</span>
             </Link>
           </SidebarSection>
         </nav>
