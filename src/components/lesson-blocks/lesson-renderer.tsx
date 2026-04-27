@@ -16,8 +16,13 @@ import MultipleChoiceBlock from "@/components/questions/multiple-choice-block";
 import ShortAnswerBlock from "@/components/questions/short-answer-block";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { LessonSection } from "@/types/lesson";
+import {
+  filterVisibleLessonSections,
+  isSectionVisible,
+  type LessonRendererVariant,
+} from "@/lib/lessons/variant-visibility";
 
-export type LessonRendererVariant = "foundation" | "higher" | "volna";
+export { isSectionVisible, type LessonRendererVariant };
 
 type LessonRendererProps = {
   sections: LessonSection[];
@@ -27,40 +32,12 @@ type LessonRendererProps = {
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-export function isSectionVisible(
-  section: LessonSection,
-  currentVariant: LessonRendererVariant
-) {
-  if (section.variantVisibility === "shared") {
-    return true;
-  }
-
-  if (
-    section.variantVisibility === "foundation_only" &&
-    currentVariant === "foundation"
-  ) {
-    return true;
-  }
-
-  if (section.variantVisibility === "higher_only" && currentVariant === "higher") {
-    return true;
-  }
-
-  if (section.variantVisibility === "volna_only" && currentVariant === "volna") {
-    return true;
-  }
-
-  return false;
-}
-
 export default function LessonRenderer({
   sections,
   lessonId = null,
   currentVariant = "foundation",
 }: LessonRendererProps) {
-  const visibleSections = sections.filter((section) =>
-    isSectionVisible(section, currentVariant)
-  );
+  const visibleSections = filterVisibleLessonSections(sections, currentVariant);
 
   return (
     <div className="dev-marker-host relative space-y-8">

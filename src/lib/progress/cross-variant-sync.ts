@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isCanonicalSectionProgressTarget } from "@/lib/progress/cross-variant-sync-helpers";
 
 type SyncCrossVariantSectionProgressParams = {
   userId: string;
@@ -256,7 +257,11 @@ export async function syncFoundationSectionProgressToHigherSameLesson({
 
   const typedTargetSections = (targetSections ?? []) as LessonSectionMetaRow[];
 
-  for (const targetSection of typedTargetSections) {
+  const matchingTargetSections = typedTargetSections.filter((targetSection) =>
+    isCanonicalSectionProgressTarget(typedCurrentSection, targetSection)
+  );
+
+  for (const targetSection of matchingTargetSections) {
     await touchLessonSectionProgress(userId, typedTargetLesson.id, targetSection.id);
   }
 }
