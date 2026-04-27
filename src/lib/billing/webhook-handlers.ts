@@ -13,6 +13,7 @@ import {
 import {
   deactivateActiveUserProductGrantsDb,
   deactivateActiveUserProductGrantsBySourceDb,
+  getActiveUserProductGrantDb,
   grantProductAccessDb,
 } from "@/lib/billing/grants";
 import {
@@ -246,6 +247,20 @@ async function deactivateSourceGrantIfDifferent(params: {
   }
 }
 
+async function hasActiveStripeGrantForPrice(params: {
+  userId: string;
+  productId: string;
+  priceId: string;
+}): Promise<boolean> {
+  const activeGrant = await getActiveUserProductGrantDb(params.userId, params.productId);
+
+  return (
+    activeGrant?.source === "stripe" &&
+    activeGrant.access_mode === "full" &&
+    activeGrant.price_id === params.priceId
+  );
+}
+
 async function findSourceSubscriptionForUpgrade(params: {
   userId: string;
   targetProduct: DbProduct;
@@ -314,6 +329,16 @@ async function handleSameCadenceSubscriptionUpgrade(params: {
   targetProduct: DbProduct;
   targetPrice: DbPrice;
 }): Promise<void> {
+  if (
+    await hasActiveStripeGrantForPrice({
+      userId: params.userId,
+      productId: params.targetProduct.id,
+      priceId: params.targetPrice.id,
+    })
+  ) {
+    return;
+  }
+
   if (!params.targetPrice.stripe_price_id) {
     throw new Error(
       "Target recurring Stripe price id is missing for same-cadence upgrade"
@@ -366,6 +391,16 @@ async function handleMonthlyToThreeMonthUpgrade(params: {
   targetProduct: DbProduct;
   targetPrice: DbPrice;
 }): Promise<void> {
+  if (
+    await hasActiveStripeGrantForPrice({
+      userId: params.userId,
+      productId: params.targetProduct.id,
+      priceId: params.targetPrice.id,
+    })
+  ) {
+    return;
+  }
+
   if (!params.targetPrice.stripe_price_id) {
     throw new Error(
       "Target recurring Stripe price id is missing for monthly-to-3-month upgrade"
@@ -425,14 +460,25 @@ async function handleLifetimeUpgrade(params: {
   userId: string;
   targetProduct: DbProduct;
   targetPrice: DbPrice;
+  startsAt: string;
 }): Promise<void> {
+  if (
+    await hasActiveStripeGrantForPrice({
+      userId: params.userId,
+      productId: params.targetProduct.id,
+      priceId: params.targetPrice.id,
+    })
+  ) {
+    return;
+  }
+
   await grantProductAccessDb({
     userId: params.userId,
     productId: params.targetProduct.id,
     priceId: params.targetPrice.id,
     accessMode: "full",
     source: "stripe",
-    startsAt: new Date().toISOString(),
+    startsAt: params.startsAt,
     endsAt: null,
   });
 
@@ -493,14 +539,25 @@ async function handleStandardPaymentCheckout(params: {
   userId: string;
   productId: string;
   priceId: string;
+  startsAt: string;
 }): Promise<void> {
+  if (
+    await hasActiveStripeGrantForPrice({
+      userId: params.userId,
+      productId: params.productId,
+      priceId: params.priceId,
+    })
+  ) {
+    return;
+  }
+
   await grantProductAccessDb({
     userId: params.userId,
     productId: params.productId,
     priceId: params.priceId,
     accessMode: "full",
     source: "stripe",
-    startsAt: new Date().toISOString(),
+    startsAt: params.startsAt,
     endsAt: null,
   });
 }
@@ -542,6 +599,9 @@ export async function handleCheckoutSessionCompleted(
     );
   }
 
+  const checkoutCompletedAt =
+    fromUnixTimestamp(session.created) ?? new Date().toISOString();
+
   if (purchaseType === "upgrade") {
     const upgradeFlow = (upgradeFlowValue || null) as UpgradeFlow | null;
 
@@ -572,6 +632,7 @@ export async function handleCheckoutSessionCompleted(
         userId,
         targetProduct,
         targetPrice,
+        startsAt: checkoutCompletedAt,
       });
       return;
     }
@@ -594,6 +655,7 @@ export async function handleCheckoutSessionCompleted(
       userId,
       productId,
       priceId,
+      startsAt: checkoutCompletedAt,
     });
     return;
   }
