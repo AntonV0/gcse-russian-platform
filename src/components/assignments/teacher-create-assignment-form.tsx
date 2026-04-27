@@ -3,44 +3,18 @@
 import { useMemo, useState } from "react";
 import { createTeacherAssignmentAction } from "@/app/actions/teacher/teacher-create-assignment-actions";
 import { updateTeacherAssignmentAction } from "@/app/actions/teacher/teacher-update-assignment-actions";
+import TeacherAssignmentDetailsFields from "@/components/assignments/teacher-assignment-details-fields";
+import type {
+  AssignmentItem,
+  TeacherAssignmentFormInitialData,
+  TeacherCreateAssignmentFormProps,
+} from "@/components/assignments/teacher-assignment-form-types";
+import TeacherAssignmentItemOrderList from "@/components/assignments/teacher-assignment-item-order-list";
+import TeacherAssignmentResourceSelectors from "@/components/assignments/teacher-assignment-resource-selectors";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import FormField from "@/components/ui/form-field";
-import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
-import Select from "@/components/ui/select";
-import Textarea from "@/components/ui/textarea";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
-import type {
-  LessonOption,
-  QuestionSetOption,
-  TeacherGroupOption,
-} from "@/lib/assignments/assignment-helpers-db";
-
-type TeacherAssignmentFormInitialData = {
-  groupId: string;
-  title: string;
-  instructions: string | null;
-  dueAt: string | null;
-  lessonIds: string[];
-  questionSetIds: string[];
-  customTask: string | null;
-  allowFileUpload: boolean;
-};
-
-type AssignmentItem =
-  | { type: "lesson"; lessonId: string }
-  | { type: "question_set"; questionSetId: string }
-  | { type: "custom_task"; customPrompt: string };
-
-type TeacherCreateAssignmentFormProps = {
-  groups: TeacherGroupOption[];
-  lessonsByGroup: Record<string, LessonOption[]>;
-  questionSets: QuestionSetOption[];
-  mode?: "create" | "edit";
-  assignmentId?: string;
-  initialData?: TeacherAssignmentFormInitialData;
-};
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
@@ -206,31 +180,6 @@ export default function TeacherCreateAssignmentForm({
     setItems((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
   }
 
-  function getItemLabel(item: AssignmentItem) {
-    if (item.type === "lesson") {
-      const lesson = availableLessons.find((entry) => entry.id === item.lessonId);
-
-      return {
-        title: lesson?.title ?? "Lesson",
-        subtitle: lesson?.module_title ?? "",
-      };
-    }
-
-    if (item.type === "question_set") {
-      const questionSet = questionSets.find((entry) => entry.id === item.questionSetId);
-
-      return {
-        title: questionSet?.title ?? "Question set",
-        subtitle: questionSet?.description ?? "",
-      };
-    }
-
-    return {
-      title: "Custom task",
-      subtitle: item.customPrompt,
-    };
-  }
-
   async function handleSubmit() {
     setError(null);
     setIsSubmitting(true);
@@ -312,206 +261,38 @@ export default function TeacherCreateAssignmentForm({
         </Button>
         </div>
 
-        <FormField label="Group">
-        <Select value={groupId} onChange={(event) => handleGroupChange(event.target.value)}>
-          {groups.map((group) => (
-            <option key={group.id} value={group.id}>
-              {group.name}
-            </option>
-          ))}
-        </Select>
-        </FormField>
-
-        <FormField label="Title" required>
-        <Input
-          type="text"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="e.g. Week 1 homework"
+        <TeacherAssignmentDetailsFields
+          groups={groups}
+          groupId={groupId}
+          title={title}
+          instructions={instructions}
+          dueAt={dueAt}
+          allowFileUpload={allowFileUpload}
+          onGroupChange={handleGroupChange}
+          onTitleChange={setTitle}
+          onInstructionsChange={setInstructions}
+          onDueAtChange={setDueAt}
+          onAllowFileUploadChange={setAllowFileUpload}
         />
-        </FormField>
 
-        <FormField label="Instructions">
-        <Textarea
-          value={instructions}
-          onChange={(event) => setInstructions(event.target.value)}
-          rows={4}
-          placeholder="Add any instructions for students..."
+        <TeacherAssignmentResourceSelectors
+          availableLessons={availableLessons}
+          questionSets={questionSets}
+          selectedLessonIds={selectedLessonIds}
+          selectedQuestionSetIds={selectedQuestionSetIds}
+          customTaskValue={customTaskValue}
+          onToggleLesson={toggleLesson}
+          onToggleQuestionSet={toggleQuestionSet}
+          onCustomTaskChange={setCustomTaskValue}
         />
-        </FormField>
 
-        <FormField label="Due date">
-        <Input
-          type="datetime-local"
-          value={dueAt}
-          onChange={(event) => setDueAt(event.target.value)}
+        <TeacherAssignmentItemOrderList
+          items={items}
+          availableLessons={availableLessons}
+          questionSets={questionSets}
+          onMoveItem={moveItem}
+          onRemoveItem={removeItem}
         />
-        </FormField>
-
-        <label className="app-checkbox-field">
-        <input
-          type="checkbox"
-          checked={allowFileUpload}
-          onChange={(event) => setAllowFileUpload(event.target.checked)}
-          className="app-focus-ring app-checkbox-input"
-        />
-        <span className="app-checkbox-copy">
-          <span className="app-checkbox-label">Allow file upload</span>
-          <span className="app-checkbox-description">
-            Students can upload an image, PDF, or file with their written work.
-          </span>
-        </span>
-        </label>
-
-        <div className="space-y-3">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">
-          Attach lessons
-        </p>
-
-        {availableLessons.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 text-sm app-text-muted">
-            No lessons available for this group yet.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {availableLessons.map((lesson) => (
-              <label
-                key={lesson.id}
-                className="flex min-h-11 cursor-pointer items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 transition hover:border-[var(--border-strong)]"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedLessonIds.includes(lesson.id)}
-                  onChange={() => toggleLesson(lesson.id)}
-                  className="app-focus-ring app-checkbox-input mt-1"
-                />
-                <span>
-                  <span className="block font-medium text-[var(--text-primary)]">
-                    {lesson.title}
-                  </span>
-                  <span className="block text-sm app-text-muted">
-                    {lesson.module_title}
-                  </span>
-                </span>
-              </label>
-            ))}
-          </div>
-        )}
-        </div>
-
-        <div className="space-y-3">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">
-          Attach question sets
-        </p>
-
-        {questionSets.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 text-sm app-text-muted">
-            No question sets available yet.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {questionSets.map((questionSet) => (
-              <label
-                key={questionSet.id}
-                className="flex min-h-11 cursor-pointer items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 transition hover:border-[var(--border-strong)]"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedQuestionSetIds.includes(questionSet.id)}
-                  onChange={() => toggleQuestionSet(questionSet.id)}
-                  className="app-focus-ring app-checkbox-input mt-1"
-                />
-                <span>
-                  <span className="block font-medium text-[var(--text-primary)]">
-                    {questionSet.title}
-                  </span>
-                  {questionSet.description ? (
-                    <span className="block text-sm app-text-muted">
-                      {questionSet.description}
-                    </span>
-                  ) : null}
-                </span>
-              </label>
-            ))}
-          </div>
-        )}
-        </div>
-
-        <FormField label="Custom task">
-        <Textarea
-          value={customTaskValue}
-          onChange={(event) => setCustomTaskValue(event.target.value)}
-          rows={4}
-          placeholder="Optional: add a written task or teacher instruction..."
-        />
-        </FormField>
-
-        <div className="space-y-3">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">
-          Assignment items (order)
-        </p>
-
-        {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 text-sm app-text-muted">
-            No items added yet.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {items.map((item, index) => {
-              const label = getItemLabel(item);
-
-              return (
-                <div
-                  key={`${item.type}-${index}`}
-                  className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 text-sm sm:flex-row"
-                >
-                  <div>
-                    <p className="font-medium text-[var(--text-primary)]">
-                      {index + 1}. {label.title}
-                    </p>
-                    {label.subtitle ? (
-                      <p className="app-text-muted">{label.subtitle}</p>
-                    ) : null}
-                  </div>
-
-                  <div className="app-mobile-action-stack flex w-full flex-wrap gap-2 sm:w-auto">
-                    <Button
-                      type="button"
-                      onClick={() => moveItem(index, "up")}
-                      variant="secondary"
-                      size="sm"
-                      iconOnly
-                      icon="up"
-                      ariaLabel="Move item up"
-                    >
-                      Move item up
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => moveItem(index, "down")}
-                      variant="secondary"
-                      size="sm"
-                      iconOnly
-                      icon="down"
-                      ariaLabel="Move item down"
-                    >
-                      Move item down
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => removeItem(index)}
-                      variant="danger"
-                      size="sm"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        </div>
 
         {error ? <FeedbackBanner tone="danger" description={error} /> : null}
 
