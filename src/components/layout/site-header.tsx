@@ -69,8 +69,13 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
 
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" className="shrink-0" onClick={closeMobileMenu}>
-            <AppLogo variant="domain" size="md" />
+          <Link href="/" className="min-w-0 shrink-0" onClick={closeMobileMenu}>
+            <span className="sm:hidden">
+              <AppLogo variant="domain" size="sm" />
+            </span>
+            <span className="hidden sm:inline-flex">
+              <AppLogo variant="domain" size="md" />
+            </span>
           </Link>
 
           <div className="hidden items-center gap-4 lg:flex">
@@ -115,7 +120,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex min-w-[5.5rem] shrink-0 items-center justify-end gap-2 lg:hidden">
             <ThemeToggle />
 
             <IconButton
