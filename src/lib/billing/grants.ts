@@ -50,6 +50,10 @@ function isGrantCurrentlyValid(grant: DbUserAccessGrant, now = new Date()): bool
   return true;
 }
 
+function nullableStringsEqual(left: string | null, right: string | null): boolean {
+  return left === right;
+}
+
 export async function getUserProductGrantsDb(
   userId: string,
   productId: string
@@ -180,10 +184,25 @@ export async function deactivateActiveUserProductGrantsBySourceDb(
 export async function grantProductAccessDb(
   input: GrantProductAccessInput
 ): Promise<DbUserAccessGrant | null> {
-  const supabase = createAdminClient();
-
   const startsAt = toIsoOrNull(input.startsAt);
   const endsAt = toIsoOrNull(input.endsAt);
+  const existingActiveGrant = await getActiveUserProductGrantDb(
+    input.userId,
+    input.productId
+  );
+
+  if (
+    existingActiveGrant &&
+    existingActiveGrant.access_mode === input.accessMode &&
+    existingActiveGrant.source === input.source &&
+    nullableStringsEqual(existingActiveGrant.price_id, input.priceId ?? null) &&
+    nullableStringsEqual(existingActiveGrant.starts_at, startsAt) &&
+    nullableStringsEqual(existingActiveGrant.ends_at, endsAt)
+  ) {
+    return existingActiveGrant;
+  }
+
+  const supabase = createAdminClient();
 
   const deactivateResult = await deactivateActiveUserProductGrantsDb(
     input.userId,

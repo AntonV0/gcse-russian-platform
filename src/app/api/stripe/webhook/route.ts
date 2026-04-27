@@ -5,6 +5,11 @@ import {
   handleCheckoutSessionCompleted,
   handleStripeSubscriptionLifecycle,
 } from "@/lib/billing/webhook-handlers";
+import {
+  claimStripeWebhookEventProcessingDb,
+  recordStripeWebhookEventFailedDb,
+  recordStripeWebhookEventProcessedDb,
+} from "@/lib/billing/webhook-events";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
@@ -27,7 +32,21 @@ export async function POST(req: NextRequest) {
     return new NextResponse("Invalid signature", { status: 400 });
   }
 
+  let claimedEvent = false;
+
   try {
+    const claim = await claimStripeWebhookEventProcessingDb({
+      eventId: event.id,
+      eventType: event.type,
+      livemode: event.livemode,
+    });
+
+    if (!claim.shouldProcess) {
+      return new NextResponse("OK", { status: 200 });
+    }
+
+    claimedEvent = true;
+
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
@@ -49,9 +68,19 @@ export async function POST(req: NextRequest) {
         break;
     }
 
+    await recordStripeWebhookEventProcessedDb(event.id);
+
     return new NextResponse("OK", { status: 200 });
   } catch (error) {
-    console.error("Stripe webhook handler error:", error);
+    if (claimedEvent) {
+      await recordStripeWebhookEventFailedDb(event.id, error);
+    }
+
+    console.error("Stripe webhook handler error:", {
+      eventId: event.id,
+      eventType: event.type,
+      error,
+    });
     return new NextResponse("Webhook handler failed", { status: 500 });
   }
 }
