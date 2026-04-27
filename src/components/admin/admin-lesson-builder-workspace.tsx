@@ -1,125 +1,28 @@
 "use client";
 
-import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
-import { insertLessonTemplateAction } from "@/app/actions/admin/admin-lesson-builder-actions";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import LessonInspectorPanel from "@/components/admin/lesson-builder/lesson-inspector-panel";
 import LessonSectionEditor from "@/components/admin/lesson-builder/lesson-section-editor";
 import LessonSectionSidebar from "@/components/admin/lesson-builder/lesson-section-sidebar";
+import LessonBuilderWorkspaceOverview from "@/components/admin/lesson-builder/workspace-overview";
+import LessonTemplateInserter from "@/components/admin/lesson-builder/workspace-template-inserter";
+import LessonBuilderWorkspaceToolbar, {
+  getLessonBuilderLayoutClass,
+} from "@/components/admin/lesson-builder/workspace-toolbar";
 import type {
   AdminLessonBuilderProps,
   DraggedBlockContext,
-  LessonSection,
   RouteFields,
 } from "@/components/admin/lesson-builder/lesson-builder-types";
 import {
-  BuilderHiddenFields,
-  CompactDisclosure,
-  Badge,
-  PendingStatusText,
-  PendingSubmitButton,
-  ToolbarButton,
   usePersistentBoolean,
   getLessonBuilderStorageKey,
-  BUILDER_DASHED_EMPTY_STATE_CLASS,
-  BUILDER_SECONDARY_BUTTON_CLASS,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { Heading } from "@/components/ui/heading";
-import { getLessonBlockLabel, getLessonBlockPreview } from "@/lib/lessons/lesson-blocks";
 
 const LESSON_BUILDER_STORAGE_EVENT = "gcse-russian-lesson-builder-storage";
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
-
-function getSectionCounts(sections: LessonSection[]) {
-  let publishedSections = 0;
-  let totalBlocks = 0;
-  let publishedBlocks = 0;
-
-  for (const section of sections) {
-    if (section.is_published) publishedSections += 1;
-    totalBlocks += section.blocks.length;
-
-    for (const block of section.blocks) {
-      if (block.is_published) publishedBlocks += 1;
-    }
-  }
-
-  return {
-    publishedSections,
-    totalSections: sections.length,
-    publishedBlocks,
-    totalBlocks,
-  };
-}
-
-function CompactBuilderStat(props: { label: string; published: number; total: number }) {
-  return (
-    <div className="app-card px-4 py-3">
-      <div className="text-[11px] font-semibold uppercase tracking-wide app-text-soft">
-        {props.label}
-      </div>
-      <div className="mt-1 flex items-baseline gap-1">
-        <span className="text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
-          {props.published}
-        </span>
-        <span className="text-sm app-text-muted">/ {props.total}</span>
-      </div>
-    </div>
-  );
-}
-
-function getContentHealthChecks(sections: LessonSection[]) {
-  const emptyTitleSections = sections.filter(
-    (section) => section.title.trim().length === 0
-  ).length;
-  const draftSections = sections.filter((section) => !section.is_published).length;
-  const emptySections = sections.filter((section) => section.blocks.length === 0).length;
-  const draftBlocks = sections.reduce(
-    (count, section) =>
-      count + section.blocks.filter((block) => !block.is_published).length,
-    0
-  );
-  const thinBlocks = sections.reduce(
-    (count, section) =>
-      count +
-      section.blocks.filter((block) => getLessonBlockPreview(block).trim().length === 0)
-        .length,
-    0
-  );
-
-  return [
-    {
-      label: "Sections",
-      value: sections.length === 0 ? "No sections yet" : `${sections.length} total`,
-      tone: sections.length === 0 ? "warning" : "success",
-    },
-    {
-      label: "Draft sections",
-      value: draftSections === 0 ? "All published" : `${draftSections} draft`,
-      tone: draftSections === 0 ? "success" : "warning",
-    },
-    {
-      label: "Empty sections",
-      value: emptySections === 0 ? "None" : `${emptySections} need blocks`,
-      tone: emptySections === 0 ? "success" : "warning",
-    },
-    {
-      label: "Draft blocks",
-      value: draftBlocks === 0 ? "All published" : `${draftBlocks} draft`,
-      tone: draftBlocks === 0 ? "success" : "warning",
-    },
-    {
-      label: "Missing titles",
-      value: emptyTitleSections === 0 ? "None" : `${emptyTitleSections} section`,
-      tone: emptyTitleSections === 0 ? "success" : "warning",
-    },
-    {
-      label: "Thin previews",
-      value: thinBlocks === 0 ? "None" : `${thinBlocks} block`,
-      tone: thinBlocks === 0 ? "success" : "warning",
-    },
-  ] as const;
-}
 
 export default function AdminLessonBuilderWorkspace({
   lessonId,
@@ -144,12 +47,6 @@ export default function AdminLessonBuilderWorkspace({
     moduleSlug,
     lessonSlug,
   };
-
-  const { publishedSections, totalSections, publishedBlocks, totalBlocks } = useMemo(
-    () => getSectionCounts(sections),
-    [sections]
-  );
-  const contentHealthChecks = useMemo(() => getContentHealthChecks(sections), [sections]);
 
   const selectedSectionStorageKey = getLessonBuilderStorageKey(
     lessonId,
@@ -227,21 +124,10 @@ export default function AdminLessonBuilderWorkspace({
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  const layoutClass = (() => {
-    if (isSidebarOpen && isInspectorOpen) {
-      return "lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)_280px] 2xl:grid-cols-[320px_minmax(0,1fr)_300px]";
-    }
-
-    if (isSidebarOpen && !isInspectorOpen) {
-      return "lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]";
-    }
-
-    if (!isSidebarOpen && isInspectorOpen) {
-      return "lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px]";
-    }
-
-    return "xl:grid-cols-[minmax(0,1fr)]";
-  })();
+  const layoutClass = getLessonBuilderLayoutClass({
+    isSidebarOpen,
+    isInspectorOpen,
+  });
 
   return (
     <div className="dev-marker-host relative space-y-4">
@@ -262,172 +148,26 @@ export default function AdminLessonBuilderWorkspace({
         />
       ) : null}
 
-      <section className="app-card border-[var(--warning-border)] bg-[var(--warning-surface)] p-4 lg:hidden">
-        <div className="space-y-2">
-          <Badge tone="warning" icon="warning">
-            Best on tablet or desktop
-          </Badge>
-          <div>
-            <Heading
-              level={2}
-              className="text-sm font-semibold text-[var(--warning-text-strong)]"
-            >
-              Lesson authoring needs extra room
-            </Heading>
-            <p className="mt-1 text-sm text-[var(--warning-text)]">
-              The builder remains available on this screen, but section ordering,
-              block editing, and inspector controls are easier with a wider workspace.
-            </p>
-          </div>
-        </div>
-      </section>
+      <LessonBuilderWorkspaceOverview sections={sections} />
 
-      <section className="grid gap-3 md:grid-cols-2">
-        <CompactBuilderStat
-          label="Sections"
-          published={publishedSections}
-          total={totalSections}
-        />
-        <CompactBuilderStat
-          label="Blocks"
-          published={publishedBlocks}
-          total={totalBlocks}
-        />
-      </section>
+      <LessonTemplateInserter
+        routeFields={routeFields}
+        lessonTemplates={templateOptions.lessonTemplates}
+      />
 
-      <section className="app-card p-4">
-        <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-wide app-text-soft">Publish checks</p>
-            <Heading level={2} className="text-sm font-semibold text-[var(--text-primary)]">
-              Content health
-            </Heading>
-          </div>
-          <Badge
-            tone={contentHealthChecks.every((check) => check.tone === "success") ? "success" : "warning"}
-            icon={contentHealthChecks.every((check) => check.tone === "success") ? "success" : "warning"}
-          >
-            {contentHealthChecks.every((check) => check.tone === "success")
-              ? "Ready"
-              : "Needs review"}
-          </Badge>
-        </div>
-
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          {contentHealthChecks.map((check) => (
-            <div
-              key={check.label}
-              className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-3 py-2"
-            >
-              <div className="text-[11px] font-semibold uppercase tracking-wide app-text-soft">
-                {check.label}
-              </div>
-              <div className="mt-1 flex items-center justify-between gap-2">
-                <span className="text-sm font-medium text-[var(--text-primary)]">
-                  {check.value}
-                </span>
-                <Badge tone={check.tone}>{check.tone === "success" ? "OK" : "Check"}</Badge>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <CompactDisclosure
-        title={`Lesson templates (${templateOptions.lessonTemplates.length})`}
-        description="Create several structured sections at once for faster lesson setup."
-      >
-        <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
-          {templateOptions.lessonTemplates.length === 0 ? (
-            <div className={BUILDER_DASHED_EMPTY_STATE_CLASS}>
-              No DB lesson templates found yet.
-            </div>
-          ) : (
-            templateOptions.lessonTemplates.map((template) => (
-              <form
-                key={template.id}
-                action={insertLessonTemplateAction}
-                className="app-card p-4"
-              >
-                <BuilderHiddenFields {...routeFields} />
-                <input type="hidden" name="templateId" value={template.id} />
-
-                <div className="mb-3">
-                  <div className="font-semibold text-[var(--text-primary)]">
-                    {template.label}
-                  </div>
-                  <div className="mt-1 text-sm app-text-muted">
-                    {template.description}
-                  </div>
-                </div>
-
-                <div className="mb-3 text-xs app-text-soft">
-                  {template.sectionsCount} section
-                  {template.sectionsCount === 1 ? "" : "s"}
-                </div>
-
-                <div className="space-y-2">
-                  <PendingSubmitButton
-                    idleLabel="Insert lesson template"
-                    pendingLabel="Inserting lesson template..."
-                    className={BUILDER_SECONDARY_BUTTON_CLASS}
-                  />
-                  <PendingStatusText pendingText="Creating sections and starter blocks..." />
-                </div>
-              </form>
-            ))
-          )}
-        </div>
-      </CompactDisclosure>
-
-      <section className="app-surface z-10 p-4 backdrop-blur-md lg:sticky lg:top-[calc(var(--site-header-height)+12px)]">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="min-w-0">
-            <div className="text-sm font-semibold text-[var(--text-primary)]">
-              {selectedSection ? `Editing: ${selectedSection.title}` : "Lesson builder"}
-            </div>
-
-            <div className="mt-1 text-sm app-text-muted">
-              {selectedSection
-                ? `${selectedSection.blocks.length} block(s)${
-                    selectedBlock
-                      ? ` · Selected block: ${getLessonBlockLabel(selectedBlock.block_type)}`
-                      : ""
-                  }`
-                : "Select a section to begin."}
-            </div>
-          </div>
-
-          <div className="app-mobile-action-stack flex flex-wrap gap-2">
-            <ToolbarButton
-              onClick={() => setIsSidebarOpen((value) => !value)}
-              isActive={isSidebarOpen}
-            >
-              {isSidebarOpen ? "Hide sections" : "Show sections"}
-            </ToolbarButton>
-
-            <ToolbarButton
-              onClick={() => setIsInspectorOpen((value) => !value)}
-              isActive={isInspectorOpen}
-            >
-              {isInspectorOpen ? "Hide inspector" : "Show inspector"}
-            </ToolbarButton>
-
-            <ToolbarButton
-              onClick={() => {
-                setSelectedBlockId(null);
-                setBlockSearch("");
-              }}
-            >
-              Clear block selection
-            </ToolbarButton>
-
-            <ToolbarButton onClick={handleJumpToAddBlock}>
-              Jump to add block
-            </ToolbarButton>
-          </div>
-        </div>
-      </section>
+      <LessonBuilderWorkspaceToolbar
+        selectedSection={selectedSection}
+        selectedBlock={selectedBlock}
+        isSidebarOpen={isSidebarOpen}
+        isInspectorOpen={isInspectorOpen}
+        onToggleSidebar={() => setIsSidebarOpen((value) => !value)}
+        onToggleInspector={() => setIsInspectorOpen((value) => !value)}
+        onClearBlockSelection={() => {
+          setSelectedBlockId(null);
+          setBlockSearch("");
+        }}
+        onJumpToAddBlock={handleJumpToAddBlock}
+      />
 
       <section className={`grid items-start gap-4 ${layoutClass}`}>
         {isSidebarOpen ? (
