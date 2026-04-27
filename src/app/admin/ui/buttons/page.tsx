@@ -89,6 +89,25 @@ const variantMatrix: Array<{
   },
 ];
 
+function ButtonExampleCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Card>
+      <CardBody className="p-4">
+        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+          {title}
+        </div>
+        {children}
+      </CardBody>
+    </Card>
+  );
+}
+
 export default async function AdminUiButtonsPage() {
   const canAccess = await requireAdminAccess();
 
@@ -241,53 +260,38 @@ export default async function AdminUiButtonsPage() {
         description="Use this area to compare how clearly each variant responds on hover. The interaction should feel deliberate, not just slightly lifted."
       >
         <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Main actions
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="primary" icon="completed">
-                  Save progress
-                </Button>
-                <Button variant="accent" icon="create">
-                  Start challenge
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Main actions">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="primary" icon="completed">
+                Save progress
+              </Button>
+              <Button variant="accent" icon="create">
+                Start challenge
+              </Button>
+            </div>
+          </ButtonExampleCard>
 
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Supporting actions
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="secondary" icon="preview">
-                  Preview
-                </Button>
-                <Button variant="soft" icon="next" iconPosition="right">
-                  Continue revision
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Supporting actions">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="secondary" icon="preview">
+                Preview
+              </Button>
+              <Button variant="soft" icon="next" iconPosition="right">
+                Continue revision
+              </Button>
+            </div>
+          </ButtonExampleCard>
 
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Low-emphasis actions
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="quiet" icon="edit">
-                  Save draft
-                </Button>
-                <Button variant="quiet" icon="file">
-                  View notes
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Low-emphasis actions">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="quiet" icon="edit">
+                Save draft
+              </Button>
+              <Button variant="quiet" icon="file">
+                View notes
+              </Button>
+            </div>
+          </ButtonExampleCard>
         </div>
       </UiLabSection>
 
@@ -296,53 +300,38 @@ export default async function AdminUiButtonsPage() {
         description="These examples compare premium gradient buttons against calmer variants. The stronger buttons should lead without making the secondary actions feel unfinished."
       >
         <div className="grid gap-4 lg:grid-cols-3">
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Primary progression
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="primary" icon="next" iconPosition="right">
-                  Keep going
-                </Button>
-                <Button variant="secondary" icon="preview">
-                  Preview path
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Primary progression">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="primary" icon="next" iconPosition="right">
+                Keep going
+              </Button>
+              <Button variant="secondary" icon="preview">
+                Preview path
+              </Button>
+            </div>
+          </ButtonExampleCard>
 
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Accent promotion
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="accent" icon="create">
-                  Launch sprint
-                </Button>
-                <Button variant="quiet" icon="file">
-                  View details
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Accent promotion">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="accent" icon="create">
+                Launch sprint
+              </Button>
+              <Button variant="quiet" icon="file">
+                View details
+              </Button>
+            </div>
+          </ButtonExampleCard>
 
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Soft continuation
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="soft" icon="preview">
-                  Reveal next task
-                </Button>
-                <Button variant="secondary" icon="back">
-                  Back
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Soft continuation">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="soft" icon="preview">
+                Reveal next task
+              </Button>
+              <Button variant="secondary" icon="back">
+                Back
+              </Button>
+            </div>
+          </ButtonExampleCard>
         </div>
       </UiLabSection>
 
@@ -408,53 +397,38 @@ export default async function AdminUiButtonsPage() {
         description="These variants are useful for more energetic student-facing CTAs, progression moments, and upgrade prompts."
       >
         <div className="grid gap-4 lg:grid-cols-3">
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Lesson / learning actions
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="soft" icon="next" iconPosition="right">
-                  Start lesson
-                </Button>
-                <Button variant="soft" icon="completed">
-                  Mark ready
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Lesson / learning actions">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="soft" icon="next" iconPosition="right">
+                Start lesson
+              </Button>
+              <Button variant="soft" icon="completed">
+                Mark ready
+              </Button>
+            </div>
+          </ButtonExampleCard>
 
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Motivational / highlight actions
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="accent" icon="completed">
-                  Unlock next step
-                </Button>
-                <Button variant="accent" icon="create">
-                  Join revision sprint
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Motivational / highlight actions">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="accent" icon="completed">
+                Unlock next step
+              </Button>
+              <Button variant="accent" icon="create">
+                Join revision sprint
+              </Button>
+            </div>
+          </ButtonExampleCard>
 
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Hero / strong contrast actions
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="inverse" icon="preview">
-                  View course path
-                </Button>
-                <Button variant="inverse" icon="next" iconPosition="right">
-                  Explore full access
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Hero / strong contrast actions">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="inverse" icon="preview">
+                View course path
+              </Button>
+              <Button variant="inverse" icon="next" iconPosition="right">
+                Explore full access
+              </Button>
+            </div>
+          </ButtonExampleCard>
         </div>
       </UiLabSection>
 
@@ -575,61 +549,46 @@ export default async function AdminUiButtonsPage() {
         description="Logout should be noticeable without looking like account deletion. Pending examples show the current disabled-button pattern before a dedicated LoadingButton exists."
       >
         <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Account exit
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="exit" icon="userX">
-                  Log out
-                </Button>
-                <Button variant="exit" size="sm" icon="userX">
-                  Log out
-                </Button>
-                <Button variant="secondary" size="sm" icon="settings">
-                  Account settings
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Account exit">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="exit" icon="userX">
+                Log out
+              </Button>
+              <Button variant="exit" size="sm" icon="userX">
+                Log out
+              </Button>
+              <Button variant="secondary" size="sm" icon="settings">
+                Account settings
+              </Button>
+            </div>
+          </ButtonExampleCard>
 
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Pending actions
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="primary" disabled icon="pending">
-                  Saving...
-                </Button>
-                <Button variant="secondary" disabled icon="pending">
-                  Loading preview...
-                </Button>
-                <Button variant="danger" disabled icon="pending">
-                  Deleting...
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Pending actions">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="primary" disabled icon="pending">
+                Saving...
+              </Button>
+              <Button variant="secondary" disabled icon="pending">
+                Loading preview...
+              </Button>
+              <Button variant="danger" disabled icon="pending">
+                Deleting...
+              </Button>
+            </div>
+          </ButtonExampleCard>
 
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                Shared primitives
-              </div>
-              <form className="flex flex-wrap gap-3">
-                <LoadingButton
-                  idleLabel="Save with LoadingButton"
-                  pendingLabel="Saving..."
-                  idleIcon="save"
-                  variant="primary"
-                />
-                <IconButton icon="settings" label="Shared icon settings" />
-                <IconButton icon="search" label="Shared icon search" variant="quiet" />
-              </form>
-            </CardBody>
-          </Card>
+          <ButtonExampleCard title="Shared primitives">
+            <form className="flex flex-wrap gap-3">
+              <LoadingButton
+                idleLabel="Save with LoadingButton"
+                pendingLabel="Saving..."
+                idleIcon="save"
+                variant="primary"
+              />
+              <IconButton icon="settings" label="Shared icon settings" />
+              <IconButton icon="search" label="Shared icon search" variant="quiet" />
+            </form>
+          </ButtonExampleCard>
         </div>
       </UiLabSection>
 
