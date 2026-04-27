@@ -7,7 +7,7 @@ import {
   getRequiredString,
 } from "@/app/actions/admin/vocabulary/item-action-helpers";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { createClient } from "@/lib/supabase/server";
+import { deleteVocabularyItemDb } from "@/lib/vocabulary/mutations";
 
 export async function deleteVocabularyItemAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
@@ -19,22 +19,7 @@ export async function deleteVocabularyItemAction(formData: FormData) {
   const vocabularyItemId = getRequiredString(formData, "vocabularyItemId");
   const vocabularySetId = getRequiredString(formData, "vocabularySetId");
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("vocabulary_items")
-    .delete()
-    .eq("id", vocabularyItemId)
-    .eq("vocabulary_set_id", vocabularySetId);
-
-  if (error) {
-    console.error("Error deleting vocabulary item:", {
-      vocabularyItemId,
-      vocabularySetId,
-      error,
-    });
-    throw new Error("Failed to delete vocabulary item");
-  }
+  await deleteVocabularyItemDb({ vocabularyItemId, vocabularySetId });
 
   const path = buildItemsPath(vocabularySetId);
   revalidatePath("/admin/vocabulary");

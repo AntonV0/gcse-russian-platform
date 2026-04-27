@@ -34,11 +34,20 @@ export {
   getVocabularySetBySlugDb,
 } from "@/lib/vocabulary/set-queries";
 export {
+  bulkCreateVocabularyItemsDb,
   createVocabularySetDb,
+  createVocabularyItemDb,
+  deleteVocabularyItemDb,
   deleteVocabularySetDb,
+  updateVocabularyItemDb,
   updateVocabularySetDb,
 } from "@/lib/vocabulary/mutations";
-export type { VocabularySetMutationPayload } from "@/lib/vocabulary/mutations";
+export type {
+  BulkVocabularyItemInput,
+  BulkVocabularyItemMutationPayload,
+  VocabularyItemMutationPayload,
+  VocabularySetMutationPayload,
+} from "@/lib/vocabulary/mutations";
 export {
   getPublishedVocabularySetsDb,
   getVocabularySetsDb,
