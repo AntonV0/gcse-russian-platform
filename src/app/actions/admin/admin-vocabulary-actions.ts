@@ -2,23 +2,24 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import {
+  createVocabularySetDb,
+  deleteVocabularySetDb,
+  updateVocabularySetDb,
+  type VocabularySetMutationPayload,
+} from "@/lib/vocabulary/mutations";
 import type {
   DbVocabularyDisplayVariant,
   DbVocabularyListMode,
   DbVocabularySetType,
   DbVocabularyTier,
 } from "@/lib/vocabulary/types";
-import { ensureDefaultVocabularyListForSetDb } from "@/lib/vocabulary/list-queries";
 import {
   getBoolean,
   getOptionalString,
   getTrimmedString,
 } from "@/app/actions/shared/form-data";
-
-const VOCABULARY_SET_SELECT =
-  "id, slug, title, description, theme_key, topic_key, tier, list_mode, set_type, default_display_variant, is_published, sort_order, source_key, source_version, import_key, created_at, updated_at";
 
 function getOptionalNonNegativeNumber(formData: FormData, key: string) {
   const raw = getTrimmedString(formData, key);
@@ -83,18 +84,8 @@ function assertVocabularyDisplayVariant(value: string): DbVocabularyDisplayVaria
   throw new Error("Invalid vocabulary display variant");
 }
 
-export async function createVocabularySetAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-
-  if (!canAccess) {
-    throw new Error("Unauthorized");
-  }
-
+function getVocabularySetMutationPayload(formData: FormData): VocabularySetMutationPayload {
   const title = getTrimmedString(formData, "title");
-  const slug = getOptionalString(formData, "slug");
-  const description = getOptionalString(formData, "description");
-  const themeKey = getOptionalString(formData, "themeKey");
-  const topicKey = getOptionalString(formData, "topicKey");
   const tier = assertVocabularyTier(getTrimmedString(formData, "tier") || "both");
   const listMode = assertVocabularyListMode(
     getTrimmedString(formData, "listMode") || "custom"
@@ -105,52 +96,37 @@ export async function createVocabularySetAction(formData: FormData) {
   const defaultDisplayVariant = assertVocabularyDisplayVariant(
     getTrimmedString(formData, "defaultDisplayVariant") || "single_column"
   );
-  const isPublished = getBoolean(formData, "isPublished");
-  const sortOrder = getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0;
-  const sourceKey = getOptionalString(formData, "sourceKey");
-  const sourceVersion = getOptionalString(formData, "sourceVersion");
-  const importKey = getOptionalString(formData, "importKey");
 
   if (!title) {
     throw new Error("Title is required");
   }
 
-  const supabase = await createClient();
+  return {
+    title,
+    slug: getOptionalString(formData, "slug"),
+    description: getOptionalString(formData, "description"),
+    theme_key: getOptionalString(formData, "themeKey"),
+    topic_key: getOptionalString(formData, "topicKey"),
+    tier,
+    list_mode: listMode,
+    set_type: setType,
+    default_display_variant: defaultDisplayVariant,
+    is_published: getBoolean(formData, "isPublished"),
+    sort_order: getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0,
+    source_key: getOptionalString(formData, "sourceKey"),
+    source_version: getOptionalString(formData, "sourceVersion"),
+    import_key: getOptionalString(formData, "importKey"),
+  };
+}
 
-  const { data, error } = await supabase
-    .from("vocabulary_sets")
-    .insert({
-      title,
-      slug,
-      description,
-      theme_key: themeKey,
-      topic_key: topicKey,
-      tier,
-      list_mode: listMode,
-      set_type: setType,
-      default_display_variant: defaultDisplayVariant,
-      is_published: isPublished,
-      sort_order: sortOrder,
-      source_key: sourceKey,
-      source_version: sourceVersion,
-      import_key: importKey,
-    })
-    .select(VOCABULARY_SET_SELECT)
-    .single();
+export async function createVocabularySetAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
 
-  if (error) {
-    console.error("Error creating vocabulary set:", error);
-    throw new Error("Failed to create vocabulary set");
+  if (!canAccess) {
+    throw new Error("Unauthorized");
   }
 
-  if (data) {
-    await ensureDefaultVocabularyListForSetDb({
-      ...data,
-      source_key: data.source_key ?? null,
-      source_version: data.source_version ?? null,
-      import_key: data.import_key ?? null,
-    });
-  }
+  await createVocabularySetDb(getVocabularySetMutationPayload(formData));
 
   revalidatePath("/admin/vocabulary");
   revalidatePath("/vocabulary");
@@ -165,57 +141,12 @@ export async function updateVocabularySetAction(formData: FormData) {
   }
 
   const vocabularySetId = getTrimmedString(formData, "vocabularySetId");
-  const title = getTrimmedString(formData, "title");
-  const slug = getOptionalString(formData, "slug");
-  const description = getOptionalString(formData, "description");
-  const themeKey = getOptionalString(formData, "themeKey");
-  const topicKey = getOptionalString(formData, "topicKey");
-  const tier = assertVocabularyTier(getTrimmedString(formData, "tier") || "both");
-  const listMode = assertVocabularyListMode(
-    getTrimmedString(formData, "listMode") || "custom"
-  );
-  const setType = assertVocabularySetType(
-    getTrimmedString(formData, "setType") || "lesson_custom"
-  );
-  const defaultDisplayVariant = assertVocabularyDisplayVariant(
-    getTrimmedString(formData, "defaultDisplayVariant") || "single_column"
-  );
-  const isPublished = getBoolean(formData, "isPublished");
-  const sortOrder = getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0;
-  const sourceKey = getOptionalString(formData, "sourceKey");
-  const sourceVersion = getOptionalString(formData, "sourceVersion");
-  const importKey = getOptionalString(formData, "importKey");
 
-  if (!vocabularySetId || !title) {
+  if (!vocabularySetId) {
     throw new Error("Missing required fields");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("vocabulary_sets")
-    .update({
-      title,
-      slug,
-      description,
-      theme_key: themeKey,
-      topic_key: topicKey,
-      tier,
-      list_mode: listMode,
-      set_type: setType,
-      default_display_variant: defaultDisplayVariant,
-      is_published: isPublished,
-      sort_order: sortOrder,
-      source_key: sourceKey,
-      source_version: sourceVersion,
-      import_key: importKey,
-    })
-    .eq("id", vocabularySetId);
-
-  if (error) {
-    console.error("Error updating vocabulary set:", error);
-    throw new Error("Failed to update vocabulary set");
-  }
+  await updateVocabularySetDb(vocabularySetId, getVocabularySetMutationPayload(formData));
 
   revalidatePath("/admin/vocabulary");
   revalidatePath(`/admin/vocabulary/${vocabularySetId}/edit`);
@@ -236,17 +167,7 @@ export async function deleteVocabularySetAction(formData: FormData) {
     throw new Error("Vocabulary set id is required");
   }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("vocabulary_sets")
-    .delete()
-    .eq("id", vocabularySetId);
-
-  if (error) {
-    console.error("Error deleting vocabulary set:", { vocabularySetId, error });
-    throw new Error("Failed to delete vocabulary set");
-  }
+  await deleteVocabularySetDb(vocabularySetId);
 
   revalidatePath("/admin/vocabulary");
   revalidatePath("/vocabulary");

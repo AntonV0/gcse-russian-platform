@@ -34,6 +34,12 @@ export {
   getVocabularySetBySlugDb,
 } from "@/lib/vocabulary/set-queries";
 export {
+  createVocabularySetDb,
+  deleteVocabularySetDb,
+  updateVocabularySetDb,
+} from "@/lib/vocabulary/mutations";
+export type { VocabularySetMutationPayload } from "@/lib/vocabulary/mutations";
+export {
   getPublishedVocabularySetsDb,
   getVocabularySetsDb,
 } from "@/lib/vocabulary/set-list-queries";
