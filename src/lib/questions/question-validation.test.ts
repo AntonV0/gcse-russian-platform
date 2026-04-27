@@ -94,12 +94,8 @@ describe("question validation helpers", () => {
       ],
     };
 
-    expect(
-      validateTextAnswer({ question, submittedText: "gcse" }).isCorrect
-    ).toBe(false);
-    expect(
-      validateTextAnswer({ question, submittedText: "GCSE" }).isCorrect
-    ).toBe(true);
+    expect(validateTextAnswer({ question, submittedText: "gcse" }).isCorrect).toBe(false);
+    expect(validateTextAnswer({ question, submittedText: "GCSE" }).isCorrect).toBe(true);
   });
 
   it("validates structured answers regardless of selected option order", () => {

@@ -58,9 +58,7 @@ describe("price matching helpers", () => {
       amount_gbp: 399,
     });
 
-    expect(matchPriceByBillingShape([lifetime], BILLING_TYPES.ONE_TIME)).toBe(
-      lifetime
-    );
+    expect(matchPriceByBillingShape([lifetime], BILLING_TYPES.ONE_TIME)).toBe(lifetime);
   });
 
   it("classifies core billing shapes", () => {

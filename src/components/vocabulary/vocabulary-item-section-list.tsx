@@ -2,19 +2,14 @@ import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import { getButtonClassName } from "@/components/ui/button-styles";
 import type { VocabularyItemSectionGroup } from "@/lib/vocabulary/item-sections";
-import {
-  getVocabularyTierLabel,
-} from "@/lib/vocabulary/labels";
+import { getVocabularyTierLabel } from "@/lib/vocabulary/labels";
 import {
   getRequiredVocabularyCoverageVariants,
   getVocabularyCoverageVariantCount,
   getVocabularyCoverageVariantLabel,
   getVocabularyCoverageVariantUsed,
 } from "@/lib/vocabulary/study-variants";
-import type {
-  DbVocabularyItem,
-  DbVocabularyItemCoverage,
-} from "@/lib/vocabulary/types";
+import type { DbVocabularyItem, DbVocabularyItemCoverage } from "@/lib/vocabulary/types";
 
 function getItemBadgeTone(item: DbVocabularyItem) {
   if (item.source_type === "spec_required") return "info";

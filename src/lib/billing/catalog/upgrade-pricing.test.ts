@@ -41,10 +41,7 @@ function product(code: string): DbProduct {
   };
 }
 
-function candidate(overrides: {
-  productCode: string;
-  fee: number;
-}): UpgradeCandidate {
+function candidate(overrides: { productCode: string; fee: number }): UpgradeCandidate {
   return {
     grant: {
       id: overrides.productCode,

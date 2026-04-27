@@ -1,6 +1,4 @@
-import {
-  groupVocabularyItemsBySource,
-} from "@/lib/vocabulary/labels";
+import { groupVocabularyItemsBySource } from "@/lib/vocabulary/labels";
 import { getVocabularyListAppliesToStudyVariant } from "@/lib/vocabulary/study-variants";
 import type {
   DbVocabularyItem,
