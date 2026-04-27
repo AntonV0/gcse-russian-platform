@@ -14,6 +14,7 @@ import Surface from "@/components/ui/surface";
 import TableShell from "@/components/ui/table-shell";
 import TableToolbar from "@/components/ui/table-toolbar";
 import AdminRow from "@/components/ui/admin-row";
+import type { AppIconKey } from "@/lib/shared/icons";
 import {
   DataTable,
   DataTableBody,
@@ -68,6 +69,37 @@ const demoRows: DemoRow[] = [
     lessons: "—",
     updated: "3 days ago",
     variant: "higher",
+  },
+];
+
+const tableGuidanceRules: Array<{
+  icon: AppIconKey;
+  title: string;
+  description: string;
+}> = [
+  {
+    icon: "list",
+    title: "Use tables when comparison matters",
+    description:
+      "Tables work best when users need to scan across repeated columns like status, updated time, variant, or action availability.",
+  },
+  {
+    icon: "layers",
+    title: "Use hierarchy lists for structure",
+    description:
+      "Module → lesson → block structures are often clearer as nested rows than as rigid tables.",
+  },
+  {
+    icon: "filter",
+    title: "Pair tables with toolbars",
+    description:
+      "If search, filtering, or creation is expected, put those controls above the table rather than scattering them around the page.",
+  },
+  {
+    icon: "warning",
+    title: "Do not default to dense mode",
+    description:
+      "Compact layouts are useful, but standard density is usually easier to scan and safer for long-term admin use.",
   },
 ];
 
@@ -658,36 +690,9 @@ function DarkSurfaceTableTest() {
 }
 
 function TableGuidance() {
-  const rules = [
-    {
-      icon: "list" as const,
-      title: "Use tables when comparison matters",
-      description:
-        "Tables work best when users need to scan across repeated columns like status, updated time, variant, or action availability.",
-    },
-    {
-      icon: "layers" as const,
-      title: "Use hierarchy lists for structure",
-      description:
-        "Module → lesson → block structures are often clearer as nested rows than as rigid tables.",
-    },
-    {
-      icon: "filter" as const,
-      title: "Pair tables with toolbars",
-      description:
-        "If search, filtering, or creation is expected, put those controls above the table rather than scattering them around the page.",
-    },
-    {
-      icon: "warning" as const,
-      title: "Do not default to dense mode",
-      description:
-        "Compact layouts are useful, but standard density is usually easier to scan and safer for long-term admin use.",
-    },
-  ];
-
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      {rules.map((rule) => (
+      {tableGuidanceRules.map((rule) => (
         <Card key={rule.title}>
           <CardBody className="p-4">
             <div className="flex items-start gap-3">
