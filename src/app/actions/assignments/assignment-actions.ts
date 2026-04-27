@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireCurrentUserCanSubmitAssignment } from "@/lib/auth/teacher-assignment-permissions";
 
 type SubmitAssignmentInput = {
   assignmentId: string;
@@ -24,6 +25,16 @@ export async function submitAssignmentAction({
 
   if (userError || !user) {
     return { success: false, error: "not_authenticated" as const };
+  }
+
+  if (!assignmentId) {
+    return { success: false, error: "missing_assignment_id" as const };
+  }
+
+  const permission = await requireCurrentUserCanSubmitAssignment(supabase, assignmentId);
+
+  if (!permission.success) {
+    return { success: false, error: permission.error };
   }
 
   const now = new Date().toISOString();

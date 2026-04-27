@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import {
+  isStudentAssignmentRole,
   isTeacherAssignmentRole,
   TEACHER_ASSIGNMENT_ROLES,
 } from "@/lib/auth/teacher-assignment-roles";
@@ -180,6 +181,66 @@ export async function requireCurrentUserCanManageAssignmentSubmission(
 
   if (!assignmentPermission.success) {
     return assignmentPermission;
+  }
+
+  return authContext;
+}
+
+export async function requireCurrentUserCanSubmitAssignment(
+  supabase: SupabaseServerClient,
+  assignmentId: string
+): Promise<TeacherAssignmentPermissionResult> {
+  const authContext = await getTeacherAssignmentAuthContext(supabase);
+
+  if (!authContext.success) {
+    return authContext;
+  }
+
+  if (authContext.isAdmin) {
+    return authContext;
+  }
+
+  const { data: assignment, error: assignmentError } = await supabase
+    .from("assignments")
+    .select("id, group_id, status")
+    .eq("id", assignmentId)
+    .maybeSingle();
+
+  if (assignmentError) {
+    console.error("Error checking student assignment submission permission:", {
+      assignmentId,
+      error: assignmentError,
+    });
+    return { success: false, error: "not_authorized" };
+  }
+
+  if (!assignment || assignment.status !== "published") {
+    return { success: false, error: "not_authorized" };
+  }
+
+  const { data, error } = await supabase
+    .from("teaching_group_members")
+    .select("member_role")
+    .eq("group_id", assignment.group_id)
+    .eq("user_id", authContext.userId)
+    .eq("member_role", "student")
+    .limit(1);
+
+  if (error) {
+    console.error("Error checking student assignment group permission:", {
+      assignmentId,
+      groupId: assignment.group_id,
+      error,
+    });
+    return { success: false, error: "not_authorized" };
+  }
+
+  const canSubmit = data?.some((membership) =>
+    isStudentAssignmentRole(membership.member_role)
+  );
+
+  if (!canSubmit) {
+    return { success: false, error: "not_authorized" };
   }
 
   return authContext;
