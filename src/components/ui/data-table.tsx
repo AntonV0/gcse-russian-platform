@@ -102,7 +102,7 @@ export function DataTableHeaderCell({ children, className }: DataTableSectionPro
 export function DataTableCell({ children, className }: DataTableSectionProps) {
   return (
     <td
-      className={["px-4 py-4 align-middle text-[var(--text-secondary)] sm:px-5 [overflow-wrap:anywhere]", className]
+      className={["break-words px-4 py-4 align-middle text-[var(--text-secondary)] sm:px-5", className]
         .filter(Boolean)
         .join(" ")}
     >
@@ -132,7 +132,7 @@ export function DataTableCompactHeaderCell({
 export function DataTableCompactCell({ children, className }: DataTableSectionProps) {
   return (
     <td
-      className={["px-4 py-3 align-middle text-[var(--text-secondary)] [overflow-wrap:anywhere]", className]
+      className={["break-words px-4 py-3 align-middle text-[var(--text-secondary)]", className]
         .filter(Boolean)
         .join(" ")}
     >

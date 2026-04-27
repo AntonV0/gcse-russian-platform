@@ -16,6 +16,10 @@ import {
   pastPaperTiers,
 } from "@/lib/past-papers/past-paper-helpers-db";
 
+const BULK_IMPORT_PLACEHOLDER =
+  "title,exam_series,paper_number,paper_name,tier,resource_type,official_url\n" +
+  "June 2026 Paper 1 Listening Foundation,June 2026,1,Paper 1 Listening,foundation,question_paper,https://qualifications.pearson.com/...";
+
 export default function PastPaperResourceForms() {
   return (
     <>
@@ -31,9 +35,11 @@ export default function PastPaperResourceForms() {
           >
             <Textarea
               name="bulkImport"
-              className="font-mono"
+              className="font-mono text-sm leading-relaxed"
               rows={8}
-              placeholder={"title,exam_series,paper_number,paper_name,tier,resource_type,official_url,source_label,is_official,sort_order,is_published,is_trial_visible,requires_paid_access,available_in_volna\nJune 2026 Paper 1 Listening Foundation question paper,June 2026,1,Paper 1 Listening,foundation,question_paper,https://qualifications.pearson.com/...,Pearson,true,0,false,true,false,true"}
+              placeholder={BULK_IMPORT_PLACEHOLDER}
+              spellCheck={false}
+              wrap="off"
             />
           </FormField>
 
