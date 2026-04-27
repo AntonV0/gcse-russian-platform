@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   clampStepIndex,
   getAllowedMaxIndex,
+  getEffectiveStepIndex,
   getLessonProgressSummary,
   getMaxVisitedIndex,
   getVisitedSectionCount,
@@ -60,6 +61,12 @@ describe("lesson progress helpers", () => {
     expect(getAllowedMaxIndex(totalSteps, -1)).toBe(0);
     expect(getAllowedMaxIndex(totalSteps, 0)).toBe(1);
     expect(getAllowedMaxIndex(totalSteps, 2)).toBe(3);
+  });
+
+  it("keeps requested steps inside the currently unlocked range", () => {
+    expect(getEffectiveStepIndex(0, 2)).toBe(0);
+    expect(getEffectiveStepIndex(2, 2)).toBe(2);
+    expect(getEffectiveStepIndex(4, 2)).toBe(2);
   });
 
   it("calculates visited section counts from visible sections only", () => {
