@@ -18,7 +18,7 @@ historical migration files for cosmetic cleanup.
   been pushed, and has not been applied to any shared database.
 - Prefer idempotent SQL for seed migrations: `insert ... where not exists`,
   `on conflict`, `create ... if not exists`, and `alter table ... add column if
-  not exists`.
+not exists`.
 - Keep static reference-content seeds, such as GCSE specification vocabulary,
   in migrations when the app depends on them being present after `db reset`.
 - Do not commit environment-specific production placeholders such as
