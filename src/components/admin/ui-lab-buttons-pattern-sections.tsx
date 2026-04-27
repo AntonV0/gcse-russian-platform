@@ -46,7 +46,13 @@ export default function UiLabButtonsPatternSections() {
               </Button>,
             ],
             [
-              <Button key="continue" variant="soft" size="sm" icon="next" iconPosition="right">
+              <Button
+                key="continue"
+                variant="soft"
+                size="sm"
+                icon="next"
+                iconPosition="right"
+              >
                 Continue
               </Button>,
               <Button key="sprint" variant="accent" size="sm" icon="create">
