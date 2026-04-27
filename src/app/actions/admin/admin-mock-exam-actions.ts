@@ -7,11 +7,11 @@ import {
   deleteMockExamQuestionAction as deleteMockExamQuestion,
   deleteMockExamSectionAction as deleteMockExamSection,
   deleteMockExamSetAction as deleteMockExamSet,
-  markMockExamAttemptAction as markMockExamAttempt,
   updateMockExamQuestionAction as updateMockExamQuestion,
   updateMockExamSectionAction as updateMockExamSection,
   updateMockExamSetAction as updateMockExamSet,
 } from "@/app/actions/admin/mock-exams/mock-exam-actions";
+import { markMockExamAttemptAction as markMockExamAttempt } from "@/app/actions/admin/mock-exams/mock-exam-attempt-marking-action";
 
 export async function createMockExamSetAction(formData: FormData) {
   return createMockExamSet(formData);
