@@ -106,7 +106,11 @@ export default function VocabularyItemEditForm({
             </VocabularyAdminFormField>
 
             <VocabularyAdminFormField label="Priority" htmlFor={`priority-${item.id}`}>
-              <Select id={`priority-${item.id}`} name="priority" defaultValue={item.priority}>
+              <Select
+                id={`priority-${item.id}`}
+                name="priority"
+                defaultValue={item.priority}
+              >
                 <option value="core">Core</option>
                 <option value="extension">Extension</option>
               </Select>
@@ -205,9 +209,7 @@ export default function VocabularyItemEditForm({
                 className="mt-1"
               />
               <span>
-                <span className="block app-label">
-                  Reflexive verb
-                </span>
+                <span className="block app-label">Reflexive verb</span>
                 <span className="mt-1 block app-text-caption">
                   Mark words such as заниматься or учиться.
                 </span>
@@ -267,7 +269,10 @@ export default function VocabularyItemEditForm({
               />
             </VocabularyAdminFormField>
 
-            <VocabularyAdminFormField label="Source key" htmlFor={`source-key-${item.id}`}>
+            <VocabularyAdminFormField
+              label="Source key"
+              htmlFor={`source-key-${item.id}`}
+            >
               <Input
                 id={`source-key-${item.id}`}
                 name="sourceKey"
@@ -297,7 +302,10 @@ export default function VocabularyItemEditForm({
               />
             </VocabularyAdminFormField>
 
-            <VocabularyAdminFormField label="Import key" htmlFor={`import-key-${item.id}`}>
+            <VocabularyAdminFormField
+              label="Import key"
+              htmlFor={`import-key-${item.id}`}
+            >
               <Input
                 id={`import-key-${item.id}`}
                 name="importKey"

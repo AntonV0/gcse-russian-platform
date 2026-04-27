@@ -1,4 +1,7 @@
-import type { QuestionInteractionType, QuestionTaskContext } from "./question-taxonomy-types";
+import type {
+  QuestionInteractionType,
+  QuestionTaskContext,
+} from "./question-taxonomy-types";
 
 export const QUESTION_TASK_CONTEXTS = [
   {
@@ -411,4 +414,3 @@ export const QUESTION_INTERACTION_TYPES = [
     order: 32,
   },
 ] as const satisfies readonly QuestionInteractionType[];
-

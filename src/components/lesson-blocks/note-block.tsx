@@ -9,11 +9,7 @@ type NoteBlockProps = {
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-export default function NoteBlock({
-  title,
-  content,
-  headingLevel = 3,
-}: NoteBlockProps) {
+export default function NoteBlock({ title, content, headingLevel = 3 }: NoteBlockProps) {
   return (
     <section className="dev-marker-host relative rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-6 shadow-sm">
       {SHOW_UI_DEBUG ? (

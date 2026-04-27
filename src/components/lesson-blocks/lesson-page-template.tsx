@@ -73,7 +73,11 @@ export default async function LessonPageTemplate({
           title="Lesson not found"
           description="This lesson could not be found. Return to the module and choose an available lesson."
           action={
-            <Button href={getModulePath(courseSlug, variantSlug, moduleSlug)} variant="primary" icon="back">
+            <Button
+              href={getModulePath(courseSlug, variantSlug, moduleSlug)}
+              variant="primary"
+              icon="back"
+            >
               Back to module
             </Button>
           }

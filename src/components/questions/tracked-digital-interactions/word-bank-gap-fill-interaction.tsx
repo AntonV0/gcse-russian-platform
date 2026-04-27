@@ -1,10 +1,7 @@
 "use client";
 
 import type { RuntimeWordBankGapFillQuestion } from "@/lib/questions/question-engine";
-import {
-  type InteractionControlProps,
-  SubmitAnswerButton,
-} from "./interaction-shared";
+import { type InteractionControlProps, SubmitAnswerButton } from "./interaction-shared";
 
 export function WordBankGapFillInteraction({
   question,
@@ -35,9 +32,7 @@ export function WordBankGapFillInteraction({
       <div className="grid gap-3">
         {question.gaps.map((gap) => (
           <label key={gap.id} className="grid gap-2 text-sm">
-            <span className="font-medium text-[var(--text-secondary)]">
-              {gap.label}
-            </span>
+            <span className="font-medium text-[var(--text-secondary)]">{gap.label}</span>
             <select
               value={gapAnswers[gap.id] ?? ""}
               onChange={(event) => onChangeGapAnswer(gap.id, event.target.value)}

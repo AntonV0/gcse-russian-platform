@@ -59,16 +59,12 @@ export default function VocabularyItemCard({
             </div>
 
             <div className="mt-3">
-              <h4 className="app-vocab-term">
-                {item.russian}
-              </h4>
+              <h4 className="app-vocab-term">{item.russian}</h4>
               <p className="mt-1 app-text-body-muted">{item.english}</p>
             </div>
           </div>
 
-          <div className="font-semibold app-text-caption group-open:hidden">
-            Edit
-          </div>
+          <div className="font-semibold app-text-caption group-open:hidden">Edit</div>
           <div className="hidden font-semibold app-text-caption group-open:block">
             Close
           </div>
@@ -91,9 +87,7 @@ export default function VocabularyItemCard({
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
-          <div className="app-text-meta">
-            Usage coverage
-          </div>
+          <div className="app-text-meta">Usage coverage</div>
           <div className="mt-3">
             <VocabularyItemCoverageBadges item={item} coverage={coverage} />
           </div>

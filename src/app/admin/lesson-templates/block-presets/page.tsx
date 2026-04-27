@@ -85,23 +85,23 @@ export default async function AdminLessonBlockPresetsPage() {
               subtitle={preset.description ?? undefined}
               badges={
                 <>
-                    <Badge tone="muted" icon="file">
-                      {preset.slug}
-                    </Badge>
+                  <Badge tone="muted" icon="file">
+                    {preset.slug}
+                  </Badge>
 
-                    {preset.is_active ? (
-                      <Badge tone="success" icon="completed">
-                        Active
-                      </Badge>
-                    ) : (
-                      <Badge tone="warning" icon="pending">
-                        Inactive
-                      </Badge>
-                    )}
-
-                    <Badge tone="muted" icon="help">
-                      {blockCountByPresetId.get(preset.id) ?? 0} block(s)
+                  {preset.is_active ? (
+                    <Badge tone="success" icon="completed">
+                      Active
                     </Badge>
+                  ) : (
+                    <Badge tone="warning" icon="pending">
+                      Inactive
+                    </Badge>
+                  )}
+
+                  <Badge tone="muted" icon="help">
+                    {blockCountByPresetId.get(preset.id) ?? 0} block(s)
+                  </Badge>
                 </>
               }
               actions={

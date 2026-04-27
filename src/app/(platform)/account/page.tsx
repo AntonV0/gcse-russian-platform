@@ -143,30 +143,20 @@ export default async function AccountPage() {
           <DashboardCard title="At a glance" headingLevel={3} className="h-full">
             <div className="space-y-4">
               <div className="app-stat-tile">
-                <div className="app-stat-label">
-                  Full name
-                </div>
+                <div className="app-stat-label">Full name</div>
                 <div className="app-stat-value">
                   {profile?.full_name ?? "No name saved"}
                 </div>
               </div>
 
               <div className="app-stat-tile">
-                <div className="app-stat-label">
-                  Email
-                </div>
-                <div className="app-stat-value">
-                  {user.email ?? "Not logged in"}
-                </div>
+                <div className="app-stat-label">Email</div>
+                <div className="app-stat-value">{user.email ?? "Not logged in"}</div>
               </div>
 
               <div className="app-stat-tile">
-                <div className="app-stat-label">
-                  Role
-                </div>
-                <div className="app-stat-value">
-                  {formatRoleLabel(dashboard.role)}
-                </div>
+                <div className="app-stat-label">Role</div>
+                <div className="app-stat-value">{formatRoleLabel(dashboard.role)}</div>
               </div>
             </div>
           </DashboardCard>
@@ -383,7 +373,6 @@ export default async function AccountPage() {
           </div>
         </DashboardCard>
       </section>
-
     </main>
   );
 }

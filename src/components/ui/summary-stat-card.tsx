@@ -130,9 +130,7 @@ export default function SummaryStatCard({
               <div className="min-w-0 flex flex-1 items-center gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex min-w-0 items-center gap-3">
-                    <div className="truncate app-heading-card">
-                      {title}
-                    </div>
+                    <div className="truncate app-heading-card">{title}</div>
 
                     <div
                       className={[
@@ -173,9 +171,7 @@ export default function SummaryStatCard({
         <CardBody className={compact ? "p-4" : "p-5"}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="app-text-caption">
-                {title}
-              </div>
+              <div className="app-text-caption">{title}</div>
 
               <div
                 className={[
@@ -204,9 +200,7 @@ export default function SummaryStatCard({
           {description || badge ? (
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               {description ? (
-                <p className="min-w-0 flex-1 app-text-body-muted">
-                  {description}
-                </p>
+                <p className="min-w-0 flex-1 app-text-body-muted">{description}</p>
               ) : (
                 <div />
               )}

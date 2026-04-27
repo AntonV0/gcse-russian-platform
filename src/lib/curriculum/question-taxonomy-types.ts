@@ -148,4 +148,3 @@ export type FutureQuestionMetadata = {
   markingMode: QuestionMarkingModeKey;
   requiresRussianTyping: boolean;
 };
-

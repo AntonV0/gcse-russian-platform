@@ -36,7 +36,9 @@ export default function TeacherAssignmentSummaryCards({
               : "Scheduled"
         }
         icon="calendar"
-        tone={dueStatus === "overdue" ? "danger" : dueStatus === "soon" ? "warning" : "brand"}
+        tone={
+          dueStatus === "overdue" ? "danger" : dueStatus === "soon" ? "warning" : "brand"
+        }
         compact
       />
       <SummaryStatCard

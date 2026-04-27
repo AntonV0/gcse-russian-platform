@@ -30,9 +30,7 @@ export function QuestionSetOverviewPanel({
 
       {questionSet.instructions ? (
         <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/55 px-4 py-3 text-sm leading-6 app-text-muted">
-          <span className="font-semibold text-[var(--text-primary)]">
-            Instructions:
-          </span>{" "}
+          <span className="font-semibold text-[var(--text-primary)]">Instructions:</span>{" "}
           {questionSet.instructions}
         </div>
       ) : null}

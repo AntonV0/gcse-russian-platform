@@ -29,4 +29,3 @@ export function getGrammarTopicLabel(value: string | null) {
   if (!value) return "Mixed";
   return value.replaceAll("_", " ");
 }
-

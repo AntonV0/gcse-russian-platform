@@ -81,9 +81,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">
-                Choose your learning path
-              </h2>
+              <h2 className="app-heading-hero max-w-3xl">Choose your learning path</h2>
               <p className="app-subtitle max-w-2xl">
                 Start with the course path that matches your level and study goals, then
                 work through modules and lessons step by step.
@@ -117,27 +115,18 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">
-                    Paths
-                  </div>
-                  <div className="app-stat-value">
-                    {variants.length}
-                  </div>
+                  <div className="app-stat-label">Paths</div>
+                  <div className="app-stat-value">{variants.length}</div>
                 </div>
 
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">
-                    Journey
-                  </div>
-                  <div className="app-stat-value">
-                    Path, module, lesson
-                  </div>
+                  <div className="app-stat-label">Journey</div>
+                  <div className="app-stat-value">Path, module, lesson</div>
                 </div>
               </div>
 
               <p className="text-sm app-text-muted">
-                Choose the path that matches your level, then follow the modules in
-                order.
+                Choose the path that matches your level, then follow the modules in order.
               </p>
             </div>
           </DashboardCard>
@@ -179,9 +168,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="app-heading-subsection">
-                      {variant.title}
-                    </h3>
+                    <h3 className="app-heading-subsection">{variant.title}</h3>
 
                     <p className="app-text-body-muted">
                       {variant.description ??
@@ -189,9 +176,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                     </p>
                   </div>
 
-                  <div className="pt-1 text-sm font-medium app-brand-text">
-                    Open path
-                  </div>
+                  <div className="pt-1 text-sm font-medium app-brand-text">Open path</div>
                 </div>
               </DashboardCard>
             </Link>

@@ -198,4 +198,3 @@ export function normalizeProfileSummary(row: unknown): MockExamProfileSummary {
     email: record.email ?? null,
   };
 }
-

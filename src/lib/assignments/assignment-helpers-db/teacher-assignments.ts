@@ -51,10 +51,7 @@ export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string)
   const profileIds = Array.from(
     new Set(
       submissions
-        .flatMap((submission) => [
-          submission.student_user_id,
-          submission.reviewed_by,
-        ])
+        .flatMap((submission) => [submission.student_user_id, submission.reviewed_by])
         .filter((profileId): profileId is string => Boolean(profileId))
     )
   );
@@ -80,7 +77,7 @@ export async function getAssignmentSubmissionsForTeacherDb(assignmentId: string)
     submission,
     student: profilesById.get(submission.student_user_id) ?? null,
     reviewer: submission.reviewed_by
-      ? profilesById.get(submission.reviewed_by) ?? null
+      ? (profilesById.get(submission.reviewed_by) ?? null)
       : null,
   }));
 
@@ -145,7 +142,9 @@ export async function getTeacherAssignmentsDb(): Promise<TeacherAssignmentListIt
     return [];
   }
 
-  const groupIds = Array.from(new Set(assignments.map((assignment) => assignment.group_id)));
+  const groupIds = Array.from(
+    new Set(assignments.map((assignment) => assignment.group_id))
+  );
   const assignmentIds = assignments.map((assignment) => assignment.id);
 
   const [{ data: groups }, { data: submissions }] = await Promise.all([

@@ -45,9 +45,7 @@ export function BlockPresetList(props: BlockPresetListProps) {
           <input type="hidden" name="presetId" value={preset.id} />
 
           <div className="mb-3">
-            <div className="font-semibold text-[var(--text-primary)]">
-              {preset.label}
-            </div>
+            <div className="font-semibold text-[var(--text-primary)]">{preset.label}</div>
             <div className="text-sm app-text-muted">{preset.description}</div>
             <div className="mt-2 text-xs app-text-soft">
               {preset.blocksCount} block{preset.blocksCount === 1 ? "" : "s"}

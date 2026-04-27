@@ -265,9 +265,7 @@ export default async function AdminUiSurfacesPage() {
                   <div className="text-xs font-semibold uppercase tracking-[0.08em] app-text-soft">
                     Updated
                   </div>
-                  <div className="mt-1 text-sm text-[var(--text-primary)]">
-                    Today
-                  </div>
+                  <div className="mt-1 text-sm text-[var(--text-primary)]">Today</div>
                 </div>
               </div>
             </CardBody>

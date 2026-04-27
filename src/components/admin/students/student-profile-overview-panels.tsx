@@ -14,11 +14,7 @@ import {
   formatVariantLabel,
 } from "@/components/admin/students/student-profile-utils";
 
-export function StudentProfileOverviewPanels({
-  student,
-}: {
-  student: AdminProfileRow;
-}) {
+export function StudentProfileOverviewPanels({ student }: { student: AdminProfileRow }) {
   return (
     <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
       <PanelCard title="Profile Details" tone="admin">
@@ -41,7 +37,11 @@ export function StudentProfileOverviewPanels({
       >
         <form action={setTeacherRoleAction}>
           <input type="hidden" name="userId" value={student.id} />
-          <input type="hidden" name="redirectTo" value={`/admin/students/${student.id}`} />
+          <input
+            type="hidden"
+            name="redirectTo"
+            value={`/admin/students/${student.id}`}
+          />
           <input
             type="hidden"
             name="mode"

@@ -66,9 +66,7 @@ export default async function AdminQuestionSetsPage() {
                     ) : null}
 
                     {questionSet.instructions ? (
-                      <p className="text-sm app-text-muted">
-                        {questionSet.instructions}
-                      </p>
+                      <p className="text-sm app-text-muted">{questionSet.instructions}</p>
                     ) : null}
 
                     <div className="flex items-center gap-2 text-sm app-text-muted">

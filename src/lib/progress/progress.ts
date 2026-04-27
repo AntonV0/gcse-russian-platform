@@ -85,7 +85,9 @@ export async function getLessonSectionProgress(
 
   const { data, error } = await supabase
     .from("lesson_section_progress")
-    .select("id, user_id, lesson_id, section_id, first_visited_at, last_visited_at, visit_count, created_at, updated_at")
+    .select(
+      "id, user_id, lesson_id, section_id, first_visited_at, last_visited_at, visit_count, created_at, updated_at"
+    )
     .eq("user_id", user.id)
     .eq("lesson_id", lessonId);
 

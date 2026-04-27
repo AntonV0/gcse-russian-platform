@@ -21,10 +21,7 @@ import {
   BUILDER_FIELD_CLASS,
   buildLessonBuilderRouteFormData,
 } from "@/components/admin/lesson-builder/lesson-builder-ui";
-import {
-  getVariantVisibilityMeta,
-  SidebarIconButton,
-} from "./sidebar-primitives";
+import { getVariantVisibilityMeta, SidebarIconButton } from "./sidebar-primitives";
 import AppIcon from "@/components/ui/app-icon";
 
 type SectionListProps = {
@@ -278,14 +275,10 @@ export function SectionList(props: SectionListProps) {
                         <SidebarIconButton
                           icon={section.is_published ? "hidden" : "preview"}
                           ariaLabel={
-                            section.is_published
-                              ? "Unpublish section"
-                              : "Publish section"
+                            section.is_published ? "Unpublish section" : "Publish section"
                           }
                           title={
-                            section.is_published
-                              ? "Unpublish section"
-                              : "Publish section"
+                            section.is_published ? "Unpublish section" : "Publish section"
                           }
                           disabled={isPending || !!props.draggedBlockContext}
                         />
@@ -302,9 +295,7 @@ export function SectionList(props: SectionListProps) {
                           ariaLabel="Move section up"
                           title="Move section up"
                           disabled={
-                            actualIndex === 0 ||
-                            isPending ||
-                            !!props.draggedBlockContext
+                            actualIndex === 0 || isPending || !!props.draggedBlockContext
                           }
                         />
                       </form>

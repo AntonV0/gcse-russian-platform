@@ -426,7 +426,10 @@ function DemoResponsivePreviewFrames() {
               description="Main work area gets the wider column."
               tone="brand"
             />
-            <PreviewPanel title="Action row" description="Buttons wrap before overflow." />
+            <PreviewPanel
+              title="Action row"
+              description="Buttons wrap before overflow."
+            />
           </div>
         </div>
       </ResponsivePreviewFrame>

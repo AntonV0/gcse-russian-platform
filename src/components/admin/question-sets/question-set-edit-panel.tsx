@@ -11,11 +11,7 @@ import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 import Textarea from "@/components/ui/textarea";
 
-export function QuestionSetEditPanel({
-  questionSet,
-}: {
-  questionSet: DbQuestionSet;
-}) {
+export function QuestionSetEditPanel({ questionSet }: { questionSet: DbQuestionSet }) {
   return (
     <PanelCard
       title="Edit question set"

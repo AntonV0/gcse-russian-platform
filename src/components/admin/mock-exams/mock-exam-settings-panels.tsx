@@ -37,11 +37,19 @@ export default function MockExamSettingsPanels({ exam }: { exam: DbMockExamSet }
             </FormField>
 
             <FormField label="Description">
-              <Textarea name="description" rows={3} defaultValue={exam.description ?? ""} />
+              <Textarea
+                name="description"
+                rows={3}
+                defaultValue={exam.description ?? ""}
+              />
             </FormField>
 
             <FormField label="Paper number" required>
-              <Select name="paperNumber" required defaultValue={String(exam.paper_number)}>
+              <Select
+                name="paperNumber"
+                required
+                defaultValue={String(exam.paper_number)}
+              >
                 <option value="1">Paper 1</option>
                 <option value="2">Paper 2</option>
                 <option value="3">Paper 3</option>

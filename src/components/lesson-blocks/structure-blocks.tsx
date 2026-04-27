@@ -121,9 +121,7 @@ export function ImageBlock({
         />
       </div>
 
-      {caption ? (
-        <figcaption className="app-text-caption">{caption}</figcaption>
-      ) : null}
+      {caption ? <figcaption className="app-text-caption">{caption}</figcaption> : null}
     </figure>
   );
 }

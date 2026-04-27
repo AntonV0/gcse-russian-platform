@@ -85,23 +85,23 @@ export default async function AdminLessonTemplatesListPage() {
               subtitle={template.description ?? undefined}
               badges={
                 <>
-                    <Badge tone="muted" icon="file">
-                      {template.slug}
-                    </Badge>
+                  <Badge tone="muted" icon="file">
+                    {template.slug}
+                  </Badge>
 
-                    <Badge tone="muted" icon="help">
-                      {sectionCountByTemplateId.get(template.id) ?? 0} section(s)
-                    </Badge>
+                  <Badge tone="muted" icon="help">
+                    {sectionCountByTemplateId.get(template.id) ?? 0} section(s)
+                  </Badge>
 
-                    {template.is_active ? (
-                      <Badge tone="success" icon="completed">
-                        Active
-                      </Badge>
-                    ) : (
-                      <Badge tone="warning" icon="pending">
-                        Inactive
-                      </Badge>
-                    )}
+                  {template.is_active ? (
+                    <Badge tone="success" icon="completed">
+                      Active
+                    </Badge>
+                  ) : (
+                    <Badge tone="warning" icon="pending">
+                      Inactive
+                    </Badge>
+                  )}
                 </>
               }
               actions={

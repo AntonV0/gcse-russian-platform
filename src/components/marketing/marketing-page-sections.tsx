@@ -63,12 +63,8 @@ export function MarketingStepList({
                 {index + 1}
               </span>
               <div className="space-y-1">
-                <h3 className="app-heading-card">
-                  {step.title}
-                </h3>
-                <p className="app-text-body-muted">
-                  {step.description}
-                </p>
+                <h3 className="app-heading-card">{step.title}</h3>
+                <p className="app-text-body-muted">{step.description}</p>
               </div>
             </CardBody>
           </Card>
@@ -101,12 +97,8 @@ export function MarketingRelatedLinks({
                 ) : null}
               </div>
               <div>
-                <h3 className="app-heading-card">
-                  {link.title}
-                </h3>
-                <p className="mt-1 app-text-body-muted">
-                  {link.description}
-                </p>
+                <h3 className="app-heading-card">{link.title}</h3>
+                <p className="mt-1 app-text-body-muted">{link.description}</p>
               </div>
               <Button href={link.href} variant="quiet" size="sm" icon="next">
                 Open page
@@ -138,12 +130,8 @@ export function MarketingFaqSection({
             key={item.question}
             className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
           >
-            <h3 className="app-heading-card">
-              {item.question}
-            </h3>
-            <p className="mt-2 app-text-body-muted">
-              {item.answer}
-            </p>
+            <h3 className="app-heading-card">{item.question}</h3>
+            <p className="mt-2 app-text-body-muted">{item.answer}</p>
           </div>
         ))}
       </div>
@@ -171,9 +159,7 @@ export function MarketingCtaBand({
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)] lg:items-center">
         <div className="space-y-2">
           <h2 className="app-section-title text-xl">{title}</h2>
-          <p className="max-w-2xl app-text-body-muted">
-            {description}
-          </p>
+          <p className="max-w-2xl app-text-body-muted">{description}</p>
         </div>
 
         <div className="app-mobile-action-stack flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:justify-end">

@@ -123,9 +123,9 @@ export default async function AssignmentsPage() {
 
                       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         <div>
-                            <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                              Due date
-                            </p>
+                          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                            Due date
+                          </p>
                           <p className={`text-sm ${getDueDateClass(dueStatus)}`}>
                             {formatDueDate(assignment.due_at)}
                             {dueStatus === "overdue" ? " (Overdue)" : ""}
@@ -134,9 +134,9 @@ export default async function AssignmentsPage() {
                         </div>
 
                         <div>
-                            <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                              Status
-                            </p>
+                          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                            Status
+                          </p>
                           <div className="mb-2">
                             <StatusBadge status={status} />
                           </div>

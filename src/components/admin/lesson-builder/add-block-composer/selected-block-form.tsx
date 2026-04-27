@@ -54,12 +54,7 @@ export function SelectedBlockForm(props: SelectedBlockFormProps) {
           </div>
         </div>
 
-        <Button
-          type="button"
-          onClick={props.onClear}
-          variant="secondary"
-          size="sm"
-        >
+        <Button type="button" onClick={props.onClear} variant="secondary" size="sm">
           Clear
         </Button>
       </div>

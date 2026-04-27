@@ -2,13 +2,12 @@ import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
-import { BulkVocabularyItemForm, NewVocabularyItemForm } from "@/components/admin/vocabulary/items/item-forms";
 import {
-  getDefaultVocabularyItemTier,
-} from "@/components/admin/vocabulary/items/item-display";
-import {
-  VocabularyAdminStatTile,
-} from "@/components/admin/vocabulary/items/primitives";
+  BulkVocabularyItemForm,
+  NewVocabularyItemForm,
+} from "@/components/admin/vocabulary/items/item-forms";
+import { getDefaultVocabularyItemTier } from "@/components/admin/vocabulary/items/item-display";
+import { VocabularyAdminStatTile } from "@/components/admin/vocabulary/items/primitives";
 import VocabularyItemCard from "@/components/admin/vocabulary/items/vocabulary-item-card";
 import {
   getVocabularyListAppliesToStudyVariant,
@@ -34,7 +33,9 @@ function getAdminListSectionTitle(list: DbVocabularyList) {
 }
 
 function groupAdminItemsByList(lists: DbVocabularyList[], items: DbVocabularyItem[]) {
-  const itemListIds = new Set(items.map((item) => item.vocabulary_list_id).filter(Boolean));
+  const itemListIds = new Set(
+    items.map((item) => item.vocabulary_list_id).filter(Boolean)
+  );
   const visibleLists = lists.filter((list) => itemListIds.has(list.id));
 
   if (visibleLists.length === 0) {
@@ -113,9 +114,7 @@ export default function VocabularySetItemsAdmin({
             </div>
 
             <div>
-              <h2 className="app-heading-section">
-                {vocabularySet.title}
-              </h2>
+              <h2 className="app-heading-section">{vocabularySet.title}</h2>
               <p className="mt-2 max-w-3xl app-text-body-muted">
                 {vocabularySet.description || "No description yet."}
               </p>
@@ -167,9 +166,7 @@ export default function VocabularySetItemsAdmin({
 
       <section className="app-surface app-section-padding">
         <div className="mb-5 flex flex-col gap-2">
-          <h2 className="app-heading-subsection">
-            Current items
-          </h2>
+          <h2 className="app-heading-subsection">Current items</h2>
           <p className="app-text-body-muted">
             Items are collapsed by default so long sets stay scannable. Open one item when
             you need detailed editing.
@@ -186,12 +183,8 @@ export default function VocabularySetItemsAdmin({
             {itemSections.map((section) => (
               <section key={section.key} className="space-y-4">
                 <div>
-                  <h3 className="app-heading-card">
-                    {section.title}
-                  </h3>
-                  <p className="mt-1 app-text-caption">
-                    {section.description}
-                  </p>
+                  <h3 className="app-heading-card">{section.title}</h3>
+                  <p className="mt-1 app-text-caption">{section.description}</p>
                 </div>
 
                 <div className="space-y-4">

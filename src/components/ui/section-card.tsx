@@ -134,7 +134,9 @@ export default function SectionCard({
         >
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0 space-y-1">
-              <Heading level={headingLevel} className="app-card-title">{title}</Heading>
+              <Heading level={headingLevel} className="app-card-title">
+                {title}
+              </Heading>
               {description ? <p className="app-card-desc">{description}</p> : null}
             </div>
 

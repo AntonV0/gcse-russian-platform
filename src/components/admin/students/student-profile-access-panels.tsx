@@ -21,19 +21,16 @@ import {
   getProductLabel,
 } from "@/components/admin/students/student-profile-utils";
 
-function GrantBadges({
-  grant,
-  active,
-}: {
-  grant: AdminAccessGrantRow;
-  active: boolean;
-}) {
+function GrantBadges({ grant, active }: { grant: AdminAccessGrantRow; active: boolean }) {
   return (
     <>
       <Badge tone={active ? "info" : "muted"} icon="user">
         {getGrantLabel(grant)}
       </Badge>
-      <Badge tone={active ? "success" : "warning"} icon={active ? "completed" : "pending"}>
+      <Badge
+        tone={active ? "success" : "warning"}
+        icon={active ? "completed" : "pending"}
+      >
         {active ? "Active" : "Inactive"}
       </Badge>
       {grant.products?.[0]?.name ? (
@@ -71,7 +68,11 @@ export function CurrentAccessPanel({
             <form action={deactivateAccessGrantAction}>
               <input type="hidden" name="userId" value={studentId} />
               <input type="hidden" name="grantId" value={activeGrant.id} />
-              <input type="hidden" name="redirectTo" value={`/admin/students/${studentId}`} />
+              <input
+                type="hidden"
+                name="redirectTo"
+                value={`/admin/students/${studentId}`}
+              />
               <AdminConfirmButton confirmMessage="Deactivate this student's current access grant?">
                 Deactivate
               </AdminConfirmButton>

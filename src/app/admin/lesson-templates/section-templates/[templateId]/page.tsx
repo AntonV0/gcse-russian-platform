@@ -125,10 +125,7 @@ export default async function AdminLessonSectionTemplateDetailPage({
           </FormField>
 
           <FormField label="Description" className="md:col-span-2">
-            <Input
-              name="description"
-              defaultValue={detail.template.description ?? ""}
-            />
+            <Input name="description" defaultValue={detail.template.description ?? ""} />
           </FormField>
 
           <CheckboxField

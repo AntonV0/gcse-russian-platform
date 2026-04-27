@@ -7,6 +7,11 @@ import {
   resolveCheckoutCatalogDb,
   type SupportedIntervalUnit,
 } from "@/lib/billing/catalog";
+import {
+  DEFAULT_CHECKOUT_CANCEL_PATH,
+  DEFAULT_CHECKOUT_SUCCESS_PATH,
+  resolveOptionalInternalRedirectPath,
+} from "@/lib/billing/redirect-paths";
 import { createStripeCheckoutSession } from "@/lib/billing/stripe";
 
 type CheckoutRequestBody = {
@@ -70,6 +75,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid intervalCount" }, { status: 400 });
     }
 
+    const successPath = resolveOptionalInternalRedirectPath(
+      body.successPath,
+      DEFAULT_CHECKOUT_SUCCESS_PATH
+    );
+    const cancelPath = resolveOptionalInternalRedirectPath(
+      body.cancelPath,
+      DEFAULT_CHECKOUT_CANCEL_PATH
+    );
+
+    if (!successPath) {
+      return NextResponse.json({ error: "Invalid successPath" }, { status: 400 });
+    }
+
+    if (!cancelPath) {
+      return NextResponse.json({ error: "Invalid cancelPath" }, { status: 400 });
+    }
+
     const user = await getCurrentUser();
 
     if (!user) {
@@ -127,8 +149,8 @@ export async function POST(req: NextRequest) {
         priceId: resolved.price.id,
         purchaseType: resolved.purchaseType,
         upgradeFlow: resolved.upgradeFlow ?? null,
-        successPath: body.successPath,
-        cancelPath: body.cancelPath,
+        successPath,
+        cancelPath,
         customerEmail: user.email ?? null,
       },
       resolved.price.billing_type

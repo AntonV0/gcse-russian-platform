@@ -59,12 +59,16 @@ export async function createVocabularyItemAction(formData: FormData) {
   const partOfSpeech = assertVocabularyPartOfSpeech(
     getTrimmedString(formData, "partOfSpeech") || "unknown"
   );
-  const gender = assertVocabularyGender(getTrimmedString(formData, "gender") || "unknown");
+  const gender = assertVocabularyGender(
+    getTrimmedString(formData, "gender") || "unknown"
+  );
   const productiveReceptive = assertVocabularyProductiveReceptive(
     getTrimmedString(formData, "productiveReceptive") || "unknown"
   );
   const tier = assertVocabularyTier(getTrimmedString(formData, "tier") || "unknown");
-  const aspect = assertVocabularyAspect(getTrimmedString(formData, "aspect") || "unknown");
+  const aspect = assertVocabularyAspect(
+    getTrimmedString(formData, "aspect") || "unknown"
+  );
   const isReflexive = getTrimmedString(formData, "isReflexive") === "true";
 
   const supabase = await createClient();

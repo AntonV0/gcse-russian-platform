@@ -12,7 +12,11 @@ export default function StudentFeedbackBanners({
   return (
     <div className="mb-6 space-y-3">
       {success ? (
-        <FeedbackBanner tone="success" title="Student account updated" description={success} />
+        <FeedbackBanner
+          tone="success"
+          title="Student account updated"
+          description={success}
+        />
       ) : null}
 
       {error ? (

@@ -134,7 +134,9 @@ export default function TeacherAssignmentSubmissionsPanel({
                 contentClassName="space-y-4"
               >
                 <div className="grid gap-3 text-sm app-text-muted md:grid-cols-2">
-                  <div>Submitted: {formatAssignmentDateTime(submission.submitted_at)}</div>
+                  <div>
+                    Submitted: {formatAssignmentDateTime(submission.submitted_at)}
+                  </div>
                   {submission.reviewed_at ? (
                     <div className="text-[var(--success)]">
                       Reviewed: {formatAssignmentDateTime(submission.reviewed_at)}

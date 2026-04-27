@@ -26,9 +26,7 @@ export default function UiLabPageNav({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div className="flex shrink-0 items-center gap-2">
           <AppIcon icon="list" size={16} className="app-brand-text" />
-          <div className="text-sm font-semibold text-[var(--text-primary)]">
-            {title}
-          </div>
+          <div className="text-sm font-semibold text-[var(--text-primary)]">{title}</div>
           <Badge tone="muted">{items.length}</Badge>
         </div>
 

@@ -45,9 +45,7 @@ export default function LessonTemplateInserter({
                 <div className="font-semibold text-[var(--text-primary)]">
                   {template.label}
                 </div>
-                <div className="mt-1 text-sm app-text-muted">
-                  {template.description}
-                </div>
+                <div className="mt-1 text-sm app-text-muted">{template.description}</div>
               </div>
 
               <div className="mb-3 text-xs app-text-soft">

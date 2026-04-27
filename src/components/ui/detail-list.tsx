@@ -38,9 +38,7 @@ export default function DetailList({ items, className }: DetailListProps) {
             key={item.label}
             className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/55 px-3 py-2.5"
           >
-            <dt className="app-text-meta">
-              {item.label}
-            </dt>
+            <dt className="app-text-meta">{item.label}</dt>
             <dd className="mt-1 min-w-0 [overflow-wrap:anywhere] app-text-detail">
               {item.value}
             </dd>

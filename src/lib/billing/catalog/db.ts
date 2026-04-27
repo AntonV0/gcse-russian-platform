@@ -1,4 +1,7 @@
-import { getActiveUserProductGrantDb, type DbUserAccessGrant } from "@/lib/billing/grants";
+import {
+  getActiveUserProductGrantDb,
+  type DbUserAccessGrant,
+} from "@/lib/billing/grants";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PRODUCT_CODES, type DbPrice, type DbProduct } from "./types";
 

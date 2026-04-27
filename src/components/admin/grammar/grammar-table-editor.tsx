@@ -4,7 +4,10 @@ import { useMemo, useState } from "react";
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-import type { GrammarTableColumns, GrammarTableRows } from "@/lib/grammar/grammar-helpers-db";
+import type {
+  GrammarTableColumns,
+  GrammarTableRows,
+} from "@/lib/grammar/grammar-helpers-db";
 
 type GrammarTableEditorProps = {
   columnsInputName?: string;
@@ -38,7 +41,10 @@ export default function GrammarTableEditor({
     normalizeRows(defaultRows.length > 0 ? defaultRows : [[""]], columns.length)
   );
 
-  const normalizedRows = useMemo(() => normalizeRows(rows, columns.length), [rows, columns]);
+  const normalizedRows = useMemo(
+    () => normalizeRows(rows, columns.length),
+    [rows, columns]
+  );
 
   function updateColumn(index: number, value: string) {
     setColumns((current) =>
@@ -78,7 +84,10 @@ export default function GrammarTableEditor({
   }
 
   function addRow() {
-    setRows((current) => [...normalizeRows(current, columns.length), columns.map(() => "")]);
+    setRows((current) => [
+      ...normalizeRows(current, columns.length),
+      columns.map(() => ""),
+    ]);
   }
 
   function removeRow(index: number) {
@@ -100,11 +109,18 @@ export default function GrammarTableEditor({
               Columns
             </div>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">
-              Table structure is stored as JSON, so it can render in any future lesson or practice surface.
+              Table structure is stored as JSON, so it can render in any future lesson or
+              practice surface.
             </p>
           </div>
 
-          <Button type="button" variant="secondary" size="sm" icon="create" onClick={addColumn}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            icon="create"
+            onClick={addColumn}
+          >
             Add column
           </Button>
         </div>
@@ -143,7 +159,13 @@ export default function GrammarTableEditor({
             </p>
           </div>
 
-          <Button type="button" variant="secondary" size="sm" icon="create" onClick={addRow}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            icon="create"
+            onClick={addRow}
+          >
             Add row
           </Button>
         </div>
@@ -173,7 +195,10 @@ export default function GrammarTableEditor({
 
               <div className="grid gap-3 md:grid-cols-2">
                 {columns.map((column, columnIndex) => (
-                  <FormField key={`${rowIndex}-${columnIndex}`} label={column || "Column"}>
+                  <FormField
+                    key={`${rowIndex}-${columnIndex}`}
+                    label={column || "Column"}
+                  >
                     <Input
                       value={row[columnIndex] ?? ""}
                       onChange={(event) =>

@@ -58,8 +58,7 @@ function getSubscriptionPeriod(subscription: Stripe.Subscription): {
 
   return {
     startsAt: fromUnixTimestamp(
-      subscriptionItem?.current_period_start ??
-        subscriptionPeriod.current_period_start
+      subscriptionItem?.current_period_start ?? subscriptionPeriod.current_period_start
     ),
     endsAt: fromUnixTimestamp(
       subscriptionItem?.current_period_end ?? subscriptionPeriod.current_period_end

@@ -1,10 +1,7 @@
 import { deleteGrammarPointAction } from "@/app/actions/admin/admin-grammar-point-actions";
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import PanelCard from "@/components/ui/panel-card";
-import type {
-  DbGrammarPoint,
-  DbGrammarSet,
-} from "@/lib/grammar/grammar-helpers-db";
+import type { DbGrammarPoint, DbGrammarSet } from "@/lib/grammar/grammar-helpers-db";
 
 export default function GrammarPointDangerZone({
   grammarSet,

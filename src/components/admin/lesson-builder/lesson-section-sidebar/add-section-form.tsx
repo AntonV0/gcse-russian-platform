@@ -45,7 +45,11 @@ export function AddSectionForm({ routeFields }: { routeFields: RouteFields }) {
         <label className="mb-1 block text-sm font-semibold text-[var(--text-primary)]">
           Section kind
         </label>
-        <select name="sectionKind" defaultValue="content" className={BUILDER_SELECT_CLASS}>
+        <select
+          name="sectionKind"
+          defaultValue="content"
+          className={BUILDER_SELECT_CLASS}
+        >
           {SECTION_KIND_OPTIONS.map((option) => (
             <option key={option} value={option}>
               {option}

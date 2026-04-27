@@ -1,4 +1,8 @@
-import type { MockExamQuestionType, MockExamSectionType, MockExamTier } from "@/lib/mock-exams/types";
+import type {
+  MockExamQuestionType,
+  MockExamSectionType,
+  MockExamTier,
+} from "@/lib/mock-exams/types";
 
 export function getMockExamTierLabel(tier: MockExamTier) {
   switch (tier) {
@@ -25,4 +29,3 @@ export function getMockExamQuestionTypeLabel(questionType: MockExamQuestionType)
       return questionType.replaceAll("_", " ");
   }
 }
-

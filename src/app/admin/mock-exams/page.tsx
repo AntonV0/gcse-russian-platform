@@ -178,7 +178,13 @@ export default async function AdminMockExamsPage({
             </FormField>
 
             <FormField label="Total marks">
-              <Input name="totalMarks" type="number" min="0" step="0.5" defaultValue="0" />
+              <Input
+                name="totalMarks"
+                type="number"
+                min="0"
+                step="0.5"
+                defaultValue="0"
+              />
             </FormField>
 
             <FormField label="Sort order">
@@ -196,11 +202,21 @@ export default async function AdminMockExamsPage({
               Trial visible
             </label>
             <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-              <input type="checkbox" name="requiresPaidAccess" value="true" defaultChecked />
+              <input
+                type="checkbox"
+                name="requiresPaidAccess"
+                value="true"
+                defaultChecked
+              />
               Requires paid access
             </label>
             <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-              <input type="checkbox" name="availableInVolna" value="true" defaultChecked />
+              <input
+                type="checkbox"
+                name="availableInVolna"
+                value="true"
+                defaultChecked
+              />
               Volna visible
             </label>
           </div>

@@ -68,7 +68,9 @@ export async function getGrammarSetsDb(filters?: GrammarSetFilters) {
     return [] as DbGrammarSetListItem[];
   }
 
-  const withCounts = await attachGrammarPointCounts((data ?? []).map(normalizeGrammarSet));
+  const withCounts = await attachGrammarPointCounts(
+    (data ?? []).map(normalizeGrammarSet)
+  );
   return applyGrammarSetFilters(withCounts, filters);
 }
 
@@ -87,7 +89,9 @@ export async function getPublishedGrammarSetsDb(filters?: GrammarSetFilters) {
     return [] as DbGrammarSetListItem[];
   }
 
-  const withCounts = await attachGrammarPointCounts((data ?? []).map(normalizeGrammarSet));
+  const withCounts = await attachGrammarPointCounts(
+    (data ?? []).map(normalizeGrammarSet)
+  );
   return applyGrammarSetFilters(withCounts, { ...filters, published: "published" });
 }
 

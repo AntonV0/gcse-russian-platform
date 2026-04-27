@@ -39,10 +39,10 @@ export default function PageHeader({
         />
       ) : null}
 
-      <Heading level={headingLevel} className="app-title">{title}</Heading>
-      {description ? (
-        <p className="max-w-3xl app-text-lede">{description}</p>
-      ) : null}
+      <Heading level={headingLevel} className="app-title">
+        {title}
+      </Heading>
+      {description ? <p className="max-w-3xl app-text-lede">{description}</p> : null}
     </div>
   );
 }

@@ -152,7 +152,10 @@ export function validateStructuredAnswer(params: {
       isCorrect =
         question.gaps.length > 0 &&
         question.gaps.every((gap) => {
-          const submitted = normalizeFreeTextAnswer(String(gaps[gap.id] ?? ""), params.options);
+          const submitted = normalizeFreeTextAnswer(
+            String(gaps[gap.id] ?? ""),
+            params.options
+          );
           return gap.acceptedAnswers.some(
             (answer) => normalizeFreeTextAnswer(answer, params.options) === submitted
           );
@@ -235,4 +238,3 @@ export function validateSentenceBuilderAnswer(params: {
     acceptedAnswerTexts: isCorrect ? [] : acceptedAnswerTexts,
   };
 }
-

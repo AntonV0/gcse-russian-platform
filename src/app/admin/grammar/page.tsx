@@ -102,7 +102,11 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
         <TableToolbar>
           <form className="flex flex-1 flex-col gap-3 lg:flex-row lg:items-center">
             <div className="w-full lg:max-w-xs">
-              <Input name="search" defaultValue={params.search ?? ""} placeholder="Search grammar..." />
+              <Input
+                name="search"
+                defaultValue={params.search ?? ""}
+                placeholder="Search grammar..."
+              />
             </div>
 
             <div className="w-full lg:max-w-[190px]">

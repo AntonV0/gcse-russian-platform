@@ -44,9 +44,7 @@ export default function AppShell({ user, children }: AppShellProps) {
 
       <SiteHeader user={user} />
 
-      <main className="app-shell-main flex-1">
-        {children}
-      </main>
+      <main className="app-shell-main flex-1">{children}</main>
 
       <SiteFooter />
     </div>

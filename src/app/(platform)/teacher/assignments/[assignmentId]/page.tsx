@@ -43,7 +43,6 @@ export default async function TeacherAssignmentReviewPage({
     return <main>Assignment not found.</main>;
   }
 
-
   const submissionsWithFiles = await Promise.all(
     submissions.map(async ({ submission, student, reviewer }) => {
       const fileUrl = await getSignedStorageUrl(
@@ -161,5 +160,3 @@ export default async function TeacherAssignmentReviewPage({
     </main>
   );
 }
-
-

@@ -239,9 +239,7 @@ export default async function ProfilePage({
                   key={avatar.key}
                   className={[
                     "app-card flex cursor-pointer flex-col items-center gap-3 p-5 text-center transition",
-                    isSelected
-                      ? "app-selected-surface"
-                      : "hover:-translate-y-0.5",
+                    isSelected ? "app-selected-surface" : "hover:-translate-y-0.5",
                   ].join(" ")}
                 >
                   <input

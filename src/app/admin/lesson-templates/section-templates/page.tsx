@@ -32,7 +32,11 @@ function CreateSectionTemplateCard() {
           <Input name="slug" required placeholder="section-template-slug" />
         </FormField>
         <FormField label="Default section title" required>
-          <Input name="defaultSectionTitle" required placeholder="Default section title" />
+          <Input
+            name="defaultSectionTitle"
+            required
+            placeholder="Default section title"
+          />
         </FormField>
         <FormField label="Default section kind" required>
           <Select name="defaultSectionKind" required defaultValue="content">
@@ -110,27 +114,27 @@ export default async function AdminLessonSectionTemplatesPage() {
                 .join(" - ")}
               badges={
                 <>
-                    <Badge tone="muted" icon="file">
-                      {template.slug}
-                    </Badge>
+                  <Badge tone="muted" icon="file">
+                    {template.slug}
+                  </Badge>
 
-                    <Badge tone="muted" icon="help">
-                      {template.default_section_kind}
-                    </Badge>
+                  <Badge tone="muted" icon="help">
+                    {template.default_section_kind}
+                  </Badge>
 
-                    <Badge tone="muted" icon="help">
-                      {presetCountByTemplateId.get(template.id) ?? 0} preset(s)
-                    </Badge>
+                  <Badge tone="muted" icon="help">
+                    {presetCountByTemplateId.get(template.id) ?? 0} preset(s)
+                  </Badge>
 
-                    {template.is_active ? (
-                      <Badge tone="success" icon="completed">
-                        Active
-                      </Badge>
-                    ) : (
-                      <Badge tone="warning" icon="pending">
-                        Inactive
-                      </Badge>
-                    )}
+                  {template.is_active ? (
+                    <Badge tone="success" icon="completed">
+                      Active
+                    </Badge>
+                  ) : (
+                    <Badge tone="warning" icon="pending">
+                      Inactive
+                    </Badge>
+                  )}
                 </>
               }
               actions={

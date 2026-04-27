@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { DbVocabularySetCoverageSummary } from "@/lib/vocabulary/vocabulary-helpers-db";
+import type { DbVocabularySetCoverageSummary } from "@/lib/vocabulary/types";
 
 function getCoverageTone(usedItems: number, totalItems: number) {
   if (totalItems === 0 || usedItems === 0) return "danger";

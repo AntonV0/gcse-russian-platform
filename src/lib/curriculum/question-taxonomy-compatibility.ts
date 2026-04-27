@@ -15,7 +15,8 @@ export const EXISTING_QUESTION_SET_COMPATIBILITY = [
     recommendedInteractionTypes: ["short_answer_en", "note_completion_en"],
     status: "covered",
     russianTypingRisk: "medium",
-    notes: "Keep for English responses. Avoid authoring Russian typed answers by default.",
+    notes:
+      "Keep for English responses. Avoid authoring Russian typed answers by default.",
   },
   {
     sourceSystem: "question_set",
@@ -24,7 +25,8 @@ export const EXISTING_QUESTION_SET_COMPATIBILITY = [
     recommendedInteractionTypes: ["translation_ru_en", "manual_marked_response"],
     status: "partial",
     russianTypingRisk: "high",
-    notes: "Safe for Russian-to-English. English-to-Russian text input should become optional or upload-based.",
+    notes:
+      "Safe for Russian-to-English. English-to-Russian text input should become optional or upload-based.",
   },
   {
     sourceSystem: "question_set",
@@ -46,7 +48,8 @@ export const EXISTING_QUESTION_SET_COMPATIBILITY = [
     ],
     status: "partial",
     russianTypingRisk: "none",
-    notes: "Useful digital-first pattern, but currently hidden inside translation metadata.",
+    notes:
+      "Useful digital-first pattern, but currently hidden inside translation metadata.",
   },
   {
     sourceSystem: "question_set",
@@ -82,7 +85,8 @@ export const EXISTING_MOCK_EXAM_COMPATIBILITY = [
     recommendedInteractionTypes: ["short_answer_en"],
     status: "covered",
     russianTypingRisk: "medium",
-    notes: "Suitable for English short answers. Should not be the default for Russian answers.",
+    notes:
+      "Suitable for English short answers. Should not be the default for Russian answers.",
   },
   {
     sourceSystem: "mock_exam",
@@ -90,7 +94,8 @@ export const EXISTING_MOCK_EXAM_COMPATIBILITY = [
     recommendedInteractionTypes: ["word_bank_gap_fill", "dropdown_gap_fill"],
     status: "needs_new_interaction",
     russianTypingRisk: "medium",
-    notes: "Current UI uses text inputs; future UI should offer selectable words by default.",
+    notes:
+      "Current UI uses text inputs; future UI should offer selectable words by default.",
   },
   {
     sourceSystem: "mock_exam",
@@ -138,7 +143,8 @@ export const EXISTING_MOCK_EXAM_COMPATIBILITY = [
     recommendedInteractionTypes: ["translation_en_ru_tiles", "writing_upload"],
     status: "needs_new_interaction",
     russianTypingRisk: "high",
-    notes: "Avoid default typed Cyrillic; use tiles for controlled practice and uploads for exam writing.",
+    notes:
+      "Avoid default typed Cyrillic; use tiles for controlled practice and uploads for exam writing.",
   },
   {
     sourceSystem: "mock_exam",
@@ -158,7 +164,8 @@ export const EXISTING_MOCK_EXAM_COMPATIBILITY = [
     ],
     status: "partial",
     russianTypingRisk: "high",
-    notes: "Can be scaffolded digitally before becoming an upload or optional draft task.",
+    notes:
+      "Can be scaffolded digitally before becoming an upload or optional draft task.",
   },
   {
     sourceSystem: "mock_exam",
@@ -222,7 +229,8 @@ export const EXISTING_MOCK_EXAM_COMPATIBILITY = [
     recommendedInteractionTypes: ["note_completion_en", "word_bank_gap_fill"],
     status: "partial",
     russianTypingRisk: "low",
-    notes: "Current UI uses text inputs; choices should be available for Russian content.",
+    notes:
+      "Current UI uses text inputs; choices should be available for Russian content.",
   },
   {
     sourceSystem: "mock_exam",
@@ -254,4 +262,3 @@ export const EXISTING_QUESTION_TYPE_COMPATIBILITY = [
   ...EXISTING_QUESTION_SET_COMPATIBILITY,
   ...EXISTING_MOCK_EXAM_COMPATIBILITY,
 ] as const satisfies readonly ExistingQuestionTypeCompatibility[];
-

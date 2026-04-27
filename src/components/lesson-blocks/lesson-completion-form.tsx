@@ -41,11 +41,7 @@ export default function LessonCompletionForm({
             <input type="hidden" name="variantSlug" value={variantSlug} />
             <input type="hidden" name="moduleSlug" value={moduleSlug} />
             <input type="hidden" name="lessonSlug" value={lessonSlug} />
-            <Button
-              type="submit"
-              variant="secondary"
-              size="sm"
-            >
+            <Button type="submit" variant="secondary" size="sm">
               Mark incomplete
             </Button>
           </form>
@@ -55,12 +51,7 @@ export default function LessonCompletionForm({
             <input type="hidden" name="variantSlug" value={variantSlug} />
             <input type="hidden" name="moduleSlug" value={moduleSlug} />
             <input type="hidden" name="lessonSlug" value={lessonSlug} />
-            <Button
-              type="submit"
-              variant="primary"
-              size="sm"
-              icon="completed"
-            >
+            <Button type="submit" variant="primary" size="sm" icon="completed">
               Mark complete
             </Button>
           </form>

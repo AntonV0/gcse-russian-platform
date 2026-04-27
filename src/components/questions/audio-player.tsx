@@ -122,16 +122,16 @@ export default function AudioPlayer({
 
           {useCustomPlayFlow ? (
             <div className="app-mobile-action-stack flex">
-            <Button
-              type="button"
-              onClick={handlePlayClick}
-              disabled={remainingPlays === 0}
-              variant="secondary"
-              size="sm"
-              icon="audio"
-            >
-              Play audio
-            </Button>
+              <Button
+                type="button"
+                onClick={handlePlayClick}
+                disabled={remainingPlays === 0}
+                variant="secondary"
+                size="sm"
+                icon="audio"
+              >
+                Play audio
+              </Button>
             </div>
           ) : null}
         </div>

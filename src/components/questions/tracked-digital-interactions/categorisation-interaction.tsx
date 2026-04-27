@@ -1,10 +1,7 @@
 "use client";
 
 import type { RuntimeCategorisationQuestion } from "@/lib/questions/question-engine";
-import {
-  type InteractionControlProps,
-  SubmitAnswerButton,
-} from "./interaction-shared";
+import { type InteractionControlProps, SubmitAnswerButton } from "./interaction-shared";
 
 export function CategorisationInteraction({
   question,
@@ -29,14 +26,10 @@ export function CategorisationInteraction({
       <div className="grid gap-3">
         {question.items.map((item) => (
           <label key={item.id} className="grid gap-2 text-sm">
-            <span className="font-medium text-[var(--text-secondary)]">
-              {item.text}
-            </span>
+            <span className="font-medium text-[var(--text-secondary)]">{item.text}</span>
             <select
               value={categoryAnswers[item.id] ?? ""}
-              onChange={(event) =>
-                onChangeCategoryAnswer(item.id, event.target.value)
-              }
+              onChange={(event) => onChangeCategoryAnswer(item.id, event.target.value)}
               disabled={submitted || isPending}
               className="app-form-control app-form-select"
             >

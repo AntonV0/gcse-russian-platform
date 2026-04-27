@@ -165,7 +165,8 @@ export function getDashboardNextStep(
 
   if (learningPlan.nextLesson) {
     return {
-      title: completedLessons > 0 ? "Continue where you left off" : "Start your first lesson",
+      title:
+        completedLessons > 0 ? "Continue where you left off" : "Start your first lesson",
       description: `${learningPlan.nextLesson.moduleTitle}: ${learningPlan.nextLesson.title}`,
       href: learningPlan.nextLesson.href,
       label: completedLessons > 0 ? "Continue lesson" : "Start lesson",

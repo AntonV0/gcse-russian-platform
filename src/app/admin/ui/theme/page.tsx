@@ -282,7 +282,10 @@ export default async function AdminUiThemePage() {
           {[
             ["Quick toggle", "Use ThemeToggle once in the main app chrome."],
             ["Full selector", "Use ThemeModeSelector in settings or profile areas."],
-            ["Dark checks", "Validate tables, forms, badges, and buttons on dark surfaces."],
+            [
+              "Dark checks",
+              "Validate tables, forms, badges, and buttons on dark surfaces.",
+            ],
             ["Future themes", "Keep token discipline so accent themes remain possible."],
           ].map(([title, description]) => (
             <Card key={title}>

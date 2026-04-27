@@ -93,75 +93,75 @@ student experiences.
 
 ## Task Contexts
 
-| Key | Purpose |
-| --- | --- |
-| `standalone_practice` | A single practice question or drill. |
-| `question_set` | A reusable set of practice questions. |
-| `lesson_practice` | Practice embedded in a lesson section. |
-| `reading_task` | A reading stimulus with one or more linked questions. |
-| `listening_task` | An audio stimulus with one or more linked questions. |
-| `writing_task` | A writing prompt, scaffold, draft, or upload task. |
-| `speaking_task` | Role play, photo card, conversation, recording, or prep task. |
-| `mock_exam_section` | A section inside a mock exam attempt. |
-| `assignment_task` | A teacher-assigned question/task. |
+| Key                   | Purpose                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| `standalone_practice` | A single practice question or drill.                          |
+| `question_set`        | A reusable set of practice questions.                         |
+| `lesson_practice`     | Practice embedded in a lesson section.                        |
+| `reading_task`        | A reading stimulus with one or more linked questions.         |
+| `listening_task`      | An audio stimulus with one or more linked questions.          |
+| `writing_task`        | A writing prompt, scaffold, draft, or upload task.            |
+| `speaking_task`       | Role play, photo card, conversation, recording, or prep task. |
+| `mock_exam_section`   | A section inside a mock exam attempt.                         |
+| `assignment_task`     | A teacher-assigned question/task.                             |
 
 ## Interaction Types
 
 ### Objective and Selection
 
-| Key | Student action | Russian typing risk |
-| --- | --- | --- |
-| `single_choice` | Select one answer. | None |
-| `multi_select` | Select more than one answer. | None |
-| `true_false_not_mentioned` | Choose true, false, or not mentioned. | None |
-| `matching` | Match prompts to options. | None |
-| `categorisation` | Sort items into categories. | None |
-| `ordering` | Put items/events/phrases in order. | None |
-| `word_bank_gap_fill` | Fill gaps using provided words. | Low |
-| `dropdown_gap_fill` | Choose one option per gap. | None |
-| `table_completion` | Complete table cells, ideally using choices. | Low |
-| `click_text` | Click words/phrases in a text. | None |
-| `opinion_recognition` | Identify positive, negative, neutral, or similar. | None |
-| `speaker_identification` | Match information to speakers. | None |
+| Key                        | Student action                                    | Russian typing risk |
+| -------------------------- | ------------------------------------------------- | ------------------- |
+| `single_choice`            | Select one answer.                                | None                |
+| `multi_select`             | Select more than one answer.                      | None                |
+| `true_false_not_mentioned` | Choose true, false, or not mentioned.             | None                |
+| `matching`                 | Match prompts to options.                         | None                |
+| `categorisation`           | Sort items into categories.                       | None                |
+| `ordering`                 | Put items/events/phrases in order.                | None                |
+| `word_bank_gap_fill`       | Fill gaps using provided words.                   | Low                 |
+| `dropdown_gap_fill`        | Choose one option per gap.                        | None                |
+| `table_completion`         | Complete table cells, ideally using choices.      | Low                 |
+| `click_text`               | Click words/phrases in a text.                    | None                |
+| `opinion_recognition`      | Identify positive, negative, neutral, or similar. | None                |
+| `speaker_identification`   | Match information to speakers.                    | None                |
 
 ### Controlled Russian Production
 
-| Key | Student action | Russian typing risk |
-| --- | --- | --- |
-| `sentence_builder` | Build a sentence from tiles. | None |
-| `phrase_builder` | Build a phrase from tiles. | None |
-| `translation_en_ru_tiles` | Translate into Russian using selectable tiles. | None |
-| `grammar_form_selection` | Choose the correct grammar form. | None |
-| `verb_form_selection` | Choose the correct verb form. | None |
-| `sentence_transformation_tiles` | Transform a sentence using provided pieces. | None |
-| `error_spotting` | Identify an error. | None |
-| `error_correction_selection` | Correct an error using choices. | None |
+| Key                             | Student action                                 | Russian typing risk |
+| ------------------------------- | ---------------------------------------------- | ------------------- |
+| `sentence_builder`              | Build a sentence from tiles.                   | None                |
+| `phrase_builder`                | Build a phrase from tiles.                     | None                |
+| `translation_en_ru_tiles`       | Translate into Russian using selectable tiles. | None                |
+| `grammar_form_selection`        | Choose the correct grammar form.               | None                |
+| `verb_form_selection`           | Choose the correct verb form.                  | None                |
+| `sentence_transformation_tiles` | Transform a sentence using provided pieces.    | None                |
+| `error_spotting`                | Identify an error.                             | None                |
+| `error_correction_selection`    | Correct an error using choices.                | None                |
 
 ### Typed English or Meaning Transfer
 
-| Key | Student action | Russian typing risk |
-| --- | --- | --- |
-| `short_answer_en` | Type a short English answer. | None |
-| `note_completion_en` | Type short English notes/details. | None |
-| `translation_ru_en` | Translate Russian into English. | None |
-| `summary_answer_en` | Type a concise English summary. | None |
+| Key                  | Student action                    | Russian typing risk |
+| -------------------- | --------------------------------- | ------------------- |
+| `short_answer_en`    | Type a short English answer.      | None                |
+| `note_completion_en` | Type short English notes/details. | None                |
+| `translation_ru_en`  | Translate Russian into English.   | None                |
+| `summary_answer_en`  | Type a concise English summary.   | None                |
 
 ### Long Response and Marked Work
 
-| Key | Student action | Russian typing risk |
-| --- | --- | --- |
-| `writing_upload` | Upload handwritten writing. | None in app |
-| `writing_draft_optional` | Type optional draft/planning. | Optional |
-| `speaking_recording` | Record spoken response. | None |
-| `speaking_prep_notes` | Type English prep notes or use prompts. | None |
-| `role_play_response` | Respond to role-play prompts. | Optional |
-| `photo_card_response` | Prepare/respond to photo prompts. | Optional |
-| `conversation_response` | Prepare/respond to conversation prompts. | Optional |
+| Key                      | Student action                           | Russian typing risk |
+| ------------------------ | ---------------------------------------- | ------------------- |
+| `writing_upload`         | Upload handwritten writing.              | None in app         |
+| `writing_draft_optional` | Type optional draft/planning.            | Optional            |
+| `speaking_recording`     | Record spoken response.                  | None                |
+| `speaking_prep_notes`    | Type English prep notes or use prompts.  | None                |
+| `role_play_response`     | Respond to role-play prompts.            | Optional            |
+| `photo_card_response`    | Prepare/respond to photo prompts.        | Optional            |
+| `conversation_response`  | Prepare/respond to conversation prompts. | Optional            |
 
 ### Escape Hatch
 
-| Key | Purpose |
-| --- | --- |
+| Key                      | Purpose                                                                 |
+| ------------------------ | ----------------------------------------------------------------------- |
 | `manual_marked_response` | Generic response field for unusual tasks awaiting a proper interaction. |
 
 Use the escape hatch sparingly. It is useful during migration, but it should not
@@ -171,14 +171,14 @@ be the default authoring path.
 
 Current question-set types are defined in the reusable practice engine.
 
-| Existing type | Existing metadata | Final interaction mapping | Status |
-| --- | --- | --- | --- |
-| `multiple_choice` | Options table | `single_choice` | Keep and rename conceptually. |
-| `short_answer` | Accepted answers | `short_answer_en` or `note_completion_en` | Keep for English answers. Avoid Russian typed answers. |
-| `translation` | `answerStrategy: text_input` | `translation_ru_en` or advanced typed Russian | Split by direction. |
-| `translation` | `answerStrategy: sentence_builder` | `translation_en_ru_tiles` or `sentence_builder` | Promote to first-class interaction. |
-| `translation` | `answerStrategy: selection_based` | `dropdown_gap_fill`, `grammar_form_selection`, or `word_bank_gap_fill` | Promote to first-class interaction. |
-| `translation` | `answerStrategy: upload_required` | `writing_upload` | Currently placeholder only. |
+| Existing type     | Existing metadata                  | Final interaction mapping                                              | Status                                                 |
+| ----------------- | ---------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------ |
+| `multiple_choice` | Options table                      | `single_choice`                                                        | Keep and rename conceptually.                          |
+| `short_answer`    | Accepted answers                   | `short_answer_en` or `note_completion_en`                              | Keep for English answers. Avoid Russian typed answers. |
+| `translation`     | `answerStrategy: text_input`       | `translation_ru_en` or advanced typed Russian                          | Split by direction.                                    |
+| `translation`     | `answerStrategy: sentence_builder` | `translation_en_ru_tiles` or `sentence_builder`                        | Promote to first-class interaction.                    |
+| `translation`     | `answerStrategy: selection_based`  | `dropdown_gap_fill`, `grammar_form_selection`, or `word_bank_gap_fill` | Promote to first-class interaction.                    |
+| `translation`     | `answerStrategy: upload_required`  | `writing_upload`                                                       | Currently placeholder only.                            |
 
 Question-set phase 2 target:
 
@@ -192,30 +192,30 @@ Question-set phase 2 target:
 Mock exams currently have broader type names. Many are exam-task labels rather
 than student interaction types.
 
-| Existing mock type | Final interaction mapping | Status |
-| --- | --- | --- |
-| `multiple_choice` | `single_choice` | Covered. |
-| `multiple_response` | `multi_select` | Covered. |
-| `short_answer` | `short_answer_en` | Covered for English; avoid Russian typing. |
-| `gap_fill` | `word_bank_gap_fill` or `dropdown_gap_fill` | Needs digital-first gap UI. |
-| `matching` | `matching` | Covered in mock UI; should become shared. |
-| `sequencing` | `ordering` | Needs tap/drag ordering, not comma-separated numbers. |
-| `opinion_recognition` | `opinion_recognition` | Covered in mock UI; should become shared. |
-| `true_false_not_mentioned` | `true_false_not_mentioned` | Covered in mock UI; should become shared. |
-| `translation_into_english` | `translation_ru_en` | Needs marking model beyond raw textarea. |
-| `translation_into_russian` | `translation_en_ru_tiles` or `writing_upload` | Avoid default Cyrillic typing. |
-| `writing_task` | `writing_upload` or `writing_draft_optional` | Needs upload workflow and rubric metadata. |
-| `simple_sentences` | `writing_upload`, `sentence_builder`, or `writing_draft_optional` | Use scaffolded practice before open writing. |
-| `short_paragraph` | `writing_upload` or `writing_draft_optional` | Needs rubric metadata. |
-| `extended_writing` | `writing_upload` or `writing_draft_optional` | Needs rubric metadata. |
-| `role_play` | `role_play_response`, `speaking_prep_notes`, `speaking_recording` | Needs speaking workflow. |
-| `photo_card` | `photo_card_response`, `speaking_prep_notes`, `speaking_recording` | Needs image + prep + recording workflow. |
-| `conversation` | `conversation_response`, `speaking_recording` | Needs speaking workflow. |
-| `sentence_builder` | `sentence_builder` | Covered conceptually; should use shared renderer. |
-| `note_completion` | `note_completion_en` or `word_bank_gap_fill` | Covered with text inputs; improve with choices. |
-| `listening_comprehension` | `listening_task` parent + child interactions | Needs parent-child task model. |
-| `reading_comprehension` | `reading_task` parent + child interactions | Needs parent-child task model. |
-| `other` | `manual_marked_response` | Migration-only escape hatch. |
+| Existing mock type         | Final interaction mapping                                          | Status                                                |
+| -------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------- |
+| `multiple_choice`          | `single_choice`                                                    | Covered.                                              |
+| `multiple_response`        | `multi_select`                                                     | Covered.                                              |
+| `short_answer`             | `short_answer_en`                                                  | Covered for English; avoid Russian typing.            |
+| `gap_fill`                 | `word_bank_gap_fill` or `dropdown_gap_fill`                        | Needs digital-first gap UI.                           |
+| `matching`                 | `matching`                                                         | Covered in mock UI; should become shared.             |
+| `sequencing`               | `ordering`                                                         | Needs tap/drag ordering, not comma-separated numbers. |
+| `opinion_recognition`      | `opinion_recognition`                                              | Covered in mock UI; should become shared.             |
+| `true_false_not_mentioned` | `true_false_not_mentioned`                                         | Covered in mock UI; should become shared.             |
+| `translation_into_english` | `translation_ru_en`                                                | Needs marking model beyond raw textarea.              |
+| `translation_into_russian` | `translation_en_ru_tiles` or `writing_upload`                      | Avoid default Cyrillic typing.                        |
+| `writing_task`             | `writing_upload` or `writing_draft_optional`                       | Needs upload workflow and rubric metadata.            |
+| `simple_sentences`         | `writing_upload`, `sentence_builder`, or `writing_draft_optional`  | Use scaffolded practice before open writing.          |
+| `short_paragraph`          | `writing_upload` or `writing_draft_optional`                       | Needs rubric metadata.                                |
+| `extended_writing`         | `writing_upload` or `writing_draft_optional`                       | Needs rubric metadata.                                |
+| `role_play`                | `role_play_response`, `speaking_prep_notes`, `speaking_recording`  | Needs speaking workflow.                              |
+| `photo_card`               | `photo_card_response`, `speaking_prep_notes`, `speaking_recording` | Needs image + prep + recording workflow.              |
+| `conversation`             | `conversation_response`, `speaking_recording`                      | Needs speaking workflow.                              |
+| `sentence_builder`         | `sentence_builder`                                                 | Covered conceptually; should use shared renderer.     |
+| `note_completion`          | `note_completion_en` or `word_bank_gap_fill`                       | Covered with text inputs; improve with choices.       |
+| `listening_comprehension`  | `listening_task` parent + child interactions                       | Needs parent-child task model.                        |
+| `reading_comprehension`    | `reading_task` parent + child interactions                         | Needs parent-child task model.                        |
+| `other`                    | `manual_marked_response`                                           | Migration-only escape hatch.                          |
 
 ## GCSE Coverage Target
 

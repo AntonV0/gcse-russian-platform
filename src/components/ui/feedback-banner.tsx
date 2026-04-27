@@ -75,10 +75,9 @@ export default function FeedbackBanner({
       ) : null}
 
       <div
-        className={[
-          "app-feedback-banner px-4 py-3.5 sm:px-5 sm:py-4",
-          wrapperClass,
-        ].join(" ")}
+        className={["app-feedback-banner px-4 py-3.5 sm:px-5 sm:py-4", wrapperClass].join(
+          " "
+        )}
       >
         <div className="relative flex items-start gap-3">
           <div className="app-feedback-icon mt-0.5">
@@ -86,11 +85,7 @@ export default function FeedbackBanner({
           </div>
 
           <div className="min-w-0 flex-1">
-            {title ? (
-              <div className="app-heading-card">
-                {title}
-              </div>
-            ) : null}
+            {title ? <div className="app-heading-card">{title}</div> : null}
 
             {description ? (
               <p className={[title ? "mt-1" : "", "app-text-body-muted"].join(" ")}>

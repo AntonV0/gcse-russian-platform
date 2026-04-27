@@ -198,7 +198,10 @@ export default function TranslationBlock({
             type="button"
             onClick={handleSubmit}
             disabled={
-              !resolvedAnswer.trim() || resolvedHasSubmitted || isSubmitting || submitLocked
+              !resolvedAnswer.trim() ||
+              resolvedHasSubmitted ||
+              isSubmitting ||
+              submitLocked
             }
             variant="primary"
             size="sm"

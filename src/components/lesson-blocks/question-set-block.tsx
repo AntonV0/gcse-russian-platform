@@ -70,9 +70,7 @@ export default async function QuestionSetBlock({
       <div className="space-y-5">
         {questions.map((question, index) => (
           <div key={question.id} className="space-y-3">
-            <div className="app-text-meta">
-              Question {index + 1}
-            </div>
+            <div className="app-text-meta">Question {index + 1}</div>
 
             <QuestionRenderer question={question} lessonId={lessonId} />
           </div>

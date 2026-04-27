@@ -99,10 +99,7 @@ export default async function AdminLessonTemplateDetailPage({
           </FormField>
 
           <FormField label="Description" className="md:col-span-2">
-            <Input
-              name="description"
-              defaultValue={detail.template.description ?? ""}
-            />
+            <Input name="description" defaultValue={detail.template.description ?? ""} />
           </FormField>
 
           <CheckboxField
@@ -290,7 +287,11 @@ export default async function AdminLessonTemplateDetailPage({
                     }
                     actions={
                       <form action={removeSectionFromLessonTemplateAction}>
-                        <input type="hidden" name="templateId" value={detail.template!.id} />
+                        <input
+                          type="hidden"
+                          name="templateId"
+                          value={detail.template!.id}
+                        />
                         <input
                           type="hidden"
                           name="lessonTemplateSectionId"

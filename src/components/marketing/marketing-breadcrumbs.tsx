@@ -36,7 +36,10 @@ export default function MarketingBreadcrumbs({ items }: MarketingBreadcrumbsProp
                   <AppIcon icon="next" size={14} className="app-text-soft" />
                 ) : null}
                 {isLast ? (
-                  <span aria-current="page" className="font-medium text-[var(--text-primary)]">
+                  <span
+                    aria-current="page"
+                    className="font-medium text-[var(--text-primary)]"
+                  >
                     {item.label}
                   </span>
                 ) : (

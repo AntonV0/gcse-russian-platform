@@ -25,8 +25,7 @@ export default function AdminDashboardSidebar({
             Start in content
           </div>
           <div className="mt-1 text-sm app-text-muted">
-            Courses, variants, modules, and lessons are the foundation of most admin
-            work.
+            Courses, variants, modules, and lessons are the foundation of most admin work.
           </div>
           <div className="mt-3">
             <Button href="/admin/content" variant="soft" size="sm" icon="courses">
@@ -102,9 +101,7 @@ export default function AdminDashboardSidebar({
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-          <div className="text-sm font-semibold text-[var(--text-primary)]">
-            Best use
-          </div>
+          <div className="text-sm font-semibold text-[var(--text-primary)]">Best use</div>
           <div className="mt-1 text-sm app-text-muted">
             Validate patterns in the UI Lab first, then reuse them in admin, student, and
             teacher pages.

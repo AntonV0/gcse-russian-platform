@@ -6,10 +6,7 @@ import {
 } from "@/lib/lessons/lesson-blocks";
 import Button from "@/components/ui/button";
 import PanelCard from "@/components/ui/panel-card";
-import {
-  BlockPresetBlockFields,
-  templateBlockTypes,
-} from "./block-preset-block-fields";
+import { BlockPresetBlockFields, templateBlockTypes } from "./block-preset-block-fields";
 
 export function BlockPresetAddBlockPanel({ presetId }: { presetId: string }) {
   return (

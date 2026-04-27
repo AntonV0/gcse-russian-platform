@@ -859,6 +859,3 @@ YYYYMMDDHHMMSS_descriptive_change_name.sql
 
 Historical migrations that have already been applied should not be renamed just
 to fix naming drift. Existing `.sql.sql` files are treated as historical artifacts.
-
-
-

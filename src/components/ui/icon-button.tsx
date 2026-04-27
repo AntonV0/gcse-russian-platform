@@ -28,13 +28,7 @@ type IconButtonAsLinkProps = IconButtonBaseProps & {
 type IconButtonProps = IconButtonAsButtonProps | IconButtonAsLinkProps;
 
 export default function IconButton(props: IconButtonProps) {
-  const {
-    icon,
-    label,
-    variant = "secondary",
-    size = "sm",
-    className,
-  } = props;
+  const { icon, label, variant = "secondary", size = "sm", className } = props;
 
   if ("href" in props && props.href) {
     return (
