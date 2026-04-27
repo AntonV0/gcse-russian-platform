@@ -2,6 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import {
+  requireCurrentUserCanManageAssignment,
+  requireCurrentUserCanManageTeachingGroupAssignments,
+} from "@/lib/auth/teacher-assignment-permissions";
 
 type UpdateTeacherAssignmentItemInput =
   | { type: "lesson"; lessonId: string }
@@ -66,36 +70,27 @@ export async function updateTeacherAssignmentAction({
     return { success: false, error: "missing_items" as const };
   }
 
-  const { error: updateError } = await supabase
-    .from("assignments")
-    .update({
-      group_id: groupId,
-      title: title.trim(),
-      instructions: instructions?.trim() || null,
-      due_at: dueAt || null,
-      allow_file_upload: allowFileUpload,
-    })
-    .eq("id", assignmentId);
+  const assignmentPermission = await requireCurrentUserCanManageAssignment(
+    supabase,
+    assignmentId
+  );
 
-  if (updateError) {
-    console.error("Error updating assignment:", updateError);
-    return { success: false, error: "assignment_update_failed" as const };
+  if (!assignmentPermission.success) {
+    return { success: false, error: assignmentPermission.error };
   }
 
-  const { error: deleteItemsError } = await supabase
-    .from("assignment_items")
-    .delete()
-    .eq("assignment_id", assignmentId);
+  const groupPermission = await requireCurrentUserCanManageTeachingGroupAssignments(
+    supabase,
+    groupId
+  );
 
-  if (deleteItemsError) {
-    console.error("Error deleting assignment items:", deleteItemsError);
-    return { success: false, error: "assignment_items_delete_failed" as const };
+  if (!groupPermission.success) {
+    return { success: false, error: groupPermission.error };
   }
 
   const assignmentItems = cleanedItems.map((item, index) => {
     if (item.type === "lesson") {
       return {
-        assignment_id: assignmentId,
         item_type: "lesson",
         lesson_id: item.lessonId,
         question_set_id: null,
@@ -106,7 +101,6 @@ export async function updateTeacherAssignmentAction({
 
     if (item.type === "question_set") {
       return {
-        assignment_id: assignmentId,
         item_type: "question_set",
         lesson_id: null,
         question_set_id: item.questionSetId,
@@ -116,7 +110,6 @@ export async function updateTeacherAssignmentAction({
     }
 
     return {
-      assignment_id: assignmentId,
       item_type: "custom_task",
       lesson_id: null,
       question_set_id: null,
@@ -125,13 +118,19 @@ export async function updateTeacherAssignmentAction({
     };
   });
 
-  const { error: itemsError } = await supabase
-    .from("assignment_items")
-    .insert(assignmentItems);
+  const { error: updateError } = await supabase.rpc("update_assignment_with_items", {
+    target_assignment_id: assignmentId,
+    target_group_id: groupId,
+    target_title: title.trim(),
+    target_instructions: instructions?.trim() || null,
+    target_due_at: dueAt || null,
+    target_allow_file_upload: allowFileUpload,
+    target_items: assignmentItems,
+  });
 
-  if (itemsError) {
-    console.error("Error recreating assignment items:", itemsError);
-    return { success: false, error: "assignment_items_create_failed" as const };
+  if (updateError) {
+    console.error("Error updating assignment with items:", updateError);
+    return { success: false, error: "assignment_update_failed" as const };
   }
 
   redirect(`/teacher/assignments/${assignmentId}`);
