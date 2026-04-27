@@ -23,6 +23,92 @@ const pageNavItems = [
   { id: "future-components", label: "Future" },
 ];
 
+const statusBadgeExamples: Array<{
+  title: string;
+  status: "not_started" | "submitted" | "reviewed" | "returned";
+  description: string;
+}> = [
+  {
+    title: "Not started",
+    status: "not_started",
+    description: "Default state before work begins.",
+  },
+  {
+    title: "Submitted",
+    status: "submitted",
+    description: "Use for work waiting on review.",
+  },
+  {
+    title: "Reviewed",
+    status: "reviewed",
+    description: "Use when a marking workflow is done.",
+  },
+  {
+    title: "Returned",
+    status: "returned",
+    description: "Use when feedback has gone back to the student.",
+  },
+];
+
+const feedbackGuidanceItems = [
+  {
+    title: "Prefer badges for compact state",
+    description:
+      "Use badges inside cards, tables, and list items where space is limited.",
+  },
+  {
+    title: "Use banners for page-level messaging",
+    description:
+      "Save results, warnings, and important guidance should be easier to notice than a badge.",
+  },
+  {
+    title: "Empty states need a next action",
+    description: "Avoid dead ends. Give users a clear first step wherever possible.",
+  },
+  {
+    title: "Reserve danger for real blockers",
+    description:
+      "Overusing destructive colour weakens hierarchy and makes interfaces feel noisy.",
+  },
+];
+
+function StatusBadgeExampleCard({
+  title,
+  status,
+  description,
+}: {
+  title: string;
+  status: "not_started" | "submitted" | "reviewed" | "returned";
+  description: string;
+}) {
+  return (
+    <Card>
+      <CardBody className="space-y-3 p-4">
+        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+        <StatusBadge status={status} />
+        <p className="text-sm app-text-muted">{description}</p>
+      </CardBody>
+    </Card>
+  );
+}
+
+function FeedbackGuidanceCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card>
+      <CardBody className="p-4">
+        <div className="mb-2 font-semibold text-[var(--text-primary)]">{title}</div>
+        <p className="text-sm app-text-muted">{description}</p>
+      </CardBody>
+    </Card>
+  );
+}
+
 export default async function AdminUiFeedbackPage() {
   const canAccess = await requireAdminAccess();
 
@@ -170,41 +256,14 @@ export default async function AdminUiFeedbackPage() {
         description="Use StatusBadge where the underlying state is semantic and repeatable, so pages do not have to reimplement label and tone logic."
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardBody className="space-y-3 p-4">
-              <div className="font-semibold text-[var(--text-primary)]">Not started</div>
-              <StatusBadge status="not_started" />
-              <p className="text-sm app-text-muted">Default state before work begins.</p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="space-y-3 p-4">
-              <div className="font-semibold text-[var(--text-primary)]">Submitted</div>
-              <StatusBadge status="submitted" />
-              <p className="text-sm app-text-muted">Use for work waiting on review.</p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="space-y-3 p-4">
-              <div className="font-semibold text-[var(--text-primary)]">Reviewed</div>
-              <StatusBadge status="reviewed" />
-              <p className="text-sm app-text-muted">
-                Use when a marking workflow is done.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="space-y-3 p-4">
-              <div className="font-semibold text-[var(--text-primary)]">Returned</div>
-              <StatusBadge status="returned" />
-              <p className="text-sm app-text-muted">
-                Use when feedback has gone back to the student.
-              </p>
-            </CardBody>
-          </Card>
+          {statusBadgeExamples.map((example) => (
+            <StatusBadgeExampleCard
+              key={example.status}
+              title={example.title}
+              status={example.status}
+              description={example.description}
+            />
+          ))}
         </div>
       </UiLabSection>
 
@@ -646,51 +705,13 @@ export default async function AdminUiFeedbackPage() {
         description="These rules keep feedback patterns consistent across admin and platform pages."
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-2 font-semibold text-[var(--text-primary)]">
-                Prefer badges for compact state
-              </div>
-              <p className="text-sm app-text-muted">
-                Use badges inside cards, tables, and list items where space is limited.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-2 font-semibold text-[var(--text-primary)]">
-                Use banners for page-level messaging
-              </div>
-              <p className="text-sm app-text-muted">
-                Save results, warnings, and important guidance should be easier to notice
-                than a badge.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-2 font-semibold text-[var(--text-primary)]">
-                Empty states need a next action
-              </div>
-              <p className="text-sm app-text-muted">
-                Avoid dead ends. Give users a clear first step wherever possible.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="p-4">
-              <div className="mb-2 font-semibold text-[var(--text-primary)]">
-                Reserve danger for real blockers
-              </div>
-              <p className="text-sm app-text-muted">
-                Overusing destructive colour weakens hierarchy and makes interfaces feel
-                noisy.
-              </p>
-            </CardBody>
-          </Card>
+          {feedbackGuidanceItems.map((item) => (
+            <FeedbackGuidanceCard
+              key={item.title}
+              title={item.title}
+              description={item.description}
+            />
+          ))}
         </div>
       </UiLabSection>
 
