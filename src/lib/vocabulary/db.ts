@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getVocabularyThemeLabel } from "@/lib/vocabulary/labels";
 import {
   getVocabularyItemsBySetIdDb,
@@ -286,8 +287,11 @@ async function getVocabularyOptionListsBySetIdsDb(
 export async function getVocabularySetsDb(options?: {
   publishedOnly?: boolean;
   filters?: VocabularySetFilters;
+  useAdminClient?: boolean;
 }) {
-  const supabase = await createClient();
+  const supabase = options?.useAdminClient
+    ? createAdminClient()
+    : await createClient();
   const filters = options?.filters;
   const tier = filters?.tier && filters.tier !== "all" ? filters.tier : null;
   const themeKey = filters?.themeKey?.trim();
@@ -327,7 +331,8 @@ export async function getVocabularySetsDb(options?: {
   });
 
   const withCounts = await attachVocabularyCountsAndUsage(
-    data.map(normalizeVocabularySet)
+    data.map(normalizeVocabularySet),
+    { useAdminClient: options?.useAdminClient }
   );
 
   return applyVocabularySetFilters(withCounts, filters);
@@ -386,8 +391,11 @@ export async function getVocabularySetOptionsDb(options?: {
 
 export async function getVocabularySetThemeKeysDb(options?: {
   publishedOnly?: boolean;
+  useAdminClient?: boolean;
 }) {
-  const supabase = await createClient();
+  const supabase = options?.useAdminClient
+    ? createAdminClient()
+    : await createClient();
   const data = await fetchSupabasePages<{ theme_key: string | null }>({
     queryFactory: () => {
       let query = supabase

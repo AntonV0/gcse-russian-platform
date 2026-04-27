@@ -68,11 +68,15 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
   };
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
   const canSeeCoverage = dashboard.role === "admin";
+  const useAdminVocabularyClient = canSeeDrafts;
   const [vocabularySets, themeKeys] = await Promise.all([
     canSeeDrafts
-      ? getVocabularySetsDb({ filters })
+      ? getVocabularySetsDb({ filters, useAdminClient: useAdminVocabularyClient })
       : getPublishedVocabularySetsDb(filters),
-    getVocabularySetThemeKeysDb({ publishedOnly: !canSeeDrafts }),
+    getVocabularySetThemeKeysDb({
+      publishedOnly: !canSeeDrafts,
+      useAdminClient: useAdminVocabularyClient,
+    }),
   ]);
   const draftCount = vocabularySets.filter((set) => !set.is_published).length;
   const topicOptions = getTopicOptions(themeKeys);
