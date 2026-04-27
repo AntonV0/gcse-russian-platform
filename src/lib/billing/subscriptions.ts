@@ -1,4 +1,8 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+export {
+  isSubscriptionActiveStatus,
+  shouldDeactivateStripeSubscriptionAccess,
+} from "@/lib/billing/subscription-status";
 
 export type DbSubscription = {
   id: string;
@@ -37,10 +41,6 @@ const SUBSCRIPTION_SELECT =
 function toIsoOrNull(value?: Date | string | null): string | null {
   if (!value) return null;
   return value instanceof Date ? value.toISOString() : value;
-}
-
-export function isSubscriptionActiveStatus(status: string): boolean {
-  return ["active", "trialing"].includes(status);
 }
 
 export async function getSubscriptionByIdDb(

@@ -46,4 +46,32 @@ describe("getStripeWebhookEventProcessingAction", () => {
       )
     ).toBe("retry_stale_processing");
   });
+
+  it("retries processing events with missing or invalid start timestamps", () => {
+    expect(
+      getStripeWebhookEventProcessingAction(
+        { status: "processing", processing_started_at: null },
+        NOW
+      )
+    ).toBe("retry_stale_processing");
+
+    expect(
+      getStripeWebhookEventProcessingAction(
+        { status: "processing", processing_started_at: "not-a-date" },
+        NOW
+      )
+    ).toBe("retry_stale_processing");
+  });
+
+  it("treats the stale threshold as reclaimable for duplicate delivery", () => {
+    expect(
+      getStripeWebhookEventProcessingAction(
+        {
+          status: "processing",
+          processing_started_at: "2026-04-27T11:45:00.000Z",
+        },
+        NOW
+      )
+    ).toBe("retry_stale_processing");
+  });
 });
