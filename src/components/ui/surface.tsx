@@ -1,4 +1,4 @@
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 
 type SurfaceVariant = "default" | "muted" | "brand";
 type SurfacePadding = "none" | "md" | "lg";
@@ -9,8 +9,6 @@ type SurfaceProps = {
   padding?: SurfacePadding;
   className?: string;
 };
-
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getVariantClass(variant: SurfaceVariant) {
   switch (variant) {
@@ -44,22 +42,20 @@ export default function Surface({
 }: SurfaceProps) {
   return (
     <div className="dev-marker-host relative">
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="Surface"
-          filePath="src/components/ui/surface.tsx"
-          tier="layout"
-          componentRole="Page or section background surface"
-          bestFor="Top-level layout zones, muted page bands, brand-tinted sections, and page composition wrappers."
-          usageExamples={[
-            "Pricing page background section",
-            "Dashboard content zone",
-            "Muted admin workspace area",
-            "Student-facing brand surface",
-          ]}
-          notes="Surface should wrap areas, not individual content cards. Use Card, SectionCard, or PanelCard inside it for contained content."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="Surface"
+        filePath="src/components/ui/surface.tsx"
+        tier="layout"
+        componentRole="Page or section background surface"
+        bestFor="Top-level layout zones, muted page bands, brand-tinted sections, and page composition wrappers."
+        usageExamples={[
+          "Pricing page background section",
+          "Dashboard content zone",
+          "Muted admin workspace area",
+          "Student-facing brand surface",
+        ]}
+        notes="Surface should wrap areas, not individual content cards. Use Card, SectionCard, or PanelCard inside it for contained content."
+      />
 
       <div
         className={[getVariantClass(variant), getPaddingClass(padding), className]

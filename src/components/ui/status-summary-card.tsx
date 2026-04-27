@@ -1,6 +1,6 @@
 import Badge from "@/components/ui/badge";
 import Card, { CardBody } from "@/components/ui/card";
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type StatusSummaryCardProps = {
@@ -12,8 +12,6 @@ type StatusSummaryCardProps = {
   className?: string;
 };
 
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
-
 export default function StatusSummaryCard({
   title,
   description,
@@ -24,22 +22,20 @@ export default function StatusSummaryCard({
 }: StatusSummaryCardProps) {
   return (
     <div className="dev-marker-host relative">
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="StatusSummaryCard"
-          filePath="src/components/ui/status-summary-card.tsx"
-          tier="semantic"
-          componentRole="Compact status summary card"
-          bestFor="Small state explanations, admin readiness cards, review states, progress summaries, and status-led guidance blocks."
-          usageExamples={[
-            "Publishing ready card",
-            "Review required summary",
-            "Student progress status",
-            "Admin readiness checklist item",
-          ]}
-          notes="Use when a short description needs a visible status label. For numeric metrics, use SummaryStatCard. For page-level messages, use FeedbackBanner."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="StatusSummaryCard"
+        filePath="src/components/ui/status-summary-card.tsx"
+        tier="semantic"
+        componentRole="Compact status summary card"
+        bestFor="Small state explanations, admin readiness cards, review states, progress summaries, and status-led guidance blocks."
+        usageExamples={[
+          "Publishing ready card",
+          "Review required summary",
+          "Student progress status",
+          "Admin readiness checklist item",
+        ]}
+        notes="Use when a short description needs a visible status label. For numeric metrics, use SummaryStatCard. For page-level messages, use FeedbackBanner."
+      />
 
       <Card className={className}>
         <CardBody className="p-4">

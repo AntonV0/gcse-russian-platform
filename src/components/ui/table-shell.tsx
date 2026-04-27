@@ -1,5 +1,5 @@
 import Card, { CardHeader } from "@/components/ui/card";
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type TableShellProps = {
@@ -11,8 +11,6 @@ type TableShellProps = {
   className?: string;
 };
 
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
-
 export default function TableShell({
   title,
   description,
@@ -23,22 +21,20 @@ export default function TableShell({
 }: TableShellProps) {
   return (
     <div className="dev-marker-host relative">
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="TableShell"
-          filePath="src/components/ui/table-shell.tsx"
-          tier="container"
-          componentRole="Table container with header and actions"
-          bestFor="Admin data sections, searchable management tables, vocabulary/grammar tables, billing tables, and structured table panels."
-          usageExamples={[
-            "Student management table",
-            "Vocabulary table wrapper",
-            "Course content table",
-            "Billing subscription list",
-          ]}
-          notes="Use with DataTable and optional TableToolbar. Avoid for simple card lists where columns do not add value."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="TableShell"
+        filePath="src/components/ui/table-shell.tsx"
+        tier="container"
+        componentRole="Table container with header and actions"
+        bestFor="Admin data sections, searchable management tables, vocabulary/grammar tables, billing tables, and structured table panels."
+        usageExamples={[
+          "Student management table",
+          "Vocabulary table wrapper",
+          "Course content table",
+          "Billing subscription list",
+        ]}
+        notes="Use with DataTable and optional TableToolbar. Avoid for simple card lists where columns do not add value."
+      />
 
       <Card className={["overflow-hidden", className].filter(Boolean).join(" ")}>
         <CardHeader>

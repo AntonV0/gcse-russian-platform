@@ -1,4 +1,4 @@
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 
 type CardProps = {
   children: React.ReactNode;
@@ -11,27 +11,23 @@ type CardSectionProps = {
   className?: string;
 };
 
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
-
 export function Card({ children, className, interactive = false }: CardProps) {
   return (
     <div className="dev-marker-host relative">
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="Card"
-          filePath="src/components/ui/card.tsx"
-          tier="container"
-          componentRole="Base content container primitive"
-          bestFor="Neutral boxed content, reusable card shells, and low-level wrappers used by higher-level card components."
-          usageExamples={[
-            "CardHeader/CardBody/CardFooter layouts",
-            "Base shell for PanelCard",
-            "Base shell for SectionCard",
-            "Simple standalone content blocks",
-          ]}
-          notes="Use Card when you need a plain reusable container. Prefer SectionCard, PanelCard, or DashboardCard when the content has a specific page role."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="Card"
+        filePath="src/components/ui/card.tsx"
+        tier="container"
+        componentRole="Base content container primitive"
+        bestFor="Neutral boxed content, reusable card shells, and low-level wrappers used by higher-level card components."
+        usageExamples={[
+          "CardHeader/CardBody/CardFooter layouts",
+          "Base shell for PanelCard",
+          "Base shell for SectionCard",
+          "Simple standalone content blocks",
+        ]}
+        notes="Use Card when you need a plain reusable container. Prefer SectionCard, PanelCard, or DashboardCard when the content has a specific page role."
+      />
 
       <div
         className={[

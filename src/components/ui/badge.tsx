@@ -1,5 +1,5 @@
 import AppIcon from "@/components/ui/app-icon";
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 type BadgeTone = "default" | "muted" | "info" | "success" | "warning" | "danger";
@@ -10,8 +10,6 @@ type BadgeProps = {
   icon?: AppIconKey;
   className?: string;
 };
-
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getToneClass(tone: BadgeTone) {
   switch (tone) {
@@ -85,22 +83,20 @@ export default function Badge({ children, tone = "muted", icon, className }: Bad
         .filter(Boolean)
         .join(" ")}
     >
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="Badge"
-          filePath="src/components/ui/badge.tsx"
-          tier="primitive"
-          componentRole="Compact status, category, or metadata label"
-          bestFor="Short labels that explain state, type, access, progress, or category without becoming full content."
-          usageExamples={[
-            "Published / Draft labels",
-            "Foundation / Higher access labels",
-            "Pricing or discount pills",
-            "Small workflow status labels",
-          ]}
-          notes="Keep badge text short. Do not use Badge for long explanations, buttons, or large callouts."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="Badge"
+        filePath="src/components/ui/badge.tsx"
+        tier="primitive"
+        componentRole="Compact status, category, or metadata label"
+        bestFor="Short labels that explain state, type, access, progress, or category without becoming full content."
+        usageExamples={[
+          "Published / Draft labels",
+          "Foundation / Higher access labels",
+          "Pricing or discount pills",
+          "Small workflow status labels",
+        ]}
+        notes="Keep badge text short. Do not use Badge for long explanations, buttons, or large callouts."
+      />
 
       <span className="flex min-w-0 items-center gap-1.5 leading-[1.25]">
         {icon ? (

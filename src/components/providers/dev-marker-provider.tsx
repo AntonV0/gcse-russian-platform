@@ -35,7 +35,7 @@ type DevMarkerProviderProps = {
 };
 
 const DEV_MARKER_STORAGE_PREFIX = "gcse-russian-dev-markers";
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+export const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 const TIER_FILTERS: { value: DevMarkerTierFilter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "layout", label: "Layout" },

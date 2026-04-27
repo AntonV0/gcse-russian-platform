@@ -1,5 +1,5 @@
 import Badge from "@/components/ui/badge";
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 
 type AttemptStatus = "draft" | "submitted" | "marked" | "abandoned";
 
@@ -7,8 +7,6 @@ type AttemptStatusBadgeProps = {
   status?: string | null;
   className?: string;
 };
-
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getAttemptStatusConfig(status: AttemptStatus) {
   switch (status) {
@@ -59,22 +57,20 @@ export default function AttemptStatusBadge({
         .filter(Boolean)
         .join(" ")}
     >
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="AttemptStatusBadge"
-          filePath="src/components/ui/attempt-status-badge.tsx"
-          tier="semantic"
-          componentRole="Semantic mock exam attempt workflow status badge"
-          bestFor="Mock exam attempt review queues, attempt detail pages, and student attempt summaries."
-          usageExamples={[
-            "Draft attempt",
-            "Submitted attempt",
-            "Marked attempt",
-            "Admin review queue status",
-          ]}
-          notes="Use for mock exam attempt workflow states. Use StatusBadge for assignment submission states."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="AttemptStatusBadge"
+        filePath="src/components/ui/attempt-status-badge.tsx"
+        tier="semantic"
+        componentRole="Semantic mock exam attempt workflow status badge"
+        bestFor="Mock exam attempt review queues, attempt detail pages, and student attempt summaries."
+        usageExamples={[
+          "Draft attempt",
+          "Submitted attempt",
+          "Marked attempt",
+          "Admin review queue status",
+        ]}
+        notes="Use for mock exam attempt workflow states. Use StatusBadge for assignment submission states."
+      />
 
       <Badge tone={tone} icon={icon}>
         {label}
