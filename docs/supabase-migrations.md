@@ -45,7 +45,7 @@ been applied already:
 - `20260420091747_seed_higher_upgrade_product_and_prices.sql.sql` contains
   Stripe placeholder price IDs. It is superseded by
   `20260420110816_seed_source_aware_higher_upgrade_prices.sql` and corrected by
-  `20260427130000_deactivate_placeholder_stripe_prices.sql`.
+  `20260427130500_deactivate_placeholder_stripe_prices.sql`.
 
 ## Stripe Price Seed Strategy
 
@@ -55,7 +55,7 @@ environment or create inactive rows that are activated by a later migration once
 real IDs are available.
 
 The corrective migration
-`20260427130000_deactivate_placeholder_stripe_prices.sql` preserves historical
+`20260427130500_deactivate_placeholder_stripe_prices.sql` preserves historical
 placeholder rows but marks them inactive and adds a check constraint preventing
 future active placeholder Stripe IDs. Runtime checkout/catalog code only reads
 active prices, so fake IDs are removed from active checkout paths without
