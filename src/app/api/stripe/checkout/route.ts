@@ -1,95 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { resolveCheckoutCatalogDb } from "@/lib/billing/catalog";
 import {
-  BILLING_TYPES,
-  INTERVAL_UNITS,
-  PRODUCT_CODES,
-  resolveCheckoutCatalogDb,
-  type SupportedIntervalUnit,
-} from "@/lib/billing/catalog";
-import {
-  DEFAULT_CHECKOUT_CANCEL_PATH,
-  DEFAULT_CHECKOUT_SUCCESS_PATH,
-  resolveOptionalInternalRedirectPath,
-} from "@/lib/billing/redirect-paths";
+  validateCheckoutRequestBody,
+  validateCheckoutResolvedStripePrice,
+  type CheckoutRequestBody,
+} from "@/lib/billing/checkout-validation";
 import { createStripeCheckoutSession } from "@/lib/billing/stripe";
-
-type CheckoutRequestBody = {
-  productCode: string;
-  billingType: string;
-  intervalUnit?: SupportedIntervalUnit | null;
-  intervalCount?: number | null;
-  isUpgrade?: boolean;
-  successPath?: string;
-  cancelPath?: string;
-};
-
-function isSupportedProductCode(value: string): boolean {
-  return Object.values(PRODUCT_CODES).includes(
-    value as (typeof PRODUCT_CODES)[keyof typeof PRODUCT_CODES]
-  );
-}
-
-function isSupportedBillingType(value: string): boolean {
-  return Object.values(BILLING_TYPES).includes(
-    value as (typeof BILLING_TYPES)[keyof typeof BILLING_TYPES]
-  );
-}
-
-function isSupportedIntervalUnit(value: string | null | undefined): boolean {
-  if (!value) return true;
-
-  return Object.values(INTERVAL_UNITS).includes(
-    value as (typeof INTERVAL_UNITS)[keyof typeof INTERVAL_UNITS]
-  );
-}
-
-function isSupportedIntervalCount(value: number | null | undefined): boolean {
-  if (value == null) return true;
-  return Number.isInteger(value) && value > 0;
-}
 
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as CheckoutRequestBody;
+    const checkoutRequest = validateCheckoutRequestBody(body);
 
-    if (!body.productCode || !isSupportedProductCode(body.productCode)) {
-      return NextResponse.json(
-        { error: "Invalid or missing productCode" },
-        { status: 400 }
-      );
-    }
-
-    if (!body.billingType || !isSupportedBillingType(body.billingType)) {
-      return NextResponse.json(
-        { error: "Invalid or missing billingType" },
-        { status: 400 }
-      );
-    }
-
-    if (!isSupportedIntervalUnit(body.intervalUnit)) {
-      return NextResponse.json({ error: "Invalid intervalUnit" }, { status: 400 });
-    }
-
-    if (!isSupportedIntervalCount(body.intervalCount)) {
-      return NextResponse.json({ error: "Invalid intervalCount" }, { status: 400 });
-    }
-
-    const successPath = resolveOptionalInternalRedirectPath(
-      body.successPath,
-      DEFAULT_CHECKOUT_SUCCESS_PATH
-    );
-    const cancelPath = resolveOptionalInternalRedirectPath(
-      body.cancelPath,
-      DEFAULT_CHECKOUT_CANCEL_PATH
-    );
-
-    if (!successPath) {
-      return NextResponse.json({ error: "Invalid successPath" }, { status: 400 });
-    }
-
-    if (!cancelPath) {
-      return NextResponse.json({ error: "Invalid cancelPath" }, { status: 400 });
+    if (!checkoutRequest.ok) {
+      return NextResponse.json({ error: checkoutRequest.error }, { status: 400 });
     }
 
     const user = await getCurrentUser();
@@ -100,11 +25,11 @@ export async function POST(req: NextRequest) {
 
     const resolved = await resolveCheckoutCatalogDb({
       userId: user.id,
-      targetProductCode: body.productCode,
-      billingType: body.billingType,
-      intervalUnit: body.intervalUnit ?? null,
-      intervalCount: body.intervalCount ?? null,
-      isUpgrade: body.isUpgrade ?? false,
+      targetProductCode: checkoutRequest.productCode,
+      billingType: checkoutRequest.billingType,
+      intervalUnit: checkoutRequest.intervalUnit,
+      intervalCount: checkoutRequest.intervalCount,
+      isUpgrade: checkoutRequest.isUpgrade,
     });
 
     if (!resolved) {
@@ -114,22 +39,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (resolved.purchaseType === "standard" && !resolved.price.stripe_price_id) {
-      return NextResponse.json(
-        { error: "Resolved standard price is missing Stripe price id" },
-        { status: 400 }
-      );
-    }
-
-    if (
-      resolved.purchaseType === "upgrade" &&
-      resolved.price.billing_type === BILLING_TYPES.SUBSCRIPTION &&
-      !resolved.price.stripe_price_id
-    ) {
-      return NextResponse.json(
-        { error: "Target recurring price is missing Stripe price id" },
-        { status: 400 }
-      );
+    const resolvedPriceValidation = validateCheckoutResolvedStripePrice(resolved);
+    if (!resolvedPriceValidation.ok) {
+      return NextResponse.json({ error: resolvedPriceValidation.error }, { status: 400 });
     }
 
     const isUpgradeCheckout = resolved.purchaseType === "upgrade";
@@ -149,8 +61,8 @@ export async function POST(req: NextRequest) {
         priceId: resolved.price.id,
         purchaseType: resolved.purchaseType,
         upgradeFlow: resolved.upgradeFlow ?? null,
-        successPath,
-        cancelPath,
+        successPath: checkoutRequest.successPath,
+        cancelPath: checkoutRequest.cancelPath,
         customerEmail: user.email ?? null,
       },
       resolved.price.billing_type

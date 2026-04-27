@@ -3,21 +3,23 @@ import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
-import LessonRenderer, {
-  isSectionVisible,
-  type LessonRendererVariant,
-} from "@/components/lesson-blocks/lesson-renderer";
+import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
 import { LessonCompletionPanel } from "@/components/lesson-blocks/lesson-page-template/lesson-completion-panel";
 import { buildLessonStepHref } from "@/components/lesson-blocks/lesson-page-template/lesson-step-routes";
 import {
   clampStepIndex,
   getAllowedMaxIndex,
+  getLessonProgressSummary,
   getMaxVisitedIndex,
 } from "@/components/lesson-blocks/lesson-page-template/progress-helpers";
 import { SectionPager } from "@/components/lesson-blocks/lesson-page-template/section-pager";
 import { StepMetaBar } from "@/components/lesson-blocks/lesson-page-template/step-meta-bar";
 import { StepTracker } from "@/components/lesson-blocks/lesson-page-template/step-tracker";
 import type { LessonSection } from "@/types/lesson";
+import {
+  filterVisibleLessonSections,
+  getLessonRendererVariant,
+} from "@/lib/lessons/variant-visibility";
 import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import {
   getLessonProgress,
@@ -35,14 +37,6 @@ type LessonPageTemplateProps = {
   currentStep?: string;
   lessonPageData?: Awaited<ReturnType<typeof loadLessonPageData>>;
 };
-
-function getLessonRendererVariant(variantSlug: string): LessonRendererVariant {
-  if (variantSlug === "higher" || variantSlug === "volna") {
-    return variantSlug;
-  }
-
-  return "foundation";
-}
 
 export default async function LessonPageTemplate({
   courseSlug,
@@ -88,9 +82,7 @@ export default async function LessonPageTemplate({
 
   const moduleHref = getModulePath(course.slug, variantSlug, moduleSlug);
   const currentVariant = getLessonRendererVariant(variantSlug);
-  const visibleSections = sections.filter((section) =>
-    isSectionVisible(section, currentVariant)
-  );
+  const visibleSections = filterVisibleLessonSections(sections, currentVariant);
 
   if (visibleSections.length === 0) {
     return (
@@ -137,16 +129,7 @@ export default async function LessonPageTemplate({
   if (didMarkCurrentSection) {
     visitedIds.add(currentSection.id);
   }
-  const visitedVisibleCount = visibleSections.reduce(
-    (count, section) => (visitedIds.has(section.id) ? count + 1 : count),
-    0
-  );
-  const progressSummary = {
-    visitedCount: visitedVisibleCount,
-    totalSections: visibleSections.length,
-    percent: Math.round((visitedVisibleCount / visibleSections.length) * 100),
-    allVisited: visitedVisibleCount >= visibleSections.length,
-  };
+  const progressSummary = getLessonProgressSummary(visibleSections, visitedIds);
   const currentStepNumber = effectiveStepIndex + 1;
   const isFinalStep = effectiveStepIndex === visibleSections.length - 1;
 
