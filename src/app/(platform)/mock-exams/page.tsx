@@ -124,8 +124,8 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
               Conditions
             </div>
             <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-              Sessions are run in exam conditions so the result is useful for
-              planning and progress decisions.
+              Sessions are run in exam conditions so the result is useful for planning and
+              progress decisions.
             </p>
           </div>
 
@@ -134,8 +134,8 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
               Predicted grade
             </div>
             <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-              Volna School can provide a predicted grade for Volna School students
-              after reviewing mock exam performance.
+              Volna School can provide a predicted grade for Volna School students after
+              reviewing mock exam performance.
             </p>
           </div>
         </div>

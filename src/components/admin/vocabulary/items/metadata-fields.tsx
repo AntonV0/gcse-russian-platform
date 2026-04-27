@@ -52,7 +52,11 @@ export default function CoreMetadataFields({
       </VocabularyAdminFormField>
 
       <VocabularyAdminFormField label="Tier" htmlFor={`${idPrefix}-tier`}>
-        <Select id={`${idPrefix}-tier`} name="tier" defaultValue={item?.tier ?? defaultTier}>
+        <Select
+          id={`${idPrefix}-tier`}
+          name="tier"
+          defaultValue={item?.tier ?? defaultTier}
+        >
           <option value="unknown">Unknown</option>
           <option value="both">Both tiers</option>
           <option value="foundation">Foundation</option>

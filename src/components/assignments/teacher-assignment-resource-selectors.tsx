@@ -29,9 +29,7 @@ export default function TeacherAssignmentResourceSelectors({
   return (
     <>
       <div className="space-y-3">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">
-          Attach lessons
-        </p>
+        <p className="text-sm font-semibold text-[var(--text-primary)]">Attach lessons</p>
 
         {availableLessons.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 text-sm app-text-muted">

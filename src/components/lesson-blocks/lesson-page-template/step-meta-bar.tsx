@@ -55,10 +55,7 @@ export function StepMetaBar({
         </div>
 
         <div className="app-progress-track">
-          <div
-            className="app-progress-bar"
-            style={{ width: `${visitedPercent}%` }}
-          />
+          <div className="app-progress-bar" style={{ width: `${visitedPercent}%` }} />
         </div>
       </div>
     </div>

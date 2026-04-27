@@ -9,11 +9,7 @@ import {
   setTeacherRoleAction,
   switchStudentAccessGrantAction,
 } from "@/app/actions/admin/admin-user-actions";
-import type {
-  ProductRow,
-  StudentCard,
-  StudentGroup,
-} from "@/lib/admin/student-list";
+import type { ProductRow, StudentCard, StudentGroup } from "@/lib/admin/student-list";
 
 function getPersonLabel(
   profile: Pick<StudentCard, "full_name" | "display_name" | "email">
@@ -116,7 +112,12 @@ function StudentRowActions({
         </Button>
       </form>
 
-      <Button href={`/admin/students/${student.id}`} variant="secondary" size="sm" icon="preview">
+      <Button
+        href={`/admin/students/${student.id}`}
+        variant="secondary"
+        size="sm"
+        icon="preview"
+      >
         View
       </Button>
     </InlineActions>

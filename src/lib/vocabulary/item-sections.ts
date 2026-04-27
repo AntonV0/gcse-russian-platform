@@ -1,10 +1,12 @@
 import {
-  getVocabularyListAppliesToStudyVariant,
   groupVocabularyItemsBySource,
-  type DbVocabularyItem,
-  type DbVocabularyList,
-  type DbVocabularyStudyVariant,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/labels";
+import { getVocabularyListAppliesToStudyVariant } from "@/lib/vocabulary/study-variants";
+import type {
+  DbVocabularyItem,
+  DbVocabularyList,
+  DbVocabularyStudyVariant,
+} from "@/lib/vocabulary/types";
 
 export type VocabularyItemSectionGroup = {
   key: string;
@@ -77,7 +79,9 @@ function getVocabularyListSectionDescription(
   return formatItemCount(itemCount);
 }
 
-function getFallbackTierSections(items: DbVocabularyItem[]): VocabularyItemSectionGroup[] {
+function getFallbackTierSections(
+  items: DbVocabularyItem[]
+): VocabularyItemSectionGroup[] {
   const foundationItems = items.filter((item) => item.tier === "foundation");
   const higherItems = items.filter((item) => item.tier === "higher");
   const bothTierItems = items.filter(
@@ -106,7 +110,9 @@ function getFallbackTierSections(items: DbVocabularyItem[]): VocabularyItemSecti
   ].filter((section) => section.items.length > 0);
 }
 
-function getFallbackSourceSections(items: DbVocabularyItem[]): VocabularyItemSectionGroup[] {
+function getFallbackSourceSections(
+  items: DbVocabularyItem[]
+): VocabularyItemSectionGroup[] {
   const groupedItems = groupVocabularyItemsBySource(items);
 
   return [
@@ -136,7 +142,9 @@ export function groupVocabularyItemsByList(
   items: DbVocabularyItem[],
   studyVariant: DbVocabularyStudyVariant | "all"
 ): VocabularyItemSectionGroup[] {
-  const itemListIds = new Set(items.map((item) => item.vocabulary_list_id).filter(Boolean));
+  const itemListIds = new Set(
+    items.map((item) => item.vocabulary_list_id).filter(Boolean)
+  );
   const visibleLists = getVisibleVocabularyLists(lists, studyVariant).filter((list) =>
     itemListIds.has(list.id)
   );

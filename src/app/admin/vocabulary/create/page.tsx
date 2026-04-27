@@ -54,9 +54,7 @@ export default function CreateVocabularySetPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-section">
-                Create a reusable vocabulary set
-              </h2>
+              <h2 className="app-heading-section">Create a reusable vocabulary set</h2>
               <p className="max-w-3xl app-text-body-muted">
                 Start with the core metadata. Item-level add, edit, reorder, and delete
                 can come next once the set exists.
@@ -79,9 +77,7 @@ export default function CreateVocabularySetPage() {
         <div className="space-y-4">
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="app-heading-subsection">
-                Core details
-              </h2>
+              <h2 className="app-heading-subsection">Core details</h2>
               <p className="mt-2 app-text-body-muted">
                 These fields define how the vocabulary set is identified and organised.
               </p>
@@ -162,9 +158,7 @@ export default function CreateVocabularySetPage() {
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="app-heading-subsection">
-                Vocabulary settings
-              </h2>
+              <h2 className="app-heading-subsection">Vocabulary settings</h2>
               <p className="mt-2 app-text-body-muted">
                 These settings control what kind of set this is and how it should behave.
               </p>
@@ -232,9 +226,7 @@ export default function CreateVocabularySetPage() {
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="app-heading-subsection">
-                Import metadata
-              </h2>
+              <h2 className="app-heading-subsection">Import metadata</h2>
               <p className="mt-2 app-text-body-muted">
                 Optional fields used by the future idempotent vocabulary importer.
               </p>
@@ -242,16 +234,28 @@ export default function CreateVocabularySetPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <FormField label="Source key" htmlFor="sourceKey">
-                <Input id="sourceKey" name="sourceKey" placeholder="pearson_edexcel_gcse_russian" />
+                <Input
+                  id="sourceKey"
+                  name="sourceKey"
+                  placeholder="pearson_edexcel_gcse_russian"
+                />
               </FormField>
 
               <FormField label="Source version" htmlFor="sourceVersion">
-                <Input id="sourceVersion" name="sourceVersion" placeholder="manual-review-v1" />
+                <Input
+                  id="sourceVersion"
+                  name="sourceVersion"
+                  placeholder="manual-review-v1"
+                />
               </FormField>
 
               <div className="md:col-span-2">
                 <FormField label="Import key" htmlFor="importKey">
-                  <Input id="importKey" name="importKey" placeholder="pearson_edexcel_gcse_russian:theme_1" />
+                  <Input
+                    id="importKey"
+                    name="importKey"
+                    placeholder="pearson_edexcel_gcse_russian:theme_1"
+                  />
                 </FormField>
               </div>
             </div>
@@ -259,9 +263,7 @@ export default function CreateVocabularySetPage() {
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="app-heading-subsection">
-                Publication
-              </h2>
+              <h2 className="app-heading-subsection">Publication</h2>
               <p className="mt-2 app-text-body-muted">
                 Decide whether the set should start as a draft or be visible immediately.
               </p>
@@ -281,9 +283,7 @@ export default function CreateVocabularySetPage() {
         <div className="space-y-4">
           <section className="app-surface app-section-padding">
             <div className="space-y-4">
-              <h2 className="app-heading-card">
-                Before you save
-              </h2>
+              <h2 className="app-heading-card">Before you save</h2>
 
               <div className="space-y-3">
                 <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 app-text-body-muted">

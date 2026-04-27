@@ -45,8 +45,8 @@ export default async function BillingPage() {
                 Choose your GCSE Russian course access
               </h1>
               <p className="mx-auto max-w-2xl text-sm leading-6 text-[var(--text-secondary)] md:text-base">
-                Start with Foundation or move to Higher. Checkout and upgrade options
-                are handled here because they depend on your signed-in account state.
+                Start with Foundation or move to Higher. Checkout and upgrade options are
+                handled here because they depend on your signed-in account state.
               </p>
             </div>
           </div>

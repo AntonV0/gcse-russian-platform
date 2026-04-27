@@ -129,7 +129,9 @@ export async function loadLessonPageData(
   }
 
   const lessons = await getLessonsByModuleIdDb(courseModule.id);
-  const currentIndex = lessons.findIndex((moduleLesson) => moduleLesson.slug === lessonSlug);
+  const currentIndex = lessons.findIndex(
+    (moduleLesson) => moduleLesson.slug === lessonSlug
+  );
   const lesson = currentIndex >= 0 ? lessons[currentIndex] : null;
   const previousLesson = currentIndex > 0 ? lessons[currentIndex - 1] : null;
   const nextLesson =

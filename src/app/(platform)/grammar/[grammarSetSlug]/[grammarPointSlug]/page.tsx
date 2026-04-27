@@ -118,7 +118,11 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
     { publishedOnly: true }
   );
 
-  if (!grammarSet || !grammarPoint || !canDashboardAccessGrammarSet(grammarSet, dashboard)) {
+  if (
+    !grammarSet ||
+    !grammarPoint ||
+    !canDashboardAccessGrammarSet(grammarSet, dashboard)
+  ) {
     notFound();
   }
 
@@ -132,7 +136,9 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
         tone="student"
         eyebrow={grammarSet.title}
         title={grammarPoint.title}
-        description={grammarPoint.short_description ?? "Grammar explanation and examples."}
+        description={
+          grammarPoint.short_description ?? "Grammar explanation and examples."
+        }
         badges={
           <>
             <Badge tone="info" icon="school">
@@ -142,7 +148,9 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
               {getGrammarCategoryLabel(grammarPoint.category_key)}
             </Badge>
             {grammarPoint.grammar_tag_key ? (
-              <Badge tone="muted">{grammarPoint.grammar_tag_key.replaceAll("_", " ")}</Badge>
+              <Badge tone="muted">
+                {grammarPoint.grammar_tag_key.replaceAll("_", " ")}
+              </Badge>
             ) : null}
           </>
         }
@@ -253,7 +261,11 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
             tone="student"
           >
             <div className="flex flex-col gap-3">
-              <Button href={`/grammar/${grammarSet.slug}`} variant="secondary" icon="back">
+              <Button
+                href={`/grammar/${grammarSet.slug}`}
+                variant="secondary"
+                icon="back"
+              >
                 Back to this set
               </Button>
               <Button href={relatedVocabularyHref} variant="secondary" icon="vocabulary">

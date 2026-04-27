@@ -1,11 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 
-import {
-  COURSE_SELECT,
-  LESSON_SELECT,
-  MODULE_SELECT,
-  VARIANT_SELECT,
-} from "./selects";
+import { COURSE_SELECT, LESSON_SELECT, MODULE_SELECT, VARIANT_SELECT } from "./selects";
 import type {
   DbCourse,
   DbCourseVariant,

@@ -13,8 +13,7 @@ import type { AppIconKey } from "@/lib/shared/icons";
 
 const LESSON_BUILDER_STORAGE_EVENT = "gcse-russian-lesson-builder-storage";
 
-export const BUILDER_FIELD_CLASS =
-  "app-form-control app-form-input";
+export const BUILDER_FIELD_CLASS = "app-form-control app-form-input";
 
 export const BUILDER_TEXTAREA_CLASS = "app-form-control app-form-textarea";
 
@@ -283,7 +282,9 @@ export function CompactDisclosure({
 
       {/* CONTENT */}
       {isOpen ? (
-        <div className="border-t border-[var(--border)] px-4 py-4 sm:px-5">{children}</div>
+        <div className="border-t border-[var(--border)] px-4 py-4 sm:px-5">
+          {children}
+        </div>
       ) : null}
     </div>
   );

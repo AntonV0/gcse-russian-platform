@@ -137,13 +137,13 @@ function MemberSection({
   const redirectTo = `/admin/teaching-groups/${groupId}`;
 
   return (
-    <PanelCard title={`${title} (${members.length})`} tone="admin" contentClassName="space-y-3">
+    <PanelCard
+      title={`${title} (${members.length})`}
+      tone="admin"
+      contentClassName="space-y-3"
+    >
       {members.length === 0 ? (
-        <EmptyState
-          icon="users"
-          title={emptyTitle}
-          description={emptyDescription}
-        />
+        <EmptyState icon="users" title={emptyTitle} description={emptyDescription} />
       ) : (
         members.map((member) => {
           const profile = profileMap.get(member.user_id);

@@ -66,9 +66,7 @@ export function assertVocabularyItemPriority(value: string): DbVocabularyItemPri
   throw new Error("Invalid vocabulary item priority");
 }
 
-export function assertVocabularyPartOfSpeech(
-  value: string
-): DbVocabularyPartOfSpeech {
+export function assertVocabularyPartOfSpeech(value: string): DbVocabularyPartOfSpeech {
   if (
     value === "noun" ||
     value === "verb" ||

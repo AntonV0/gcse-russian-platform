@@ -36,9 +36,7 @@ function DemoPageHierarchy() {
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
           <div className="app-label">Subsection label</div>
-          <h3 className="mt-2 app-heading-subsection">
-            Section metadata
-          </h3>
+          <h3 className="mt-2 app-heading-subsection">Section metadata</h3>
           <p className="mt-2 app-text-body-muted">
             Use compact supporting text to explain what the editor controls without
             overpowering the content.
@@ -124,10 +122,10 @@ function DemoHierarchyScale() {
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] p-4">
-          <div className="app-heading-card">
-            Metadata row
-          </div>
-          <p className="mt-1 app-text-meta normal-case">Edited 2 hours ago · Higher tier</p>
+          <div className="app-heading-card">Metadata row</div>
+          <p className="mt-1 app-text-meta normal-case">
+            Edited 2 hours ago · Higher tier
+          </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] p-4">
@@ -258,18 +256,14 @@ function DemoToneComparison() {
       >
         <div>
           <div className="app-label">Inspector</div>
-          <div className="mt-2 app-heading-subsection">
-            Section visibility
-          </div>
+          <div className="mt-2 app-heading-subsection">Section visibility</div>
           <p className="mt-2 app-text-body-muted">
             Short, factual explanation for a repeat-use control.
           </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
-          <div className="app-heading-card">
-            Variant visibility
-          </div>
+          <div className="app-heading-card">Variant visibility</div>
           <div className="mt-1 app-text-meta normal-case">
             shared · higher_only · volna_only
           </div>
@@ -293,9 +287,7 @@ function DemoToneComparison() {
         </div>
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-          <div className="app-heading-card">
-            Suggested next step
-          </div>
+          <div className="app-heading-card">Suggested next step</div>
           <div className="mt-1 app-text-body-muted">
             Review Theme 1 vocabulary before starting the next listening task.
           </div>
@@ -383,9 +375,7 @@ function DemoFontSystemPreview() {
               <div className="space-y-3">
                 <div>
                   <div className="app-label">English</div>
-                  <div className="mt-2 app-heading-section">
-                    {example.english}
-                  </div>
+                  <div className="mt-2 app-heading-section">{example.english}</div>
                 </div>
 
                 <div>
@@ -401,9 +391,7 @@ function DemoFontSystemPreview() {
               <div className="space-y-4">
                 <div>
                   <div className="app-label">English</div>
-                  <p className="mt-2 app-lesson-prose">
-                    {example.english}
-                  </p>
+                  <p className="mt-2 app-lesson-prose">{example.english}</p>
                 </div>
 
                 <div>
@@ -466,14 +454,13 @@ function DemoLessonContentTypography() {
       >
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
           <div className="app-label">Exam tip</div>
-          <div className="mt-2 app-heading-card">
-            Include a future time marker
-          </div>
+          <div className="mt-2 app-heading-card">Include a future time marker</div>
           <p className="mt-2 app-text-body-muted">
             Add words like{" "}
             <span lang="ru" className="app-russian-text inline font-medium">
               завтра
-            </span>,{" "}
+            </span>
+            ,{" "}
             <span lang="ru" className="app-russian-text inline font-medium">
               на следующей неделе
             </span>
@@ -481,8 +468,7 @@ function DemoLessonContentTypography() {
             <span lang="ru" className="app-russian-text inline font-medium">
               я буду
             </span>{" "}
-            to
-            make your timeframe clear.
+            to make your timeframe clear.
           </p>
         </div>
       </PanelCard>

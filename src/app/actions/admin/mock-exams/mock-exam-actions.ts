@@ -317,16 +317,15 @@ export async function markMockExamAttemptAction(formData: FormData) {
 
   const questions = sections.flatMap((section) => questionsBySectionId[section.id] ?? []);
   const now = new Date().toISOString();
-  const { responseRows, attemptPayload, scorePayload } =
-    getMockExamMarkingPayloads({
-      formData,
-      questions,
-      responsesByQuestionId,
-      attemptId: attempt.id,
-      totalMarks: attempt.total_marks_snapshot,
-      markedBy: user.id,
-      now,
-    });
+  const { responseRows, attemptPayload, scorePayload } = getMockExamMarkingPayloads({
+    formData,
+    questions,
+    responsesByQuestionId,
+    attemptId: attempt.id,
+    totalMarks: attempt.total_marks_snapshot,
+    markedBy: user.id,
+    now,
+  });
   const supabase = await createClient();
 
   if (responseRows.length > 0) {

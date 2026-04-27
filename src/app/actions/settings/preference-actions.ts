@@ -43,17 +43,11 @@ export async function updateAppearancePreferences(update: AppearancePreferenceUp
     accent_preference?: AccentPreference;
   } = {};
 
-  if (
-    update.themePreference &&
-    themePreferences.has(update.themePreference)
-  ) {
+  if (update.themePreference && themePreferences.has(update.themePreference)) {
     payload.theme_preference = update.themePreference;
   }
 
-  if (
-    update.accentPreference &&
-    accentPreferences.has(update.accentPreference)
-  ) {
+  if (update.accentPreference && accentPreferences.has(update.accentPreference)) {
     payload.accent_preference = update.accentPreference;
   }
 
@@ -61,10 +55,7 @@ export async function updateAppearancePreferences(update: AppearancePreferenceUp
     return { ok: false };
   }
 
-  const { error } = await supabase
-    .from("profiles")
-    .update(payload)
-    .eq("id", user.id);
+  const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
 
   if (error) {
     console.error("Error updating appearance preferences:", error);

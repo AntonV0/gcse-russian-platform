@@ -222,9 +222,7 @@ export function BlockPresetBlockFields({
               name={name("vocabularySetSlug")}
               required
               defaultValue={
-                typeof data?.vocabularySetSlug === "string"
-                  ? data.vocabularySetSlug
-                  : ""
+                typeof data?.vocabularySetSlug === "string" ? data.vocabularySetSlug : ""
               }
             />
           </FormField>

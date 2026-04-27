@@ -31,16 +31,12 @@ export default async function AdminStudentsPage({
     statusFilter
   )}&access=${encodeURIComponent(accessFilter)}`;
 
-  const {
-    orderedGroups,
-    filteredInactiveStudents,
-    totalStudents,
-    accessOptions,
-  } = await getAdminStudentList({
-    q,
-    statusFilter,
-    accessFilter,
-  });
+  const { orderedGroups, filteredInactiveStudents, totalStudents, accessOptions } =
+    await getAdminStudentList({
+      q,
+      statusFilter,
+      accessFilter,
+    });
 
   return (
     <main>
@@ -51,11 +47,7 @@ export default async function AdminStudentsPage({
 
       <StudentFeedbackBanners success={params.success} error={params.error} />
 
-      <StudentFilterPanel
-        q={q}
-        statusFilter={statusFilter}
-        accessFilter={accessFilter}
-      />
+      <StudentFilterPanel q={q} statusFilter={statusFilter} accessFilter={accessFilter} />
 
       <FeedbackBanner
         className="mb-6"

@@ -26,13 +26,13 @@ export default function AdminQuestionForm({
   defaultValues,
   submitLabel = "Save question",
 }: AdminQuestionFormProps) {
-  const [questionType, setQuestionType] = useState<
-    AdminQuestionType
-  >(defaultValues?.questionType ?? "translation");
+  const [questionType, setQuestionType] = useState<AdminQuestionType>(
+    defaultValues?.questionType ?? "translation"
+  );
 
-  const [answerStrategy, setAnswerStrategy] = useState<
-    AdminQuestionAnswerStrategy
-  >(defaultValues?.answerStrategy ?? "text_input");
+  const [answerStrategy, setAnswerStrategy] = useState<AdminQuestionAnswerStrategy>(
+    defaultValues?.answerStrategy ?? "text_input"
+  );
 
   const isTextQuestion =
     questionType === "short_answer" || questionType === "translation";
@@ -174,4 +174,3 @@ export default function AdminQuestionForm({
     </form>
   );
 }
-

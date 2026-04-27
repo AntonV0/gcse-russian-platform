@@ -1,10 +1,7 @@
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import type { DbMockExamSet, MockExamFilters } from "@/lib/mock-exams/types";
 
-export function applyMockExamFilters(
-  exams: DbMockExamSet[],
-  filters?: MockExamFilters
-) {
+export function applyMockExamFilters(exams: DbMockExamSet[], filters?: MockExamFilters) {
   const paperNumber =
     filters?.paperNumber && filters.paperNumber !== "all"
       ? Number(filters.paperNumber)

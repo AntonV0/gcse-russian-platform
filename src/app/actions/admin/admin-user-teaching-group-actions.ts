@@ -76,7 +76,9 @@ async function addUserToTeachingGroupAction(formData: FormData, role: Membership
   revalidatePath(`/admin/teaching-groups/${groupId}`);
   redirectWithSuccess(
     redirectTo,
-    role === "student" ? "Student added to teaching group" : "Teacher added to teaching group"
+    role === "student"
+      ? "Student added to teaching group"
+      : "Teacher added to teaching group"
   );
 }
 

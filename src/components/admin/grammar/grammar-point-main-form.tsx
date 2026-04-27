@@ -8,10 +8,7 @@ import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import { GRAMMAR_TAGS } from "@/lib/curriculum/grammar-tags";
-import type {
-  DbGrammarPoint,
-  DbGrammarSet,
-} from "@/lib/grammar/grammar-helpers-db";
+import type { DbGrammarPoint, DbGrammarSet } from "@/lib/grammar/grammar-helpers-db";
 
 export default function GrammarPointMainForm({
   grammarSet,
@@ -67,11 +64,17 @@ export default function GrammarPointMainForm({
           </div>
 
           <FormField label="Spec reference">
-            <Input name="specReference" defaultValue={grammarPoint.spec_reference ?? ""} />
+            <Input
+              name="specReference"
+              defaultValue={grammarPoint.spec_reference ?? ""}
+            />
           </FormField>
 
           <FormField label="Grammar tag">
-            <Select name="grammarTagKey" defaultValue={grammarPoint.grammar_tag_key ?? ""}>
+            <Select
+              name="grammarTagKey"
+              defaultValue={grammarPoint.grammar_tag_key ?? ""}
+            >
               <option value="">No tag</option>
               {GRAMMAR_TAGS.map((tag) => (
                 <option key={tag.key} value={tag.key}>

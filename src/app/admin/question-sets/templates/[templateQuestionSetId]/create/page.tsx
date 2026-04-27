@@ -57,7 +57,12 @@ export default async function CreateQuestionSetFromTemplatePage({
   return (
     <main className="max-w-3xl">
       <InlineActions className="mb-6">
-        <Button href="/admin/question-sets/templates" variant="quiet" size="sm" icon="back">
+        <Button
+          href="/admin/question-sets/templates"
+          variant="quiet"
+          size="sm"
+          icon="back"
+        >
           Back to templates
         </Button>
       </InlineActions>

@@ -80,9 +80,7 @@ export default function EmptyState({
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 [background:var(--accent-sheen-gradient)]" />
 
         {visual ? (
-          <div className="relative mb-5 flex justify-center">
-            {visual}
-          </div>
+          <div className="relative mb-5 flex justify-center">{visual}</div>
         ) : null}
 
         {icon ? (
@@ -98,9 +96,7 @@ export default function EmptyState({
             {title}
           </Heading>
 
-          {description ? (
-            <p className="mt-2 app-text-body-muted">{description}</p>
-          ) : null}
+          {description ? <p className="mt-2 app-text-body-muted">{description}</p> : null}
 
           {action ? <div className="mt-6 flex justify-center">{action}</div> : null}
         </div>

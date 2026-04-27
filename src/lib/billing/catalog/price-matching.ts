@@ -1,9 +1,4 @@
-import {
-  BILLING_TYPES,
-  INTERVAL_UNITS,
-  PRODUCT_CODES,
-  type DbPrice,
-} from "./types";
+import { BILLING_TYPES, INTERVAL_UNITS, PRODUCT_CODES, type DbPrice } from "./types";
 
 export function matchPriceByBillingShape(
   prices: DbPrice[],

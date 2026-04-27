@@ -47,17 +47,13 @@ export default function FormField({
   const generatedId = useId();
   const controlElement =
     isValidElement<FormControlElementProps>(children) && children.type !== Fragment
-    ? children
-    : null;
+      ? children
+      : null;
   const controlId =
     id ?? htmlFor ?? controlElement?.props.id ?? `form-field-${generatedId}`;
   const descriptionId = description ? `${controlId}-description` : undefined;
   const statusId = statusText ? `${controlId}-message` : undefined;
-  const describedBy = [
-    controlElement?.props["aria-describedby"],
-    descriptionId,
-    statusId,
-  ]
+  const describedBy = [controlElement?.props["aria-describedby"], descriptionId, statusId]
     .filter(Boolean)
     .join(" ");
   const control = controlElement

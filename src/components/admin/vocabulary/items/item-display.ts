@@ -18,9 +18,7 @@ export function getVocabularyItemSourceTypeLabel(
   }
 }
 
-export function getVocabularyItemPriorityLabel(
-  priority: DbVocabularyItem["priority"]
-) {
+export function getVocabularyItemPriorityLabel(priority: DbVocabularyItem["priority"]) {
   switch (priority) {
     case "core":
       return "Core";

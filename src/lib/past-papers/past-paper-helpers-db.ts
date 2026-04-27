@@ -137,9 +137,7 @@ function applyPastPaperFilters(
       : null;
   const tier = filters?.tier && filters.tier !== "all" ? filters.tier : null;
   const resourceType =
-    filters?.resourceType && filters.resourceType !== "all"
-      ? filters.resourceType
-      : null;
+    filters?.resourceType && filters.resourceType !== "all" ? filters.resourceType : null;
   const published = filters?.published ?? "all";
 
   return resources.filter((resource) => {

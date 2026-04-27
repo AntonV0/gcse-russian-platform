@@ -164,10 +164,9 @@ export function ThemeProvider({
   const initialState = readInitialThemeState();
   const resolvedInitialPreference =
     initialThemePreference ?? initialState.themePreference;
-  const resolvedInitialAccent =
-    initialAccentPreference ?? initialState.accentPreference;
-  const [theme, setThemeState] = useState<ThemeMode | null>(
-    () => resolveTheme(resolvedInitialPreference)
+  const resolvedInitialAccent = initialAccentPreference ?? initialState.accentPreference;
+  const [theme, setThemeState] = useState<ThemeMode | null>(() =>
+    resolveTheme(resolvedInitialPreference)
   );
   const [themePreference, setThemePreferenceState] = useState<ThemePreference | null>(
     () => resolvedInitialPreference
@@ -206,7 +205,10 @@ export function ThemeProvider({
 
   useEffect(() => {
     applyTheme(theme ?? readResolvedTheme(), false);
-    applyAccent(accentPreference ?? readStoredAccentPreference() ?? DEFAULT_ACCENT, false);
+    applyAccent(
+      accentPreference ?? readStoredAccentPreference() ?? DEFAULT_ACCENT,
+      false
+    );
     localStorage.setItem(THEME_STORAGE_KEY, themePreference ?? "system");
     localStorage.setItem(ACCENT_STORAGE_KEY, accentPreference ?? DEFAULT_ACCENT);
 
@@ -271,7 +273,14 @@ export function ThemeProvider({
       setAccentPreference,
       toggleTheme,
     }),
-    [theme, themePreference, accentPreference, setThemePreference, setAccentPreference, toggleTheme]
+    [
+      theme,
+      themePreference,
+      accentPreference,
+      setThemePreference,
+      setAccentPreference,
+      toggleTheme,
+    ]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

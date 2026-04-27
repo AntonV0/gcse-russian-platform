@@ -44,13 +44,14 @@ export default function DangerZone({
         <CardHeader className="border-b-[color-mix(in_srgb,var(--danger)_18%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--danger)_8%,transparent)_0%,color-mix(in_srgb,var(--danger)_2%,transparent)_100%)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0">
-              <Heading level={headingLevel} className="app-heading-card text-[var(--danger)]">
+              <Heading
+                level={headingLevel}
+                className="app-heading-card text-[var(--danger)]"
+              >
                 {title}
               </Heading>
               {description ? (
-                <p className="mt-1 app-text-body-muted">
-                  {description}
-                </p>
+                <p className="mt-1 app-text-body-muted">{description}</p>
               ) : null}
             </div>
 
@@ -61,9 +62,7 @@ export default function DangerZone({
         </CardHeader>
 
         {children ? (
-          <CardBody className="space-y-3 app-text-body">
-            {children}
-          </CardBody>
+          <CardBody className="space-y-3 app-text-body">{children}</CardBody>
         ) : null}
       </Card>
     </div>

@@ -33,12 +33,8 @@ export function VocabularyAdminStatTile({
 }) {
   return (
     <div className="rounded-2xl bg-[var(--background-muted)] px-4 py-3">
-      <div className="app-text-meta">
-        {label}
-      </div>
-      <div className="mt-1.5 font-semibold app-text-detail">
-        {value}
-      </div>
+      <div className="app-text-meta">{label}</div>
+      <div className="mt-1.5 font-semibold app-text-detail">{value}</div>
     </div>
   );
 }
@@ -61,18 +57,12 @@ export function VocabularyAdminDisclosurePanel({
     >
       <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-3">
         <span>
-          <span className="block app-heading-card">
-            {title}
-          </span>
+          <span className="block app-heading-card">{title}</span>
           {description ? (
-            <span className="mt-1 block app-text-body-muted">
-              {description}
-            </span>
+            <span className="mt-1 block app-text-body-muted">{description}</span>
           ) : null}
         </span>
-        <span className="font-semibold app-text-caption group-open:hidden">
-          Open
-        </span>
+        <span className="font-semibold app-text-caption group-open:hidden">Open</span>
         <span className="hidden font-semibold app-text-caption group-open:inline">
           Close
         </span>

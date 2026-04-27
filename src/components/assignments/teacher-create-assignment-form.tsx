@@ -256,9 +256,9 @@ export default function TeacherCreateAssignmentForm({
         contentClassName="space-y-6"
       >
         <div className="app-mobile-action-stack flex justify-end">
-        <Button href="/teacher/assignments" variant="quiet" size="sm" icon="back">
-          Back to assignments
-        </Button>
+          <Button href="/teacher/assignments" variant="quiet" size="sm" icon="back">
+            Back to assignments
+          </Button>
         </div>
 
         <TeacherAssignmentDetailsFields
@@ -297,24 +297,24 @@ export default function TeacherCreateAssignmentForm({
         {error ? <FeedbackBanner tone="danger" description={error} /> : null}
 
         <div className="app-mobile-action-stack flex flex-wrap items-center gap-3">
-        <Button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          variant="primary"
-        >
-          {isSubmitting
-            ? isEditMode
-              ? "Saving..."
-              : "Creating..."
-            : isEditMode
-              ? "Save changes"
-              : "Create assignment"}
-        </Button>
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            variant="primary"
+          >
+            {isSubmitting
+              ? isEditMode
+                ? "Saving..."
+                : "Creating..."
+              : isEditMode
+                ? "Save changes"
+                : "Create assignment"}
+          </Button>
 
-        <Button href="/teacher/assignments" variant="quiet">
-          Cancel
-        </Button>
+          <Button href="/teacher/assignments" variant="quiet">
+            Cancel
+          </Button>
         </div>
       </PanelCard>
     </div>

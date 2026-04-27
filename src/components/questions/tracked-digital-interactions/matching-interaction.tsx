@@ -1,10 +1,7 @@
 "use client";
 
 import type { RuntimeMatchingQuestion } from "@/lib/questions/question-engine";
-import {
-  type InteractionControlProps,
-  SubmitAnswerButton,
-} from "./interaction-shared";
+import { type InteractionControlProps, SubmitAnswerButton } from "./interaction-shared";
 
 export function MatchingInteraction({
   question,

@@ -122,7 +122,9 @@ export default function AdminQuestionSettingsFields({
               className="font-mono"
               rows={8}
               defaultValue={defaultValues?.selectionGroupsText ?? ""}
-              placeholder={"subject|Choose subject|I,you,he\nverb|Choose verb|live,study,like"}
+              placeholder={
+                "subject|Choose subject|I,you,he\nverb|Choose verb|live,study,like"
+              }
             />
           </FormField>
         </PanelCard>

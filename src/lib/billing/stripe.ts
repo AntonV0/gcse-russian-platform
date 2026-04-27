@@ -1,4 +1,10 @@
 import Stripe from "stripe";
+import {
+  buildCheckoutRedirectUrl,
+  DEFAULT_CHECKOUT_CANCEL_PATH,
+  DEFAULT_CHECKOUT_SUCCESS_PATH,
+  normalizeAppBaseUrl,
+} from "@/lib/billing/redirect-paths";
 
 let stripeInstance: Stripe | null = null;
 
@@ -38,12 +44,12 @@ export function getStripeWebhookSecret(): string {
 }
 
 export function getStripeAppBaseUrl(): string {
-  return (
+  return normalizeAppBaseUrl(
     process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.APP_URL ||
-    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-    "http://localhost:3000"
-  ).replace(/\/$/, "");
+      process.env.APP_URL ||
+      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+      "http://localhost:3000"
+  );
 }
 
 export type StripeCheckoutMode = "payment" | "subscription";
@@ -112,8 +118,16 @@ export async function createStripeCheckoutSession(
   const stripe = getStripeClient();
   const baseUrl = getStripeAppBaseUrl();
 
-  const successUrl = `${baseUrl}${input.successPath ?? "/account"}?checkout=success`;
-  const cancelUrl = `${baseUrl}${input.cancelPath ?? "/account"}?checkout=cancelled`;
+  const successUrl = buildCheckoutRedirectUrl(
+    baseUrl,
+    input.successPath ?? DEFAULT_CHECKOUT_SUCCESS_PATH,
+    "success"
+  );
+  const cancelUrl = buildCheckoutRedirectUrl(
+    baseUrl,
+    input.cancelPath ?? DEFAULT_CHECKOUT_CANCEL_PATH,
+    "cancelled"
+  );
 
   const mode = input.modeOverride ?? getStripeCheckoutModeFromBillingType(billingType);
   const lineItems = buildLineItems(input);

@@ -40,12 +40,7 @@ export default function DeleteAssignmentButton({
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Button
-        type="button"
-        onClick={handleDelete}
-        variant="danger"
-        size="sm"
-      >
+      <Button type="button" onClick={handleDelete} variant="danger" size="sm">
         Confirm delete
       </Button>
 

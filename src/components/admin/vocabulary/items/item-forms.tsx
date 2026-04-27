@@ -25,9 +25,7 @@ export function NewVocabularyItemForm({
   return (
     <section className="app-surface app-section-padding">
       <div className="mb-5 flex flex-col gap-2">
-        <h2 className="app-heading-subsection">
-          Quick add item
-        </h2>
+        <h2 className="app-heading-subsection">Quick add item</h2>
         <p className="app-text-body-muted">
           Add the essentials first. Open optional sections only when this item needs extra
           metadata.
@@ -149,16 +147,17 @@ export function NewVocabularyItemForm({
               </Select>
             </VocabularyAdminFormField>
 
-            <VocabularyAdminFormField label="Case governed" htmlFor="create-case-governed">
+            <VocabularyAdminFormField
+              label="Case governed"
+              htmlFor="create-case-governed"
+            >
               <Input id="create-case-governed" name="caseGoverned" />
             </VocabularyAdminFormField>
 
             <label className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
               <input type="checkbox" name="isReflexive" value="true" className="mt-1" />
               <span>
-                <span className="block app-label">
-                  Reflexive verb
-                </span>
+                <span className="block app-label">Reflexive verb</span>
                 <span className="mt-1 block app-text-caption">
                   Mark words such as Ð·Ð°Ð½Ð¸Ð¼Ð°Ñ‚ÑŒÑÑ or ÑƒÑ‡Ð¸Ñ‚ÑŒÑÑ.
                 </span>
@@ -179,7 +178,10 @@ export function NewVocabularyItemForm({
               </Select>
             </VocabularyAdminFormField>
 
-            <VocabularyAdminFormField label="Canonical key" htmlFor="create-canonical-key">
+            <VocabularyAdminFormField
+              label="Canonical key"
+              htmlFor="create-canonical-key"
+            >
               <Input id="create-canonical-key" name="canonicalKey" />
             </VocabularyAdminFormField>
 
@@ -206,7 +208,10 @@ export function NewVocabularyItemForm({
               <Input id="create-source-key" name="sourceKey" />
             </VocabularyAdminFormField>
 
-            <VocabularyAdminFormField label="Source version" htmlFor="create-source-version">
+            <VocabularyAdminFormField
+              label="Source version"
+              htmlFor="create-source-version"
+            >
               <Input id="create-source-version" name="sourceVersion" />
             </VocabularyAdminFormField>
 

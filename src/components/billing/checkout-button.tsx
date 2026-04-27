@@ -91,9 +91,7 @@ export default function CheckoutButton({
         {isLoading ? "Redirecting..." : children}
       </Button>
 
-      {errorMessage ? (
-        <FeedbackBanner tone="danger" description={errorMessage} />
-      ) : null}
+      {errorMessage ? <FeedbackBanner tone="danger" description={errorMessage} /> : null}
     </div>
   );
 }

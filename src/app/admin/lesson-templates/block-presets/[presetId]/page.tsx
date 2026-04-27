@@ -35,10 +35,7 @@ export default async function AdminLessonBlockPresetDetailPage({
         </Button>
       </div>
 
-      <BlockPresetDetailsPanel
-        preset={detail.preset}
-        blockCount={detail.blocks.length}
-      />
+      <BlockPresetDetailsPanel preset={detail.preset} blockCount={detail.blocks.length} />
 
       <BlockPresetAddBlockPanel presetId={detail.preset.id} />
 

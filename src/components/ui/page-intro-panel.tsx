@@ -117,9 +117,7 @@ export default function PageIntroPanel({
               {supportingContent}
             </div>
 
-            <div className="flex justify-center xl:justify-end">
-              {visual}
-            </div>
+            <div className="flex justify-center xl:justify-end">{visual}</div>
           </div>
         ) : (
           <>

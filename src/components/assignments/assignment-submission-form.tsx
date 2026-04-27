@@ -152,9 +152,7 @@ export default function AssignmentSubmissionForm({
 
       {isLocked && (mark !== null || feedback) ? (
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
-          <p className="mb-1 font-medium text-[var(--text-primary)]">
-            Teacher feedback
-          </p>
+          <p className="mb-1 font-medium text-[var(--text-primary)]">Teacher feedback</p>
 
           {mark !== null ? <p className="mb-1">Mark: {mark}</p> : null}
 
@@ -201,9 +199,7 @@ export default function AssignmentSubmissionForm({
         </div>
       ) : null}
 
-      {uploadError ? (
-        <FeedbackBanner tone="danger" description={uploadError} />
-      ) : null}
+      {uploadError ? <FeedbackBanner tone="danger" description={uploadError} /> : null}
 
       <div className="app-mobile-action-stack flex">
         <Button

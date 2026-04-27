@@ -2,10 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import AppIcon from "@/components/ui/app-icon";
-import {
-  useTheme,
-  type AccentPreference,
-} from "@/components/providers/theme-provider";
+import { useTheme, type AccentPreference } from "@/components/providers/theme-provider";
 
 const accentOptions: Array<{
   value: AccentPreference;
@@ -94,7 +91,9 @@ export default function ThemeAccentSelector() {
                 <span
                   className={[
                     "text-sm font-semibold",
-                    isActive ? "text-[var(--accent-on-soft)]" : "text-[var(--text-primary)]",
+                    isActive
+                      ? "text-[var(--accent-on-soft)]"
+                      : "text-[var(--text-primary)]",
                   ].join(" ")}
                 >
                   {option.label}

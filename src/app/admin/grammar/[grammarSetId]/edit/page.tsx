@@ -15,7 +15,10 @@ import {
   deleteGrammarSetAction,
   updateGrammarSetAction,
 } from "@/app/actions/admin/admin-grammar-actions";
-import { getGrammarTierLabel, loadGrammarSetByIdDb } from "@/lib/grammar/grammar-helpers-db";
+import {
+  getGrammarTierLabel,
+  loadGrammarSetByIdDb,
+} from "@/lib/grammar/grammar-helpers-db";
 
 type EditGrammarSetPageProps = {
   params: Promise<{ grammarSetId: string }>;

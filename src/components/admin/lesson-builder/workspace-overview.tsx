@@ -109,8 +109,8 @@ function MobileAuthoringWarning() {
             Lesson authoring needs extra room
           </Heading>
           <p className="mt-1 text-sm text-[var(--warning-text)]">
-            The builder remains available on this screen, but section ordering,
-            block editing, and inspector controls are easier with a wider workspace.
+            The builder remains available on this screen, but section ordering, block
+            editing, and inspector controls are easier with a wider workspace.
           </p>
         </div>
       </div>
@@ -151,7 +151,10 @@ function ContentHealthPanel({ sections }: { sections: LessonSection[] }) {
             Content health
           </Heading>
         </div>
-        <Badge tone={isReady ? "success" : "warning"} icon={isReady ? "success" : "warning"}>
+        <Badge
+          tone={isReady ? "success" : "warning"}
+          icon={isReady ? "success" : "warning"}
+        >
           {isReady ? "Ready" : "Needs review"}
         </Badge>
       </div>

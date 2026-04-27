@@ -153,12 +153,8 @@ export default function EvergreenGuidePage({
                   key={item.title}
                   className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
                 >
-                  <h3 className="app-heading-card">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 app-text-body-muted">
-                    {item.description}
-                  </p>
+                  <h3 className="app-heading-card">{item.title}</h3>
+                  <p className="mt-2 app-text-body-muted">{item.description}</p>
                 </div>
               ))}
             </div>

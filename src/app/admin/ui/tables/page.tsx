@@ -601,9 +601,7 @@ function DarkSurfaceTableTest() {
               className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] p-4"
             >
               <div className="font-medium text-white">{row.name}</div>
-              <div className="mt-1 text-sm text-[rgba(255,255,255,0.68)]">
-                {row.type}
-              </div>
+              <div className="mt-1 text-sm text-[rgba(255,255,255,0.68)]">{row.type}</div>
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <StatusBadge status={row.status} />
@@ -640,9 +638,7 @@ function DarkSurfaceTableTest() {
                   <StatusBadge status={row.status} />
                 </div>
 
-                <div className="text-sm text-[rgba(255,255,255,0.72)]">
-                  {row.updated}
-                </div>
+                <div className="text-sm text-[rgba(255,255,255,0.72)]">{row.updated}</div>
 
                 <div className="app-mobile-action-stack flex flex-wrap gap-2">
                   <Button variant="secondary" size="sm" icon="edit">

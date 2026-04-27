@@ -1,9 +1,6 @@
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import Button from "@/components/ui/button";
-import {
-  DataTableCell,
-  DataTableRow,
-} from "@/components/ui/data-table";
+import { DataTableCell, DataTableRow } from "@/components/ui/data-table";
 import Input from "@/components/ui/input";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";

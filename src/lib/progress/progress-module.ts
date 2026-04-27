@@ -25,10 +25,7 @@ export async function getModuleProgress(
   return data;
 }
 
-export async function getCourseLessonProgress(
-  courseSlug: string,
-  variantSlug: string
-) {
+export async function getCourseLessonProgress(courseSlug: string, variantSlug: string) {
   const user = await getCurrentUser();
 
   if (!user) return [];

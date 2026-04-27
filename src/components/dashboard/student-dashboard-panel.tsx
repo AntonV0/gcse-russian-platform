@@ -183,7 +183,10 @@ function DashboardLinkCard({
     <DashboardCard title={title}>
       <div className="space-y-3">
         <p>{description}</p>
-        <Link href={href} className="inline-flex items-center gap-2 font-medium app-brand-text">
+        <Link
+          href={href}
+          className="inline-flex items-center gap-2 font-medium app-brand-text"
+        >
           {linkLabel}
           <AppIcon icon="next" size={14} />
         </Link>
@@ -192,19 +195,14 @@ function DashboardLinkCard({
   );
 }
 
-function StudentSupportCard({
-  accessMode,
-}: {
-  accessMode: DashboardInfo["accessMode"];
-}) {
+function StudentSupportCard({ accessMode }: { accessMode: DashboardInfo["accessMode"] }) {
   return (
     <DashboardCard title={accessMode === "volna" ? "Assignments" : "Live support"}>
       <div className="space-y-3">
         {accessMode === "volna" ? (
           <>
             <p>
-              Your Volna student area includes teacher-led assignments and guided
-              support.
+              Your Volna student area includes teacher-led assignments and guided support.
             </p>
 
             <Link
@@ -218,8 +216,8 @@ function StudentSupportCard({
         ) : (
           <>
             <p>
-              Looking for live support as well as self-study? Explore Volna
-              School&apos;s online GCSE Russian classes.
+              Looking for live support as well as self-study? Explore Volna School&apos;s
+              online GCSE Russian classes.
             </p>
 
             <Link

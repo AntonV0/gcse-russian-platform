@@ -56,8 +56,8 @@ export default function UiLabLessonBuilderPrimitivesDemo() {
               Builder field class
             </div>
             <p className="mt-1 text-sm app-text-muted">
-              The builder has a dedicated input class for compact editor forms until
-              every editor is migrated to shared FormField primitives.
+              The builder has a dedicated input class for compact editor forms until every
+              editor is migrated to shared FormField primitives.
             </p>
           </div>
 

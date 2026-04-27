@@ -82,10 +82,7 @@ export function getBooleanFromString(value: string, defaultValue: boolean) {
   throw new Error(`Invalid boolean value: ${value}`);
 }
 
-export function getOptionalNonNegativeNumberFromString(
-  value: string,
-  fieldName: string
-) {
+export function getOptionalNonNegativeNumberFromString(value: string, fieldName: string) {
   const trimmed = value.trim();
   if (!trimmed) return null;
 

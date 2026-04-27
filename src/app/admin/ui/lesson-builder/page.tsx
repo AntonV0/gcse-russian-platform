@@ -65,7 +65,9 @@ function SectionSidebarRow({
         active
           ? "app-selected-surface"
           : "border-[var(--border)] bg-[var(--background-elevated)]",
-        dropTarget ? "ring-2 ring-[color-mix(in_srgb,var(--success)_40%,transparent)]" : "",
+        dropTarget
+          ? "ring-2 ring-[color-mix(in_srgb,var(--success)_40%,transparent)]"
+          : "",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -192,7 +194,10 @@ export default async function AdminUiLessonBuilderPage() {
                 <Input defaultValue="School subjects vocabulary" />
               </FormField>
               <FormField label="Content">
-                <Textarea rows={5} defaultValue="Introduce core nouns and opinion phrases." />
+                <Textarea
+                  rows={5}
+                  defaultValue="Introduce core nouns and opinion phrases."
+                />
               </FormField>
             </div>
           </PanelCard>
@@ -367,14 +372,22 @@ export default async function AdminUiLessonBuilderPage() {
             iconTone="brand"
             title="No blocks in this section yet"
             description="Create the first block above to start building this lesson section."
-            action={<Button variant="primary" icon="create">Create first block</Button>}
+            action={
+              <Button variant="primary" icon="create">
+                Create first block
+              </Button>
+            }
           />
           <EmptyState
             icon="search"
             iconTone="warning"
             title="No blocks match your search"
             description="Try a broader keyword or clear the current search."
-            action={<Button variant="secondary" icon="refresh">Clear search</Button>}
+            action={
+              <Button variant="secondary" icon="refresh">
+                Clear search
+              </Button>
+            }
           />
           <Card>
             <CardBody className="space-y-3 p-5">

@@ -68,7 +68,8 @@ export async function getLessonAccessState(
     lessonSlug
   );
 
-  const needsAccessGrant = !profile?.is_admin && !profile?.is_teacher && !lesson?.is_trial_visible;
+  const needsAccessGrant =
+    !profile?.is_admin && !profile?.is_teacher && !lesson?.is_trial_visible;
   const access = needsAccessGrant
     ? await getCurrentCourseAccess(courseSlug, variantSlug)
     : null;

@@ -1,4 +1,9 @@
-import type { DbGrammarExample, DbGrammarPoint, DbGrammarSet, DbGrammarTable } from "@/lib/grammar/types";
+import type {
+  DbGrammarExample,
+  DbGrammarPoint,
+  DbGrammarSet,
+  DbGrammarTable,
+} from "@/lib/grammar/types";
 
 export function normalizeGrammarSet(row: unknown): DbGrammarSet {
   const record = row as Partial<DbGrammarSet>;
@@ -91,4 +96,3 @@ export function normalizeGrammarTable(row: unknown): DbGrammarTable {
     updated_at: String(record.updated_at),
   };
 }
-

@@ -28,7 +28,9 @@ type GrammarSetPointsPageProps = {
   params: Promise<{ grammarSetId: string }>;
 };
 
-export default async function GrammarSetPointsPage({ params }: GrammarSetPointsPageProps) {
+export default async function GrammarSetPointsPage({
+  params,
+}: GrammarSetPointsPageProps) {
   const { grammarSetId } = await params;
   const { grammarSet, points } = await loadGrammarSetByIdDb(grammarSetId);
 
@@ -166,7 +168,10 @@ export default async function GrammarSetPointsPage({ params }: GrammarSetPointsP
             </FormField>
 
             <FormField label="Spec reference">
-              <Input name="specReference" placeholder="Foundation grammar appendix: verbs" />
+              <Input
+                name="specReference"
+                placeholder="Foundation grammar appendix: verbs"
+              />
             </FormField>
 
             <FormField label="Grammar tag">

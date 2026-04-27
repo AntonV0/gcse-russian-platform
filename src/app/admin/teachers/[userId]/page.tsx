@@ -121,7 +121,11 @@ export default async function AdminTeacherProfilePage({
           />
         </PanelCard>
 
-        <PanelCard title="Actions" description="Adjust teaching permissions." tone="muted">
+        <PanelCard
+          title="Actions"
+          description="Adjust teaching permissions."
+          tone="muted"
+        >
           <form action={setTeacherRoleAction}>
             <input type="hidden" name="userId" value={teacher.id} />
             <input type="hidden" name="redirectTo" value={teacherHref} />
@@ -144,9 +148,7 @@ export default async function AdminTeacherProfilePage({
           tone="admin"
         >
           {availableGroups.length === 0 ? (
-            <p className="text-sm app-text-muted">
-              No available teaching groups to add.
-            </p>
+            <p className="text-sm app-text-muted">No available teaching groups to add.</p>
           ) : (
             <form
               action={addTeacherToTeachingGroupAction}

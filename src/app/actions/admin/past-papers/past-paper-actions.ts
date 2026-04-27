@@ -3,13 +3,8 @@
 import { redirect } from "next/navigation";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import {
-  getBoolean,
-  getTrimmedString,
-} from "@/app/actions/shared/form-data";
-import {
-  getPastPaperPayload,
-} from "@/app/actions/admin/past-papers/past-paper-payloads";
+import { getBoolean, getTrimmedString } from "@/app/actions/shared/form-data";
+import { getPastPaperPayload } from "@/app/actions/admin/past-papers/past-paper-payloads";
 import { getPastPaperBulkImportPayloads } from "@/app/actions/admin/past-papers/past-paper-bulk-import-payloads";
 
 export async function createPastPaperResourceAction(formData: FormData) {
@@ -93,9 +88,7 @@ export async function bulkCreatePastPaperResourcesAction(formData: FormData) {
     throw new Error(`Failed to bulk import past paper resources: ${error.message}`);
   }
 
-  redirect(
-    `/admin/past-papers?imported=${rowsToInsert.length}&skipped=${skippedCount}`
-  );
+  redirect(`/admin/past-papers?imported=${rowsToInsert.length}&skipped=${skippedCount}`);
 }
 
 export async function updatePastPaperResourceAction(formData: FormData) {

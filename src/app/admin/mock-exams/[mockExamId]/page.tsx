@@ -25,9 +25,7 @@ export default async function AdminMockExamDetailPage({
   }
 
   const { mockExamId } = await params;
-  const { exam, sections, questionsBySectionId } = await loadMockExamByIdDb(
-    mockExamId
-  );
+  const { exam, sections, questionsBySectionId } = await loadMockExamByIdDb(mockExamId);
 
   if (!exam) {
     return <main>Mock exam not found.</main>;

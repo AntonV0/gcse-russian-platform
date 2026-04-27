@@ -96,7 +96,10 @@ export async function createGrammarTableAction(formData: FormData) {
   const grammarSetId = getTrimmedString(formData, "grammarSetId");
   const grammarPointId = getTrimmedString(formData, "grammarPointId");
   const title = getTrimmedString(formData, "title");
-  const columns = parseStringArrayJson(getTrimmedString(formData, "columnsJson"), "columns");
+  const columns = parseStringArrayJson(
+    getTrimmedString(formData, "columnsJson"),
+    "columns"
+  );
   const rows = parseStringMatrixJson(getTrimmedString(formData, "rowsJson"), "rows");
   const optionalNote = getOptionalString(formData, "optionalNote");
   const manualSortOrder = getOptionalNonNegativeNumber(formData, "sortOrder");
@@ -139,7 +142,10 @@ export async function updateGrammarTableAction(formData: FormData) {
   const grammarPointId = getTrimmedString(formData, "grammarPointId");
   const grammarTableId = getTrimmedString(formData, "grammarTableId");
   const title = getTrimmedString(formData, "title");
-  const columns = parseStringArrayJson(getTrimmedString(formData, "columnsJson"), "columns");
+  const columns = parseStringArrayJson(
+    getTrimmedString(formData, "columnsJson"),
+    "columns"
+  );
   const rows = parseStringMatrixJson(getTrimmedString(formData, "rowsJson"), "rows");
   const optionalNote = getOptionalString(formData, "optionalNote");
   const sortOrder = getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0;

@@ -14,11 +14,7 @@ export const SET_TYPES = [
   "exam_prep",
   "lesson_custom",
 ] as const;
-export const DISPLAY_VARIANTS = [
-  "single_column",
-  "two_column",
-  "compact_cards",
-] as const;
+export const DISPLAY_VARIANTS = ["single_column", "two_column", "compact_cards"] as const;
 export const ITEM_TYPES = ["word", "phrase"] as const;
 export const SOURCE_TYPES = ["spec_required", "extended", "custom"] as const;
 export const PRIORITIES = ["core", "extension"] as const;

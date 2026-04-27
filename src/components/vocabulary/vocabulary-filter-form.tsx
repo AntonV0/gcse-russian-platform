@@ -1,7 +1,7 @@
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
-import type { VocabularySetFilters } from "@/lib/vocabulary/vocabulary-helpers-db";
+import type { VocabularySetFilters } from "@/lib/vocabulary/types";
 
 type VocabularyTopicOption = {
   value: string;

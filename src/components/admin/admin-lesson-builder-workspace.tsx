@@ -175,7 +175,10 @@ export default function AdminLessonBuilderWorkspace({
             <div className="app-card p-4">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Sections</p>
-                <Heading level={3} className="text-sm font-semibold text-[var(--text-primary)]">
+                <Heading
+                  level={3}
+                  className="text-sm font-semibold text-[var(--text-primary)]"
+                >
                   Lesson structure
                 </Heading>
               </div>
@@ -199,7 +202,10 @@ export default function AdminLessonBuilderWorkspace({
           <div className="app-surface-strong p-4 md:p-5 xl:p-6">
             <div className="mb-4">
               <p className="text-xs uppercase tracking-wide app-text-soft">Builder</p>
-              <Heading level={2} className="text-xl font-semibold text-[var(--text-primary)]">
+              <Heading
+                level={2}
+                className="text-xl font-semibold text-[var(--text-primary)]"
+              >
                 Lesson content
               </Heading>
             </div>
@@ -232,7 +238,10 @@ export default function AdminLessonBuilderWorkspace({
             <div className="app-card p-4">
               <div className="mb-3">
                 <p className="text-xs uppercase tracking-wide app-text-soft">Inspector</p>
-                <Heading level={3} className="text-sm font-semibold text-[var(--text-primary)]">
+                <Heading
+                  level={3}
+                  className="text-sm font-semibold text-[var(--text-primary)]"
+                >
                   Settings
                 </Heading>
               </div>

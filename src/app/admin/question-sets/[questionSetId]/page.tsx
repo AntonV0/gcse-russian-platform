@@ -63,10 +63,7 @@ export default async function AdminQuestionSetDetailPage({
       </section>
 
       <section className="mb-8">
-        <QuestionSetQuestionsPanel
-          questionSetId={questionSet.id}
-          questions={questions}
-        />
+        <QuestionSetQuestionsPanel questionSetId={questionSet.id} questions={questions} />
       </section>
 
       <section className="max-w-4xl">

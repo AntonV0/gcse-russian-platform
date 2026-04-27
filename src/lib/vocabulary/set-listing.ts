@@ -24,9 +24,7 @@ async function getVocabularySetSummaryRowsBySetIdsDb(
     return new Map<string, DbVocabularySetSummaryRow>();
   }
 
-  const supabase = options?.useAdminClient
-    ? createAdminClient()
-    : await createClient();
+  const supabase = options?.useAdminClient ? createAdminClient() : await createClient();
   const data = (
     await Promise.all(
       chunkValues(uniqueVocabularySetIds).map((setIdBatch) =>

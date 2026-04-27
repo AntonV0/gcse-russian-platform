@@ -146,11 +146,10 @@ export function getQuestionOptionRows(
   }));
 }
 
-export function getQuestionAcceptedAnswerRows(
-  formData: FormData,
-  questionId: string
-) {
-  const acceptedAnswers = parseLineList(getTrimmedString(formData, "acceptedAnswersText"));
+export function getQuestionAcceptedAnswerRows(formData: FormData, questionId: string) {
+  const acceptedAnswers = parseLineList(
+    getTrimmedString(formData, "acceptedAnswersText")
+  );
 
   if (acceptedAnswers.length === 0) {
     throw new Error("Text questions need at least 1 accepted answer");

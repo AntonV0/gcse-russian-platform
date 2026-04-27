@@ -47,19 +47,12 @@ export default function LockedContentCard({
         />
       ) : null}
 
-      <Card
-        className="app-section-tone-brand"
-        interactive
-      >
+      <Card className="app-section-tone-brand" interactive>
         <CardBody className="space-y-4 px-5 py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="mb-1 app-text-meta">
-                Access / funnel
-              </div>
-              <h3 className="app-heading-card">
-                {title}
-              </h3>
+              <div className="mb-1 app-text-meta">Access / funnel</div>
+              <h3 className="app-heading-card">{title}</h3>
             </div>
 
             <div className="flex shrink-0 flex-wrap justify-end gap-2">

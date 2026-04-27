@@ -6,12 +6,7 @@ import {
   getTrimmedString,
 } from "@/app/actions/shared/form-data";
 
-export {
-  getBoolean,
-  getOptionalPositiveNumber,
-  getOptionalString,
-  getTrimmedString,
-};
+export { getBoolean, getOptionalPositiveNumber, getOptionalString, getTrimmedString };
 
 export function parseJsonObject(raw: string) {
   if (!raw) return {};
@@ -218,10 +213,7 @@ export function buildStructuredMetadata(formData: FormData) {
     metadata.categories = parseCategoryRows(categoriesText);
   }
 
-  const categorisationItemsText = getTrimmedString(
-    formData,
-    "categorisationItemsText"
-  );
+  const categorisationItemsText = getTrimmedString(formData, "categorisationItemsText");
   if (categorisationItemsText) {
     metadata.items = parseCategorisationItemRows(categorisationItemsText);
   }

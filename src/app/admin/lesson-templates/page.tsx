@@ -51,7 +51,11 @@ export default async function AdminLessonTemplatesPage() {
           href="/admin/lesson-templates/block-presets"
           title="Block Presets"
           subtitle="Reusable starter block groups such as teaching explanation or vocabulary practice."
-          icon={<Badge tone="info" icon="blocks">Blocks</Badge>}
+          icon={
+            <Badge tone="info" icon="blocks">
+              Blocks
+            </Badge>
+          }
           badges={
             <Badge tone="muted" icon="help">
               {overview.counts.presetBlocks} preset block rows
@@ -63,7 +67,11 @@ export default async function AdminLessonTemplatesPage() {
           href="/admin/lesson-templates/section-templates"
           title="Section Templates"
           subtitle="Reusable section blueprints that compose one or more block presets."
-          icon={<Badge tone="info" icon="layers">Sections</Badge>}
+          icon={
+            <Badge tone="info" icon="layers">
+              Sections
+            </Badge>
+          }
           badges={
             <Badge tone="muted" icon="help">
               {overview.counts.sectionTemplatePresetLinks} preset links
@@ -75,7 +83,11 @@ export default async function AdminLessonTemplatesPage() {
           href="/admin/lesson-templates/lesson-templates"
           title="Lesson Templates"
           subtitle="Full lesson scaffolds built from ordered section templates."
-          icon={<Badge tone="info" icon="lesson">Lessons</Badge>}
+          icon={
+            <Badge tone="info" icon="lesson">
+              Lessons
+            </Badge>
+          }
           badges={
             <Badge tone="muted" icon="help">
               {overview.counts.lessonTemplateSections} template section rows

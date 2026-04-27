@@ -35,11 +35,7 @@ export default async function CreateQuestionSetPage() {
           </FormField>
 
           <FormField label="Slug" required>
-            <Input
-              name="slug"
-              required
-              placeholder="theme-2-translation-practice"
-            />
+            <Input name="slug" required placeholder="theme-2-translation-practice" />
           </FormField>
 
           <FormField label="Description">
@@ -72,10 +68,7 @@ export default async function CreateQuestionSetPage() {
           />
 
           <FormField label="Template type">
-            <Input
-              name="templateType"
-              placeholder="translation_selection_based"
-            />
+            <Input name="templateType" placeholder="translation_selection_based" />
           </FormField>
         </PanelCard>
 

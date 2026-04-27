@@ -19,9 +19,7 @@ export type MockExamQuestionFormProps = {
   };
 };
 
-export type MockExamQuestionDataUpdater = <
-  Key extends keyof MockExamQuestionDataState,
->(
+export type MockExamQuestionDataUpdater = <Key extends keyof MockExamQuestionDataState>(
   key: Key,
   value: MockExamQuestionDataState[Key]
 ) => void;

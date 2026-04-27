@@ -72,14 +72,10 @@ export default function AdminRow({
       >
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 flex-1">
-            <div className="app-heading-card">
-              {title}
-            </div>
+            <div className="app-heading-card">{title}</div>
 
             {description ? (
-              <div className="mt-1 app-text-body-muted">
-                {description}
-              </div>
+              <div className="mt-1 app-text-body-muted">{description}</div>
             ) : null}
           </div>
 

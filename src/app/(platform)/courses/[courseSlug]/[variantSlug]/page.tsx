@@ -82,9 +82,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">
-                Choose your next module
-              </h2>
+              <h2 className="app-heading-hero max-w-3xl">Choose your next module</h2>
               <p className="app-subtitle max-w-2xl">
                 Work through the modules in order to keep your learning structured and
                 easier to follow.
@@ -118,21 +116,13 @@ export default async function VariantPage({ params }: VariantPageProps) {
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">
-                    Path
-                  </div>
-                  <div className="app-stat-value">
-                    {getVariantLabel(variant.slug)}
-                  </div>
+                  <div className="app-stat-label">Path</div>
+                  <div className="app-stat-value">{getVariantLabel(variant.slug)}</div>
                 </div>
 
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">
-                    Modules
-                  </div>
-                  <div className="app-stat-value">
-                    {modules.length}
-                  </div>
+                  <div className="app-stat-label">Modules</div>
+                  <div className="app-stat-value">{modules.length}</div>
                 </div>
               </div>
 
@@ -180,9 +170,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="app-heading-subsection">
-                      {module.title}
-                    </h3>
+                    <h3 className="app-heading-subsection">{module.title}</h3>
 
                     <p className="app-text-body-muted">
                       {module.description ??

@@ -40,21 +40,13 @@ export default function LessonFooterNav({
       ) : null}
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <Button
-          href={moduleHref}
-          variant="secondary"
-          icon="back"
-        >
+        <Button href={moduleHref} variant="secondary" icon="back">
           Back to module
         </Button>
 
         <div className="flex flex-col gap-3 sm:flex-row">
           {previousLesson ? (
-            <Button
-              href={previousLesson.href}
-              variant="secondary"
-              icon="back"
-            >
+            <Button href={previousLesson.href} variant="secondary" icon="back">
               Previous lesson: {previousLesson.label}
             </Button>
           ) : null}

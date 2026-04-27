@@ -2,15 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 
 import { buildVocabularySetCoverageSummary } from "./coverage-summary";
 import { getVocabularyListsBySetIdDb } from "./list-queries";
-import {
-  normalizeVocabularyItem,
-  normalizeVocabularyItemCoverage,
-} from "./normalizers";
+import { normalizeVocabularyItem, normalizeVocabularyItemCoverage } from "./normalizers";
 import { chunkValues, fetchSupabasePages } from "./pagination";
-import {
-  VOCABULARY_ITEM_COVERAGE_SELECT,
-  VOCABULARY_ITEM_SELECT,
-} from "./selects";
+import { VOCABULARY_ITEM_COVERAGE_SELECT, VOCABULARY_ITEM_SELECT } from "./selects";
 import {
   filterVocabularyListsForStudyVariant,
   getVocabularyItemAppliesToStudyVariant,
@@ -107,10 +101,7 @@ export async function getVocabularyItemsBySetIdDb(
     return getVocabularyItemsByListIdsDb([explicitList.id]);
   }
 
-  const scopedLists = filterVocabularyListsForStudyVariant(
-    lists,
-    options?.scopeVariant
-  );
+  const scopedLists = filterVocabularyListsForStudyVariant(lists, options?.scopeVariant);
 
   if (scopedLists.length > 0) {
     const listItems = await getVocabularyItemsByListIdsDb(
@@ -147,9 +138,7 @@ export async function getVocabularyItemsBySetIdDb(
   );
 }
 
-export async function getVocabularyItemCoverageByItemIdsDb(
-  vocabularyItemIds: string[]
-) {
+export async function getVocabularyItemCoverageByItemIdsDb(vocabularyItemIds: string[]) {
   const uniqueVocabularyItemIds = Array.from(new Set(vocabularyItemIds));
 
   if (uniqueVocabularyItemIds.length === 0) {
@@ -186,16 +175,12 @@ export async function getVocabularyItemCoverageByItemIdsDb(
   );
 }
 
-export async function getVocabularySetCoverageSummaryBySetIdDb(
-  vocabularySetId: string
-) {
+export async function getVocabularySetCoverageSummaryBySetIdDb(vocabularySetId: string) {
   const [lists, items] = await Promise.all([
     getVocabularyListsBySetIdDb(vocabularySetId),
     getVocabularyItemsBySetIdDb(vocabularySetId, { scopeVariant: "all" }),
   ]);
-  const uniqueItems = Array.from(
-    new Map(items.map((item) => [item.id, item])).values()
-  );
+  const uniqueItems = Array.from(new Map(items.map((item) => [item.id, item])).values());
   const listItems = items
     .filter((item) => item.vocabulary_list_id)
     .map((item) => ({

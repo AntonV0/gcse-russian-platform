@@ -134,12 +134,10 @@ export async function syncLessonVocabularySetUsagesForLesson(params: {
         throw new Error("Failed to sync lesson vocabulary usage");
       }
 
-      const typedVocabularyLists = (vocabularyLists ?? [])
-        .filter(
-          (list): list is VocabularyListForUsageSync =>
-            typeof list.id === "string" &&
-            typeof list.vocabulary_set_id === "string"
-        );
+      const typedVocabularyLists = (vocabularyLists ?? []).filter(
+        (list): list is VocabularyListForUsageSync =>
+          typeof list.id === "string" && typeof list.vocabulary_set_id === "string"
+      );
 
       const nextVocabularyLinkRows: LessonVocabularyLinkRow[] = [];
 

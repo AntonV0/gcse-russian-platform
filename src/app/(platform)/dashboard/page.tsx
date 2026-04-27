@@ -23,10 +23,7 @@ export default async function DashboardPage() {
 
   const learningPlan =
     dashboard.role === "student"
-      ? await getStudentLearningPlan(
-          dashboard.variant,
-          progressSummary.completedLessons
-        )
+      ? await getStudentLearningPlan(dashboard.variant, progressSummary.completedLessons)
       : {
           totalLessons: 0,
           completedLessons: progressSummary.completedLessons,
@@ -68,9 +65,7 @@ export default async function DashboardPage() {
         <TeacherDashboardPanel dashboard={dashboard} userEmail={user?.email} />
       ) : null}
 
-      {dashboard.role === "admin" ? (
-        <AdminDashboardPanel dashboard={dashboard} />
-      ) : null}
+      {dashboard.role === "admin" ? <AdminDashboardPanel dashboard={dashboard} /> : null}
     </main>
   );
 }

@@ -44,11 +44,7 @@ export function BlockPresetBlocksPanel({
         <div className="space-y-4">
           <BlockPresetOrderForm presetId={presetId} blocks={blocks} />
           {blocks.map((block) => (
-            <BlockPresetBlockEditor
-              key={block.id}
-              presetId={presetId}
-              block={block}
-            />
+            <BlockPresetBlockEditor key={block.id} presetId={presetId} block={block} />
           ))}
         </div>
       )}
@@ -131,11 +127,7 @@ function BlockPresetBlockEditor({
 
         <BlockPresetBlockFields blockType={block.block_type} data={block.data} />
 
-        <CheckboxField
-          name="isActive"
-          label="Active"
-          defaultChecked={block.is_active}
-        />
+        <CheckboxField name="isActive" label="Active" defaultChecked={block.is_active} />
 
         <InlineActions>
           <Button type="submit" variant="secondary" icon="save">

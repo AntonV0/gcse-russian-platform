@@ -93,9 +93,7 @@ export function getCoverageTotalItemIdsForVariant(params: {
   return new Set([...fallbackItemIds, ...listItemIds]);
 }
 
-export function getVocabularyCoverageVariantLabel(
-  variant: DbVocabularyCoverageVariant
-) {
+export function getVocabularyCoverageVariantLabel(variant: DbVocabularyCoverageVariant) {
   switch (variant) {
     case "foundation":
       return "Foundation";

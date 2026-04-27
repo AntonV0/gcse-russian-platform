@@ -64,7 +64,9 @@ function toPublicFeedback(result: QuestionFeedbackResult): QuestionFeedbackResul
   };
 }
 
-function isRuntimeTextQuestion(question: RuntimeQuestion): question is RuntimeTextQuestion {
+function isRuntimeTextQuestion(
+  question: RuntimeQuestion
+): question is RuntimeTextQuestion {
   return question.type === "short_answer" || question.type === "translation";
 }
 

@@ -175,7 +175,13 @@ export function validateVocabularyImportManifest(
       }
 
       assertString(issues, set, "importKey", setPath);
-      assertUnique(issues, set.importKey, importKeys, `${setPath}.importKey`, "Import key");
+      assertUnique(
+        issues,
+        set.importKey,
+        importKeys,
+        `${setPath}.importKey`,
+        "Import key"
+      );
       assertString(issues, set, "slug", setPath);
       assertUnique(issues, set.slug, setSlugs, `${setPath}.slug`, "Set slug");
       assertString(issues, set, "title", setPath);
@@ -257,13 +263,7 @@ export function validateVocabularyImportManifest(
           assertEnum(issues, item, "priority", itemPath, PRIORITIES);
           assertEnum(issues, item, "partOfSpeech", itemPath, PARTS_OF_SPEECH);
           assertEnum(issues, item, "gender", itemPath, GENDERS);
-          assertEnum(
-            issues,
-            item,
-            "productiveReceptive",
-            itemPath,
-            PRODUCTIVE_RECEPTIVE
-          );
+          assertEnum(issues, item, "productiveReceptive", itemPath, PRODUCTIVE_RECEPTIVE);
           assertEnum(issues, item, "tier", itemPath, TIERS);
           assertEnum(issues, item, "aspect", itemPath, ASPECTS);
           assertBoolean(issues, item, "isReflexive", itemPath);
@@ -283,4 +283,3 @@ export function validateVocabularyImportManifest(
     },
   };
 }
-

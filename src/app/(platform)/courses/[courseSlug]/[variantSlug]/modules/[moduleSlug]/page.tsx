@@ -105,9 +105,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">
-                Continue this module
-              </h2>
+              <h2 className="app-heading-hero max-w-3xl">Continue this module</h2>
               <p className="app-subtitle max-w-2xl">
                 Follow the lesson sequence in order so your progress stays structured and
                 unlocked correctly.
@@ -161,18 +159,14 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
               <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">
-                    Progress
-                  </div>
+                  <div className="app-stat-label">Progress</div>
                   <div className="app-stat-value">
                     {completedCount} / {totalLessons}
                   </div>
                 </div>
 
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">
-                    Next step
-                  </div>
+                  <div className="app-stat-label">Next step</div>
                   <div className="app-stat-value">
                     {firstAccessibleIncompleteLesson
                       ? firstAccessibleIncompleteLesson.title
@@ -181,12 +175,8 @@ export default async function ModulePage({ params }: ModulePageProps) {
                 </div>
 
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">
-                    Access
-                  </div>
-                  <div className="app-stat-value">
-                    Step by step
-                  </div>
+                  <div className="app-stat-label">Access</div>
+                  <div className="app-stat-value">Step by step</div>
                 </div>
               </div>
 
@@ -256,9 +246,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="app-heading-subsection">
-                      {lesson.title}
-                    </h3>
+                    <h3 className="app-heading-subsection">{lesson.title}</h3>
 
                     <p className="app-text-body-muted">
                       {lesson.summary ?? "Open this lesson to continue your learning."}

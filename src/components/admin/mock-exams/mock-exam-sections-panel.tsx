@@ -71,7 +71,11 @@ function SectionSettingsForm({
       </div>
 
       <FormField label="Instructions">
-        <Textarea name="instructions" rows={3} defaultValue={section.instructions ?? ""} />
+        <Textarea
+          name="instructions"
+          rows={3}
+          defaultValue={section.instructions ?? ""}
+        />
       </FormField>
 
       <div className="flex flex-wrap gap-2">
@@ -191,8 +195,8 @@ export default function MockExamSectionsPanel({
       <div className="space-y-1">
         <h2 className="app-card-title">Sections and questions</h2>
         <p className="app-card-desc">
-          Edit ordering with sort order fields. Question data is JSONB so new
-          GCSE-style task types can be added without changing the table shape.
+          Edit ordering with sort order fields. Question data is JSONB so new GCSE-style
+          task types can be added without changing the table shape.
         </p>
       </div>
 

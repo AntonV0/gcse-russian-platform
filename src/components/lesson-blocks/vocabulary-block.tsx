@@ -66,9 +66,7 @@ export default function VocabularyBlock({
               </Heading>
 
               {description ? (
-                <p className="max-w-3xl app-text-body-muted">
-                  {description}
-                </p>
+                <p className="max-w-3xl app-text-body-muted">{description}</p>
               ) : null}
             </div>
           </div>

@@ -38,9 +38,7 @@ export function DataTable({ children, className }: DataTableProps) {
       ) : null}
 
       <div className="max-w-full overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
-        <table className="w-full min-w-[640px] border-collapse text-sm">
-          {children}
-        </table>
+        <table className="w-full min-w-[640px] border-collapse text-sm">{children}</table>
       </div>
     </div>
   );
@@ -102,7 +100,10 @@ export function DataTableHeaderCell({ children, className }: DataTableSectionPro
 export function DataTableCell({ children, className }: DataTableSectionProps) {
   return (
     <td
-      className={["break-words px-4 py-4 align-middle text-[var(--text-secondary)] sm:px-5", className]
+      className={[
+        "break-words px-4 py-4 align-middle text-[var(--text-secondary)] sm:px-5",
+        className,
+      ]
         .filter(Boolean)
         .join(" ")}
     >
@@ -132,7 +133,10 @@ export function DataTableCompactHeaderCell({
 export function DataTableCompactCell({ children, className }: DataTableSectionProps) {
   return (
     <td
-      className={["break-words px-4 py-3 align-middle text-[var(--text-secondary)]", className]
+      className={[
+        "break-words px-4 py-3 align-middle text-[var(--text-secondary)]",
+        className,
+      ]
         .filter(Boolean)
         .join(" ")}
     >

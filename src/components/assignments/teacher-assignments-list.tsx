@@ -180,41 +180,41 @@ export default function TeacherAssignmentsList({
       ) : null}
 
       <PanelCard tone="student" density="compact">
-      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-end">
-          <FormField label="Filter" className="w-full md:min-w-56">
-            <Select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as TeacherFilterValue)}
-            >
-              <option value="all">All ({counts.all})</option>
-              <option value="pending_review">
-                Pending review ({counts.pending_review})
-              </option>
-              <option value="reviewed">Reviewed ({counts.reviewed})</option>
-              <option value="no_submissions">
-                No submissions ({counts.no_submissions})
-              </option>
-            </Select>
-          </FormField>
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-end">
+            <FormField label="Filter" className="w-full md:min-w-56">
+              <Select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value as TeacherFilterValue)}
+              >
+                <option value="all">All ({counts.all})</option>
+                <option value="pending_review">
+                  Pending review ({counts.pending_review})
+                </option>
+                <option value="reviewed">Reviewed ({counts.reviewed})</option>
+                <option value="no_submissions">
+                  No submissions ({counts.no_submissions})
+                </option>
+              </Select>
+            </FormField>
 
-          <FormField label="Sort by" className="w-full md:min-w-48">
-            <Select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as TeacherSortValue)}
-            >
-              <option value="priority">Priority</option>
-              <option value="due_date">Due date</option>
-              <option value="newest">Newest created</option>
-              <option value="most_submissions">Most submissions</option>
-            </Select>
-          </FormField>
+            <FormField label="Sort by" className="w-full md:min-w-48">
+              <Select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as TeacherSortValue)}
+              >
+                <option value="priority">Priority</option>
+                <option value="due_date">Due date</option>
+                <option value="newest">Newest created</option>
+                <option value="most_submissions">Most submissions</option>
+              </Select>
+            </FormField>
+          </div>
+
+          <p className="text-sm app-text-muted">
+            Showing {visibleAssignments.length} of {assignments.length} assignments
+          </p>
         </div>
-
-        <p className="text-sm app-text-muted">
-          Showing {visibleAssignments.length} of {assignments.length} assignments
-        </p>
-      </div>
       </PanelCard>
 
       {visibleAssignments.length === 0 ? (
@@ -237,7 +237,9 @@ export default function TeacherAssignmentsList({
                 <CardListItem
                   key={assignment.id}
                   href={`/teacher/assignments/${assignment.id}`}
-                  className={teacherStatus.isActive ? "border-l-4 border-l-[var(--warning)]" : ""}
+                  className={
+                    teacherStatus.isActive ? "border-l-4 border-l-[var(--warning)]" : ""
+                  }
                   title={assignment.title}
                   subtitle={[
                     assignment.instructions,

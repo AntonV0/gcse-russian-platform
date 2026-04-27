@@ -44,12 +44,7 @@ export default function PastPaperResourceForms() {
           </FormField>
 
           <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-            <input
-              type="checkbox"
-              name="skipDuplicateUrls"
-              value="true"
-              defaultChecked
-            />
+            <input type="checkbox" name="skipDuplicateUrls" value="true" defaultChecked />
             Skip duplicate official URLs
           </label>
 
@@ -153,7 +148,12 @@ export default function PastPaperResourceForms() {
               Requires paid access
             </label>
             <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-              <input type="checkbox" name="availableInVolna" value="true" defaultChecked />
+              <input
+                type="checkbox"
+                name="availableInVolna"
+                value="true"
+                defaultChecked
+              />
               Volna visible
             </label>
           </div>

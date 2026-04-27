@@ -100,18 +100,11 @@ export default async function AdminTeachingGroupEditPage({
           <input type="hidden" name="groupId" value={teachingGroup.id} />
 
           <FormField label="Name" required>
-            <Input
-              name="name"
-              required
-              defaultValue={teachingGroup.name}
-            />
+            <Input name="name" required defaultValue={teachingGroup.name} />
           </FormField>
 
           <FormField label="Linked course">
-            <Select
-              name="courseId"
-              defaultValue={teachingGroup.course_id ?? ""}
-            >
+            <Select name="courseId" defaultValue={teachingGroup.course_id ?? ""}>
               <option value="">No linked course</option>
               {courseRows.map((course) => (
                 <option key={course.id} value={course.id}>

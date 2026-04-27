@@ -54,7 +54,10 @@ export default function PastPaperResourceTable({
           </div>
 
           <div className="w-full lg:max-w-[150px]">
-            <Select name="paperNumber" defaultValue={String(filters.paperNumber ?? "all")}>
+            <Select
+              name="paperNumber"
+              defaultValue={String(filters.paperNumber ?? "all")}
+            >
               <option value="all">All papers</option>
               <option value="1">Paper 1</option>
               <option value="2">Paper 2</option>
