@@ -4,216 +4,14 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import { getTrimmedString } from "@/app/actions/shared/form-data";
 import {
-  getBoolean,
-  getOptionalPositiveNumber,
-  getOptionalString,
-  getTrimmedString,
-} from "@/app/actions/shared/form-data";
-import {
-  mockExamPaperNames,
-  mockExamQuestionTypes,
-  mockExamSectionTypes,
-  mockExamTiers,
-  loadMockExamAttemptDb,
-  type MockExamPaperName,
-  type MockExamQuestionType,
-  type MockExamSectionType,
-  type MockExamTier,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
-
-function validatePaperName(value: string): MockExamPaperName {
-  if (mockExamPaperNames.includes(value as MockExamPaperName)) {
-    return value as MockExamPaperName;
-  }
-
-  throw new Error("Invalid paper name");
-}
-
-function validateTier(value: string): MockExamTier {
-  if (mockExamTiers.includes(value as MockExamTier)) {
-    return value as MockExamTier;
-  }
-
-  throw new Error("Invalid tier");
-}
-
-function validateSectionType(value: string): MockExamSectionType {
-  if (mockExamSectionTypes.includes(value as MockExamSectionType)) {
-    return value as MockExamSectionType;
-  }
-
-  throw new Error("Invalid section type");
-}
-
-function validateQuestionType(value: string): MockExamQuestionType {
-  if (mockExamQuestionTypes.includes(value as MockExamQuestionType)) {
-    return value as MockExamQuestionType;
-  }
-
-  throw new Error("Invalid question type");
-}
-
-function getOptionalNonNegativeNumber(formData: FormData, key: string) {
-  const raw = getTrimmedString(formData, key);
-  if (!raw) return null;
-
-  const value = Number(raw);
-  if (!Number.isFinite(value) || value < 0) {
-    throw new Error(`${key} must be zero or greater`);
-  }
-
-  return value;
-}
-
-function parseJsonObject(raw: string) {
-  if (!raw) return {};
-
-  const parsed = JSON.parse(raw);
-
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-    throw new Error("Question data must be a JSON object");
-  }
-
-  return parsed as Record<string, unknown>;
-}
-
-function getManualMark(formData: FormData, key: string, maxMarks: number) {
-  const raw = getTrimmedString(formData, key);
-  if (!raw) return null;
-
-  const value = Number(raw);
-  if (!Number.isFinite(value) || value < 0 || value > maxMarks) {
-    throw new Error(`${key} must be between 0 and ${maxMarks}`);
-  }
-
-  return value;
-}
-
-function getAiSuggestedMark(formData: FormData, key: string, maxMarks: number) {
-  const raw = getTrimmedString(formData, key);
-  if (!raw) return null;
-
-  const value = Number(raw);
-  if (!Number.isFinite(value) || value < 0 || value > maxMarks) {
-    throw new Error(`${key} must be between 0 and ${maxMarks}`);
-  }
-
-  return value;
-}
-
-function getAiConfidence(value: string) {
-  return ["low", "medium", "high"].includes(value) ? value : null;
-}
-
-function getAiTeacherDecision(value: string) {
-  return ["pending", "accepted", "edited", "rejected"].includes(value)
-    ? value
-    : "pending";
-}
-
-function hasAiMarkingValue(value: Record<string, unknown>) {
-  return Object.entries(value).some(([key, entry]) => {
-    if (key === "teacherDecision") return entry !== "pending";
-    return entry !== null && entry !== "";
-  });
-}
-
-function getAiMarkingPayload(
-  formData: FormData,
-  questionId: string,
-  maxMarks: number,
-  now: string
-) {
-  const payload = {
-    suggestedMarks: getAiSuggestedMark(
-      formData,
-      `aiSuggestedMarks_${questionId}`,
-      maxMarks
-    ),
-    confidence: getAiConfidence(getTrimmedString(formData, `aiConfidence_${questionId}`)),
-    teacherDecision: getAiTeacherDecision(
-      getTrimmedString(formData, `aiTeacherDecision_${questionId}`)
-    ),
-    teacherNotes: getOptionalString(formData, `aiTeacherNotes_${questionId}`),
-    rationale: getOptionalString(formData, `aiRationale_${questionId}`),
-    evidence: getOptionalString(formData, `aiEvidence_${questionId}`),
-    strengths: getOptionalString(formData, `aiStrengths_${questionId}`),
-    targets: getOptionalString(formData, `aiTargets_${questionId}`),
-    reviewedAt: now,
-  };
-
-  return hasAiMarkingValue(payload) ? payload : null;
-}
-
-function getExamPayload(formData: FormData) {
-  const title = getTrimmedString(formData, "title");
-  const slug = getTrimmedString(formData, "slug");
-  const paperNumber = getOptionalPositiveNumber(formData, "paperNumber");
-  const paperName = validatePaperName(getTrimmedString(formData, "paperName"));
-  const tier = validateTier(getTrimmedString(formData, "tier"));
-
-  if (!title || !slug || !paperNumber) {
-    throw new Error("Missing required fields");
-  }
-
-  if (paperNumber < 1 || paperNumber > 4) {
-    throw new Error("Paper number must be between 1 and 4");
-  }
-
-  return {
-    title,
-    slug,
-    description: getOptionalString(formData, "description"),
-    paper_number: paperNumber,
-    paper_name: paperName,
-    tier,
-    time_limit_minutes: getOptionalPositiveNumber(formData, "timeLimitMinutes"),
-    total_marks: getOptionalNonNegativeNumber(formData, "totalMarks") ?? 0,
-    is_published: getBoolean(formData, "isPublished"),
-    sort_order: getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0,
-    is_trial_visible: getBoolean(formData, "isTrialVisible"),
-    requires_paid_access: getBoolean(formData, "requiresPaidAccess"),
-    available_in_volna: getBoolean(formData, "availableInVolna"),
-    updated_at: new Date().toISOString(),
-  };
-}
-
-function getSectionPayload(formData: FormData) {
-  const title = getTrimmedString(formData, "title");
-  const sectionType = validateSectionType(getTrimmedString(formData, "sectionType"));
-
-  if (!title) {
-    throw new Error("Missing section title");
-  }
-
-  return {
-    title,
-    instructions: getOptionalString(formData, "instructions"),
-    section_type: sectionType,
-    sort_order: getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0,
-    updated_at: new Date().toISOString(),
-  };
-}
-
-function getQuestionPayload(formData: FormData) {
-  const prompt = getTrimmedString(formData, "prompt");
-  const questionType = validateQuestionType(getTrimmedString(formData, "questionType"));
-  const rawData = getTrimmedString(formData, "data");
-
-  if (!prompt) {
-    throw new Error("Missing question prompt");
-  }
-
-  return {
-    question_type: questionType,
-    prompt,
-    data: parseJsonObject(rawData),
-    marks: getOptionalNonNegativeNumber(formData, "marks") ?? 1,
-    sort_order: getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0,
-    updated_at: new Date().toISOString(),
-  };
-}
+  getExamPayload,
+  getQuestionPayload,
+  getSectionPayload,
+} from "@/app/actions/admin/mock-exams/mock-exam-form-payloads";
+import { getMockExamMarkingPayloads } from "@/app/actions/admin/mock-exams/mock-exam-marking-payloads";
+import { loadMockExamAttemptDb } from "@/lib/mock-exams/mock-exam-helpers-db";
 
 export async function createMockExamSetAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
@@ -519,40 +317,16 @@ export async function markMockExamAttemptAction(formData: FormData) {
 
   const questions = sections.flatMap((section) => questionsBySectionId[section.id] ?? []);
   const now = new Date().toISOString();
-  const responseRows = questions.map((question) => {
-    const existingResponse = responsesByQuestionId[question.id];
-    const awardedMarks = getManualMark(
+  const { responseRows, attemptPayload, scorePayload } =
+    getMockExamMarkingPayloads({
       formData,
-      `awardedMarks_${question.id}`,
-      question.marks
-    );
-    const feedback = getOptionalString(formData, `feedback_${question.id}`);
-    const aiMarking = getAiMarkingPayload(formData, question.id, question.marks, now);
-
-    return {
-      attempt_id: attempt.id,
-      question_id: question.id,
-      response_text: existingResponse?.response_text ?? null,
-      response_payload: {
-        ...(existingResponse?.response_payload ?? {}),
-        ...(aiMarking ? { aiMarking } : {}),
-      },
-      awarded_marks: awardedMarks,
-      feedback,
-      is_flagged: getBoolean(formData, `isFlagged_${question.id}`),
-      updated_at: now,
-    };
-  });
-  const markedRows = responseRows.filter((row) => row.awarded_marks !== null);
-  const awardedMarks = markedRows.reduce(
-    (total, row) => total + Number(row.awarded_marks ?? 0),
-    0
-  );
-  const overallFeedback = getOptionalString(formData, "overallFeedback");
-  const predictedGrade = getOptionalString(formData, "predictedGrade");
-  const aiSummary = getOptionalString(formData, "aiSummary");
-  const teacherModerationNotes = getOptionalString(formData, "teacherModerationNotes");
-  const status = markedRows.length === questions.length ? "marked" : "submitted";
+      questions,
+      responsesByQuestionId,
+      attemptId: attempt.id,
+      totalMarks: attempt.total_marks_snapshot,
+      markedBy: user.id,
+      now,
+    });
   const supabase = await createClient();
 
   if (responseRows.length > 0) {
@@ -568,12 +342,7 @@ export async function markMockExamAttemptAction(formData: FormData) {
 
   const { error: attemptError } = await supabase
     .from("mock_exam_attempts")
-    .update({
-      status,
-      awarded_marks: markedRows.length > 0 ? awardedMarks : null,
-      feedback: overallFeedback,
-      updated_at: now,
-    })
+    .update(attemptPayload)
     .eq("id", attempt.id);
 
   if (attemptError) {
@@ -584,24 +353,11 @@ export async function markMockExamAttemptAction(formData: FormData) {
     throw new Error(`Failed to update attempt: ${attemptError.message}`);
   }
 
-  if (markedRows.length > 0) {
+  if (scorePayload) {
     const { error: scoreError } = await supabase.from("mock_exam_scores").upsert(
       {
         attempt_id: attempt.id,
-        total_marks: attempt.total_marks_snapshot,
-        awarded_marks: awardedMarks,
-        score_payload: {
-          predictedGrade,
-          markedResponseCount: markedRows.length,
-          totalQuestionCount: questions.length,
-          isFullyMarked: markedRows.length === questions.length,
-          aiSummary,
-          teacherModerationNotes,
-        },
-        feedback: overallFeedback,
-        marked_by: user.id,
-        marked_at: now,
-        updated_at: now,
+        ...scorePayload,
       },
       { onConflict: "attempt_id" }
     );
