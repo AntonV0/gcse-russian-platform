@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import type {
   DbVocabularyAspect,
   DbVocabularyGender,
@@ -9,11 +8,6 @@ import type {
   DbVocabularyProductiveReceptive,
   DbVocabularyTier,
 } from "@/lib/vocabulary/types";
-import {
-  ensureDefaultVocabularyListForSetDb,
-  getVocabularyListByIdDb,
-} from "@/lib/vocabulary/list-queries";
-import { getVocabularySetByIdDb } from "@/lib/vocabulary/set-queries";
 import { getTrimmedString } from "@/app/actions/shared/form-data";
 
 export function getRequiredString(formData: FormData, key: string) {
@@ -143,49 +137,6 @@ export function assertVocabularyAspect(value: string): DbVocabularyAspect {
   }
 
   throw new Error("Invalid vocabulary aspect");
-}
-
-export async function getVocabularyListForItemWrite(params: {
-  vocabularySetId: string;
-  vocabularyListId?: string | null;
-}) {
-  if (params.vocabularyListId) {
-    const list = await getVocabularyListByIdDb(params.vocabularyListId);
-
-    if (list && list.vocabulary_set_id === params.vocabularySetId) {
-      return list;
-    }
-  }
-
-  const vocabularySet = await getVocabularySetByIdDb(params.vocabularySetId);
-
-  if (!vocabularySet) {
-    throw new Error("Vocabulary set not found");
-  }
-
-  return ensureDefaultVocabularyListForSetDb(vocabularySet);
-}
-
-export async function getNextVocabularyListItemPosition(vocabularyListId: string) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("vocabulary_list_items")
-    .select("position")
-    .eq("vocabulary_list_id", vocabularyListId)
-    .order("position", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Error loading last vocabulary list item position:", {
-      vocabularyListId,
-      error,
-    });
-    throw new Error("Failed to calculate vocabulary item position");
-  }
-
-  return (data?.position ?? -1) + 1;
 }
 
 export function buildItemsPath(vocabularySetId: string) {

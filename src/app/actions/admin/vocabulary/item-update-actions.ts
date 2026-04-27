@@ -17,17 +17,7 @@ import {
   getRequiredString,
 } from "@/app/actions/admin/vocabulary/item-action-helpers";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { createClient } from "@/lib/supabase/server";
-import type {
-  DbVocabularyAspect,
-  DbVocabularyGender,
-  DbVocabularyItemPriority,
-  DbVocabularyItemSourceType,
-  DbVocabularyItemType,
-  DbVocabularyPartOfSpeech,
-  DbVocabularyProductiveReceptive,
-  DbVocabularyTier,
-} from "@/lib/vocabulary/types";
+import { updateVocabularyItemDb } from "@/lib/vocabulary/mutations";
 
 export async function updateVocabularyItemAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
@@ -81,107 +71,40 @@ export async function updateVocabularyItemAction(formData: FormData) {
   const isReflexive = getTrimmedString(formData, "isReflexive") === "true";
   const manualPosition = getOptionalNonNegativeNumber(formData, "position");
 
-  const supabase = await createClient();
-
-  const payload: {
-    russian: string;
-    english: string;
-    canonical_key: string | null;
-    transliteration: string | null;
-    example_ru: string | null;
-    example_en: string | null;
-    notes: string | null;
-    item_type: DbVocabularyItemType;
-    source_type: DbVocabularyItemSourceType;
-    priority: DbVocabularyItemPriority;
-    part_of_speech: DbVocabularyPartOfSpeech;
-    gender: DbVocabularyGender;
-    plural: string | null;
-    productive_receptive: DbVocabularyProductiveReceptive;
-    tier: DbVocabularyTier;
-    theme_key: string | null;
-    topic_key: string | null;
-    category_key: string | null;
-    subcategory_key: string | null;
-    aspect: DbVocabularyAspect;
-    case_governed: string | null;
-    is_reflexive: boolean;
-    source_key: string | null;
-    source_version: string | null;
-    source_section_ref: string | null;
-    import_key: string | null;
-    position?: number;
-  } = {
-    russian,
-    english,
-    canonical_key: canonicalKey,
-    transliteration,
-    example_ru: exampleRu,
-    example_en: exampleEn,
-    notes,
-    item_type: itemType,
-    source_type: sourceType,
-    priority,
-    part_of_speech: partOfSpeech,
-    gender,
-    plural,
-    productive_receptive: productiveReceptive,
-    tier,
-    theme_key: themeKey,
-    topic_key: topicKey,
-    category_key: categoryKey,
-    subcategory_key: subcategoryKey,
-    aspect,
-    case_governed: caseGoverned,
-    is_reflexive: isReflexive,
-    source_key: sourceKey,
-    source_version: sourceVersion,
-    source_section_ref: sourceSectionRef,
-    import_key: importKey,
-  };
-
-  if (manualPosition !== null) {
-    payload.position = manualPosition;
-  }
-
-  if (vocabularyListId && manualPosition !== null) {
-    const { error: listItemError } = await supabase
-      .from("vocabulary_list_items")
-      .update({
-        position: manualPosition,
-        productive_receptive_override:
-          productiveReceptive === "unknown" ? null : productiveReceptive,
-        tier_override: tier === "unknown" ? null : tier,
-        source_section_ref: sourceSectionRef,
-        import_key: importKey,
-      })
-      .eq("vocabulary_list_id", vocabularyListId)
-      .eq("vocabulary_item_id", vocabularyItemId);
-
-    if (listItemError) {
-      console.error("Error updating vocabulary list item:", {
-        vocabularyItemId,
-        vocabularyListId,
-        error: listItemError,
-      });
-      throw new Error("Failed to update vocabulary list item");
-    }
-  }
-
-  const { error } = await supabase
-    .from("vocabulary_items")
-    .update(payload)
-    .eq("id", vocabularyItemId)
-    .eq("vocabulary_set_id", vocabularySetId);
-
-  if (error) {
-    console.error("Error updating vocabulary item:", {
-      vocabularyItemId,
-      vocabularySetId,
-      error,
-    });
-    throw new Error("Failed to update vocabulary item");
-  }
+  await updateVocabularyItemDb({
+    vocabularyItemId,
+    vocabularySetId,
+    vocabularyListId,
+    manualPosition,
+    payload: {
+      russian,
+      english,
+      canonical_key: canonicalKey,
+      transliteration,
+      example_ru: exampleRu,
+      example_en: exampleEn,
+      notes,
+      item_type: itemType,
+      source_type: sourceType,
+      priority,
+      part_of_speech: partOfSpeech,
+      gender,
+      plural,
+      productive_receptive: productiveReceptive,
+      tier,
+      theme_key: themeKey,
+      topic_key: topicKey,
+      category_key: categoryKey,
+      subcategory_key: subcategoryKey,
+      aspect,
+      case_governed: caseGoverned,
+      is_reflexive: isReflexive,
+      source_key: sourceKey,
+      source_version: sourceVersion,
+      source_section_ref: sourceSectionRef,
+      import_key: importKey,
+    },
+  });
 
   const path = buildItemsPath(vocabularySetId);
   revalidatePath("/admin/vocabulary");
