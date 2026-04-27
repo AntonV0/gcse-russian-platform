@@ -85,7 +85,10 @@ export default async function AdminVocabularyPage({
     themeKey: params.themeKey ?? null,
     published: normalizePublishedFilter(params.published),
   };
-  const vocabularySets = await getVocabularySetsDb({ filters });
+  const vocabularySets = await getVocabularySetsDb({
+    filters,
+    useAdminClient: true,
+  });
   const totalSets = vocabularySets.length;
   const publishedSets = vocabularySets.filter((set) => set.is_published).length;
   const draftSets = totalSets - publishedSets;
