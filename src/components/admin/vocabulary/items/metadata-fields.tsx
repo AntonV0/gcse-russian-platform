@@ -1,9 +1,6 @@
 import Select from "@/components/ui/select";
 import { VocabularyAdminFormField } from "@/components/admin/vocabulary/items/primitives";
-import type {
-  DbVocabularyItem,
-  DbVocabularyTier,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+import type { DbVocabularyItem, DbVocabularyTier } from "@/lib/vocabulary/types";
 
 export default function CoreMetadataFields({
   idPrefix,

@@ -23,11 +23,11 @@ import {
   getVocabularyDisplayVariantLabel,
   getVocabularyListModeLabel,
   getVocabularySetTypeLabel,
-  getVocabularySetsDb,
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
-  type VocabularySetFilters,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/labels";
+import { getVocabularySetsDb } from "@/lib/vocabulary/set-list-queries";
+import type { VocabularySetFilters } from "@/lib/vocabulary/types";
 
 type AdminVocabularyPageProps = {
   searchParams?: Promise<{
@@ -157,7 +157,12 @@ export default async function AdminVocabularyPage({
         title="Vocabulary sets"
         description="Use filters to find sets, publish drafts, manage items, or preview the student-facing page."
         actions={
-          <Button href="/admin/vocabulary/create" variant="primary" size="sm" icon="create">
+          <Button
+            href="/admin/vocabulary/create"
+            variant="primary"
+            size="sm"
+            icon="create"
+          >
             New set
           </Button>
         }
@@ -252,9 +257,7 @@ export default async function AdminVocabularyPage({
                 <DataTableRow key={vocabularySet.id}>
                   <DataTableCell>
                     <div className="space-y-1">
-                      <div className="app-heading-card">
-                        {vocabularySet.title}
-                      </div>
+                      <div className="app-heading-card">{vocabularySet.title}</div>
                       <div className="app-text-caption">
                         {vocabularySet.slug ?? vocabularySet.id}
                       </div>
@@ -262,7 +265,9 @@ export default async function AdminVocabularyPage({
                         {vocabularySet.description ?? "No description yet."}
                       </div>
                       <div className="flex flex-wrap gap-2 pt-1">
-                        <Badge tone="muted">{getVocabularySetTypeLabel(vocabularySet.set_type)}</Badge>
+                        <Badge tone="muted">
+                          {getVocabularySetTypeLabel(vocabularySet.set_type)}
+                        </Badge>
                         <Badge tone="muted">
                           {getVocabularyDisplayVariantLabel(
                             vocabularySet.default_display_variant
@@ -329,7 +334,11 @@ export default async function AdminVocabularyPage({
                         View
                       </Button>
                       <form action={deleteVocabularySetAction}>
-                        <input type="hidden" name="vocabularySetId" value={vocabularySet.id} />
+                        <input
+                          type="hidden"
+                          name="vocabularySetId"
+                          value={vocabularySet.id}
+                        />
                         <AdminConfirmButton
                           variant="danger"
                           icon="delete"

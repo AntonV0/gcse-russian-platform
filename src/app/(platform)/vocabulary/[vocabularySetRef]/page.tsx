@@ -15,15 +15,15 @@ import {
 } from "@/lib/vocabulary/item-sections";
 import {
   getVocabularyDisplayVariantLabel,
-  getVocabularyItemCoverageByItemIdsDb,
   getVocabularyListModeLabel,
   getVocabularySetTypeLabel,
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
   getVocabularyTopicLabel,
-  loadVocabularySetByRefDb,
-  type DbVocabularyItemCoverage,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/labels";
+import { getVocabularyItemCoverageByItemIdsDb } from "@/lib/vocabulary/item-queries";
+import { loadVocabularySetByRefDb } from "@/lib/vocabulary/loaders";
+import type { DbVocabularyItemCoverage } from "@/lib/vocabulary/types";
 
 type VocabularySetPageProps = {
   params: Promise<{ vocabularySetRef: string }>;
@@ -167,9 +167,9 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
                 reverse it and check the examples for natural exam-style usage.
               </p>
               <p>
-                Badges show whether a word is best for production, recognition, or
-                all skills, so you can prioritise speaking, writing, listening, and
-                reading practice deliberately.
+                Badges show whether a word is best for production, recognition, or all
+                skills, so you can prioritise speaking, writing, listening, and reading
+                practice deliberately.
               </p>
             </div>
           </PanelCard>
@@ -178,4 +178,3 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
     </main>
   );
 }
-

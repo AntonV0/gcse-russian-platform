@@ -27,7 +27,7 @@ import type {
   DbVocabularyPartOfSpeech,
   DbVocabularyProductiveReceptive,
   DbVocabularyTier,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/types";
 
 export async function updateVocabularyItemAction(formData: FormData) {
   const canAccess = await requireAdminAccess();

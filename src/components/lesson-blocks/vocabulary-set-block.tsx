@@ -2,9 +2,9 @@ import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
 import {
   getVocabularyListModeLabel,
   getVocabularyTierLabel,
-  loadVocabularySetBySlugDb,
-  type DbVocabularyStudyVariant,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/labels";
+import { loadVocabularySetBySlugDb } from "@/lib/vocabulary/loaders";
+import type { DbVocabularyStudyVariant } from "@/lib/vocabulary/types";
 
 type VocabularySetBlockProps = {
   title?: string;
@@ -47,14 +47,14 @@ export default async function VocabularySetBlock({
     <VocabularyBlock
       title={title ?? vocabularyList?.title ?? vocabularySet.title}
       eyebrow={vocabularyList ? "Vocabulary list" : "Vocabulary set"}
-      description={
-        vocabularyList?.description ?? vocabularySet.description ?? undefined
-      }
+      description={vocabularyList?.description ?? vocabularySet.description ?? undefined}
       meta={[
         getVocabularyTierLabel(vocabularySet.tier),
         getVocabularyListModeLabel(vocabularySet.list_mode),
         ...(vocabularyList ? [vocabularyList.title] : []),
-        currentVariant === "volna" ? "Volna tier" : getVocabularyTierLabel(currentVariant),
+        currentVariant === "volna"
+          ? "Volna tier"
+          : getVocabularyTierLabel(currentVariant),
         vocabularySet.is_published ? "Published set" : "Draft set",
       ]}
       items={items.map((item) => ({

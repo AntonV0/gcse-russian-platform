@@ -12,10 +12,7 @@ import {
   VocabularyAdminDisclosurePanel,
   VocabularyAdminFormField,
 } from "@/components/admin/vocabulary/items/primitives";
-import type {
-  DbVocabularyItem,
-  DbVocabularyTier,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+import type { DbVocabularyItem, DbVocabularyTier } from "@/lib/vocabulary/types";
 
 export default function VocabularyItemEditForm({
   item,

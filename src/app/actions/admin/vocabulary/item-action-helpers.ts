@@ -8,12 +8,12 @@ import type {
   DbVocabularyPartOfSpeech,
   DbVocabularyProductiveReceptive,
   DbVocabularyTier,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/types";
 import {
   ensureDefaultVocabularyListForSetDb,
   getVocabularyListByIdDb,
-  getVocabularySetByIdDb,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/list-queries";
+import { getVocabularySetByIdDb } from "@/lib/vocabulary/set-queries";
 import { getTrimmedString } from "@/app/actions/shared/form-data";
 
 export function getRequiredString(formData: FormData, key: string) {

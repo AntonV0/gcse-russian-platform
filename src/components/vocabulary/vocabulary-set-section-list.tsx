@@ -7,10 +7,10 @@ import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import VocabularyCoverageBadges from "@/components/vocabulary/vocabulary-coverage-badges";
 import {
   getVocabularyListModeLabel,
-  getVocabularySetsDb,
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/labels";
+import { getVocabularySetsDb } from "@/lib/vocabulary/set-list-queries";
 
 type VocabularySet = Awaited<ReturnType<typeof getVocabularySetsDb>>[number];
 

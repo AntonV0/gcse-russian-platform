@@ -8,12 +8,12 @@ import {
   getVocabularyPartOfSpeechLabel,
 } from "@/components/admin/vocabulary/items/item-display";
 import { VocabularyAdminStatTile } from "@/components/admin/vocabulary/items/primitives";
-import {
-  getVocabularyProductiveReceptiveLabel,
-  type DbVocabularyItem,
-  type DbVocabularyItemCoverage,
-  type DbVocabularyTier,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+import { getVocabularyProductiveReceptiveLabel } from "@/lib/vocabulary/labels";
+import type {
+  DbVocabularyItem,
+  DbVocabularyItemCoverage,
+  DbVocabularyTier,
+} from "@/lib/vocabulary/types";
 
 export default function VocabularyItemCard({
   item,

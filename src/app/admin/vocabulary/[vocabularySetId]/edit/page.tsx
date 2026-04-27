@@ -12,7 +12,7 @@ import {
   VocabularyAdminStatTile,
 } from "@/components/admin/vocabulary/items/primitives";
 import { updateVocabularySetAction } from "@/app/actions/admin/admin-vocabulary-actions";
-import { loadVocabularySetByIdDb } from "@/lib/vocabulary/vocabulary-helpers-db";
+import { loadVocabularySetByIdDb } from "@/lib/vocabulary/loaders";
 
 function ToggleField({
   name,
@@ -71,9 +71,7 @@ export default async function EditVocabularySetPage({
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-section">
-                {vocabularySet.title}
-              </h2>
+              <h2 className="app-heading-section">{vocabularySet.title}</h2>
               <p className="max-w-3xl app-text-body-muted">
                 Update the set metadata now. Item management can be added next as its own
                 dedicated flow.
@@ -98,9 +96,7 @@ export default async function EditVocabularySetPage({
         <div className="space-y-4">
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="app-heading-subsection">
-                Core details
-              </h2>
+              <h2 className="app-heading-subsection">Core details</h2>
               <p className="mt-2 app-text-body-muted">
                 Update the main metadata used by admin and future student-facing tools.
               </p>
@@ -169,9 +165,7 @@ export default async function EditVocabularySetPage({
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="app-heading-subsection">
-                Vocabulary settings
-              </h2>
+              <h2 className="app-heading-subsection">Vocabulary settings</h2>
               <p className="mt-2 app-text-body-muted">
                 Control set structure, display defaults, and classification.
               </p>
@@ -227,9 +221,7 @@ export default async function EditVocabularySetPage({
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="app-heading-subsection">
-                Import metadata
-              </h2>
+              <h2 className="app-heading-subsection">Import metadata</h2>
               <p className="mt-2 app-text-body-muted">
                 Stable source metadata for repeatable manifest imports.
               </p>
@@ -266,9 +258,7 @@ export default async function EditVocabularySetPage({
 
           <section className="app-surface app-section-padding">
             <div className="mb-5">
-              <h2 className="app-heading-subsection">
-                Publication
-              </h2>
+              <h2 className="app-heading-subsection">Publication</h2>
             </div>
 
             <div className="grid gap-3">
@@ -285,9 +275,7 @@ export default async function EditVocabularySetPage({
         <div className="space-y-4">
           <section className="app-surface app-section-padding">
             <div className="space-y-4">
-              <h2 className="app-heading-card">
-                Current stats
-              </h2>
+              <h2 className="app-heading-card">Current stats</h2>
 
               <div className="grid gap-3">
                 <VocabularyAdminStatTile label="Items" value={items.length} />
@@ -297,9 +285,7 @@ export default async function EditVocabularySetPage({
                 />
 
                 <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3">
-                  <div className="app-text-meta">
-                    Variant usage
-                  </div>
+                  <div className="app-text-meta">Variant usage</div>
                   <div className="mt-3 space-y-2">
                     <div className="app-text-caption">
                       Foundation: {usageStats.foundationOccurrences}

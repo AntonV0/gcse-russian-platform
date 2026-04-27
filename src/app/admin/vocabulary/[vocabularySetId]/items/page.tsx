@@ -1,9 +1,7 @@
 import { notFound } from "next/navigation";
 import VocabularySetItemsAdmin from "@/components/admin/vocabulary/items/vocabulary-set-items-admin";
-import {
-  getVocabularyItemCoverageByItemIdsDb,
-  loadVocabularySetByIdDb,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+import { getVocabularyItemCoverageByItemIdsDb } from "@/lib/vocabulary/item-queries";
+import { loadVocabularySetByIdDb } from "@/lib/vocabulary/loaders";
 
 export default async function VocabularySetItemsPage({
   params,
