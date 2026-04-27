@@ -9,18 +9,16 @@ import {
   getOptionalString,
   getTrimmedString,
 } from "./shared";
-
-function usesOptionsTable(questionType: string) {
-  return questionType === "multiple_choice" || questionType === "multiple_response";
-}
-
-const QUESTION_SET_DUPLICATE_SELECT =
-  "id, slug, title, description, instructions, source_type, is_template, template_type";
-const QUESTION_DUPLICATE_SELECT =
-  "id, question_set_id, question_type, prompt, explanation, marks, position, audio_path, image_path, metadata, is_active";
-const QUESTION_OPTION_DUPLICATE_SELECT = "option_text, is_correct, position";
-const QUESTION_ACCEPTED_ANSWER_DUPLICATE_SELECT =
-  "answer_text, normalized_answer, is_primary, case_sensitive, notes";
+import {
+  copyQuestionAnswerRows,
+  copyQuestionRowsIntoSet,
+  getQuestionCopyInsert,
+  QUESTION_DUPLICATE_SELECT,
+  QUESTION_SET_DUPLICATE_SELECT,
+  SOURCE_QUESTION_COPY_MESSAGES,
+  SOURCE_SET_COPY_MESSAGES,
+  TEMPLATE_COPY_MESSAGES,
+} from "./question-copy-helpers";
 
 export async function duplicateQuestionAction(formData: FormData) {
   const canAccess = await requireAdminAccess();
@@ -67,18 +65,12 @@ export async function duplicateQuestionAction(formData: FormData) {
 
   const { data: duplicatedQuestion, error: duplicatedQuestionError } = await supabase
     .from("questions")
-    .insert({
-      question_set_id: sourceQuestion.question_set_id,
-      question_type: sourceQuestion.question_type,
-      prompt: `${sourceQuestion.prompt} (Copy)`,
-      explanation: sourceQuestion.explanation,
-      marks: sourceQuestion.marks,
-      position: nextPosition,
-      audio_path: sourceQuestion.audio_path,
-      image_path: sourceQuestion.image_path,
-      metadata: sourceQuestion.metadata ?? {},
-      is_active: sourceQuestion.is_active,
-    })
+    .insert(
+      getQuestionCopyInsert(sourceQuestion, sourceQuestion.question_set_id, {
+        prompt: `${sourceQuestion.prompt} (Copy)`,
+        position: nextPosition,
+      })
+    )
     .select("id, question_type")
     .single();
 
@@ -87,67 +79,13 @@ export async function duplicateQuestionAction(formData: FormData) {
     throw new Error("Failed to duplicate question");
   }
 
-  if (usesOptionsTable(duplicatedQuestion.question_type)) {
-    const { data: sourceOptions, error: sourceOptionsError } = await supabase
-      .from("question_options")
-      .select(QUESTION_OPTION_DUPLICATE_SELECT)
-      .eq("question_id", sourceQuestion.id)
-      .order("position", { ascending: true });
-
-    if (sourceOptionsError) {
-      console.error("Error loading source options:", sourceOptionsError);
-      throw new Error("Failed to load source options");
-    }
-
-    const optionRows = (sourceOptions ?? []).map((option) => ({
-      question_id: duplicatedQuestion.id,
-      option_text: option.option_text,
-      is_correct: option.is_correct,
-      position: option.position,
-    }));
-
-    if (optionRows.length > 0) {
-      const { error: insertOptionsError } = await supabase
-        .from("question_options")
-        .insert(optionRows);
-
-      if (insertOptionsError) {
-        console.error("Error duplicating question options:", insertOptionsError);
-        throw new Error("Failed to duplicate question options");
-      }
-    }
-  } else {
-    const { data: sourceAnswers, error: sourceAnswersError } = await supabase
-      .from("question_accepted_answers")
-      .select(QUESTION_ACCEPTED_ANSWER_DUPLICATE_SELECT)
-      .eq("question_id", sourceQuestion.id)
-      .order("is_primary", { ascending: false });
-
-    if (sourceAnswersError) {
-      console.error("Error loading source accepted answers:", sourceAnswersError);
-      throw new Error("Failed to load source accepted answers");
-    }
-
-    const answerRows = (sourceAnswers ?? []).map((answer) => ({
-      question_id: duplicatedQuestion.id,
-      answer_text: answer.answer_text,
-      normalized_answer: answer.normalized_answer,
-      is_primary: answer.is_primary,
-      case_sensitive: answer.case_sensitive,
-      notes: answer.notes,
-    }));
-
-    if (answerRows.length > 0) {
-      const { error: insertAnswersError } = await supabase
-        .from("question_accepted_answers")
-        .insert(answerRows);
-
-      if (insertAnswersError) {
-        console.error("Error duplicating accepted answers:", insertAnswersError);
-        throw new Error("Failed to duplicate accepted answers");
-      }
-    }
-  }
+  await copyQuestionAnswerRows({
+    supabase,
+    sourceQuestionId: sourceQuestion.id,
+    targetQuestionId: duplicatedQuestion.id,
+    questionType: duplicatedQuestion.question_type,
+    messages: SOURCE_QUESTION_COPY_MESSAGES,
+  });
 
   redirect(`/admin/question-sets/${questionSetId}`);
 }
@@ -205,114 +143,12 @@ export async function duplicateQuestionSetAction(formData: FormData) {
     throw new Error("Failed to duplicate question set");
   }
 
-  const { data: sourceQuestions, error: sourceQuestionsError } = await supabase
-    .from("questions")
-    .select(QUESTION_DUPLICATE_SELECT)
-    .eq("question_set_id", questionSetId)
-    .order("position", { ascending: true });
-
-  if (sourceQuestionsError) {
-    console.error("Error loading source questions:", sourceQuestionsError);
-    throw new Error("Failed to load source questions");
-  }
-
-  const questionIdMap = new Map<string, string>();
-
-  for (const sourceQuestion of sourceQuestions ?? []) {
-    const { data: duplicatedQuestion, error: duplicatedQuestionError } = await supabase
-      .from("questions")
-      .insert({
-        question_set_id: duplicatedSet.id,
-        question_type: sourceQuestion.question_type,
-        prompt: sourceQuestion.prompt,
-        explanation: sourceQuestion.explanation,
-        marks: sourceQuestion.marks,
-        position: sourceQuestion.position,
-        audio_path: sourceQuestion.audio_path,
-        image_path: sourceQuestion.image_path,
-        metadata: sourceQuestion.metadata ?? {},
-        is_active: sourceQuestion.is_active,
-      })
-      .select("id")
-      .single();
-
-    if (duplicatedQuestionError || !duplicatedQuestion) {
-      console.error("Error duplicating question:", duplicatedQuestionError);
-      throw new Error("Failed to duplicate question");
-    }
-
-    questionIdMap.set(sourceQuestion.id, duplicatedQuestion.id);
-  }
-
-  for (const sourceQuestion of sourceQuestions ?? []) {
-    const duplicatedQuestionId = questionIdMap.get(sourceQuestion.id);
-
-    if (!duplicatedQuestionId) {
-      continue;
-    }
-
-    if (usesOptionsTable(sourceQuestion.question_type)) {
-      const { data: sourceOptions, error: sourceOptionsError } = await supabase
-        .from("question_options")
-        .select(QUESTION_OPTION_DUPLICATE_SELECT)
-        .eq("question_id", sourceQuestion.id)
-        .order("position", { ascending: true });
-
-      if (sourceOptionsError) {
-        console.error("Error loading source question options:", sourceOptionsError);
-        throw new Error("Failed to load source question options");
-      }
-
-      const optionRows = (sourceOptions ?? []).map((option) => ({
-        question_id: duplicatedQuestionId,
-        option_text: option.option_text,
-        is_correct: option.is_correct,
-        position: option.position,
-      }));
-
-      if (optionRows.length > 0) {
-        const { error: insertOptionsError } = await supabase
-          .from("question_options")
-          .insert(optionRows);
-
-        if (insertOptionsError) {
-          console.error("Error duplicating question options:", insertOptionsError);
-          throw new Error("Failed to duplicate question options");
-        }
-      }
-    } else {
-      const { data: sourceAnswers, error: sourceAnswersError } = await supabase
-        .from("question_accepted_answers")
-        .select(QUESTION_ACCEPTED_ANSWER_DUPLICATE_SELECT)
-        .eq("question_id", sourceQuestion.id)
-        .order("is_primary", { ascending: false });
-
-      if (sourceAnswersError) {
-        console.error("Error loading source accepted answers:", sourceAnswersError);
-        throw new Error("Failed to load source accepted answers");
-      }
-
-      const answerRows = (sourceAnswers ?? []).map((answer) => ({
-        question_id: duplicatedQuestionId,
-        answer_text: answer.answer_text,
-        normalized_answer: answer.normalized_answer,
-        is_primary: answer.is_primary,
-        case_sensitive: answer.case_sensitive,
-        notes: answer.notes,
-      }));
-
-      if (answerRows.length > 0) {
-        const { error: insertAnswersError } = await supabase
-          .from("question_accepted_answers")
-          .insert(answerRows);
-
-        if (insertAnswersError) {
-          console.error("Error duplicating accepted answers:", insertAnswersError);
-          throw new Error("Failed to duplicate accepted answers");
-        }
-      }
-    }
-  }
+  await copyQuestionRowsIntoSet({
+    supabase,
+    sourceQuestionSetId: questionSetId,
+    targetQuestionSetId: duplicatedSet.id,
+    messages: SOURCE_SET_COPY_MESSAGES,
+  });
 
   redirect(`/admin/question-sets/${duplicatedSet.id}`);
 }
@@ -371,112 +207,12 @@ export async function createQuestionSetFromTemplateAction(formData: FormData) {
     throw new Error("Failed to create question set from template");
   }
 
-  const { data: sourceQuestions, error: sourceQuestionsError } = await supabase
-    .from("questions")
-    .select(QUESTION_DUPLICATE_SELECT)
-    .eq("question_set_id", templateQuestionSetId)
-    .order("position", { ascending: true });
-
-  if (sourceQuestionsError) {
-    console.error("Error loading template questions:", sourceQuestionsError);
-    throw new Error("Failed to load template questions");
-  }
-
-  const questionIdMap = new Map<string, string>();
-
-  for (const sourceQuestion of sourceQuestions ?? []) {
-    const { data: newQuestion, error: newQuestionError } = await supabase
-      .from("questions")
-      .insert({
-        question_set_id: newSet.id,
-        question_type: sourceQuestion.question_type,
-        prompt: sourceQuestion.prompt,
-        explanation: sourceQuestion.explanation,
-        marks: sourceQuestion.marks,
-        position: sourceQuestion.position,
-        audio_path: sourceQuestion.audio_path,
-        image_path: sourceQuestion.image_path,
-        metadata: sourceQuestion.metadata ?? {},
-        is_active: sourceQuestion.is_active,
-      })
-      .select("id")
-      .single();
-
-    if (newQuestionError || !newQuestion) {
-      console.error("Error creating question from template:", newQuestionError);
-      throw new Error("Failed to create template question copy");
-    }
-
-    questionIdMap.set(sourceQuestion.id, newQuestion.id);
-  }
-
-  for (const sourceQuestion of sourceQuestions ?? []) {
-    const newQuestionId = questionIdMap.get(sourceQuestion.id);
-
-    if (!newQuestionId) continue;
-
-    if (usesOptionsTable(sourceQuestion.question_type)) {
-      const { data: sourceOptions, error: sourceOptionsError } = await supabase
-        .from("question_options")
-        .select(QUESTION_OPTION_DUPLICATE_SELECT)
-        .eq("question_id", sourceQuestion.id)
-        .order("position", { ascending: true });
-
-      if (sourceOptionsError) {
-        console.error("Error loading template options:", sourceOptionsError);
-        throw new Error("Failed to load template options");
-      }
-
-      const optionRows = (sourceOptions ?? []).map((option) => ({
-        question_id: newQuestionId,
-        option_text: option.option_text,
-        is_correct: option.is_correct,
-        position: option.position,
-      }));
-
-      if (optionRows.length > 0) {
-        const { error: insertOptionsError } = await supabase
-          .from("question_options")
-          .insert(optionRows);
-
-        if (insertOptionsError) {
-          console.error("Error copying template options:", insertOptionsError);
-          throw new Error("Failed to copy template options");
-        }
-      }
-    } else {
-      const { data: sourceAnswers, error: sourceAnswersError } = await supabase
-        .from("question_accepted_answers")
-        .select(QUESTION_ACCEPTED_ANSWER_DUPLICATE_SELECT)
-        .eq("question_id", sourceQuestion.id)
-        .order("is_primary", { ascending: false });
-
-      if (sourceAnswersError) {
-        console.error("Error loading template accepted answers:", sourceAnswersError);
-        throw new Error("Failed to load template accepted answers");
-      }
-
-      const answerRows = (sourceAnswers ?? []).map((answer) => ({
-        question_id: newQuestionId,
-        answer_text: answer.answer_text,
-        normalized_answer: answer.normalized_answer,
-        is_primary: answer.is_primary,
-        case_sensitive: answer.case_sensitive,
-        notes: answer.notes,
-      }));
-
-      if (answerRows.length > 0) {
-        const { error: insertAnswersError } = await supabase
-          .from("question_accepted_answers")
-          .insert(answerRows);
-
-        if (insertAnswersError) {
-          console.error("Error copying template answers:", insertAnswersError);
-          throw new Error("Failed to copy template answers");
-        }
-      }
-    }
-  }
+  await copyQuestionRowsIntoSet({
+    supabase,
+    sourceQuestionSetId: templateQuestionSetId,
+    targetQuestionSetId: newSet.id,
+    messages: TEMPLATE_COPY_MESSAGES,
+  });
 
   redirect(`/admin/question-sets/${newSet.id}`);
 }
