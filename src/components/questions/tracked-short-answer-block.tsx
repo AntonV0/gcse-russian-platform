@@ -4,79 +4,19 @@ import { useMemo, useState, useTransition } from "react";
 import ShortAnswerBlock from "@/components/questions/short-answer-block";
 import TranslationBlock from "@/components/questions/translation-block";
 import SentenceBuilderBlock from "@/components/questions/sentence-builder-block";
-import SelectionBasedBlock, {
-  type SelectionGroup,
-} from "@/components/questions/selection-based-block";
+import SelectionBasedBlock from "@/components/questions/selection-based-block";
+import { UnsupportedAnswerStrategyMessage } from "@/components/questions/unsupported-answer-strategy-message";
 import {
   submitQuestionAttemptAction,
   type SubmitQuestionAttemptActionResult,
 } from "@/app/actions/questions/question-actions";
-
-type TranslationDirection = "to_russian" | "to_english";
-
-type AnswerStrategy =
-  | "text_input"
-  | "selection_based"
-  | "sentence_builder"
-  | "upload_required";
-
-type TranslationUiConfig = {
-  direction?: TranslationDirection;
-  sourceLanguageLabel?: string;
-  targetLanguageLabel?: string;
-  instruction?: string;
-  placeholder?: string;
-};
-
-type SentenceBuilderUiConfig = {
-  wordBank?: string[];
-};
-
-type SelectionBasedUiConfig = {
-  groups?: SelectionGroup[];
-  displayMode?: "grouped" | "inline_gaps";
-};
-
-type ListeningUiConfig = {
-  maxPlays?: number;
-  listeningMode?: boolean;
-  autoPlay?: boolean;
-  hideNativeControls?: boolean;
-  requireAudioCompletionBeforeSubmit?: boolean;
-};
-
-type TrackedShortAnswerBlockProps = {
-  questionId: string;
-  lessonId?: string | null;
-  question: string;
-  questionType?: "short_answer" | "translation";
-  explanation?: string;
-  placeholder?: string;
-  translationUi?: TranslationUiConfig;
-  sentenceBuilderUi?: SentenceBuilderUiConfig;
-  selectionBasedUi?: SelectionBasedUiConfig;
-  audioUrl?: string | null;
-  listeningUi?: ListeningUiConfig;
-  answerStrategy?: AnswerStrategy;
-};
-
-function buildSentenceBuilderTokenPool(params: { customWordBank?: string[] }) {
-  if (params.customWordBank && params.customWordBank.length > 0) {
-    return [...params.customWordBank];
-  }
-
-  return [];
-}
-
-function buildSelectionBasedSubmittedText(params: {
-  groups: SelectionGroup[];
-  selectedOptions: Record<string, string>;
-}) {
-  return params.groups
-    .map((group) => params.selectedOptions[group.id])
-    .filter((value): value is string => typeof value === "string" && value.length > 0)
-    .join(" ");
-}
+import type { TrackedShortAnswerBlockProps } from "./tracked-short-answer-types";
+import {
+  buildSelectionBasedSubmittedText,
+  buildSentenceBuilderTokenPool,
+  getSelectionBasedInstruction,
+  getSentenceBuilderInstruction,
+} from "./tracked-short-answer-utils";
 
 export default function TrackedShortAnswerBlock({
   questionId,
@@ -120,29 +60,8 @@ export default function TrackedShortAnswerBlock({
     selectedOptions,
   });
 
-  const sentenceBuilderInstruction = useMemo(() => {
-    if (translationUi?.instruction) {
-      return translationUi.instruction;
-    }
-
-    if (translationUi?.targetLanguageLabel) {
-      return `Build the sentence in ${translationUi.targetLanguageLabel}`;
-    }
-
-    return "Build the sentence in Russian";
-  }, [translationUi]);
-
-  const selectionBasedInstruction = useMemo(() => {
-    if (translationUi?.instruction) {
-      return translationUi.instruction;
-    }
-
-    if (translationUi?.targetLanguageLabel) {
-      return `Select the correct forms in ${translationUi.targetLanguageLabel}`;
-    }
-
-    return "Select the correct Russian forms";
-  }, [translationUi]);
+  const sentenceBuilderInstruction = getSentenceBuilderInstruction(translationUi);
+  const selectionBasedInstruction = getSelectionBasedInstruction(translationUi);
 
   const audioGatePassed =
     !listeningUi?.requireAudioCompletionBeforeSubmit || audioCompleted;
@@ -307,12 +226,7 @@ export default function TrackedShortAnswerBlock({
   }
 
   if (questionType === "translation" && answerStrategy !== "text_input") {
-    return (
-      <div className="rounded-lg border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] p-4 text-sm text-[var(--warning)]">
-        This question requires a different interaction type (
-        {answerStrategy.replace("_", " ")}). This will be supported soon.
-      </div>
-    );
+    return <UnsupportedAnswerStrategyMessage answerStrategy={answerStrategy} />;
   }
 
   if (questionType === "translation") {
