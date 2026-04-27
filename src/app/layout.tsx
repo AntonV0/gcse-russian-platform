@@ -47,6 +47,24 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/brand/logo-final/favicon-r-light-32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/brand/logo-final/favicon-r-dark-32.png"
+          media="(prefers-color-scheme: dark)"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/brand/logo-final/favicon-r-light-180.png"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

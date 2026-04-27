@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import LogoutButton from "@/components/layout/logout-button";
+import AppLogo from "@/components/ui/app-logo";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
@@ -128,17 +129,8 @@ export default function AdminSidebar() {
       ) : null}
 
       <div className="shrink-0 border-b border-[var(--border)] px-4 py-4">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
-            <AppIcon icon="admin" size={16} />
-          </div>
-
-          <div>
-            <div className="text-sm font-semibold text-[var(--text-primary)]">
-              Admin Panel
-            </div>
-            <div className="text-xs text-[var(--text-secondary)]">Management</div>
-          </div>
+        <div className="px-3 py-2">
+          <AppLogo variant="domain" size="sm" subtitle="Admin Panel" showIcon={false} />
         </div>
       </div>
 

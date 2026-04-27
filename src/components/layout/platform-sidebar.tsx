@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AppLogo from "@/components/ui/app-logo";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import LogoutButton from "@/components/layout/logout-button";
@@ -134,52 +135,160 @@ export default function PlatformSidebar({
 
   return (
     <>
-    <section className="dev-marker-host relative lg:hidden">
-      <div className="rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)]">
-        <div className="mb-4 flex items-center gap-3">
-          <span className="app-brand-mark ring-1 ring-[var(--border)]">
-            <AppIcon icon="school" size={18} className="app-brand-text" />
-          </span>
-
-          <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
-              GCSE Russian
-            </div>
-            <div className="text-xs app-text-soft">
-              {getAccessLabel(role, accessMode)}
-            </div>
+      <section className="dev-marker-host relative lg:hidden">
+        <div className="rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)]">
+          <div className="mb-4">
+            <AppLogo
+              variant={isAdmin ? "domain" : "full"}
+              size="sm"
+              subtitle={getAccessLabel(role, accessMode)}
+              showIcon={!isAdmin}
+            />
           </div>
+
+          <nav className="space-y-3" aria-label="Platform navigation">
+            <div>
+              <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
+                Learn
+              </div>
+              <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
+                {[...mainItems, ...conditionalItems].map((item) => {
+                  const active = isActive(activePathname, item.href);
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={mobileItemClass(active)}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      <AppIcon icon={item.icon} size={16} />
+                      <span className="whitespace-nowrap">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
+                Account
+              </div>
+              <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
+                {utilityItems.map((item) => {
+                  const active = isActive(activePathname, item.href);
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={mobileItemClass(active)}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      <AppIcon icon={item.icon} size={16} />
+                      <span className="whitespace-nowrap">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+              <div className="mt-3 px-1">
+                <LogoutButton />
+              </div>
+            </div>
+          </nav>
+        </div>
+      </section>
+
+      <aside className="dev-marker-host relative hidden h-full min-h-[calc(100vh-10rem)] flex-col rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)] lg:flex">
+        {SHOW_UI_DEBUG ? (
+          <DevComponentMarker
+            componentName="PlatformSidebar"
+            filePath="src/components/layout/platform-sidebar.tsx"
+            tier="layout"
+            componentRole="Role-aware platform sidebar navigation"
+            bestFor="Authenticated platform pages, student/teacher/admin navigation, account utilities, and access-aware route groups."
+            usageExamples={[
+              "Student platform shell",
+              "Teacher assignment area",
+              "Admin navigation shell",
+              "Account/settings navigation",
+            ]}
+            notes="Use inside the authenticated platform layout. Keep route visibility rules here aligned with access control helpers."
+          />
+        ) : null}
+
+        <div className="mb-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-3 py-3">
+          <AppLogo
+            variant={isAdmin ? "domain" : "full"}
+            size="sm"
+            subtitle={getAccessLabel(role, accessMode)}
+            showIcon={!isAdmin}
+          />
         </div>
 
-        <nav className="space-y-3" aria-label="Platform navigation">
-          <div>
-            <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
-              Learn
-            </div>
-            <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
-              {[...mainItems, ...conditionalItems].map((item) => {
+        <nav className="flex flex-1 flex-col" aria-label="Platform navigation">
+          <div className="space-y-1">
+            {sectionLabel("Learn")}
+
+            {mainItems.map((item) => {
+              const active = isActive(activePathname, item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={itemClass(active)}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <AppIcon
+                    icon={item.icon}
+                    size={18}
+                    className={
+                      active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
+                    }
+                  />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+
+          {conditionalItems.length > 0 ? (
+            <div className="mt-5 space-y-1">
+              {sectionLabel("More")}
+
+              {conditionalItems.map((item) => {
                 const active = isActive(activePathname, item.href);
 
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={mobileItemClass(active)}
+                    className={itemClass(active)}
                     aria-current={active ? "page" : undefined}
                   >
-                    <AppIcon icon={item.icon} size={16} />
-                    <span className="whitespace-nowrap">{item.label}</span>
+                    <AppIcon
+                      icon={item.icon}
+                      size={18}
+                      className={
+                        active
+                          ? "text-[var(--accent-on-soft)]"
+                          : "text-[var(--text-muted)]"
+                      }
+                    />
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
             </div>
-          </div>
+          ) : null}
 
-          <div>
-            <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
-              Account
-            </div>
-            <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
+          <div className="mt-auto pt-6">
+            <div className="mb-4 border-t border-[var(--border)]" />
+
+            <div className="space-y-1">
+              {sectionLabel("Account")}
+
               {utilityItems.map((item) => {
                 const active = isActive(activePathname, item.href);
 
@@ -187,148 +296,30 @@ export default function PlatformSidebar({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={mobileItemClass(active)}
+                    className={itemClass(active)}
                     aria-current={active ? "page" : undefined}
                   >
-                    <AppIcon icon={item.icon} size={16} />
-                    <span className="whitespace-nowrap">{item.label}</span>
+                    <AppIcon
+                      icon={item.icon}
+                      size={18}
+                      className={
+                        active
+                          ? "text-[var(--accent-on-soft)]"
+                          : "text-[var(--text-muted)]"
+                      }
+                    />
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
             </div>
-            <div className="mt-3 px-1">
+
+            <div className="mt-4 pt-4">
               <LogoutButton />
             </div>
           </div>
         </nav>
-      </div>
-    </section>
-
-    <aside className="dev-marker-host relative hidden h-full min-h-[calc(100vh-10rem)] flex-col rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)] lg:flex">
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="PlatformSidebar"
-          filePath="src/components/layout/platform-sidebar.tsx"
-          tier="layout"
-          componentRole="Role-aware platform sidebar navigation"
-          bestFor="Authenticated platform pages, student/teacher/admin navigation, account utilities, and access-aware route groups."
-          usageExamples={[
-            "Student platform shell",
-            "Teacher assignment area",
-            "Admin navigation shell",
-            "Account/settings navigation",
-          ]}
-          notes="Use inside the authenticated platform layout. Keep route visibility rules here aligned with access control helpers."
-        />
-      ) : null}
-
-      <div className="mb-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/55 px-3 py-3">
-        <div className="flex items-center gap-3">
-          <span className="app-brand-mark ring-1 ring-[var(--border)]">
-            <AppIcon icon="school" size={18} className="app-brand-text" />
-          </span>
-
-          <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
-              GCSE Russian
-            </div>
-            <div className="text-xs app-text-soft">
-              {getAccessLabel(role, accessMode)}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <nav className="flex flex-1 flex-col" aria-label="Platform navigation">
-        <div className="space-y-1">
-          {sectionLabel("Learn")}
-
-          {mainItems.map((item) => {
-            const active = isActive(activePathname, item.href);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={itemClass(active)}
-                aria-current={active ? "page" : undefined}
-              >
-                <AppIcon
-                  icon={item.icon}
-                  size={18}
-                  className={
-                    active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
-                  }
-                />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-
-        {conditionalItems.length > 0 ? (
-          <div className="mt-5 space-y-1">
-            {sectionLabel("More")}
-
-            {conditionalItems.map((item) => {
-              const active = isActive(activePathname, item.href);
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={itemClass(active)}
-                  aria-current={active ? "page" : undefined}
-                >
-                  <AppIcon
-                    icon={item.icon}
-                    size={18}
-                    className={
-                      active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
-                    }
-                  />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        ) : null}
-
-        <div className="mt-auto pt-6">
-          <div className="mb-4 border-t border-[var(--border)]" />
-
-          <div className="space-y-1">
-            {sectionLabel("Account")}
-
-            {utilityItems.map((item) => {
-              const active = isActive(activePathname, item.href);
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={itemClass(active)}
-                  aria-current={active ? "page" : undefined}
-                >
-                  <AppIcon
-                    icon={item.icon}
-                    size={18}
-                    className={
-                      active ? "text-[var(--accent-on-soft)]" : "text-[var(--text-muted)]"
-                    }
-                  />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="mt-4 pt-4">
-            <LogoutButton />
-          </div>
-        </div>
-      </nav>
-    </aside>
+      </aside>
     </>
   );
 }

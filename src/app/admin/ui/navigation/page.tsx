@@ -5,6 +5,7 @@ import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
 import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab-section";
+import AppLogo from "@/components/ui/app-logo";
 import AppIcon from "@/components/ui/app-icon";
 import BackNav from "@/components/ui/back-nav";
 import Badge from "@/components/ui/badge";
@@ -126,15 +127,7 @@ function DemoPlatformHeader() {
       <div className="border-b border-[var(--border)] bg-[var(--background)]/92 px-4 py-3 backdrop-blur sm:px-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-4">
-            <div className="app-brand-lockup shrink-0">
-              <span className="app-brand-mark ring-1 ring-[var(--border)]">
-                <AppIcon icon="school" size={18} className="app-brand-text" />
-              </span>
-
-              <span className="app-brand-text text-lg font-semibold tracking-tight">
-                GCSE Russian
-              </span>
-            </div>
+            <AppLogo size="sm" className="shrink-0" />
 
             <nav className="hidden items-center gap-1 md:flex">
               {primaryItems.map((item) => (

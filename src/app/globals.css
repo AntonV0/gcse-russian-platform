@@ -18,10 +18,11 @@ html.theme-transition .app-icon-button,
 html.theme-transition .app-btn-base,
 html.theme-transition .app-btn-surface-fix,
 html.theme-transition .app-nav-link,
-html.theme-transition .app-brand-mark,
+html.theme-transition .app-logo-icon,
 html.theme-transition .app-form-control {
   transition:
     background-color 0.3s ease,
+    background-image 0.3s ease,
     border-color 0.3s ease,
     color 0.3s ease,
     box-shadow 0.3s ease;

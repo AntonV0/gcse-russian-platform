@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import LogoutButton from "@/components/layout/logout-button";
-import AppIcon from "@/components/ui/app-icon";
+import AppLogo from "@/components/ui/app-logo";
 import Button from "@/components/ui/button";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import IconButton from "@/components/ui/icon-button";
@@ -69,14 +69,8 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
 
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" className="app-brand-lockup shrink-0" onClick={closeMobileMenu}>
-            <span className="app-brand-mark ring-1 ring-[var(--border)]">
-              <AppIcon icon="school" size={18} className="app-brand-text" />
-            </span>
-
-            <span className="text-lg font-semibold tracking-tight app-brand-text">
-              GCSE Russian
-            </span>
+          <Link href="/" className="shrink-0" onClick={closeMobileMenu}>
+            <AppLogo variant="domain" size="md" />
           </Link>
 
           <div className="hidden items-center gap-4 lg:flex">
@@ -171,20 +165,10 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                <Button
-                  href="/login"
-                  variant="secondary"
-                  className="w-full"
-                  icon="user"
-                >
+                <Button href="/login" variant="secondary" className="w-full" icon="user">
                   Log in
                 </Button>
-                <Button
-                  href="/signup"
-                  variant="primary"
-                  className="w-full"
-                  icon="create"
-                >
+                <Button href="/signup" variant="primary" className="w-full" icon="create">
                   Sign up
                 </Button>
               </div>
