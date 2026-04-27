@@ -1,15 +1,14 @@
-import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
+import {
+  AddTeachingGroupMemberPanel,
+  TeachingGroupMemberSection,
+  type TeachingGroupMemberRow,
+  type TeachingGroupProfileRow,
+} from "@/components/admin/teaching-groups/teaching-group-member-panels";
 import PageHeader from "@/components/layout/page-header";
-import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import CardListItem from "@/components/ui/card-list-item";
 import DetailList from "@/components/ui/detail-list";
-import EmptyState from "@/components/ui/empty-state";
-import FormField from "@/components/ui/form-field";
-import InlineActions from "@/components/ui/inline-actions";
 import PanelCard from "@/components/ui/panel-card";
-import Select from "@/components/ui/select";
 import {
   addStudentToTeachingGroupAction,
   addTeacherToTeachingGroupAction,
@@ -27,21 +26,6 @@ type TeachingGroupRow = {
   is_active: boolean;
 };
 
-type TeachingGroupMemberRow = {
-  user_id: string;
-  group_id: string;
-  member_role: string;
-};
-
-type ProfileRow = {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  display_name: string | null;
-  is_admin: boolean;
-  is_teacher: boolean;
-};
-
 type CourseRow = {
   id: string;
   title: string;
@@ -54,139 +38,6 @@ type VariantRow = {
   title: string;
   slug: string;
 };
-
-function getPersonLabel(
-  profile: Pick<ProfileRow, "full_name" | "display_name" | "email">
-) {
-  return profile.full_name || profile.display_name || profile.email || "Unnamed";
-}
-
-function AddMemberPanel({
-  title,
-  description,
-  emptyText,
-  action,
-  groupId,
-  redirectTo,
-  profiles,
-  selectLabel,
-  buttonLabel,
-}: {
-  title: string;
-  description: string;
-  emptyText: string;
-  action: (formData: FormData) => void | Promise<void>;
-  groupId: string;
-  redirectTo: string;
-  profiles: ProfileRow[];
-  selectLabel: string;
-  buttonLabel: string;
-}) {
-  return (
-    <PanelCard title={title} description={description} tone="admin">
-      {profiles.length === 0 ? (
-        <p className="text-sm app-text-muted">{emptyText}</p>
-      ) : (
-        <form action={action} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <input type="hidden" name="groupId" value={groupId} />
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-
-          <FormField label={selectLabel} className="min-w-0 flex-1">
-            <Select name="userId" required>
-              <option value="">Select user</option>
-              {profiles.map((profile) => (
-                <option key={profile.id} value={profile.id}>
-                  {getPersonLabel(profile)}
-                </option>
-              ))}
-            </Select>
-          </FormField>
-
-          <Button type="submit" variant="secondary" icon="create">
-            {buttonLabel}
-          </Button>
-        </form>
-      )}
-    </PanelCard>
-  );
-}
-
-function MemberSection({
-  title,
-  emptyTitle,
-  emptyDescription,
-  members,
-  profileMap,
-  viewHrefPrefix,
-  viewLabel,
-  removeAction,
-  confirmMessage,
-  groupId,
-}: {
-  title: string;
-  emptyTitle: string;
-  emptyDescription: string;
-  members: TeachingGroupMemberRow[];
-  profileMap: Map<string, ProfileRow>;
-  viewHrefPrefix: "/admin/teachers" | "/admin/students";
-  viewLabel: string;
-  removeAction: (formData: FormData) => void | Promise<void>;
-  confirmMessage: string;
-  groupId: string;
-}) {
-  const redirectTo = `/admin/teaching-groups/${groupId}`;
-
-  return (
-    <PanelCard
-      title={`${title} (${members.length})`}
-      tone="admin"
-      contentClassName="space-y-3"
-    >
-      {members.length === 0 ? (
-        <EmptyState icon="users" title={emptyTitle} description={emptyDescription} />
-      ) : (
-        members.map((member) => {
-          const profile = profileMap.get(member.user_id);
-
-          return (
-            <CardListItem
-              key={member.user_id}
-              title={profile ? getPersonLabel(profile) : member.user_id}
-              subtitle={profile?.email || "No email"}
-              badges={<Badge tone="muted">{member.member_role}</Badge>}
-              actions={
-                <InlineActions>
-                  {profile ? (
-                    <Button
-                      href={`${viewHrefPrefix}/${profile.id}`}
-                      variant="secondary"
-                      size="sm"
-                      icon="preview"
-                    >
-                      {viewLabel}
-                    </Button>
-                  ) : null}
-
-                  <form action={removeAction}>
-                    <input type="hidden" name="userId" value={member.user_id} />
-                    <input type="hidden" name="groupId" value={groupId} />
-                    <input type="hidden" name="redirectTo" value={redirectTo} />
-                    <AdminConfirmButton
-                      confirmMessage={confirmMessage}
-                      className="app-btn-base app-btn-danger min-h-9 rounded-xl px-3.5 py-2 text-sm"
-                    >
-                      Remove
-                    </AdminConfirmButton>
-                  </form>
-                </InlineActions>
-              }
-            />
-          );
-        })
-      )}
-    </PanelCard>
-  );
-}
 
 export default async function AdminTeachingGroupDetailPage({
   params,
@@ -237,7 +88,7 @@ export default async function AdminTeachingGroupDetailPage({
   const teachingGroup = group as TeachingGroupRow | null;
   const membershipRows = (currentGroupMemberships ?? []) as TeachingGroupMemberRow[];
   const allMembershipRows = (allMemberships ?? []) as TeachingGroupMemberRow[];
-  const profileRows = (profiles ?? []) as ProfileRow[];
+  const profileRows = (profiles ?? []) as TeachingGroupProfileRow[];
   const courseRows = (courses ?? []) as CourseRow[];
   const variantRows = (variants ?? []) as VariantRow[];
   const activeGrantRows = (grants ?? []) as Array<{
@@ -344,7 +195,7 @@ export default async function AdminTeachingGroupDetailPage({
       </section>
 
       <section className="mb-6 grid gap-4 lg:grid-cols-2">
-        <AddMemberPanel
+        <AddTeachingGroupMemberPanel
           title="Add teacher"
           description="Attach a teacher or admin user to this group."
           emptyText="No available teachers to add."
@@ -356,7 +207,7 @@ export default async function AdminTeachingGroupDetailPage({
           buttonLabel="Add teacher"
         />
 
-        <AddMemberPanel
+        <AddTeachingGroupMemberPanel
           title="Add student"
           description="Attach an eligible active student to this group."
           emptyText="No available students to add."
@@ -370,7 +221,7 @@ export default async function AdminTeachingGroupDetailPage({
       </section>
 
       <section className="mb-6">
-        <MemberSection
+        <TeachingGroupMemberSection
           title="Teachers"
           emptyTitle="No teacher members yet"
           emptyDescription="Add a teacher to make this group useful for guided Volna work."
@@ -384,7 +235,7 @@ export default async function AdminTeachingGroupDetailPage({
         />
       </section>
 
-      <MemberSection
+      <TeachingGroupMemberSection
         title="Students"
         emptyTitle="No student members yet"
         emptyDescription="Add students once they have active access and are ready for teacher-led work."
