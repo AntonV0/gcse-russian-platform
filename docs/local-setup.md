@@ -80,6 +80,14 @@ Stripe CLI listener running while testing webhook-driven access changes.
 ## 5. Validate before committing
 
 ```bash
+npm run seo:check
 npm run lint
 npm run build
 ```
+
+## Safe agent workflow
+
+- Check the dirty tree before editing.
+- Do not revert user changes unless explicitly asked.
+- Run lint, tests where relevant, and build before commits.
+- Commit coherent slices that match the work completed.

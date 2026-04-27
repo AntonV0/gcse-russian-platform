@@ -16,12 +16,14 @@ Project architecture notes are kept in `docs/`:
 - `docs/architecture.md`
 - `docs/decisions.md`
 - `docs/image-strategy.md`
+- `docs/local-setup.md`
 - `docs/PROJECT_STRUCTURE.md`
+- `docs/supabase-migrations.md`
 - `docs/ui-system-guidelines.md`
 
 ---
 
-## 🚀 Overview
+## Overview
 
 This platform combines:
 
@@ -36,21 +38,21 @@ learning experiences without splitting into separate apps.
 
 ---
 
-## 🧠 Core Product Model
+## Core Product Model
 
 Two independent axes shape the platform:
 
 ### Roles
 
-- **Admin** → full system control and content management
-- **Teacher** → manages groups, assignments, and student progress
-- **Student** → consumes content and completes work
+- **Admin** -> full system control and content management
+- **Teacher** -> manages groups, assignments, and student progress
+- **Student** -> consumes content and completes work
 
 ### Student access modes
 
-- **Trial** → restricted access, upgrade-focused
-- **Self-study / Full** → independent paid learning
-- **Volna student** → teacher-linked experience with assignments
+- **Trial** -> restricted access, upgrade-focused
+- **Self-study / Full** -> independent paid learning
+- **Volna student** -> teacher-linked experience with assignments
 
 These are handled through:
 
@@ -62,7 +64,7 @@ NOT separate applications.
 
 ---
 
-## 🧱 Main Systems
+## Main Systems
 
 ### Lesson System (DB-Driven)
 
@@ -94,7 +96,7 @@ Lessons now follow a strict hierarchical structure:
 
 ---
 
-## 🧬 Variant-Based Content System
+## Variant-Based Content System
 
 The lesson system now supports **variant-aware content delivery**.
 
@@ -122,8 +124,8 @@ Values:
 
 This replaces the previous:
 
-- ❌ track visibility
-- ❌ delivery visibility
+- Removed: track visibility
+- Removed: delivery visibility
 
 ### Why this matters
 
@@ -133,7 +135,7 @@ This replaces the previous:
 
 ---
 
-## ♻️ Shared Section Architecture
+## Shared Section Architecture
 
 To support future content reuse, sections now include:
 
@@ -165,8 +167,8 @@ Each instance can still:
 
 This is currently:
 
-- ✅ stored
-- ✅ editable in CMS
+- stored
+- editable in CMS
 
 But not yet used for:
 
@@ -174,7 +176,7 @@ But not yet used for:
 
 ---
 
-## 🛠️ Lesson Builder System (CORE CMS)
+## Lesson Builder System (CORE CMS)
 
 The lesson builder has evolved into a **true CMS-style authoring tool**.
 
@@ -193,16 +195,16 @@ The lesson builder has evolved into a **true CMS-style authoring tool**.
 
 ### Architectural shift
 
-- ❌ Removed hardcoded templates
-- ✅ Presets resolved dynamically from the database
-- ❌ Removed track/delivery visibility system
-- ✅ Fully DB-driven content system
-- ✅ Templates resolved dynamically
-- ✅ Variant-aware content system
+- Removed hardcoded templates
+- Presets resolved dynamically from the database
+- Removed track/delivery visibility system
+- Fully DB-driven content system
+- Templates resolved dynamically
+- Variant-aware content system
 
 ---
 
-## 🎨 UI Lab & Design System
+## UI Lab & Design System
 
 A dedicated **UI Lab system** has been introduced to standardise and evolve UI patterns across:
 
@@ -260,19 +262,19 @@ All shared UI components support a **development-only visual marker**:
 
 This is:
 
-- ✅ enabled in development
-- ❌ removed in production
+- enabled in development
+- removed in production
 
 ---
 
-## 📊 Table System & Data Display
+## Table System & Data Display
 
 A reusable table architecture has been introduced to replace raw table markup.
 
 ### Components
 
-- `TableShell` → outer structure (title, description, actions)
-- `TableToolbar` → filters, search, actions
+- `TableShell` -> outer structure (title, description, actions)
+- `TableToolbar` -> filters, search, actions
 - `DataTable`
   - header
   - body
@@ -284,7 +286,7 @@ A reusable table architecture has been introduced to replace raw table markup.
 
 - Standard admin tables (default)
 - Dense tables (compact)
-- Hierarchical list patterns (modules → lessons → blocks)
+- Hierarchical list patterns (modules -> lessons -> blocks)
 - Empty states
 - Filtered-empty states
 - Dark-surface compatibility testing
@@ -298,7 +300,7 @@ A reusable table architecture has been introduced to replace raw table markup.
 
 ---
 
-## ✨ Lesson Builder UX Improvements
+## Lesson Builder UX Improvements
 
 This phase focused heavily on **authoring experience**, not just
 functionality.
@@ -363,7 +365,7 @@ Now:
 
 ---
 
-## 🧭 Platform UX & Navigation System
+## Platform UX & Navigation System
 
 This update introduced a more structured and scalable **student platform UI layer**.
 
@@ -411,14 +413,14 @@ This ensures:
 
 ---
 
-## 👤 Account System Improvements
+## Account System Improvements
 
 ### Profile system
 
 - Added structured profile page
 - Introduced `avatar_key` system:
   - preset avatars (no uploads)
-  - safer and simpler for younger users (12–16)
+  - safer and simpler for younger users (12-16)
   - scalable for future expansion
 
 ---
@@ -433,7 +435,7 @@ This ensures:
 
 ---
 
-## 🧠 Dashboard System
+## Dashboard System
 
 The dashboard is evolving into a **central learning hub**, not just a landing page.
 
@@ -469,9 +471,9 @@ Dynamic guidance based on:
 
 Examples:
 
-- Trial → explore platform
-- Full → continue learning
-- Volna → open assignments
+- Trial -> explore platform
+- Full -> continue learning
+- Volna -> open assignments
 
 ---
 
@@ -479,13 +481,13 @@ Examples:
 
 This version intentionally:
 
-- ❌ does NOT compute exact “next lesson”
-- ❌ does NOT depend on complex progression logic
-- ✅ stays lightweight and safe
+- does NOT compute exact "next lesson"
+- does NOT depend on complex progression logic
+- stays lightweight and safe
 
 ---
 
-## 🎨 Theme System
+## Theme System
 
 The platform supports a global theme system with three modes:
 
@@ -510,7 +512,7 @@ All UI colours are implemented using CSS variables to support future extensibili
 
 ---
 
-## 🧠 Product Direction
+## Product Direction
 
 The platform is moving toward:
 
@@ -523,7 +525,7 @@ The platform is moving toward:
 
 ---
 
-## 📊 Progress Tracking
+## Progress Tracking
 
 ### Tables
 
@@ -540,7 +542,7 @@ The platform is moving toward:
 
 ---
 
-## 🗄️ Database Overview
+## Database Overview
 
 Core content:
 
@@ -553,7 +555,7 @@ Core content:
 
 ---
 
-## 🧹 Technical Cleanup
+## Technical Cleanup
 
 - removed legacy template files
 - removed track/delivery visibility system
@@ -565,11 +567,11 @@ Core content:
 
 ---
 
-## 🛣️ Next Areas for Expansion
+## Next Areas for Expansion
 
 ### Dashboard
 
-- true “continue lesson” system
+- true "continue lesson" system
 - module-level progress tracking
 - personalised recommendations
 
@@ -601,7 +603,7 @@ Core content:
 
 ---
 
-## 👤 Author
+## Author
 
 Anton Vlasenko  
-Director — Volna Online Russian School
+Director - Volna Online Russian School

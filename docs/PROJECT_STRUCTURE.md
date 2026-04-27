@@ -68,7 +68,20 @@ src/
         page.tsx
 
       grammar/
+        loading.tsx
         page.tsx
+        [grammarSetSlug]/
+          page.tsx
+          [grammarPointSlug]/
+            page.tsx
+
+      mock-exams/
+        page.tsx
+        [mockExamSlug]/
+          page.tsx
+          attempts/
+            [attemptId]/
+              page.tsx
 
       online-classes/
         page.tsx
@@ -97,7 +110,10 @@ src/
               page.tsx
 
       vocabulary/
+        loading.tsx
         page.tsx
+        [vocabularySetRef]/
+          page.tsx
 
     (marketing)/
       layout.tsx
@@ -130,14 +146,22 @@ src/
 
       admin/
         admin-content-actions.ts
+        admin-grammar-actions.ts
+        admin-grammar-example-actions.ts
+        admin-grammar-point-actions.ts
+        admin-grammar-table-actions.ts
         admin-lesson-builder-actions.ts
         admin-lesson-builder-block-actions.ts
         admin-lesson-builder-section-actions.ts
         admin-lesson-builder-shared.ts
         admin-lesson-builder-template-actions.ts
+        admin-mock-exam-actions.ts
+        admin-past-paper-actions.ts
         admin-question-actions.ts
         admin-teaching-group-actions.ts
+        admin-user-action-shared.ts
         admin-user-actions.ts
+        admin-user-teaching-group-actions.ts
         admin-vocabulary-actions.ts
         admin-vocabulary-items-actions.ts
 
@@ -163,12 +187,33 @@ src/
           section-template-actions.ts
           shared.ts
 
+        mock-exams/
+          mock-exam-actions.ts
+          mock-exam-attempt-marking-action.ts
+          mock-exam-form-payloads.ts
+          mock-exam-marking-payloads.ts
+
+        past-papers/
+          past-paper-actions.ts
+          past-paper-bulk-import-payloads.ts
+          past-paper-payload-validators.ts
+          past-paper-payloads.ts
+
         questions/
+          question-action-payloads.ts
           question-actions.ts
+          question-copy-helpers.ts
           question-duplication-actions.ts
           question-order-actions.ts
           question-set-actions.ts
           shared.ts
+
+        vocabulary/
+          item-action-helpers.ts
+          item-actions.ts
+          item-create-actions.ts
+          item-delete-actions.ts
+          item-update-actions.ts
 
       assignments/
         assignment-actions.ts
@@ -176,11 +221,20 @@ src/
       auth/
         auth.ts
 
+      mock-exams/
+        mock-exam-attempt-actions.ts
+        mock-exam-response-extraction.ts
+        mock-exam-response-marking.ts
+        mock-exam-response-storage.ts
+
       progress/
         progress.ts
 
       questions/
         question-actions.ts
+
+      settings/
+        preference-actions.ts
 
       teacher/
         teacher-assignment-actions.ts
@@ -229,6 +283,31 @@ src/
           page.tsx
           [templateId]/
             page.tsx
+
+      grammar/
+        page.tsx
+        create/
+          page.tsx
+        [grammarSetId]/
+          edit/
+            page.tsx
+          points/
+            page.tsx
+            [grammarPointId]/
+              edit/
+                page.tsx
+
+      mock-exams/
+        page.tsx
+        review/
+          page.tsx
+          [attemptId]/
+            page.tsx
+        [mockExamId]/
+          page.tsx
+
+      past-papers/
+        page.tsx
 
       question-sets/
         page.tsx
@@ -364,6 +443,28 @@ src/
           section-template-list.tsx
           sidebar-primitives.tsx
 
+      mock-exams/
+        mock-exam-attempt-marking-form.tsx
+        mock-exam-attempt-review-summary.tsx
+        mock-exam-attempt-review-utils.ts
+        mock-exam-create-panel.tsx
+        mock-exam-detail-header.tsx
+        mock-exam-section-create-panel.tsx
+        mock-exam-sections-panel.tsx
+        mock-exam-sets-table.tsx
+        mock-exam-settings-panels.tsx
+
+      vocabulary/
+        items/
+          coverage-badges.tsx
+          item-display.ts
+          item-forms.tsx
+          metadata-fields.tsx
+          primitives.tsx
+          vocabulary-item-card.tsx
+          vocabulary-item-edit-form.tsx
+          vocabulary-set-items-admin.tsx
+
     assignments/
       assignment-submission-form.tsx
       delete-assignment-button.tsx
@@ -377,11 +478,18 @@ src/
       checkout-button.tsx
 
       pricing/
+        active-plan-state-data.ts
+        active-subscription-state-data.ts
         data.tsx
         foundation-plan-panel.tsx
+        higher-plan-purchase-options.tsx
+        higher-plan-upgrade-offer.tsx
+        higher-plan-upgrade-visibility.ts
         higher-plan-panel.tsx
+        plan-pricing-data.ts
         plan-card.tsx
         plan-state-elements.tsx
+        pricing-page-data.ts
         types.ts
 
     layout/
@@ -418,6 +526,22 @@ src/
         step-meta-bar.tsx
         step-tracker.tsx
 
+    mock-exams/
+      mock-exam-audio-recorder.tsx
+      mock-exam-marking-assistant.tsx
+      mock-exam-question-preview.tsx
+      mock-exam-response-field.tsx
+      mock-exam-response-summary.tsx
+      mock-exam-timer-panel.tsx
+
+      question-preview/
+        choice-structure-previews.tsx
+        media-preview.tsx
+        preview-data.ts
+        question-specific-preview.tsx
+        speaking-writing-previews.tsx
+        text-previews.tsx
+
     providers/
       theme-provider.tsx
 
@@ -436,6 +560,12 @@ src/
 
     settings/
       theme-mode-selector.tsx
+
+    vocabulary/
+      vocabulary-coverage-badges.tsx
+      vocabulary-filter-form.tsx
+      vocabulary-item-section-list.tsx
+      vocabulary-set-section-list.tsx
 
     ui/
       admin-row.tsx
@@ -505,16 +635,27 @@ src/
       catalog.ts
       grants.ts
       pricing-ui.ts
+      redirect-paths.js
+      redirect-paths.test.ts
       stripe.ts
       subscriptions.ts
+      webhook-checkout-handlers.ts
+      webhook-event-status.ts
+      webhook-event-status.test.ts
+      webhook-events.ts
       webhook-handlers.ts
+      webhook-stripe-utils.ts
+      webhook-subscription-handlers.ts
+      webhook-upgrade-handlers.ts
 
       catalog/
         checkout-resolution.ts
         db.ts
         price-matching.ts
+        price-matching.test.ts
         types.ts
         upgrade-pricing.ts
+        upgrade-pricing.test.ts
         upgrade-quotes.ts
 
     courses/
@@ -552,6 +693,25 @@ src/
       lesson-content-helpers-db.ts
       lesson-template-helpers-db.ts
 
+    mock-exams/
+      access.ts
+      constants.ts
+      db.ts
+      labels.ts
+      loaders.ts
+      mock-exam-helpers-db.ts
+      normalizers.ts
+      queries.ts
+      selects.ts
+      types.ts
+
+      question-data/
+        codecs.ts
+        metadata.ts
+        state.ts
+        templates.ts
+        text-codec-utils.ts
+
     progress/
       cross-variant-sync.ts
       progress-module.ts
@@ -580,8 +740,32 @@ src/
       admin-user-helpers-db.ts
 
     vocabulary/
+      coverage-summary.ts
+      db.ts
+      import-manifest.ts
+      import-manifest-constants.ts
+      import-manifest-types.ts
+      item-queries.ts
+      item-sections.ts
+      labels.ts
+      list-queries.ts
+      loaders.ts
+      mutations.ts
+      normalizers.ts
+      pagination.ts
+      selects.ts
+      set-list-queries.ts
+      set-listing.ts
+      set-options.ts
+      set-queries.ts
+      study-variants.ts
+      types.ts
+      usage-queries.ts
       vocabulary-helpers-db.ts
+      vocabulary-usage-list-scope.ts
       vocabulary-usage-sync.ts
+      vocabulary-usage-types.ts
+      vocabulary-usage-variants.ts
 
     volna/
       volna-helpers-db.ts
@@ -604,7 +788,12 @@ docs/
   architecture.md
   decisions.md
   image-strategy.md
+  local-setup.md
   PROJECT_STRUCTURE.md
+  question-design-system.md
+  responsive-qa.md
+  seo-launch-checklist.md
+  supabase-migrations.md
   ui-system-guidelines.md
 
   page-ui-private/
@@ -708,6 +897,72 @@ supabase/
     20260420110816_seed_source_aware_higher_upgrade_prices.sql
     20260420143656_expand_vocabulary_system.sql
     20260420212332_create_lesson_vocabulary_set_usages.sql
+    20260424120000_expand_structured_vocabulary_lists.sql
+    20260424123000_add_appearance_preferences_to_profiles.sql
+    20260424170000_create_grammar_system.sql
+    20260424183000_create_past_papers_and_mock_exams.sql
+    20260424193000_create_mock_exam_attempts.sql
+    20260424203000_seed_spec_vocabulary_common_verbs.sql
+    20260424204500_add_vocabulary_item_coverage_and_clean_common_verbs.sql
+    20260425093000_add_vocabulary_item_coverage_counts.sql
+    20260425103000_harden_profiles_and_create_lesson_section_progress.sql
+    20260425110000_seed_spec_vocabulary_common_adjectives.sql
+    20260425111500_harden_content_read_policies.sql
+    20260425113000_seed_spec_vocabulary_common_adverbs.sql
+    20260425114500_seed_spec_vocabulary_prepositions.sql
+    20260425120000_seed_spec_vocabulary_colours.sql
+    20260425121500_seed_spec_vocabulary_numbers.sql
+    20260425123000_seed_spec_vocabulary_ordinal_numbers.sql
+    20260425124500_seed_spec_vocabulary_quantities_and_measures.sql
+    20260425130000_seed_spec_vocabulary_connecting_words.sql
+    20260425131500_seed_spec_vocabulary_time_expressions.sql
+    20260425133000_seed_spec_vocabulary_times_of_day.sql
+    20260425134500_seed_spec_vocabulary_days_of_the_week.sql
+    20260425140000_seed_spec_vocabulary_months_and_seasons.sql
+    20260425141500_seed_spec_vocabulary_question_words.sql
+    20260425143000_seed_spec_vocabulary_useful_expressions.sql
+    20260425144500_seed_spec_vocabulary_other_high_frequency_words.sql
+    20260425150000_seed_spec_vocabulary_countries.sql
+    20260425151500_seed_spec_vocabulary_continents.sql
+    20260425153000_seed_spec_vocabulary_nationalities.sql
+    20260425154500_seed_spec_vocabulary_areas_mountains_seas_places.sql
+    20260425160000_seed_spec_vocabulary_useful_abbreviations_and_acronyms.sql
+    20260425161500_seed_spec_vocabulary_social_conventions.sql
+    20260425163000_seed_spec_vocabulary_language_dialogues_messages.sql
+    20260425164500_harden_reference_content_read_policies.sql
+    20260425170000_seed_spec_vocabulary_identity_culture_food_drink_foundation.sql
+    20260425171500_seed_spec_vocabulary_identity_culture_food_drink_higher.sql
+    20260425173000_seed_spec_vocabulary_identity_culture_dress_style_foundation.sql
+    20260425174500_seed_spec_vocabulary_identity_culture_dress_style_higher.sql
+    20260425180000_add_billing_subscription_sync_indexes.sql
+    20260425180500_seed_spec_vocabulary_identity_culture_relationships_characteristics_foundation.sql
+    20260425181500_seed_spec_vocabulary_identity_culture_relationships_characteristics_higher.sql
+    20260425183000_seed_spec_vocabulary_identity_culture_cultural_life_foundation.sql
+    20260425184500_seed_spec_vocabulary_identity_culture_cultural_life_higher.sql
+    20260425190000_seed_spec_vocabulary_identity_culture_social_media_foundation.sql
+    20260425191500_seed_spec_vocabulary_identity_culture_social_media_higher.sql
+    20260425193000_seed_spec_vocabulary_local_area_holiday_travel_foundation.sql
+    20260425194500_seed_spec_vocabulary_local_area_holiday_travel_higher.sql
+    20260425200000_seed_spec_vocabulary_local_area_weather_foundation.sql
+    20260425201500_seed_spec_vocabulary_local_area_weather_higher.sql
+    20260425203000_seed_spec_vocabulary_local_area_directions_foundation.sql
+    20260425204500_seed_spec_vocabulary_local_area_directions_higher.sql
+    20260425210000_seed_spec_vocabulary_local_area_problems_foundation.sql
+    20260425211500_seed_spec_vocabulary_local_area_problems_higher.sql
+    20260425213000_seed_spec_vocabulary_school_foundation.sql
+    20260425214500_seed_spec_vocabulary_school_higher.sql
+    20260425220000_seed_spec_vocabulary_future_aspirations_study_work_foundation.sql
+    20260425221500_seed_spec_vocabulary_future_aspirations_study_work_higher.sql
+    20260425223000_seed_spec_vocabulary_international_global_dimension_foundation.sql
+    20260425224500_seed_spec_vocabulary_international_global_dimension_higher.sql
+    20260426090000_clean_common_verbs_student_display.sql
+    20260426093000_scope_vocabulary_coverage_by_list_tier.sql
+    20260426101500_repair_topic_vocabulary_list_links.sql
+    20260426103000_create_mock_exam_response_storage.sql
+    20260426113000_add_vocabulary_set_summaries.sql
+    20260427124500_harden_teacher_assignment_mutations.sql
+    20260427130000_create_stripe_webhook_events.sql
+    20260427130500_deactivate_placeholder_stripe_prices.sql
 ```
 
 ---
@@ -799,7 +1054,13 @@ Pricing UI has been split into dedicated components under:
 
 Supporting pricing helpers:
 
+- `src/lib/billing/catalog/`
 - `src/lib/billing/pricing-ui.ts`
+- `src/lib/billing/webhook-*-handlers.ts`
+- `src/lib/billing/webhook-events.ts`
+
+Billing webhook handling also has a persisted event-status helper and tests in
+`src/lib/billing/webhook-event-status.ts`.
 
 ---
 
@@ -822,6 +1083,23 @@ Lesson builder server actions have been split into focused files:
 Vocabulary usage helpers now include:
 
 - `src/lib/vocabulary/vocabulary-usage-sync.ts`
+- `src/lib/vocabulary/vocabulary-usage-list-scope.ts`
+- focused query, loader, mutation, normalizer, and import-manifest modules under
+  `src/lib/vocabulary/`
+
+---
+
+### Mock exams
+
+Mock exam platform, admin, and response workflows are split across:
+
+- `src/app/(platform)/mock-exams/`
+- `src/app/admin/mock-exams/`
+- `src/app/actions/mock-exams/`
+- `src/app/actions/admin/mock-exams/`
+- `src/components/mock-exams/`
+- `src/components/admin/mock-exams/`
+- `src/lib/mock-exams/`
 
 ---
 
@@ -835,8 +1113,6 @@ Newer feature domains should prefer focused folders over broad helper files:
   facade `src/lib/mock-exams/mock-exam-helpers-db.ts`.
 - `src/lib/mock-exams/question-data/codecs.ts` owns mock exam question-data
   parsing and form serialization helpers.
-- `src/lib/dashboard/learning-plan.ts` owns student learning-plan and dashboard
-  next-step orchestration.
 - `src/app/actions/admin/vocabulary/item-actions.ts` owns vocabulary item server
   actions. `src/app/actions/admin/admin-vocabulary-items-actions.ts` remains as
   a compatibility wrapper while older imports are migrated.
