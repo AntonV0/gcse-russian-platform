@@ -74,4 +74,16 @@ describe("getStripeWebhookEventProcessingAction", () => {
       )
     ).toBe("retry_stale_processing");
   });
+
+  it("keeps duplicate processing events locked just before the stale threshold", () => {
+    expect(
+      getStripeWebhookEventProcessingAction(
+        {
+          status: "processing",
+          processing_started_at: "2026-04-27T11:45:00.001Z",
+        },
+        NOW
+      )
+    ).toBe("skip_processing");
+  });
 });
