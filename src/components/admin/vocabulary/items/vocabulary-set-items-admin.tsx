@@ -10,15 +10,17 @@ import { getDefaultVocabularyItemTier } from "@/components/admin/vocabulary/item
 import { VocabularyAdminStatTile } from "@/components/admin/vocabulary/items/primitives";
 import VocabularyItemCard from "@/components/admin/vocabulary/items/vocabulary-item-card";
 import {
-  getVocabularyListAppliesToStudyVariant,
   getVocabularyListModeLabel,
   getVocabularyTierLabel,
-  type DbVocabularyItem,
-  type DbVocabularyItemCoverage,
-  type DbVocabularyList,
-  type DbVocabularySet,
-  type DbVocabularySetUsageStats,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/labels";
+import { getVocabularyListAppliesToStudyVariant } from "@/lib/vocabulary/study-variants";
+import type {
+  DbVocabularyItem,
+  DbVocabularyItemCoverage,
+  DbVocabularyList,
+  DbVocabularySet,
+  DbVocabularySetUsageStats,
+} from "@/lib/vocabulary/types";
 
 function getAdminListSectionTitle(list: DbVocabularyList) {
   if (list.tier === "foundation") {

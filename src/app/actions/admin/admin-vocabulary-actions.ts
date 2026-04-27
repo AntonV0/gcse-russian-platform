@@ -9,8 +9,8 @@ import type {
   DbVocabularyListMode,
   DbVocabularySetType,
   DbVocabularyTier,
-} from "@/lib/vocabulary/vocabulary-helpers-db";
-import { ensureDefaultVocabularyListForSetDb } from "@/lib/vocabulary/vocabulary-helpers-db";
+} from "@/lib/vocabulary/types";
+import { ensureDefaultVocabularyListForSetDb } from "@/lib/vocabulary/list-queries";
 import {
   getBoolean,
   getOptionalString,
