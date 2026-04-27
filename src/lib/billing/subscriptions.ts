@@ -1,8 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-export {
+import {
   isSubscriptionActiveStatus,
   shouldDeactivateStripeSubscriptionAccess,
 } from "@/lib/billing/subscription-status";
+
+export { isSubscriptionActiveStatus, shouldDeactivateStripeSubscriptionAccess };
 
 export type DbSubscription = {
   id: string;
