@@ -14,6 +14,7 @@ import PracticeSurfaceCard from "@/components/ui/practice-surface-card";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import AssessmentSurfaceCard from "@/components/ui/assessment-surface-card";
 import Surface from "@/components/ui/surface";
+import type { AppIconKey } from "@/lib/shared/icons";
 
 const pageNavItems = [
   { id: "foundations", label: "Foundations" },
@@ -23,6 +24,88 @@ const pageNavItems = [
   { id: "semantic-surfaces", label: "Semantic" },
   { id: "dark-surfaces", label: "Dark surfaces" },
   { id: "future-components", label: "Future" },
+];
+
+const surfaceIntentGuides: Array<{
+  badge: string;
+  badgeTone: "muted" | "info" | "warning" | "danger";
+  title: string;
+  description: string;
+}> = [
+  {
+    badge: "Low-level",
+    badgeTone: "muted",
+    title: "Foundational surface",
+    description:
+      "Use when you only need visual weight control: default, muted, elevated, or branded.",
+  },
+  {
+    badge: "Semantic",
+    badgeTone: "info",
+    title: "Lesson or practice wrapper",
+    description:
+      "Use when the container has a repeated product meaning and will appear across multiple pages or variants.",
+  },
+  {
+    badge: "Do later",
+    badgeTone: "warning",
+    title: "Extract after pattern stabilises",
+    description:
+      "First prove the pattern inside the UI lab, then move it into a shared component with a dev marker.",
+  },
+  {
+    badge: "Avoid",
+    badgeTone: "danger",
+    title: "Too many raw surface classes",
+    description:
+      "Do not create dozens of low-level CSS surfaces for lesson, test, and premium states. Those should become semantic components instead.",
+  },
+];
+
+const stackedSummaryCards = [
+  {
+    title: "Summary card",
+    description:
+      "Repeated cards should stay visually lighter than hero or brand sections.",
+  },
+  {
+    title: "Summary card",
+    description: "This helps the eye understand hierarchy quickly.",
+  },
+  {
+    title: "Summary card",
+    description: "Keep these compact and easy to scan.",
+  },
+];
+
+const surfaceUsageRules: Array<{
+  icon: AppIconKey;
+  title: string;
+  description: string;
+}> = [
+  {
+    icon: "component",
+    title: "Use app-card by default",
+    description:
+      "Most repeated blocks should start with app-card unless they clearly need a different level of emphasis.",
+  },
+  {
+    icon: "warning",
+    title: "Use branded surfaces sparingly",
+    description: "Branded surfaces lose impact if they appear too often.",
+  },
+  {
+    icon: "forms",
+    title: "Match surface to density",
+    description:
+      "Dense form or inspector content often benefits from panel-like grouping rather than decorative styling.",
+  },
+  {
+    icon: "idea",
+    title: "Prefer hierarchy over effects",
+    description:
+      "Use spacing, heading structure, and surface choice before adding more visual flair.",
+  },
 ];
 
 function SurfaceExample({
@@ -56,6 +139,67 @@ function SpacingBlock({ title, className }: { title: string; className: string }
         <p className="mt-2 text-sm app-text-muted">
           Use this to compare how dense or spacious a layout feels.
         </p>
+      </CardBody>
+    </Card>
+  );
+}
+
+function SurfaceIntentGuideCard({
+  badge,
+  badgeTone,
+  title,
+  description,
+}: {
+  badge: string;
+  badgeTone: "muted" | "info" | "warning" | "danger";
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card>
+      <CardBody className="space-y-3">
+        <Badge tone={badgeTone}>{badge}</Badge>
+        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+        <p className="text-sm app-text-muted">{description}</p>
+      </CardBody>
+    </Card>
+  );
+}
+
+function SummaryCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card>
+      <CardBody>
+        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+        <p className="mt-2 text-sm app-text-muted">{description}</p>
+      </CardBody>
+    </Card>
+  );
+}
+
+function SurfaceUsageRuleCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: AppIconKey;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card>
+      <CardBody>
+        <div className="mb-2 flex items-center gap-2">
+          <AppIcon icon={icon} size={16} className="app-brand-text" />
+          <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+        </div>
+        <p className="text-sm app-text-muted">{description}</p>
       </CardBody>
     </Card>
   );
@@ -410,57 +554,15 @@ export default async function AdminUiSurfacesPage() {
         description="These rules make it easier to decide whether you should create a new semantic surface component or just reuse an existing foundational surface."
       >
         <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardBody className="space-y-3">
-              <Badge tone="muted">Low-level</Badge>
-              <div className="font-semibold text-[var(--text-primary)]">
-                Foundational surface
-              </div>
-              <p className="text-sm app-text-muted">
-                Use when you only need visual weight control: default, muted, elevated, or
-                branded.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="space-y-3">
-              <Badge tone="info">Semantic</Badge>
-              <div className="font-semibold text-[var(--text-primary)]">
-                Lesson or practice wrapper
-              </div>
-              <p className="text-sm app-text-muted">
-                Use when the container has a repeated product meaning and will appear
-                across multiple pages or variants.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="space-y-3">
-              <Badge tone="warning">Do later</Badge>
-              <div className="font-semibold text-[var(--text-primary)]">
-                Extract after pattern stabilises
-              </div>
-              <p className="text-sm app-text-muted">
-                First prove the pattern inside the UI lab, then move it into a shared
-                component with a dev marker.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody className="space-y-3">
-              <Badge tone="danger">Avoid</Badge>
-              <div className="font-semibold text-[var(--text-primary)]">
-                Too many raw surface classes
-              </div>
-              <p className="text-sm app-text-muted">
-                Do not create dozens of low-level CSS surfaces for lesson, test, and
-                premium states. Those should become semantic components instead.
-              </p>
-            </CardBody>
-          </Card>
+          {surfaceIntentGuides.map((guide) => (
+            <SurfaceIntentGuideCard
+              key={guide.badge}
+              badge={guide.badge}
+              badgeTone={guide.badgeTone}
+              title={guide.title}
+              description={guide.description}
+            />
+          ))}
         </div>
       </UiLabSection>
 
@@ -610,38 +712,13 @@ export default async function AdminUiSurfacesPage() {
           </Surface>
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <Card>
-              <CardBody>
-                <div className="font-semibold text-[var(--text-primary)]">
-                  Summary card
-                </div>
-                <p className="mt-2 text-sm app-text-muted">
-                  Repeated cards should stay visually lighter than hero or brand sections.
-                </p>
-              </CardBody>
-            </Card>
-
-            <Card>
-              <CardBody>
-                <div className="font-semibold text-[var(--text-primary)]">
-                  Summary card
-                </div>
-                <p className="mt-2 text-sm app-text-muted">
-                  This helps the eye understand hierarchy quickly.
-                </p>
-              </CardBody>
-            </Card>
-
-            <Card>
-              <CardBody>
-                <div className="font-semibold text-[var(--text-primary)]">
-                  Summary card
-                </div>
-                <p className="mt-2 text-sm app-text-muted">
-                  Keep these compact and easy to scan.
-                </p>
-              </CardBody>
-            </Card>
+            {stackedSummaryCards.map((summary, index) => (
+              <SummaryCard
+                key={`${summary.title}-${index}`}
+                title={summary.title}
+                description={summary.description}
+              />
+            ))}
           </div>
 
           <SectionCard
@@ -661,64 +738,14 @@ export default async function AdminUiSurfacesPage() {
         description="These are the rules that will keep future pages visually consistent."
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardBody>
-              <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon="component" size={16} className="app-brand-text" />
-                <div className="font-semibold text-[var(--text-primary)]">
-                  Use app-card by default
-                </div>
-              </div>
-              <p className="text-sm app-text-muted">
-                Most repeated blocks should start with app-card unless they clearly need a
-                different level of emphasis.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon="warning" size={16} className="app-brand-text" />
-                <div className="font-semibold text-[var(--text-primary)]">
-                  Use branded surfaces sparingly
-                </div>
-              </div>
-              <p className="text-sm app-text-muted">
-                Branded surfaces lose impact if they appear too often.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon="forms" size={16} className="app-brand-text" />
-                <div className="font-semibold text-[var(--text-primary)]">
-                  Match surface to density
-                </div>
-              </div>
-              <p className="text-sm app-text-muted">
-                Dense form or inspector content often benefits from panel-like grouping
-                rather than decorative styling.
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="mb-2 flex items-center gap-2">
-                <AppIcon icon="idea" size={16} className="app-brand-text" />
-                <div className="font-semibold text-[var(--text-primary)]">
-                  Prefer hierarchy over effects
-                </div>
-              </div>
-              <p className="text-sm app-text-muted">
-                Use spacing, heading structure, and surface choice before adding more
-                visual flair.
-              </p>
-            </CardBody>
-          </Card>
+          {surfaceUsageRules.map((rule) => (
+            <SurfaceUsageRuleCard
+              key={rule.title}
+              icon={rule.icon}
+              title={rule.title}
+              description={rule.description}
+            />
+          ))}
         </div>
       </UiLabSection>
 
