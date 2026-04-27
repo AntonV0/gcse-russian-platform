@@ -9,7 +9,10 @@ import {
   type ButtonSize,
   type ButtonVariant,
 } from "@/components/ui/button-styles";
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import {
+  DevOnlyComponentMarker,
+  SHOW_UI_DEBUG,
+} from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 type BaseProps = {
@@ -34,8 +37,6 @@ type ButtonAsLinkProps = BaseProps & {
 };
 
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
-
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getResolvedAriaLabel({
   ariaLabel,
@@ -100,12 +101,8 @@ function ButtonInner({
 }
 
 function ButtonMarker() {
-  if (!SHOW_UI_DEBUG) {
-    return null;
-  }
-
   return (
-    <DevComponentMarker
+    <DevOnlyComponentMarker
       componentName="Button"
       filePath="src/components/ui/button.tsx"
       tier="primitive"

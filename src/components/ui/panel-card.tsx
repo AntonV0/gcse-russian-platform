@@ -1,5 +1,5 @@
 import Card, { CardBody, CardFooter, CardHeader } from "@/components/ui/card";
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
 type PanelCardTone = "default" | "admin" | "student" | "brand" | "muted";
@@ -19,8 +19,6 @@ type PanelCardProps = {
   density?: PanelCardDensity;
   headingLevel?: HeadingLevel;
 };
-
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 function getToneClasses(tone: PanelCardTone) {
   switch (tone) {
@@ -97,22 +95,20 @@ export default function PanelCard({
 
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="PanelCard"
-          filePath="src/components/ui/panel-card.tsx"
-          tier="container"
-          componentRole="Structured support panel with optional header, body, actions, and footer"
-          bestFor="Side panels, inspector panels, settings groups, metadata panels, and secondary support sections."
-          usageExamples={[
-            "Lesson builder inspector",
-            "Admin settings panel",
-            "Course metadata side panel",
-            "Student guidance/support panel",
-          ]}
-          notes="Use PanelCard for supporting or utility content. Use SectionCard for primary page sections and Card for neutral low-level containers."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="PanelCard"
+        filePath="src/components/ui/panel-card.tsx"
+        tier="container"
+        componentRole="Structured support panel with optional header, body, actions, and footer"
+        bestFor="Side panels, inspector panels, settings groups, metadata panels, and secondary support sections."
+        usageExamples={[
+          "Lesson builder inspector",
+          "Admin settings panel",
+          "Course metadata side panel",
+          "Student guidance/support panel",
+        ]}
+        notes="Use PanelCard for supporting or utility content. Use SectionCard for primary page sections and Card for neutral low-level containers."
+      />
 
       <Card
         className={["app-panel-card rounded-2xl", toneClasses.card]

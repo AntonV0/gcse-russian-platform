@@ -1,5 +1,5 @@
 import Badge from "@/components/ui/badge";
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 
 type Status = "not_started" | "submitted" | "reviewed" | "returned";
 
@@ -41,8 +41,6 @@ function getStatusConfig(status: Status) {
   }
 }
 
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
-
 export default function StatusBadge({ status, className }: StatusBadgeProps) {
   const normalized: Status =
     status === "submitted" || status === "reviewed" || status === "returned"
@@ -57,22 +55,20 @@ export default function StatusBadge({ status, className }: StatusBadgeProps) {
         .filter(Boolean)
         .join(" ")}
     >
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="StatusBadge"
-          filePath="src/components/ui/status-badge.tsx"
-          tier="semantic"
-          componentRole="Semantic wrapper for standardized workflow status labels"
-          bestFor="Repeated product states where the same status should always map to the same label, tone, and icon."
-          usageExamples={[
-            "Assignment submission state",
-            "Teacher review state",
-            "Student workflow progress",
-            "Returned work status",
-          ]}
-          notes="Use StatusBadge instead of hand-building Badge when the status is a known product/workflow state. Do not use it for one-off marketing labels."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="StatusBadge"
+        filePath="src/components/ui/status-badge.tsx"
+        tier="semantic"
+        componentRole="Semantic wrapper for standardized workflow status labels"
+        bestFor="Repeated product states where the same status should always map to the same label, tone, and icon."
+        usageExamples={[
+          "Assignment submission state",
+          "Teacher review state",
+          "Student workflow progress",
+          "Returned work status",
+        ]}
+        notes="Use StatusBadge instead of hand-building Badge when the status is a known product/workflow state. Do not use it for one-off marketing labels."
+      />
 
       <Badge tone={tone} icon={icon}>
         {label}

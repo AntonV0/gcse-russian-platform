@@ -1,28 +1,24 @@
-import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 
 type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement>;
-
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function Select({ className, children, ...props }: SelectProps) {
   return (
     <div className="dev-marker-host relative">
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="Select"
-          filePath="src/components/ui/select.tsx"
-          tier="primitive"
-          componentRole="Native select input primitive"
-          bestFor="Small, fixed option sets such as status, variant, tier, type, order, and visibility."
-          usageExamples={[
-            "Course variant selector",
-            "Lesson status selector",
-            "Block type selector",
-            "Admin filter dropdown",
-          ]}
-          notes="Use inside FormField when labelled. Use a custom combobox later only for searchable or very large option sets."
-        />
-      ) : null}
+      <DevOnlyComponentMarker
+        componentName="Select"
+        filePath="src/components/ui/select.tsx"
+        tier="primitive"
+        componentRole="Native select input primitive"
+        bestFor="Small, fixed option sets such as status, variant, tier, type, order, and visibility."
+        usageExamples={[
+          "Course variant selector",
+          "Lesson status selector",
+          "Block type selector",
+          "Admin filter dropdown",
+        ]}
+        notes="Use inside FormField when labelled. Use a custom combobox later only for searchable or very large option sets."
+      />
 
       <div className="relative">
         <select

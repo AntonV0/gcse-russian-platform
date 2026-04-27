@@ -4,6 +4,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Check, Copy } from "lucide-react";
 import {
+  SHOW_UI_DEBUG,
   type DevMarkerTier,
   useDevMarkers,
 } from "@/components/providers/dev-marker-provider";
@@ -26,7 +27,6 @@ type MarkerPanelPosition = {
   arrowLeft: number;
 };
 
-const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 const PANEL_WIDTH = 352;
 const PANEL_GAP = 10;
 const VIEWPORT_MARGIN = 12;
@@ -417,4 +417,14 @@ export default function DevComponentMarker({
       {panel}
     </span>
   );
+}
+
+export { SHOW_UI_DEBUG };
+
+export function DevOnlyComponentMarker(props: DevComponentMarkerProps) {
+  if (!SHOW_UI_DEBUG) {
+    return null;
+  }
+
+  return <DevComponentMarker {...props} />;
 }
