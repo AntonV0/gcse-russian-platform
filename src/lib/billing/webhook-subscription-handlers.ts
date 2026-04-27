@@ -6,9 +6,9 @@ import {
 } from "@/lib/billing/grants";
 import {
   getSubscriptionByProviderSubscriptionIdDb,
-  isSubscriptionActiveStatus,
   upsertSubscriptionDb,
 } from "@/lib/billing/subscriptions";
+import { shouldDeactivateStripeSubscriptionAccess } from "@/lib/billing/subscription-status";
 import {
   assertActiveSubscriptionHasEndDate,
   fromUnixTimestamp,
@@ -129,26 +129,27 @@ export async function handleStripeSubscriptionLifecycle(
     canceledAt: fromUnixTimestamp(subscription.canceled_at),
   });
 
-  if (isSubscriptionActiveStatus(subscription.status)) {
-    await grantProductAccessDb({
-      userId: context.userId,
-      productId: context.productId,
-      priceId: context.priceId,
-      accessMode: "full",
-      source: "stripe",
-      startsAt,
-      endsAt,
-    });
+  if (shouldDeactivateStripeSubscriptionAccess(subscription.status)) {
+    const deactivateResult = await deactivateActiveUserProductGrantsBySourceDb(
+      context.userId,
+      context.productId,
+      "stripe"
+    );
+
+    if (!deactivateResult.success) {
+      throw new Error("Failed to deactivate inactive Stripe subscription grants");
+    }
+
     return;
   }
 
-  const deactivateResult = await deactivateActiveUserProductGrantsBySourceDb(
-    context.userId,
-    context.productId,
-    "stripe"
-  );
-
-  if (!deactivateResult.success) {
-    throw new Error("Failed to deactivate inactive Stripe subscription grants");
-  }
+  await grantProductAccessDb({
+    userId: context.userId,
+    productId: context.productId,
+    priceId: context.priceId,
+    accessMode: "full",
+    source: "stripe",
+    startsAt,
+    endsAt,
+  });
 }
