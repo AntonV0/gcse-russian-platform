@@ -135,14 +135,14 @@ function SectionToggleButton() {
       className={getButtonClassName({
         variant: "secondary",
         size: "sm",
-        className: "pointer-events-none",
+        className: "pointer-events-none shrink-0 px-3 sm:px-3.5",
       })}
       aria-hidden="true"
     >
       <span className="shrink-0">
         <AppIcon icon="next" size={16} />
       </span>
-      <span className="truncate">Open</span>
+      <span className="hidden sm:inline">Open</span>
     </span>
   );
 }

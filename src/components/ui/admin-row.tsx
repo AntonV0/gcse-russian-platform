@@ -70,8 +70,8 @@ export default function AdminRow({
           .filter(Boolean)
           .join(" ")}
       >
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1">
             <div className="app-heading-card">
               {title}
             </div>
@@ -84,7 +84,7 @@ export default function AdminRow({
           </div>
 
           {badges || actions ? (
-            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end">
               {badges}
               {actions}
             </div>

@@ -148,6 +148,45 @@ function DemoToolbar() {
   );
 }
 
+function DemoMobileRows({ dense = false }: { dense?: boolean }) {
+  return (
+    <div className={["grid gap-3 p-4 md:hidden", dense ? "text-sm" : ""].join(" ")}>
+      {demoRows.map((row) => (
+        <div
+          key={row.name}
+          className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] px-4 py-3"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
+              <div className="mt-1 text-sm app-text-muted">{row.type}</div>
+            </div>
+
+            <StatusBadge status={row.status} />
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm app-text-muted">
+            <span>{row.lessons} lessons</span>
+            <span>{row.updated}</span>
+          </div>
+
+          {!dense ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <VariantBadge variant={row.variant} />
+              <Button variant="secondary" size="sm" icon="edit">
+                Edit
+              </Button>
+              <Button variant="quiet" size="sm" icon="next">
+                Open
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function StandardTable() {
   return (
     <TableShell
@@ -163,54 +202,60 @@ function StandardTable() {
     >
       <DemoToolbar />
 
-      <DataTable>
-        <DataTableHead>
-          <DataTableHeaderRow>
-            <DataTableHeaderCell>Name</DataTableHeaderCell>
-            <DataTableHeaderCell>Type</DataTableHeaderCell>
-            <DataTableHeaderCell>Status</DataTableHeaderCell>
-            <DataTableHeaderCell>Lessons</DataTableHeaderCell>
-            <DataTableHeaderCell>Updated</DataTableHeaderCell>
-            <DataTableHeaderCell>Actions</DataTableHeaderCell>
-          </DataTableHeaderRow>
-        </DataTableHead>
+      <DemoMobileRows />
 
-        <DataTableBody>
-          {demoRows.map((row) => (
-            <DataTableRow key={row.name}>
-              <DataTableCell>
-                <div className="space-y-1">
-                  <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
-                  <div className="flex flex-wrap gap-2">
-                    <VariantBadge variant={row.variant} />
+      <div className="hidden md:block">
+        <DataTable>
+          <DataTableHead>
+            <DataTableHeaderRow>
+              <DataTableHeaderCell>Name</DataTableHeaderCell>
+              <DataTableHeaderCell>Type</DataTableHeaderCell>
+              <DataTableHeaderCell>Status</DataTableHeaderCell>
+              <DataTableHeaderCell>Lessons</DataTableHeaderCell>
+              <DataTableHeaderCell>Updated</DataTableHeaderCell>
+              <DataTableHeaderCell>Actions</DataTableHeaderCell>
+            </DataTableHeaderRow>
+          </DataTableHead>
+
+          <DataTableBody>
+            {demoRows.map((row) => (
+              <DataTableRow key={row.name}>
+                <DataTableCell>
+                  <div className="space-y-1">
+                    <div className="font-medium text-[var(--text-primary)]">
+                      {row.name}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <VariantBadge variant={row.variant} />
+                    </div>
                   </div>
-                </div>
-              </DataTableCell>
+                </DataTableCell>
 
-              <DataTableCell className="app-text-muted">{row.type}</DataTableCell>
+                <DataTableCell className="app-text-muted">{row.type}</DataTableCell>
 
-              <DataTableCell>
-                <StatusBadge status={row.status} />
-              </DataTableCell>
+                <DataTableCell>
+                  <StatusBadge status={row.status} />
+                </DataTableCell>
 
-              <DataTableCell className="app-text-muted">{row.lessons}</DataTableCell>
+                <DataTableCell className="app-text-muted">{row.lessons}</DataTableCell>
 
-              <DataTableCell className="app-text-muted">{row.updated}</DataTableCell>
+                <DataTableCell className="app-text-muted">{row.updated}</DataTableCell>
 
-              <DataTableCell>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="secondary" size="sm" icon="edit">
-                    Edit
-                  </Button>
-                  <Button variant="quiet" size="sm" icon="next">
-                    Open
-                  </Button>
-                </div>
-              </DataTableCell>
-            </DataTableRow>
-          ))}
-        </DataTableBody>
-      </DataTable>
+                <DataTableCell>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="secondary" size="sm" icon="edit">
+                      Edit
+                    </Button>
+                    <Button variant="quiet" size="sm" icon="next">
+                      Open
+                    </Button>
+                  </div>
+                </DataTableCell>
+              </DataTableRow>
+            ))}
+          </DataTableBody>
+        </DataTable>
+      </div>
     </TableShell>
   );
 }
@@ -223,34 +268,38 @@ function DenseTable() {
       headingLevel={3}
       actions={<Badge tone="warning">Compact pattern</Badge>}
     >
-      <DataTable>
-        <DataTableHead>
-          <DataTableHeaderRow>
-            <DataTableCompactHeaderCell>Item</DataTableCompactHeaderCell>
-            <DataTableCompactHeaderCell>Status</DataTableCompactHeaderCell>
-            <DataTableCompactHeaderCell>Updated</DataTableCompactHeaderCell>
-          </DataTableHeaderRow>
-        </DataTableHead>
+      <DemoMobileRows dense />
 
-        <DataTableBody>
-          {demoRows.map((row) => (
-            <DataTableRow key={row.name} className="hover:bg-transparent">
-              <DataTableCompactCell>
-                <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
-                <div className="mt-0.5 text-xs app-text-soft">{row.type}</div>
-              </DataTableCompactCell>
+      <div className="hidden md:block">
+        <DataTable>
+          <DataTableHead>
+            <DataTableHeaderRow>
+              <DataTableCompactHeaderCell>Item</DataTableCompactHeaderCell>
+              <DataTableCompactHeaderCell>Status</DataTableCompactHeaderCell>
+              <DataTableCompactHeaderCell>Updated</DataTableCompactHeaderCell>
+            </DataTableHeaderRow>
+          </DataTableHead>
 
-              <DataTableCompactCell>
-                <StatusBadge status={row.status} />
-              </DataTableCompactCell>
+          <DataTableBody>
+            {demoRows.map((row) => (
+              <DataTableRow key={row.name} className="hover:bg-transparent">
+                <DataTableCompactCell>
+                  <div className="font-medium text-[var(--text-primary)]">{row.name}</div>
+                  <div className="mt-0.5 text-xs app-text-soft">{row.type}</div>
+                </DataTableCompactCell>
 
-              <DataTableCompactCell className="app-text-muted">
-                {row.updated}
-              </DataTableCompactCell>
-            </DataTableRow>
-          ))}
-        </DataTableBody>
-      </DataTable>
+                <DataTableCompactCell>
+                  <StatusBadge status={row.status} />
+                </DataTableCompactCell>
+
+                <DataTableCompactCell className="app-text-muted">
+                  {row.updated}
+                </DataTableCompactCell>
+              </DataTableRow>
+            ))}
+          </DataTableBody>
+        </DataTable>
+      </div>
     </TableShell>
   );
 }
@@ -419,7 +468,7 @@ function HierarchyListPattern() {
             </div>
           </div>
 
-          <div className="mt-4 space-y-3 border-l border-[var(--border)] pl-4">
+          <div className="mt-4 space-y-3 sm:border-l sm:border-[var(--border)] sm:pl-4">
             <AdminRow
               title="School and daily routine"
               description="Lesson • 6 blocks"
@@ -433,7 +482,7 @@ function HierarchyListPattern() {
               className="bg-[var(--background-muted)]/35"
             />
 
-            <div className="ml-4 space-y-2 border-l border-[var(--border)] pl-4">
+            <div className="space-y-2 sm:ml-4 sm:border-l sm:border-[var(--border)] sm:pl-4">
               <AdminRow
                 title="Starter vocabulary"
                 description="Block • content"
@@ -545,7 +594,28 @@ function DarkSurfaceTableTest() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
-        <div className="overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
+        <div className="grid gap-3 p-4 md:hidden">
+          {demoRows.slice(0, 2).map((row) => (
+            <div
+              key={row.name}
+              className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] p-4"
+            >
+              <div className="font-medium text-white">{row.name}</div>
+              <div className="mt-1 text-sm text-[rgba(255,255,255,0.68)]">
+                {row.type}
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <StatusBadge status={row.status} />
+                <span className="text-sm text-[rgba(255,255,255,0.72)]">
+                  {row.updated}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden overflow-x-auto overscroll-x-contain [scrollbar-width:thin] md:block">
           <div className="min-w-[640px]">
             <div className="grid grid-cols-[minmax(0,1.4fr)_180px_160px_auto] gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-3 text-sm font-semibold text-white">
               <div>Name</div>

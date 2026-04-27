@@ -481,7 +481,7 @@ export default async function AdminUiComponentsPage() {
         title="Premium section / inspector panels"
         description="This is the preferred container pattern for admin sections, side panels, metadata groups, and calmer student support panels."
       >
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
           <PanelCard
             title="Admin section panel"
             description="Best default for admin editing and grouped page content."
