@@ -114,3 +114,13 @@ export function normalizeVocabularySetBlockData(input: {
     vocabularyListSlug: optionalString(input.vocabularyListSlug),
   };
 }
+
+export function normalizeGrammarSetBlockData(input: {
+  title: unknown;
+  grammarSetSlug: unknown;
+}) {
+  return {
+    title: optionalString(input.title),
+    grammarSetSlug: requireString(input.grammarSetSlug, "grammarSetSlug"),
+  };
+}

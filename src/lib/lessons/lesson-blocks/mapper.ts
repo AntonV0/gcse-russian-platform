@@ -3,6 +3,7 @@ import {
   normalizeAudioBlockData,
   normalizeCalloutBlockData,
   normalizeExamTipBlockData,
+  normalizeGrammarSetBlockData,
   normalizeHeaderBlockData,
   normalizeImageBlockData,
   normalizeNoteBlockData,
@@ -112,6 +113,15 @@ export function mapDbBlockToLessonBlock(row: DbLessonBlockLike): LessonBlock {
           title: data.title,
           vocabularySetSlug: data.vocabularySetSlug,
           vocabularyListSlug: data.vocabularyListSlug,
+        }),
+      };
+
+    case "grammar-set":
+      return {
+        type: "grammar-set",
+        ...normalizeGrammarSetBlockData({
+          title: data.title,
+          grammarSetSlug: data.grammarSetSlug,
         }),
       };
 

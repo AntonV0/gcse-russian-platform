@@ -4,6 +4,7 @@ import AddBlockComposer from "@/components/admin/lesson-builder/add-block-compos
 import DraggableBlockList from "@/components/admin/lesson-builder/draggable-block-list";
 import type {
   LessonBuilderTemplateOptions,
+  LessonBuilderGrammarSetOption,
   LessonBuilderVocabularySetOption,
   LessonSection,
   RouteFields,
@@ -75,6 +76,7 @@ export default function LessonSectionEditor(props: {
   onBlockDragEnd: () => void;
   templateOptions: LessonBuilderTemplateOptions;
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
+  grammarSetOptions: LessonBuilderGrammarSetOption[];
 }) {
   const marker = SHOW_UI_DEBUG ? (
     <DevComponentMarker
@@ -205,6 +207,7 @@ export default function LessonSectionEditor(props: {
             routeFields={props.routeFields}
             blockPresetOptions={props.templateOptions.blockPresets}
             vocabularySetOptions={props.vocabularySetOptions}
+            grammarSetOptions={props.grammarSetOptions}
           />
         </CompactDisclosure>
       </div>

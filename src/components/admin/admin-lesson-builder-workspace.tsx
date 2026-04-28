@@ -36,6 +36,7 @@ export default function AdminLessonBuilderWorkspace({
   sections,
   templateOptions,
   vocabularySetOptions,
+  grammarSetOptions,
 }: AdminLessonBuilderProps) {
   const routeFields: RouteFields = {
     courseId,
@@ -222,6 +223,7 @@ export default function AdminLessonBuilderWorkspace({
               onBlockDragEnd={() => setDraggedBlockContext(null)}
               templateOptions={templateOptions}
               vocabularySetOptions={vocabularySetOptions}
+              grammarSetOptions={grammarSetOptions}
             />
           </div>
         </div>
@@ -255,6 +257,7 @@ export default function AdminLessonBuilderWorkspace({
                 totalSections={sections.length}
                 blockIndex={blockIndex}
                 vocabularySetOptions={vocabularySetOptions}
+                grammarSetOptions={grammarSetOptions}
               />
             </div>
           </aside>

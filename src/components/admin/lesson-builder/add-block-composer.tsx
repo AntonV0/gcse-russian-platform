@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type {
+  LessonBuilderGrammarSetOption,
   LessonBuilderVocabularySetOption,
   LessonSection,
   NewBlockType,
@@ -32,6 +33,7 @@ export default function AddBlockComposer(props: {
     blocksCount: number;
   }[];
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
+  grammarSetOptions: LessonBuilderGrammarSetOption[];
 }) {
   const [composerState, setComposerState] = useState<{
     sectionId: string;
@@ -157,6 +159,12 @@ export default function AddBlockComposer(props: {
                 selectedValue={selectedNewBlockType}
                 onSelect={updateSelectedNewBlockType}
               />
+              <BlockTypeButton
+                label="Grammar set"
+                value="grammar-set"
+                selectedValue={selectedNewBlockType}
+                onSelect={updateSelectedNewBlockType}
+              />
             </div>
           </div>
 
@@ -212,6 +220,7 @@ export default function AddBlockComposer(props: {
           routeFields={props.routeFields}
           selectedNewBlockType={selectedNewBlockType}
           vocabularySetOptions={props.vocabularySetOptions}
+          grammarSetOptions={props.grammarSetOptions}
           onClear={() => updateSelectedNewBlockType(null)}
         />
       )}

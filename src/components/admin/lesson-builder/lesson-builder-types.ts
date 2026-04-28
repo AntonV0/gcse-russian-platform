@@ -41,6 +41,17 @@ export type LessonBuilderVocabularySetOption = {
   }[];
 };
 
+export type LessonBuilderGrammarSetOption = {
+  id: string;
+  title: string;
+  slug: string;
+  isPublished: boolean;
+  tier: string;
+  themeKey: string | null;
+  topicKey: string | null;
+  pointCount: number;
+};
+
 export type LessonSectionVariantVisibility =
   | "shared"
   | "foundation_only"
@@ -75,6 +86,7 @@ export type AdminLessonBuilderProps = {
   }[];
   templateOptions: LessonBuilderTemplateOptions;
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
+  grammarSetOptions: LessonBuilderGrammarSetOption[];
 };
 
 export type RouteFields = {
@@ -102,6 +114,7 @@ export type NewBlockType =
   | "vocabulary"
   | "image"
   | "audio"
+  | "grammar-set"
   | "question-set"
   | "vocabulary-set";
 

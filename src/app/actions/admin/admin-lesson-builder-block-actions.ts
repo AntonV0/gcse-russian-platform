@@ -24,9 +24,11 @@ import {
 } from "@/app/actions/admin/lesson-builder-block-actions/media-block-actions";
 import {
   createQuestionSetBlockAction as createQuestionSetBlock,
+  createGrammarSetBlockAction as createGrammarSetBlock,
   createVocabularyBlockAction as createVocabularyBlock,
   createVocabularySetBlockAction as createVocabularySetBlock,
   updateQuestionSetBlockAction as updateQuestionSetBlock,
+  updateGrammarSetBlockAction as updateGrammarSetBlock,
   updateVocabularyBlockAction as updateVocabularyBlock,
   updateVocabularySetBlockAction as updateVocabularySetBlock,
 } from "@/app/actions/admin/lesson-builder-block-actions/linked-block-actions";
@@ -115,6 +117,10 @@ export async function createQuestionSetBlockAction(formData: FormData) {
   return createQuestionSetBlock(formData);
 }
 
+export async function createGrammarSetBlockAction(formData: FormData) {
+  return createGrammarSetBlock(formData);
+}
+
 export async function createVocabularyBlockAction(formData: FormData) {
   return createVocabularyBlock(formData);
 }
@@ -125,6 +131,10 @@ export async function createVocabularySetBlockAction(formData: FormData) {
 
 export async function updateQuestionSetBlockAction(formData: FormData) {
   return updateQuestionSetBlock(formData);
+}
+
+export async function updateGrammarSetBlockAction(formData: FormData) {
+  return updateGrammarSetBlock(formData);
 }
 
 export async function updateVocabularyBlockAction(formData: FormData) {

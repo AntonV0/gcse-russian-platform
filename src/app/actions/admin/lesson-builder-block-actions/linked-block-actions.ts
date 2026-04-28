@@ -5,10 +5,12 @@ import {
   normalizeQuestionSetBlockData,
   normalizeVocabularyBlockData,
   normalizeVocabularySetBlockData,
+  normalizeGrammarSetBlockData,
 } from "@/lib/lessons/lesson-blocks";
 import { getTrimmedString } from "@/app/actions/admin/admin-lesson-builder-shared";
 import {
   createValidatedBlock,
+  ensureGrammarSetExists,
   ensureVocabularyListBelongsToSet,
   updateValidatedBlock,
 } from "./shared";
@@ -162,6 +164,60 @@ export async function updateVocabularySetBlockAction(formData: FormData) {
         title,
         vocabularySetSlug,
         vocabularyListSlug,
+      });
+    },
+  });
+}
+
+export async function createGrammarSetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const sectionId = getTrimmedString(formData, "sectionId");
+  const title = getTrimmedString(formData, "title");
+  const grammarSetSlug = getTrimmedString(formData, "grammarSetSlug");
+
+  if (!sectionId || !grammarSetSlug) {
+    throw new Error("Missing required fields");
+  }
+
+  await createValidatedBlock({
+    formData,
+    sectionId,
+    blockType: "grammar-set",
+    buildData: async () => {
+      await ensureGrammarSetExists(grammarSetSlug);
+
+      return normalizeGrammarSetBlockData({
+        title,
+        grammarSetSlug,
+      });
+    },
+  });
+}
+
+export async function updateGrammarSetBlockAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const blockId = getTrimmedString(formData, "blockId");
+  const title = getTrimmedString(formData, "title");
+  const grammarSetSlug = getTrimmedString(formData, "grammarSetSlug");
+
+  if (!blockId || !grammarSetSlug) {
+    throw new Error("Missing required fields");
+  }
+
+  await updateValidatedBlock({
+    formData,
+    blockId,
+    blockType: "grammar-set",
+    buildData: async () => {
+      await ensureGrammarSetExists(grammarSetSlug);
+
+      return normalizeGrammarSetBlockData({
+        title,
+        grammarSetSlug,
       });
     },
   });

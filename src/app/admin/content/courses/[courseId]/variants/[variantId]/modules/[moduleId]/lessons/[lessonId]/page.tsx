@@ -15,6 +15,7 @@ import {
 } from "@/lib/courses/course-helpers-db";
 import { getLessonSectionsWithBlocksDb } from "@/lib/lessons/lesson-admin-helpers-db";
 import { getLessonBuilderTemplateOptionsDb } from "@/lib/lessons/lesson-template-helpers-db";
+import { getGrammarSetsDb } from "@/lib/grammar/grammar-helpers-db";
 import { getVocabularySetOptionsDb } from "@/lib/vocabulary/sets/set-options";
 
 type AdminLessonDetailPageProps = {
@@ -86,10 +87,11 @@ export default async function AdminLessonDetailPage({
     );
   }
 
-  const [sections, templateOptions, vocabularySets] = await Promise.all([
+  const [sections, templateOptions, vocabularySets, grammarSets] = await Promise.all([
     getLessonSectionsWithBlocksDb(lesson.id),
     getLessonBuilderTemplateOptionsDb(),
     getVocabularySetOptionsDb({ excludeSetTypes: ["specification"] }),
+    getGrammarSetsDb(),
   ]);
 
   const vocabularySetOptions = vocabularySets.map((set) => ({
@@ -108,6 +110,16 @@ export default async function AdminLessonDetailPage({
       tier: list.tier,
       listMode: list.list_mode,
     })),
+  }));
+  const grammarSetOptions = grammarSets.map((set) => ({
+    id: set.id,
+    title: set.title,
+    slug: set.slug,
+    isPublished: set.is_published,
+    tier: set.tier,
+    themeKey: set.theme_key,
+    topicKey: set.topic_key,
+    pointCount: set.point_count,
   }));
 
   return (
@@ -188,6 +200,7 @@ export default async function AdminLessonDetailPage({
           sections={sections}
           templateOptions={templateOptions}
           vocabularySetOptions={vocabularySetOptions}
+          grammarSetOptions={grammarSetOptions}
         />
       </SectionCard>
 

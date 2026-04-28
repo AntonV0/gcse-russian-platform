@@ -18,5 +18,6 @@ export type BuilderBlockType =
   | "vocabulary"
   | "image"
   | "audio"
+  | "grammar-set"
   | "question-set"
   | "vocabulary-set";

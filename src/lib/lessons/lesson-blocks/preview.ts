@@ -57,6 +57,11 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
                 : block.vocabularySetSlug
             );
 
+      case "grammar-set":
+        return block.title
+          ? joinPreview("Grammar set", block.title)
+          : joinPreview("Grammar set", block.grammarSetSlug);
+
       case "question-set":
         return block.title
           ? joinPreview("Question set", block.title)
@@ -147,6 +152,14 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
                 : data.vocabularySetSlug
             )
           : "Vocabulary set block";
+
+    case "grammar-set":
+      return typeof data.title === "string" && data.title.trim().length > 0
+        ? joinPreview("Grammar set", data.title)
+        : typeof data.grammarSetSlug === "string" &&
+            data.grammarSetSlug.trim().length > 0
+          ? joinPreview("Grammar set", data.grammarSetSlug)
+          : "Grammar set block";
 
     case "question-set":
       return typeof data.title === "string" && data.title.trim().length > 0
