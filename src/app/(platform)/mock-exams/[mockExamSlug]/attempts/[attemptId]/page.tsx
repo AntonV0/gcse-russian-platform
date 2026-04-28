@@ -19,6 +19,7 @@ import {
 import { loadMockExamAttemptDb } from "@/lib/mock-exams/loaders";
 import { getStudentSafeMockExamQuestion } from "@/lib/mock-exams/normalizers";
 import { getMockExamScoreByAttemptIdDb } from "@/lib/mock-exams/queries";
+import type { DbMockExamResponse } from "@/lib/mock-exams/types";
 
 type MockExamAttemptPageProps = {
   params: Promise<{
@@ -26,6 +27,19 @@ type MockExamAttemptPageProps = {
     attemptId: string;
   }>;
 };
+
+function hasSavedResponse(response?: DbMockExamResponse) {
+  if (!response) return false;
+
+  if (response.response_text?.trim()) return true;
+
+  return Object.values(response.response_payload).some((value) => {
+    if (typeof value === "string") return value.trim().length > 0;
+    if (Array.isArray(value)) return value.length > 0;
+    if (value && typeof value === "object") return Object.keys(value).length > 0;
+    return value !== null && value !== undefined;
+  });
+}
 
 export default async function MockExamAttemptPage({ params }: MockExamAttemptPageProps) {
   const { mockExamSlug, attemptId } = await params;
@@ -65,6 +79,11 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
   const markedResponseCount = Object.values(responsesByQuestionId).filter(
     (response) => response.awarded_marks !== null
   ).length;
+  const savedResponseCount = Object.values(responsesByQuestionId).filter((response) =>
+    hasSavedResponse(response)
+  ).length;
+  const completionPercent =
+    questionCount > 0 ? Math.round((savedResponseCount / questionCount) * 100) : 0;
   const predictedGrade =
     typeof score?.score_payload.predictedGrade === "string"
       ? score.score_payload.predictedGrade
@@ -111,7 +130,7 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
         title={isDraft ? "Draft attempt" : "Attempt submitted"}
         description={
           isDraft
-            ? "Save draft responses while you work, then submit when you are ready for marking. Objective questions can be auto-marked on submission."
+            ? `${savedResponseCount} of ${questionCount} responses saved. Save draft responses while you work, then submit when you are ready for marking.`
             : attempt.status === "marked"
               ? "This attempt has been marked. Review your score, feedback, and question-level comments below."
               : "This attempt has been submitted. Objective marks may be visible now; longer answers may still be awaiting teacher review."
@@ -123,6 +142,46 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
         timeLimitMinutes={attempt.time_limit_minutes_snapshot}
         isDraft={isDraft}
       />
+
+      <SectionCard
+        title={isDraft ? "Attempt progress" : "Response overview"}
+        description={
+          isDraft
+            ? "Use this checkpoint before submitting your work."
+            : "A quick view of saved responses and marking progress."
+        }
+        tone="student"
+        density="compact"
+      >
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+              Responses saved
+            </div>
+            <div className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
+              {savedResponseCount} / {questionCount}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+              Completion
+            </div>
+            <div className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
+              {completionPercent}%
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+              Marked
+            </div>
+            <div className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
+              {markedResponseCount} / {questionCount}
+            </div>
+          </div>
+        </div>
+      </SectionCard>
 
       {!isDraft ? (
         <SectionCard
@@ -225,9 +284,33 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
                         const response = responsesByQuestionId[question.id];
                         const studentSafeQuestion =
                           getStudentSafeMockExamQuestion(question);
+                        const responseSaved = hasSavedResponse(response);
+                        const responseMarked =
+                          response?.awarded_marks !== null &&
+                          response?.awarded_marks !== undefined;
 
                         return (
                           <div key={question.id} className="space-y-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge tone="muted" icon="question">
+                                Question {questionIndex + 1}
+                              </Badge>
+                              <Badge
+                                tone={responseSaved ? "success" : "warning"}
+                                icon={responseSaved ? "save" : "pending"}
+                              >
+                                {responseSaved ? "Response saved" : "No response"}
+                              </Badge>
+                              {!isDraft ? (
+                                <Badge
+                                  tone={responseMarked ? "info" : "muted"}
+                                  icon={responseMarked ? "marked" : "pending"}
+                                >
+                                  {responseMarked ? "Marked" : "Awaiting mark"}
+                                </Badge>
+                              ) : null}
+                            </div>
+
                             <MockExamQuestionPreview
                               question={studentSafeQuestion}
                               index={questionIndex}
@@ -249,14 +332,15 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
                               </div>
                             )}
 
-                            {response?.awarded_marks !== null &&
-                            response?.awarded_marks !== undefined ? (
-                              <div className="flex flex-wrap gap-2">
+                            {responseMarked ? (
+                              <div className="space-y-2">
                                 <Badge tone="info">
                                   Mark: {response.awarded_marks} / {question.marks}
                                 </Badge>
                                 {response.feedback ? (
-                                  <Badge tone="muted">{response.feedback}</Badge>
+                                  <p className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3 text-sm app-text-muted">
+                                    {response.feedback}
+                                  </p>
                                 ) : null}
                               </div>
                             ) : null}

@@ -3,7 +3,6 @@ import {
   markLessonIncomplete,
 } from "@/app/actions/progress/progress";
 import Button from "@/components/ui/button";
-import PanelCard from "@/components/ui/panel-card";
 
 type LessonCompletionFormProps = {
   courseSlug: string;
@@ -11,6 +10,7 @@ type LessonCompletionFormProps = {
   moduleSlug: string;
   lessonSlug: string;
   completed: boolean;
+  canComplete?: boolean;
 };
 
 export default function LessonCompletionForm({
@@ -19,44 +19,45 @@ export default function LessonCompletionForm({
   moduleSlug,
   lessonSlug,
   completed,
+  canComplete = true,
 }: LessonCompletionFormProps) {
   return (
-    <PanelCard
-      title="Lesson progress"
-      description={
-        completed
-          ? "This lesson is marked as complete."
-          : "Mark this lesson as complete when finished."
-      }
-      tone="student"
-      density="compact"
-      className="mt-6"
-    >
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div />
-
-        {completed ? (
-          <form action={markLessonIncomplete}>
-            <input type="hidden" name="courseSlug" value={courseSlug} />
-            <input type="hidden" name="variantSlug" value={variantSlug} />
-            <input type="hidden" name="moduleSlug" value={moduleSlug} />
-            <input type="hidden" name="lessonSlug" value={lessonSlug} />
-            <Button type="submit" variant="secondary" size="sm">
-              Mark incomplete
-            </Button>
-          </form>
-        ) : (
-          <form action={markLessonComplete}>
-            <input type="hidden" name="courseSlug" value={courseSlug} />
-            <input type="hidden" name="variantSlug" value={variantSlug} />
-            <input type="hidden" name="moduleSlug" value={moduleSlug} />
-            <input type="hidden" name="lessonSlug" value={lessonSlug} />
-            <Button type="submit" variant="primary" size="sm" icon="completed">
-              Mark complete
-            </Button>
-          </form>
-        )}
+    <div className="flex flex-col gap-3 border-t border-[var(--border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="text-sm app-text-muted">
+        {completed
+          ? "This lesson is already saved as complete."
+          : canComplete
+            ? "Save this lesson to your course progress."
+            : "Visit every section before marking the lesson complete."}
       </div>
-    </PanelCard>
+
+      {completed ? (
+        <form action={markLessonIncomplete}>
+          <input type="hidden" name="courseSlug" value={courseSlug} />
+          <input type="hidden" name="variantSlug" value={variantSlug} />
+          <input type="hidden" name="moduleSlug" value={moduleSlug} />
+          <input type="hidden" name="lessonSlug" value={lessonSlug} />
+          <Button type="submit" variant="secondary" size="sm" icon="refresh">
+            Mark incomplete
+          </Button>
+        </form>
+      ) : (
+        <form action={markLessonComplete}>
+          <input type="hidden" name="courseSlug" value={courseSlug} />
+          <input type="hidden" name="variantSlug" value={variantSlug} />
+          <input type="hidden" name="moduleSlug" value={moduleSlug} />
+          <input type="hidden" name="lessonSlug" value={lessonSlug} />
+          <Button
+            type="submit"
+            variant="primary"
+            size="sm"
+            icon="completed"
+            disabled={!canComplete}
+          >
+            Mark complete
+          </Button>
+        </form>
+      )}
+    </div>
   );
 }
