@@ -3,17 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import { assertAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getBoolean,
+  getEnumValue,
   getOptionalPositiveNumber,
   getOptionalString,
   getTrimmedString,
 } from "./shared";
 
 export async function createLessonAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
@@ -79,8 +79,7 @@ export async function createLessonAction(formData: FormData) {
 }
 
 export async function updateLessonAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
@@ -153,21 +152,16 @@ export async function updateLessonAction(formData: FormData) {
 }
 
 export async function moveLessonAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
   const moduleId = getTrimmedString(formData, "moduleId");
   const lessonId = getTrimmedString(formData, "lessonId");
-  const direction = getTrimmedString(formData, "direction");
+  const direction = getEnumValue(formData, "direction", ["up", "down"] as const);
 
   if (!courseId || !variantId || !moduleId || !lessonId) {
     throw new Error("Missing required fields");
-  }
-
-  if (direction !== "up" && direction !== "down") {
-    throw new Error("Invalid move direction");
   }
 
   const supabase = await createClient();
@@ -245,8 +239,7 @@ export async function moveLessonAction(formData: FormData) {
 }
 
 export async function unpublishLessonAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");

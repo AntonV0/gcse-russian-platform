@@ -2,12 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import { assertAdminAccess } from "@/lib/auth/admin-auth";
 import { getBoolean, getOptionalString, getTrimmedString } from "./shared";
 
 export async function createCourseAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const title = getTrimmedString(formData, "title");
   const slug = getTrimmedString(formData, "slug");
@@ -42,8 +41,7 @@ export async function createCourseAction(formData: FormData) {
 }
 
 export async function updateCourseAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const title = getTrimmedString(formData, "title");
