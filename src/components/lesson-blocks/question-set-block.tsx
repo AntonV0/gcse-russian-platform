@@ -1,5 +1,6 @@
 import { loadRuntimeQuestionSetBySlugDb } from "@/lib/questions/question-helpers-db";
 import QuestionRenderer from "@/components/questions/question-renderer";
+import QuestionSetPracticeShell from "@/components/questions/question-set-practice-shell";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { Heading, type HeadingLevel } from "@/components/ui/heading";
 
@@ -67,15 +68,24 @@ export default async function QuestionSetBlock({
         ) : null}
       </div>
 
-      <div className="space-y-5">
-        {questions.map((question, index) => (
-          <div key={question.id} className="space-y-3">
-            <div className="app-text-meta">Question {index + 1}</div>
+      <QuestionSetPracticeShell
+        questionSetSlug={questionSetSlug}
+        questions={questions.map((question, index) => ({
+          id: question.id,
+          number: index + 1,
+          prompt: question.prompt,
+        }))}
+      >
+        <div className="space-y-5">
+          {questions.map((question, index) => (
+            <div id={`question-${question.id}`} key={question.id} className="space-y-3">
+              <div className="app-text-meta">Question {index + 1}</div>
 
-            <QuestionRenderer question={question} lessonId={lessonId} />
-          </div>
-        ))}
-      </div>
+              <QuestionRenderer question={question} lessonId={lessonId} />
+            </div>
+          ))}
+        </div>
+      </QuestionSetPracticeShell>
     </section>
   );
 }

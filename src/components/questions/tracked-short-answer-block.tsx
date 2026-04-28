@@ -10,6 +10,7 @@ import {
   submitQuestionAttemptAction,
   type SubmitQuestionAttemptActionResult,
 } from "@/app/actions/questions/question-actions";
+import { notifyQuestionAttemptSubmitted } from "@/components/questions/question-attempt-events";
 import type { TrackedShortAnswerBlockProps } from "./tracked-short-answer-types";
 import {
   buildSelectionBasedSubmittedText,
@@ -66,6 +67,20 @@ export default function TrackedShortAnswerBlock({
   const audioGatePassed =
     !listeningUi?.requireAudioCompletionBeforeSubmit || audioCompleted;
 
+  function recordSetAttempt(actionResult: SubmitQuestionAttemptActionResult) {
+    if (!actionResult.success) {
+      return;
+    }
+
+    notifyQuestionAttemptSubmitted({
+      questionId,
+      isCorrect: actionResult.feedback.isCorrect,
+      statusLabel: actionResult.feedback.statusLabel,
+      correctAnswerText: actionResult.feedback.correctAnswerText,
+      feedback: actionResult.feedback.feedback,
+    });
+  }
+
   async function handleSubmitText() {
     if (!value.trim() || submitted || isPending || !audioGatePassed) return;
 
@@ -77,6 +92,7 @@ export default function TrackedShortAnswerBlock({
       });
 
       setResult(actionResult);
+      recordSetAttempt(actionResult);
     });
   }
 
@@ -95,6 +111,7 @@ export default function TrackedShortAnswerBlock({
       });
 
       setResult(actionResult);
+      recordSetAttempt(actionResult);
     });
   }
 
@@ -116,6 +133,7 @@ export default function TrackedShortAnswerBlock({
       });
 
       setResult(actionResult);
+      recordSetAttempt(actionResult);
     });
   }
 

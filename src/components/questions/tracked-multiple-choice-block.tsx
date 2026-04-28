@@ -6,6 +6,7 @@ import {
   submitQuestionAttemptAction,
   type SubmitQuestionAttemptActionResult,
 } from "@/app/actions/questions/question-actions";
+import { notifyQuestionAttemptSubmitted } from "@/components/questions/question-attempt-events";
 
 type TrackedMultipleChoiceBlockProps = {
   questionId: string;
@@ -48,6 +49,16 @@ export default function TrackedMultipleChoiceBlock({
       });
 
       setResult(actionResult);
+
+      if (actionResult.success) {
+        notifyQuestionAttemptSubmitted({
+          questionId,
+          isCorrect: actionResult.feedback.isCorrect,
+          statusLabel: actionResult.feedback.statusLabel,
+          correctAnswerText: actionResult.feedback.correctAnswerText,
+          feedback: actionResult.feedback.feedback,
+        });
+      }
     });
   }
 
