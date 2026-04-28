@@ -18,26 +18,222 @@ import {
   deleteGrammarPointAction,
 } from "@/app/actions/admin/admin-grammar-point-actions";
 import {
+  getGrammarCoverageVariantCount,
+  getGrammarCoverageVariantLabel,
+  getGrammarCoverageVariantUsed,
   getGrammarCategoryLabel,
   getGrammarKnowledgeRequirementLabel,
+  getGrammarPointCoverageByPointIdsDb,
   getGrammarTierLabel,
+  getRequiredGrammarCoverageVariants,
+  type DbGrammarKnowledgeRequirement,
+  type DbGrammarPoint,
+  type DbGrammarPointCoverage,
+  type DbGrammarTier,
   loadGrammarSetByIdDb,
 } from "@/lib/grammar/grammar-helpers-db";
 import { GRAMMAR_TAGS } from "@/lib/curriculum/grammar-tags";
 
 type GrammarSetPointsPageProps = {
   params: Promise<{ grammarSetId: string }>;
+  searchParams?: Promise<{
+    pointSearch?: string;
+    tier?: string;
+    knowledgeRequirement?: string;
+    categoryKey?: string;
+    coverage?: string;
+  }>;
 };
+
+type GrammarPointFilters = {
+  pointSearch?: string;
+  tier?: string;
+  knowledgeRequirement?: string;
+  categoryKey?: string;
+  coverage?: string;
+};
+
+function getUniqueSortedValues(values: (string | null | undefined)[]) {
+  return Array.from(
+    new Set(values.filter((value): value is string => Boolean(value)))
+  ).sort((a, b) => a.localeCompare(b));
+}
+
+function normalizeTierFilter(value?: string): DbGrammarTier | "all" {
+  return value === "foundation" ||
+    value === "higher" ||
+    value === "both" ||
+    value === "unknown"
+    ? value
+    : "all";
+}
+
+function normalizeKnowledgeRequirementFilter(
+  value?: string
+): DbGrammarKnowledgeRequirement | "all" {
+  return value === "productive" ||
+    value === "receptive" ||
+    value === "mixed" ||
+    value === "unknown"
+    ? value
+    : "all";
+}
+
+function normalizeCoverageFilter(value?: string) {
+  if (
+    value === "foundation" ||
+    value === "higher" ||
+    value === "volna" ||
+    value === "unused"
+  ) {
+    return value;
+  }
+
+  return "all";
+}
+
+function filterGrammarPoints({
+  points,
+  pointCoverageById,
+  filters,
+}: {
+  points: DbGrammarPoint[];
+  pointCoverageById: Map<string, DbGrammarPointCoverage>;
+  filters: GrammarPointFilters;
+}) {
+  const search = filters.pointSearch?.trim().toLowerCase();
+  const tier = normalizeTierFilter(filters.tier);
+  const knowledgeRequirement = normalizeKnowledgeRequirementFilter(
+    filters.knowledgeRequirement
+  );
+  const categoryKey = filters.categoryKey?.trim();
+  const coverage = normalizeCoverageFilter(filters.coverage);
+
+  return points.filter((point) => {
+    if (search) {
+      const haystack = [
+        point.title,
+        point.slug,
+        point.short_description,
+        point.full_explanation,
+        point.spec_reference,
+        point.grammar_tag_key,
+        point.category_key,
+        point.source_key,
+        point.source_version,
+        point.import_key,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      if (!haystack.includes(search)) return false;
+    }
+
+    if (tier !== "all" && point.tier !== tier) {
+      return false;
+    }
+
+    if (
+      knowledgeRequirement !== "all" &&
+      point.knowledge_requirement !== knowledgeRequirement
+    ) {
+      return false;
+    }
+
+    if (categoryKey && point.category_key !== categoryKey) {
+      return false;
+    }
+
+    const pointCoverage = pointCoverageById.get(point.id);
+
+    if (coverage === "foundation" && !pointCoverage?.used_in_foundation) {
+      return false;
+    }
+
+    if (coverage === "higher" && !pointCoverage?.used_in_higher) {
+      return false;
+    }
+
+    if (coverage === "volna" && !pointCoverage?.used_in_volna) {
+      return false;
+    }
+
+    if (
+      coverage === "unused" &&
+      (pointCoverage?.used_in_foundation ||
+        pointCoverage?.used_in_higher ||
+        pointCoverage?.used_in_volna)
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function PointCoverageBadges({
+  point,
+  coverage,
+}: {
+  point: DbGrammarPoint;
+  coverage: DbGrammarPointCoverage | null;
+}) {
+  const variants = getRequiredGrammarCoverageVariants(point.tier);
+
+  if (variants.length === 0) {
+    return <Badge tone="warning">Unclassified coverage</Badge>;
+  }
+
+  return (
+    <span className="flex flex-wrap gap-2">
+      {variants.map((variant) => (
+        <Badge
+          key={variant}
+          tone={getGrammarCoverageVariantUsed(coverage, variant) ? "success" : "danger"}
+          icon={getGrammarCoverageVariantUsed(coverage, variant) ? "success" : "cancel"}
+        >
+          {getGrammarCoverageVariantCount(coverage, variant) > 0
+            ? `${getGrammarCoverageVariantLabel(variant)} ${getGrammarCoverageVariantCount(
+                coverage,
+                variant
+              )}`
+            : getGrammarCoverageVariantLabel(variant)}
+        </Badge>
+      ))}
+    </span>
+  );
+}
 
 export default async function GrammarSetPointsPage({
   params,
+  searchParams,
 }: GrammarSetPointsPageProps) {
   const { grammarSetId } = await params;
+  const pointFilters = (await searchParams) ?? {};
   const { grammarSet, points } = await loadGrammarSetByIdDb(grammarSetId);
 
   if (!grammarSet) {
     notFound();
   }
+
+  const pointCoverageById = await getGrammarPointCoverageByPointIdsDb(
+    points.map((point) => point.id)
+  );
+  const filteredPoints = filterGrammarPoints({
+    points,
+    pointCoverageById,
+    filters: pointFilters,
+  });
+  const categoryOptions = getUniqueSortedValues(
+    points.map((point) => point.category_key)
+  );
+  const hasActiveFilters =
+    Boolean(pointFilters.pointSearch?.trim()) ||
+    normalizeTierFilter(pointFilters.tier) !== "all" ||
+    normalizeKnowledgeRequirementFilter(pointFilters.knowledgeRequirement) !== "all" ||
+    Boolean(pointFilters.categoryKey?.trim()) ||
+    normalizeCoverageFilter(pointFilters.coverage) !== "all";
 
   return (
     <main className="space-y-4">
@@ -58,6 +254,9 @@ export default async function GrammarSetPointsPage({
             />
             <Badge tone="muted" icon="list">
               {points.length} point{points.length === 1 ? "" : "s"}
+            </Badge>
+            <Badge tone={hasActiveFilters ? "info" : "muted"} icon="filter">
+              {filteredPoints.length} shown
             </Badge>
           </>
         }
@@ -80,9 +279,72 @@ export default async function GrammarSetPointsPage({
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
         <SectionCard
           title="Current points"
-          description="Open a point to edit its explanation, examples, and tables."
+          description="Filter points by metadata and coverage, then open a point to edit its explanation, examples, and tables."
           tone="admin"
         >
+          <form className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1.2fr)_repeat(4,minmax(140px,1fr))_max-content] xl:items-center">
+            <Input
+              name="pointSearch"
+              defaultValue={pointFilters.pointSearch ?? ""}
+              placeholder="Search title, rule, key..."
+            />
+
+            <Select name="tier" defaultValue={normalizeTierFilter(pointFilters.tier)}>
+              <option value="all">All tiers</option>
+              <option value="foundation">Foundation</option>
+              <option value="higher">Higher</option>
+              <option value="both">Both tiers</option>
+              <option value="unknown">Unknown</option>
+            </Select>
+
+            <Select
+              name="knowledgeRequirement"
+              defaultValue={normalizeKnowledgeRequirementFilter(
+                pointFilters.knowledgeRequirement
+              )}
+            >
+              <option value="all">All requirements</option>
+              <option value="productive">Productive</option>
+              <option value="receptive">Receptive</option>
+              <option value="mixed">Mixed</option>
+              <option value="unknown">Unknown</option>
+            </Select>
+
+            <Select name="categoryKey" defaultValue={pointFilters.categoryKey ?? ""}>
+              <option value="">All categories</option>
+              {categoryOptions.map((categoryKey) => (
+                <option key={categoryKey} value={categoryKey}>
+                  {getGrammarCategoryLabel(categoryKey)}
+                </option>
+              ))}
+            </Select>
+
+            <Select
+              name="coverage"
+              defaultValue={normalizeCoverageFilter(pointFilters.coverage)}
+            >
+              <option value="all">All coverage</option>
+              <option value="foundation">Used in Foundation</option>
+              <option value="higher">Used in Higher</option>
+              <option value="volna">Used in Volna</option>
+              <option value="unused">Unused</option>
+            </Select>
+
+            <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-1 xl:justify-end">
+              <Button type="submit" variant="secondary" size="sm" icon="filter">
+                Apply
+              </Button>
+              <Button
+                href={`/admin/grammar/${grammarSet.id}/points`}
+                variant="quiet"
+                size="sm"
+                icon="refresh"
+              >
+                Reset
+              </Button>
+            </div>
+          </form>
+
           {points.length === 0 ? (
             <EmptyState
               icon="lessonContent"
@@ -90,9 +352,16 @@ export default async function GrammarSetPointsPage({
               title="No grammar points yet"
               description="Use the form beside this list to add the first point."
             />
+          ) : filteredPoints.length === 0 ? (
+            <EmptyState
+              icon="search"
+              iconTone="brand"
+              title="No grammar points match"
+              description="Clear the current filters to inspect the full set again."
+            />
           ) : (
             <div className="space-y-3">
-              {points.map((point) => (
+              {filteredPoints.map((point) => (
                 <AdminRow
                   key={point.id}
                   title={point.title}
@@ -116,6 +385,10 @@ export default async function GrammarSetPointsPage({
                         )}
                       </Badge>
                       <PublishStatusBadge isPublished={point.is_published} />
+                      <PointCoverageBadges
+                        point={point}
+                        coverage={pointCoverageById.get(point.id) ?? null}
+                      />
                     </>
                   }
                   actions={
