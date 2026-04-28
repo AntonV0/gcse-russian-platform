@@ -1,5 +1,9 @@
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+import {
+  BRANDED_OG_BACKGROUND_PATH,
+  BrandedOgImage,
+} from "@/lib/seo/branded-og-template";
 import { getOgImageDefinition } from "@/lib/seo/og-images";
 
 export const runtime = "edge";
@@ -11,7 +15,7 @@ export const size = {
 export const contentType = "image/png";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ imageSlug: string }> }
 ) {
   const { imageSlug } = await params;
@@ -19,6 +23,24 @@ export async function GET(
 
   if (!image) {
     return new Response("Not found", { status: 404 });
+  }
+
+  if (imageSlug === "course") {
+    const backgroundImageUrl = new URL(
+      BRANDED_OG_BACKGROUND_PATH,
+      request.url
+    ).toString();
+
+    return new ImageResponse(
+      <BrandedOgImage
+        backgroundImageUrl={backgroundImageUrl}
+        eyebrow="Pearson Edexcel 1RU0"
+        title={image.title}
+        description="Structured lessons, vocabulary, grammar, exam practice, and progress."
+        badges={["Foundation + Higher", "Course dashboard", "Exam-focused"]}
+      />,
+      size
+    );
   }
 
   return new ImageResponse(
