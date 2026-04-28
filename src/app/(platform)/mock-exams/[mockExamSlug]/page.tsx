@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
 import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import Badge from "@/components/ui/badge";
@@ -34,7 +35,7 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
   );
 
   if (!exam || !canDashboardAccessMockExam(exam, dashboard)) {
-    return <main>Mock exam not found.</main>;
+    notFound();
   }
 
   const questionCount = sections.reduce(

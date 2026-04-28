@@ -131,8 +131,8 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
         description="Filter by paper, tier, exam series, and resource type."
         tone="student"
       >
-        <form className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="w-full lg:max-w-[190px]">
+        <form className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:items-center">
+          <div className="min-w-0">
             <Select name="examSeries" defaultValue={params.examSeries ?? ""}>
               <option value="">All series</option>
               {examSeriesOptions.map((examSeries) => (
@@ -143,7 +143,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             </Select>
           </div>
 
-          <div className="w-full lg:max-w-[160px]">
+          <div className="min-w-0">
             <Select
               name="paperNumber"
               defaultValue={String(filters.paperNumber ?? "all")}
@@ -156,7 +156,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             </Select>
           </div>
 
-          <div className="w-full lg:max-w-[180px]">
+          <div className="min-w-0">
             <Select name="tier" defaultValue={filters.tier ?? "all"}>
               <option value="all">All tiers</option>
               {pastPaperTiers.map((tier) => (
@@ -167,7 +167,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             </Select>
           </div>
 
-          <div className="w-full lg:max-w-[240px]">
+          <div className="min-w-0">
             <Select name="resourceType" defaultValue={filters.resourceType ?? "all"}>
               <option value="all">All resource types</option>
               {pastPaperResourceTypes.map((resourceType) => (
@@ -178,7 +178,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             </Select>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="app-mobile-action-stack flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:flex-wrap xl:col-span-4 xl:justify-end">
             <Button type="submit" variant="primary" icon="filter">
               Apply
             </Button>
@@ -258,7 +258,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
                           href={resource.official_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="app-btn-base app-btn-primary min-h-10 gap-2 rounded-2xl px-4 py-2.5 text-sm"
+                          className="app-btn-base app-btn-primary min-h-10 w-full justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm sm:w-auto lg:shrink-0"
                         >
                           Open Pearson resource
                           <AppIcon icon="externalLink" size={14} />

@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
 import { getQuestionSetBySlugDb } from "@/lib/questions/question-helpers-db";
@@ -14,7 +15,7 @@ export default async function QuestionSetPage({ params }: QuestionSetPageProps) 
   const questionSet = await getQuestionSetBySlugDb(questionSetSlug);
 
   if (!questionSet) {
-    return <main>Question set not found.</main>;
+    notFound();
   }
 
   return (

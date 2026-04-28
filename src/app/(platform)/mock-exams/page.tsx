@@ -143,8 +143,8 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
         description="Filter by paper and tier."
         tone="student"
       >
-        <form className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="w-full lg:max-w-[170px]">
+        <form className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(160px,180px)_minmax(180px,220px)] xl:items-center">
+          <div className="min-w-0">
             <Select
               name="paperNumber"
               defaultValue={String(filters.paperNumber ?? "all")}
@@ -157,7 +157,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             </Select>
           </div>
 
-          <div className="w-full lg:max-w-[190px]">
+          <div className="min-w-0">
             <Select name="tier" defaultValue={filters.tier ?? "all"}>
               <option value="all">All tiers</option>
               {mockExamTiers.map((tier) => (
@@ -168,7 +168,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             </Select>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="app-mobile-action-stack flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:flex-wrap xl:justify-end">
             <Button type="submit" variant="primary" icon="filter">
               Apply
             </Button>
