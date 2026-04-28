@@ -5,10 +5,8 @@ import Input from "@/components/ui/input";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
-import {
-  getMockExamSectionTypeLabel,
-  mockExamSectionTypes,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { mockExamSectionTypes } from "@/lib/mock-exams/constants";
+import { getMockExamSectionTypeLabel } from "@/lib/mock-exams/labels";
 
 export default function MockExamSectionCreatePanel({
   mockExamId,

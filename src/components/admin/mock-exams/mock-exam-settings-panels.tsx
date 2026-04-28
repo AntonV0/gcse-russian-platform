@@ -9,12 +9,9 @@ import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
-import {
-  getMockExamTierLabel,
-  mockExamPaperNames,
-  mockExamTiers,
-  type DbMockExamSet,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { mockExamPaperNames, mockExamTiers } from "@/lib/mock-exams/constants";
+import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
+import type { DbMockExamSet } from "@/lib/mock-exams/types";
 
 export default function MockExamSettingsPanels({ exam }: { exam: DbMockExamSet }) {
   return (

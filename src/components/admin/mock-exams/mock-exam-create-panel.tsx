@@ -4,11 +4,8 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
-import {
-  getMockExamTierLabel,
-  mockExamPaperNames,
-  mockExamTiers,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { mockExamPaperNames, mockExamTiers } from "@/lib/mock-exams/constants";
+import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
 
 export function MockExamCreatePanel() {
   return (
@@ -68,13 +65,7 @@ export function MockExamCreatePanel() {
           </FormField>
 
           <FormField label="Total marks">
-            <Input
-              name="totalMarks"
-              type="number"
-              min="0"
-              step="0.5"
-              defaultValue="0"
-            />
+            <Input name="totalMarks" type="number" min="0" step="0.5" defaultValue="0" />
           </FormField>
 
           <FormField label="Sort order">
@@ -101,12 +92,7 @@ export function MockExamCreatePanel() {
             Requires paid access
           </label>
           <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-            <input
-              type="checkbox"
-              name="availableInVolna"
-              value="true"
-              defaultChecked
-            />
+            <input type="checkbox" name="availableInVolna" value="true" defaultChecked />
             Volna visible
           </label>
         </div>

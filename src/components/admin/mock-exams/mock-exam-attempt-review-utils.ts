@@ -1,4 +1,4 @@
-import type { MockExamProfileSummary } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { MockExamProfileSummary } from "@/lib/mock-exams/types";
 
 export function getMockExamProfileLabel(profile: MockExamProfileSummary | null) {
   if (!profile) return "Unknown student";

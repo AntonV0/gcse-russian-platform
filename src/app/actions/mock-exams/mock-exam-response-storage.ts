@@ -1,4 +1,4 @@
-import type { DbMockExamResponse } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamResponse } from "@/lib/mock-exams/types";
 import { createClient } from "@/lib/supabase/server";
 
 export type StoredMockExamResponseFile = {

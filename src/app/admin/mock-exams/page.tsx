@@ -5,12 +5,9 @@ import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import {
-  getMockExamSetsDb,
-  mockExamTiers,
-  type MockExamFilters,
-  type MockExamTier,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { mockExamTiers } from "@/lib/mock-exams/constants";
+import { getMockExamSetsDb } from "@/lib/mock-exams/queries";
+import type { MockExamFilters, MockExamTier } from "@/lib/mock-exams/types";
 
 type AdminMockExamsPageProps = {
   searchParams?: Promise<{

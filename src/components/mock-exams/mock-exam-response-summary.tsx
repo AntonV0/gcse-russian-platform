@@ -1,7 +1,7 @@
 import AudioPlayer from "@/components/questions/audio-player";
 import Badge from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
-import type { DbMockExamResponse } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamResponse } from "@/lib/mock-exams/types";
 
 type StoredResponseFile = {
   bucket: string;

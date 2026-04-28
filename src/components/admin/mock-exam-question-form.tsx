@@ -18,7 +18,7 @@ import {
   parseMockExamQuestionData,
   type MockExamQuestionDataState,
 } from "@/lib/mock-exams/question-data/codecs";
-import type { MockExamQuestionType } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { MockExamQuestionType } from "@/lib/mock-exams/types";
 
 export default function MockExamQuestionForm({
   action,

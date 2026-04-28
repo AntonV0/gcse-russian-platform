@@ -3,10 +3,8 @@ import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
-import {
-  getMockExamTierLabel,
-  type DbMockExamSet,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
+import type { DbMockExamSet } from "@/lib/mock-exams/types";
 
 export default function MockExamDetailHeader({
   exam,

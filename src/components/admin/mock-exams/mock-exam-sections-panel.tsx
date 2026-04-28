@@ -15,16 +15,17 @@ import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
+import { mockExamQuestionTypes, mockExamSectionTypes } from "@/lib/mock-exams/constants";
 import {
   getMockExamQuestionTypeLabel,
   getMockExamSectionTypeLabel,
-  mockExamQuestionDataTemplates,
-  mockExamQuestionTypes,
-  mockExamSectionTypes,
-  type DbMockExamQuestion,
-  type DbMockExamSection,
-  type MockExamQuestionType,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+} from "@/lib/mock-exams/labels";
+import { mockExamQuestionDataTemplates } from "@/lib/mock-exams/question-data/templates";
+import type {
+  DbMockExamQuestion,
+  DbMockExamSection,
+  MockExamQuestionType,
+} from "@/lib/mock-exams/types";
 
 type MockExamSectionsPanelProps = {
   mockExamId: string;

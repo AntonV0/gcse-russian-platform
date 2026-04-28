@@ -3,10 +3,7 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
-import type {
-  DbMockExamQuestion,
-  DbMockExamResponse,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamQuestion, DbMockExamResponse } from "@/lib/mock-exams/types";
 
 type MockExamMarkingAssistantProps = {
   question: DbMockExamQuestion;

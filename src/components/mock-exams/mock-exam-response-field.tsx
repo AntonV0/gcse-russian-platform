@@ -3,10 +3,7 @@ import Input from "@/components/ui/input";
 import MockExamAudioRecorder from "@/components/mock-exams/mock-exam-audio-recorder";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
-import type {
-  DbMockExamQuestion,
-  DbMockExamResponse,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamQuestion, DbMockExamResponse } from "@/lib/mock-exams/types";
 
 type MockExamResponseFieldProps = {
   question: DbMockExamQuestion;

@@ -9,11 +9,13 @@ import {
   mockExamQuestionTypes,
   mockExamSectionTypes,
   mockExamTiers,
-  type MockExamPaperName,
-  type MockExamQuestionType,
-  type MockExamSectionType,
-  type MockExamTier,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+} from "@/lib/mock-exams/constants";
+import type {
+  MockExamPaperName,
+  MockExamQuestionType,
+  MockExamSectionType,
+  MockExamTier,
+} from "@/lib/mock-exams/types";
 
 function validatePaperName(value: string): MockExamPaperName {
   if (mockExamPaperNames.includes(value as MockExamPaperName)) {

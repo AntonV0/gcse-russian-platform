@@ -5,7 +5,7 @@ import {
   MockExamAttemptReviewSummary,
 } from "@/components/admin/mock-exams/mock-exam-attempt-review-summary";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { loadMockExamAttemptReviewDb } from "@/lib/mock-exams/mock-exam-helpers-db";
+import { loadMockExamAttemptReviewDb } from "@/lib/mock-exams/loaders";
 
 type AdminMockExamAttemptReviewPageProps = {
   params: Promise<{

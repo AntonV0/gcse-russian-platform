@@ -1,4 +1,4 @@
-import type { DbMockExamQuestion } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamQuestion } from "@/lib/mock-exams/types";
 import {
   MockExamFieldsPreview,
   MockExamMatchingPreview,
