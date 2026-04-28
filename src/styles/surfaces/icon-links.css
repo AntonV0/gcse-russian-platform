@@ -1,0 +1,56 @@
+.app-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--background-elevated);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.app-icon-button:hover {
+  background: var(--background-muted);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.app-icon-button-icon {
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.app-icon-button:hover .app-icon-button-icon {
+  color: var(--accent-ink);
+}
+
+[data-theme="dark"] .app-icon-button-icon {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .app-icon-button:hover .app-icon-button-icon {
+  color: var(--text-primary);
+}
+
+.app-footer-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.app-card-link-arrow {
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.app-card-hover:hover .app-card-link-arrow {
+  color: var(--accent-ink);
+  transform: translateX(2px);
+}

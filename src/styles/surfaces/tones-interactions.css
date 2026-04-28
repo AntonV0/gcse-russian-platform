@@ -1,0 +1,86 @@
+.app-intro-panel,
+.app-section-tone-default,
+.app-section-tone-admin,
+.app-section-tone-student,
+.app-panel-tone-default,
+.app-panel-tone-admin,
+.app-panel-tone-student {
+  background: var(--surface-raised-bg);
+  border-color: var(--surface-panel-border);
+  box-shadow: var(--surface-panel-shadow);
+}
+
+.app-intro-panel {
+  border: 1px solid var(--surface-panel-border);
+  border-radius: var(--radius-xl);
+}
+
+.app-intro-panel-brand,
+.app-intro-panel-student,
+.app-section-tone-brand,
+.app-panel-tone-brand {
+  background: var(--surface-brand-bg);
+  border-color: var(--surface-accent-border);
+  box-shadow: var(--surface-accent-shadow);
+}
+
+.app-intro-panel-admin,
+.app-section-tone-admin,
+.app-panel-tone-admin {
+  background: var(--surface-accent-bg);
+}
+
+.app-intro-panel-neutral,
+.app-section-tone-muted,
+.app-panel-tone-muted {
+  background: var(--surface-muted-bg);
+  border-color: var(--border-subtle);
+  box-shadow: var(--shadow-xs);
+}
+
+.app-section-header-tone-default,
+.app-section-header-tone-admin,
+.app-section-header-tone-student,
+.app-section-header-tone-brand,
+.app-panel-header-tone-default,
+.app-panel-header-tone-admin,
+.app-panel-header-tone-student,
+.app-panel-header-tone-brand {
+  background: var(--surface-header-bg);
+  border-bottom-color: var(--surface-header-border);
+}
+
+.app-section-header-tone-muted,
+.app-panel-header-tone-muted {
+  background: color-mix(in srgb, var(--text-primary) 2%, transparent);
+  border-bottom-color: var(--border-subtle);
+}
+
+.app-brand-soft {
+  background: var(--accent-gradient-soft);
+}
+
+.app-accent-soft {
+  background: var(--danger-gradient-soft);
+}
+
+.app-interactive {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.app-interactive:hover {
+  transform: translateY(-1px);
+}
+
+.app-hover-surface:hover {
+  background: var(--surface-muted-bg);
+}
+
+.app-hover-border:hover {
+  border-color: var(--border-strong);
+}

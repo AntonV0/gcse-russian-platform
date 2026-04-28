@@ -1,0 +1,13 @@
+@media (max-width: 639px) {
+  .app-mobile-action-stack > .dev-marker-host,
+  .app-mobile-action-stack > a,
+  .app-mobile-action-stack > button,
+  .app-mobile-action-stack > span {
+    width: 100%;
+  }
+
+  .app-mobile-action-stack .app-btn-surface-fix,
+  .app-mobile-action-stack .app-btn-base {
+    width: 100%;
+  }
+}

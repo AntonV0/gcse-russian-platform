@@ -1,0 +1,269 @@
+:root {
+  /* ========= Core palette ========= */
+  --background: #f6f8fb;
+  --background-elevated: #ffffff;
+  --background-muted: #eef3f9;
+  --background-soft-accent: var(--accent-soft);
+  --background-soft-blue: #edf4ff;
+  --background-soft-danger: #fff2f2;
+  --background-soft-red: #fff2f2;
+
+  --text-primary: #102033;
+  --text-secondary: #526377;
+  --text-muted: #6f8095;
+  --text-inverse: #ffffff;
+
+  --border: #d8e1eb;
+  --border-subtle: #e4ecf5;
+  --border-strong: #c3d0de;
+
+  --surface-primary: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-secondary: #f1f5fa;
+  --dark-page-bg: #050608;
+  --dark-surface-base: #07090d;
+  --dark-surface-elevated: #0c1016;
+  --dark-surface-muted: #141922;
+  --dark-surface-strong: #1e2530;
+  --dark-surface-border: #2b313c;
+  --dark-control-bg: color-mix(in srgb, var(--accent) 1.5%, var(--dark-surface-elevated));
+  --dark-control-bg-hover: color-mix(
+    in srgb,
+    var(--accent) 3%,
+    var(--dark-surface-muted)
+  );
+  --dark-control-bg-disabled: color-mix(in srgb, black 16%, var(--dark-surface-elevated));
+
+  /* ========= Accent colours ========= */
+  --accent: #2563eb;
+  --accent-fill: #2563eb;
+  --accent-fill-hover: #1d4ed8;
+  --accent-hover: var(--accent-fill-hover);
+  --accent-ink: #1d4ed8;
+  --accent-on-fill: #ffffff;
+  --accent-on-soft: var(--accent-ink);
+  --accent-soft: #eaf2ff;
+  --accent-selected-bg: var(--accent-soft);
+  --accent-selected-border: var(--accent-fill);
+  --accent-glow: rgba(37, 99, 235, 0.16);
+  --accent-ring: rgba(37, 99, 235, 0.14);
+  --accent-rgb: 37, 99, 235;
+  --control-border: var(--border);
+  --control-border-strong: var(--border-strong);
+  --control-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
+    0 8px 18px color-mix(in srgb, var(--text-primary) 4%, transparent);
+  --control-shadow-hover:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    0 10px 22px color-mix(in srgb, var(--text-primary) 6%, transparent);
+  --control-shadow-focus:
+    0 0 0 4px var(--accent-ring),
+    0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    0 10px 22px color-mix(in srgb, var(--text-primary) 6%, transparent);
+
+  /* ========= Brand colours ========= */
+  --brand-blue: var(--accent-fill);
+  --brand-blue-hover: var(--accent-fill-hover);
+  --brand-blue-soft: var(--accent-soft);
+
+  --brand-red: #d94b52;
+  --brand-red-hover: #bf3940;
+  --brand-red-soft: #fff1f2;
+
+  --brand-white: #ffffff;
+
+  /* ========= Semantic colours ========= */
+  --success: #1f8a4c;
+  --success-soft: #eefbf3;
+  --success-text: #166534;
+  --success-text-strong: #14532d;
+  --success-surface: color-mix(in srgb, var(--success) 8%, var(--background-elevated));
+  --success-surface-strong: color-mix(
+    in srgb,
+    var(--success) 13%,
+    var(--background-elevated)
+  );
+  --success-border: color-mix(in srgb, var(--success) 22%, transparent);
+  --success-border-strong: color-mix(in srgb, var(--success) 36%, transparent);
+  --success-shadow: color-mix(in srgb, var(--success) 10%, transparent);
+  --success-ring: color-mix(in srgb, var(--success) 12%, transparent);
+
+  --warning: #b7791f;
+  --warning-soft: #fff8eb;
+  --warning-text: #92400e;
+  --warning-text-strong: #78350f;
+  --warning-surface: color-mix(in srgb, var(--warning) 9%, var(--background-elevated));
+  --warning-surface-strong: color-mix(
+    in srgb,
+    var(--warning) 14%,
+    var(--background-elevated)
+  );
+  --warning-border: color-mix(in srgb, var(--warning) 24%, transparent);
+  --warning-border-strong: color-mix(in srgb, var(--warning) 38%, transparent);
+  --warning-shadow: color-mix(in srgb, var(--warning) 10%, transparent);
+  --warning-ring: color-mix(in srgb, var(--warning) 12%, transparent);
+
+  --danger: #c23b3b;
+  --danger-soft: #fff1f1;
+  --danger-text: #991b1b;
+  --danger-text-strong: #7f1d1d;
+  --danger-surface: color-mix(in srgb, var(--danger) 8%, var(--background-elevated));
+  --danger-surface-strong: color-mix(
+    in srgb,
+    var(--danger) 13%,
+    var(--background-elevated)
+  );
+  --danger-border: color-mix(in srgb, var(--danger) 24%, transparent);
+  --danger-border-strong: color-mix(in srgb, var(--danger) 40%, transparent);
+  --danger-shadow: color-mix(in srgb, var(--danger) 10%, transparent);
+  --danger-ring: color-mix(in srgb, var(--danger) 12%, transparent);
+
+  --info: var(--accent-ink);
+  --info-soft: var(--accent-soft);
+  --info-text: var(--accent-on-soft);
+  --info-text-strong: var(--accent-ink);
+  --info-surface: color-mix(in srgb, var(--accent) 8%, var(--background-elevated));
+  --info-surface-strong: color-mix(
+    in srgb,
+    var(--accent) 13%,
+    var(--background-elevated)
+  );
+  --info-border: color-mix(in srgb, var(--accent) 22%, transparent);
+  --info-border-strong: color-mix(in srgb, var(--accent) 36%, transparent);
+  --info-shadow: color-mix(in srgb, var(--accent) 10%, transparent);
+  --info-ring: var(--accent-ring);
+
+  /* ========= Layout ========= */
+  --page-max-width: 1360px;
+  --page-padding-x: 1rem;
+  --page-padding-y: 1rem;
+  --site-header-height: 65px;
+  --sticky-site-offset: calc(var(--site-header-height) + 1.5rem);
+
+  /* ========= Radius ========= */
+  --radius-xs: 0.4rem;
+  --radius-sm: 0.6rem;
+  --radius-md: 0.85rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+
+  /* ========= Shadows ========= */
+  --shadow-xs: 0 1px 2px rgba(16, 32, 51, 0.04);
+  --shadow-sm: 0 1px 2px rgba(16, 32, 51, 0.04), 0 4px 10px rgba(16, 32, 51, 0.04);
+  --shadow-md: 0 2px 6px rgba(16, 32, 51, 0.05), 0 10px 24px rgba(16, 32, 51, 0.07);
+  --shadow-lg: 0 4px 12px rgba(16, 32, 51, 0.06), 0 18px 40px rgba(16, 32, 51, 0.1);
+
+  /* ========= Surface recipes ========= */
+  --surface-plain-bg: var(--background-elevated);
+  --surface-muted-bg: var(--background-muted);
+  --surface-raised-bg: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--background-elevated) 98%, white) 0%,
+    var(--background-elevated) 100%
+  );
+  --surface-accent-bg: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 6%, var(--background-elevated)) 0%,
+    var(--background-elevated) 58%,
+    color-mix(in srgb, var(--accent) 3%, var(--background-elevated)) 100%
+  );
+  --surface-brand-bg: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 9%, var(--background-elevated)) 0%,
+    var(--background-elevated) 52%,
+    color-mix(in srgb, var(--accent) 5%, var(--background-elevated)) 100%
+  );
+  --surface-panel-border: var(--border-subtle);
+  --surface-accent-border: color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
+  --surface-panel-shadow: var(--shadow-sm);
+  --surface-raised-shadow: var(--shadow-md);
+  --surface-accent-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
+    0 16px 34px color-mix(in srgb, var(--accent) 8%, transparent);
+  --surface-header-bg: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 4%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 0%, transparent) 100%
+  );
+  --surface-header-border: color-mix(in srgb, var(--accent) 12%, var(--border-subtle));
+
+  /* ========= Motion ========= */
+  --transition-fast: 160ms ease;
+  --transition-base: 220ms ease;
+  --transition-slow: 320ms ease;
+
+  /* ========= Gradients ========= */
+  --accent-gradient-fill: linear-gradient(
+    135deg,
+    var(--accent-fill) 0%,
+    color-mix(in srgb, var(--accent-fill) 88%, var(--accent-fill-hover)) 58%,
+    var(--accent-fill-hover) 100%
+  );
+  --accent-gradient-fill-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-fill-hover) 92%, var(--accent-fill)) 0%,
+    var(--accent-fill-hover) 100%
+  );
+  --accent-gradient-soft: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 11%, var(--background-elevated)) 0%,
+    var(--background-elevated) 58%,
+    color-mix(in srgb, var(--accent) 5%, var(--background-elevated)) 100%
+  );
+  --accent-gradient-soft-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 16%, var(--background-elevated)) 0%,
+    color-mix(in srgb, var(--accent) 4%, var(--background-elevated)) 100%
+  );
+  --accent-gradient-selected: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 14%, var(--background-elevated)) 0%,
+    var(--accent-selected-bg) 100%
+  );
+  --accent-progress-gradient: linear-gradient(
+    90deg,
+    var(--accent-fill) 0%,
+    var(--accent-fill-hover) 100%
+  );
+  --accent-sheen-gradient: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 0%, transparent) 100%
+  );
+  --feedback-sheen-gradient: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--brand-white) 14%, transparent) 0%,
+    color-mix(in srgb, var(--brand-white) 0%, transparent) 100%
+  );
+  --feedback-info-bg: linear-gradient(
+    135deg,
+    var(--info-surface-strong) 0%,
+    var(--info-surface) 100%
+  );
+  --feedback-success-bg: linear-gradient(
+    135deg,
+    var(--success-surface-strong) 0%,
+    var(--success-surface) 100%
+  );
+  --feedback-warning-bg: linear-gradient(
+    135deg,
+    var(--warning-surface-strong) 0%,
+    var(--warning-surface) 100%
+  );
+  --feedback-danger-bg: linear-gradient(
+    135deg,
+    var(--danger-surface-strong) 0%,
+    var(--danger-surface) 100%
+  );
+  --danger-gradient-soft: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--danger) 9%, var(--background-elevated)) 0%,
+    var(--background-elevated) 100%
+  );
+  --gradient-brand-soft: var(--accent-gradient-soft);
+  --gradient-accent-soft: var(--accent-gradient-soft);
+  --gradient-blue-soft: var(--accent-gradient-soft);
+  --gradient-danger-soft: var(--danger-gradient-soft);
+  --gradient-red-soft: var(--danger-gradient-soft);
+}

@@ -1,0 +1,134 @@
+.app-focus-ring:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px var(--accent-ring),
+    0 0 0 1px color-mix(in srgb, var(--accent-fill) 62%, transparent);
+  border-color: var(--accent-fill);
+}
+
+.app-btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-weight: 600;
+  transition:
+    transform var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    filter var(--transition-fast);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.app-btn-base:hover {
+  transform: translateY(-2px);
+}
+
+.app-btn-base:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.app-btn-base:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+  filter: saturate(0.72) grayscale(0.08);
+  transform: none;
+}
+
+.app-btn-primary {
+  background: var(--accent-gradient-fill);
+  color: var(--accent-on-fill);
+  border-color: color-mix(in srgb, var(--accent-fill) 86%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 18%, transparent),
+    0 12px 26px color-mix(in srgb, var(--accent) 24%, transparent),
+    0 2px 6px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.app-btn-primary:hover {
+  background: var(--accent-gradient-fill-hover);
+  border-color: var(--accent-fill-hover);
+  filter: brightness(1.04) saturate(1.04);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 22%, transparent),
+    0 16px 34px color-mix(in srgb, var(--accent) 27%, transparent),
+    0 5px 12px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.app-btn-secondary {
+  background: var(--background-elevated);
+  color: var(--text-primary);
+  border-color: var(--border);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    0 7px 16px color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+
+.app-btn-secondary:hover {
+  background: var(--background-muted);
+  border-color: var(--border-strong);
+  box-shadow:
+    0 12px 26px color-mix(in srgb, var(--text-primary) 9%, transparent),
+    0 2px 7px color-mix(in srgb, var(--text-primary) 5%, transparent);
+}
+
+.app-btn-accent {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-fill) 94%, var(--brand-white)) 0%,
+    var(--accent-fill) 48%,
+    color-mix(in srgb, var(--accent-fill-hover) 92%, var(--accent-fill)) 100%
+  );
+  color: var(--accent-on-fill);
+  border: 1px solid transparent;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 18%, transparent),
+    0 11px 25px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 2px 7px color-mix(in srgb, var(--accent) 13%, transparent);
+}
+
+.app-btn-accent:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-fill-hover) 88%, var(--brand-white)) 0%,
+    var(--accent-fill-hover) 100%
+  );
+  border-color: transparent;
+  filter: brightness(1.04) saturate(1.04);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 22%, transparent),
+    0 16px 34px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 4px 11px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.app-btn-danger {
+  background: linear-gradient(
+    135deg,
+    var(--danger-surface-strong) 0%,
+    var(--danger-surface) 100%
+  );
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--danger) 5%, transparent),
+    0 9px 20px color-mix(in srgb, var(--danger) 9%, transparent);
+}
+
+.app-btn-danger:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--danger) 15%, var(--background-elevated)) 0%,
+    color-mix(in srgb, var(--danger) 4%, var(--background-elevated)) 100%
+  );
+  color: var(--danger-text-strong);
+  border-color: var(--danger-border-strong);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--danger) 6%, transparent),
+    0 13px 28px color-mix(in srgb, var(--danger) 14%, transparent);
+}
