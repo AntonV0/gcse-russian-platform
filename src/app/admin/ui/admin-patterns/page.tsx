@@ -1,9 +1,9 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { ADMIN_PATTERNS_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab-admin-patterns-data";
-import { UiLabAdminPatternDashboardFormSections } from "@/components/admin/ui-lab-admin-pattern-dashboard-form-sections";
-import { UiLabAdminPatternOperationalSections } from "@/components/admin/ui-lab-admin-pattern-operational-sections";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import { ADMIN_PATTERNS_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab/admin-patterns/ui-lab-admin-patterns-data";
+import { UiLabAdminPatternDashboardFormSections } from "@/components/admin/ui-lab/admin-patterns/ui-lab-admin-pattern-dashboard-form-sections";
+import { UiLabAdminPatternOperationalSections } from "@/components/admin/ui-lab/admin-patterns/ui-lab-admin-pattern-operational-sections";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 
 export default async function AdminUiAdminPatternsPage() {
   const canAccess = await requireAdminAccess();

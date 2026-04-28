@@ -1,9 +1,9 @@
-import { BUTTONS_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab-buttons-data";
-import UiLabButtonsFoundationSections from "@/components/admin/ui-lab-buttons-foundation-sections";
-import UiLabButtonsPatternSections from "@/components/admin/ui-lab-buttons-pattern-sections";
-import UiLabButtonsStateSections from "@/components/admin/ui-lab-buttons-state-sections";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import { BUTTONS_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab/buttons/ui-lab-buttons-data";
+import UiLabButtonsFoundationSections from "@/components/admin/ui-lab/buttons/ui-lab-buttons-foundation-sections";
+import UiLabButtonsPatternSections from "@/components/admin/ui-lab/buttons/ui-lab-buttons-pattern-sections";
+import UiLabButtonsStateSections from "@/components/admin/ui-lab/buttons/ui-lab-buttons-state-sections";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 
 export default async function AdminUiButtonsPage() {

@@ -1,7 +1,7 @@
-import UiLabOverviewPanels from "@/components/admin/ui-lab-overview-panels";
-import { UI_LAB_OVERVIEW_NAV_ITEMS } from "@/components/admin/ui-lab-overview-data";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import UiLabOverviewPanels from "@/components/admin/ui-lab/overview/ui-lab-overview-panels";
+import { UI_LAB_OVERVIEW_NAV_ITEMS } from "@/components/admin/ui-lab/overview/ui-lab-overview-data";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 
 export default async function AdminUiOverviewPage() {

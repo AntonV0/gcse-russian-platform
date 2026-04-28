@@ -1,9 +1,9 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { NAVIGATION_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab-navigation-data";
-import { UiLabNavigationSecondarySections } from "@/components/admin/ui-lab-navigation-secondary-sections";
-import { UiLabNavigationShellSections } from "@/components/admin/ui-lab-navigation-shell-sections";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import { NAVIGATION_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab/navigation/ui-lab-navigation-data";
+import { UiLabNavigationSecondarySections } from "@/components/admin/ui-lab/navigation/ui-lab-navigation-secondary-sections";
+import { UiLabNavigationShellSections } from "@/components/admin/ui-lab/navigation/ui-lab-navigation-shell-sections";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 
 export default async function AdminUiNavigationPage() {
   const canAccess = await requireAdminAccess();

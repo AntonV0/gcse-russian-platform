@@ -1,11 +1,11 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { FORM_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab-forms-data";
-import { UiLabFormsAdminControlSections } from "@/components/admin/ui-lab-forms-admin-control-sections";
-import { UiLabFormsFieldSections } from "@/components/admin/ui-lab-forms-field-sections";
-import { UiLabFormsGuidanceSections } from "@/components/admin/ui-lab-forms-guidance-section";
-import { UiLabFormsLayoutSections } from "@/components/admin/ui-lab-forms-layout-sections";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import { FORM_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab/forms/ui-lab-forms-data";
+import { UiLabFormsAdminControlSections } from "@/components/admin/ui-lab/forms/ui-lab-forms-admin-control-sections";
+import { UiLabFormsFieldSections } from "@/components/admin/ui-lab/forms/ui-lab-forms-field-sections";
+import { UiLabFormsGuidanceSections } from "@/components/admin/ui-lab/forms/ui-lab-forms-guidance-section";
+import { UiLabFormsLayoutSections } from "@/components/admin/ui-lab/forms/ui-lab-forms-layout-sections";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 
 export default async function AdminUiFormsPage() {
   const canAccess = await requireAdminAccess();

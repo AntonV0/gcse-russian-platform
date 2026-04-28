@@ -1,8 +1,8 @@
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 import UiLabLessonBuilderSections, {
   LESSON_BUILDER_PAGE_NAV_ITEMS,
-} from "@/components/admin/ui-lab-lesson-builder-sections";
+} from "@/components/admin/ui-lab/lesson-builder/ui-lab-lesson-builder-sections";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 
 export default async function AdminUiLessonBuilderPage() {
