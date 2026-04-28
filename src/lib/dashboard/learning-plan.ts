@@ -5,7 +5,9 @@ import {
   getLessonsByModuleIdsDb,
   loadVariantPageData,
 } from "@/lib/courses/course-helpers-db";
+import { getLessonSectionsByLessonIdDb } from "@/lib/lessons/lesson-content-helpers-db";
 import { getCourseLessonProgress } from "@/lib/progress/progress-module";
+import { getVisitedLessonSectionIds } from "@/lib/progress/progress";
 
 export type DashboardVariant = "foundation" | "higher" | "volna" | null;
 export type DashboardAccessMode = "trial" | "full" | "volna" | null;
@@ -21,6 +23,132 @@ export type StudentLearningPlan = {
     estimatedMinutes: number | null;
   } | null;
 };
+
+type DashboardLessonProgressEntry = {
+  module_slug: string;
+  lesson_slug: string;
+  completed: boolean | null;
+};
+
+type DashboardLessonProgressTarget = {
+  moduleSlug: string;
+  lessonSlug: string;
+};
+
+type DashboardLessonSectionTarget = {
+  id: string;
+  variant_visibility: "shared" | "foundation_only" | "higher_only" | "volna_only";
+};
+
+function getLessonProgressKey(moduleSlug: string, lessonSlug: string) {
+  return `${moduleSlug}/${lessonSlug}`;
+}
+
+function getCompletedLessonKeys(progress: DashboardLessonProgressEntry[]) {
+  return new Set(
+    progress
+      .filter((entry) => entry.completed)
+      .map((entry) => getLessonProgressKey(entry.module_slug, entry.lesson_slug))
+  );
+}
+
+export function getCompletedLessonCountForDashboardPlan(
+  progress: DashboardLessonProgressEntry[],
+  lessons: DashboardLessonProgressTarget[]
+) {
+  const completedLessonKeys = getCompletedLessonKeys(progress);
+  const lessonKeys = new Set(
+    lessons.map((lesson) => getLessonProgressKey(lesson.moduleSlug, lesson.lessonSlug))
+  );
+
+  let completedLessons = 0;
+
+  for (const lessonKey of lessonKeys) {
+    if (completedLessonKeys.has(lessonKey)) {
+      completedLessons += 1;
+    }
+  }
+
+  return completedLessons;
+}
+
+function isSectionVisibleForDashboardVariant(
+  section: DashboardLessonSectionTarget,
+  variant: Exclude<DashboardVariant, null>
+) {
+  if (section.variant_visibility === "shared") {
+    return true;
+  }
+
+  if (section.variant_visibility === "foundation_only" && variant === "foundation") {
+    return true;
+  }
+
+  if (section.variant_visibility === "higher_only" && variant === "higher") {
+    return true;
+  }
+
+  if (section.variant_visibility === "volna_only" && variant === "volna") {
+    return true;
+  }
+
+  return false;
+}
+
+export function getDashboardLessonResumeStepNumber(
+  sections: DashboardLessonSectionTarget[],
+  visitedSectionIds: string[],
+  variant: Exclude<DashboardVariant, null>
+) {
+  const visibleSections = sections.filter((section) =>
+    isSectionVisibleForDashboardVariant(section, variant)
+  );
+
+  if (visibleSections.length === 0) {
+    return null;
+  }
+
+  const visitedIds = new Set(visitedSectionIds);
+  let maxVisitedIndex = -1;
+
+  visibleSections.forEach((section, index) => {
+    if (visitedIds.has(section.id)) {
+      maxVisitedIndex = index;
+    }
+  });
+
+  return Math.min(maxVisitedIndex + 1, visibleSections.length - 1) + 1;
+}
+
+async function getDashboardLessonResumeHref(params: {
+  courseSlug: string;
+  variant: Exclude<DashboardVariant, null>;
+  moduleSlug: string;
+  lessonSlug: string;
+  lessonId: string;
+}) {
+  const href = getLessonPath(
+    params.courseSlug,
+    params.variant,
+    params.moduleSlug,
+    params.lessonSlug
+  );
+  const [sections, visitedSectionIds] = await Promise.all([
+    getLessonSectionsByLessonIdDb(params.lessonId),
+    getVisitedLessonSectionIds(params.lessonId),
+  ]);
+  const resumeStepNumber = getDashboardLessonResumeStepNumber(
+    sections,
+    visitedSectionIds,
+    params.variant
+  );
+
+  if (!resumeStepNumber || resumeStepNumber <= 1) {
+    return href;
+  }
+
+  return `${href}?step=${resumeStepNumber}`;
+}
 
 export function formatDashboardLabel(value: string | null) {
   if (!value) return "-";
@@ -66,12 +194,12 @@ export function getDashboardProgressMessage(
 
 export async function getStudentLearningPlan(
   variant: DashboardVariant,
-  completedLessons: number
+  fallbackCompletedLessons: number
 ): Promise<StudentLearningPlan> {
   if (!variant) {
     return {
       totalLessons: 0,
-      completedLessons,
+      completedLessons: fallbackCompletedLessons,
       progressPercent: 0,
       nextLesson: null,
     };
@@ -82,7 +210,7 @@ export async function getStudentLearningPlan(
   if (!course || modules.length === 0) {
     return {
       totalLessons: 0,
-      completedLessons,
+      completedLessons: fallbackCompletedLessons,
       progressPercent: 0,
       nextLesson: null,
     };
@@ -103,22 +231,30 @@ export async function getStudentLearningPlan(
     lessonsByModuleId.set(lesson.module_id, current);
   }
 
+  const orderedLessonProgressTargets = modules.flatMap((courseModule) =>
+    (lessonsByModuleId.get(courseModule.id) ?? []).map((lesson) => ({
+      moduleSlug: courseModule.slug,
+      lessonSlug: lesson.slug,
+    }))
+  );
   const totalLessons = lessons.length;
+  const completedLessons = getCompletedLessonCountForDashboardPlan(
+    progress,
+    orderedLessonProgressTargets
+  );
   const progressPercent =
     totalLessons > 0
       ? Math.min(100, Math.round((completedLessons / totalLessons) * 100))
       : 0;
-  const completedLessonKeys = new Set(
-    progress
-      .filter((entry) => entry.completed)
-      .map((entry) => `${entry.module_slug}/${entry.lesson_slug}`)
-  );
+  const completedLessonKeys = getCompletedLessonKeys(progress);
 
   for (const courseModule of modules) {
     const moduleLessons = lessonsByModuleId.get(courseModule.id) ?? [];
 
     for (const lesson of moduleLessons) {
-      if (completedLessonKeys.has(`${courseModule.slug}/${lesson.slug}`)) continue;
+      if (completedLessonKeys.has(getLessonProgressKey(courseModule.slug, lesson.slug))) {
+        continue;
+      }
 
       const accessState = getLessonAccessStateFromMeta(lesson, profile, access);
 
@@ -131,7 +267,13 @@ export async function getStudentLearningPlan(
         nextLesson: {
           title: lesson.title,
           moduleTitle: courseModule.title,
-          href: getLessonPath(course.slug, variant, courseModule.slug, lesson.slug),
+          href: await getDashboardLessonResumeHref({
+            courseSlug: course.slug,
+            variant,
+            moduleSlug: courseModule.slug,
+            lessonSlug: lesson.slug,
+            lessonId: lesson.id,
+          }),
           estimatedMinutes: lesson.estimated_minutes,
         },
       };
@@ -152,6 +294,9 @@ export function getDashboardNextStep(
   completedLessons: number,
   learningPlan: StudentLearningPlan
 ) {
+  const completedLessonCount =
+    learningPlan.totalLessons > 0 ? learningPlan.completedLessons : completedLessons;
+
   if (accessMode === "volna") {
     return {
       title: "Continue your guided work",
@@ -166,10 +311,12 @@ export function getDashboardNextStep(
   if (learningPlan.nextLesson) {
     return {
       title:
-        completedLessons > 0 ? "Continue where you left off" : "Start your first lesson",
+        completedLessonCount > 0
+          ? "Continue where you left off"
+          : "Start your first lesson",
       description: `${learningPlan.nextLesson.moduleTitle}: ${learningPlan.nextLesson.title}`,
       href: learningPlan.nextLesson.href,
-      label: completedLessons > 0 ? "Continue lesson" : "Start lesson",
+      label: completedLessonCount > 0 ? "Continue lesson" : "Start lesson",
       icon: "next" as const,
     };
   }
@@ -185,7 +332,7 @@ export function getDashboardNextStep(
     };
   }
 
-  if (variant && completedLessons > 0) {
+  if (variant && completedLessonCount > 0) {
     return {
       title: "Keep your momentum going",
       description:

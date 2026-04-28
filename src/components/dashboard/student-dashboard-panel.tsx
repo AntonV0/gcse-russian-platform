@@ -117,6 +117,9 @@ function LearningSnapshotCard({
   completedLessons: number;
   learningPlan: StudentLearningPlan;
 }) {
+  const completedLessonCount =
+    learningPlan.totalLessons > 0 ? learningPlan.completedLessons : completedLessons;
+
   return (
     <DashboardCard title="Learning snapshot" headingLevel={3} className="h-full">
       <div className="space-y-4">
@@ -126,7 +129,7 @@ function LearningSnapshotCard({
               {learningPlan.progressPercent}% complete
             </span>
             <span className="app-text-muted">
-              {completedLessons} of {learningPlan.totalLessons || "-"}
+              {completedLessonCount} of {learningPlan.totalLessons || "-"}
             </span>
           </div>
           <div className="app-progress-track">
@@ -140,7 +143,7 @@ function LearningSnapshotCard({
         <div className="grid gap-3">
           <div className="app-stat-tile">
             <div className="app-stat-label">Completed lessons</div>
-            <div className="app-stat-value">{String(completedLessons)}</div>
+            <div className="app-stat-value">{String(completedLessonCount)}</div>
           </div>
 
           <div className="app-stat-tile">
@@ -161,7 +164,7 @@ function LearningSnapshotCard({
         </div>
 
         <p className="text-sm app-text-muted">
-          {getDashboardProgressMessage(dashboard.accessMode, completedLessons)}
+          {getDashboardProgressMessage(dashboard.accessMode, completedLessonCount)}
         </p>
       </div>
     </DashboardCard>
