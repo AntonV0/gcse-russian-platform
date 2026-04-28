@@ -38,9 +38,12 @@ export function StepMetaBar({
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
+          <div className="min-w-0">
             <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
-              Step {currentStepNumber} of {totalSteps} -{" "}
+              Step {currentStepNumber} of {totalSteps}
+            </div>
+
+            <div className="mt-1 text-sm font-semibold capitalize text-[var(--text-primary)]">
               {sectionKind.replaceAll("_", " ")}
             </div>
 
@@ -49,8 +52,8 @@ export function StepMetaBar({
             ) : null}
           </div>
 
-          <div className="text-sm app-text-muted">
-            Visited progress: {visitedPercent}%
+          <div className="rounded-full border border-[var(--border)] bg-[var(--background-muted)] px-3 py-1 text-sm font-medium text-[var(--text-secondary)]">
+            Lesson progress {visitedPercent}%
           </div>
         </div>
 

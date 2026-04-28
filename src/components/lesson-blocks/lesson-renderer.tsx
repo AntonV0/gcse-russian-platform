@@ -28,6 +28,8 @@ type LessonRendererProps = {
   sections: LessonSection[];
   lessonId?: string | null;
   currentVariant?: LessonRendererVariant;
+  sectionSurface?: "card" | "flat";
+  showSectionHeader?: boolean;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -36,8 +38,14 @@ export default function LessonRenderer({
   sections,
   lessonId = null,
   currentVariant = "foundation",
+  sectionSurface = "card",
+  showSectionHeader = true,
 }: LessonRendererProps) {
   const visibleSections = filterVisibleLessonSections(sections, currentVariant);
+  const sectionClassName =
+    sectionSurface === "flat"
+      ? "space-y-5"
+      : "space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/60 p-4 md:p-6";
 
   return (
     <div className="dev-marker-host relative space-y-8">
@@ -59,21 +67,20 @@ export default function LessonRenderer({
       ) : null}
 
       {visibleSections.map((section) => (
-        <section
-          key={section.id}
-          className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/60 p-4 md:p-6"
-        >
-          <div className="space-y-2">
-            <div className="app-text-meta">
-              {section.sectionKind.replaceAll("_", " ")}
+        <section key={section.id} className={sectionClassName}>
+          {showSectionHeader ? (
+            <div className="space-y-2">
+              <div className="app-text-meta">
+                {section.sectionKind.replaceAll("_", " ")}
+              </div>
+
+              <h2 className="app-heading-section">{section.title}</h2>
+
+              {section.description ? (
+                <p className="app-text-body-muted">{section.description}</p>
+              ) : null}
             </div>
-
-            <h2 className="app-heading-section">{section.title}</h2>
-
-            {section.description ? (
-              <p className="app-text-body-muted">{section.description}</p>
-            ) : null}
-          </div>
+          ) : null}
 
           <div className="space-y-5">
             {section.blocks.map((block, index) => {

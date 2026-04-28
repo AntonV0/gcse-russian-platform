@@ -67,9 +67,9 @@ export function SectionPager({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-semibold text-[var(--text-primary)]">Section navigation</h2>
+          <h2 className="font-semibold text-[var(--text-primary)]">Keep going</h2>
           <p className="mt-1 text-sm app-text-muted">
-            Move forward step by step, and revisit sections you have already opened.
+            Continue when you are ready, or revisit an earlier section to check a detail.
           </p>
         </div>
 
@@ -79,11 +79,11 @@ export function SectionPager({
               href={previousHref}
               className="app-btn-base app-btn-secondary min-h-11 rounded-lg px-4 py-2 text-sm"
             >
-              Previous section
+              Previous
             </Link>
           ) : (
             <span className="flex min-h-11 items-center justify-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
-              Previous section
+              Previous
             </span>
           )}
 
@@ -96,7 +96,7 @@ export function SectionPager({
             </Link>
           ) : (
             <span className="flex min-h-11 items-center justify-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
-              Next section
+              Final section
             </span>
           )}
         </div>

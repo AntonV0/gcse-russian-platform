@@ -47,10 +47,11 @@ export function StepTracker({
 
       <div className="mb-4">
         <p className="text-sm font-semibold text-[var(--text-primary)]">
-          Section {currentStepIndex + 1} of {sections.length}
+          Lesson sections
         </p>
         <p className="mt-1 text-sm app-text-muted">
-          Visited sections stay available. The next new section unlocks as you go.
+          You are on section {currentStepIndex + 1} of {sections.length}. Completed steps
+          stay open for quick review.
         </p>
       </div>
 

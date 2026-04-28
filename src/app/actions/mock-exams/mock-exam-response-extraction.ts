@@ -33,6 +33,17 @@ function parseIndexList(value: string) {
     .filter((item) => Number.isInteger(item) && item >= 0);
 }
 
+function parseSequencingSelects(question: DbMockExamQuestion, formData: FormData) {
+  const items = getStringArray(question.data.items);
+  if (items.length === 0) return [];
+
+  return items
+    .map((_, index) =>
+      Number(getTrimmedString(formData, `response_order_${question.id}_${index}`))
+    )
+    .filter((item) => Number.isInteger(item) && item >= 0);
+}
+
 const writingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
   "writing_task",
   "simple_sentences",
@@ -102,13 +113,20 @@ export async function extractQuestionResponse(
     }
 
     case "sequencing": {
-      const orderText = getTrimmedString(formData, `response_order_${question.id}`);
+      const selectedOrder = parseSequencingSelects(question, formData);
+      const legacyOrderText = getTrimmedString(formData, `response_order_${question.id}`);
+      const order =
+        selectedOrder.length > 0 ? selectedOrder : parseIndexList(legacyOrderText);
+      const orderText =
+        order.length > 0
+          ? order.map((item) => String(item + 1)).join(", ")
+          : legacyOrderText;
 
       return {
         responseText: orderText || null,
         responsePayload: {
           orderText,
-          order: parseIndexList(orderText),
+          order,
         },
       };
     }
