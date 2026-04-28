@@ -7,6 +7,10 @@ import EmptyState from "@/components/ui/empty-state";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadCoursePageData } from "@/lib/courses/course-helpers-db";
 import { getCoursesPath, getVariantPath } from "@/lib/access/routes";
+import {
+  formatCoursePathRemainingMinutes,
+  getVariantPathProgressSummaries,
+} from "@/lib/courses/path-progress";
 
 type CoursePageProps = {
   params: Promise<{
@@ -55,6 +59,26 @@ export default async function CoursePage({ params }: CoursePageProps) {
   }
 
   const primaryVariant = variants[0] ?? null;
+  const pathSummaries = await getVariantPathProgressSummaries(course.slug, variants);
+  const primaryVariantSummary = primaryVariant
+    ? pathSummaries.get(primaryVariant.slug)
+    : null;
+  const primaryActionHref =
+    primaryVariantSummary?.nextLesson?.href ??
+    (primaryVariant ? getVariantPath(course.slug, primaryVariant.slug) : null);
+  const primaryActionLabel = primaryVariantSummary?.nextLesson
+    ? `Continue: ${primaryVariantSummary.nextLesson.title}`
+    : primaryVariant
+      ? `Open ${primaryVariant.title}`
+      : null;
+  const totalLessons = Array.from(pathSummaries.values()).reduce(
+    (total, summary) => total + summary.totalLessons,
+    0
+  );
+  const completedLessons = Array.from(pathSummaries.values()).reduce(
+    (total, summary) => total + summary.completedLessons,
+    0
+  );
 
   return (
     <main className="space-y-8">
@@ -89,13 +113,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              {primaryVariant ? (
-                <Button
-                  href={getVariantPath(course.slug, primaryVariant.slug)}
-                  variant="primary"
-                  icon="next"
-                >
-                  Continue to {primaryVariant.title}
+              {primaryActionHref && primaryActionLabel ? (
+                <Button href={primaryActionHref} variant="primary" icon="next">
+                  {primaryActionLabel}
                 </Button>
               ) : null}
 
@@ -115,18 +135,26 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">Paths</div>
-                  <div className="app-stat-value">{variants.length}</div>
+                  <div className="app-stat-label">Progress</div>
+                  <div className="app-stat-value">
+                    {completedLessons} / {totalLessons || "-"}
+                  </div>
                 </div>
 
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">Journey</div>
-                  <div className="app-stat-value">Path, module, lesson</div>
+                  <div className="app-stat-label">Next up</div>
+                  <div className="app-stat-value">
+                    {primaryVariantSummary?.nextLesson?.title ??
+                      (primaryVariantSummary?.isComplete
+                        ? "Path complete"
+                        : "Choose a path")}
+                  </div>
                 </div>
               </div>
 
               <p className="text-sm app-text-muted">
-                Choose the path that matches your level, then follow the modules in order.
+                Choose the path that matches your level, then follow the next available
+                lesson to keep momentum visible.
               </p>
             </div>
           </DashboardCard>
@@ -151,36 +179,91 @@ export default async function CoursePage({ params }: CoursePageProps) {
         />
       ) : (
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {variants.map((variant, index) => (
-            <Link
-              key={variant.slug}
-              href={getVariantPath(course.slug, variant.slug)}
-              className="block"
-            >
-              <DashboardCard className="h-full transition hover:-translate-y-0.5">
-                <div className="space-y-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge tone={getVariantTone(variant.slug)} icon="layers">
-                      {getVariantLabel(variant.slug)}
-                    </Badge>
+          {variants.map((variant, index) => {
+            const summary = pathSummaries.get(variant.slug);
+            const href =
+              summary?.nextLesson?.href ?? getVariantPath(course.slug, variant.slug);
 
-                    {index === 0 ? <Badge tone="muted">Suggested</Badge> : null}
+            return (
+              <Link key={variant.slug} href={href} className="block">
+                <DashboardCard className="h-full transition hover:-translate-y-0.5">
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge tone={getVariantTone(variant.slug)} icon="layers">
+                        {getVariantLabel(variant.slug)}
+                      </Badge>
+
+                      {summary?.isComplete ? (
+                        <Badge tone="success" icon="completed">
+                          Complete
+                        </Badge>
+                      ) : summary?.nextLesson ? (
+                        <Badge tone="info" icon="next">
+                          Up next
+                        </Badge>
+                      ) : index === 0 ? (
+                        <Badge tone="muted">Suggested</Badge>
+                      ) : null}
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="app-heading-subsection">{variant.title}</h3>
+
+                      <p className="app-text-body-muted">
+                        {variant.description ??
+                          "Open this path to view modules and continue learning."}
+                      </p>
+                    </div>
+
+                    <div>
+                      <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                        <span className="font-medium text-[var(--text-primary)]">
+                          {summary?.progressPercent ?? 0}% complete
+                        </span>
+                        <span className="app-text-muted">
+                          {summary?.completedLessons ?? 0} of{" "}
+                          {summary?.totalLessons || "-"}
+                        </span>
+                      </div>
+                      <div className="app-progress-track">
+                        <div
+                          className="app-progress-bar"
+                          style={{ width: `${summary?.progressPercent ?? 0}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="app-stat-tile">
+                        <div className="app-stat-label">Lessons</div>
+                        <div className="app-stat-value">
+                          {summary?.totalLessons || "-"}
+                        </div>
+                      </div>
+
+                      <div className="app-stat-tile">
+                        <div className="app-stat-label">Time left</div>
+                        <div className="app-stat-value">
+                          {formatCoursePathRemainingMinutes(
+                            summary?.remainingMinutes,
+                            !!summary?.isComplete
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-1 text-sm font-medium app-brand-text">
+                      {summary?.nextLesson
+                        ? `Continue: ${summary.nextLesson.title}`
+                        : summary?.isComplete
+                          ? "Review path"
+                          : "Open path"}
+                    </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <h3 className="app-heading-subsection">{variant.title}</h3>
-
-                    <p className="app-text-body-muted">
-                      {variant.description ??
-                        "Open this path to view modules and continue learning."}
-                    </p>
-                  </div>
-
-                  <div className="pt-1 text-sm font-medium app-brand-text">Open path</div>
-                </div>
-              </DashboardCard>
-            </Link>
-          ))}
+                </DashboardCard>
+              </Link>
+            );
+          })}
         </section>
       )}
     </main>

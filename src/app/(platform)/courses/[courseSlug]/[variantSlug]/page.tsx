@@ -7,6 +7,10 @@ import EmptyState from "@/components/ui/empty-state";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadVariantPageData } from "@/lib/courses/course-helpers-db";
 import { getCoursePath, getCoursesPath, getModulePath } from "@/lib/access/routes";
+import {
+  formatCoursePathRemainingMinutes,
+  getVariantPathProgressSummary,
+} from "@/lib/courses/path-progress";
 
 type VariantPageProps = {
   params: Promise<{
@@ -56,6 +60,20 @@ export default async function VariantPage({ params }: VariantPageProps) {
   }
 
   const primaryModule = modules[0] ?? null;
+  const pathSummary = await getVariantPathProgressSummary(course.slug, variant, modules);
+  const moduleSummaryMap = new Map(
+    pathSummary.moduleSummaries.map((summary) => [summary.moduleSlug, summary])
+  );
+  const primaryActionHref =
+    pathSummary.nextLesson?.href ??
+    (primaryModule ? getModulePath(course.slug, variant.slug, primaryModule.slug) : null);
+  const primaryActionLabel = pathSummary.nextLesson
+    ? `Continue: ${pathSummary.nextLesson.title}`
+    : pathSummary.isComplete
+      ? "Review this path"
+      : primaryModule
+        ? `Start ${primaryModule.title}`
+        : null;
 
   return (
     <main className="space-y-8">
@@ -90,13 +108,9 @@ export default async function VariantPage({ params }: VariantPageProps) {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              {primaryModule ? (
-                <Button
-                  href={getModulePath(course.slug, variant.slug, primaryModule.slug)}
-                  variant="primary"
-                  icon="next"
-                >
-                  Continue to {primaryModule.title}
+              {primaryActionHref && primaryActionLabel ? (
+                <Button href={primaryActionHref} variant="primary" icon="next">
+                  {primaryActionLabel}
                 </Button>
               ) : null}
 
@@ -116,19 +130,47 @@ export default async function VariantPage({ params }: VariantPageProps) {
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">Path</div>
-                  <div className="app-stat-value">{getVariantLabel(variant.slug)}</div>
+                  <div className="app-stat-label">Progress</div>
+                  <div className="app-stat-value">
+                    {pathSummary.completedLessons} / {pathSummary.totalLessons || "-"}
+                  </div>
                 </div>
 
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">Modules</div>
-                  <div className="app-stat-value">{modules.length}</div>
+                  <div className="app-stat-label">Time left</div>
+                  <div className="app-stat-value">
+                    {formatCoursePathRemainingMinutes(
+                      pathSummary.remainingMinutes,
+                      pathSummary.isComplete
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                  <span className="font-medium text-[var(--text-primary)]">
+                    {pathSummary.progressPercent}% complete
+                  </span>
+                  <span className="app-text-muted">
+                    {pathSummary.totalModules} module
+                    {pathSummary.totalModules === 1 ? "" : "s"}
+                  </span>
+                </div>
+                <div className="app-progress-track">
+                  <div
+                    className="app-progress-bar"
+                    style={{ width: `${pathSummary.progressPercent}%` }}
+                  />
                 </div>
               </div>
 
               <p className="text-sm app-text-muted">
-                Start with the first available module, then continue in order as new
-                lessons unlock.
+                {pathSummary.nextLesson
+                  ? `${pathSummary.nextLesson.moduleTitle} is next in your guided route.`
+                  : pathSummary.isComplete
+                    ? "Every lesson in this path is complete. Revisit modules whenever you want revision."
+                    : "Start with the first available module, then continue in order as lessons unlock."}
               </p>
             </div>
           </DashboardCard>
@@ -153,38 +195,93 @@ export default async function VariantPage({ params }: VariantPageProps) {
         />
       ) : (
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {modules.map((module, index) => (
-            <Link
-              key={module.slug}
-              href={getModulePath(course.slug, variant.slug, module.slug)}
-              className="block"
-            >
-              <DashboardCard className="h-full transition hover:-translate-y-0.5">
-                <div className="space-y-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge tone="muted" icon="modules">
-                      Module {index + 1}
-                    </Badge>
+          {modules.map((module, index) => {
+            const summary = moduleSummaryMap.get(module.slug);
+            const href =
+              summary?.nextLesson?.href ??
+              getModulePath(course.slug, variant.slug, module.slug);
 
-                    {index === 0 ? <Badge tone="success">Start here</Badge> : null}
+            return (
+              <Link key={module.slug} href={href} className="block">
+                <DashboardCard className="h-full transition hover:-translate-y-0.5">
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge tone="muted" icon="modules">
+                        Module {index + 1}
+                      </Badge>
+
+                      {summary?.isComplete ? (
+                        <Badge tone="success" icon="completed">
+                          Complete
+                        </Badge>
+                      ) : summary?.nextLesson ? (
+                        <Badge tone="info" icon="next">
+                          Up next
+                        </Badge>
+                      ) : index === 0 ? (
+                        <Badge tone="success">Start here</Badge>
+                      ) : null}
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="app-heading-subsection">{module.title}</h3>
+
+                      <p className="app-text-body-muted">
+                        {module.description ??
+                          "Open this module to view lessons and continue learning."}
+                      </p>
+                    </div>
+
+                    <div>
+                      <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                        <span className="font-medium text-[var(--text-primary)]">
+                          {summary?.progressPercent ?? 0}% complete
+                        </span>
+                        <span className="app-text-muted">
+                          {summary?.completedLessons ?? 0} of{" "}
+                          {summary?.totalLessons || "-"}
+                        </span>
+                      </div>
+                      <div className="app-progress-track">
+                        <div
+                          className="app-progress-bar"
+                          style={{ width: `${summary?.progressPercent ?? 0}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="app-stat-tile">
+                        <div className="app-stat-label">Next lesson</div>
+                        <div className="app-stat-value">
+                          {summary?.nextLesson?.title ??
+                            (summary?.isComplete ? "Review ready" : "Open module")}
+                        </div>
+                      </div>
+
+                      <div className="app-stat-tile">
+                        <div className="app-stat-label">Time left</div>
+                        <div className="app-stat-value">
+                          {formatCoursePathRemainingMinutes(
+                            summary?.remainingMinutes,
+                            !!summary?.isComplete
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-1 text-sm font-medium app-brand-text">
+                      {summary?.nextLesson
+                        ? `Continue: ${summary.nextLesson.title}`
+                        : summary?.isComplete
+                          ? "Review module"
+                          : "Open module"}
+                    </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <h3 className="app-heading-subsection">{module.title}</h3>
-
-                    <p className="app-text-body-muted">
-                      {module.description ??
-                        "Open this module to view lessons and continue learning."}
-                    </p>
-                  </div>
-
-                  <div className="pt-1 text-sm font-medium app-brand-text">
-                    Open module
-                  </div>
-                </div>
-              </DashboardCard>
-            </Link>
-          ))}
+                </DashboardCard>
+              </Link>
+            );
+          })}
         </section>
       )}
     </main>
