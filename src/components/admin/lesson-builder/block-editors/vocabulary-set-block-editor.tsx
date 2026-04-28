@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { updateVocabularySetBlockAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import type { LessonBuilderVocabularySetOption } from "@/components/admin/lesson-builder/lesson-builder-types";
+import { useVocabularySetOptionFilters } from "@/components/admin/lesson-builder/vocabulary-set-option-filters";
 import {
   BuilderHiddenFields,
   PendingStatusText,
@@ -48,6 +49,20 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
   const selectedVocabularyList = selectedVocabularySet?.lists.find(
     (list) => list.slug === selectedListValue
   );
+  const {
+    filteredVocabularySetOptions,
+    setModeFilter,
+    setSearch,
+    setSetModeFilter,
+    setSetSearch,
+    setSetStatusFilter,
+    setSetTierFilter,
+    setStatusFilter,
+    setTierFilter,
+  } = useVocabularySetOptionFilters({
+    options: props.vocabularySetOptions,
+    selectedOption: selectedVocabularySet,
+  });
   const hasMissingList =
     Boolean(props.defaultListSlug) &&
     selectedValue === props.defaultSlug &&
@@ -75,6 +90,53 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
         className={BUILDER_FIELD_CLASS}
       />
 
+      <div className="grid gap-2 md:grid-cols-2">
+        <input
+          type="search"
+          value={setSearch}
+          onChange={(event) => setSetSearch(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") event.preventDefault();
+          }}
+          placeholder="Filter vocabulary sets..."
+          className={`${BUILDER_FIELD_CLASS} md:col-span-2`}
+          aria-label="Filter vocabulary sets"
+        />
+        <select
+          value={setTierFilter}
+          onChange={(event) => setSetTierFilter(event.target.value)}
+          className={BUILDER_SELECT_CLASS}
+          aria-label="Filter vocabulary sets by tier"
+        >
+          <option value="all">All tiers</option>
+          <option value="foundation">Foundation</option>
+          <option value="higher">Higher</option>
+          <option value="both">Both tiers</option>
+        </select>
+        <select
+          value={setModeFilter}
+          onChange={(event) => setSetModeFilter(event.target.value)}
+          className={BUILDER_SELECT_CLASS}
+          aria-label="Filter vocabulary sets by list mode"
+        >
+          <option value="all">All modes</option>
+          <option value="spec_only">Exam list</option>
+          <option value="extended_only">Extra practice</option>
+          <option value="spec_and_extended">Exam + extra</option>
+          <option value="custom">Custom sets</option>
+        </select>
+        <select
+          value={setStatusFilter}
+          onChange={(event) => setSetStatusFilter(event.target.value)}
+          className={`${BUILDER_SELECT_CLASS} md:col-span-2`}
+          aria-label="Filter vocabulary sets by status"
+        >
+          <option value="all">All statuses</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+        </select>
+      </div>
+
       <select
         name="vocabularySetSlug"
         required
@@ -90,14 +152,23 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
             Missing set - {props.defaultSlug}
           </option>
         ) : null}
+        <option value="" disabled>
+          Choose a vocabulary set
+        </option>
 
-        {props.vocabularySetOptions.map((option) => (
+        {filteredVocabularySetOptions.map((option) => (
           <option key={option.id} value={option.slug}>
-            {option.title} - {option.slug}
+            {option.title} - {option.slug} - {option.tier} - {option.listMode}
             {option.isPublished ? "" : " - draft"}
           </option>
         ))}
       </select>
+
+      <div className="text-xs app-text-soft">
+        Showing {filteredVocabularySetOptions.length} of{" "}
+        {props.vocabularySetOptions.length} vocabulary set
+        {props.vocabularySetOptions.length === 1 ? "" : "s"}.
+      </div>
 
       {!hasMatchingOption && props.defaultSlug ? (
         <div className="rounded-2xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] px-3 py-3 text-sm text-[var(--warning)]">

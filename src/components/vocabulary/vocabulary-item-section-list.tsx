@@ -108,32 +108,46 @@ function VocabularyItemRow({
   item,
   coverage,
   showStaffMetadata,
+  position,
 }: {
   item: DbVocabularyItem;
   coverage: DbVocabularyItemCoverage | null;
   showStaffMetadata: boolean;
+  position: number;
 }) {
   const studyUseLabel = getItemStudyUseLabel(item);
 
   return (
-    <div className="app-card app-card-hover p-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0">
-          <div className="text-lg font-semibold leading-7 text-[var(--text-primary)]">
-            {item.russian}
-          </div>
-          <div className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-            {item.english}
-          </div>
-          {item.transliteration ? (
-            <div className="mt-1 text-sm leading-6 app-text-soft">
-              {item.transliteration}
+    <div className="group relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent)_24%,var(--border-strong))] hover:bg-[var(--background-elevated)]">
+      <div className="absolute inset-y-0 left-0 w-1 bg-[var(--accent-fill)] opacity-70" />
+
+      <div className="grid gap-4 px-4 py-4 sm:pl-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+        <div className="flex min-w-0 gap-3">
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--text-muted)]">
+            {position}
+          </span>
+
+          <div className="min-w-0">
+            <div
+              lang="ru"
+              className="text-lg font-semibold leading-7 text-[var(--text-primary)]"
+            >
+              {item.russian}
             </div>
-          ) : null}
+            {item.transliteration ? (
+              <div className="mt-1 text-sm leading-6 app-text-soft">
+                {item.transliteration}
+              </div>
+            ) : null}
+          </div>
         </div>
 
-        <div className="flex shrink-0 flex-col gap-2 md:items-end">
-          <div className="flex flex-wrap gap-2 md:justify-end">
+        <div className="min-w-0 border-t border-[var(--border-subtle)] pt-3 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
+          <div className="text-sm leading-6 text-[var(--text-secondary)]">
+            {item.english}
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2">
             <Badge tone={getItemBadgeTone(item)}>{getItemSourceLabel(item)}</Badge>
             <Badge tone="muted">{item.part_of_speech.replaceAll("_", " ")}</Badge>
             <Badge tone="muted">{getVocabularyTierLabel(item.tier)}</Badge>
@@ -141,13 +155,15 @@ function VocabularyItemRow({
           </div>
 
           {showStaffMetadata ? (
-            <VocabularyItemCoverageBadges item={item} coverage={coverage} />
+            <div className="mt-3">
+              <VocabularyItemCoverageBadges item={item} coverage={coverage} />
+            </div>
           ) : null}
         </div>
       </div>
 
       {item.example_ru || item.example_en || item.notes ? (
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 border-t border-[var(--border-subtle)] bg-[var(--background-elevated)]/45 px-4 py-4 sm:pl-5 md:grid-cols-2">
           {item.example_ru || item.example_en ? (
             <div className="app-soft-panel px-3 py-3">
               {item.example_ru ? (
@@ -205,12 +221,13 @@ function VocabularyItemSection({
       </summary>
 
       <div className="mt-4 grid gap-3">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <VocabularyItemRow
             key={`${item.vocabulary_list_id ?? item.vocabulary_set_id}-${item.id}`}
             item={item}
             coverage={itemCoverageById.get(item.id) ?? null}
             showStaffMetadata={showStaffMetadata}
+            position={index + 1}
           />
         ))}
       </div>
