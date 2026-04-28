@@ -1,3 +1,5 @@
+import type { DbVocabularySetType } from "@/lib/vocabulary/shared/types";
+
 export type LessonBuilderTemplateOptions = {
   blockPresets: {
     id: string;
@@ -28,6 +30,7 @@ export type LessonBuilderVocabularySetOption = {
   isPublished: boolean;
   tier: string;
   listMode: string;
+  setType: DbVocabularySetType;
   lists: {
     id: string;
     title: string;

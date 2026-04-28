@@ -9,7 +9,7 @@ import VocabularySetSectionList from "@/components/vocabulary/vocabulary-set-sec
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import { getVocabularyThemeLabel } from "@/lib/vocabulary/shared/labels";
 import {
-  getPublishedVocabularySetsDb,
+  getPublishedStudentVocabularySetsDb,
   getVocabularySetsDb,
 } from "@/lib/vocabulary/sets/set-list-queries";
 import { getVocabularySetThemeKeysDb } from "@/lib/vocabulary/sets/set-options";
@@ -71,9 +71,10 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
   const [vocabularySets, themeKeys] = await Promise.all([
     canSeeDrafts
       ? getVocabularySetsDb({ filters })
-      : getPublishedVocabularySetsDb(filters),
+      : getPublishedStudentVocabularySetsDb(filters),
     getVocabularySetThemeKeysDb({
       publishedOnly: !canSeeDrafts,
+      excludeSetTypes: canSeeDrafts ? undefined : ["specification"],
     }),
   ]);
   const draftCount = vocabularySets.filter((set) => !set.is_published).length;

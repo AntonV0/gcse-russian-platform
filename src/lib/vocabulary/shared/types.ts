@@ -251,7 +251,14 @@ export type DbVocabularySetOptionList = Pick<
 
 export type DbVocabularySetOption = Pick<
   DbVocabularySet,
-  "id" | "title" | "slug" | "is_published" | "tier" | "list_mode" | "sort_order"
+  | "id"
+  | "title"
+  | "slug"
+  | "is_published"
+  | "tier"
+  | "list_mode"
+  | "set_type"
+  | "sort_order"
 > & {
   lists: DbVocabularySetOptionList[];
 };

@@ -3,6 +3,7 @@ import { getVocabularyThemeLabel } from "@/lib/vocabulary/shared/labels";
 import { chunkValues, fetchSupabasePages } from "@/lib/vocabulary/shared/pagination";
 import type {
   DbVocabularySet,
+  DbVocabularySetType,
   DbVocabularySetOption,
   DbVocabularySetOptionList,
 } from "@/lib/vocabulary/shared/types";
@@ -46,23 +47,37 @@ async function getVocabularyOptionListsBySetIdsDb(vocabularySetIds: string[]) {
   return listsBySetId;
 }
 
-export async function getVocabularySetOptionsDb(options?: { publishedOnly?: boolean }) {
+export async function getVocabularySetOptionsDb(options?: {
+  publishedOnly?: boolean;
+  excludeSetTypes?: DbVocabularySetType[];
+}) {
   const supabase = await createClient();
   const data = await fetchSupabasePages<
     Pick<
       DbVocabularySet,
-      "id" | "title" | "slug" | "is_published" | "tier" | "list_mode" | "sort_order"
+      | "id"
+      | "title"
+      | "slug"
+      | "is_published"
+      | "tier"
+      | "list_mode"
+      | "set_type"
+      | "sort_order"
     >
   >({
     queryFactory: () => {
       let query = supabase
         .from("vocabulary_sets")
-        .select("id, title, slug, is_published, tier, list_mode, sort_order")
+        .select("id, title, slug, is_published, tier, list_mode, set_type, sort_order")
         .order("sort_order", { ascending: true })
         .order("title", { ascending: true });
 
       if (options?.publishedOnly) {
         query = query.eq("is_published", true);
+      }
+
+      for (const excludedSetType of options?.excludeSetTypes ?? []) {
+        query = query.neq("set_type", excludedSetType);
       }
 
       return query;
@@ -93,7 +108,10 @@ export async function getVocabularySetOptionsDb(options?: { publishedOnly?: bool
   );
 }
 
-export async function getVocabularySetThemeKeysDb(options?: { publishedOnly?: boolean }) {
+export async function getVocabularySetThemeKeysDb(options?: {
+  publishedOnly?: boolean;
+  excludeSetTypes?: DbVocabularySetType[];
+}) {
   const supabase = await createClient();
   const data = await fetchSupabasePages<{ theme_key: string | null }>({
     queryFactory: () => {
@@ -105,6 +123,10 @@ export async function getVocabularySetThemeKeysDb(options?: { publishedOnly?: bo
 
       if (options?.publishedOnly) {
         query = query.eq("is_published", true);
+      }
+
+      for (const excludedSetType of options?.excludeSetTypes ?? []) {
+        query = query.neq("set_type", excludedSetType);
       }
 
       return query;

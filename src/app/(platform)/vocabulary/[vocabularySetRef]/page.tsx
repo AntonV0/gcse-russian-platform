@@ -39,7 +39,11 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
     { scopeVariant: studyVariant }
   );
 
-  if (!vocabularySet || (!vocabularySet.is_published && !canSeeDrafts)) {
+  if (
+    !vocabularySet ||
+    (!vocabularySet.is_published && !canSeeDrafts) ||
+    (vocabularySet.set_type === "specification" && !canSeeDrafts)
+  ) {
     notFound();
   }
 
