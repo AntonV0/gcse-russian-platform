@@ -84,7 +84,9 @@ function assertVocabularyDisplayVariant(value: string): DbVocabularyDisplayVaria
   throw new Error("Invalid vocabulary display variant");
 }
 
-function getVocabularySetMutationPayload(formData: FormData): VocabularySetMutationPayload {
+function getVocabularySetMutationPayload(
+  formData: FormData
+): VocabularySetMutationPayload {
   const title = getTrimmedString(formData, "title");
   const tier = assertVocabularyTier(getTrimmedString(formData, "tier") || "both");
   const listMode = assertVocabularyListMode(
