@@ -12,10 +12,11 @@ import { getDefaultVocabularyItemTier } from "@/components/admin/vocabulary/item
 import { VocabularyAdminStatTile } from "@/components/admin/vocabulary/items/primitives";
 import VocabularyItemCard from "@/components/admin/vocabulary/items/vocabulary-item-card";
 import {
+  getVocabularyCategoryLabel,
   getVocabularyListModeLabel,
   getVocabularyTierLabel,
-} from "@/lib/vocabulary/labels";
-import { getVocabularyListAppliesToStudyVariant } from "@/lib/vocabulary/study-variants";
+} from "@/lib/vocabulary/shared/labels";
+import { getVocabularyListAppliesToStudyVariant } from "@/lib/vocabulary/shared/study-variants";
 import type {
   DbVocabularyItem,
   DbVocabularyItemCoverage,
@@ -26,7 +27,7 @@ import type {
   DbVocabularySet,
   DbVocabularySetUsageStats,
   DbVocabularyTier,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 
 type VocabularyItemAdminFilters = {
   itemSearch?: string;
@@ -431,7 +432,7 @@ export default function VocabularySetItemsAdmin({
               <option value="">All categories</option>
               {categoryOptions.map((categoryKey) => (
                 <option key={categoryKey} value={categoryKey}>
-                  {categoryKey.replaceAll("_", " ")}
+                  {getVocabularyCategoryLabel(categoryKey)}
                 </option>
               ))}
             </Select>
