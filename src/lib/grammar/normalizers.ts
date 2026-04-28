@@ -1,7 +1,9 @@
 import type {
   DbGrammarExample,
   DbGrammarPoint,
+  DbGrammarPointCoverage,
   DbGrammarSet,
+  DbGrammarSetSummaryRow,
   DbGrammarTable,
 } from "@/lib/grammar/types";
 
@@ -99,5 +101,38 @@ export function normalizeGrammarTable(row: unknown): DbGrammarTable {
     sort_order: Number(record.sort_order ?? 0),
     created_at: String(record.created_at),
     updated_at: String(record.updated_at),
+  };
+}
+
+export function normalizeGrammarPointCoverage(row: unknown): DbGrammarPointCoverage {
+  const record = row as Partial<DbGrammarPointCoverage>;
+
+  return {
+    grammar_point_id: String(record.grammar_point_id),
+    used_in_foundation: Boolean(record.used_in_foundation),
+    used_in_higher: Boolean(record.used_in_higher),
+    used_in_volna: Boolean(record.used_in_volna),
+    foundation_occurrences: Number(record.foundation_occurrences ?? 0),
+    higher_occurrences: Number(record.higher_occurrences ?? 0),
+    volna_occurrences: Number(record.volna_occurrences ?? 0),
+  };
+}
+
+export function normalizeGrammarSetSummaryRow(row: unknown): DbGrammarSetSummaryRow {
+  const record = row as Partial<DbGrammarSetSummaryRow>;
+
+  return {
+    grammar_set_id: String(record.grammar_set_id),
+    point_count: Number(record.point_count ?? 0),
+    total_occurrences: Number(record.total_occurrences ?? 0),
+    foundation_occurrences: Number(record.foundation_occurrences ?? 0),
+    higher_occurrences: Number(record.higher_occurrences ?? 0),
+    volna_occurrences: Number(record.volna_occurrences ?? 0),
+    foundation_total_points: Number(record.foundation_total_points ?? 0),
+    higher_total_points: Number(record.higher_total_points ?? 0),
+    volna_total_points: Number(record.volna_total_points ?? 0),
+    foundation_used_points: Number(record.foundation_used_points ?? 0),
+    higher_used_points: Number(record.higher_used_points ?? 0),
+    volna_used_points: Number(record.volna_used_points ?? 0),
   };
 }

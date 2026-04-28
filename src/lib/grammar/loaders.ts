@@ -8,9 +8,15 @@ import {
   getGrammarTablesByPointIdDb,
 } from "@/lib/grammar/queries";
 import type {
+  DbGrammarStudyVariant,
   LoadedGrammarPointDetailDb,
   LoadedGrammarSetDetailDb,
 } from "@/lib/grammar/types";
+
+type GrammarSetLoadOptions = {
+  publishedOnly?: boolean;
+  scopeVariant?: DbGrammarStudyVariant | "all" | null;
+};
 
 export async function loadGrammarSetByIdDb(
   grammarSetId: string
@@ -34,7 +40,7 @@ export async function loadGrammarSetByIdDb(
 
 export async function loadGrammarSetBySlugDb(
   grammarSetSlug: string,
-  options?: { publishedOnly?: boolean }
+  options?: GrammarSetLoadOptions
 ): Promise<LoadedGrammarSetDetailDb> {
   const grammarSet = await getGrammarSetBySlugDb(grammarSetSlug);
 
@@ -54,6 +60,7 @@ export async function loadGrammarSetBySlugDb(
 
   const points = await getGrammarPointsBySetIdDb(grammarSet.id, {
     publishedOnly: options?.publishedOnly,
+    scopeVariant: options?.scopeVariant,
   });
 
   return {
