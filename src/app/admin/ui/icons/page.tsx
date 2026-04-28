@@ -1,9 +1,9 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import type { AppIconKey } from "@/lib/shared/icons";
-import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
-import UiLabSection from "@/components/admin/ui-lab-section";
+import UiLabFutureSection from "@/components/admin/ui-lab/shell/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
+import UiLabSection from "@/components/admin/ui-lab/shell/ui-lab-section";
 import AllIconsBrowserSection from "@/components/admin/all-icons-browser-section";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";

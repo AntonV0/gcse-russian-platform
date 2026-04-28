@@ -1,10 +1,10 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { LAYOUT_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab-layout-data";
-import { UiLabLayoutBoundarySections } from "@/components/admin/ui-lab-layout-boundary-sections";
-import { UiLabLayoutGridResponsiveSections } from "@/components/admin/ui-lab-layout-grid-responsive-sections";
-import { UiLabLayoutShellSections } from "@/components/admin/ui-lab-layout-shell-sections";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import { LAYOUT_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab/layout/ui-lab-layout-data";
+import { UiLabLayoutBoundarySections } from "@/components/admin/ui-lab/layout/ui-lab-layout-boundary-sections";
+import { UiLabLayoutGridResponsiveSections } from "@/components/admin/ui-lab/layout/ui-lab-layout-grid-responsive-sections";
+import { UiLabLayoutShellSections } from "@/components/admin/ui-lab/layout/ui-lab-layout-shell-sections";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 
 export default async function AdminUiLayoutPage() {
   const canAccess = await requireAdminAccess();

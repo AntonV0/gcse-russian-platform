@@ -1,25 +1,25 @@
-import UiLabFutureSection from "@/components/admin/ui-lab-future-section";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import UiLabFutureSection from "@/components/admin/ui-lab/shell/ui-lab-future-section";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 import {
   DarkSurfaceHierarchySection,
   NestedSurfacesSection,
   SpacingRhythmSection,
   StackedPageCompositionSection,
   SurfaceUsageRulesSection,
-} from "@/components/admin/ui-lab-surfaces-composition";
-import { surfacePageNavItems } from "@/components/admin/ui-lab-surfaces-data";
+} from "@/components/admin/ui-lab/surfaces/ui-lab-surfaces-composition";
+import { surfacePageNavItems } from "@/components/admin/ui-lab/surfaces/ui-lab-surfaces-data";
 import {
   SurfaceCardAnatomySection,
   SurfaceFoundationsSection,
   SurfacePrimitivesSection,
   SurfaceToneDensitySection,
-} from "@/components/admin/ui-lab-surfaces-foundations";
+} from "@/components/admin/ui-lab/surfaces/ui-lab-surfaces-foundations";
 import {
   SemanticExtractionDirectionSection,
   SemanticSurfacePatternsSection,
   SurfaceIntentGuideSection,
-} from "@/components/admin/ui-lab-surfaces-semantic";
+} from "@/components/admin/ui-lab/surfaces/ui-lab-surfaces-semantic";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 
 export default async function AdminUiSurfacesPage() {

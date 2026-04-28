@@ -1,10 +1,10 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { FEEDBACK_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab-feedback-data";
-import { UiLabFeedbackBadgeSections } from "@/components/admin/ui-lab-feedback-badge-sections";
-import { UiLabFeedbackBannerQuestionSections } from "@/components/admin/ui-lab-feedback-banner-question-sections";
-import { UiLabFeedbackEmptyGuidanceSections } from "@/components/admin/ui-lab-feedback-empty-guidance-sections";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import { FEEDBACK_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab/feedback/ui-lab-feedback-data";
+import { UiLabFeedbackBadgeSections } from "@/components/admin/ui-lab/feedback/ui-lab-feedback-badge-sections";
+import { UiLabFeedbackBannerQuestionSections } from "@/components/admin/ui-lab/feedback/ui-lab-feedback-banner-question-sections";
+import { UiLabFeedbackEmptyGuidanceSections } from "@/components/admin/ui-lab/feedback/ui-lab-feedback-empty-guidance-sections";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 
 export default async function AdminUiFeedbackPage() {
   const canAccess = await requireAdminAccess();

@@ -1,9 +1,9 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { TYPOGRAPHY_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab-typography-data";
-import { UiLabTypographyContentSections } from "@/components/admin/ui-lab-typography-content-sections";
-import { UiLabTypographyHierarchySections } from "@/components/admin/ui-lab-typography-hierarchy-sections";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import { TYPOGRAPHY_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab/typography/ui-lab-typography-data";
+import { UiLabTypographyContentSections } from "@/components/admin/ui-lab/typography/ui-lab-typography-content-sections";
+import { UiLabTypographyHierarchySections } from "@/components/admin/ui-lab/typography/ui-lab-typography-hierarchy-sections";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 
 export default async function AdminUiTypographyPage() {
   const canAccess = await requireAdminAccess();

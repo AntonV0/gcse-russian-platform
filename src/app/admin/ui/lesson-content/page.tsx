@@ -1,9 +1,9 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { LESSON_CONTENT_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab-lesson-content-data";
-import { UiLabLessonContentPracticeSections } from "@/components/admin/ui-lab-lesson-content-practice-sections";
-import { UiLabLessonContentSurfaceSections } from "@/components/admin/ui-lab-lesson-content-surface-sections";
-import UiLabPageNav from "@/components/admin/ui-lab-page-nav";
-import UiLabShell from "@/components/admin/ui-lab-shell";
+import { LESSON_CONTENT_PAGE_NAV_ITEMS } from "@/components/admin/ui-lab/lesson-content/ui-lab-lesson-content-data";
+import { UiLabLessonContentPracticeSections } from "@/components/admin/ui-lab/lesson-content/ui-lab-lesson-content-practice-sections";
+import { UiLabLessonContentSurfaceSections } from "@/components/admin/ui-lab/lesson-content/ui-lab-lesson-content-surface-sections";
+import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
+import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 
 export default async function AdminUiLessonContentPage() {
   const canAccess = await requireAdminAccess();
