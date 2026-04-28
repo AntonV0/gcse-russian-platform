@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
 import MockExamResponseField from "@/components/mock-exams/mock-exam-response-field";
 import MockExamResponseSummary from "@/components/mock-exams/mock-exam-response-summary";
@@ -31,14 +32,28 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
   const user = await getCurrentUser();
 
   if (!user) {
-    return <main>Log in to access this mock exam attempt.</main>;
+    return (
+      <main>
+        <EmptyState
+          icon="user"
+          iconTone="brand"
+          title="Log in to view this attempt"
+          description="Mock exam attempts are saved to your student account. Log in to continue or review your work."
+          action={
+            <Button href="/login" variant="primary" icon="user">
+              Log in
+            </Button>
+          }
+        />
+      </main>
+    );
   }
 
   const { attempt, exam, sections, questionsBySectionId, responsesByQuestionId } =
     await loadMockExamAttemptDb(attemptId);
 
   if (!attempt || !exam || exam.slug !== mockExamSlug || attempt.user_id !== user.id) {
-    return <main>Mock exam attempt not found.</main>;
+    notFound();
   }
 
   const isDraft = attempt.status === "draft";
@@ -256,7 +271,7 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
           </div>
 
           {isDraft ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               <Button
                 type="submit"
                 name="submitIntent"

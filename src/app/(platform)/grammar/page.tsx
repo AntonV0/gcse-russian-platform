@@ -105,8 +105,8 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
         description="Search by keyword, then narrow by tier or topic."
         tone="student"
       >
-        <form className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="w-full lg:max-w-xs">
+        <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(240px,1fr)_minmax(150px,190px)_minmax(220px,1fr)] xl:items-center">
+          <div className="min-w-0">
             <Input
               name="search"
               defaultValue={params.search ?? ""}
@@ -114,7 +114,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             />
           </div>
 
-          <div className="w-full lg:max-w-[190px]">
+          <div className="min-w-0">
             <Select name="tier" defaultValue={filters.tier ?? "all"}>
               <option value="all">All tiers</option>
               <option value="foundation">Foundation</option>
@@ -123,7 +123,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             </Select>
           </div>
 
-          <div className="w-full lg:max-w-[220px]">
+          <div className="min-w-0 md:col-span-2 xl:col-span-1">
             <Select name="themeKey" defaultValue={filters.themeKey ?? ""}>
               <option value="">All topics</option>
               {topicOptions.map((topic) => (
@@ -134,7 +134,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             </Select>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap md:col-span-2 xl:col-span-3 xl:justify-end">
             <Button type="submit" variant="primary" icon="search">
               Search
             </Button>
