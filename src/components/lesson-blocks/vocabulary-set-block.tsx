@@ -60,6 +60,7 @@ export default async function VocabularySetBlock({
       items={items.map((item) => ({
         russian: item.russian,
         english: item.english,
+        transliteration: item.transliteration,
       }))}
     />
   );
