@@ -144,9 +144,9 @@ export default function AssignmentSubmissionForm({
       title={isLocked ? "Submitted homework" : "Submit homework"}
       description={
         isLocked
-          ? "This response is locked because your teacher has reviewed it."
+          ? "Reviewed by your teacher. This response is locked."
           : hasExistingSubmission
-            ? "Update your response until your teacher reviews it."
+            ? "Your latest submission is saved. Resubmit here until your teacher reviews it."
             : "Save your written response and any allowed attachment here."
       }
       tone="student"
@@ -156,6 +156,7 @@ export default function AssignmentSubmissionForm({
       {isLocked ? (
         <FeedbackBanner
           tone="warning"
+          title="Reviewed response"
           description="This assignment has been reviewed and can no longer be edited."
         />
       ) : null}
