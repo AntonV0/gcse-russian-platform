@@ -274,5 +274,8 @@ export type VocabularySetFilters = {
   tier?: DbVocabularyTier | "all" | null;
   themeKey?: string | null;
   listMode?: DbVocabularyListMode | "all" | null;
+  setType?: DbVocabularySetType | "all" | null;
+  sourceKey?: string | null;
+  usageVariant?: DbVocabularyUsageVariant | "unused" | "all" | null;
   published?: "all" | "published" | "draft" | null;
 };

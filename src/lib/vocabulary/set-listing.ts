@@ -98,15 +98,23 @@ export function applyVocabularySetFilters(
   const themeKey = filters?.themeKey?.trim();
   const listMode =
     filters?.listMode && filters.listMode !== "all" ? filters.listMode : null;
+  const setType = filters?.setType && filters.setType !== "all" ? filters.setType : null;
+  const sourceKey = filters?.sourceKey?.trim();
+  const usageVariant =
+    filters?.usageVariant && filters.usageVariant !== "all" ? filters.usageVariant : null;
   const published = filters?.published ?? "all";
 
   return vocabularySets.filter((vocabularySet) => {
     if (search) {
       const haystack = [
         vocabularySet.title,
+        vocabularySet.slug,
         vocabularySet.description,
         getVocabularyThemeLabel(vocabularySet.theme_key),
         vocabularySet.topic_key,
+        vocabularySet.source_key,
+        vocabularySet.source_version,
+        vocabularySet.import_key,
       ]
         .filter(Boolean)
         .join(" ")
@@ -124,6 +132,30 @@ export function applyVocabularySetFilters(
     }
 
     if (listMode && vocabularySet.list_mode !== listMode) {
+      return false;
+    }
+
+    if (setType && vocabularySet.set_type !== setType) {
+      return false;
+    }
+
+    if (sourceKey && vocabularySet.source_key !== sourceKey) {
+      return false;
+    }
+
+    if (usageVariant === "foundation" && !vocabularySet.usage_stats.usedInFoundation) {
+      return false;
+    }
+
+    if (usageVariant === "higher" && !vocabularySet.usage_stats.usedInHigher) {
+      return false;
+    }
+
+    if (usageVariant === "volna" && !vocabularySet.usage_stats.usedInVolna) {
+      return false;
+    }
+
+    if (usageVariant === "unused" && vocabularySet.usage_stats.totalOccurrences > 0) {
       return false;
     }
 
