@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { submitAssignmentAction } from "@/app/actions/assignments/assignment-actions";
+import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import FormField from "@/components/ui/form-field";
@@ -22,6 +23,10 @@ type AssignmentSubmissionFormProps = {
 
 function sanitizeFileName(fileName: string) {
   return fileName.replace(/[^a-zA-Z0-9._-]/g, "-");
+}
+
+function countWords(value: string) {
+  return value.trim() ? value.trim().split(/\s+/).length : 0;
 }
 
 export default function AssignmentSubmissionForm({
@@ -47,6 +52,12 @@ export default function AssignmentSubmissionForm({
   const [isPending, startTransition] = useTransition();
   const supabase = useMemo(() => createClient(), []);
   const isLocked = status === "reviewed";
+  const hasExistingSubmission = Boolean(initialValue || initialFilePath);
+  const hasUnsavedTextChange = value !== initialValue;
+  const hasUnsavedFileChange = Boolean(selectedFile);
+  const hasUnsavedChanges = hasUnsavedTextChange || hasUnsavedFileChange;
+  const wordCount = countWords(value);
+  const characterCount = value.length;
 
   async function uploadSelectedFile() {
     if (!selectedFile) {
@@ -129,11 +140,30 @@ export default function AssignmentSubmissionForm({
     value.trim().length > 0 || (allowFileUpload && (selectedFile || uploadedFilePath));
 
   return (
-    <PanelCard tone="student" density="compact" contentClassName="space-y-4">
+    <PanelCard
+      title={isLocked ? "Submitted homework" : "Submit homework"}
+      description={
+        isLocked
+          ? "This response is locked because your teacher has reviewed it."
+          : hasExistingSubmission
+            ? "Update your response until your teacher reviews it."
+            : "Save your written response and any allowed attachment here."
+      }
+      tone="student"
+      density="compact"
+      contentClassName="space-y-4"
+    >
       {isLocked ? (
         <FeedbackBanner
           tone="warning"
           description="This assignment has been reviewed and can no longer be edited."
+        />
+      ) : null}
+
+      {!isLocked && hasExistingSubmission && hasUnsavedChanges ? (
+        <FeedbackBanner
+          tone="info"
+          description="You have unsaved changes. Save again before leaving this assignment."
         />
       ) : null}
 
@@ -150,8 +180,27 @@ export default function AssignmentSubmissionForm({
         />
       </FormField>
 
+      <div className="flex flex-wrap gap-2">
+        <Badge tone={wordCount > 0 ? "info" : "muted"} icon="text">
+          {wordCount} word{wordCount === 1 ? "" : "s"}
+        </Badge>
+        <Badge tone="muted" icon="write">
+          {characterCount} character{characterCount === 1 ? "" : "s"}
+        </Badge>
+        {uploadedFileName ? (
+          <Badge tone="success" icon="file">
+            File saved
+          </Badge>
+        ) : null}
+        {selectedFile ? (
+          <Badge tone="warning" icon="upload">
+            New file selected
+          </Badge>
+        ) : null}
+      </div>
+
       {isLocked && (mark !== null || feedback) ? (
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
           <p className="mb-1 font-medium text-[var(--text-primary)]">Teacher feedback</p>
 
           {mark !== null ? <p className="mb-1">Mark: {mark}</p> : null}
@@ -165,7 +214,7 @@ export default function AssignmentSubmissionForm({
       ) : null}
 
       {allowFileUpload ? (
-        <div className="space-y-2 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
+        <div className="space-y-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
           <label className="block text-sm font-medium text-[var(--text-primary)]">
             Upload written work
           </label>
@@ -207,11 +256,12 @@ export default function AssignmentSubmissionForm({
           onClick={handleSubmit}
           disabled={isPending || !canSubmit || isLocked}
           variant="primary"
+          icon={hasExistingSubmission ? "save" : "submitted"}
         >
           {isPending
-            ? "Submitting..."
-            : initialValue || initialFilePath
-              ? "Update submission"
+            ? "Saving..."
+            : hasExistingSubmission
+              ? "Save changes"
               : "Submit homework"}
         </Button>
       </div>

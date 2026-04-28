@@ -1,4 +1,5 @@
 import LessonCompletionForm from "@/components/lesson-blocks/lesson-completion-form";
+import Badge from "@/components/ui/badge";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 
 type LessonCompletionPanelProps = {
@@ -25,7 +26,7 @@ export function LessonCompletionPanel({
   allVisited,
 }: LessonCompletionPanelProps) {
   return (
-    <div className="dev-marker-host relative app-card p-5 space-y-4">
+    <div className="dev-marker-host relative app-card space-y-4 p-5">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="LessonCompletionPanel"
@@ -43,24 +44,51 @@ export function LessonCompletionPanel({
         />
       ) : null}
 
-      <div>
-        <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-          Ready to finish?
-        </h2>
-        <p className="mt-1 text-sm app-text-muted">
-          Mark the lesson complete when you have reviewed each section and feel ready to
-          move on.
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+            Ready to finish?
+          </h2>
+          <p className="mt-1 text-sm app-text-muted">
+            Review the lesson checklist, then mark it complete when you are ready to move
+            on.
+          </p>
+        </div>
+
+        <Badge tone={completed ? "success" : allVisited ? "info" : "warning"}>
+          {completed ? "Completed" : allVisited ? "Ready" : "Review remaining"}
+        </Badge>
       </div>
 
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
-        <div className="font-medium text-[var(--text-primary)]">
-          Visited sections: {visitedCount} / {totalSections}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
+          <div className="font-medium text-[var(--text-primary)]">Sections opened</div>
+          <div className="mt-1 text-2xl font-semibold text-[var(--text-primary)]">
+            {visitedCount} / {totalSections}
+          </div>
+          <div className="mt-1 app-text-muted">
+            {allVisited
+              ? "Every section has been opened."
+              : "Open each section so progress reflects the full lesson."}
+          </div>
         </div>
-        <div className="mt-1 app-text-muted">
-          {allVisited
-            ? "Every section has been opened. Nice work."
-            : "Open each section before finishing so your progress reflects the full lesson."}
+
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
+          <div className="font-medium text-[var(--text-primary)]">Next step</div>
+          <div className="mt-2 space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge tone={allVisited ? "success" : "warning"} icon="list">
+                {allVisited ? "Checked" : "Incomplete"}
+              </Badge>
+              <span className="app-text-muted">All sections visited</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge tone={completed ? "success" : "muted"} icon="completed">
+                {completed ? "Saved" : "Pending"}
+              </Badge>
+              <span className="app-text-muted">Lesson progress saved</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -70,6 +98,7 @@ export function LessonCompletionPanel({
         moduleSlug={moduleSlug}
         lessonSlug={lessonSlug}
         completed={completed}
+        canComplete={allVisited}
       />
     </div>
   );
