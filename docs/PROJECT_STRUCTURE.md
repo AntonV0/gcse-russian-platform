@@ -405,10 +405,22 @@ src/
       continue-where-left-off-panel.tsx
       debug-billing-panel.tsx
       expandable-admin-form-panel.tsx
-      ui-lab-future-section.tsx
-      ui-lab-page-nav.tsx
-      ui-lab-section.tsx
-      ui-lab-shell.tsx
+
+      ui-lab/
+        admin-patterns/
+        buttons/
+        components/
+        feedback/
+        forms/
+        layout/
+        lesson-builder/
+        lesson-content/
+        navigation/
+        overview/
+        shell/
+        surfaces/
+        tables/
+        typography/
 
       lesson-builder/
         add-block-composer.tsx
@@ -740,32 +752,38 @@ src/
       admin-user-helpers-db.ts
 
     vocabulary/
-      coverage-summary.ts
-      db.ts
-      import-manifest.ts
-      import-manifest-constants.ts
-      import-manifest-types.ts
-      item-queries.ts
-      item-sections.ts
-      labels.ts
-      list-queries.ts
-      loaders.ts
-      mutations.ts
-      normalizers.ts
-      pagination.ts
-      selects.ts
-      set-list-queries.ts
-      set-listing.ts
-      set-options.ts
-      set-queries.ts
-      study-variants.ts
-      types.ts
-      usage-queries.ts
+      imports/
+        import-manifest.ts
+        import-manifest-constants.ts
+        import-manifest-types.ts
+      items/
+        item-queries.ts
+        item-sections.ts
+        mutations.ts
+      sets/
+        list-queries.ts
+        loaders.ts
+        set-list-queries.ts
+        set-listing.ts
+        set-options.ts
+        set-queries.ts
+      shared/
+        coverage-summary.ts
+        db.ts
+        labels.ts
+        metadata-health.ts
+        normalizers.ts
+        pagination.ts
+        selects.ts
+        study-variants.ts
+        types.ts
+      usage/
+        usage-queries.ts
+        vocabulary-usage-list-scope.ts
+        vocabulary-usage-sync.ts
+        vocabulary-usage-types.ts
+        vocabulary-usage-variants.ts
       vocabulary-helpers-db.ts
-      vocabulary-usage-list-scope.ts
-      vocabulary-usage-sync.ts
-      vocabulary-usage-types.ts
-      vocabulary-usage-variants.ts
 
     volna/
       volna-helpers-db.ts
@@ -1082,10 +1100,19 @@ Lesson builder server actions have been split into focused files:
 
 Vocabulary usage helpers now include:
 
-- `src/lib/vocabulary/vocabulary-usage-sync.ts`
-- `src/lib/vocabulary/vocabulary-usage-list-scope.ts`
+- `src/lib/vocabulary/usage/vocabulary-usage-sync.ts`
+- `src/lib/vocabulary/usage/vocabulary-usage-list-scope.ts`
 - focused query, loader, mutation, normalizer, and import-manifest modules under
-  `src/lib/vocabulary/`
+  `src/lib/vocabulary/{imports,items,sets,shared,usage}/`
+
+---
+
+### UI Lab components
+
+Admin UI Lab examples are grouped by page/domain under
+`src/components/admin/ui-lab/`. Route pages in `src/app/admin/ui/` should import
+from the matching UI Lab subfolder instead of adding more flat
+`ui-lab-*.tsx` files to `src/components/admin/`.
 
 ---
 
@@ -1107,8 +1134,8 @@ Mock exam platform, admin, and response workflows are split across:
 
 Newer feature domains should prefer focused folders over broad helper files:
 
-- `src/lib/vocabulary/db.ts` is the implementation module behind the compatibility
-  facade `src/lib/vocabulary/vocabulary-helpers-db.ts`.
+- `src/lib/vocabulary/shared/db.ts` is the implementation module behind the
+  compatibility facade `src/lib/vocabulary/vocabulary-helpers-db.ts`.
 - `src/lib/mock-exams/db.ts` is the implementation module behind the compatibility
   facade `src/lib/mock-exams/mock-exam-helpers-db.ts`.
 - `src/lib/mock-exams/question-data/codecs.ts` owns mock exam question-data
