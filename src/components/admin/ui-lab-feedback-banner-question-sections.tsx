@@ -5,6 +5,9 @@ import Button from "@/components/ui/button";
 import Card, { CardBody } from "@/components/ui/card";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 
+const CARD_TITLE_CLASS = "font-semibold text-[var(--text-primary)]";
+const SECTION_HEADING_CLASS = "mb-3 text-sm font-semibold text-[var(--text-primary)]";
+
 function DemoBanners() {
   return (
     <div className="space-y-4">
@@ -87,23 +90,17 @@ function DemoAdminFeedback() {
   return (
     <div className="grid gap-4 xl:grid-cols-3">
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Success only
-        </div>
+        <div className={SECTION_HEADING_CLASS}>Success only</div>
         <AdminFeedbackBanner success="Course settings saved successfully." />
       </div>
 
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Error only
-        </div>
+        <div className={SECTION_HEADING_CLASS}>Error only</div>
         <AdminFeedbackBanner error="A required field is missing before this section can be published." />
       </div>
 
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Stacked feedback
-        </div>
+        <div className={SECTION_HEADING_CLASS}>Stacked feedback</div>
         <AdminFeedbackBanner
           success="Lesson draft saved."
           error="Audio file upload is still missing."
@@ -119,9 +116,7 @@ function DemoQuestionFeedback() {
       <Card>
         <CardBody className="space-y-4 p-4">
           <div>
-            <div className="font-semibold text-[var(--text-primary)]">
-              Correct answer
-            </div>
+            <div className={CARD_TITLE_CLASS}>Correct answer</div>
             <p className="mt-1 text-sm app-text-muted">
               Simple success state after a correct response.
             </p>
@@ -138,9 +133,7 @@ function DemoQuestionFeedback() {
       <Card>
         <CardBody className="space-y-4 p-4">
           <div>
-            <div className="font-semibold text-[var(--text-primary)]">
-              Incorrect with correction
-            </div>
+            <div className={CARD_TITLE_CLASS}>Incorrect with correction</div>
             <p className="mt-1 text-sm app-text-muted">
               Use when the student needs the expected answer shown clearly.
             </p>
@@ -158,9 +151,7 @@ function DemoQuestionFeedback() {
       <Card>
         <CardBody className="space-y-4 p-4">
           <div>
-            <div className="font-semibold text-[var(--text-primary)]">
-              Incorrect with accepted answers
-            </div>
+            <div className={CARD_TITLE_CLASS}>Incorrect with accepted answers</div>
             <p className="mt-1 text-sm app-text-muted">
               Useful when multiple valid phrasings are accepted.
             </p>
@@ -179,9 +170,7 @@ function DemoQuestionFeedback() {
       <Card>
         <CardBody className="space-y-4 p-4">
           <div>
-            <div className="font-semibold text-[var(--text-primary)]">
-              Minimal correct state
-            </div>
+            <div className={CARD_TITLE_CLASS}>Minimal correct state</div>
             <p className="mt-1 text-sm app-text-muted">
               A lighter success result when no extra explanation is needed.
             </p>

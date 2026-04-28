@@ -24,11 +24,9 @@ export function getHigherPlanUpgradeVisibility({
 
   const canShowHigherThreeMonthToHigherLifetimeUpgrade =
     higherThreeMonthToHigherLifetimeQuote?.eligible &&
-    higherThreeMonthToHigherLifetimeQuote.sourceProduct?.code ===
-      "gcse-russian-higher" &&
+    higherThreeMonthToHigherLifetimeQuote.sourceProduct?.code === "gcse-russian-higher" &&
     higherThreeMonthToHigherLifetimeQuote.upgradeFlow === "lifetime" &&
-    higherThreeMonthToHigherLifetimeQuote.sourcePrice?.billing_type ===
-      "subscription" &&
+    higherThreeMonthToHigherLifetimeQuote.sourcePrice?.billing_type === "subscription" &&
     (higherThreeMonthToHigherLifetimeQuote.sourcePrice?.interval_count ?? 1) === 3;
 
   const canShowFoundationMonthlyToHigherMonthlyUpgrade =
@@ -42,8 +40,7 @@ export function getHigherPlanUpgradeVisibility({
     foundationMonthlyToHigherThreeMonthQuote?.eligible &&
     foundationMonthlyToHigherThreeMonthQuote.sourceProduct?.code ===
       "gcse-russian-foundation" &&
-    foundationMonthlyToHigherThreeMonthQuote.upgradeFlow ===
-      "monthly_to_three_month" &&
+    foundationMonthlyToHigherThreeMonthQuote.upgradeFlow === "monthly_to_three_month" &&
     (foundationMonthlyToHigherThreeMonthQuote.sourcePrice?.interval_count ?? 1) === 1;
 
   const canShowFoundationThreeMonthToHigherThreeMonthUpgrade =
@@ -51,8 +48,7 @@ export function getHigherPlanUpgradeVisibility({
     foundationThreeMonthToHigherThreeMonthQuote.sourceProduct?.code ===
       "gcse-russian-foundation" &&
     foundationThreeMonthToHigherThreeMonthQuote.upgradeFlow === "same_cadence" &&
-    (foundationThreeMonthToHigherThreeMonthQuote.sourcePrice?.interval_count ?? 1) ===
-      3;
+    (foundationThreeMonthToHigherThreeMonthQuote.sourcePrice?.interval_count ?? 1) === 3;
 
   const canShowFoundationLifetimeToHigherLifetimeUpgrade =
     foundationLifetimeToHigherLifetimeQuote?.eligible &&

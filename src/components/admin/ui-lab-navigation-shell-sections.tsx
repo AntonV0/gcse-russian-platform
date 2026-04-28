@@ -1,4 +1,7 @@
-import type { UiLabNavGroup, UiLabPrimaryNavItem } from "@/components/admin/ui-lab-navigation-primitives";
+import type {
+  UiLabNavGroup,
+  UiLabPrimaryNavItem,
+} from "@/components/admin/ui-lab-navigation-primitives";
 
 import { uiLabPages } from "@/lib/ui/ui-lab";
 import UiLabSection from "@/components/admin/ui-lab-section";

@@ -1,6 +1,4 @@
-import {
-  COURSE_VARIANT_OPTIONS,
-} from "@/components/admin/ui-lab-forms-data";
+import { COURSE_VARIANT_OPTIONS } from "@/components/admin/ui-lab-forms-data";
 import { UiLabFormsSelectOptions } from "@/components/admin/ui-lab-forms-select-options";
 import UiLabSection from "@/components/admin/ui-lab-section";
 import Badge from "@/components/ui/badge";
@@ -10,6 +8,8 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
+
+const CARD_TITLE_CLASS = "font-semibold text-[var(--text-primary)]";
 
 function DemoBasicFields() {
   return (
@@ -87,7 +87,7 @@ function DemoChecks() {
     <div className="grid gap-4 lg:grid-cols-2">
       <Card>
         <CardBody className="space-y-3 p-4">
-          <div className="font-semibold text-[var(--text-primary)]">Simple toggles</div>
+          <div className={CARD_TITLE_CLASS}>Simple toggles</div>
 
           <CheckboxField
             name="active"
@@ -112,9 +112,7 @@ function DemoChecks() {
 
       <Card>
         <CardBody className="space-y-3 p-4">
-          <div className="font-semibold text-[var(--text-primary)]">
-            Recommended usage
-          </div>
+          <div className={CARD_TITLE_CLASS}>Recommended usage</div>
 
           <div className="space-y-2 text-sm app-text-muted">
             <p>
@@ -140,7 +138,7 @@ function DemoValidationStates() {
     <div className="grid gap-4 lg:grid-cols-3">
       <Card>
         <CardBody className="space-y-4 p-4">
-          <div className="font-semibold text-[var(--text-primary)]">Default field</div>
+          <div className={CARD_TITLE_CLASS}>Default field</div>
 
           <FormField
             label="Normal state"
@@ -153,7 +151,7 @@ function DemoValidationStates() {
 
       <Card>
         <CardBody className="space-y-4 p-4">
-          <div className="font-semibold text-[var(--text-primary)]">Helpful guidance</div>
+          <div className={CARD_TITLE_CLASS}>Helpful guidance</div>
 
           <FormField label="Slug" success="Looks good — this format is valid.">
             <Input placeholder="gcse-russian-higher" defaultValue="gcse-russian-higher" />
@@ -163,9 +161,7 @@ function DemoValidationStates() {
 
       <Card>
         <CardBody className="space-y-4 p-4">
-          <div className="font-semibold text-[var(--text-primary)]">
-            Error state example
-          </div>
+          <div className={CARD_TITLE_CLASS}>Error state example</div>
 
           <FormField
             label="Slug"

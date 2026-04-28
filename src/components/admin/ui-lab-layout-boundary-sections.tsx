@@ -92,10 +92,7 @@ function DemoPageBoundaries() {
             description="12 vocabulary sets configured."
           />
           <UiLabLayoutDemoBlock title="Items" description="438 words and phrases." />
-          <UiLabLayoutDemoBlock
-            title="Coverage"
-            description="Themes 1-5 in progress."
-          />
+          <UiLabLayoutDemoBlock title="Coverage" description="Themes 1-5 in progress." />
         </div>
       </Surface>
     </PageContainer>

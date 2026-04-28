@@ -2,10 +2,7 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  SHOW_UI_DEBUG,
-  useDevMarkers,
-} from "@/components/providers/dev-marker-provider";
+import { SHOW_UI_DEBUG, useDevMarkers } from "@/components/providers/dev-marker-provider";
 import DevComponentMarkerPanel from "@/components/ui/dev-component-marker-panel";
 import type {
   DevComponentMarkerProps,

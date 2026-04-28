@@ -210,9 +210,7 @@ export default function AdminSidebar() {
               className={getNavItemClass(isLessonTemplates)}
             >
               <AppIcon icon="file" size={18} className="shrink-0" />
-              <span className="min-w-0 flex-1 truncate text-left">
-                Lesson Templates
-              </span>
+              <span className="min-w-0 flex-1 truncate text-left">Lesson Templates</span>
             </Link>
 
             <Link href="/admin/vocabulary" className={getNavItemClass(isVocabulary)}>

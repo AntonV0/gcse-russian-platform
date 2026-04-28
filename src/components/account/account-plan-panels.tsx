@@ -4,11 +4,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import type { CurrentPlanSummary } from "@/lib/billing/account-helpers";
 import { formatAccessLabel, formatDate } from "./account-formatters";
 
-export function AccountPlanPanels({
-  currentPlan,
-}: {
-  currentPlan: CurrentPlanSummary;
-}) {
+export function AccountPlanPanels({ currentPlan }: { currentPlan: CurrentPlanSummary }) {
   return (
     <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
       <DashboardCard title="Current plan">
@@ -50,7 +46,9 @@ export function AccountPlanPanels({
             </>
           ) : (
             <>
-              <p>No active Higher upgrade path is currently available for this account.</p>
+              <p>
+                No active Higher upgrade path is currently available for this account.
+              </p>
               <AccountBillingLink label="View pricing" />
             </>
           )}
@@ -60,17 +58,10 @@ export function AccountPlanPanels({
   );
 }
 
-function PlanDetail({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
+function PlanDetail({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <span className="font-medium text-[var(--text-primary)]">{label}:</span>{" "}
-      {children}
+      <span className="font-medium text-[var(--text-primary)]">{label}:</span> {children}
     </div>
   );
 }

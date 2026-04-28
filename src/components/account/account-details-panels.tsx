@@ -28,9 +28,7 @@ export function AccountDetailsPanels({
           </div>
 
           <div>
-            <span className="font-medium text-[var(--text-primary)]">
-              Display name:
-            </span>{" "}
+            <span className="font-medium text-[var(--text-primary)]">Display name:</span>{" "}
             {profile.displayName ?? "No display name saved"}
           </div>
 

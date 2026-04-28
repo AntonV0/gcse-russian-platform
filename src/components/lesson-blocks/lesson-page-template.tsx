@@ -107,10 +107,7 @@ export default async function LessonPageTemplate({
   const visitedIdsBeforeVisit = new Set(await getVisitedLessonSectionIds(lesson.id));
   const maxVisitedIndex = getMaxVisitedIndex(visibleSections, visitedIdsBeforeVisit);
   const allowedMaxIndex = getAllowedMaxIndex(visibleSections.length, maxVisitedIndex);
-  const effectiveStepIndex = getEffectiveStepIndex(
-    requestedStepIndex,
-    allowedMaxIndex
-  );
+  const effectiveStepIndex = getEffectiveStepIndex(requestedStepIndex, allowedMaxIndex);
 
   if (effectiveStepIndex !== requestedStepIndex) {
     redirect(

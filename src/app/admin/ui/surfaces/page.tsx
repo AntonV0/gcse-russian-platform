@@ -166,13 +166,7 @@ function SurfaceIntentGuideCard({
   );
 }
 
-function SummaryCard({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+function SummaryCard({ title, description }: { title: string; description: string }) {
   return (
     <Card>
       <CardBody>

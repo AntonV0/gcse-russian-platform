@@ -67,9 +67,7 @@ export function AccountOverviewPanel({
           <div className="space-y-4">
             <div className="app-stat-tile">
               <div className="app-stat-label">Full name</div>
-              <div className="app-stat-value">
-                {profile.fullName ?? "No name saved"}
-              </div>
+              <div className="app-stat-value">{profile.fullName ?? "No name saved"}</div>
             </div>
 
             <div className="app-stat-tile">

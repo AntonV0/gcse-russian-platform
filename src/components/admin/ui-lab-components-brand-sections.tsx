@@ -66,7 +66,10 @@ function DemoLogoDirections() {
     <div className="space-y-4">
       <div className="grid gap-4 xl:grid-cols-3">
         {COMPONENT_LOGO_DIRECTIONS.map((direction) => (
-          <div key={direction.variant} className="app-card flex h-full flex-col gap-5 p-5">
+          <div
+            key={direction.variant}
+            className="app-card flex h-full flex-col gap-5 p-5"
+          >
             <div className="space-y-3">
               <AppLogo variant={direction.variant} size="lg" />
 
