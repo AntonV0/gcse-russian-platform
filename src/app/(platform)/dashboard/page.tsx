@@ -9,6 +9,7 @@ import {
   getDashboardNextStep,
   getStudentLearningPlan,
 } from "@/lib/dashboard/learning-plan";
+import { getStudentDashboardActivity } from "@/lib/dashboard/student-next-actions";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
 
 export default async function DashboardPage() {
@@ -21,15 +22,21 @@ export default async function DashboardPage() {
       ? await getCourseProgressSummary("gcse-russian", dashboard.variant)
       : { completedLessons: 0 };
 
-  const learningPlan =
+  const [learningPlan, dashboardActivity] =
     dashboard.role === "student"
-      ? await getStudentLearningPlan(dashboard.variant, progressSummary.completedLessons)
-      : {
-          totalLessons: 0,
-          completedLessons: progressSummary.completedLessons,
-          progressPercent: 0,
-          nextLesson: null,
-        };
+      ? await Promise.all([
+          getStudentLearningPlan(dashboard.variant, progressSummary.completedLessons),
+          getStudentDashboardActivity(user?.id),
+        ])
+      : [
+          {
+            totalLessons: 0,
+            completedLessons: progressSummary.completedLessons,
+            progressPercent: 0,
+            nextLesson: null,
+          },
+          null,
+        ];
 
   const welcomeName = profile?.full_name ? `, ${profile.full_name}` : "";
   const nextStep = getDashboardNextStep(
@@ -58,6 +65,7 @@ export default async function DashboardPage() {
           completedLessons={progressSummary.completedLessons}
           learningPlan={learningPlan}
           nextStep={nextStep}
+          activity={dashboardActivity!}
         />
       ) : null}
 
