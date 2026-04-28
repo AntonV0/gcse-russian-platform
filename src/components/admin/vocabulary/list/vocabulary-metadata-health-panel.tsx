@@ -1,3 +1,4 @@
+import Button from "@/components/ui/button";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import type { AdminVocabularyMetadataHealth } from "@/components/admin/vocabulary/list/types";
 
@@ -54,6 +55,67 @@ export default function VocabularyMetadataHealthPanel({
           compact
         />
       </div>
+
+      {metadataHealth.sampleIssues.length > 0 ? (
+        <div className="mt-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)]">
+          <div className="flex flex-col gap-2 border-b border-[var(--border-subtle)] px-4 py-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="app-heading-card">Review queue</h3>
+              <p className="mt-1 app-text-caption">
+                Fast links into the affected vocabulary set with the closest item
+                filter applied.
+              </p>
+            </div>
+            <Button
+              href="/admin/vocabulary?setType=specification"
+              variant="secondary"
+              size="sm"
+              icon="filter"
+            >
+              Spec sets
+            </Button>
+          </div>
+
+          <div className="divide-y divide-[var(--border-subtle)]">
+            {metadataHealth.sampleIssues.slice(0, 8).map((issue) => (
+              <div
+                key={`${issue.title}-${issue.setId}-${issue.russian}`}
+                className="grid gap-3 px-4 py-3 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_auto] lg:items-center"
+              >
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-[var(--text-primary)]">
+                    {issue.title}
+                  </div>
+                  <div className="mt-1 truncate app-text-caption">
+                    {issue.setTitle}
+                    {issue.setSlug ? ` / ${issue.setSlug}` : ""}
+                  </div>
+                </div>
+
+                <div className="min-w-0">
+                  <div
+                    lang="ru"
+                    className="truncate font-medium text-[var(--text-primary)]"
+                  >
+                    {issue.russian}
+                  </div>
+                  {issue.english ? (
+                    <div className="mt-1 truncate text-sm text-[var(--text-secondary)]">
+                      {issue.english}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="lg:justify-self-end">
+                  <Button href={issue.href} variant="secondary" size="sm" icon="edit">
+                    Review
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

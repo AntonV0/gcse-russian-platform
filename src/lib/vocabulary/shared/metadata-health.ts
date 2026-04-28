@@ -4,7 +4,10 @@ import { fetchSupabasePages } from "@/lib/vocabulary/shared/pagination";
 
 type VocabularyMetadataItemRow = {
   id: string;
+  vocabulary_set_id: string;
   canonical_key: string | null;
+  russian: string | null;
+  english: string | null;
   transliteration: string | null;
   part_of_speech: string | null;
   tier: string | null;
@@ -16,6 +19,8 @@ type VocabularyMetadataItemRow = {
 
 type VocabularyMetadataSetRow = {
   id: string;
+  title: string;
+  slug: string | null;
   theme_key: string | null;
   topic_key: string | null;
   set_type: string | null;
@@ -34,6 +39,49 @@ function countDuplicateValues(values: (string | null)[]) {
   return Array.from(counts.values()).filter((count) => count > 1).length;
 }
 
+function getItemReviewHref(
+  vocabularySetId: string,
+  params: Record<string, string | null | undefined>
+) {
+  const searchParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value?.trim()) {
+      searchParams.set(key, value);
+    }
+  }
+
+  const queryString = searchParams.toString();
+
+  return `/admin/vocabulary/${vocabularySetId}/items${
+    queryString ? `?${queryString}` : ""
+  }`;
+}
+
+function createIssueSample({
+  title,
+  item,
+  setById,
+  params,
+}: {
+  title: string;
+  item: VocabularyMetadataItemRow;
+  setById: Map<string, VocabularyMetadataSetRow>;
+  params: Record<string, string | null | undefined>;
+}) {
+  const vocabularySet = setById.get(item.vocabulary_set_id);
+
+  return {
+    title,
+    setId: item.vocabulary_set_id,
+    setTitle: vocabularySet?.title ?? "Unknown set",
+    setSlug: vocabularySet?.slug ?? null,
+    russian: item.russian ?? "Untitled item",
+    english: item.english ?? "",
+    href: getItemReviewHref(item.vocabulary_set_id, params),
+  };
+}
+
 export async function getVocabularyMetadataHealthDb() {
   const supabase = await createClient();
   const [items, sets] = await Promise.all([
@@ -42,7 +90,7 @@ export async function getVocabularyMetadataHealthDb() {
         supabase
           .from("vocabulary_items")
           .select(
-            "id, canonical_key, transliteration, part_of_speech, tier, theme_key, topic_key, category_key, source_type"
+            "id, vocabulary_set_id, canonical_key, russian, english, transliteration, part_of_speech, tier, theme_key, topic_key, category_key, source_type"
           ),
       errorMessage: "Error fetching vocabulary metadata health items:",
       errorContext: {},
@@ -51,7 +99,7 @@ export async function getVocabularyMetadataHealthDb() {
       queryFactory: () =>
         supabase
           .from("vocabulary_sets")
-          .select("id, theme_key, topic_key, set_type, source_key"),
+          .select("id, title, slug, theme_key, topic_key, set_type, source_key"),
       errorMessage: "Error fetching vocabulary metadata health sets:",
       errorContext: {},
     }),
@@ -59,6 +107,69 @@ export async function getVocabularyMetadataHealthDb() {
 
   const specItems = items.filter((item) => item.source_type === "spec_required");
   const specificationSets = sets.filter((set) => set.set_type === "specification");
+  const setById = new Map(sets.map((set) => [set.id, set]));
+  const duplicateCanonicalKeyCounts = new Map<string, number>();
+
+  for (const item of items) {
+    const canonicalKey = item.canonical_key?.trim();
+    if (!canonicalKey) continue;
+    duplicateCanonicalKeyCounts.set(
+      canonicalKey,
+      (duplicateCanonicalKeyCounts.get(canonicalKey) ?? 0) + 1
+    );
+  }
+
+  const duplicateCanonicalKeys = new Set(
+    Array.from(duplicateCanonicalKeyCounts.entries())
+      .filter(([, count]) => count > 1)
+      .map(([canonicalKey]) => canonicalKey)
+  );
+  const sampleIssues = [
+    ...items
+      .filter((item) => !item.part_of_speech || item.part_of_speech === "unknown")
+      .slice(0, 3)
+      .map((item) =>
+        createIssueSample({
+          title: "Unknown part of speech",
+          item,
+          setById,
+          params: { partOfSpeech: "unknown", itemSearch: item.russian },
+        })
+      ),
+    ...items
+      .filter((item) => !item.transliteration?.trim())
+      .slice(0, 3)
+      .map((item) =>
+        createIssueSample({
+          title: "Missing transliteration",
+          item,
+          setById,
+          params: { itemSearch: item.russian },
+        })
+      ),
+    ...items
+      .filter((item) => !item.category_key?.trim())
+      .slice(0, 3)
+      .map((item) =>
+        createIssueSample({
+          title: "Missing category",
+          item,
+          setById,
+          params: { itemSearch: item.russian },
+        })
+      ),
+    ...items
+      .filter((item) => duplicateCanonicalKeys.has(item.canonical_key?.trim() ?? ""))
+      .slice(0, 3)
+      .map((item) =>
+        createIssueSample({
+          title: "Duplicate canonical key",
+          item,
+          setById,
+          params: { itemSearch: item.canonical_key },
+        })
+      ),
+  ];
 
   return {
     totalItems: items.length,
@@ -80,5 +191,6 @@ export async function getVocabularyMetadataHealthDb() {
     specSetsInHighFrequency: specificationSets.filter(
       (set) => set.theme_key === "high_frequency_language"
     ).length,
+    sampleIssues,
   };
 }
