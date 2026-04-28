@@ -155,7 +155,10 @@ export default async function LessonPageTemplate({
           </div>
 
           <div>
-            <h2 className="app-section-title text-lg">{currentSection.title}</h2>
+            <div className="text-xs font-medium uppercase tracking-wide text-[var(--accent-on-soft)] opacity-80">
+              Current section
+            </div>
+            <h2 className="mt-1 app-section-title text-lg">{currentSection.title}</h2>
             {currentSection.description ? (
               <p className="mt-1 text-sm app-text-muted">{currentSection.description}</p>
             ) : null}
@@ -178,6 +181,8 @@ export default async function LessonPageTemplate({
               sections={[currentSection]}
               lessonId={lesson.id}
               currentVariant={currentVariant}
+              sectionSurface="flat"
+              showSectionHeader={false}
             />
           </div>
 

@@ -45,11 +45,11 @@ export function LessonCompletionPanel({
 
       <div>
         <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-          Finish lesson
+          Ready to finish?
         </h2>
         <p className="mt-1 text-sm app-text-muted">
-          Lesson completion stays manual, but section visit progress is tracked
-          automatically.
+          Mark the lesson complete when you have reviewed each section and feel ready to
+          move on.
         </p>
       </div>
 
@@ -59,8 +59,8 @@ export function LessonCompletionPanel({
         </div>
         <div className="mt-1 app-text-muted">
           {allVisited
-            ? "You have visited every section in this lesson."
-            : "Visit all sections before marking the lesson complete for the best learning flow."}
+            ? "Every section has been opened. Nice work."
+            : "Open each section before finishing so your progress reflects the full lesson."}
         </div>
       </div>
 

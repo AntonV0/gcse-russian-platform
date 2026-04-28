@@ -33,6 +33,21 @@ function getPayloadStringArray(value: unknown) {
   return value.filter((item): item is string => typeof item === "string");
 }
 
+function getPayloadNumberArray(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is number => Number.isInteger(item) && item >= 0);
+}
+
+function parseStoredOrder(order: unknown, orderText: unknown) {
+  const storedOrder = getPayloadNumberArray(order);
+  if (storedOrder.length > 0) return storedOrder;
+
+  return getPayloadString(orderText)
+    .split(",")
+    .map((item) => Number(item.trim()) - 1)
+    .filter((item) => Number.isInteger(item) && item >= 0);
+}
+
 function getStoredText(response?: DbMockExamResponse) {
   return response?.response_text ?? "";
 }
@@ -152,6 +167,50 @@ export default function MockExamResponseField({
   }
 
   if (question.question_type === "sequencing") {
+    const items = getStringArray(question.data.items);
+    const storedOrder = parseStoredOrder(payload.order, payload.orderText);
+
+    if (items.length > 0) {
+      return (
+        <FormField
+          label="Put the items in order"
+          hint="Choose one item for each position. The first dropdown is the first item in your answer."
+        >
+          <div className="grid gap-3">
+            {items.map((_, positionIndex) => (
+              <label
+                key={`${question.id}-order-position-${positionIndex}`}
+                className="grid gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-3 sm:grid-cols-[7rem_minmax(0,1fr)] sm:items-center"
+              >
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
+                  Position {positionIndex + 1}
+                </span>
+                <Select
+                  name={`response_order_${question.id}_${positionIndex}`}
+                  defaultValue={
+                    Number.isInteger(storedOrder[positionIndex])
+                      ? String(storedOrder[positionIndex])
+                      : ""
+                  }
+                  disabled={disabled}
+                >
+                  <option value="">Choose item</option>
+                  {items.map((item, itemIndex) => (
+                    <option
+                      key={`${question.id}-order-option-${positionIndex}-${itemIndex}`}
+                      value={itemIndex}
+                    >
+                      {itemIndex + 1}. {item}
+                    </option>
+                  ))}
+                </Select>
+              </label>
+            ))}
+          </div>
+        </FormField>
+      );
+    }
+
     return (
       <FormField
         label="Order"
