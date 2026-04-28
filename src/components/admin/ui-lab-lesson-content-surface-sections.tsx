@@ -55,9 +55,10 @@ function DemoContentBlocks() {
   return (
     <div className="grid gap-4 xl:grid-cols-2">
       <LessonContentBlock label="Text" title="Giving opinions about school">
-        Use <strong className="text-[var(--text-primary)]">Ð¼Ð½Ðµ Ð½Ñ€Ð°Ð²Ð¸Ñ‚ÑÑ</strong> and{" "}
-        <strong className="text-[var(--text-primary)]">Ñ Ð»ÑŽÐ±Ð»ÑŽ</strong> to explain
-        what subjects you enjoy. Add <strong>Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾</strong> to give a reason.
+        Use <strong className="text-[var(--text-primary)]">Ð¼Ð½Ðµ Ð½Ñ€Ð°Ð²Ð¸Ñ‚ÑÑ</strong>{" "}
+        and <strong className="text-[var(--text-primary)]">Ñ Ð»ÑŽÐ±Ð»ÑŽ</strong> to
+        explain what subjects you enjoy. Add <strong>Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾</strong> to give
+        a reason.
       </LessonContentBlock>
 
       <LessonContentBlock label="Vocabulary" title="Core words">

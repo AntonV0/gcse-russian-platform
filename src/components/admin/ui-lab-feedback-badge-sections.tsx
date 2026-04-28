@@ -4,6 +4,9 @@ import Badge from "@/components/ui/badge";
 import Card, { CardBody } from "@/components/ui/card";
 import StatusBadge from "@/components/ui/status-badge";
 
+const CARD_TITLE_CLASS = "font-semibold text-[var(--text-primary)]";
+const SECTION_HEADING_CLASS = "mb-3 text-sm font-semibold text-[var(--text-primary)]";
+
 function StatusBadgeExampleCard({
   title,
   status,
@@ -16,7 +19,7 @@ function StatusBadgeExampleCard({
   return (
     <Card>
       <CardBody className="space-y-3 p-4">
-        <div className="font-semibold text-[var(--text-primary)]">{title}</div>
+        <div className={CARD_TITLE_CLASS}>{title}</div>
         <StatusBadge status={status} />
         <p className="text-sm app-text-muted">{description}</p>
       </CardBody>
@@ -28,9 +31,7 @@ function DemoBadgeHierarchy() {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Core tones
-        </div>
+        <div className={SECTION_HEADING_CLASS}>Core tones</div>
         <div className="flex flex-wrap gap-3">
           <Badge tone="muted">Muted</Badge>
           <Badge tone="default">Default</Badge>
@@ -42,9 +43,7 @@ function DemoBadgeHierarchy() {
       </div>
 
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          With icons
-        </div>
+        <div className={SECTION_HEADING_CLASS}>With icons</div>
         <div className="flex flex-wrap gap-3">
           <Badge tone="muted" icon="file">
             Draft
@@ -68,9 +67,7 @@ function DemoBadgeHierarchy() {
       </div>
 
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Real UI labels
-        </div>
+        <div className={SECTION_HEADING_CLASS}>Real UI labels</div>
         <div className="flex flex-wrap gap-3">
           <Badge tone="info" icon="preview">
             Higher only
@@ -94,9 +91,7 @@ function DemoHighEmphasisBadges() {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Access + availability
-        </div>
+        <div className={SECTION_HEADING_CLASS}>Access + availability</div>
         <div className="flex flex-wrap gap-3">
           <Badge tone="info" icon="preview">
             Trial access
@@ -111,9 +106,7 @@ function DemoHighEmphasisBadges() {
       </div>
 
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Student progress moments
-        </div>
+        <div className={SECTION_HEADING_CLASS}>Student progress moments</div>
         <div className="flex flex-wrap gap-3">
           <Badge tone="success" icon="completed">
             Marked correct
@@ -128,9 +121,7 @@ function DemoHighEmphasisBadges() {
       </div>
 
       <div className="app-card p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Publishing + workflow
-        </div>
+        <div className={SECTION_HEADING_CLASS}>Publishing + workflow</div>
         <div className="flex flex-wrap gap-3">
           <Badge tone="muted" icon="file">
             Draft
@@ -150,7 +141,9 @@ function DemoHighEmphasisBadges() {
 function DemoDarkSurfaceBadges() {
   return (
     <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(135deg,var(--dark-surface-elevated)_0%,var(--dark-surface-muted)_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
-      <div className="mb-3 text-sm font-semibold text-white">Dark-surface badge check</div>
+      <div className="mb-3 text-sm font-semibold text-white">
+        Dark-surface badge check
+      </div>
       <div className="flex flex-wrap gap-3">
         <Badge tone="muted" icon="file">
           Draft

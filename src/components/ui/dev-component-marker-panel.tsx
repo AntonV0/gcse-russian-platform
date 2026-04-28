@@ -4,10 +4,7 @@ import { Check, Copy } from "lucide-react";
 import type { CSSProperties, RefObject } from "react";
 import type { DevMarkerTier } from "@/components/providers/dev-marker-provider";
 import type { MarkerPanelPosition } from "@/components/ui/dev-component-marker-types";
-import {
-  getPanelClass,
-  getTierLabel,
-} from "@/components/ui/dev-component-marker-utils";
+import { getPanelClass, getTierLabel } from "@/components/ui/dev-component-marker-utils";
 
 type DevComponentMarkerPanelProps = {
   panelRef: RefObject<HTMLDivElement | null>;

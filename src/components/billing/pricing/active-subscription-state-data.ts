@@ -1,8 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import {
-  BILLING_TYPES,
-  PRODUCT_CODES,
-} from "@/lib/billing/catalog";
+import { BILLING_TYPES, PRODUCT_CODES } from "@/lib/billing/catalog";
 import { formatPriceLabel } from "@/lib/billing/pricing-ui";
 import type {
   ActiveSubscriptionState,

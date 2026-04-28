@@ -34,7 +34,10 @@ function DemoAdminShell() {
           title="Published lessons"
           description="34 lessons across all variants."
         />
-        <UiLabLayoutDemoBlock title="Draft lessons" description="7 items needing review." />
+        <UiLabLayoutDemoBlock
+          title="Draft lessons"
+          description="7 items needing review."
+        />
         <UiLabLayoutDemoBlock
           title="Last update"
           description="Teacher tools refined yesterday."
@@ -87,7 +90,10 @@ function DemoStudentShell() {
       </Surface>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <UiLabLayoutDemoBlock title="Completed" description="12 lessons finished this term." />
+        <UiLabLayoutDemoBlock
+          title="Completed"
+          description="12 lessons finished this term."
+        />
         <UiLabLayoutDemoBlock
           title="Current goal"
           description="Finish speaking practice by Friday."

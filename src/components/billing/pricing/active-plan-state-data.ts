@@ -1,9 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import {
-  BILLING_TYPES,
-  INTERVAL_UNITS,
-  PRODUCT_CODES,
-} from "@/lib/billing/catalog";
+import { BILLING_TYPES, INTERVAL_UNITS, PRODUCT_CODES } from "@/lib/billing/catalog";
 import type {
   ActiveGrantProductCode,
   ActivePlanState,

@@ -37,9 +37,18 @@ function DemoGridPatterns() {
           Three-column summaries
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          <UiLabLayoutDemoBlock title="Metric" description="Compact overview or KPI card." />
-          <UiLabLayoutDemoBlock title="Metric" description="Compact overview or KPI card." />
-          <UiLabLayoutDemoBlock title="Metric" description="Compact overview or KPI card." />
+          <UiLabLayoutDemoBlock
+            title="Metric"
+            description="Compact overview or KPI card."
+          />
+          <UiLabLayoutDemoBlock
+            title="Metric"
+            description="Compact overview or KPI card."
+          />
+          <UiLabLayoutDemoBlock
+            title="Metric"
+            description="Compact overview or KPI card."
+          />
         </div>
       </div>
 
@@ -243,7 +252,10 @@ function DemoResponsivePreviewFrames() {
               description="Main work area gets the wider column."
               tone="brand"
             />
-            <PreviewPanel title="Action row" description="Buttons wrap before overflow." />
+            <PreviewPanel
+              title="Action row"
+              description="Buttons wrap before overflow."
+            />
           </div>
         </div>
       </ResponsivePreviewFrame>
