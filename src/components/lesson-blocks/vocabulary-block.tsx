@@ -1,6 +1,7 @@
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import AppIcon from "@/components/ui/app-icon";
 import { Heading, type HeadingLevel } from "@/components/ui/heading";
+import VocabularyStudyList from "@/components/lesson-blocks/vocabulary-study-list";
 
 type VocabularyItem = {
   russian: string;
@@ -104,38 +105,7 @@ export default function VocabularyBlock({
             No vocabulary items are available in this set yet.
           </div>
         ) : (
-          <div className="grid gap-2 xl:grid-cols-2">
-            {items.map((item, index) => (
-              <div
-                key={`${item.russian}-${item.english}`}
-                className="group relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent)_24%,var(--border-strong))] hover:bg-[var(--background-elevated)]"
-              >
-                <div className="absolute inset-y-0 left-0 w-1 bg-[var(--accent-fill)] opacity-70" />
-
-                <div className="grid min-h-[4.75rem] gap-3 px-4 py-3.5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center sm:pl-5">
-                  <div className="flex min-w-0 gap-3">
-                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--text-muted)]">
-                      {index + 1}
-                    </span>
-                    <span className="min-w-0">
-                      <span lang="ru" className="block app-vocab-term">
-                        {item.russian}
-                      </span>
-                      {item.transliteration ? (
-                        <span className="mt-1 block text-sm app-text-soft">
-                          {item.transliteration}
-                        </span>
-                      ) : null}
-                    </span>
-                  </div>
-
-                  <div className="min-w-0 border-t border-[var(--border-subtle)] pt-3 text-[var(--text-secondary)] sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
-                    {item.english}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <VocabularyStudyList items={items} />
         )}
       </div>
     </section>
