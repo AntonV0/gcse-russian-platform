@@ -9,7 +9,7 @@ import type {
   QuestionTaskContextKey,
 } from "@/lib/curriculum";
 import { QUESTION_INTERACTION_TYPES } from "@/lib/curriculum";
-import type { MockExamQuestionType } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { MockExamQuestionType } from "@/lib/mock-exams/types";
 import { MOCK_EXAM_QUESTION_BRIDGE } from "@/lib/questions/mock-exam-question-bridge";
 
 export { MOCK_EXAM_QUESTION_BRIDGE } from "@/lib/questions/mock-exam-question-bridge";

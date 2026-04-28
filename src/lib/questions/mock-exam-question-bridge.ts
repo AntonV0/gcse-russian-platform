@@ -1,4 +1,4 @@
-import type { MockExamQuestionType } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { MockExamQuestionType } from "@/lib/mock-exams/types";
 
 import type { BridgeDefinition } from "./question-system-bridge";
 

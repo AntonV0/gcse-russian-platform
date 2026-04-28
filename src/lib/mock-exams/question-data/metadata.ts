@@ -1,4 +1,4 @@
-import type { MockExamQuestionType } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { MockExamQuestionType } from "@/lib/mock-exams/types";
 import { getMockExamQuestionDesignBridge } from "@/lib/questions/question-system-bridge";
 import type {
   LongResponseMarkingMetadata,

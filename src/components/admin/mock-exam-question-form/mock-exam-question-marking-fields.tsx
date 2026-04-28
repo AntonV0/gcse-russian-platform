@@ -3,7 +3,7 @@ import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import type { MockExamQuestionDataState } from "@/lib/mock-exams/question-data/codecs";
-import type { MockExamQuestionType } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { MockExamQuestionType } from "@/lib/mock-exams/types";
 
 import type { MockExamQuestionDataUpdater } from "./mock-exam-question-form-types";
 import {

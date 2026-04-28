@@ -10,14 +10,14 @@ import SectionCard from "@/components/ui/section-card";
 import { startMockExamAttemptAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { canDashboardAccessMockExam } from "@/lib/mock-exams/access";
 import {
-  canDashboardAccessMockExam,
-  getCurrentUserMockExamAttemptsDb,
   getMockExamSectionTypeLabel,
-  getStudentSafeMockExamQuestion,
   getMockExamTierLabel,
-  loadMockExamBySlugDb,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+} from "@/lib/mock-exams/labels";
+import { loadMockExamBySlugDb } from "@/lib/mock-exams/loaders";
+import { getStudentSafeMockExamQuestion } from "@/lib/mock-exams/normalizers";
+import { getCurrentUserMockExamAttemptsDb } from "@/lib/mock-exams/queries";
 
 type MockExamDetailPageProps = {
   params: Promise<{

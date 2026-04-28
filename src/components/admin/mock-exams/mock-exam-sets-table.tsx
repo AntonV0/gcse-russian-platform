@@ -16,12 +16,9 @@ import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import TableShell from "@/components/ui/table-shell";
 import TableToolbar from "@/components/ui/table-toolbar";
-import {
-  getMockExamTierLabel,
-  mockExamTiers,
-  type DbMockExamSet,
-  type MockExamFilters,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { mockExamTiers } from "@/lib/mock-exams/constants";
+import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
+import type { DbMockExamSet, MockExamFilters } from "@/lib/mock-exams/types";
 
 export function MockExamSetsTable({
   exams,

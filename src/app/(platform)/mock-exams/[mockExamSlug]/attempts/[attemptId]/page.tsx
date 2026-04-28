@@ -12,12 +12,12 @@ import SectionCard from "@/components/ui/section-card";
 import { saveMockExamAttemptResponsesAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
 import { getCurrentUser } from "@/lib/auth/auth";
 import {
-  getMockExamScoreByAttemptIdDb,
   getMockExamSectionTypeLabel,
-  getStudentSafeMockExamQuestion,
   getMockExamTierLabel,
-  loadMockExamAttemptDb,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+} from "@/lib/mock-exams/labels";
+import { loadMockExamAttemptDb } from "@/lib/mock-exams/loaders";
+import { getStudentSafeMockExamQuestion } from "@/lib/mock-exams/normalizers";
+import { getMockExamScoreByAttemptIdDb } from "@/lib/mock-exams/queries";
 
 type MockExamAttemptPageProps = {
   params: Promise<{

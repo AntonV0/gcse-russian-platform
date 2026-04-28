@@ -1,6 +1,6 @@
 import Image from "next/image";
 import AudioPlayer from "@/components/questions/audio-player";
-import type { DbMockExamQuestion } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamQuestion } from "@/lib/mock-exams/types";
 import { getNumber, getString, getTaskStimulus } from "./preview-data";
 
 export function MockExamQuestionMediaPreview({

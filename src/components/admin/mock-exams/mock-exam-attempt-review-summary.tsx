@@ -4,13 +4,13 @@ import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
-import {
-  getMockExamTierLabel,
-  type DbMockExamAttempt,
-  type DbMockExamScore,
-  type DbMockExamSet,
-  type MockExamProfileSummary,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
+import type {
+  DbMockExamAttempt,
+  DbMockExamScore,
+  DbMockExamSet,
+  MockExamProfileSummary,
+} from "@/lib/mock-exams/types";
 import {
   getMockExamProfileLabel,
   getString,

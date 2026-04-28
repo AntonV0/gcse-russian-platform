@@ -1,8 +1,5 @@
 import { getTrimmedString } from "@/app/actions/shared/form-data";
-import type {
-  DbMockExamQuestion,
-  DbMockExamResponse,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamQuestion, DbMockExamResponse } from "@/lib/mock-exams/types";
 import { createClient } from "@/lib/supabase/server";
 import {
   getExistingStoredFile,

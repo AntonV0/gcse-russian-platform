@@ -9,14 +9,14 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
-import {
-  getMockExamSectionTypeLabel,
-  type DbMockExamAttempt,
-  type DbMockExamQuestion,
-  type DbMockExamResponse,
-  type DbMockExamScore,
-  type DbMockExamSection,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { getMockExamSectionTypeLabel } from "@/lib/mock-exams/labels";
+import type {
+  DbMockExamAttempt,
+  DbMockExamQuestion,
+  DbMockExamResponse,
+  DbMockExamScore,
+  DbMockExamSection,
+} from "@/lib/mock-exams/types";
 import { getString } from "@/components/admin/mock-exams/mock-exam-attempt-review-utils";
 
 type MockExamAttemptMarkingFormProps = {

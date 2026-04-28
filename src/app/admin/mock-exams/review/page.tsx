@@ -16,11 +16,9 @@ import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import TableShell from "@/components/ui/table-shell";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import {
-  getMockExamAttemptsForAdminReviewDb,
-  getMockExamTierLabel,
-  type MockExamProfileSummary,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
+import { getMockExamAttemptsForAdminReviewDb } from "@/lib/mock-exams/loaders";
+import type { MockExamProfileSummary } from "@/lib/mock-exams/types";
 
 function getProfileLabel(profile: MockExamProfileSummary | null) {
   if (!profile) return "Unknown student";

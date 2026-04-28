@@ -5,7 +5,7 @@ import { getTrimmedString } from "@/app/actions/shared/form-data";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { loadMockExamAttemptDb } from "@/lib/mock-exams/mock-exam-helpers-db";
+import { loadMockExamAttemptDb } from "@/lib/mock-exams/loaders";
 import { getMockExamMarkingPayloads } from "@/app/actions/admin/mock-exams/mock-exam-marking-payloads";
 
 export async function markMockExamAttemptAction(formData: FormData) {

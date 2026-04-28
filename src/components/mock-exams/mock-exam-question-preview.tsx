@@ -1,6 +1,6 @@
 import Badge from "@/components/ui/badge";
-import type { DbMockExamQuestion } from "@/lib/mock-exams/mock-exam-helpers-db";
-import { getMockExamQuestionTypeLabel } from "@/lib/mock-exams/mock-exam-helpers-db";
+import { getMockExamQuestionTypeLabel } from "@/lib/mock-exams/labels";
+import type { DbMockExamQuestion } from "@/lib/mock-exams/types";
 import { MockExamQuestionMediaPreview } from "./question-preview/media-preview";
 import { MockExamQuestionSpecificPreview } from "./question-preview/question-specific-preview";
 

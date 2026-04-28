@@ -1,5 +1,5 @@
 import Badge from "@/components/ui/badge";
-import type { DbMockExamQuestion } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamQuestion } from "@/lib/mock-exams/types";
 import {
   getNumber,
   getRecord,

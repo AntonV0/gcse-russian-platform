@@ -3,11 +3,9 @@ import MockExamSectionCreatePanel from "@/components/admin/mock-exams/mock-exam-
 import MockExamSectionsPanel from "@/components/admin/mock-exams/mock-exam-sections-panel";
 import MockExamSettingsPanels from "@/components/admin/mock-exams/mock-exam-settings-panels";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import {
-  getMockExamQuestionTypeLabel,
-  loadMockExamByIdDb,
-  mockExamQuestionTypes,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { mockExamQuestionTypes } from "@/lib/mock-exams/constants";
+import { getMockExamQuestionTypeLabel } from "@/lib/mock-exams/labels";
+import { loadMockExamByIdDb } from "@/lib/mock-exams/loaders";
 
 type AdminMockExamDetailPageProps = {
   params: Promise<{

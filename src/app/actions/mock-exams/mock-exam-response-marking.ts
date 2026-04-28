@@ -1,5 +1,5 @@
 import type { ExtractedResponse } from "@/app/actions/mock-exams/mock-exam-response-extraction";
-import type { DbMockExamQuestion } from "@/lib/mock-exams/mock-exam-helpers-db";
+import type { DbMockExamQuestion } from "@/lib/mock-exams/types";
 
 type MarkResult = {
   awardedMarks: number | null;

@@ -3,11 +3,9 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
-import {
-  canDashboardAccessMockExam,
-  getMockExamSetBySlugDb,
-  loadMockExamAttemptDb,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { canDashboardAccessMockExam } from "@/lib/mock-exams/access";
+import { loadMockExamAttemptDb } from "@/lib/mock-exams/loaders";
+import { getMockExamSetBySlugDb } from "@/lib/mock-exams/queries";
 import { createClient } from "@/lib/supabase/server";
 import { getTrimmedString } from "@/app/actions/shared/form-data";
 import { extractQuestionResponse } from "@/app/actions/mock-exams/mock-exam-response-extraction";

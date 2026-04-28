@@ -8,14 +8,11 @@ import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
-import {
-  filterMockExamsForDashboardAccess,
-  getMockExamTierLabel,
-  getPublishedMockExamSetsDb,
-  mockExamTiers,
-  type MockExamFilters,
-  type MockExamTier,
-} from "@/lib/mock-exams/mock-exam-helpers-db";
+import { filterMockExamsForDashboardAccess } from "@/lib/mock-exams/access";
+import { mockExamTiers } from "@/lib/mock-exams/constants";
+import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
+import { getPublishedMockExamSetsDb } from "@/lib/mock-exams/queries";
+import type { MockExamFilters, MockExamTier } from "@/lib/mock-exams/types";
 
 type MockExamsPageProps = {
   searchParams?: Promise<{
