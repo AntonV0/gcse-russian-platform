@@ -1,4 +1,9 @@
 export type DbGrammarTier = "foundation" | "higher" | "both" | "unknown";
+export type DbGrammarKnowledgeRequirement =
+  | "productive"
+  | "receptive"
+  | "mixed"
+  | "unknown";
 
 export type GrammarTableCell = string;
 export type GrammarTableColumns = string[];
@@ -35,6 +40,11 @@ export type DbGrammarPoint = {
   grammar_tag_key: string | null;
   category_key: string | null;
   tier: DbGrammarTier;
+  knowledge_requirement: DbGrammarKnowledgeRequirement;
+  receptive_scope: string | null;
+  source_key: string | null;
+  source_version: string | null;
+  import_key: string | null;
   sort_order: number;
   is_published: boolean;
   created_at: string;

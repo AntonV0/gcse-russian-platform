@@ -10,6 +10,7 @@ import GrammarTableRenderer from "@/components/grammar/grammar-table-renderer";
 import {
   canDashboardAccessGrammarSet,
   getGrammarCategoryLabel,
+  getGrammarKnowledgeRequirementLabel,
   getGrammarTierLabel,
   loadGrammarPointBySlugsDb,
 } from "@/lib/grammar/grammar-helpers-db";
@@ -147,6 +148,17 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
             <Badge tone="muted" className="capitalize">
               {getGrammarCategoryLabel(grammarPoint.category_key)}
             </Badge>
+            <Badge
+              tone={
+                grammarPoint.knowledge_requirement === "receptive"
+                  ? "warning"
+                  : "muted"
+              }
+            >
+              {getGrammarKnowledgeRequirementLabel(
+                grammarPoint.knowledge_requirement
+              )}
+            </Badge>
             {grammarPoint.grammar_tag_key ? (
               <Badge tone="muted">
                 {grammarPoint.grammar_tag_key.replaceAll("_", " ")}
@@ -243,6 +255,20 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
                   label: "Category",
                   value: getGrammarCategoryLabel(grammarPoint.category_key),
                 },
+                {
+                  label: "Knowledge",
+                  value: getGrammarKnowledgeRequirementLabel(
+                    grammarPoint.knowledge_requirement
+                  ),
+                },
+                ...(grammarPoint.receptive_scope
+                  ? [
+                      {
+                        label: "Receptive scope",
+                        value: grammarPoint.receptive_scope,
+                      },
+                    ]
+                  : []),
                 {
                   label: "Spec reference",
                   value: grammarPoint.spec_reference ?? "Not specified",

@@ -8,7 +8,10 @@ import {
   getTrimmedString,
 } from "@/app/actions/shared/form-data";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import type { DbGrammarTier } from "@/lib/grammar/grammar-helpers-db";
+import type {
+  DbGrammarKnowledgeRequirement,
+  DbGrammarTier,
+} from "@/lib/grammar/grammar-helpers-db";
 import { getGrammarSetByIdDb } from "@/lib/grammar/grammar-helpers-db";
 import { createClient } from "@/lib/supabase/server";
 
@@ -47,6 +50,19 @@ function assertGrammarTier(value: string): DbGrammarTier {
   }
 
   throw new Error("Invalid grammar tier");
+}
+
+function assertKnowledgeRequirement(value: string): DbGrammarKnowledgeRequirement {
+  if (
+    value === "productive" ||
+    value === "receptive" ||
+    value === "mixed" ||
+    value === "unknown"
+  ) {
+    return value;
+  }
+
+  throw new Error("Invalid grammar knowledge requirement");
 }
 
 async function requireGrammarAdmin() {
@@ -92,6 +108,13 @@ export async function createGrammarPointAction(formData: FormData) {
   const grammarTagKey = getOptionalString(formData, "grammarTagKey");
   const categoryKey = getOptionalString(formData, "categoryKey");
   const tier = assertGrammarTier(getTrimmedString(formData, "tier") || "both");
+  const knowledgeRequirement = assertKnowledgeRequirement(
+    getTrimmedString(formData, "knowledgeRequirement") || "productive"
+  );
+  const receptiveScope = getOptionalString(formData, "receptiveScope");
+  const sourceKey = getOptionalString(formData, "sourceKey");
+  const sourceVersion = getOptionalString(formData, "sourceVersion");
+  const importKey = getOptionalString(formData, "importKey");
   const manualSortOrder = getOptionalNonNegativeNumber(formData, "sortOrder");
   const isPublished = getBoolean(formData, "isPublished");
 
@@ -112,6 +135,11 @@ export async function createGrammarPointAction(formData: FormData) {
     grammar_tag_key: grammarTagKey,
     category_key: categoryKey,
     tier,
+    knowledge_requirement: knowledgeRequirement,
+    receptive_scope: receptiveScope,
+    source_key: sourceKey,
+    source_version: sourceVersion,
+    import_key: importKey,
     sort_order: sortOrder,
     is_published: isPublished,
   });
@@ -141,6 +169,13 @@ export async function updateGrammarPointAction(formData: FormData) {
   const grammarTagKey = getOptionalString(formData, "grammarTagKey");
   const categoryKey = getOptionalString(formData, "categoryKey");
   const tier = assertGrammarTier(getTrimmedString(formData, "tier") || "both");
+  const knowledgeRequirement = assertKnowledgeRequirement(
+    getTrimmedString(formData, "knowledgeRequirement") || "productive"
+  );
+  const receptiveScope = getOptionalString(formData, "receptiveScope");
+  const sourceKey = getOptionalString(formData, "sourceKey");
+  const sourceVersion = getOptionalString(formData, "sourceVersion");
+  const importKey = getOptionalString(formData, "importKey");
   const sortOrder = getOptionalNonNegativeNumber(formData, "sortOrder") ?? 0;
   const isPublished = getBoolean(formData, "isPublished");
 
@@ -161,6 +196,11 @@ export async function updateGrammarPointAction(formData: FormData) {
       grammar_tag_key: grammarTagKey,
       category_key: categoryKey,
       tier,
+      knowledge_requirement: knowledgeRequirement,
+      receptive_scope: receptiveScope,
+      source_key: sourceKey,
+      source_version: sourceVersion,
+      import_key: importKey,
       sort_order: sortOrder,
       is_published: isPublished,
     })

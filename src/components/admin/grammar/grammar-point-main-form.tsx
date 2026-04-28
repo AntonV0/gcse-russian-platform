@@ -97,6 +97,31 @@ export default function GrammarPointMainForm({
             </Select>
           </FormField>
 
+          <FormField
+            label="Knowledge requirement"
+            description="Use receptive for specification points marked (R)."
+          >
+            <Select
+              name="knowledgeRequirement"
+              defaultValue={grammarPoint.knowledge_requirement}
+            >
+              <option value="productive">Productive knowledge</option>
+              <option value="receptive">Receptive knowledge</option>
+              <option value="mixed">Mixed knowledge</option>
+              <option value="unknown">Unknown requirement</option>
+            </Select>
+          </FormField>
+
+          <div className="md:col-span-2">
+            <FormField label="Receptive scope">
+              <Textarea
+                name="receptiveScope"
+                rows={3}
+                defaultValue={grammarPoint.receptive_scope ?? ""}
+              />
+            </FormField>
+          </div>
+
           <FormField label="Sort order">
             <Input
               name="sortOrder"
@@ -106,6 +131,23 @@ export default function GrammarPointMainForm({
               defaultValue={grammarPoint.sort_order}
             />
           </FormField>
+
+          <FormField label="Source key">
+            <Input name="sourceKey" defaultValue={grammarPoint.source_key ?? ""} />
+          </FormField>
+
+          <FormField label="Source version">
+            <Input
+              name="sourceVersion"
+              defaultValue={grammarPoint.source_version ?? ""}
+            />
+          </FormField>
+
+          <div className="md:col-span-2">
+            <FormField label="Import key">
+              <Input name="importKey" defaultValue={grammarPoint.import_key ?? ""} />
+            </FormField>
+          </div>
         </div>
       </SectionCard>
 

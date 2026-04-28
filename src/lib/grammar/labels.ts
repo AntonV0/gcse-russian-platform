@@ -1,4 +1,7 @@
-import type { DbGrammarTier } from "@/lib/grammar/types";
+import type {
+  DbGrammarKnowledgeRequirement,
+  DbGrammarTier,
+} from "@/lib/grammar/types";
 
 export function getGrammarTierLabel(tier: DbGrammarTier) {
   switch (tier) {
@@ -12,6 +15,23 @@ export function getGrammarTierLabel(tier: DbGrammarTier) {
       return "Unknown tier";
     default:
       return tier;
+  }
+}
+
+export function getGrammarKnowledgeRequirementLabel(
+  value: DbGrammarKnowledgeRequirement
+) {
+  switch (value) {
+    case "productive":
+      return "Productive knowledge";
+    case "receptive":
+      return "Receptive knowledge";
+    case "mixed":
+      return "Mixed knowledge";
+    case "unknown":
+      return "Unknown requirement";
+    default:
+      return value;
   }
 }
 
