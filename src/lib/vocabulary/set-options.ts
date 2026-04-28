@@ -1,4 +1,3 @@
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getVocabularyThemeLabel } from "@/lib/vocabulary/labels";
 import { chunkValues, fetchSupabasePages } from "@/lib/vocabulary/pagination";
@@ -94,11 +93,8 @@ export async function getVocabularySetOptionsDb(options?: { publishedOnly?: bool
   );
 }
 
-export async function getVocabularySetThemeKeysDb(options?: {
-  publishedOnly?: boolean;
-  useAdminClient?: boolean;
-}) {
-  const supabase = options?.useAdminClient ? createAdminClient() : await createClient();
+export async function getVocabularySetThemeKeysDb(options?: { publishedOnly?: boolean }) {
+  const supabase = await createClient();
   const data = await fetchSupabasePages<{ theme_key: string | null }>({
     queryFactory: () => {
       let query = supabase

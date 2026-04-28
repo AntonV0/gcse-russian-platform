@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 import { getVocabularyThemeLabel } from "./labels";
 import { normalizeVocabularySetSummaryRow } from "./normalizers";
@@ -14,17 +13,14 @@ import type {
   VocabularySetFilters,
 } from "./types";
 
-async function getVocabularySetSummaryRowsBySetIdsDb(
-  vocabularySetIds: string[],
-  options?: { useAdminClient?: boolean }
-) {
+async function getVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds: string[]) {
   const uniqueVocabularySetIds = Array.from(new Set(vocabularySetIds));
 
   if (uniqueVocabularySetIds.length === 0) {
     return new Map<string, DbVocabularySetSummaryRow>();
   }
 
-  const supabase = options?.useAdminClient ? createAdminClient() : await createClient();
+  const supabase = await createClient();
   const data = (
     await Promise.all(
       chunkValues(uniqueVocabularySetIds).map((setIdBatch) =>
@@ -50,18 +46,14 @@ async function getVocabularySetSummaryRowsBySetIdsDb(
 }
 
 export async function attachVocabularyCountsAndUsage(
-  vocabularySets: DbVocabularySet[],
-  options?: { useAdminClient?: boolean }
+  vocabularySets: DbVocabularySet[]
 ): Promise<DbVocabularySetListItem[]> {
   if (vocabularySets.length === 0) {
     return [];
   }
 
   const vocabularySetIds = vocabularySets.map((vocabularySet) => vocabularySet.id);
-  const summariesBySetId = await getVocabularySetSummaryRowsBySetIdsDb(
-    vocabularySetIds,
-    options
-  );
+  const summariesBySetId = await getVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds);
 
   return vocabularySets.map((vocabularySet) => {
     const summary = summariesBySetId.get(vocabularySet.id);
