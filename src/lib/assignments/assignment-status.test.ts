@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getDueDateClass, getDueDateStatus } from "@/lib/assignments/assignment-status";
+import {
+  getDueDateClass,
+  getDueDateStatus,
+  getDueDateUrgency,
+} from "@/lib/assignments/assignment-status";
 
 describe("assignment due-date helpers", () => {
   afterEach(() => {
@@ -24,5 +28,22 @@ describe("assignment due-date helpers", () => {
     expect(getDueDateClass("soon")).toContain("--warning-text");
     expect(getDueDateClass("normal")).toContain("--text-muted");
     expect(getDueDateClass("none")).toContain("--text-muted");
+  });
+
+  it("returns student-facing urgency copy for overdue and soon due dates", () => {
+    const now = new Date("2026-04-27T12:00:00.000Z");
+
+    expect(getDueDateUrgency("2026-04-27T11:59:59.000Z", now)).toMatchObject({
+      status: "overdue",
+      tone: "danger",
+      title: "Past due",
+      label: "Overdue",
+    });
+    expect(getDueDateUrgency("2026-04-29T12:00:00.000Z", now)).toMatchObject({
+      status: "soon",
+      tone: "warning",
+      title: "Due soon",
+      label: "Due soon",
+    });
   });
 });

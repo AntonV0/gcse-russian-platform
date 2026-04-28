@@ -1,4 +1,5 @@
 import AssignmentSubmissionForm from "@/components/assignments/assignment-submission-form";
+import AssignmentReviewTimeline from "@/components/assignments/assignment-review-timeline";
 import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -16,7 +17,7 @@ import {
   getStudentAssignmentByIdDb,
 } from "@/lib/assignments/assignment-helpers-db";
 import type { AssignmentSubmissionStatus } from "@/lib/assignments/assignment-helpers-db";
-import { getDueDateStatus } from "@/lib/assignments/assignment-status";
+import { getDueDateStatus, getDueDateUrgency } from "@/lib/assignments/assignment-status";
 import { getSignedStorageUrl } from "@/lib/shared/storage-helpers";
 
 type Props = {
@@ -51,24 +52,18 @@ function getSubmissionStatus(submissionStatus?: AssignmentSubmissionStatus | nul
 
 function getSubmissionDescription(status: AssignmentSubmissionStatus) {
   if (status === "reviewed") {
-    return "Your teacher has reviewed this assignment.";
+    return "Your teacher has reviewed this assignment. Your response is locked.";
   }
 
   if (status === "submitted") {
-    return "Your work has been submitted and is waiting for teacher review.";
+    return "Your work is waiting for teacher review. You can resubmit until it is reviewed.";
   }
 
   return "Open the items below, then submit your response when you are ready.";
 }
 
 function getDueDateDescription(value: string | null) {
-  const dueStatus = getDueDateStatus(value);
-
-  if (!value) return "Your teacher has not set a due date.";
-  if (dueStatus === "overdue") return "This assignment is past its due date.";
-  if (dueStatus === "soon") return "This assignment is due soon.";
-
-  return "Use the due date to plan your homework time.";
+  return getDueDateUrgency(value).description;
 }
 
 function getItemBadge(itemType: string) {
@@ -242,6 +237,9 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
 
   const status = getSubmissionStatus(submission?.status);
   const dueStatus = getDueDateStatus(assignment.due_at);
+  const dueUrgency = getDueDateUrgency(assignment.due_at);
+  const showDueUrgency =
+    status !== "reviewed" && (dueStatus === "overdue" || dueStatus === "soon");
   const submittedFileUrl = await getSignedStorageUrl(
     "assignment-submissions",
     submission?.submitted_file_path ?? null
@@ -276,7 +274,7 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
               status === "not_started"
                 ? "To do"
                 : status === "submitted"
-                  ? "Sent"
+                  ? "Awaiting review"
                   : "Reviewed"
             }
             description={getSubmissionDescription(status)}
@@ -298,7 +296,7 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
           />
           <SummaryStatCard
             title="Due date"
-            value={formatDueDate(assignment.due_at)}
+            value={<span className="text-base">{formatDueDate(assignment.due_at)}</span>}
             description={getDueDateDescription(assignment.due_at)}
             icon={dueStatus === "overdue" ? "warning" : "calendar"}
             tone={
@@ -323,14 +321,20 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
           <SummaryStatCard
             title="Submitted"
             value={
-              submission?.submitted_at
-                ? formatDateTime(submission.submitted_at)
-                : "Not yet"
+              submission?.submitted_at ? (
+                <span className="text-base">
+                  {formatDateTime(submission.submitted_at)}
+                </span>
+              ) : (
+                "Not yet"
+              )
             }
             description={
-              submission?.submitted_at
-                ? "You can update it until teacher review."
-                : "Submit below when ready."
+              status === "reviewed"
+                ? "Your reviewed response is locked."
+                : submission?.submitted_at
+                  ? "You can update it until teacher review."
+                  : "Submit below when ready."
             }
             icon="upload"
             compact
@@ -338,19 +342,39 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
         </div>
       </div>
 
+      {showDueUrgency ? (
+        <FeedbackBanner
+          className="mb-6"
+          tone={dueUrgency.tone}
+          title={dueUrgency.title}
+          description={dueUrgency.description}
+        />
+      ) : null}
+
+      {submission?.status === "submitted" ? (
+        <FeedbackBanner
+          className="mb-6"
+          tone="info"
+          title="Submitted for review"
+          description="Your latest submission is saved. You can still update your response until your teacher reviews it."
+        />
+      ) : null}
+
       {submission?.status === "reviewed" ? (
         <FeedbackBanner
           className="mb-6"
           tone="success"
-          title="Teacher feedback available"
+          title="Reviewed and locked"
           description={
             submission.feedback
               ? submission.feedback
-              : "Your teacher has reviewed this assignment."
+              : "Your teacher has reviewed this assignment. Your response can no longer be edited."
           }
         >
           {submission.mark !== null ? (
-            <p className="app-text-body-muted">Mark: {submission.mark}</p>
+            <Badge tone="success" icon="marked">
+              Mark: {submission.mark}
+            </Badge>
           ) : null}
         </FeedbackBanner>
       ) : null}
@@ -372,6 +396,13 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
         </div>
 
         <div className="space-y-6 xl:sticky xl:top-6">
+          <AssignmentReviewTimeline
+            assignedAt={assignment.created_at}
+            dueAt={assignment.due_at}
+            submission={submission}
+            status={status}
+          />
+
           <AssignmentSubmissionForm
             assignmentId={assignment.id}
             initialValue={submission?.submitted_text ?? ""}
