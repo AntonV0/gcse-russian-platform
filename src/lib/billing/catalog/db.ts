@@ -2,7 +2,7 @@ import {
   getActiveUserProductGrantDb,
   type DbUserAccessGrant,
 } from "@/lib/billing/grants";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { PRODUCT_CODES, type DbPrice, type DbProduct } from "./types";
 
 const PRODUCT_SELECT =
@@ -13,7 +13,7 @@ const PRICE_SELECT =
 export async function getActiveProductByCodeDb(
   productCode: string
 ): Promise<DbProduct | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("products")
@@ -34,7 +34,7 @@ export async function getActiveProductByCodeDb(
 }
 
 export async function getProductByIdDb(productId: string): Promise<DbProduct | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("products")
@@ -54,7 +54,7 @@ export async function getProductByIdDb(productId: string): Promise<DbProduct | n
 }
 
 export async function getActivePricesForProductDb(productId: string): Promise<DbPrice[]> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("prices")
@@ -75,7 +75,7 @@ export async function getActivePricesForProductDb(productId: string): Promise<Db
 }
 
 export async function getActivePriceByIdDb(priceId: string): Promise<DbPrice | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("prices")
@@ -98,7 +98,7 @@ export async function getActivePriceByIdDb(priceId: string): Promise<DbPrice | n
 export async function getActivePriceByStripePriceIdDb(
   stripePriceId: string
 ): Promise<DbPrice | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("prices")

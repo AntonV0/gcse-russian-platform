@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import {
   STRIPE_WEBHOOK_EVENT_PROCESSING_STALE_MS,
   getStripeWebhookEventProcessingAction,
@@ -36,7 +36,7 @@ function getSafeFailureSummary(error: unknown): string {
 async function getStripeWebhookEventDb(
   eventId: string
 ): Promise<DbStripeWebhookEvent | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("stripe_webhook_events")
@@ -60,7 +60,7 @@ export async function claimStripeWebhookEventProcessingDb(params: {
   eventType: string;
   livemode: boolean;
 }): Promise<StripeWebhookEventProcessingClaim> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
   const now = new Date();
   const nowIso = now.toISOString();
 
@@ -146,7 +146,7 @@ export async function claimStripeWebhookEventProcessingDb(params: {
 export async function recordStripeWebhookEventProcessedDb(
   eventId: string
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
   const nowIso = new Date().toISOString();
 
   const { error } = await supabase
@@ -173,7 +173,7 @@ export async function recordStripeWebhookEventFailedDb(
   eventId: string,
   error: unknown
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
   const nowIso = new Date().toISOString();
 
   const { error: updateError } = await supabase
