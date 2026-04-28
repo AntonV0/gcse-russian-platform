@@ -10,6 +10,10 @@ import { getCoursesPath, getVariantPath, getLessonPath } from "@/lib/access/rout
 import { getModuleProgress } from "@/lib/progress/progress-module";
 import { getLessonAccessStateFromMeta } from "@/lib/access/access";
 import { getCurrentCourseAccess, getCurrentProfile } from "@/lib/auth/auth";
+import {
+  formatCoursePathMinutes,
+  formatCoursePathRemainingMinutes,
+} from "@/lib/courses/path-progress";
 
 type ModulePageProps = {
   params: Promise<{
@@ -54,10 +58,19 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   const progress = await getModuleProgress(courseSlug, variantSlug, moduleSlug);
   const completedMap = new Map(progress.map((p) => [p.lesson_slug, p.completed]));
-  const completedCount = progress.filter((p) => p.completed).length;
+  const completedCount = lessons.filter((lesson) => completedMap.get(lesson.slug)).length;
   const totalLessons = lessons.length;
   const progressPercent =
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+  const estimatedMinutes = lessons.reduce<number | null>(
+    (total, lesson) =>
+      lesson.estimated_minutes ? (total ?? 0) + lesson.estimated_minutes : total,
+    null
+  );
+  const remainingMinutes = lessons.reduce<number | null>((total, lesson) => {
+    if (completedMap.get(lesson.slug)) return total;
+    return lesson.estimated_minutes ? (total ?? 0) + lesson.estimated_minutes : total;
+  }, null);
 
   const [profile, access] = await Promise.all([
     getCurrentProfile(),
@@ -76,9 +89,16 @@ export default async function ModulePage({ params }: ModulePageProps) {
       const accessState = lessonAccessMap.get(lesson.slug);
       const isCompleted = completedMap.get(lesson.slug);
       return accessState === "accessible" && !isCompleted;
-    }) ??
-    lessons.find((lesson) => lessonAccessMap.get(lesson.slug) === "accessible") ??
-    null;
+    }) ?? null;
+  const firstAccessibleLesson =
+    lessons.find((lesson) => lessonAccessMap.get(lesson.slug) === "accessible") ?? null;
+  const primaryLesson = firstAccessibleIncompleteLesson ?? firstAccessibleLesson;
+  const isModuleComplete = totalLessons > 0 && completedCount === totalLessons;
+  const momentumMessage = isModuleComplete
+    ? "Module complete. Review any lesson to keep the knowledge warm."
+    : firstAccessibleIncompleteLesson
+      ? `${firstAccessibleIncompleteLesson.title} is your next guided step.`
+      : "Open the first available lesson when it unlocks.";
 
   return (
     <main className="space-y-8">
@@ -102,29 +122,31 @@ export default async function ModulePage({ params }: ModulePageProps) {
               <Badge tone="success" icon="completed">
                 {completedCount} completed
               </Badge>
+              <Badge tone="muted" icon="pending">
+                {formatCoursePathRemainingMinutes(remainingMinutes, isModuleComplete)}
+              </Badge>
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">Continue this module</h2>
-              <p className="app-subtitle max-w-2xl">
-                Follow the lesson sequence in order so your progress stays structured and
-                unlocked correctly.
-              </p>
+              <h2 className="app-heading-hero max-w-3xl">
+                {isModuleComplete ? "Module complete" : "Continue this module"}
+              </h2>
+              <p className="app-subtitle max-w-2xl">{momentumMessage}</p>
             </div>
 
             <div className="app-mobile-action-stack flex flex-wrap gap-3">
-              {firstAccessibleIncompleteLesson ? (
+              {primaryLesson ? (
                 <Button
                   href={getLessonPath(
                     course.slug,
                     variantSlug,
                     module.slug,
-                    firstAccessibleIncompleteLesson.slug
+                    primaryLesson.slug
                   )}
                   variant="primary"
                   icon="next"
                 >
-                  Continue lesson
+                  {firstAccessibleIncompleteLesson ? "Continue lesson" : "Review lesson"}
                 </Button>
               ) : null}
 
@@ -175,14 +197,17 @@ export default async function ModulePage({ params }: ModulePageProps) {
                 </div>
 
                 <div className="app-stat-tile">
-                  <div className="app-stat-label">Access</div>
-                  <div className="app-stat-value">Step by step</div>
+                  <div className="app-stat-label">Time left</div>
+                  <div className="app-stat-value">
+                    {formatCoursePathRemainingMinutes(remainingMinutes, isModuleComplete)}
+                  </div>
                 </div>
               </div>
 
               <p className="text-sm app-text-muted">
-                Follow the next available lesson first. Completed lessons stay available
-                for revision.
+                {isModuleComplete
+                  ? `You have completed all ${totalLessons} lessons. Revision is ready whenever you need it.`
+                  : `${formatCoursePathMinutes(estimatedMinutes)} in this module, with ${formatCoursePathMinutes(remainingMinutes)} still to work through.`}
               </p>
             </div>
           </DashboardCard>
@@ -225,6 +250,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     <Badge tone="muted" icon="lesson">
                       Lesson {index + 1}
                     </Badge>
+                    <Badge tone="muted" icon="pending">
+                      {formatCoursePathMinutes(lesson.estimated_minutes)}
+                    </Badge>
 
                     {isCompleted ? (
                       <Badge tone="success" icon="completed">
@@ -253,8 +281,35 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     </p>
                   </div>
 
+                  <div>
+                    <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                      <span className="font-medium text-[var(--text-primary)]">
+                        {isCompleted
+                          ? "Ready for revision"
+                          : isNextLesson
+                            ? "Your next step"
+                            : canAccessLesson
+                              ? "Available when ready"
+                              : "Locked for now"}
+                      </span>
+                      <span className="app-text-muted">
+                        Step {index + 1} of {totalLessons}
+                      </span>
+                    </div>
+                    <div className="app-progress-track">
+                      <div
+                        className="app-progress-bar"
+                        style={{ width: isCompleted ? "100%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+
                   <div className="pt-1 text-sm font-medium app-brand-text">
-                    {canAccessLesson ? "Open lesson" : "Locked until previous progress"}
+                    {isCompleted
+                      ? "Review lesson"
+                      : canAccessLesson
+                        ? "Open lesson"
+                        : "Locked until previous progress"}
                   </div>
                 </div>
               </DashboardCard>
