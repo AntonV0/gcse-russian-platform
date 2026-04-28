@@ -65,6 +65,7 @@ uploads/
 
 # cache / temp artifacts
 .cache/
+.codex-screenshots/
 .turbo/
 .swc/
 .parcel-cache/
