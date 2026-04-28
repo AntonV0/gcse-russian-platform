@@ -190,7 +190,12 @@ export default function QuestionSetPracticeShell({
 
         <div
           className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--background-elevated)]"
-          aria-hidden="true"
+          role="progressbar"
+          aria-label="Question set practice progress"
+          aria-valuemin={0}
+          aria-valuemax={totalQuestions}
+          aria-valuenow={answeredCount}
+          aria-valuetext={progressLabel}
         >
           <div
             className="h-full rounded-full bg-[var(--accent-fill)] transition-[width] duration-300"
@@ -203,6 +208,8 @@ export default function QuestionSetPracticeShell({
 
       {isComplete ? (
         <div
+          role="status"
+          aria-live="polite"
           className={[
             "app-question-feedback p-4",
             incorrectQuestions.length > 0
@@ -234,8 +241,9 @@ export default function QuestionSetPracticeShell({
                 variant="warning"
                 size="sm"
                 icon="preview"
+                ariaLabel="Review missed answers in this question set"
               >
-                Review
+                Review missed answers
               </Button>
             ) : null}
           </div>
@@ -278,6 +286,7 @@ export default function QuestionSetPracticeShell({
                       variant="secondary"
                       size="sm"
                       icon="back"
+                      ariaLabel={`Go back to question ${question.number}`}
                     >
                       Go back
                     </Button>

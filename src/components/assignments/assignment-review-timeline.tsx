@@ -146,6 +146,7 @@ export default function AssignmentReviewTimeline({
             <li key={item.title} className="relative flex gap-3">
               {index < items.length - 1 ? (
                 <span
+                  aria-hidden="true"
                   className={[
                     "absolute left-[0.93rem] top-8 h-[calc(100%+0.5rem)] w-px",
                     classes.line,
@@ -154,6 +155,7 @@ export default function AssignmentReviewTimeline({
               ) : null}
 
               <span
+                aria-hidden="true"
                 className={[
                   "relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border",
                   classes.marker,
@@ -163,6 +165,14 @@ export default function AssignmentReviewTimeline({
               </span>
 
               <div className="min-w-0 flex-1 pb-1">
+                <span className="sr-only">
+                  {item.state === "complete"
+                    ? "Completed step"
+                    : item.state === "active"
+                      ? "Current step"
+                      : "Upcoming step"}
+                  :{" "}
+                </span>
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-medium text-[var(--text-primary)]">{item.title}</p>
                   {getStateBadge(item.state)}

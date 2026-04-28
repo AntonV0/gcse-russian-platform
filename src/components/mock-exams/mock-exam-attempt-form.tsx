@@ -104,6 +104,7 @@ export default function MockExamAttemptForm({
             value="save"
             variant="secondary"
             icon="save"
+            ariaLabel="Save mock exam draft"
           >
             Save draft
           </Button>
@@ -113,6 +114,7 @@ export default function MockExamAttemptForm({
             value="submit"
             variant="primary"
             icon="confirm"
+            ariaLabel="Submit mock exam attempt for marking"
           >
             Submit attempt
           </Button>

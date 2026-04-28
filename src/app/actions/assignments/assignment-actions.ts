@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireCurrentUserCanSubmitAssignment } from "@/lib/auth/teacher-assignment-permissions";
 
@@ -87,6 +88,10 @@ export async function submitAssignmentAction({
       return { success: false, error: "submission_update_failed" as const };
     }
   }
+
+  revalidatePath("/assignments");
+  revalidatePath(`/assignments/${assignmentId}`);
+  revalidatePath("/dashboard");
 
   return { success: true };
 }

@@ -105,9 +105,18 @@ export default async function LessonPageTemplate({
 
   const requestedStepIndex = clampStepIndex(currentStep, visibleSections.length);
   const visitedIdsBeforeVisit = new Set(await getVisitedLessonSectionIds(lesson.id));
-  const maxVisitedIndex = getMaxVisitedIndex(visibleSections, visitedIdsBeforeVisit);
-  const allowedMaxIndex = getAllowedMaxIndex(visibleSections.length, maxVisitedIndex);
-  const effectiveStepIndex = getEffectiveStepIndex(requestedStepIndex, allowedMaxIndex);
+  const maxVisitedIndexBeforeVisit = getMaxVisitedIndex(
+    visibleSections,
+    visitedIdsBeforeVisit
+  );
+  const allowedMaxIndexBeforeVisit = getAllowedMaxIndex(
+    visibleSections.length,
+    maxVisitedIndexBeforeVisit
+  );
+  const effectiveStepIndex = getEffectiveStepIndex(
+    requestedStepIndex,
+    allowedMaxIndexBeforeVisit
+  );
 
   if (effectiveStepIndex !== requestedStepIndex) {
     redirect(
@@ -130,6 +139,8 @@ export default async function LessonPageTemplate({
   if (didMarkCurrentSection) {
     visitedIds.add(currentSection.id);
   }
+  const maxVisitedIndex = getMaxVisitedIndex(visibleSections, visitedIds);
+  const allowedMaxIndex = getAllowedMaxIndex(visibleSections.length, maxVisitedIndex);
   const progressSummary = getLessonProgressSummary(visibleSections, visitedIds);
   const currentStepNumber = effectiveStepIndex + 1;
   const isFinalStep = effectiveStepIndex === visibleSections.length - 1;

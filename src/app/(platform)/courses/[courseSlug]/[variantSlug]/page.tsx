@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
@@ -6,7 +7,7 @@ import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadVariantPageData } from "@/lib/courses/course-helpers-db";
-import { getCoursePath, getCoursesPath, getModulePath } from "@/lib/access/routes";
+import { getCoursePath, getModulePath } from "@/lib/access/routes";
 import {
   formatCoursePathRemainingMinutes,
   getVariantPathProgressSummary,
@@ -36,27 +37,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
   const { course, variant, modules } = await loadVariantPageData(courseSlug, variantSlug);
 
   if (!course || !variant) {
-    return (
-      <main>
-        <EmptyState
-          icon="search"
-          iconTone="brand"
-          title="Learning path not found"
-          description="This learning path could not be found. Return to the course list and choose an available path."
-          visual={
-            <VisualPlaceholder
-              category="learningPath"
-              ariaLabel="Learning path not found placeholder"
-            />
-          }
-          action={
-            <Button href={getCoursesPath()} variant="primary" icon="courses">
-              Courses
-            </Button>
-          }
-        />
-      </main>
-    );
+    notFound();
   }
 
   const primaryModule = modules[0] ?? null;
@@ -157,7 +138,14 @@ export default async function VariantPage({ params }: VariantPageProps) {
                     {pathSummary.totalModules === 1 ? "" : "s"}
                   </span>
                 </div>
-                <div className="app-progress-track">
+                <div
+                  className="app-progress-track"
+                  role="progressbar"
+                  aria-label={`${variant.title} path progress`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={pathSummary.progressPercent}
+                >
                   <div
                     className="app-progress-bar"
                     style={{ width: `${pathSummary.progressPercent}%` }}
@@ -202,7 +190,12 @@ export default async function VariantPage({ params }: VariantPageProps) {
               getModulePath(course.slug, variant.slug, module.slug);
 
             return (
-              <Link key={module.slug} href={href} className="block">
+              <Link
+                key={module.slug}
+                href={href}
+                className="app-focus-ring block rounded-2xl"
+                aria-label={`Open ${module.title}`}
+              >
                 <DashboardCard className="h-full transition hover:-translate-y-0.5">
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-2">
@@ -242,7 +235,14 @@ export default async function VariantPage({ params }: VariantPageProps) {
                           {summary?.totalLessons || "-"}
                         </span>
                       </div>
-                      <div className="app-progress-track">
+                      <div
+                        className="app-progress-track"
+                        role="progressbar"
+                        aria-label={`${module.title} progress`}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={summary?.progressPercent ?? 0}
+                      >
                         <div
                           className="app-progress-bar"
                           style={{ width: `${summary?.progressPercent ?? 0}%` }}

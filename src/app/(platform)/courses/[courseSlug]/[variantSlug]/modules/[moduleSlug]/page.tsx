@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
@@ -6,7 +7,7 @@ import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadModulePageData } from "@/lib/courses/course-helpers-db";
-import { getCoursesPath, getVariantPath, getLessonPath } from "@/lib/access/routes";
+import { getVariantPath, getLessonPath } from "@/lib/access/routes";
 import { getModuleProgress } from "@/lib/progress/progress-module";
 import { getLessonAccessStateFromMeta } from "@/lib/access/access";
 import { getCurrentCourseAccess, getCurrentProfile } from "@/lib/auth/auth";
@@ -33,27 +34,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
   );
 
   if (!course || !module) {
-    return (
-      <main>
-        <EmptyState
-          icon="search"
-          iconTone="brand"
-          title="Module not found"
-          description="This module could not be found. Return to the course list and choose an available module."
-          visual={
-            <VisualPlaceholder
-              category="learningPath"
-              ariaLabel="Module not found placeholder"
-            />
-          }
-          action={
-            <Button href={getCoursesPath()} variant="primary" icon="courses">
-              Courses
-            </Button>
-          }
-        />
-      </main>
-    );
+    notFound();
   }
 
   const progress = await getModuleProgress(courseSlug, variantSlug, moduleSlug);
