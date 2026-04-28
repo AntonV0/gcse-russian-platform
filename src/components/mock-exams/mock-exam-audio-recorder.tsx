@@ -88,6 +88,7 @@ export default function MockExamAudioRecorder({
           icon="audio"
           onClick={isRecording ? stopRecording : startRecording}
           disabled={disabled}
+          ariaLabel={isRecording ? "Stop recording response" : "Record spoken response"}
         >
           {isRecording ? "Stop recording" : "Record response"}
         </Button>
@@ -100,7 +101,9 @@ export default function MockExamAudioRecorder({
       ) : null}
 
       {recordingError ? (
-        <p className="text-sm text-[var(--danger)]">{recordingError}</p>
+        <p className="text-sm text-[var(--danger)]" role="alert">
+          {recordingError}
+        </p>
       ) : null}
     </div>
   );

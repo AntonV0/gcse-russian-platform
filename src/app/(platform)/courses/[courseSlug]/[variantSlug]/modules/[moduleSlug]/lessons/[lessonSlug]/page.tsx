@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -40,21 +41,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   const { course, module, lesson } = lessonPageData;
 
   if (!course || !module || !lesson) {
-    return (
-      <main>
-        <EmptyState
-          icon="search"
-          iconTone="brand"
-          title="Lesson not found"
-          description="This lesson could not be found. Return to your course path and choose an available lesson."
-          action={
-            <Button href="/courses" variant="primary" icon="courses">
-              Browse courses
-            </Button>
-          }
-        />
-      </main>
-    );
+    notFound();
   }
 
   const canAccess = await canUserAccessLesson(

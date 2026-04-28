@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { submitAssignmentAction } from "@/app/actions/assignments/assignment-actions";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -50,6 +51,7 @@ export default function AssignmentSubmissionForm({
   );
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const isLocked = status === "reviewed";
   const hasExistingSubmission = Boolean(initialValue || initialFilePath);
@@ -58,6 +60,8 @@ export default function AssignmentSubmissionForm({
   const hasUnsavedChanges = hasUnsavedTextChange || hasUnsavedFileChange;
   const wordCount = countWords(value);
   const characterCount = value.length;
+  const fileInputId = `assignment-file-${assignmentId}`;
+  const submitHelpId = `assignment-submit-help-${assignmentId}`;
 
   async function uploadSelectedFile() {
     if (!selectedFile) {
@@ -124,6 +128,7 @@ export default function AssignmentSubmissionForm({
         setUploadedFileName(uploadResult.fileName ?? null);
         setSelectedFile(null);
         setSaved(true);
+        router.refresh();
       } else {
         setSaved(false);
 
@@ -216,11 +221,15 @@ export default function AssignmentSubmissionForm({
 
       {allowFileUpload ? (
         <div className="space-y-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
-          <label className="block text-sm font-medium text-[var(--text-primary)]">
+          <label
+            htmlFor={fileInputId}
+            className="block text-sm font-medium text-[var(--text-primary)]"
+          >
             Upload written work
           </label>
 
           <input
+            id={fileInputId}
             type="file"
             accept=".jpg,.jpeg,.png,.pdf,.webp"
             disabled={isLocked}
@@ -234,13 +243,13 @@ export default function AssignmentSubmissionForm({
           />
 
           {selectedFile ? (
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="break-words text-sm text-[var(--text-secondary)]">
               Selected file: {selectedFile.name}
             </p>
           ) : null}
 
           {!selectedFile && uploadedFileName ? (
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="break-words text-sm text-[var(--text-secondary)]">
               Existing uploaded file: {uploadedFileName}
             </p>
           ) : null}
@@ -258,6 +267,12 @@ export default function AssignmentSubmissionForm({
           disabled={isPending || !canSubmit || isLocked}
           variant="primary"
           icon={hasExistingSubmission ? "save" : "submitted"}
+          aria-describedby={!isLocked && !canSubmit ? submitHelpId : undefined}
+          ariaLabel={
+            hasExistingSubmission
+              ? "Save assignment submission changes"
+              : "Submit homework response"
+          }
         >
           {isPending
             ? "Saving..."
@@ -266,6 +281,12 @@ export default function AssignmentSubmissionForm({
               : "Submit homework"}
         </Button>
       </div>
+
+      {!isLocked && !canSubmit ? (
+        <p id={submitHelpId} className="text-sm app-text-soft">
+          Add a response or upload an allowed file before submitting.
+        </p>
+      ) : null}
 
       {saved ? (
         <FeedbackBanner tone="success" description="Submission saved successfully." />

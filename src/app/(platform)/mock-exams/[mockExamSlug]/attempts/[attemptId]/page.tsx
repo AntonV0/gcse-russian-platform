@@ -417,6 +417,9 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
                   <a
                     key={question.id}
                     href={`#${question.anchorId}`}
+                    aria-label={`${section.title}, ${question.label}: ${
+                      question.saved ? "answered" : "blank"
+                    }${!isDraft && question.marked ? ", marked" : ""}`}
                     className={[
                       "inline-flex min-h-9 items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-semibold transition",
                       question.saved
@@ -427,7 +430,12 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
                     <span>{question.label}</span>
                     <span className="text-xs font-medium opacity-80">
                       {question.saved ? "answered" : "blank"}
-                      {!isDraft && question.marked ? " | marked" : ""}
+                      {!isDraft && question.marked ? (
+                        <>
+                          <span aria-hidden="true"> | </span>
+                          marked
+                        </>
+                      ) : null}
                     </span>
                   </a>
                 ))}
@@ -465,7 +473,14 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
 
               {scorePercent !== null ? (
                 <div className="mt-5">
-                  <div className="h-2 overflow-hidden rounded-full bg-[var(--background-elevated)]">
+                  <div
+                    className="h-2 overflow-hidden rounded-full bg-[var(--background-elevated)]"
+                    role="progressbar"
+                    aria-label="Awarded score"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={scorePercent}
+                  >
                     <div
                       className="h-full rounded-full bg-[var(--success-text)]"
                       style={{ width: `${Math.min(Math.max(scorePercent, 0), 100)}%` }}

@@ -11,7 +11,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const { error } = await searchParams;
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-var(--site-header-height)-8rem)] max-w-md items-center px-4 py-10">
+    <div className="mx-auto flex min-h-[calc(100vh-var(--site-header-height)-8rem)] max-w-md items-center px-4 py-10">
       <section className="app-surface-brand app-section-padding-lg w-full">
         <div className="mb-6 space-y-2">
           <h1 className="app-title">Create account</h1>
@@ -80,6 +80,6 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
           </button>
         </form>
       </section>
-    </main>
+    </div>
   );
 }

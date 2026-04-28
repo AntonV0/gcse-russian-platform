@@ -19,7 +19,7 @@ export default async function QuestionSetPage({ params }: QuestionSetPageProps) 
   }
 
   return (
-    <main>
+    <main className="space-y-4">
       <PageHeader
         title={questionSet.title}
         description={questionSet.description ?? undefined}

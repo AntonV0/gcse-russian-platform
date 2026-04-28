@@ -88,7 +88,8 @@ export default function MockExamResponseField({
     const selected = getPayloadString(payload.selectedOption);
 
     return (
-      <FormField label="Your answer">
+      <fieldset className="app-form-field">
+        <legend className="app-form-label">Your answer</legend>
         <div className="grid gap-2">
           {options.map((option, index) => (
             <label
@@ -106,7 +107,7 @@ export default function MockExamResponseField({
             </label>
           ))}
         </div>
-      </FormField>
+      </fieldset>
     );
   }
 
@@ -115,7 +116,8 @@ export default function MockExamResponseField({
     const selected = new Set(getPayloadStringArray(payload.selectedOptions));
 
     return (
-      <FormField label="Your answers">
+      <fieldset className="app-form-field">
+        <legend className="app-form-label">Your answers</legend>
         <div className="grid gap-2">
           {options.map((option, index) => (
             <label
@@ -133,7 +135,7 @@ export default function MockExamResponseField({
             </label>
           ))}
         </div>
-      </FormField>
+      </fieldset>
     );
   }
 

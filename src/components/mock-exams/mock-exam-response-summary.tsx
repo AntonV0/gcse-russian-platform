@@ -85,7 +85,7 @@ export default async function MockExamResponseSummary({
   if (!hasStructuredResponse) {
     if (response.response_text) {
       return (
-        <pre className="whitespace-pre-wrap text-sm leading-6 text-[var(--text-secondary)]">
+        <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-[var(--text-secondary)]">
           {response.response_text}
         </pre>
       );
@@ -96,7 +96,7 @@ export default async function MockExamResponseSummary({
     }
 
     return (
-      <pre className="whitespace-pre-wrap text-sm leading-6 text-[var(--text-secondary)]">
+      <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-[var(--text-secondary)]">
         {JSON.stringify(payload, null, 2)}
       </pre>
     );
@@ -139,12 +139,15 @@ export default async function MockExamResponseSummary({
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 block text-sm font-medium app-brand-text"
+              className="mt-2 block break-words text-sm font-medium app-brand-text"
+              aria-label={`Open uploaded work: ${file.fileName}`}
             >
               {file.fileName}
             </a>
           ) : (
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">{file.fileName}</p>
+            <p className="mt-2 break-words text-sm text-[var(--text-secondary)]">
+              {file.fileName}
+            </p>
           )}
         </div>
       ) : null}
@@ -157,7 +160,9 @@ export default async function MockExamResponseSummary({
               <AudioPlayer src={audioUrl} />
             </div>
           ) : (
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">{audio.fileName}</p>
+            <p className="mt-2 break-words text-sm text-[var(--text-secondary)]">
+              {audio.fileName}
+            </p>
           )}
         </div>
       ) : null}

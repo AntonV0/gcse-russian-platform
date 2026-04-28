@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
@@ -35,27 +36,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
   const { course, variants } = await loadCoursePageData(courseSlug);
 
   if (!course) {
-    return (
-      <main>
-        <EmptyState
-          icon="search"
-          iconTone="brand"
-          title="Course not found"
-          description="This course could not be found. Return to the course list and choose an available course."
-          visual={
-            <VisualPlaceholder
-              category="learningPath"
-              ariaLabel="Course not found placeholder"
-            />
-          }
-          action={
-            <Button href={getCoursesPath()} variant="primary" icon="courses">
-              Courses
-            </Button>
-          }
-        />
-      </main>
-    );
+    notFound();
   }
 
   const primaryVariant = variants[0] ?? null;

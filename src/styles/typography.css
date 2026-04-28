@@ -57,6 +57,7 @@
   letter-spacing: 0;
   color: var(--text-primary);
   line-height: 1.28;
+  overflow-wrap: anywhere;
 }
 
 .app-text-lede {
