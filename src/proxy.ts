@@ -33,11 +33,23 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except:
-     * - static files
-     * - image optimizer
-     * - favicon
+     * Refresh Supabase auth only for authenticated application surfaces.
+     * Public marketing pages, API/webhook handlers, OG image routes, metadata,
+     * and static assets should not pay the auth-refresh cost in the proxy.
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/admin/:path*",
+    "/account/:path*",
+    "/assignments/:path*",
+    "/courses/:path*",
+    "/dashboard/:path*",
+    "/grammar/:path*",
+    "/mock-exams/:path*",
+    "/online-classes/:path*",
+    "/past-papers/:path*",
+    "/profile/:path*",
+    "/question-sets/:path*",
+    "/settings/:path*",
+    "/teacher/:path*",
+    "/vocabulary/:path*",
   ],
 };

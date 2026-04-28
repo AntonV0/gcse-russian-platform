@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 export type GrantAccessMode = "trial" | "full" | "volna";
 export type GrantSource = "stripe" | "admin" | "manual" | "migration";
@@ -58,7 +58,7 @@ export async function getUserProductGrantsDb(
   userId: string,
   productId: string
 ): Promise<DbUserAccessGrant[]> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("user_access_grants")
@@ -100,7 +100,7 @@ export async function deactivateActiveUserProductGrantsDb(
   userId: string,
   productId: string
 ): Promise<{ success: boolean; deactivatedCount: number }> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const activeGrants = await getUserProductGrantsDb(userId, productId);
   const activeIds = activeGrants
@@ -135,7 +135,7 @@ export async function deactivateActiveUserProductGrantsBySourceDb(
   productId: string,
   source: GrantSource
 ): Promise<{ success: boolean; deactivatedCount: number }> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data: activeGrants, error: fetchError } = await supabase
     .from("user_access_grants")
@@ -202,7 +202,7 @@ export async function grantProductAccessDb(
     return existingActiveGrant;
   }
 
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const deactivateResult = await deactivateActiveUserProductGrantsDb(
     input.userId,
@@ -245,7 +245,7 @@ export async function grantProductAccessDb(
 export async function deactivateGrantByIdDb(
   grantId: string
 ): Promise<DbUserAccessGrant | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("user_access_grants")
@@ -269,7 +269,7 @@ export async function setGrantEndDateDb(
   grantId: string,
   endsAt: Date | string | null
 ): Promise<DbUserAccessGrant | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("user_access_grants")

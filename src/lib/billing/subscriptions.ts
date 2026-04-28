@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import {
   isSubscriptionActiveStatus,
   shouldDeactivateStripeSubscriptionAccess,
@@ -48,7 +48,7 @@ function toIsoOrNull(value?: Date | string | null): string | null {
 export async function getSubscriptionByIdDb(
   subscriptionId: string
 ): Promise<DbSubscription | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("subscriptions")
@@ -70,7 +70,7 @@ export async function getSubscriptionByIdDb(
 export async function getSubscriptionByProviderSubscriptionIdDb(
   providerSubscriptionId: string
 ): Promise<DbSubscription | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("subscriptions")
@@ -93,7 +93,7 @@ export async function getUserProductSubscriptionsDb(
   userId: string,
   productId: string
 ): Promise<DbSubscription[]> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("subscriptions")
@@ -141,7 +141,7 @@ async function findSubscriptionForUpsert(
 export async function upsertSubscriptionDb(
   input: UpsertSubscriptionInput
 ): Promise<DbSubscription | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const existing = await findSubscriptionForUpsert(input);
 
@@ -201,7 +201,7 @@ export async function cancelSubscriptionByProviderSubscriptionIdDb(
   providerSubscriptionId: string,
   canceledAt?: Date | string | null
 ): Promise<DbSubscription | null> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("subscriptions")
@@ -230,7 +230,7 @@ export async function cancelSubscriptionByProviderSubscriptionIdDb(
 export async function getActiveUserSubscriptionsDb(
   userId: string
 ): Promise<DbSubscription[]> {
-  const supabase = createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("subscriptions")

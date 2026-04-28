@@ -1,3 +1,5 @@
+import "server-only";
+
 import { createClient } from "@supabase/supabase-js";
 import { supabaseUrl } from "@/lib/supabase/env";
 
@@ -11,7 +13,7 @@ function getServiceRoleKey(): string {
   return value;
 }
 
-export function createAdminClient() {
+export function createServiceRoleClient() {
   return createClient(supabaseUrl, getServiceRoleKey(), {
     auth: {
       autoRefreshToken: false,
@@ -19,3 +21,8 @@ export function createAdminClient() {
     },
   });
 }
+
+/**
+ * @deprecated Use createServiceRoleClient so RLS-bypassing access is explicit.
+ */
+export const createAdminClient = createServiceRoleClient;
