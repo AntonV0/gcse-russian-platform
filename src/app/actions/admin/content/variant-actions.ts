@@ -3,17 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import { assertAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getBoolean,
+  getEnumValue,
   getOptionalPositiveNumber,
   getOptionalString,
   getTrimmedString,
 } from "./shared";
 
 export async function createVariantAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const title = getTrimmedString(formData, "title");
@@ -63,8 +63,7 @@ export async function createVariantAction(formData: FormData) {
 }
 
 export async function updateVariantAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const variantId = getTrimmedString(formData, "variantId");
   const courseId = getTrimmedString(formData, "courseId");
@@ -115,19 +114,14 @@ export async function updateVariantAction(formData: FormData) {
 }
 
 export async function moveVariantAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
-  const direction = getTrimmedString(formData, "direction");
+  const direction = getEnumValue(formData, "direction", ["up", "down"] as const);
 
   if (!courseId || !variantId) {
     throw new Error("Missing required fields");
-  }
-
-  if (direction !== "up" && direction !== "down") {
-    throw new Error("Invalid move direction");
   }
 
   const supabase = await createClient();
@@ -201,8 +195,7 @@ export async function moveVariantAction(formData: FormData) {
 }
 
 export async function archiveVariantAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");

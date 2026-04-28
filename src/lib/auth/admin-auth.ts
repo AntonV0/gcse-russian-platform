@@ -9,3 +9,11 @@ export async function requireAdminAccess() {
 
   return true;
 }
+
+export async function assertAdminAccess() {
+  const canAccess = await requireAdminAccess();
+
+  if (!canAccess) {
+    throw new Error("Unauthorized");
+  }
+}

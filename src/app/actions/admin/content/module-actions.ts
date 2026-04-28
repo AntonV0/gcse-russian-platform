@@ -3,17 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdminAccess } from "@/lib/auth/admin-auth";
+import { assertAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getBoolean,
+  getEnumValue,
   getOptionalPositiveNumber,
   getOptionalString,
   getTrimmedString,
 } from "./shared";
 
 export async function createModuleAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const variantId = getTrimmedString(formData, "variantId");
   const courseId = getTrimmedString(formData, "courseId");
@@ -62,8 +62,7 @@ export async function createModuleAction(formData: FormData) {
 }
 
 export async function updateModuleAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
@@ -114,20 +113,15 @@ export async function updateModuleAction(formData: FormData) {
 }
 
 export async function moveModuleAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
   const moduleId = getTrimmedString(formData, "moduleId");
-  const direction = getTrimmedString(formData, "direction");
+  const direction = getEnumValue(formData, "direction", ["up", "down"] as const);
 
   if (!courseId || !variantId || !moduleId) {
     throw new Error("Missing required fields");
-  }
-
-  if (direction !== "up" && direction !== "down") {
-    throw new Error("Invalid move direction");
   }
 
   const supabase = await createClient();
@@ -197,8 +191,7 @@ export async function moveModuleAction(formData: FormData) {
 }
 
 export async function unpublishModuleAction(formData: FormData) {
-  const canAccess = await requireAdminAccess();
-  if (!canAccess) throw new Error("Unauthorized");
+  await assertAdminAccess();
 
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
