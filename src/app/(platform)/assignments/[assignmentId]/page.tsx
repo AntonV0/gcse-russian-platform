@@ -1,162 +1,414 @@
+import AssignmentSubmissionForm from "@/components/assignments/assignment-submission-form";
 import PageHeader from "@/components/layout/page-header";
-import DeleteAssignmentButton from "@/components/assignments/delete-assignment-button";
-import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
-import TeacherAssignmentItemsPanel from "@/components/assignments/teacher-assignment-items-panel";
-import TeacherAssignmentSubmissionsPanel from "@/components/assignments/teacher-assignment-submissions-panel";
-import TeacherAssignmentSummaryCards from "@/components/assignments/teacher-assignment-summary-cards";
-import { getSubmittedAtTime } from "@/components/assignments/teacher-assignment-review-utils";
+import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import CardListItem from "@/components/ui/card-list-item";
+import EmptyState from "@/components/ui/empty-state";
+import FeedbackBanner from "@/components/ui/feedback-banner";
 import InlineActions from "@/components/ui/inline-actions";
+import PanelCard from "@/components/ui/panel-card";
+import StatusBadge from "@/components/ui/status-badge";
+import SummaryStatCard from "@/components/ui/summary-stat-card";
+import { getLessonPath } from "@/lib/access/routes";
 import {
-  getAssignmentByIdDb,
   getAssignmentItemsWithDetailsDb,
-  getAssignmentSubmissionsForTeacherDb,
+  getCurrentUserAssignmentSubmissionDb,
+  getStudentAssignmentByIdDb,
 } from "@/lib/assignments/assignment-helpers-db";
-import { canCurrentUserReviewAssignment } from "@/lib/auth/teacher-auth";
+import type { AssignmentSubmissionStatus } from "@/lib/assignments/assignment-helpers-db";
+import { getDueDateStatus } from "@/lib/assignments/assignment-status";
 import { getSignedStorageUrl } from "@/lib/shared/storage-helpers";
 
 type Props = {
   params: Promise<{ assignmentId: string }>;
-  searchParams: Promise<{ filter?: string; sort?: string }>;
 };
 
-export default async function TeacherAssignmentReviewPage({
-  params,
-  searchParams,
-}: Props) {
-  const { assignmentId } = await params;
-  const { filter = "all", sort = "pending_first" } = await searchParams;
+type StudentAssignmentItem = Awaited<
+  ReturnType<typeof getAssignmentItemsWithDetailsDb>
+>[number];
 
-  const canReview = await canCurrentUserReviewAssignment(assignmentId);
+function formatDueDate(value: string | null) {
+  if (!value) return "No due date";
 
-  if (!canReview) {
-    return <TeacherAccessDenied />;
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
+function formatDateTime(value: string | null) {
+  if (!value) return "Not submitted yet";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
+function getSubmissionStatus(submissionStatus?: AssignmentSubmissionStatus | null) {
+  return submissionStatus ?? "not_started";
+}
+
+function getSubmissionDescription(status: AssignmentSubmissionStatus) {
+  if (status === "reviewed") {
+    return "Your teacher has reviewed this assignment.";
   }
 
-  const [assignment, items, submissions] = await Promise.all([
-    getAssignmentByIdDb(assignmentId),
-    getAssignmentItemsWithDetailsDb(assignmentId),
-    getAssignmentSubmissionsForTeacherDb(assignmentId),
-  ]);
-
-  if (!assignment) {
-    return <main>Assignment not found.</main>;
+  if (status === "submitted") {
+    return "Your work has been submitted and is waiting for teacher review.";
   }
 
-  const submissionsWithFiles = await Promise.all(
-    submissions.map(async ({ submission, student, reviewer }) => {
-      const fileUrl = await getSignedStorageUrl(
-        "assignment-submissions",
-        submission.submitted_file_path ?? null
-      );
+  return "Open the items below, then submit your response when you are ready.";
+}
 
-      return {
-        submission,
-        student,
-        reviewer,
-        fileUrl,
-      };
-    })
+function getDueDateDescription(value: string | null) {
+  const dueStatus = getDueDateStatus(value);
+
+  if (!value) return "Your teacher has not set a due date.";
+  if (dueStatus === "overdue") return "This assignment is past its due date.";
+  if (dueStatus === "soon") return "This assignment is due soon.";
+
+  return "Use the due date to plan your homework time.";
+}
+
+function getItemBadge(itemType: string) {
+  if (itemType === "lesson") {
+    return (
+      <Badge tone="info" icon="lesson">
+        Lesson
+      </Badge>
+    );
+  }
+
+  if (itemType === "question_set") {
+    return (
+      <Badge tone="warning" icon="question">
+        Question set
+      </Badge>
+    );
+  }
+
+  if (itemType === "custom_task") {
+    return (
+      <Badge tone="muted" icon="write">
+        Custom task
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge tone="muted" icon="assignments">
+      Item
+    </Badge>
+  );
+}
+
+function StudentAssignmentItemRow({
+  item,
+  index,
+}: {
+  item: StudentAssignmentItem;
+  index: number;
+}) {
+  const stepBadge = (
+    <Badge tone="muted" icon="list">
+      Step {index + 1}
+    </Badge>
   );
 
-  const pendingCount = submissionsWithFiles.filter(
-    ({ submission }) => submission.status !== "reviewed"
-  ).length;
-  const reviewedCount = submissionsWithFiles.length - pendingCount;
-
-  const filteredSubmissions = submissionsWithFiles.filter(({ submission }) => {
-    if (filter === "pending") return submission.status !== "reviewed";
-    if (filter === "reviewed") return submission.status === "reviewed";
-    return true;
-  });
-
-  const visibleSubmissions = [...filteredSubmissions].sort((a, b) => {
-    if (sort === "newest") {
-      return (
-        getSubmittedAtTime(b.submission.submitted_at) -
-        getSubmittedAtTime(a.submission.submitted_at)
-      );
-    }
-
-    if (sort === "oldest") {
-      return (
-        getSubmittedAtTime(a.submission.submitted_at) -
-        getSubmittedAtTime(b.submission.submitted_at)
-      );
-    }
-
-    if (sort === "reviewed_first") {
-      const aReviewed = a.submission.status === "reviewed" ? 0 : 1;
-      const bReviewed = b.submission.status === "reviewed" ? 0 : 1;
-
-      if (aReviewed !== bReviewed) return aReviewed - bReviewed;
-
-      return (
-        getSubmittedAtTime(b.submission.submitted_at) -
-        getSubmittedAtTime(a.submission.submitted_at)
-      );
-    }
-
-    const aPending = a.submission.status === "reviewed" ? 1 : 0;
-    const bPending = b.submission.status === "reviewed" ? 1 : 0;
-
-    if (aPending !== bPending) return aPending - bPending;
-
+  if (item.item_type === "lesson" && item.lesson) {
     return (
-      getSubmittedAtTime(b.submission.submitted_at) -
-      getSubmittedAtTime(a.submission.submitted_at)
+      <CardListItem
+        title={item.lesson.title}
+        subtitle={item.lesson.module_title}
+        badges={
+          <>
+            {stepBadge}
+            {getItemBadge(item.item_type)}
+          </>
+        }
+        actions={
+          <Button
+            href={getLessonPath(
+              item.lesson.course_slug,
+              item.lesson.variant_slug,
+              item.lesson.module_slug,
+              item.lesson.slug
+            )}
+            variant="secondary"
+            size="sm"
+            icon="preview"
+          >
+            Open lesson
+          </Button>
+        }
+      />
     );
-  });
+  }
+
+  if (item.item_type === "question_set" && item.questionSet?.slug) {
+    return (
+      <CardListItem
+        title={item.questionSet.title}
+        subtitle={item.questionSet.description ?? undefined}
+        badges={
+          <>
+            {stepBadge}
+            {getItemBadge(item.item_type)}
+          </>
+        }
+        actions={
+          <Button
+            href={`/question-sets/${item.questionSet.slug}`}
+            variant="secondary"
+            size="sm"
+            icon="preview"
+          >
+            Open questions
+          </Button>
+        }
+      />
+    );
+  }
+
+  return (
+    <CardListItem
+      title={item.item_type === "custom_task" ? "Teacher task" : "Assignment item"}
+      subtitle={item.custom_prompt ?? "No task text provided."}
+      badges={
+        <>
+          {stepBadge}
+          {getItemBadge(item.item_type)}
+        </>
+      }
+    />
+  );
+}
+
+function StudentAssignmentItemsPanel({ items }: { items: StudentAssignmentItem[] }) {
+  return (
+    <PanelCard
+      title="Assignment work"
+      description="Complete these items in order before submitting your response."
+      tone="student"
+      contentClassName="space-y-3"
+    >
+      {items.length === 0 ? (
+        <EmptyState
+          icon="assignments"
+          title="No items attached"
+          description="Your teacher has not attached any lesson, question set, or custom task items to this assignment yet."
+        />
+      ) : (
+        <ol className="space-y-3">
+          {items.map((item, index) => (
+            <li key={item.id}>
+              <StudentAssignmentItemRow item={item} index={index} />
+            </li>
+          ))}
+        </ol>
+      )}
+    </PanelCard>
+  );
+}
+
+export default async function StudentAssignmentDetailPage({ params }: Props) {
+  const { assignmentId } = await params;
+
+  const assignment = await getStudentAssignmentByIdDb(assignmentId);
+
+  if (!assignment) {
+    return (
+      <main>
+        <EmptyState
+          icon="assignments"
+          iconTone="brand"
+          title="Assignment unavailable"
+          description="This assignment could not be found for your student account. It may have been removed or assigned to a different group."
+          action={
+            <Button href="/assignments" variant="primary" icon="back">
+              Back to assignments
+            </Button>
+          }
+        />
+      </main>
+    );
+  }
+
+  const [items, submission] = await Promise.all([
+    getAssignmentItemsWithDetailsDb(assignment.id),
+    getCurrentUserAssignmentSubmissionDb(assignment.id),
+  ]);
+
+  const status = getSubmissionStatus(submission?.status);
+  const dueStatus = getDueDateStatus(assignment.due_at);
+  const submittedFileUrl = await getSignedStorageUrl(
+    "assignment-submissions",
+    submission?.submitted_file_path ?? null
+  );
 
   return (
     <main>
-      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-3">
-          <InlineActions>
-            <Button href="/teacher/assignments" variant="quiet" size="sm" icon="back">
-              Back to assignments
-            </Button>
-          </InlineActions>
+      <div className="mb-6 space-y-4">
+        <InlineActions>
+          <Button href="/assignments" variant="quiet" size="sm" icon="back">
+            Back to assignments
+          </Button>
+        </InlineActions>
 
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <PageHeader
-            title={`Review: ${assignment.title}`}
-            description={assignment.instructions ?? undefined}
+            title={assignment.title}
+            description={
+              assignment.instructions ?? "Review the tasks and submit your work."
+            }
           />
+
+          <div className="flex shrink-0 justify-start lg:justify-end">
+            <StatusBadge status={status} />
+          </div>
         </div>
 
-        <InlineActions align="end">
-          <Button
-            href={`/teacher/assignments/${assignment.id}/edit`}
-            variant="secondary"
-            size="sm"
-            icon="edit"
-          >
-            Edit
-          </Button>
-
-          <DeleteAssignmentButton assignmentId={assignment.id} />
-        </InlineActions>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <SummaryStatCard
+            title="Status"
+            value={
+              status === "not_started"
+                ? "To do"
+                : status === "submitted"
+                  ? "Sent"
+                  : "Reviewed"
+            }
+            description={getSubmissionDescription(status)}
+            icon={
+              status === "reviewed"
+                ? "completed"
+                : status === "submitted"
+                  ? "upload"
+                  : "pending"
+            }
+            tone={
+              status === "reviewed"
+                ? "success"
+                : status === "submitted"
+                  ? "warning"
+                  : "default"
+            }
+            compact
+          />
+          <SummaryStatCard
+            title="Due date"
+            value={formatDueDate(assignment.due_at)}
+            description={getDueDateDescription(assignment.due_at)}
+            icon={dueStatus === "overdue" ? "warning" : "calendar"}
+            tone={
+              dueStatus === "overdue"
+                ? "danger"
+                : dueStatus === "soon"
+                  ? "warning"
+                  : "info"
+            }
+            compact
+          />
+          <SummaryStatCard
+            title="Work items"
+            value={items.length}
+            description={
+              items.length === 1 ? "One task to complete." : "Tasks to complete in order."
+            }
+            icon="assignments"
+            tone="brand"
+            compact
+          />
+          <SummaryStatCard
+            title="Submitted"
+            value={
+              submission?.submitted_at
+                ? formatDateTime(submission.submitted_at)
+                : "Not yet"
+            }
+            description={
+              submission?.submitted_at
+                ? "You can update it until teacher review."
+                : "Submit below when ready."
+            }
+            icon="upload"
+            compact
+          />
+        </div>
       </div>
 
-      <TeacherAssignmentSummaryCards
-        assignment={assignment}
-        itemCount={items.length}
-        pendingCount={pendingCount}
-        reviewedCount={reviewedCount}
-        className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-      />
+      {submission?.status === "reviewed" ? (
+        <FeedbackBanner
+          className="mb-6"
+          tone="success"
+          title="Teacher feedback available"
+          description={
+            submission.feedback
+              ? submission.feedback
+              : "Your teacher has reviewed this assignment."
+          }
+        >
+          {submission.mark !== null ? (
+            <p className="app-text-body-muted">Mark: {submission.mark}</p>
+          ) : null}
+        </FeedbackBanner>
+      ) : null}
 
-      <TeacherAssignmentItemsPanel items={items} />
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
+        <div className="space-y-6">
+          <PanelCard
+            title="Instructions"
+            description="Read this before opening the work items."
+            tone="student"
+          >
+            <p className="whitespace-pre-line app-text-body-muted">
+              {assignment.instructions ??
+                "Your teacher has not added extra instructions for this assignment."}
+            </p>
+          </PanelCard>
 
-      <TeacherAssignmentSubmissionsPanel
-        assignmentId={assignment.id}
-        filter={filter}
-        sort={sort}
-        submissions={visibleSubmissions}
-        pendingCount={pendingCount}
-        reviewedCount={reviewedCount}
-        initiallyOpenReviewForm={true}
-      />
+          <StudentAssignmentItemsPanel items={items} />
+        </div>
+
+        <div className="space-y-6 xl:sticky xl:top-6">
+          <AssignmentSubmissionForm
+            assignmentId={assignment.id}
+            initialValue={submission?.submitted_text ?? ""}
+            initialFilePath={submission?.submitted_file_path ?? null}
+            initialFileName={submission?.submitted_file_name ?? null}
+            allowFileUpload={assignment.allow_file_upload}
+            status={status}
+            mark={submission?.mark ?? null}
+            feedback={submission?.feedback ?? null}
+          />
+
+          {submission?.submitted_file_name ? (
+            <PanelCard
+              title="Submitted file"
+              description="The latest file attached to this assignment."
+              tone="muted"
+              density="compact"
+              actions={
+                submittedFileUrl ? (
+                  <Button
+                    href={submittedFileUrl}
+                    variant="secondary"
+                    size="sm"
+                    icon="preview"
+                  >
+                    Open file
+                  </Button>
+                ) : null
+              }
+            >
+              <p className="break-words app-text-body-muted">
+                {submission.submitted_file_name}
+              </p>
+            </PanelCard>
+          ) : null}
+        </div>
+      </div>
     </main>
   );
 }
