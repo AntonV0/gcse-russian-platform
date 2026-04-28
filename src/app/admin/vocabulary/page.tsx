@@ -23,15 +23,18 @@ import {
   getVocabularyDisplayVariantLabel,
   getVocabularyListModeLabel,
   getVocabularySetTypeLabel,
+  getVocabularySourceLabel,
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
-} from "@/lib/vocabulary/labels";
-import { getVocabularySetsDb } from "@/lib/vocabulary/set-list-queries";
+  getVocabularyTopicLabel,
+} from "@/lib/vocabulary/shared/labels";
+import { getVocabularyMetadataHealthDb } from "@/lib/vocabulary/shared/metadata-health";
+import { getVocabularySetsDb } from "@/lib/vocabulary/sets/set-list-queries";
 import {
   getVocabularySetSourceKeysDb,
   getVocabularySetThemeKeysDb,
-} from "@/lib/vocabulary/set-options";
-import type { VocabularySetFilters } from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/sets/set-options";
+import type { VocabularySetFilters } from "@/lib/vocabulary/shared/types";
 
 type AdminVocabularyPageProps = {
   searchParams?: Promise<{
@@ -126,6 +129,39 @@ function getUsageFilterLabel(value?: VocabularySetFilters["usageVariant"]) {
   }
 }
 
+const VOCABULARY_ADMIN_SAVED_FILTERS = [
+  {
+    label: "Spec sets",
+    href: "/admin/vocabulary?setType=specification&published=published",
+    description: "Published specification vocabulary only.",
+  },
+  {
+    label: "Custom lesson sets",
+    href: "/admin/vocabulary?listMode=custom&setType=lesson_custom",
+    description: "Teacher-built sets for lessons.",
+  },
+  {
+    label: "Unused spec sets",
+    href: "/admin/vocabulary?setType=specification&usageVariant=unused",
+    description: "Spec sets not attached to lessons yet.",
+  },
+  {
+    label: "Foundation coverage",
+    href: "/admin/vocabulary?setType=specification&usageVariant=foundation",
+    description: "Spec sets already used in Foundation lessons.",
+  },
+  {
+    label: "Higher coverage",
+    href: "/admin/vocabulary?setType=specification&usageVariant=higher",
+    description: "Spec sets already used in Higher lessons.",
+  },
+  {
+    label: "Volna coverage",
+    href: "/admin/vocabulary?setType=specification&usageVariant=volna",
+    description: "Spec sets already used in Volna lessons.",
+  },
+] as const;
+
 export default async function AdminVocabularyPage({
   searchParams,
 }: AdminVocabularyPageProps) {
@@ -140,10 +176,11 @@ export default async function AdminVocabularyPage({
     usageVariant: normalizeUsageVariantFilter(params.usageVariant),
     published: normalizePublishedFilter(params.published),
   };
-  const [vocabularySets, themeKeys, sourceKeys] = await Promise.all([
+  const [vocabularySets, themeKeys, sourceKeys, metadataHealth] = await Promise.all([
     getVocabularySetsDb({ filters }),
     getVocabularySetThemeKeysDb(),
     getVocabularySetSourceKeysDb(),
+    getVocabularyMetadataHealthDb(),
   ]);
   const totalSets = vocabularySets.length;
   const publishedSets = vocabularySets.filter((set) => set.is_published).length;
@@ -219,6 +256,80 @@ export default async function AdminVocabularyPage({
         />
       </section>
 
+      <section className="app-surface app-section-padding">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div>
+            <h2 className="app-heading-subsection">Saved vocabulary views</h2>
+            <p className="mt-2 app-text-body-muted">
+              Jump straight to the admin slices that matter most when planning lessons and
+              checking spec coverage.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {VOCABULARY_ADMIN_SAVED_FILTERS.map((filter) => (
+              <Button
+                key={filter.href}
+                href={filter.href}
+                variant="secondary"
+                size="sm"
+                icon="filter"
+                title={filter.description}
+              >
+                {filter.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="app-surface app-section-padding">
+        <div className="mb-4 flex flex-col gap-2">
+          <h2 className="app-heading-subsection">Metadata health</h2>
+          <p className="app-text-body-muted">
+            Import-quality checks for finding words that need better labels,
+            transliteration, or coverage metadata.
+          </p>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <SummaryStatCard
+            title="Unknown part of speech"
+            value={metadataHealth.unknownPartOfSpeechItems}
+            description={`${metadataHealth.specItems} spec items checked.`}
+            icon="vocabulary"
+            tone={metadataHealth.unknownPartOfSpeechItems === 0 ? "success" : "warning"}
+            compact
+          />
+          <SummaryStatCard
+            title="Missing transliteration"
+            value={metadataHealth.missingTransliterationItems}
+            description="Items without a student-friendly pronunciation aid."
+            icon="language"
+            tone={
+              metadataHealth.missingTransliterationItems === 0 ? "success" : "warning"
+            }
+            compact
+          />
+          <SummaryStatCard
+            title="Missing category"
+            value={metadataHealth.missingCategoryItems}
+            description="Items that cannot yet be filtered by category."
+            icon="folder"
+            tone={metadataHealth.missingCategoryItems === 0 ? "success" : "warning"}
+            compact
+          />
+          <SummaryStatCard
+            title="Duplicate canonical keys"
+            value={metadataHealth.duplicateCanonicalKeys}
+            description="Repeated keys worth reviewing before custom-set reuse."
+            icon="duplicate"
+            tone={metadataHealth.duplicateCanonicalKeys === 0 ? "success" : "warning"}
+            compact
+          />
+        </div>
+      </section>
+
       <TableShell
         title="Vocabulary sets"
         description="Use filters to find sets, publish drafts, manage items, or preview the student-facing page."
@@ -291,7 +402,7 @@ export default async function AdminVocabularyPage({
                 <option value="">All sources</option>
                 {sourceKeys.map((sourceKey) => (
                   <option key={sourceKey} value={sourceKey}>
-                    {sourceKey}
+                    {getVocabularySourceLabel(sourceKey)}
                   </option>
                 ))}
               </Select>
@@ -436,12 +547,12 @@ export default async function AdminVocabularyPage({
                       </div>
                       {vocabularySet.topic_key ? (
                         <div className="app-text-caption">
-                          Topic: {vocabularySet.topic_key}
+                          Topic: {getVocabularyTopicLabel(vocabularySet.topic_key)}
                         </div>
                       ) : null}
                       {vocabularySet.source_key ? (
                         <div className="app-text-caption">
-                          Source: {vocabularySet.source_key}
+                          Source: {getVocabularySourceLabel(vocabularySet.source_key)}
                         </div>
                       ) : null}
                     </div>

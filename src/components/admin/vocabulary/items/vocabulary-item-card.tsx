@@ -9,14 +9,15 @@ import {
 } from "@/components/admin/vocabulary/items/item-display";
 import { VocabularyAdminStatTile } from "@/components/admin/vocabulary/items/primitives";
 import {
+  getVocabularyCategoryLabel,
   getVocabularyProductiveReceptiveLabel,
   getVocabularyTierLabel,
-} from "@/lib/vocabulary/labels";
+} from "@/lib/vocabulary/shared/labels";
 import type {
   DbVocabularyItem,
   DbVocabularyItemCoverage,
   DbVocabularyTier,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 
 export default function VocabularyItemCard({
   item,
@@ -63,7 +64,7 @@ export default function VocabularyItemCard({
               </Badge>
               {item.category_key ? (
                 <Badge tone="muted" icon="folder">
-                  {item.category_key.replaceAll("_", " ")}
+                  {getVocabularyCategoryLabel(item.category_key)}
                 </Badge>
               ) : null}
             </div>
@@ -103,7 +104,7 @@ export default function VocabularyItemCard({
           />
           <VocabularyAdminStatTile
             label="Category"
-            value={item.category_key?.replaceAll("_", " ") ?? "None"}
+            value={getVocabularyCategoryLabel(item.category_key)}
           />
           <VocabularyAdminStatTile
             label="Source section"
