@@ -10,6 +10,7 @@ import {
   getTrimmedString,
   normalizeLessonBlockPositionsInSection,
   reorderTablePositions,
+  syncLessonGrammarSetUsagesFromFormData,
   syncLessonVocabularySetUsagesFromFormData,
 } from "@/app/actions/admin/admin-lesson-builder-shared";
 import { createBlockRow, type CreatableLessonBlockType } from "./shared";
@@ -194,6 +195,7 @@ export async function reorderBlocksAction(formData: FormData) {
   });
 
   await syncLessonVocabularySetUsagesFromFormData(formData);
+  await syncLessonGrammarSetUsagesFromFormData(formData);
 
   const redirectPath = getRouteRedirectPath(formData);
   revalidatePath(redirectPath);

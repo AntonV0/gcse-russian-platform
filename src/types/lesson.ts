@@ -83,6 +83,12 @@ export type VocabularySetLessonBlock = {
   showSourceBadges?: boolean;
 };
 
+export type GrammarSetLessonBlock = {
+  type: "grammar-set";
+  title?: string;
+  grammarSetSlug: string;
+};
+
 export type MultipleChoiceLessonBlock = {
   type: "multiple-choice";
   question: string;
@@ -120,6 +126,7 @@ export type LessonBlock =
   | AudioLessonBlock
   | VocabularyLessonBlock
   | VocabularySetLessonBlock
+  | GrammarSetLessonBlock
   | QuestionSetLessonBlock
   | MultipleChoiceLessonBlock
   | ShortAnswerLessonBlock;

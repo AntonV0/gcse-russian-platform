@@ -11,6 +11,7 @@ import {
   createTextBlockAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
 import type {
+  LessonBuilderGrammarSetOption,
   LessonBuilderVocabularySetOption,
   NewBlockType,
   RouteFields,
@@ -32,12 +33,14 @@ import {
   AddVocabularyBlockForm,
   AddVocabularySetBlockForm,
 } from "./vocabulary-block-forms";
+import { AddGrammarSetBlockForm } from "./grammar-block-forms";
 
 type SelectedBlockFormProps = {
   sectionId: string;
   routeFields: RouteFields;
   selectedNewBlockType: NewBlockType;
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
+  grammarSetOptions: LessonBuilderGrammarSetOption[];
   onClear: () => void;
 };
 
@@ -166,6 +169,14 @@ export function SelectedBlockForm(props: SelectedBlockFormProps) {
           buttonLabel="Add question-set block"
           slugFieldName="questionSetSlug"
           slugPlaceholder="question-set-slug"
+        />
+      )}
+
+      {props.selectedNewBlockType === "grammar-set" && (
+        <AddGrammarSetBlockForm
+          sectionId={props.sectionId}
+          routeFields={props.routeFields}
+          grammarSetOptions={props.grammarSetOptions}
         />
       )}
 

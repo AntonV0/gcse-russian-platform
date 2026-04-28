@@ -77,6 +77,12 @@ export function getDefaultBlockData(
         vocabularyListSlug: "",
       };
 
+    case "grammar-set":
+      return {
+        title: "Grammar focus",
+        grammarSetSlug: "",
+      };
+
     default:
       return {};
   }

@@ -15,6 +15,7 @@ const BLOCK_TYPE_ICONS = {
   vocabulary: "vocabulary",
   image: "image",
   audio: "audio",
+  "grammar-set": "grammar",
   "question-set": "questionSet",
   "vocabulary-set": "vocabularySet",
 } satisfies Record<NewBlockType, AppIconKey>;

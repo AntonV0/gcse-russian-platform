@@ -6,6 +6,10 @@ import {
   getVocabularyUsageVariantForLessonSync,
   syncLessonVocabularySetUsagesForLesson,
 } from "@/lib/vocabulary/usage/vocabulary-usage-sync";
+import {
+  getGrammarUsageVariantForLessonSync,
+  syncLessonGrammarSetUsagesForLesson,
+} from "@/lib/grammar/usage/grammar-usage-sync";
 
 export { getBoolean, getTrimmedString };
 
@@ -96,6 +100,28 @@ export async function syncLessonVocabularySetUsagesFromFormData(formData: FormDa
   });
 }
 
+export async function syncLessonGrammarSetUsagesFromFormData(formData: FormData) {
+  const lessonId = getTrimmedString(formData, "lessonId");
+
+  if (!lessonId) {
+    return;
+  }
+
+  const variant = await getGrammarUsageVariantForLessonSync({
+    variantId: getTrimmedString(formData, "variantId"),
+    variantSlug: getTrimmedString(formData, "variantSlug"),
+  });
+
+  if (!variant) {
+    return;
+  }
+
+  await syncLessonGrammarSetUsagesForLesson({
+    lessonId,
+    variant,
+  });
+}
+
 export async function revalidateLessonPaths(formData: FormData) {
   const courseId = getTrimmedString(formData, "courseId");
   const variantId = getTrimmedString(formData, "variantId");
@@ -129,6 +155,7 @@ export async function revalidateLessonPaths(formData: FormData) {
 
 export async function finalizeLessonMutation(formData: FormData) {
   await syncLessonVocabularySetUsagesFromFormData(formData);
+  await syncLessonGrammarSetUsagesFromFormData(formData);
   await revalidateLessonPaths(formData);
 }
 

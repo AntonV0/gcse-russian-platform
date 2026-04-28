@@ -2,6 +2,7 @@ import TextBlock from "@/components/lesson-blocks/text-block";
 import NoteBlock from "@/components/lesson-blocks/note-block";
 import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
 import VocabularySetBlock from "@/components/lesson-blocks/vocabulary-set-block";
+import GrammarSetBlock from "@/components/lesson-blocks/grammar-set-block";
 import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
 import {
   AudioBlock,
@@ -157,6 +158,16 @@ export default function LessonRenderer({
                       title={block.title}
                       vocabularySetSlug={block.vocabularySetSlug}
                       vocabularyListSlug={block.vocabularyListSlug}
+                      currentVariant={currentVariant}
+                    />
+                  );
+
+                case "grammar-set":
+                  return (
+                    <GrammarSetBlock
+                      key={index}
+                      title={block.title}
+                      grammarSetSlug={block.grammarSetSlug}
                       currentVariant={currentVariant}
                     />
                   );

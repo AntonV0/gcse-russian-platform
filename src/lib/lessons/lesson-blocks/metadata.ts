@@ -22,6 +22,8 @@ export function getLessonBlockLabel(blockType: string): string {
       return "Vocabulary";
     case "vocabulary-set":
       return "Vocabulary set";
+    case "grammar-set":
+      return "Grammar set";
     case "question-set":
       return "Question set";
     case "multiple-choice":
@@ -47,6 +49,8 @@ export function getLessonBlockGroupLabel(blockType: string): string {
     case "vocabulary":
     case "vocabulary-set":
       return "Vocabulary";
+    case "grammar-set":
+      return "Grammar";
     case "image":
     case "audio":
       return "Media";
@@ -73,6 +77,8 @@ export function getLessonBlockAccentClass(blockType: string): string {
     case "vocabulary":
     case "vocabulary-set":
       return "border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text)]";
+    case "grammar-set":
+      return "border-[var(--info-border)] bg-[var(--info-surface)] text-[var(--info-text)]";
     case "image":
     case "audio":
       return "border-[var(--surface-accent-border)] bg-[var(--accent-selected-bg)] text-[var(--accent-on-soft)]";

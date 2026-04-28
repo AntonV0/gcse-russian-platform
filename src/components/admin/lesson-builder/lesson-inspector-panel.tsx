@@ -14,6 +14,7 @@ import {
 import { BlockEditPanel } from "@/components/admin/lesson-builder/block-editors";
 import type {
   LessonBlock,
+  LessonBuilderGrammarSetOption,
   LessonBuilderVocabularySetOption,
   LessonSection,
   RouteFields,
@@ -50,6 +51,7 @@ export default function LessonInspectorPanel(props: {
   totalSections: number;
   blockIndex: number;
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
+  grammarSetOptions: LessonBuilderGrammarSetOption[];
 }) {
   const marker = SHOW_UI_DEBUG ? (
     <DevComponentMarker
@@ -125,6 +127,7 @@ export default function LessonInspectorPanel(props: {
                 block={props.block}
                 routeFields={props.routeFields}
                 vocabularySetOptions={props.vocabularySetOptions}
+                grammarSetOptions={props.grammarSetOptions}
               />
             </div>
 

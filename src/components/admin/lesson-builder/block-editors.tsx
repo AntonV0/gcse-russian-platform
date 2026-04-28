@@ -10,6 +10,7 @@ import {
   updateTextBlockAction,
 } from "@/app/actions/admin/admin-lesson-builder-actions";
 import type {
+  LessonBuilderGrammarSetOption,
   LessonBuilderVocabularySetOption,
   RouteFields,
 } from "@/components/admin/lesson-builder/lesson-builder-types";
@@ -24,6 +25,7 @@ import {
 } from "@/components/admin/lesson-builder/block-editors/text-editors";
 import { VocabularyBlockEditor } from "@/components/admin/lesson-builder/block-editors/vocabulary-block-editor";
 import { VocabularySetBlockEditor } from "@/components/admin/lesson-builder/block-editors/vocabulary-set-block-editor";
+import { GrammarSetBlockEditor } from "@/components/admin/lesson-builder/block-editors/grammar-set-block-editor";
 
 function getStringValue(value: unknown) {
   return typeof value === "string" ? value : "";
@@ -37,6 +39,7 @@ export function BlockEditPanel(props: {
   };
   routeFields: RouteFields;
   vocabularySetOptions: LessonBuilderVocabularySetOption[];
+  grammarSetOptions: LessonBuilderGrammarSetOption[];
 }) {
   switch (props.block.block_type) {
     case "header":
@@ -168,6 +171,17 @@ export function BlockEditPanel(props: {
           defaultSlug={getStringValue(props.block.data.vocabularySetSlug)}
           defaultListSlug={getStringValue(props.block.data.vocabularyListSlug)}
           vocabularySetOptions={props.vocabularySetOptions}
+        />
+      );
+
+    case "grammar-set":
+      return (
+        <GrammarSetBlockEditor
+          blockId={props.block.id}
+          routeFields={props.routeFields}
+          defaultTitle={getStringValue(props.block.data.title)}
+          defaultSlug={getStringValue(props.block.data.grammarSetSlug)}
+          grammarSetOptions={props.grammarSetOptions}
         />
       );
 

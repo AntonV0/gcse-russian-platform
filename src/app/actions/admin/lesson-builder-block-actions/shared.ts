@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getGrammarSetBySlugDb } from "@/lib/grammar/grammar-helpers-db";
 import { getVocabularyListsBySetIdDb } from "@/lib/vocabulary/sets/list-queries";
 import { getVocabularySetBySlugDb } from "@/lib/vocabulary/sets/set-queries";
 import {
@@ -17,6 +18,7 @@ export type CreatableLessonBlockType =
   | "image"
   | "audio"
   | "vocabulary"
+  | "grammar-set"
   | "question-set"
   | "vocabulary-set";
 
@@ -169,4 +171,14 @@ export async function ensureVocabularyListBelongsToSet(
   }
 
   return vocabularyList;
+}
+
+export async function ensureGrammarSetExists(grammarSetSlug: string) {
+  const grammarSet = await getGrammarSetBySlugDb(grammarSetSlug);
+
+  if (!grammarSet) {
+    throw new Error("Selected grammar set does not exist");
+  }
+
+  return grammarSet;
 }
