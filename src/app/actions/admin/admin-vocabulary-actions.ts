@@ -8,13 +8,13 @@ import {
   deleteVocabularySetDb,
   updateVocabularySetDb,
   type VocabularySetMutationPayload,
-} from "@/lib/vocabulary/mutations";
+} from "@/lib/vocabulary/items/mutations";
 import type {
   DbVocabularyDisplayVariant,
   DbVocabularyListMode,
   DbVocabularySetType,
   DbVocabularyTier,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 import {
   getBoolean,
   getOptionalString,

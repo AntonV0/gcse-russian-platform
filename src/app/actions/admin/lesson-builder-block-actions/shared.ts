@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { getVocabularyListsBySetIdDb } from "@/lib/vocabulary/list-queries";
-import { getVocabularySetBySlugDb } from "@/lib/vocabulary/set-queries";
+import { getVocabularyListsBySetIdDb } from "@/lib/vocabulary/sets/list-queries";
+import { getVocabularySetBySlugDb } from "@/lib/vocabulary/sets/set-queries";
 import {
   finalizeLessonMutation,
   getNextBlockPosition,

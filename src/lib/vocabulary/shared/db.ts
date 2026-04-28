@@ -6,13 +6,13 @@ export {
   getVocabularyItemsBySetIdDb,
   getVocabularyListCountBySetIdDb,
   getVocabularySetCoverageSummaryBySetIdDb,
-} from "@/lib/vocabulary/item-queries";
+} from "@/lib/vocabulary/items/item-queries";
 export {
   ensureDefaultVocabularyListForSetDb,
   getDefaultVocabularyListBySetIdDb,
   getVocabularyListByIdDb,
   getVocabularyListsBySetIdDb,
-} from "@/lib/vocabulary/list-queries";
+} from "@/lib/vocabulary/sets/list-queries";
 export {
   groupVocabularyItemsBySource,
   getVocabularyDisplayVariantLabel,
@@ -22,17 +22,17 @@ export {
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
   getVocabularyTopicLabel,
-} from "@/lib/vocabulary/labels";
+} from "@/lib/vocabulary/shared/labels";
 export {
   loadVocabularySetByIdDb,
   loadVocabularySetByRefDb,
   loadVocabularySetBySlugDb,
-} from "@/lib/vocabulary/loaders";
+} from "@/lib/vocabulary/sets/loaders";
 export {
   getVocabularySetByIdDb,
   getVocabularySetByRefDb,
   getVocabularySetBySlugDb,
-} from "@/lib/vocabulary/set-queries";
+} from "@/lib/vocabulary/sets/set-queries";
 export {
   bulkCreateVocabularyItemsDb,
   createVocabularySetDb,
@@ -41,21 +41,21 @@ export {
   deleteVocabularySetDb,
   updateVocabularyItemDb,
   updateVocabularySetDb,
-} from "@/lib/vocabulary/mutations";
+} from "@/lib/vocabulary/items/mutations";
 export type {
   BulkVocabularyItemInput,
   BulkVocabularyItemMutationPayload,
   VocabularyItemMutationPayload,
   VocabularySetMutationPayload,
-} from "@/lib/vocabulary/mutations";
+} from "@/lib/vocabulary/items/mutations";
 export {
   getPublishedVocabularySetsDb,
   getVocabularySetsDb,
-} from "@/lib/vocabulary/set-list-queries";
+} from "@/lib/vocabulary/sets/set-list-queries";
 export {
   getVocabularySetOptionsDb,
   getVocabularySetThemeKeysDb,
-} from "@/lib/vocabulary/set-options";
+} from "@/lib/vocabulary/sets/set-options";
 export {
   buildVocabularyUsageStats,
   filterVocabularyListsForStudyVariant,
@@ -66,11 +66,11 @@ export {
   getVocabularyCoverageVariantUsed,
   getVocabularyItemAppliesToStudyVariant,
   getVocabularyListAppliesToStudyVariant,
-} from "@/lib/vocabulary/study-variants";
+} from "@/lib/vocabulary/shared/study-variants";
 export {
   getVocabularySetUsageStatsBySetIdDb,
   getVocabularySetUsagesBySetIdDb,
-} from "@/lib/vocabulary/usage-queries";
+} from "@/lib/vocabulary/usage/usage-queries";
 
 export type {
   DbLessonVocabularySetUsage,
@@ -103,4 +103,4 @@ export type {
   LoadedVocabularySetDetailDb,
   VocabularySetFilters,
   VocabularySetLoadOptions,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";

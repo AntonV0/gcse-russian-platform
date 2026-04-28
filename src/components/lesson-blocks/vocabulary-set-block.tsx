@@ -2,9 +2,9 @@ import VocabularyBlock from "@/components/lesson-blocks/vocabulary-block";
 import {
   getVocabularyListModeLabel,
   getVocabularyTierLabel,
-} from "@/lib/vocabulary/labels";
-import { loadVocabularySetBySlugDb } from "@/lib/vocabulary/loaders";
-import type { DbVocabularyStudyVariant } from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/labels";
+import { loadVocabularySetBySlugDb } from "@/lib/vocabulary/sets/loaders";
+import type { DbVocabularyStudyVariant } from "@/lib/vocabulary/shared/types";
 
 type VocabularySetBlockProps = {
   title?: string;

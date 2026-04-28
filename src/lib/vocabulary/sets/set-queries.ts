@@ -1,7 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 
-import { normalizeVocabularySet } from "./normalizers";
-import { VOCABULARY_SET_SELECT } from "./selects";
+import { normalizeVocabularySet } from "@/lib/vocabulary/shared/normalizers";
+import { VOCABULARY_SET_SELECT } from "@/lib/vocabulary/shared/selects";
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function getVocabularySetByIdDb(vocabularySetId: string) {
   const supabase = await createClient();
@@ -48,6 +51,10 @@ export async function getVocabularySetByRefDb(vocabularySetRef: string) {
 
   if (bySlug) {
     return bySlug;
+  }
+
+  if (!UUID_PATTERN.test(vocabularySetRef)) {
+    return null;
   }
 
   return getVocabularySetByIdDb(vocabularySetRef);

@@ -1,11 +1,11 @@
-import { getCoverageTotalItemIdsForVariant } from "./study-variants";
+import { getCoverageTotalItemIdsForVariant } from "@/lib/vocabulary/shared/study-variants";
 import type {
   DbVocabularyItem,
   DbVocabularyItemCoverage,
   DbVocabularyList,
   DbVocabularyListItem,
   DbVocabularySetCoverageSummary,
-} from "./types";
+} from "@/lib/vocabulary/shared/types";
 
 export function createEmptyCoverageSummary(): DbVocabularySetCoverageSummary {
   return {

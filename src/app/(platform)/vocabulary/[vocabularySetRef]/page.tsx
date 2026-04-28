@@ -12,7 +12,7 @@ import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getVocabularyStudyVariant,
   groupVocabularyItemsByList,
-} from "@/lib/vocabulary/item-sections";
+} from "@/lib/vocabulary/items/item-sections";
 import {
   getVocabularyDisplayVariantLabel,
   getVocabularyListModeLabel,
@@ -20,10 +20,10 @@ import {
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
   getVocabularyTopicLabel,
-} from "@/lib/vocabulary/labels";
-import { getVocabularyItemCoverageByItemIdsDb } from "@/lib/vocabulary/item-queries";
-import { loadVocabularySetByRefDb } from "@/lib/vocabulary/loaders";
-import type { DbVocabularyItemCoverage } from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/labels";
+import { getVocabularyItemCoverageByItemIdsDb } from "@/lib/vocabulary/items/item-queries";
+import { loadVocabularySetByRefDb } from "@/lib/vocabulary/sets/loaders";
+import type { DbVocabularyItemCoverage } from "@/lib/vocabulary/shared/types";
 
 type VocabularySetPageProps = {
   params: Promise<{ vocabularySetRef: string }>;

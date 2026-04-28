@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 
-import type { VocabularyUsageVariant } from "./vocabulary-usage-types";
+import type { VocabularyUsageVariant } from "@/lib/vocabulary/usage/vocabulary-usage-types";
 
 export function resolveVocabularyUsageVariantFromSlug(
   variantSlug: string

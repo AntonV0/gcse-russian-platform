@@ -7,7 +7,7 @@ import type {
   DbVocabularyPartOfSpeech,
   DbVocabularyProductiveReceptive,
   DbVocabularyTier,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 import { getTrimmedString } from "@/app/actions/shared/form-data";
 
 export function getRequiredString(formData: FormData, key: string) {

@@ -12,7 +12,7 @@ import {
   VocabularyAdminStatTile,
 } from "@/components/admin/vocabulary/items/primitives";
 import { updateVocabularySetAction } from "@/app/actions/admin/admin-vocabulary-actions";
-import { loadVocabularySetByIdDb } from "@/lib/vocabulary/loaders";
+import { loadVocabularySetByIdDb } from "@/lib/vocabulary/sets/loaders";
 
 function ToggleField({
   name,

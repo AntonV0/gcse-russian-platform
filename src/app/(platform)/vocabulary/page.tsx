@@ -7,13 +7,13 @@ import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import VocabularyFilterForm from "@/components/vocabulary/vocabulary-filter-form";
 import VocabularySetSectionList from "@/components/vocabulary/vocabulary-set-section-list";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
-import { getVocabularyThemeLabel } from "@/lib/vocabulary/labels";
+import { getVocabularyThemeLabel } from "@/lib/vocabulary/shared/labels";
 import {
   getPublishedVocabularySetsDb,
   getVocabularySetsDb,
-} from "@/lib/vocabulary/set-list-queries";
-import { getVocabularySetThemeKeysDb } from "@/lib/vocabulary/set-options";
-import type { VocabularySetFilters } from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/sets/set-list-queries";
+import { getVocabularySetThemeKeysDb } from "@/lib/vocabulary/sets/set-options";
+import type { VocabularySetFilters } from "@/lib/vocabulary/shared/types";
 
 type VocabularyPageProps = {
   searchParams?: Promise<{

@@ -5,7 +5,7 @@ import { getBoolean, getTrimmedString } from "@/app/actions/shared/form-data";
 import {
   getVocabularyUsageVariantForLessonSync,
   syncLessonVocabularySetUsagesForLesson,
-} from "@/lib/vocabulary/vocabulary-usage-sync";
+} from "@/lib/vocabulary/usage/vocabulary-usage-sync";
 
 export { getBoolean, getTrimmedString };
 
