@@ -1,0 +1,192 @@
+.dev-marker-host {
+  position: relative;
+}
+
+.app-site-header.dev-marker-host {
+  position: sticky;
+}
+
+.dev-marker-anchor {
+  position: absolute;
+  top: 0.38rem;
+  right: 0.38rem;
+  z-index: 240;
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.dev-marker-anchor > * {
+  pointer-events: auto;
+}
+
+.dev-marker-anchor[data-dev-marker-tier="container"] {
+  z-index: 260;
+}
+
+.dev-marker-anchor[data-dev-marker-tier="layout"] {
+  top: 0.38rem;
+  right: 2.2rem;
+  z-index: 255;
+}
+
+.dev-marker-anchor[data-dev-marker-tier="semantic"] {
+  top: 2.1rem;
+  right: 0.38rem;
+  z-index: 250;
+}
+
+.dev-marker-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.3rem;
+  width: 1.3rem;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 24%, transparent);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: color-mix(in srgb, var(--brand-blue) 90%, transparent);
+  box-shadow:
+    0 1px 2px rgba(16, 32, 51, 0.08),
+    0 0 0 2px rgba(246, 248, 251, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0.96;
+  transform: scale(1);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.dev-marker-trigger:hover,
+.dev-marker-trigger[data-state="open"] {
+  opacity: 1;
+  transform: scale(1.05);
+  border-color: color-mix(in srgb, var(--brand-blue) 45%, transparent);
+  background: rgba(255, 255, 255, 1);
+  color: var(--brand-blue);
+  box-shadow:
+    0 1px 2px rgba(16, 32, 51, 0.08),
+    0 0 0 2px rgba(246, 248, 251, 0.96),
+    0 10px 24px rgba(16, 32, 51, 0.14);
+}
+
+.dev-marker-trigger:focus-visible {
+  outline: none;
+  opacity: 1;
+  transform: scale(1.05);
+  border-color: color-mix(in srgb, var(--brand-blue) 45%, transparent);
+  box-shadow:
+    0 0 0 4px var(--accent-ring),
+    0 0 0 6px rgba(246, 248, 251, 0.96),
+    0 10px 24px rgba(16, 32, 51, 0.14);
+}
+
+.dev-marker-trigger-open {
+  opacity: 1;
+}
+
+.dev-marker-trigger-icon {
+  height: 0.72rem;
+  width: 0.72rem;
+  flex-shrink: 0;
+}
+
+.dev-marker-panel {
+  position: fixed;
+  z-index: 9999;
+  width: min(22rem, calc(100vw - 1.5rem));
+  max-width: calc(100vw - 1.5rem);
+  padding: 0.7rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 16%, transparent);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.985);
+  color: var(--text-primary);
+  box-shadow:
+    0 2px 8px rgba(16, 32, 51, 0.08),
+    0 18px 40px rgba(16, 32, 51, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dev-marker-panel::before {
+  content: "";
+  position: absolute;
+  top: -0.35rem;
+  left: var(--dev-marker-arrow-left, 1rem);
+  height: 0.7rem;
+  width: 0.7rem;
+  rotate: 45deg;
+  border-top: 1px solid currentColor;
+  border-left: 1px solid currentColor;
+  background: inherit;
+  color: inherit;
+  opacity: 0.16;
+}
+
+.dev-marker-panel-label {
+  margin-bottom: 0.3rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dev-marker-panel-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.dev-marker-panel-path {
+  margin-top: 0.3rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  word-break: break-word;
+}
+
+.dev-marker-panel-path-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.dev-marker-panel-path-row .dev-marker-panel-path {
+  margin-top: 0;
+}
+
+.dev-marker-copy-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.28rem;
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 18%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-blue) 6%, transparent);
+  padding: 0.28rem 0.45rem;
+  color: var(--brand-blue);
+  font-size: 0.66rem;
+  font-weight: 800;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.dev-marker-copy-button:hover,
+.dev-marker-copy-button:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--brand-blue) 36%, transparent);
+  background: color-mix(in srgb, var(--brand-blue) 10%, transparent);
+}

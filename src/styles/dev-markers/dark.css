@@ -1,0 +1,130 @@
+[data-theme="dark"] .dev-marker-trigger {
+  border-color: color-mix(in srgb, var(--brand-blue) 30%, transparent);
+  background: color-mix(in srgb, var(--dark-control-bg) 98%, transparent);
+  color: color-mix(in srgb, var(--brand-blue-hover) 92%, transparent);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.28),
+    0 0 0 2px color-mix(in srgb, var(--dark-surface-base) 94%, transparent);
+}
+
+[data-theme="dark"] .dev-marker-toggle {
+  border-color: color-mix(in srgb, var(--brand-blue) 30%, transparent);
+  background: color-mix(in srgb, var(--dark-control-bg) 98%, transparent);
+  color: var(--text-primary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.28),
+    0 16px 36px rgba(0, 0, 0, 0.34);
+}
+
+[data-theme="dark"] .dev-marker-toggle:hover,
+[data-theme="dark"] .dev-marker-toggle:focus-visible {
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 45%, transparent);
+}
+
+[data-theme="dark"] .dev-marker-toggle[data-state="enabled"] {
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 48%, transparent);
+  background: var(--brand-blue);
+  color: var(--accent-on-fill);
+}
+
+[data-theme="dark"] .dev-marker-control-panel {
+  border-color: color-mix(in srgb, var(--brand-blue) 20%, transparent);
+  background: color-mix(in srgb, var(--dark-control-bg) 97.5%, transparent);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.28),
+    0 18px 42px rgba(0, 0, 0, 0.36);
+}
+
+[data-theme="dark"] .dev-marker-control-panel-header,
+[data-theme="dark"] .dev-marker-tier-filter {
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 12%, transparent);
+}
+
+[data-theme="dark"] .dev-marker-control-icon-button,
+[data-theme="dark"] .dev-marker-tier-filter-button,
+[data-theme="dark"] .dev-marker-copy-button {
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 18%, transparent);
+  background: color-mix(in srgb, var(--brand-blue) 8%, transparent);
+}
+
+[data-theme="dark"] .dev-marker-control-icon-button:hover,
+[data-theme="dark"] .dev-marker-control-icon-button[aria-expanded="true"],
+[data-theme="dark"] .dev-marker-tier-filter-button:hover,
+[data-theme="dark"] .dev-marker-tier-filter-button[data-state="active"],
+[data-theme="dark"] .dev-marker-copy-button:hover,
+[data-theme="dark"] .dev-marker-copy-button:focus-visible,
+[data-theme="dark"] .dev-marker-index-item:hover,
+[data-theme="dark"] .dev-marker-index-item:focus-visible {
+  background: color-mix(in srgb, var(--brand-blue) 14%, transparent);
+}
+
+[data-theme="dark"] .dev-marker-trigger:hover,
+[data-theme="dark"] .dev-marker-trigger[data-state="open"] {
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 45%, transparent);
+  background: var(--dark-control-bg);
+  color: var(--brand-blue);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.28),
+    0 0 0 2px color-mix(in srgb, var(--dark-surface-base) 98%, transparent),
+    0 10px 24px rgba(0, 0, 0, 0.32);
+}
+
+[data-theme="dark"] .dev-marker-trigger:focus-visible {
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 45%, transparent);
+  box-shadow:
+    0 0 0 4px var(--accent-ring),
+    0 0 0 6px color-mix(in srgb, var(--dark-surface-base) 98%, transparent),
+    0 10px 24px rgba(0, 0, 0, 0.32);
+}
+
+[data-theme="dark"] .dev-marker-trigger-layout {
+  border-color: rgba(34, 211, 238, 0.28);
+  color: rgb(103, 232, 249);
+}
+
+[data-theme="dark"] .dev-marker-trigger-semantic {
+  border-color: rgba(167, 139, 250, 0.3);
+  color: rgb(196, 181, 253);
+}
+
+[data-theme="dark"] .dev-marker-panel {
+  border-color: color-mix(in srgb, var(--brand-blue) 18%, transparent);
+  background: color-mix(in srgb, var(--dark-control-bg) 98.5%, transparent);
+  color: var(--text-primary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.28),
+    0 18px 40px rgba(0, 0, 0, 0.34);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-container)::after {
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 14%, transparent);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-container:hover)::after,
+[data-theme="dark"]
+  .dev-marker-host:has(.dev-marker-trigger-container[data-state="open"])::after {
+  border-color: color-mix(in srgb, var(--brand-blue-hover) 28%, transparent);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--brand-blue) 8%, transparent);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-layout)::after {
+  border-color: rgba(34, 211, 238, 0.12);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-layout:hover)::after,
+[data-theme="dark"]
+  .dev-marker-host:has(.dev-marker-trigger-layout[data-state="open"])::after {
+  border-color: rgba(34, 211, 238, 0.24);
+  box-shadow: inset 0 0 0 3px rgba(34, 211, 238, 0.07);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-semantic)::after {
+  border-color: rgba(167, 139, 250, 0.12);
+}
+
+[data-theme="dark"] .dev-marker-host:has(.dev-marker-trigger-semantic:hover)::after,
+[data-theme="dark"]
+  .dev-marker-host:has(.dev-marker-trigger-semantic[data-state="open"])::after {
+  border-color: rgba(167, 139, 250, 0.24);
+  box-shadow: inset 0 0 0 3px rgba(167, 139, 250, 0.07);
+}
