@@ -89,7 +89,7 @@ export default async function AdminLessonDetailPage({
   const [sections, templateOptions, vocabularySets] = await Promise.all([
     getLessonSectionsWithBlocksDb(lesson.id),
     getLessonBuilderTemplateOptionsDb(),
-    getVocabularySetOptionsDb(),
+    getVocabularySetOptionsDb({ excludeSetTypes: ["specification"] }),
   ]);
 
   const vocabularySetOptions = vocabularySets.map((set) => ({
@@ -99,6 +99,7 @@ export default async function AdminLessonDetailPage({
     isPublished: set.is_published,
     tier: set.tier,
     listMode: set.list_mode,
+    setType: set.set_type,
     lists: set.lists.map((list) => ({
       id: list.id,
       title: list.title,

@@ -6,11 +6,15 @@ import {
   attachVocabularyCountsAndUsage,
   applyVocabularySetFilters,
 } from "@/lib/vocabulary/sets/set-listing";
-import type { VocabularySetFilters } from "@/lib/vocabulary/shared/types";
+import type {
+  DbVocabularySetType,
+  VocabularySetFilters,
+} from "@/lib/vocabulary/shared/types";
 
 export async function getVocabularySetsDb(options?: {
   publishedOnly?: boolean;
   filters?: VocabularySetFilters;
+  excludeSetTypes?: DbVocabularySetType[];
 }) {
   const supabase = await createClient();
   const filters = options?.filters;
@@ -52,6 +56,10 @@ export async function getVocabularySetsDb(options?: {
         query = query.eq("set_type", setType);
       }
 
+      for (const excludedSetType of options?.excludeSetTypes ?? []) {
+        query = query.neq("set_type", excludedSetType);
+      }
+
       if (sourceKey) {
         query = query.eq("source_key", sourceKey);
       }
@@ -71,4 +79,14 @@ export async function getVocabularySetsDb(options?: {
 
 export async function getPublishedVocabularySetsDb(filters?: VocabularySetFilters) {
   return getVocabularySetsDb({ publishedOnly: true, filters });
+}
+
+export async function getPublishedStudentVocabularySetsDb(
+  filters?: VocabularySetFilters
+) {
+  return getVocabularySetsDb({
+    publishedOnly: true,
+    filters,
+    excludeSetTypes: ["specification"],
+  });
 }

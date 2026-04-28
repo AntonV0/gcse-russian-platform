@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { updateVocabularySetBlockAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import type { LessonBuilderVocabularySetOption } from "@/components/admin/lesson-builder/lesson-builder-types";
 import { useVocabularySetOptionFilters } from "@/components/admin/lesson-builder/vocabulary-set-option-filters";
+import { getVocabularySetTypeLabel } from "@/lib/vocabulary/shared/labels";
 import {
   BuilderHiddenFields,
   PendingStatusText,
@@ -57,8 +58,10 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
     setSetSearch,
     setSetStatusFilter,
     setSetTierFilter,
+    setSetTypeFilter,
     setStatusFilter,
     setTierFilter,
+    setTypeFilter,
   } = useVocabularySetOptionFilters({
     options: props.vocabularySetOptions,
     selectedOption: selectedVocabularySet,
@@ -128,12 +131,25 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
         <select
           value={setStatusFilter}
           onChange={(event) => setSetStatusFilter(event.target.value)}
-          className={`${BUILDER_SELECT_CLASS} md:col-span-2`}
+          className={BUILDER_SELECT_CLASS}
           aria-label="Filter vocabulary sets by status"
         >
           <option value="all">All statuses</option>
           <option value="published">Published</option>
           <option value="draft">Draft</option>
+        </select>
+        <select
+          value={setTypeFilter}
+          onChange={(event) => setSetTypeFilter(event.target.value)}
+          className={BUILDER_SELECT_CLASS}
+          aria-label="Filter vocabulary sets by type"
+        >
+          <option value="lesson_custom">Lesson custom</option>
+          <option value="theme">Theme</option>
+          <option value="core">Core</option>
+          <option value="phrase_bank">Phrase bank</option>
+          <option value="exam_prep">Exam prep</option>
+          <option value="all">All attachable types</option>
         </select>
       </div>
 
@@ -159,6 +175,8 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
         {filteredVocabularySetOptions.map((option) => (
           <option key={option.id} value={option.slug}>
             {option.title} - {option.slug} - {option.tier} - {option.listMode}
+            {" - "}
+            {getVocabularySetTypeLabel(option.setType)}
             {option.isPublished ? "" : " - draft"}
           </option>
         ))}
@@ -224,12 +242,21 @@ export function VocabularySetBlockEditor(props: VocabularySetBlockEditorProps) {
             <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
               Mode: {selectedVocabularySet.listMode}
             </span>
+            <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
+              Type: {getVocabularySetTypeLabel(selectedVocabularySet.setType)}
+            </span>
             {selectedVocabularyList ? (
               <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
                 List: {selectedVocabularyList.title}
               </span>
             ) : null}
           </div>
+          {selectedVocabularySet.setType !== "lesson_custom" ? (
+            <div className="mt-3 rounded-2xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] px-3 py-3 text-xs leading-5 text-[var(--warning)]">
+              Lesson custom sets are recommended here so students see the smaller,
+              lesson-specific vocabulary list rather than a broad library set.
+            </div>
+          ) : null}
         </div>
       ) : null}
 

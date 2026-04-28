@@ -151,6 +151,12 @@ export async function ensureVocabularyListBelongsToSet(
 ) {
   const vocabularySet = await ensureVocabularySetExists(vocabularySetSlug);
 
+  if (vocabularySet.set_type === "specification") {
+    throw new Error(
+      "Specification vocabulary sets cannot be attached directly to lessons. Create a smaller custom lesson vocabulary set instead."
+    );
+  }
+
   if (!vocabularyListSlug) {
     return null;
   }

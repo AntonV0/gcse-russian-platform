@@ -9,6 +9,7 @@ function getVocabularySetOptionSearchText(option: LessonBuilderVocabularySetOpti
     option.slug,
     option.tier,
     option.listMode,
+    option.setType,
     option.isPublished ? "published" : "draft",
     ...option.lists.flatMap((list) => [list.title, list.slug, list.tier, list.listMode]),
   ]
@@ -26,6 +27,7 @@ export function useVocabularySetOptionFilters({
   const [setSearch, setSetSearch] = useState("");
   const [setTierFilter, setSetTierFilter] = useState("all");
   const [setModeFilter, setSetModeFilter] = useState("all");
+  const [setTypeFilter, setSetTypeFilter] = useState("lesson_custom");
   const [setStatusFilter, setSetStatusFilter] = useState("all");
 
   const filteredVocabularySetOptions = useMemo(() => {
@@ -48,6 +50,10 @@ export function useVocabularySetOptionFilters({
         return false;
       }
 
+      if (setTypeFilter !== "all" && option.setType !== setTypeFilter) {
+        return false;
+      }
+
       if (setStatusFilter === "published" && !option.isPublished) {
         return false;
       }
@@ -67,7 +73,15 @@ export function useVocabularySetOptionFilters({
     }
 
     return filteredOptions;
-  }, [options, selectedOption, setModeFilter, setSearch, setStatusFilter, setTierFilter]);
+  }, [
+    options,
+    selectedOption,
+    setModeFilter,
+    setSearch,
+    setStatusFilter,
+    setTierFilter,
+    setTypeFilter,
+  ]);
 
   return {
     filteredVocabularySetOptions,
@@ -77,7 +91,9 @@ export function useVocabularySetOptionFilters({
     setSetSearch,
     setSetStatusFilter,
     setSetTierFilter,
+    setSetTypeFilter,
     setStatusFilter,
     setTierFilter,
+    setTypeFilter,
   };
 }

@@ -7,6 +7,7 @@ import {
 } from "@/app/actions/admin/admin-lesson-builder-actions";
 import type { LessonBuilderVocabularySetOption } from "@/components/admin/lesson-builder/lesson-builder-types";
 import { useVocabularySetOptionFilters } from "@/components/admin/lesson-builder/vocabulary-set-option-filters";
+import { getVocabularySetTypeLabel } from "@/lib/vocabulary/shared/labels";
 import {
   BuilderHiddenFields,
   PendingStatusText,
@@ -73,8 +74,12 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
     vocabularyListSlug?: string;
   };
 
+  const preferredInitialOption =
+    props.vocabularySetOptions.find((option) => option.setType === "lesson_custom") ??
+    props.vocabularySetOptions[0] ??
+    null;
   const [selectedSlug, setSelectedSlug] = useState<string>(
-    props.vocabularySetOptions[0]?.slug ?? String(defaultData.vocabularySetSlug ?? "")
+    String(defaultData.vocabularySetSlug ?? preferredInitialOption?.slug ?? "")
   );
   const [selectedListSlug, setSelectedListSlug] = useState<string>(
     String(defaultData.vocabularyListSlug ?? "")
@@ -93,8 +98,10 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
     setSetSearch,
     setSetStatusFilter,
     setSetTierFilter,
+    setSetTypeFilter,
     setStatusFilter,
     setTierFilter,
+    setTypeFilter,
   } = useVocabularySetOptionFilters({
     options: props.vocabularySetOptions,
     selectedOption: selectedVocabularySet,
@@ -172,6 +179,19 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
             <option value="published">Published</option>
             <option value="draft">Draft</option>
           </select>
+          <select
+            value={setTypeFilter}
+            onChange={(event) => setSetTypeFilter(event.target.value)}
+            className={BUILDER_SELECT_CLASS}
+            aria-label="Filter vocabulary sets by type"
+          >
+            <option value="lesson_custom">Lesson custom</option>
+            <option value="theme">Theme</option>
+            <option value="core">Core</option>
+            <option value="phrase_bank">Phrase bank</option>
+            <option value="exam_prep">Exam prep</option>
+            <option value="all">All attachable types</option>
+          </select>
         </div>
 
         <select
@@ -187,6 +207,8 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
           {filteredVocabularySetOptions.map((option) => (
             <option key={option.id} value={option.slug}>
               {option.title} - {option.slug} - {option.tier} - {option.listMode}
+              {" - "}
+              {getVocabularySetTypeLabel(option.setType)}
               {option.isPublished ? "" : " - draft"}
             </option>
           ))}
@@ -233,6 +255,9 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
               <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
                 Mode: {selectedVocabularySet.listMode}
               </span>
+              <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
+                Type: {getVocabularySetTypeLabel(selectedVocabularySet.setType)}
+              </span>
               {selectedListSlug ? (
                 <span className="rounded-full border border-[var(--border)] bg-[var(--background-elevated)] px-2 py-1 text-[var(--text-secondary)]">
                   List:{" "}
@@ -242,6 +267,12 @@ export function AddVocabularySetBlockForm(props: AddVocabularySetBlockFormProps)
                 </span>
               ) : null}
             </div>
+            {selectedVocabularySet.setType !== "lesson_custom" ? (
+              <div className="mt-3 rounded-2xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] px-3 py-3 text-xs leading-5 text-[var(--warning)]">
+                Lesson custom sets are recommended here so students see the smaller,
+                lesson-specific vocabulary list rather than a broad library set.
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
