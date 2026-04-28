@@ -3,18 +3,27 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
 import EmptyState from "@/components/ui/empty-state";
+import LockedContentCard from "@/components/ui/locked-content-card";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 import GrammarTableRenderer from "@/components/grammar/grammar-table-renderer";
+import { GrammarPointRequirementBadges } from "@/components/grammar/grammar-requirement-badges";
+import { GrammarPointSetNavigationPanel } from "@/components/grammar/grammar-related-navigation";
 import {
   canDashboardAccessGrammarSet,
   getGrammarCategoryLabel,
   getGrammarKnowledgeRequirementLabel,
   getGrammarTierLabel,
+  getGrammarPointsBySetIdDb,
   loadGrammarPointBySlugsDb,
 } from "@/lib/grammar/grammar-helpers-db";
-import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { getDashboardInfo, type DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import type {
+  DbGrammarExample,
+  DbGrammarPoint,
+  DbGrammarStudyVariant,
+} from "@/lib/grammar/types";
 
 type GrammarPointPageProps = {
   params: Promise<{ grammarSetSlug: string; grammarPointSlug: string }>;
@@ -110,6 +119,85 @@ function RussianExampleText({
   );
 }
 
+function getStudyVariantForDashboard(
+  dashboard: DashboardInfo
+): DbGrammarStudyVariant | "all" | null {
+  if (dashboard.role === "admin" || dashboard.role === "teacher") {
+    return "all";
+  }
+
+  if (
+    dashboard.variant === "foundation" ||
+    dashboard.variant === "higher" ||
+    dashboard.variant === "volna"
+  ) {
+    return dashboard.variant;
+  }
+
+  return null;
+}
+
+function getPracticeTasks(
+  grammarPoint: DbGrammarPoint,
+  examples: DbGrammarExample[]
+) {
+  const firstExample = examples[0];
+  const highlightedText =
+    firstExample?.optional_highlight ?? firstExample?.russian_text ?? grammarPoint.title;
+
+  return [
+    {
+      title: "Spot it",
+      description: firstExample
+        ? `Find "${highlightedText}" in the first example and explain what job it is doing.`
+        : "Underline the part of the rule that changes the meaning of the sentence.",
+    },
+    {
+      title: "Change it",
+      description:
+        grammarPoint.knowledge_requirement === "receptive"
+          ? "Write two English meanings this form could signal when you meet it in reading or listening."
+          : "Change the example into a new sentence by switching the person, tense, or noun.",
+    },
+    {
+      title: "Use it",
+      description:
+        grammarPoint.knowledge_requirement === "receptive"
+          ? "Add this point to your recognition notes so you can identify it quickly in an exam text."
+          : "Write one exam-style sentence of your own and check the form against the explanation.",
+    },
+  ];
+}
+
+function PracticeTasks({
+  grammarPoint,
+  examples,
+}: {
+  grammarPoint: DbGrammarPoint;
+  examples: DbGrammarExample[];
+}) {
+  const tasks = getPracticeTasks(grammarPoint, examples);
+
+  return (
+    <div className="grid gap-3 md:grid-cols-3">
+      {tasks.map((task, index) => (
+        <div
+          key={task.title}
+          className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4"
+        >
+          <div className="mb-3 flex items-center gap-2">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full [background:var(--accent-gradient-selected)] text-sm font-semibold text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
+              {index + 1}
+            </span>
+            <h3 className="app-heading-card">{task.title}</h3>
+          </div>
+          <p className="app-text-body-muted">{task.description}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default async function GrammarPointPage({ params }: GrammarPointPageProps) {
   const { grammarSetSlug, grammarPointSlug } = await params;
   const dashboard = await getDashboardInfo();
@@ -119,17 +207,62 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
     { publishedOnly: true }
   );
 
-  if (
-    !grammarSet ||
-    !grammarPoint ||
-    !canDashboardAccessGrammarSet(grammarSet, dashboard)
-  ) {
+  if (!grammarSet || !grammarPoint) {
     notFound();
+  }
+
+  if (!canDashboardAccessGrammarSet(grammarSet, dashboard)) {
+    return (
+      <main className="space-y-4">
+        <PageIntroPanel
+          tone="student"
+          eyebrow={grammarSet.title}
+          title={grammarPoint.title}
+          description={
+            grammarPoint.short_description ??
+            "This grammar point is part of the full GCSE Russian course."
+          }
+          badges={<GrammarPointRequirementBadges point={grammarPoint} />}
+          actions={
+            <Button href="/grammar" variant="secondary" icon="back">
+              All grammar
+            </Button>
+          }
+        />
+
+        <LockedContentCard
+          title="Unlock this grammar point"
+          description="This explanation, examples, and practice route are published, but your current access does not include them yet."
+          accessLabel="Full course"
+          statusLabel="Locked"
+          primaryActionHref="/account/billing"
+          primaryActionLabel="Review access"
+          secondaryActionHref="/grammar"
+          secondaryActionLabel="Browse grammar"
+        />
+      </main>
+    );
   }
 
   const relatedVocabularyHref = grammarSet.theme_key
     ? `/vocabulary?themeKey=${encodeURIComponent(grammarSet.theme_key)}`
     : "/vocabulary";
+  const setPoints = await getGrammarPointsBySetIdDb(grammarSet.id, {
+    publishedOnly: true,
+    scopeVariant: getStudyVariantForDashboard(dashboard),
+  });
+  const currentPointIndex = setPoints.findIndex((point) => point.id === grammarPoint.id);
+  const previousPoint =
+    currentPointIndex > 0 ? setPoints[currentPointIndex - 1] ?? null : null;
+  const nextPoint =
+    currentPointIndex >= 0 ? setPoints[currentPointIndex + 1] ?? null : null;
+  const relatedPoints = setPoints
+    .filter(
+      (point) =>
+        point.id !== grammarPoint.id &&
+        point.category_key === grammarPoint.category_key
+    )
+    .slice(0, 4);
 
   return (
     <main className="space-y-4">
@@ -140,32 +273,7 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
         description={
           grammarPoint.short_description ?? "Grammar explanation and examples."
         }
-        badges={
-          <>
-            <Badge tone="info" icon="school">
-              {getGrammarTierLabel(grammarPoint.tier)}
-            </Badge>
-            <Badge tone="muted" className="capitalize">
-              {getGrammarCategoryLabel(grammarPoint.category_key)}
-            </Badge>
-            <Badge
-              tone={
-                grammarPoint.knowledge_requirement === "receptive"
-                  ? "warning"
-                  : "muted"
-              }
-            >
-              {getGrammarKnowledgeRequirementLabel(
-                grammarPoint.knowledge_requirement
-              )}
-            </Badge>
-            {grammarPoint.grammar_tag_key ? (
-              <Badge tone="muted">
-                {grammarPoint.grammar_tag_key.replaceAll("_", " ")}
-              </Badge>
-            ) : null}
-          </>
-        }
+        badges={<GrammarPointRequirementBadges point={grammarPoint} />}
         actions={
           <>
             <Button href={`/grammar/${grammarSet.slug}`} variant="secondary" icon="back">
@@ -188,20 +296,26 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
             {renderExplanation(grammarPoint.full_explanation)}
           </SectionCard>
 
-          {tables.length > 0 ? (
-            <div className="space-y-3">
-              <div>
-                <h2 className="app-heading-section">Grammar tables</h2>
-                <p className="mt-1 app-text-body-muted">
-                  Reference tables for forms, endings, or patterns.
-                </p>
+          <SectionCard
+            title="Reference tables"
+            description="Use these forms, endings, or patterns as a quick check while practising."
+            tone="student"
+          >
+            {tables.length > 0 ? (
+              <div className="space-y-3">
+                {tables.map((table) => (
+                  <GrammarTableRenderer key={table.id} table={table} />
+                ))}
               </div>
-
-              {tables.map((table) => (
-                <GrammarTableRenderer key={table.id} table={table} />
-              ))}
-            </div>
-          ) : null}
+            ) : (
+              <EmptyState
+                icon="table"
+                iconTone="default"
+                title="No reference table yet"
+                description="This point can be studied from the explanation and examples while the table is prepared."
+              />
+            )}
+          </SectionCard>
 
           <SectionCard
             title="Examples"
@@ -222,6 +336,11 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
                     key={example.id}
                     className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4"
                   >
+                    <div className="mb-3">
+                      <Badge tone="muted" icon="language">
+                        Example
+                      </Badge>
+                    </div>
                     <div lang="ru" className="app-russian-text text-lg font-semibold">
                       <RussianExampleText
                         text={example.russian_text}
@@ -240,6 +359,14 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
                 ))}
               </div>
             )}
+          </SectionCard>
+
+          <SectionCard
+            title="Practice"
+            description="Turn the rule into a small active task before moving on."
+            tone="student"
+          >
+            <PracticeTasks grammarPoint={grammarPoint} examples={examples} />
           </SectionCard>
         </div>
 
@@ -280,6 +407,14 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
               ]}
             />
           </PanelCard>
+
+          <GrammarPointSetNavigationPanel
+            grammarSet={grammarSet}
+            currentPoint={grammarPoint}
+            previousPoint={previousPoint}
+            nextPoint={nextPoint}
+            relatedPoints={relatedPoints}
+          />
 
           <PanelCard
             title="Next steps"
