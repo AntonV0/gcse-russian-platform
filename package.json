@@ -11,7 +11,7 @@
     "lint": "eslint",
     "seo:check": "node scripts/validate-seo.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check . --no-error-on-unmatched-pattern"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
