@@ -9,3 +9,12 @@ export const GRAMMAR_EXAMPLE_SELECT =
 
 export const GRAMMAR_TABLE_SELECT =
   "id, grammar_point_id, title, columns, rows, optional_note, sort_order, created_at, updated_at";
+
+export const GRAMMAR_POINT_COVERAGE_SELECT =
+  "grammar_point_id, used_in_foundation, used_in_higher, used_in_volna, foundation_occurrences, higher_occurrences, volna_occurrences";
+
+export const GRAMMAR_SET_SUMMARY_SELECT =
+  "grammar_set_id, point_count, total_occurrences, foundation_occurrences, higher_occurrences, volna_occurrences, foundation_total_points, higher_total_points, volna_total_points, foundation_used_points, higher_used_points, volna_used_points";
+
+export const LESSON_GRAMMAR_LINK_SELECT =
+  "id, lesson_id, lesson_section_id, lesson_block_id, link_type, grammar_set_id, grammar_point_id, grammar_tag_key, variant, usage_type, position, created_at";
