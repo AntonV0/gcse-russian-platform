@@ -28,6 +28,15 @@ export type AdminVocabularyMetadataHealth = {
   missingTransliterationItems: number;
   missingCategoryItems: number;
   duplicateCanonicalKeys: number;
+  sampleIssues: {
+    title: string;
+    setId: string;
+    setTitle: string;
+    setSlug: string | null;
+    russian: string;
+    english: string;
+    href: string;
+  }[];
 };
 
 export type AdminVocabularyListProps = {
