@@ -38,6 +38,12 @@ export type CheckoutResolvedPriceValidationResult =
   | { ok: true }
   | { ok: false; error: string };
 
+function isCheckoutRequestBodyObject(
+  value: unknown
+): value is Partial<CheckoutRequestBody> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function isSupportedProductCode(value: string): boolean {
   return Object.values(PRODUCT_CODES).includes(
     value as (typeof PRODUCT_CODES)[keyof typeof PRODUCT_CODES]
@@ -64,8 +70,12 @@ function isSupportedIntervalCount(value: number | null | undefined): boolean {
 }
 
 export function validateCheckoutRequestBody(
-  body: CheckoutRequestBody
+  body: unknown
 ): CheckoutRequestValidationResult {
+  if (!isCheckoutRequestBodyObject(body)) {
+    return { ok: false, error: "Invalid or missing productCode" };
+  }
+
   if (!body.productCode || !isSupportedProductCode(body.productCode)) {
     return { ok: false, error: "Invalid or missing productCode" };
   }
@@ -80,6 +90,10 @@ export function validateCheckoutRequestBody(
 
   if (!isSupportedIntervalCount(body.intervalCount)) {
     return { ok: false, error: "Invalid intervalCount" };
+  }
+
+  if (body.isUpgrade != null && typeof body.isUpgrade !== "boolean") {
+    return { ok: false, error: "Invalid isUpgrade" };
   }
 
   const successPath = resolveOptionalInternalRedirectPath(

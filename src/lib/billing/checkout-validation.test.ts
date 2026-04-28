@@ -98,6 +98,27 @@ describe("validateCheckoutRequestBody", () => {
     ).toEqual({ ok: false, error: "Invalid intervalCount" });
   });
 
+  it("rejects malformed checkout JSON before reading typed fields", () => {
+    expect(validateCheckoutRequestBody(null)).toEqual({
+      ok: false,
+      error: "Invalid or missing productCode",
+    });
+    expect(validateCheckoutRequestBody([])).toEqual({
+      ok: false,
+      error: "Invalid or missing productCode",
+    });
+  });
+
+  it("rejects non-boolean upgrade flags", () => {
+    expect(
+      validateCheckoutRequestBody({
+        productCode: PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION,
+        billingType: BILLING_TYPES.ONE_TIME,
+        isUpgrade: "true" as never,
+      })
+    ).toEqual({ ok: false, error: "Invalid isUpgrade" });
+  });
+
   it("rejects unsafe redirect paths before checkout session creation", () => {
     expect(
       validateCheckoutRequestBody({
