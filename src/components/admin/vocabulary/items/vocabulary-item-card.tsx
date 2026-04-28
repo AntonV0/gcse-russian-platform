@@ -8,7 +8,10 @@ import {
   getVocabularyPartOfSpeechLabel,
 } from "@/components/admin/vocabulary/items/item-display";
 import { VocabularyAdminStatTile } from "@/components/admin/vocabulary/items/primitives";
-import { getVocabularyProductiveReceptiveLabel } from "@/lib/vocabulary/labels";
+import {
+  getVocabularyProductiveReceptiveLabel,
+  getVocabularyTierLabel,
+} from "@/lib/vocabulary/labels";
 import type {
   DbVocabularyItem,
   DbVocabularyItemCoverage,
@@ -52,6 +55,17 @@ export default function VocabularyItemCard({
               <Badge tone="muted" icon="info">
                 {getVocabularyProductiveReceptiveLabel(item.productive_receptive)}
               </Badge>
+              <Badge tone="muted" icon="school">
+                {getVocabularyTierLabel(item.tier)}
+              </Badge>
+              <Badge tone="muted" icon="vocabulary">
+                {getVocabularyPartOfSpeechLabel(item.part_of_speech)}
+              </Badge>
+              {item.category_key ? (
+                <Badge tone="muted" icon="folder">
+                  {item.category_key.replaceAll("_", " ")}
+                </Badge>
+              ) : null}
             </div>
 
             <div className="mt-3">
@@ -82,6 +96,18 @@ export default function VocabularyItemCard({
           <VocabularyAdminStatTile
             label="Part of speech"
             value={getVocabularyPartOfSpeechLabel(item.part_of_speech)}
+          />
+          <VocabularyAdminStatTile
+            label="Tier"
+            value={getVocabularyTierLabel(item.tier)}
+          />
+          <VocabularyAdminStatTile
+            label="Category"
+            value={item.category_key?.replaceAll("_", " ") ?? "None"}
+          />
+          <VocabularyAdminStatTile
+            label="Source section"
+            value={item.source_section_ref ?? "None"}
           />
           <VocabularyAdminStatTile label="Position" value={item.position} />
         </div>
