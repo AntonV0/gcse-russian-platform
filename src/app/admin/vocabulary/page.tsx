@@ -27,6 +27,10 @@ import {
   getVocabularyTierLabel,
 } from "@/lib/vocabulary/labels";
 import { getVocabularySetsDb } from "@/lib/vocabulary/set-list-queries";
+import {
+  getVocabularySetSourceKeysDb,
+  getVocabularySetThemeKeysDb,
+} from "@/lib/vocabulary/set-options";
 import type { VocabularySetFilters } from "@/lib/vocabulary/types";
 
 type AdminVocabularyPageProps = {
@@ -34,7 +38,10 @@ type AdminVocabularyPageProps = {
     search?: string;
     tier?: string;
     listMode?: string;
+    setType?: string;
     themeKey?: string;
+    sourceKey?: string;
+    usageVariant?: string;
     published?: string;
   }>;
 };
@@ -70,8 +77,53 @@ function normalizePublishedFilter(value?: string): VocabularySetFilters["publish
   return "all";
 }
 
+function normalizeSetTypeFilter(value?: string): VocabularySetFilters["setType"] {
+  if (
+    value === "specification" ||
+    value === "core" ||
+    value === "theme" ||
+    value === "phrase_bank" ||
+    value === "exam_prep" ||
+    value === "lesson_custom"
+  ) {
+    return value;
+  }
+
+  return "all";
+}
+
+function normalizeUsageVariantFilter(
+  value?: string
+): VocabularySetFilters["usageVariant"] {
+  if (
+    value === "foundation" ||
+    value === "higher" ||
+    value === "volna" ||
+    value === "unused"
+  ) {
+    return value;
+  }
+
+  return "all";
+}
+
 function getVocabularySetHref(vocabularySet: { id: string; slug: string | null }) {
   return `/vocabulary/${vocabularySet.slug ?? vocabularySet.id}`;
+}
+
+function getUsageFilterLabel(value?: VocabularySetFilters["usageVariant"]) {
+  switch (value) {
+    case "foundation":
+      return "Foundation usage";
+    case "higher":
+      return "Higher usage";
+    case "volna":
+      return "Volna usage";
+    case "unused":
+      return "Unused sets";
+    default:
+      return "All usage";
+  }
 }
 
 export default async function AdminVocabularyPage({
@@ -82,14 +134,25 @@ export default async function AdminVocabularyPage({
     search: params.search ?? null,
     tier: normalizeTierFilter(params.tier),
     listMode: normalizeListModeFilter(params.listMode),
+    setType: normalizeSetTypeFilter(params.setType),
     themeKey: params.themeKey ?? null,
+    sourceKey: params.sourceKey ?? null,
+    usageVariant: normalizeUsageVariantFilter(params.usageVariant),
     published: normalizePublishedFilter(params.published),
   };
-  const vocabularySets = await getVocabularySetsDb({ filters });
+  const [vocabularySets, themeKeys, sourceKeys] = await Promise.all([
+    getVocabularySetsDb({ filters }),
+    getVocabularySetThemeKeysDb(),
+    getVocabularySetSourceKeysDb(),
+  ]);
   const totalSets = vocabularySets.length;
   const publishedSets = vocabularySets.filter((set) => set.is_published).length;
   const draftSets = totalSets - publishedSets;
   const totalItems = vocabularySets.reduce((sum, set) => sum + set.item_count, 0);
+  const totalUsages = vocabularySets.reduce(
+    (sum, set) => sum + set.usage_stats.totalOccurrences,
+    0
+  );
 
   return (
     <main className="space-y-4">
@@ -123,7 +186,7 @@ export default async function AdminVocabularyPage({
         }
       />
 
-      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         <SummaryStatCard
           title="Vocabulary sets"
           value={totalSets}
@@ -148,6 +211,12 @@ export default async function AdminVocabularyPage({
           description="Total vocabulary items inside filtered sets."
           icon="list"
         />
+        <SummaryStatCard
+          title="Lesson usage"
+          value={totalUsages}
+          description={`${getUsageFilterLabel(filters.usageVariant)} across filtered sets.`}
+          icon="lessons"
+        />
       </section>
 
       <TableShell
@@ -165,16 +234,16 @@ export default async function AdminVocabularyPage({
         }
       >
         <TableToolbar>
-          <form className="flex flex-1 flex-col gap-3 xl:flex-row xl:items-center">
-            <div className="w-full xl:max-w-xs">
+          <form className="grid flex-1 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1.2fr)_repeat(7,minmax(140px,1fr))_max-content] xl:items-center">
+            <div className="min-w-0">
               <Input
                 name="search"
                 defaultValue={params.search ?? ""}
-                placeholder="Search vocabulary..."
+                placeholder="Search title, slug, topic, source..."
               />
             </div>
 
-            <div className="w-full xl:max-w-[180px]">
+            <div className="min-w-0">
               <Select name="tier" defaultValue={filters.tier ?? "all"}>
                 <option value="all">All tiers</option>
                 <option value="foundation">Foundation</option>
@@ -184,7 +253,7 @@ export default async function AdminVocabularyPage({
               </Select>
             </div>
 
-            <div className="w-full xl:max-w-[210px]">
+            <div className="min-w-0">
               <Select name="listMode" defaultValue={filters.listMode ?? "all"}>
                 <option value="all">All modes</option>
                 <option value="custom">Custom</option>
@@ -194,15 +263,51 @@ export default async function AdminVocabularyPage({
               </Select>
             </div>
 
-            <div className="w-full xl:max-w-[180px]">
-              <Input
-                name="themeKey"
-                defaultValue={params.themeKey ?? ""}
-                placeholder="Theme key"
-              />
+            <div className="min-w-0">
+              <Select name="setType" defaultValue={filters.setType ?? "all"}>
+                <option value="all">All types</option>
+                <option value="specification">Specification</option>
+                <option value="core">Core</option>
+                <option value="theme">Theme</option>
+                <option value="phrase_bank">Phrase bank</option>
+                <option value="exam_prep">Exam prep</option>
+                <option value="lesson_custom">Lesson custom</option>
+              </Select>
             </div>
 
-            <div className="w-full xl:max-w-[170px]">
+            <div className="min-w-0">
+              <Select name="themeKey" defaultValue={filters.themeKey ?? ""}>
+                <option value="">All themes</option>
+                {themeKeys.map((themeKey) => (
+                  <option key={themeKey} value={themeKey}>
+                    {getVocabularyThemeLabel(themeKey)}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div className="min-w-0">
+              <Select name="sourceKey" defaultValue={filters.sourceKey ?? ""}>
+                <option value="">All sources</option>
+                {sourceKeys.map((sourceKey) => (
+                  <option key={sourceKey} value={sourceKey}>
+                    {sourceKey}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div className="min-w-0">
+              <Select name="usageVariant" defaultValue={filters.usageVariant ?? "all"}>
+                <option value="all">All usage</option>
+                <option value="foundation">Used in Foundation</option>
+                <option value="higher">Used in Higher</option>
+                <option value="volna">Used in Volna</option>
+                <option value="unused">Unused</option>
+              </Select>
+            </div>
+
+            <div className="min-w-0">
               <Select name="published" defaultValue={filters.published ?? "all"}>
                 <option value="all">All statuses</option>
                 <option value="published">Published</option>
@@ -210,7 +315,7 @@ export default async function AdminVocabularyPage({
               </Select>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-1 xl:justify-end">
               <Button type="submit" variant="secondary" size="sm" icon="filter">
                 Apply
               </Button>
@@ -243,8 +348,9 @@ export default async function AdminVocabularyPage({
                 <DataTableHeaderCell>Tier</DataTableHeaderCell>
                 <DataTableHeaderCell>Mode</DataTableHeaderCell>
                 <DataTableHeaderCell>Items</DataTableHeaderCell>
+                <DataTableHeaderCell>Usage</DataTableHeaderCell>
                 <DataTableHeaderCell>Status</DataTableHeaderCell>
-                <DataTableHeaderCell>Theme</DataTableHeaderCell>
+                <DataTableHeaderCell>Metadata</DataTableHeaderCell>
                 <DataTableHeaderCell>Actions</DataTableHeaderCell>
               </DataTableHeaderRow>
             </DataTableHead>
@@ -297,11 +403,48 @@ export default async function AdminVocabularyPage({
                   </DataTableCell>
 
                   <DataTableCell>
+                    <div className="grid min-w-[8rem] grid-cols-3 gap-1 text-center">
+                      <div className="rounded-lg bg-[var(--background-muted)] px-2 py-1">
+                        <div className="app-text-meta">F</div>
+                        <div className="font-semibold text-[var(--text-primary)]">
+                          {vocabularySet.usage_stats.foundationOccurrences}
+                        </div>
+                      </div>
+                      <div className="rounded-lg bg-[var(--background-muted)] px-2 py-1">
+                        <div className="app-text-meta">H</div>
+                        <div className="font-semibold text-[var(--text-primary)]">
+                          {vocabularySet.usage_stats.higherOccurrences}
+                        </div>
+                      </div>
+                      <div className="rounded-lg bg-[var(--background-muted)] px-2 py-1">
+                        <div className="app-text-meta">V</div>
+                        <div className="font-semibold text-[var(--text-primary)]">
+                          {vocabularySet.usage_stats.volnaOccurrences}
+                        </div>
+                      </div>
+                    </div>
+                  </DataTableCell>
+
+                  <DataTableCell>
                     <PublishStatusBadge isPublished={vocabularySet.is_published} />
                   </DataTableCell>
 
-                  <DataTableCell className="capitalize">
-                    {getVocabularyThemeLabel(vocabularySet.theme_key)}
+                  <DataTableCell>
+                    <div className="space-y-1">
+                      <div className="capitalize text-[var(--text-primary)]">
+                        {getVocabularyThemeLabel(vocabularySet.theme_key)}
+                      </div>
+                      {vocabularySet.topic_key ? (
+                        <div className="app-text-caption">
+                          Topic: {vocabularySet.topic_key}
+                        </div>
+                      ) : null}
+                      {vocabularySet.source_key ? (
+                        <div className="app-text-caption">
+                          Source: {vocabularySet.source_key}
+                        </div>
+                      ) : null}
+                    </div>
                   </DataTableCell>
 
                   <DataTableCell>

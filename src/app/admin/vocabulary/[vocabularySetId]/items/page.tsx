@@ -5,10 +5,21 @@ import { loadVocabularySetByIdDb } from "@/lib/vocabulary/loaders";
 
 export default async function VocabularySetItemsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ vocabularySetId: string }>;
+  searchParams?: Promise<{
+    itemSearch?: string;
+    partOfSpeech?: string;
+    sourceType?: string;
+    tier?: string;
+    skillUse?: string;
+    categoryKey?: string;
+    coverage?: string;
+  }>;
 }) {
   const { vocabularySetId } = await params;
+  const itemFilters = (await searchParams) ?? {};
   const { vocabularySet, vocabularyList, lists, items, usageStats } =
     await loadVocabularySetByIdDb(vocabularySetId);
 
@@ -28,6 +39,7 @@ export default async function VocabularySetItemsPage({
       items={items}
       usageStats={usageStats}
       itemCoverageById={itemCoverageById}
+      itemFilters={itemFilters}
     />
   );
 }

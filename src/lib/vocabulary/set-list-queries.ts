@@ -18,6 +18,8 @@ export async function getVocabularySetsDb(options?: {
   const themeKey = filters?.themeKey?.trim();
   const listMode =
     filters?.listMode && filters.listMode !== "all" ? filters.listMode : null;
+  const setType = filters?.setType && filters.setType !== "all" ? filters.setType : null;
+  const sourceKey = filters?.sourceKey?.trim();
   const published = filters?.published ?? "all";
 
   const data = await fetchSupabasePages<Record<string, unknown>>({
@@ -44,6 +46,14 @@ export async function getVocabularySetsDb(options?: {
 
       if (listMode) {
         query = query.eq("list_mode", listMode);
+      }
+
+      if (setType) {
+        query = query.eq("set_type", setType);
+      }
+
+      if (sourceKey) {
+        query = query.eq("source_key", sourceKey);
       }
 
       return query;

@@ -121,3 +121,34 @@ export async function getVocabularySetThemeKeysDb(options?: { publishedOnly?: bo
     )
   ).sort((a, b) => getVocabularyThemeLabel(a).localeCompare(getVocabularyThemeLabel(b)));
 }
+
+export async function getVocabularySetSourceKeysDb(options?: {
+  publishedOnly?: boolean;
+}) {
+  const supabase = await createClient();
+  const data = await fetchSupabasePages<{ source_key: string | null }>({
+    queryFactory: () => {
+      let query = supabase
+        .from("vocabulary_sets")
+        .select("source_key")
+        .not("source_key", "is", null)
+        .order("source_key", { ascending: true });
+
+      if (options?.publishedOnly) {
+        query = query.eq("is_published", true);
+      }
+
+      return query;
+    },
+    errorMessage: "Error fetching vocabulary source keys:",
+    errorContext: { options },
+  });
+
+  return Array.from(
+    new Set(
+      data
+        .map((row) => row.source_key)
+        .filter((sourceKey): sourceKey is string => Boolean(sourceKey))
+    )
+  ).sort((a, b) => a.localeCompare(b));
+}
