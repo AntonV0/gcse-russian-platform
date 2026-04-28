@@ -7,7 +7,7 @@ import {
   bulkCreateVocabularyItemsAction,
   createVocabularyItemAction,
 } from "@/app/actions/admin/vocabulary/item-actions";
-import type { DbVocabularyTier } from "@/lib/vocabulary/types";
+import type { DbVocabularyTier } from "@/lib/vocabulary/shared/types";
 import {
   VocabularyAdminDisclosurePanel,
   VocabularyAdminFormField,

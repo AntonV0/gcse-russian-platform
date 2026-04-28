@@ -1,17 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 
-import { getVocabularyListIdsForVariantScope } from "./vocabulary-usage-list-scope";
+import { getVocabularyListIdsForVariantScope } from "@/lib/vocabulary/usage/vocabulary-usage-list-scope";
 import type {
   LessonVocabularyLinkRow,
   VocabularyListForUsageSync,
   VocabularyUsageVariant,
-} from "./vocabulary-usage-types";
+} from "@/lib/vocabulary/usage/vocabulary-usage-types";
 
-export type { VocabularyUsageVariant } from "./vocabulary-usage-types";
+export type { VocabularyUsageVariant } from "@/lib/vocabulary/usage/vocabulary-usage-types";
 export {
   getVocabularyUsageVariantForLessonSync,
   resolveVocabularyUsageVariantFromSlug,
-} from "./vocabulary-usage-variants";
+} from "@/lib/vocabulary/usage/vocabulary-usage-variants";
 
 export async function syncLessonVocabularySetUsagesForLesson(params: {
   lessonId: string;

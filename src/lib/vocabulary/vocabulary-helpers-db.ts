@@ -1,1 +1,1 @@
-export * from "@/lib/vocabulary/db";
+export * from "@/lib/vocabulary/shared/db";

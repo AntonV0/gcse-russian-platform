@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 
-import { slugifyVocabularyTitle } from "./normalizers";
-import { VOCABULARY_LIST_SELECT } from "./selects";
-import type { DbVocabularyList, DbVocabularySet } from "./types";
+import { slugifyVocabularyTitle } from "@/lib/vocabulary/shared/normalizers";
+import { VOCABULARY_LIST_SELECT } from "@/lib/vocabulary/shared/selects";
+import type { DbVocabularyList, DbVocabularySet } from "@/lib/vocabulary/shared/types";
 
 export async function getVocabularyListsBySetIdDb(vocabularySetId: string) {
   const supabase = await createClient();

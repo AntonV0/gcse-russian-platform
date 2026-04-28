@@ -1,10 +1,10 @@
-import { groupVocabularyItemsBySource } from "@/lib/vocabulary/labels";
-import { getVocabularyListAppliesToStudyVariant } from "@/lib/vocabulary/study-variants";
+import { groupVocabularyItemsBySource } from "@/lib/vocabulary/shared/labels";
+import { getVocabularyListAppliesToStudyVariant } from "@/lib/vocabulary/shared/study-variants";
 import type {
   DbVocabularyItem,
   DbVocabularyList,
   DbVocabularyStudyVariant,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 
 export type VocabularyItemSectionGroup = {
   key: string;

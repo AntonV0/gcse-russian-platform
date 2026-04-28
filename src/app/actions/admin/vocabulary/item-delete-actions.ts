@@ -7,7 +7,7 @@ import {
   getRequiredString,
 } from "@/app/actions/admin/vocabulary/item-action-helpers";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
-import { deleteVocabularyItemDb } from "@/lib/vocabulary/mutations";
+import { deleteVocabularyItemDb } from "@/lib/vocabulary/items/mutations";
 
 export async function deleteVocabularyItemAction(formData: FormData) {
   const canAccess = await requireAdminAccess();

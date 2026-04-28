@@ -1,19 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
 
-import { buildVocabularySetCoverageSummary } from "./coverage-summary";
-import { getVocabularyListsBySetIdDb } from "./list-queries";
-import { normalizeVocabularyItem, normalizeVocabularyItemCoverage } from "./normalizers";
-import { chunkValues, fetchSupabasePages } from "./pagination";
-import { VOCABULARY_ITEM_COVERAGE_SELECT, VOCABULARY_ITEM_SELECT } from "./selects";
+import { buildVocabularySetCoverageSummary } from "@/lib/vocabulary/shared/coverage-summary";
+import { getVocabularyListsBySetIdDb } from "@/lib/vocabulary/sets/list-queries";
+import { normalizeVocabularyItem, normalizeVocabularyItemCoverage } from "@/lib/vocabulary/shared/normalizers";
+import { chunkValues, fetchSupabasePages } from "@/lib/vocabulary/shared/pagination";
+import { VOCABULARY_ITEM_COVERAGE_SELECT, VOCABULARY_ITEM_SELECT } from "@/lib/vocabulary/shared/selects";
 import {
   filterVocabularyListsForStudyVariant,
   getVocabularyItemAppliesToStudyVariant,
-} from "./study-variants";
+} from "@/lib/vocabulary/shared/study-variants";
 import type {
   DbVocabularyItem,
   DbVocabularyItemCoverage,
   VocabularySetLoadOptions,
-} from "./types";
+} from "@/lib/vocabulary/shared/types";
 
 export async function getVocabularyItemsByListIdDb(vocabularyListId: string) {
   const items = await getVocabularyItemsByListIdsDb([vocabularyListId]);

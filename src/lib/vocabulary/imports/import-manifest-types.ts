@@ -10,7 +10,7 @@ import type {
   DbVocabularyProductiveReceptive,
   DbVocabularySetType,
   DbVocabularyTier,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 
 export type VocabularyManifestReviewStatus = "draft" | "reviewed" | "approved";
 

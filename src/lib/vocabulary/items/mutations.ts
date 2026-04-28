@@ -3,10 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import {
   ensureDefaultVocabularyListForSetDb,
   getVocabularyListByIdDb,
-} from "@/lib/vocabulary/list-queries";
-import { normalizeVocabularySet } from "@/lib/vocabulary/normalizers";
-import { getVocabularySetByIdDb } from "@/lib/vocabulary/set-queries";
-import { VOCABULARY_SET_SELECT } from "@/lib/vocabulary/selects";
+} from "@/lib/vocabulary/sets/list-queries";
+import { normalizeVocabularySet } from "@/lib/vocabulary/shared/normalizers";
+import { getVocabularySetByIdDb } from "@/lib/vocabulary/sets/set-queries";
+import { VOCABULARY_SET_SELECT } from "@/lib/vocabulary/shared/selects";
 import type {
   DbVocabularyAspect,
   DbVocabularyDisplayVariant,
@@ -20,7 +20,7 @@ import type {
   DbVocabularySet,
   DbVocabularySetType,
   DbVocabularyTier,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 
 export type VocabularySetMutationPayload = {
   title: string;

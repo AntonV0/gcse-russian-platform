@@ -15,7 +15,7 @@ import {
 } from "@/lib/courses/course-helpers-db";
 import { getLessonSectionsWithBlocksDb } from "@/lib/lessons/lesson-admin-helpers-db";
 import { getLessonBuilderTemplateOptionsDb } from "@/lib/lessons/lesson-template-helpers-db";
-import { getVocabularySetOptionsDb } from "@/lib/vocabulary/set-options";
+import { getVocabularySetOptionsDb } from "@/lib/vocabulary/sets/set-options";
 
 type AdminLessonDetailPageProps = {
   params: Promise<{

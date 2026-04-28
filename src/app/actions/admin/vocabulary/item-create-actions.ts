@@ -20,7 +20,7 @@ import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   bulkCreateVocabularyItemsDb,
   createVocabularyItemDb,
-} from "@/lib/vocabulary/mutations";
+} from "@/lib/vocabulary/items/mutations";
 
 export async function createVocabularyItemAction(formData: FormData) {
   const canAccess = await requireAdminAccess();

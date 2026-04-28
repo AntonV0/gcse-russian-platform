@@ -1,7 +1,7 @@
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
-import type { VocabularySetFilters } from "@/lib/vocabulary/types";
+import type { VocabularySetFilters } from "@/lib/vocabulary/shared/types";
 
 type VocabularyTopicOption = {
   value: string;
@@ -20,7 +20,7 @@ export default function VocabularyFilterForm({
   topicOptions,
 }: VocabularyFilterFormProps) {
   return (
-    <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_minmax(140px,160px)_minmax(150px,170px)_minmax(150px,170px)_max-content] xl:items-center">
+    <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(240px,1.2fr)_repeat(3,minmax(160px,1fr))] xl:items-center">
       <div className="min-w-0">
         <Input
           name="search"
@@ -59,7 +59,7 @@ export default function VocabularyFilterForm({
         </Select>
       </div>
 
-      <div className="app-mobile-action-stack flex shrink-0 flex-wrap gap-2 md:col-span-2 xl:col-span-1 xl:flex-nowrap xl:justify-end">
+      <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap md:col-span-2 xl:col-span-4 xl:justify-end">
         <Button type="submit" variant="primary" icon="search">
           Search
         </Button>

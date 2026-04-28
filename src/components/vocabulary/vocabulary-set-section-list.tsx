@@ -9,8 +9,8 @@ import {
   getVocabularyListModeLabel,
   getVocabularyThemeLabel,
   getVocabularyTierLabel,
-} from "@/lib/vocabulary/labels";
-import { getVocabularySetsDb } from "@/lib/vocabulary/set-list-queries";
+} from "@/lib/vocabulary/shared/labels";
+import { getVocabularySetsDb } from "@/lib/vocabulary/sets/set-list-queries";
 
 type VocabularySet = Awaited<ReturnType<typeof getVocabularySetsDb>>[number];
 

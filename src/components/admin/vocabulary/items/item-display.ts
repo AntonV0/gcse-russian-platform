@@ -1,4 +1,4 @@
-import type { DbVocabularyItem, DbVocabularyTier } from "@/lib/vocabulary/types";
+import type { DbVocabularyItem, DbVocabularyTier } from "@/lib/vocabulary/shared/types";
 
 export function getVocabularyItemSourceTypeLabel(
   sourceType: DbVocabularyItem["source_type"]

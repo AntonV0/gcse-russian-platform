@@ -1,10 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
-import { buildVocabularyUsageStats } from "@/lib/vocabulary/study-variants";
-import { LESSON_VOCABULARY_SET_USAGE_SELECT } from "@/lib/vocabulary/selects";
+import { buildVocabularyUsageStats } from "@/lib/vocabulary/shared/study-variants";
+import { LESSON_VOCABULARY_SET_USAGE_SELECT } from "@/lib/vocabulary/shared/selects";
 import type {
   DbLessonVocabularySetUsage,
   DbVocabularySetUsageStats,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 
 export async function getVocabularySetUsagesBySetIdDb(vocabularySetId: string) {
   const supabase = await createClient();

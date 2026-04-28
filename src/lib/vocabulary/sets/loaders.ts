@@ -1,16 +1,16 @@
-import { getVocabularyItemsBySetIdDb } from "@/lib/vocabulary/item-queries";
-import { getVocabularyListsBySetIdDb } from "@/lib/vocabulary/list-queries";
+import { getVocabularyItemsBySetIdDb } from "@/lib/vocabulary/items/item-queries";
+import { getVocabularyListsBySetIdDb } from "@/lib/vocabulary/sets/list-queries";
 import {
   getVocabularySetByIdDb,
   getVocabularySetByRefDb,
   getVocabularySetBySlugDb,
-} from "@/lib/vocabulary/set-queries";
-import { getVocabularySetUsageStatsBySetIdDb } from "@/lib/vocabulary/usage-queries";
+} from "@/lib/vocabulary/sets/set-queries";
+import { getVocabularySetUsageStatsBySetIdDb } from "@/lib/vocabulary/usage/usage-queries";
 import type {
   LoadedVocabularySetDb,
   LoadedVocabularySetDetailDb,
   VocabularySetLoadOptions,
-} from "@/lib/vocabulary/types";
+} from "@/lib/vocabulary/shared/types";
 
 const EMPTY_USAGE_STATS = {
   totalOccurrences: 0,

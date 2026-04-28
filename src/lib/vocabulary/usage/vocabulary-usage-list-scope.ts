@@ -1,7 +1,7 @@
 import type {
   VocabularyListForUsageSync,
   VocabularyUsageVariant,
-} from "./vocabulary-usage-types";
+} from "@/lib/vocabulary/usage/vocabulary-usage-types";
 
 function isListInVariantScope(
   list: Pick<VocabularyListForUsageSync, "tier">,
