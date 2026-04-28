@@ -60,6 +60,36 @@ const logoDirections: Array<{
   },
 ];
 
+function PanelExampleBlock({
+  title,
+  description,
+  tone = "default",
+}: {
+  title: string;
+  description: string;
+  tone?: "default" | "muted";
+}) {
+  const isMuted = tone === "muted";
+
+  return (
+    <div
+      className={[
+        "rounded-2xl border border-[var(--border)] px-4 py-3",
+        isMuted ? "bg-[var(--background-muted)]" : "bg-[var(--background-elevated)]",
+      ].join(" ")}
+    >
+      <div className="text-sm font-medium text-[var(--text-primary)]">{title}</div>
+      <div
+        className={["mt-1 text-sm", isMuted ? "app-text-soft" : "app-text-muted"].join(
+          " "
+        )}
+      >
+        {description}
+      </div>
+    </div>
+  );
+}
+
 export default async function AdminUiComponentsPage() {
   const canAccess = await requireAdminAccess();
 
@@ -481,24 +511,16 @@ export default async function AdminUiComponentsPage() {
             }
             contentClassName="space-y-3"
           >
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-              <div className="text-sm font-medium text-[var(--text-primary)]">
-                Section settings
-              </div>
-              <div className="mt-1 text-sm app-text-muted">
-                Use for durable admin structures where actions and description both
-                matter.
-              </div>
-            </div>
+            <PanelExampleBlock
+              title="Section settings"
+              description="Use for durable admin structures where actions and description both matter."
+            />
 
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
-              <div className="text-sm font-medium text-[var(--text-primary)]">
-                Publishing controls
-              </div>
-              <div className="mt-1 text-sm app-text-soft">
-                draft · scheduled · published
-              </div>
-            </div>
+            <PanelExampleBlock
+              title="Publishing controls"
+              description="draft · scheduled · published"
+              tone="muted"
+            />
           </PanelCard>
 
           <PanelCard
@@ -529,23 +551,15 @@ export default async function AdminUiComponentsPage() {
             tone="student"
             contentClassName="space-y-3"
           >
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-              <div className="text-sm font-medium text-[var(--text-primary)]">
-                Exam reminder
-              </div>
-              <div className="mt-1 text-sm app-text-muted">
-                Keep your answer in full sentences and include a clear time reference.
-              </div>
-            </div>
+            <PanelExampleBlock
+              title="Exam reminder"
+              description="Keep your answer in full sentences and include a clear time reference."
+            />
 
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
-              <div className="text-sm font-medium text-[var(--text-primary)]">
-                Suggested next step
-              </div>
-              <div className="mt-1 text-sm app-text-muted">
-                Review the new vocabulary before starting the translation practice.
-              </div>
-            </div>
+            <PanelExampleBlock
+              title="Suggested next step"
+              description="Review the new vocabulary before starting the translation practice."
+            />
           </PanelCard>
         </div>
       </UiLabSection>
