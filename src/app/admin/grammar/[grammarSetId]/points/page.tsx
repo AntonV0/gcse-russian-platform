@@ -19,6 +19,7 @@ import {
 } from "@/app/actions/admin/admin-grammar-point-actions";
 import {
   getGrammarCategoryLabel,
+  getGrammarKnowledgeRequirementLabel,
   getGrammarTierLabel,
   loadGrammarSetByIdDb,
 } from "@/lib/grammar/grammar-helpers-db";
@@ -102,6 +103,17 @@ export default async function GrammarSetPointsPage({
                       <Badge tone="info">{getGrammarTierLabel(point.tier)}</Badge>
                       <Badge tone="muted" className="capitalize">
                         {getGrammarCategoryLabel(point.category_key)}
+                      </Badge>
+                      <Badge
+                        tone={
+                          point.knowledge_requirement === "receptive"
+                            ? "warning"
+                            : "muted"
+                        }
+                      >
+                        {getGrammarKnowledgeRequirementLabel(
+                          point.knowledge_requirement
+                        )}
                       </Badge>
                       <PublishStatusBadge isPublished={point.is_published} />
                     </>
@@ -189,6 +201,26 @@ export default async function GrammarSetPointsPage({
               <Input name="categoryKey" placeholder="verbs" />
             </FormField>
 
+            <FormField
+              label="Knowledge requirement"
+              description="Use receptive for structures marked (R) in the specification."
+            >
+              <Select name="knowledgeRequirement" defaultValue="productive">
+                <option value="productive">Productive knowledge</option>
+                <option value="receptive">Receptive knowledge</option>
+                <option value="mixed">Mixed knowledge</option>
+                <option value="unknown">Unknown requirement</option>
+              </Select>
+            </FormField>
+
+            <FormField label="Receptive scope">
+              <Textarea
+                name="receptiveScope"
+                rows={3}
+                placeholder="Only this substructure is receptive, if the point cannot be split further."
+              />
+            </FormField>
+
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField label="Tier">
                 <Select name="tier" defaultValue={grammarSet.tier}>
@@ -201,6 +233,20 @@ export default async function GrammarSetPointsPage({
 
               <FormField label="Sort order">
                 <Input name="sortOrder" type="number" min={0} step={1} />
+              </FormField>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FormField label="Source key">
+                <Input name="sourceKey" placeholder="edexcel_gcse_russian_spec" />
+              </FormField>
+
+              <FormField label="Source version">
+                <Input name="sourceVersion" placeholder="Appendix 2" />
+              </FormField>
+
+              <FormField label="Import key">
+                <Input name="importKey" placeholder="foundation:verbs:present-tense" />
               </FormField>
             </div>
 

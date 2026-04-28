@@ -1,5 +1,6 @@
 export {
   getGrammarCategoryLabel,
+  getGrammarKnowledgeRequirementLabel,
   getGrammarThemeLabel,
   getGrammarTierLabel,
   getGrammarTopicLabel,
@@ -9,6 +10,7 @@ export * from "@/lib/grammar/loaders";
 export * from "@/lib/grammar/queries";
 export type {
   DbGrammarExample,
+  DbGrammarKnowledgeRequirement,
   DbGrammarPoint,
   DbGrammarSet,
   DbGrammarSetListItem,

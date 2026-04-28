@@ -4,6 +4,7 @@ import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import {
   getGrammarCategoryLabel,
+  getGrammarKnowledgeRequirementLabel,
   getGrammarTierLabel,
   type DbGrammarPoint,
   type DbGrammarSet,
@@ -29,6 +30,13 @@ export default function GrammarPointEditHeader({
           </Badge>
           <Badge tone="muted" className="capitalize">
             {getGrammarCategoryLabel(grammarPoint.category_key)}
+          </Badge>
+          <Badge
+            tone={
+              grammarPoint.knowledge_requirement === "receptive" ? "warning" : "muted"
+            }
+          >
+            {getGrammarKnowledgeRequirementLabel(grammarPoint.knowledge_requirement)}
           </Badge>
           <PublishStatusBadge isPublished={grammarPoint.is_published} />
         </>

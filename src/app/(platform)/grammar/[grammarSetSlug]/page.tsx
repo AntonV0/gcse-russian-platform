@@ -8,6 +8,7 @@ import SectionCard from "@/components/ui/section-card";
 import {
   canDashboardAccessGrammarSet,
   getGrammarCategoryLabel,
+  getGrammarKnowledgeRequirementLabel,
   getGrammarThemeLabel,
   getGrammarTierLabel,
   loadGrammarSetBySlugDb,
@@ -83,6 +84,17 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
                     </Badge>
                     <Badge tone="muted" className="capitalize">
                       {getGrammarCategoryLabel(point.category_key)}
+                    </Badge>
+                    <Badge
+                      tone={
+                        point.knowledge_requirement === "receptive"
+                          ? "warning"
+                          : "muted"
+                      }
+                    >
+                      {getGrammarKnowledgeRequirementLabel(
+                        point.knowledge_requirement
+                      )}
                     </Badge>
                     {point.spec_reference ? (
                       <Badge tone="muted" icon="file">
