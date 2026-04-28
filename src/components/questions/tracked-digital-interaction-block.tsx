@@ -5,6 +5,7 @@ import {
   submitQuestionAttemptAction,
   type SubmitQuestionAttemptActionResult,
 } from "@/app/actions/questions/question-actions";
+import { notifyQuestionAttemptSubmitted } from "@/components/questions/question-attempt-events";
 import QuestionCard from "@/components/questions/question-card";
 import QuestionFeedback from "@/components/questions/question-feedback";
 import {
@@ -74,6 +75,16 @@ export default function TrackedDigitalInteractionBlock({
       });
 
       setResult(actionResult);
+
+      if (actionResult.success) {
+        notifyQuestionAttemptSubmitted({
+          questionId: question.id,
+          isCorrect: actionResult.feedback.isCorrect,
+          statusLabel: actionResult.feedback.statusLabel,
+          correctAnswerText: actionResult.feedback.correctAnswerText,
+          feedback: actionResult.feedback.feedback,
+        });
+      }
     });
   }
 
