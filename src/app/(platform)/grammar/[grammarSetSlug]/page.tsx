@@ -12,7 +12,7 @@ import { RelatedGrammarSetsPanel } from "@/components/grammar/grammar-related-na
 import {
   canDashboardAccessGrammarSet,
   getGrammarPointCoverageByPointIdsDb,
-  getGrammarThemeLabel,
+  getGrammarTopicLabel,
   getPublishedGrammarSetsDb,
   filterGrammarSetsForDashboardAccess,
   type DbGrammarStudyVariant,
@@ -83,9 +83,9 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
     );
   }
 
-  const relatedGrammarSets = grammarSet.theme_key
+  const relatedGrammarSets = grammarSet.topic_key
     ? filterGrammarSetsForDashboardAccess(
-        await getPublishedGrammarSetsDb({ themeKey: grammarSet.theme_key }),
+        await getPublishedGrammarSetsDb({ topicKey: grammarSet.topic_key }),
         dashboard
       )
         .filter((relatedSet) => relatedSet.id !== grammarSet.id)
@@ -165,8 +165,8 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
             <DetailList
               items={[
                 {
-                  label: "Theme",
-                  value: getGrammarThemeLabel(grammarSet.theme_key),
+                  label: "Topic",
+                  value: getGrammarTopicLabel(grammarSet.topic_key),
                 },
                 {
                   label: "Points",

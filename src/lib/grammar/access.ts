@@ -12,6 +12,7 @@ export function applyGrammarSetFilters(
   const search = filters?.search?.trim().toLowerCase();
   const tier = filters?.tier && filters.tier !== "all" ? filters.tier : null;
   const themeKey = filters?.themeKey?.trim();
+  const topicKey = filters?.topicKey?.trim();
   const sourceKey = filters?.sourceKey?.trim();
   const usageVariant =
     filters?.usageVariant && filters.usageVariant !== "all"
@@ -42,6 +43,10 @@ export function applyGrammarSetFilters(
     }
 
     if (themeKey && grammarSet.theme_key !== themeKey) {
+      return false;
+    }
+
+    if (topicKey && grammarSet.topic_key !== topicKey) {
       return false;
     }
 

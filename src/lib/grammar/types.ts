@@ -160,6 +160,7 @@ export type GrammarSetFilters = {
   search?: string | null;
   tier?: DbGrammarTier | "all" | null;
   themeKey?: string | null;
+  topicKey?: string | null;
   sourceKey?: string | null;
   usageVariant?: DbGrammarUsageVariant | "unused" | "all" | null;
   published?: "all" | "published" | "draft" | null;
