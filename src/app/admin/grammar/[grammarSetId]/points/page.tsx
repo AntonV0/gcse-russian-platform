@@ -52,10 +52,29 @@ type GrammarPointFilters = {
   coverage?: string;
 };
 
+const TIER_FILTER_OPTIONS: DbGrammarTier[] = [
+  "foundation",
+  "higher",
+  "both",
+  "unknown",
+];
+
+const KNOWLEDGE_FILTER_OPTIONS: DbGrammarKnowledgeRequirement[] = [
+  "productive",
+  "receptive",
+  "mixed",
+  "unknown",
+];
+
 function getUniqueSortedValues(values: (string | null | undefined)[]) {
   return Array.from(
     new Set(values.filter((value): value is string => Boolean(value)))
   ).sort((a, b) => a.localeCompare(b));
+}
+
+function getOrderedUniqueValues<T extends string>(values: T[], order: readonly T[]) {
+  const uniqueValues = new Set(values);
+  return order.filter((value) => uniqueValues.has(value));
 }
 
 function normalizeTierFilter(value?: string): DbGrammarTier | "all" {
@@ -208,10 +227,12 @@ function GrammarPointAdminCard({
   grammarSetId,
   point,
   coverage,
+  position,
 }: {
   grammarSetId: string;
   point: DbGrammarPoint;
   coverage: DbGrammarPointCoverage | null;
+  position: number;
 }) {
   const knowledgeTone =
     point.knowledge_requirement === "receptive" ? "warning" : "muted";
@@ -219,26 +240,31 @@ function GrammarPointAdminCard({
   return (
     <article className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] px-4 py-3 shadow-[var(--shadow-xs)]">
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="muted">Order {point.sort_order}</Badge>
-            <PublishStatusBadge isPublished={point.is_published} />
-          </div>
+        <div className="flex min-w-0 gap-3">
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-muted)] text-sm font-semibold text-[var(--text-secondary)]">
+            {position}
+          </span>
 
-          <h3 className="mt-2 break-words text-base font-semibold leading-6 text-[var(--text-primary)]">
-            {point.title}
-          </h3>
-          <p className="mt-1 max-w-3xl break-words text-sm leading-6 text-[var(--text-secondary)]">
-            {point.short_description ?? "No short description yet."}
-          </p>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h3 className="break-words text-base font-semibold leading-6 text-[var(--text-primary)]">
+                {point.title}
+              </h3>
+              <PublishStatusBadge isPublished={point.is_published} />
+            </div>
+            <p className="mt-1 max-w-3xl break-words text-sm leading-6 text-[var(--text-secondary)]">
+              {point.short_description ?? "No short description yet."}
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 lg:justify-end">
+        <div className="flex flex-wrap gap-1.5 lg:justify-end">
           <Button
             href={`/admin/grammar/${grammarSetId}/points/${point.id}/edit`}
             variant="secondary"
             size="sm"
             icon="edit"
+            className="min-h-8 rounded-lg px-2.5 py-1 text-xs"
           >
             Edit
           </Button>
@@ -248,6 +274,8 @@ function GrammarPointAdminCard({
             <AdminConfirmButton
               variant="danger"
               icon="delete"
+              size="sm"
+              className="min-h-8 rounded-lg px-2.5 py-1 text-xs"
               confirmMessage={`Delete ${point.title}? This also deletes examples and tables.`}
             >
               Delete
@@ -293,12 +321,30 @@ export default async function GrammarSetPointsPage({
   const categoryOptions = getUniqueSortedValues(
     points.map((point) => point.category_key)
   );
+  const tierOptions = getOrderedUniqueValues(
+    points.map((point) => point.tier),
+    TIER_FILTER_OPTIONS
+  );
+  const knowledgeRequirementOptions = getOrderedUniqueValues(
+    points.map((point) => point.knowledge_requirement),
+    KNOWLEDGE_FILTER_OPTIONS
+  );
+  const selectedTierFilter = normalizeTierFilter(pointFilters.tier);
+  const selectedKnowledgeFilter = normalizeKnowledgeRequirementFilter(
+    pointFilters.knowledgeRequirement
+  );
+  const selectedCoverageFilter = normalizeCoverageFilter(pointFilters.coverage);
+  const showTierFilter = tierOptions.length > 1 || selectedTierFilter !== "all";
+  const showKnowledgeFilter =
+    knowledgeRequirementOptions.length > 1 || selectedKnowledgeFilter !== "all";
+  const showCategoryFilter =
+    categoryOptions.length > 1 || Boolean(pointFilters.categoryKey?.trim());
   const hasActiveFilters =
     Boolean(pointFilters.pointSearch?.trim()) ||
-    normalizeTierFilter(pointFilters.tier) !== "all" ||
-    normalizeKnowledgeRequirementFilter(pointFilters.knowledgeRequirement) !== "all" ||
+    selectedTierFilter !== "all" ||
+    selectedKnowledgeFilter !== "all" ||
     Boolean(pointFilters.categoryKey?.trim()) ||
-    normalizeCoverageFilter(pointFilters.coverage) !== "all";
+    selectedCoverageFilter !== "all";
 
   return (
     <main className="space-y-4">
@@ -347,55 +393,68 @@ export default async function GrammarSetPointsPage({
           description="Filter points by metadata and coverage, then open a point to edit its explanation, examples, and tables."
           tone="admin"
         >
-          <form className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1.2fr)_repeat(4,minmax(140px,1fr))_max-content] xl:items-center">
-            <Input
-              name="pointSearch"
-              defaultValue={pointFilters.pointSearch ?? ""}
-              placeholder="Search title, rule, key..."
-            />
+          <form className="mb-5 flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
+            <div className="min-w-0 lg:min-w-[18rem] lg:flex-1">
+              <Input
+                name="pointSearch"
+                defaultValue={pointFilters.pointSearch ?? ""}
+                placeholder="Search title, rule, key..."
+              />
+            </div>
 
-            <Select name="tier" defaultValue={normalizeTierFilter(pointFilters.tier)}>
-              <option value="all">All tiers</option>
-              <option value="foundation">Foundation</option>
-              <option value="higher">Higher</option>
-              <option value="both">Both tiers</option>
-              <option value="unknown">Unknown</option>
-            </Select>
+            {showTierFilter ? (
+              <div className="min-w-0 lg:w-40">
+                <Select name="tier" defaultValue={selectedTierFilter}>
+                  <option value="all">All tiers</option>
+                  {tierOptions.map((tier) => (
+                    <option key={tier} value={tier}>
+                      {getGrammarTierLabel(tier)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            ) : null}
 
-            <Select
-              name="knowledgeRequirement"
-              defaultValue={normalizeKnowledgeRequirementFilter(
-                pointFilters.knowledgeRequirement
-              )}
-            >
-              <option value="all">All requirements</option>
-              <option value="productive">Productive</option>
-              <option value="receptive">Receptive</option>
-              <option value="mixed">Mixed</option>
-              <option value="unknown">Unknown</option>
-            </Select>
+            {showKnowledgeFilter ? (
+              <div className="min-w-0 lg:w-48">
+                <Select
+                  name="knowledgeRequirement"
+                  defaultValue={selectedKnowledgeFilter}
+                >
+                  <option value="all">All requirements</option>
+                  {knowledgeRequirementOptions.map((requirement) => (
+                    <option key={requirement} value={requirement}>
+                      {getGrammarKnowledgeRequirementLabel(requirement)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            ) : null}
 
-            <Select name="categoryKey" defaultValue={pointFilters.categoryKey ?? ""}>
-              <option value="">All categories</option>
-              {categoryOptions.map((categoryKey) => (
-                <option key={categoryKey} value={categoryKey}>
-                  {getGrammarCategoryLabel(categoryKey)}
-                </option>
-              ))}
-            </Select>
+            {showCategoryFilter ? (
+              <div className="min-w-0 lg:w-44">
+                <Select name="categoryKey" defaultValue={pointFilters.categoryKey ?? ""}>
+                  <option value="">All categories</option>
+                  {categoryOptions.map((categoryKey) => (
+                    <option key={categoryKey} value={categoryKey}>
+                      {getGrammarCategoryLabel(categoryKey)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            ) : null}
 
-            <Select
-              name="coverage"
-              defaultValue={normalizeCoverageFilter(pointFilters.coverage)}
-            >
-              <option value="all">All coverage</option>
-              <option value="foundation">Used in Foundation</option>
-              <option value="higher">Used in Higher</option>
-              <option value="volna">Used in Volna</option>
-              <option value="unused">Unused</option>
-            </Select>
+            <div className="min-w-0 lg:w-44">
+              <Select name="coverage" defaultValue={selectedCoverageFilter}>
+                <option value="all">All coverage</option>
+                <option value="foundation">Used in Foundation</option>
+                <option value="higher">Used in Higher</option>
+                <option value="volna">Used in Volna</option>
+                <option value="unused">Unused</option>
+              </Select>
+            </div>
 
-            <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-1 xl:justify-end">
+            <div className="flex flex-wrap gap-2 lg:ml-auto">
               <Button type="submit" variant="secondary" size="sm" icon="filter">
                 Apply
               </Button>
@@ -426,12 +485,13 @@ export default async function GrammarSetPointsPage({
             />
           ) : (
             <div className="space-y-3">
-              {filteredPoints.map((point) => (
+              {filteredPoints.map((point, index) => (
                 <GrammarPointAdminCard
                   key={point.id}
                   grammarSetId={grammarSet.id}
                   point={point}
                   coverage={pointCoverageById.get(point.id) ?? null}
+                  position={index + 1}
                 />
               ))}
             </div>
