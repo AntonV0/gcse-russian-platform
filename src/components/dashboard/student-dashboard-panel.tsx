@@ -188,6 +188,10 @@ function LearningSnapshotCard({
 }) {
   const completedLessonCount =
     learningPlan.totalLessons > 0 ? learningPlan.completedLessons : completedLessons;
+  const progressMessage =
+    learningPlan.totalLessons === 0 && dashboard.variant
+      ? "Your course path is set up. Published lessons will appear here as content opens; use the course hub to browse what is available now."
+      : getDashboardProgressMessage(dashboard.accessMode, completedLessonCount);
 
   return (
     <DashboardCard title="Learning snapshot" headingLevel={3} className="h-full">
@@ -239,9 +243,7 @@ function LearningSnapshotCard({
           </div>
         </div>
 
-        <p className="text-sm app-text-muted">
-          {getDashboardProgressMessage(dashboard.accessMode, completedLessonCount)}
-        </p>
+        <p className="text-sm app-text-muted">{progressMessage}</p>
       </div>
     </DashboardCard>
   );

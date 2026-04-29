@@ -29,6 +29,7 @@ vi.mock("@/lib/progress/progress-module", () => ({
 }));
 
 vi.mock("@/lib/lessons/lesson-content-helpers-db", () => ({
+  getLessonIdsWithPublishedSectionsDb: vi.fn(),
   getLessonSectionsByLessonIdDb: vi.fn(),
 }));
 
