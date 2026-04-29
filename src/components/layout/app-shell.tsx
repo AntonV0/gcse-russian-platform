@@ -18,6 +18,7 @@ export default function AppShell({ user, children }: AppShellProps) {
   const pathname = usePathname();
   const isMarketingRoute =
     pathname.startsWith("/marketing") || pathname === "/login" || pathname === "/signup";
+  const isAdminRoute = pathname.startsWith("/admin");
 
   if (isMarketingRoute) {
     return <>{children}</>;
@@ -44,7 +45,9 @@ export default function AppShell({ user, children }: AppShellProps) {
 
       <SiteHeader user={user} />
 
-      <div className="app-shell-main flex-1">{children}</div>
+      <div className={isAdminRoute ? "flex-1" : "app-shell-main flex-1"}>
+        {children}
+      </div>
 
       <SiteFooter />
     </div>
