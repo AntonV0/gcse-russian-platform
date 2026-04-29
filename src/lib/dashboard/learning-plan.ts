@@ -230,8 +230,10 @@ export async function getStudentLearningPlan(
     lessons.map((lesson) => lesson.id),
     variant
   );
-  const contentReadyLessons = lessons.filter((lesson) =>
-    contentReadyLessonIds.has(lesson.id)
+  const canSeeDraftLessons = !!profile?.is_admin || !!profile?.is_teacher;
+  const contentReadyLessons = lessons.filter(
+    (lesson) =>
+      (canSeeDraftLessons || lesson.is_published) && contentReadyLessonIds.has(lesson.id)
   );
   const lessonsByModuleId = new Map<string, typeof contentReadyLessons>();
 
