@@ -5,7 +5,10 @@ import {
   getLessonsByModuleIdsDb,
   loadVariantPageData,
 } from "@/lib/courses/course-helpers-db";
-import { getLessonSectionsByLessonIdDb } from "@/lib/lessons/lesson-content-helpers-db";
+import {
+  getLessonIdsWithPublishedSectionsDb,
+  getLessonSectionsByLessonIdDb,
+} from "@/lib/lessons/lesson-content-helpers-db";
 import { getCourseLessonProgress } from "@/lib/progress/progress-module";
 import { getVisitedLessonSectionIds } from "@/lib/progress/progress";
 
@@ -223,9 +226,16 @@ export async function getStudentLearningPlan(
     getCurrentCourseAccess(course.slug, variant),
   ]);
 
-  const lessonsByModuleId = new Map<string, typeof lessons>();
+  const contentReadyLessonIds = await getLessonIdsWithPublishedSectionsDb(
+    lessons.map((lesson) => lesson.id),
+    variant
+  );
+  const contentReadyLessons = lessons.filter((lesson) =>
+    contentReadyLessonIds.has(lesson.id)
+  );
+  const lessonsByModuleId = new Map<string, typeof contentReadyLessons>();
 
-  for (const lesson of lessons) {
+  for (const lesson of contentReadyLessons) {
     const current = lessonsByModuleId.get(lesson.module_id) ?? [];
     current.push(lesson);
     lessonsByModuleId.set(lesson.module_id, current);
@@ -237,7 +247,7 @@ export async function getStudentLearningPlan(
       lessonSlug: lesson.slug,
     }))
   );
-  const totalLessons = lessons.length;
+  const totalLessons = contentReadyLessons.length;
   const completedLessons = getCompletedLessonCountForDashboardPlan(
     progress,
     orderedLessonProgressTargets

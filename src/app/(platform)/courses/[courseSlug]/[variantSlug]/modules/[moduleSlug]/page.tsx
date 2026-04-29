@@ -15,6 +15,7 @@ import {
   formatCoursePathMinutes,
   formatCoursePathRemainingMinutes,
 } from "@/lib/courses/path-progress";
+import { getLessonIdsWithPublishedSectionsDb } from "@/lib/lessons/lesson-content-helpers-db";
 
 type ModulePageProps = {
   params: Promise<{
@@ -37,18 +38,28 @@ export default async function ModulePage({ params }: ModulePageProps) {
     notFound();
   }
 
+  const contentReadyLessonIds = await getLessonIdsWithPublishedSectionsDb(
+    lessons.map((lesson) => lesson.id),
+    variantSlug as "foundation" | "higher" | "volna"
+  );
+  const visibleLessons = lessons.filter((lesson) =>
+    contentReadyLessonIds.has(lesson.id)
+  );
+  const hiddenDraftLessonCount = lessons.length - visibleLessons.length;
   const progress = await getModuleProgress(courseSlug, variantSlug, moduleSlug);
   const completedMap = new Map(progress.map((p) => [p.lesson_slug, p.completed]));
-  const completedCount = lessons.filter((lesson) => completedMap.get(lesson.slug)).length;
-  const totalLessons = lessons.length;
+  const completedCount = visibleLessons.filter((lesson) =>
+    completedMap.get(lesson.slug)
+  ).length;
+  const totalLessons = visibleLessons.length;
   const progressPercent =
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-  const estimatedMinutes = lessons.reduce<number | null>(
+  const estimatedMinutes = visibleLessons.reduce<number | null>(
     (total, lesson) =>
       lesson.estimated_minutes ? (total ?? 0) + lesson.estimated_minutes : total,
     null
   );
-  const remainingMinutes = lessons.reduce<number | null>((total, lesson) => {
+  const remainingMinutes = visibleLessons.reduce<number | null>((total, lesson) => {
     if (completedMap.get(lesson.slug)) return total;
     return lesson.estimated_minutes ? (total ?? 0) + lesson.estimated_minutes : total;
   }, null);
@@ -57,7 +68,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
     getCurrentProfile(),
     getCurrentCourseAccess(courseSlug, variantSlug),
   ]);
-  const lessonAccessEntries = lessons.map((lesson) => {
+  const lessonAccessEntries = visibleLessons.map((lesson) => {
     const accessState = getLessonAccessStateFromMeta(lesson, profile, access);
 
     return [lesson.slug, accessState] as const;
@@ -66,20 +77,24 @@ export default async function ModulePage({ params }: ModulePageProps) {
   const lessonAccessMap = new Map(lessonAccessEntries);
 
   const firstAccessibleIncompleteLesson =
-    lessons.find((lesson) => {
+    visibleLessons.find((lesson) => {
       const accessState = lessonAccessMap.get(lesson.slug);
       const isCompleted = completedMap.get(lesson.slug);
       return accessState === "accessible" && !isCompleted;
     }) ?? null;
   const firstAccessibleLesson =
-    lessons.find((lesson) => lessonAccessMap.get(lesson.slug) === "accessible") ?? null;
+    visibleLessons.find((lesson) => lessonAccessMap.get(lesson.slug) === "accessible") ??
+    null;
   const primaryLesson = firstAccessibleIncompleteLesson ?? firstAccessibleLesson;
+  const hasPublishedLessons = totalLessons > 0;
   const isModuleComplete = totalLessons > 0 && completedCount === totalLessons;
-  const momentumMessage = isModuleComplete
-    ? "Module complete. Review any lesson to keep the knowledge warm."
-    : firstAccessibleIncompleteLesson
-      ? `${firstAccessibleIncompleteLesson.title} is your next guided step.`
-      : "Open the first available lesson when it unlocks.";
+  const momentumMessage = !hasPublishedLessons
+    ? "Published lesson content for this module is not available for this path yet."
+    : isModuleComplete
+      ? "Module complete. Review any lesson to keep the knowledge warm."
+      : firstAccessibleIncompleteLesson
+        ? `${firstAccessibleIncompleteLesson.title} is your next guided step.`
+        : "Open the first available lesson when it unlocks.";
 
   return (
     <main className="space-y-8">
@@ -98,7 +113,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                 {course.title}
               </Badge>
               <Badge tone="muted" icon="modules">
-                {totalLessons} lesson{totalLessons === 1 ? "" : "s"}
+                {totalLessons} published lesson{totalLessons === 1 ? "" : "s"}
               </Badge>
               <Badge tone="success" icon="completed">
                 {completedCount} completed
@@ -110,7 +125,11 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
             <div className="space-y-2">
               <h2 className="app-heading-hero max-w-3xl">
-                {isModuleComplete ? "Module complete" : "Continue this module"}
+                {!hasPublishedLessons
+                  ? "Module content is being prepared"
+                  : isModuleComplete
+                    ? "Module complete"
+                    : "Continue this module"}
               </h2>
               <p className="app-subtitle max-w-2xl">{momentumMessage}</p>
             </div>
@@ -171,9 +190,11 @@ export default async function ModulePage({ params }: ModulePageProps) {
                 <div className="app-stat-tile">
                   <div className="app-stat-label">Next step</div>
                   <div className="app-stat-value">
-                    {firstAccessibleIncompleteLesson
-                      ? firstAccessibleIncompleteLesson.title
-                      : "Module complete"}
+                    {!hasPublishedLessons
+                      ? "Content pending"
+                      : firstAccessibleIncompleteLesson
+                        ? firstAccessibleIncompleteLesson.title
+                        : "Module complete"}
                   </div>
                 </div>
 
@@ -188,17 +209,27 @@ export default async function ModulePage({ params }: ModulePageProps) {
               <p className="text-sm app-text-muted">
                 {isModuleComplete
                   ? `You have completed all ${totalLessons} lessons. Revision is ready whenever you need it.`
-                  : `${formatCoursePathMinutes(estimatedMinutes)} in this module, with ${formatCoursePathMinutes(remainingMinutes)} still to work through.`}
+                  : hasPublishedLessons
+                    ? `${formatCoursePathMinutes(estimatedMinutes)} in this module, with ${formatCoursePathMinutes(remainingMinutes)} still to work through.`
+                    : "Published lessons will appear here when they are ready for this course path."}
               </p>
             </div>
           </DashboardCard>
         </div>
       </section>
 
-      {lessons.length === 0 ? (
+      {visibleLessons.length === 0 ? (
         <EmptyState
-          title="No lessons available yet"
-          description="This module does not contain any visible lessons right now."
+          title={
+            lessons.length > 0
+              ? "No published lesson content yet"
+              : "No lessons available yet"
+          }
+          description={
+            lessons.length > 0
+              ? `${hiddenDraftLessonCount} lesson${hiddenDraftLessonCount === 1 ? "" : "s"} exist in this module, but published content is not available for this path yet.`
+              : "This module does not contain any visible lessons right now."
+          }
           visual={
             <VisualPlaceholder
               category="learningPath"
@@ -217,7 +248,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
         />
       ) : (
         <section className="grid gap-4 md:grid-cols-2">
-          {lessons.map((lesson, index) => {
+          {visibleLessons.map((lesson, index) => {
             const isCompleted = !!completedMap.get(lesson.slug);
             const accessState = lessonAccessMap.get(lesson.slug);
             const canAccessLesson = accessState === "accessible";

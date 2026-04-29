@@ -29,6 +29,8 @@ export type DbLessonBlock = {
   updated_at: string;
 };
 
+export type LessonContentVariant = "foundation" | "higher" | "volna";
+
 const LESSON_SECTION_SELECT =
   "id, lesson_id, title, description, section_kind, position, is_published, variant_visibility, canonical_section_key, settings, created_at, updated_at";
 const LESSON_BLOCK_SELECT =
@@ -52,6 +54,50 @@ export async function getLessonSectionsByLessonIdDb(
   }
 
   return (data ?? []) as DbLessonSection[];
+}
+
+function isSectionVisibleForVariant(
+  variantVisibility: DbLessonSection["variant_visibility"],
+  variant?: LessonContentVariant
+) {
+  if (!variant) return true;
+  if (variantVisibility === "shared") return true;
+  if (variantVisibility === "foundation_only" && variant === "foundation") return true;
+  if (variantVisibility === "higher_only" && variant === "higher") return true;
+  if (variantVisibility === "volna_only" && variant === "volna") return true;
+
+  return false;
+}
+
+export async function getLessonIdsWithPublishedSectionsDb(
+  lessonIds: string[],
+  variant?: LessonContentVariant
+): Promise<Set<string>> {
+  if (lessonIds.length === 0) return new Set();
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("lesson_sections")
+    .select("lesson_id, variant_visibility")
+    .in("lesson_id", lessonIds)
+    .eq("is_published", true);
+
+  if (error) {
+    console.error("Error fetching lesson content availability:", { lessonIds, error });
+    return new Set();
+  }
+
+  return new Set(
+    (data ?? [])
+      .filter((section) =>
+        isSectionVisibleForVariant(
+          section.variant_visibility as DbLessonSection["variant_visibility"],
+          variant
+        )
+      )
+      .map((section) => section.lesson_id as string)
+  );
 }
 
 export async function getLessonBlocksBySectionIdsDb(

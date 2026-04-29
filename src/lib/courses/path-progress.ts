@@ -5,6 +5,7 @@ import {
   getLessonsByModuleIdsDb,
   getModulesByVariantIdDb,
 } from "@/lib/courses/course-helpers-db";
+import { getLessonIdsWithPublishedSectionsDb } from "@/lib/lessons/lesson-content-helpers-db";
 import { getCourseLessonProgress } from "@/lib/progress/progress-module";
 
 import type { DbCourseVariant, DbLesson, DbModule } from "./types";
@@ -163,9 +164,16 @@ export async function getVariantPathProgressSummary(
     getCurrentProfile(),
     getCurrentCourseAccess(courseSlug, variant.slug),
   ]);
+  const contentReadyLessonIds = await getLessonIdsWithPublishedSectionsDb(
+    lessons.map((lesson) => lesson.id),
+    variant.slug as "foundation" | "higher" | "volna"
+  );
+  const contentReadyLessons = lessons.filter((lesson) =>
+    contentReadyLessonIds.has(lesson.id)
+  );
   const lessonsByModuleId = new Map<string, DbLesson[]>();
 
-  for (const lesson of lessons) {
+  for (const lesson of contentReadyLessons) {
     const moduleLessons = lessonsByModuleId.get(lesson.module_id) ?? [];
     moduleLessons.push(lesson);
     lessonsByModuleId.set(lesson.module_id, moduleLessons);

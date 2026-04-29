@@ -232,7 +232,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
                               {resource.title}
                             </h3>
                             <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-                              {resource.paper_name} · {resource.source_label}
+                              {resource.paper_name} &middot; {resource.source_label}
                             </p>
                           </div>
 
