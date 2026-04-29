@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
-import AdminRow from "@/components/ui/admin-row";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
@@ -205,6 +204,72 @@ function PointCoverageBadges({
   );
 }
 
+function GrammarPointAdminCard({
+  grammarSetId,
+  point,
+  coverage,
+}: {
+  grammarSetId: string;
+  point: DbGrammarPoint;
+  coverage: DbGrammarPointCoverage | null;
+}) {
+  const knowledgeTone =
+    point.knowledge_requirement === "receptive" ? "warning" : "muted";
+
+  return (
+    <article className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] px-4 py-3 shadow-[var(--shadow-xs)]">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone="muted">Order {point.sort_order}</Badge>
+            <PublishStatusBadge isPublished={point.is_published} />
+          </div>
+
+          <h3 className="mt-2 break-words text-base font-semibold leading-6 text-[var(--text-primary)]">
+            {point.title}
+          </h3>
+          <p className="mt-1 max-w-3xl break-words text-sm leading-6 text-[var(--text-secondary)]">
+            {point.short_description ?? "No short description yet."}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2 lg:justify-end">
+          <Button
+            href={`/admin/grammar/${grammarSetId}/points/${point.id}/edit`}
+            variant="secondary"
+            size="sm"
+            icon="edit"
+          >
+            Edit
+          </Button>
+          <form action={deleteGrammarPointAction}>
+            <input type="hidden" name="grammarSetId" value={grammarSetId} />
+            <input type="hidden" name="grammarPointId" value={point.id} />
+            <AdminConfirmButton
+              variant="danger"
+              icon="delete"
+              confirmMessage={`Delete ${point.title}? This also deletes examples and tables.`}
+            >
+              Delete
+            </AdminConfirmButton>
+          </form>
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--border-subtle)] pt-3">
+        <Badge tone="info">{getGrammarTierLabel(point.tier)}</Badge>
+        <Badge tone="muted" className="capitalize">
+          {getGrammarCategoryLabel(point.category_key)}
+        </Badge>
+        <Badge tone={knowledgeTone}>
+          {getGrammarKnowledgeRequirementLabel(point.knowledge_requirement)}
+        </Badge>
+        <PointCoverageBadges point={point} coverage={coverage} />
+      </div>
+    </article>
+  );
+}
+
 export default async function GrammarSetPointsPage({
   params,
   searchParams,
@@ -362,58 +427,11 @@ export default async function GrammarSetPointsPage({
           ) : (
             <div className="space-y-3">
               {filteredPoints.map((point) => (
-                <AdminRow
+                <GrammarPointAdminCard
                   key={point.id}
-                  title={point.title}
-                  description={point.short_description ?? "No short description yet."}
-                  badges={
-                    <>
-                      <Badge tone="muted">Order {point.sort_order}</Badge>
-                      <Badge tone="info">{getGrammarTierLabel(point.tier)}</Badge>
-                      <Badge tone="muted" className="capitalize">
-                        {getGrammarCategoryLabel(point.category_key)}
-                      </Badge>
-                      <Badge
-                        tone={
-                          point.knowledge_requirement === "receptive"
-                            ? "warning"
-                            : "muted"
-                        }
-                      >
-                        {getGrammarKnowledgeRequirementLabel(
-                          point.knowledge_requirement
-                        )}
-                      </Badge>
-                      <PublishStatusBadge isPublished={point.is_published} />
-                      <PointCoverageBadges
-                        point={point}
-                        coverage={pointCoverageById.get(point.id) ?? null}
-                      />
-                    </>
-                  }
-                  actions={
-                    <>
-                      <Button
-                        href={`/admin/grammar/${grammarSet.id}/points/${point.id}/edit`}
-                        variant="secondary"
-                        size="sm"
-                        icon="edit"
-                      >
-                        Edit
-                      </Button>
-                      <form action={deleteGrammarPointAction}>
-                        <input type="hidden" name="grammarSetId" value={grammarSet.id} />
-                        <input type="hidden" name="grammarPointId" value={point.id} />
-                        <AdminConfirmButton
-                          variant="danger"
-                          icon="delete"
-                          confirmMessage={`Delete ${point.title}? This also deletes examples and tables.`}
-                        >
-                          Delete
-                        </AdminConfirmButton>
-                      </form>
-                    </>
-                  }
+                  grammarSetId={grammarSet.id}
+                  point={point}
+                  coverage={pointCoverageById.get(point.id) ?? null}
                 />
               ))}
             </div>
