@@ -2,7 +2,6 @@ import Badge from "@/components/ui/badge";
 import {
   getGrammarCategoryLabel,
   getGrammarKnowledgeRequirementLabel,
-  getGrammarThemeLabel,
   getGrammarTierLabel,
 } from "@/lib/grammar/grammar-helpers-db";
 import type { DbGrammarPoint, DbGrammarSet } from "@/lib/grammar/types";
@@ -82,9 +81,6 @@ export function GrammarSetRequirementBadges({
       <Badge tone="info" icon="school">
         {getGrammarTierLabel(grammarSet.tier)}
       </Badge>
-      <Badge tone="muted" icon="folder" className="capitalize">
-        {getGrammarThemeLabel(grammarSet.theme_key)}
-      </Badge>
       {typeof pointCount === "number" ? (
         <Badge tone="muted" icon="list">
           {pointCount} point{pointCount === 1 ? "" : "s"}
@@ -103,11 +99,6 @@ export function GrammarSetRequirementBadges({
           Included
         </Badge>
       )}
-      {grammarSet.available_in_volna ? (
-        <Badge tone="info" icon="school">
-          Volna
-        </Badge>
-      ) : null}
     </>
   );
 }
