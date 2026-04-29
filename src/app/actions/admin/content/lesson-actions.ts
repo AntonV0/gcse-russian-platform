@@ -272,3 +272,134 @@ export async function unpublishLessonAction(formData: FormData) {
     `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}/lessons/${lessonId}`
   );
 }
+
+export async function deleteLessonAction(formData: FormData) {
+  await assertAdminAccess();
+
+  const courseId = getTrimmedString(formData, "courseId");
+  const variantId = getTrimmedString(formData, "variantId");
+  const moduleId = getTrimmedString(formData, "moduleId");
+  const lessonId = getTrimmedString(formData, "lessonId");
+  const confirmSlug = getTrimmedString(formData, "confirmSlug");
+
+  if (!courseId || !variantId || !moduleId || !lessonId) {
+    throw new Error("Missing required fields");
+  }
+
+  const supabase = await createClient();
+
+  const { data: lesson, error: lessonError } = await supabase
+    .from("lessons")
+    .select("id, module_id, slug, is_published")
+    .eq("id", lessonId)
+    .eq("module_id", moduleId)
+    .maybeSingle();
+
+  if (lessonError) {
+    console.error("Error loading lesson for delete:", lessonError);
+    throw new Error("Failed to load lesson");
+  }
+
+  if (!lesson) {
+    throw new Error("Lesson not found");
+  }
+
+  if (lesson.is_published) {
+    throw new Error("Unpublish this lesson before deleting it");
+  }
+
+  if (confirmSlug !== lesson.slug) {
+    throw new Error("Lesson slug confirmation did not match");
+  }
+
+  const { data: moduleRecord, error: moduleError } = await supabase
+    .from("modules")
+    .select("slug, course_variant_id")
+    .eq("id", moduleId)
+    .maybeSingle();
+
+  if (moduleError || !moduleRecord) {
+    console.error("Error loading module for lesson delete:", moduleError);
+    throw new Error("Failed to load module");
+  }
+
+  const { data: variant, error: currentVariantError } = await supabase
+    .from("course_variants")
+    .select("slug, course_id")
+    .eq("id", variantId)
+    .maybeSingle();
+
+  if (currentVariantError || !variant) {
+    console.error("Error loading variant for lesson delete:", currentVariantError);
+    throw new Error("Failed to load variant");
+  }
+
+  const { data: course, error: courseError } = await supabase
+    .from("courses")
+    .select("slug")
+    .eq("id", courseId)
+    .eq("id", variant.course_id)
+    .maybeSingle();
+
+  if (courseError || !course || moduleRecord.course_variant_id !== variantId) {
+    console.error("Error loading course for lesson delete:", courseError);
+    throw new Error("Failed to validate lesson location");
+  }
+
+  const { error: progressError } = await supabase
+    .from("lesson_progress")
+    .delete()
+    .eq("course_slug", course.slug)
+    .eq("variant_slug", variant.slug)
+    .eq("module_slug", moduleRecord.slug)
+    .eq("lesson_slug", lesson.slug);
+
+  if (progressError) {
+    console.error("Error deleting lesson progress:", progressError);
+    throw new Error("Failed to delete lesson progress");
+  }
+
+  const { error: deleteError } = await supabase
+    .from("lessons")
+    .delete()
+    .eq("id", lesson.id)
+    .eq("module_id", moduleId);
+
+  if (deleteError) {
+    console.error("Error deleting lesson:", deleteError);
+    throw new Error("Failed to delete lesson");
+  }
+
+  const { data: remainingLessons, error: remainingError } = await supabase
+    .from("lessons")
+    .select("id")
+    .eq("module_id", moduleId)
+    .order("position", { ascending: true });
+
+  if (remainingError || !remainingLessons) {
+    console.error("Error loading remaining lessons:", remainingError);
+    throw new Error("Failed to reorder remaining lessons");
+  }
+
+  for (let index = 0; index < remainingLessons.length; index += 1) {
+    const { error: updateError } = await supabase
+      .from("lessons")
+      .update({ position: index + 1 })
+      .eq("id", remainingLessons[index].id)
+      .eq("module_id", moduleId);
+
+    if (updateError) {
+      console.error("Error reordering remaining lessons:", updateError);
+      throw new Error("Failed to reorder remaining lessons");
+    }
+  }
+
+  revalidatePath(
+    `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}`
+  );
+  revalidatePath(`/courses/${course.slug}/${variant.slug}`);
+  revalidatePath(`/courses/${course.slug}/${variant.slug}/modules/${moduleRecord.slug}`);
+  redirect(
+    `/admin/content/courses/${courseId}/variants/${variantId}/modules/${moduleId}`
+  );
+}

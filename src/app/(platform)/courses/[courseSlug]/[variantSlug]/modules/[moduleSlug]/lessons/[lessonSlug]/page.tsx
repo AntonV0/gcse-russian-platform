@@ -8,6 +8,7 @@ import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import { canUserAccessLesson } from "@/lib/access/access";
 import { loadLessonContentByLessonIdDb } from "@/lib/lessons/lesson-content-helpers-db";
 import { getModulePath, getVariantPath } from "@/lib/access/routes";
+import { getCurrentProfile } from "@/lib/auth/auth";
 
 type LessonPageProps = {
   params: Promise<{
@@ -41,6 +42,13 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   const { course, module, lesson } = lessonPageData;
 
   if (!course || !module || !lesson) {
+    notFound();
+  }
+
+  const profile = await getCurrentProfile();
+  const canPreviewDraftLesson = !!profile?.is_admin || !!profile?.is_teacher;
+
+  if (!lesson.is_published && !canPreviewDraftLesson) {
     notFound();
   }
 
@@ -140,7 +148,50 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
       lessonSlug={lessonSlug}
       sections={lessonContent.sections}
       currentStep={currentStep}
-      lessonPageData={lessonPageData}
+      lessonPageData={{
+        ...lessonPageData,
+        previousLesson: getAdjacentPublishedLesson(
+          lessonPageData.lessons,
+          lesson.slug,
+          "previous",
+          canPreviewDraftLesson
+        ),
+        nextLesson: getAdjacentPublishedLesson(
+          lessonPageData.lessons,
+          lesson.slug,
+          "next",
+          canPreviewDraftLesson
+        ),
+      }}
     />
   );
+}
+
+function getAdjacentPublishedLesson(
+  lessons: Awaited<ReturnType<typeof loadLessonPageData>>["lessons"],
+  currentLessonSlug: string,
+  direction: "previous" | "next",
+  canPreviewDraftLesson: boolean
+) {
+  const currentIndex = lessons.findIndex(
+    (moduleLesson) => moduleLesson.slug === currentLessonSlug
+  );
+
+  if (currentIndex === -1) return null;
+
+  const step = direction === "previous" ? -1 : 1;
+
+  for (
+    let index = currentIndex + step;
+    index >= 0 && index < lessons.length;
+    index += step
+  ) {
+    const lesson = lessons[index];
+
+    if (canPreviewDraftLesson || lesson.is_published) {
+      return lesson;
+    }
+  }
+
+  return null;
 }

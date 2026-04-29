@@ -19,6 +19,7 @@ import {
 } from "@/app/actions/admin/content/module-actions";
 import {
   createLessonAction as createLesson,
+  deleteLessonAction as deleteLesson,
   moveLessonAction as moveLesson,
   unpublishLessonAction as unpublishLesson,
   updateLessonAction as updateLesson,
@@ -92,4 +93,9 @@ export async function unpublishLessonAction(formData: FormData) {
 export async function updateLessonAction(formData: FormData) {
   await assertAdminAccess();
   return updateLesson(formData);
+}
+
+export async function deleteLessonAction(formData: FormData) {
+  await assertAdminAccess();
+  return deleteLesson(formData);
 }

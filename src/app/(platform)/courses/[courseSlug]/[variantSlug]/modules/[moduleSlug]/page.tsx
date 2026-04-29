@@ -38,12 +38,18 @@ export default async function ModulePage({ params }: ModulePageProps) {
     notFound();
   }
 
+  const [profile, access] = await Promise.all([
+    getCurrentProfile(),
+    getCurrentCourseAccess(courseSlug, variantSlug),
+  ]);
+  const canSeeDraftLessons = !!profile?.is_admin || !!profile?.is_teacher;
   const contentReadyLessonIds = await getLessonIdsWithPublishedSectionsDb(
     lessons.map((lesson) => lesson.id),
     variantSlug as "foundation" | "higher" | "volna"
   );
-  const visibleLessons = lessons.filter((lesson) =>
-    contentReadyLessonIds.has(lesson.id)
+  const visibleLessons = lessons.filter(
+    (lesson) =>
+      (canSeeDraftLessons || lesson.is_published) && contentReadyLessonIds.has(lesson.id)
   );
   const hiddenDraftLessonCount = lessons.length - visibleLessons.length;
   const progress = await getModuleProgress(courseSlug, variantSlug, moduleSlug);
@@ -64,10 +70,6 @@ export default async function ModulePage({ params }: ModulePageProps) {
     return lesson.estimated_minutes ? (total ?? 0) + lesson.estimated_minutes : total;
   }, null);
 
-  const [profile, access] = await Promise.all([
-    getCurrentProfile(),
-    getCurrentCourseAccess(courseSlug, variantSlug),
-  ]);
   const lessonAccessEntries = visibleLessons.map((lesson) => {
     const accessState = getLessonAccessStateFromMeta(lesson, profile, access);
 
