@@ -66,6 +66,14 @@ const KNOWLEDGE_FILTER_OPTIONS: DbGrammarKnowledgeRequirement[] = [
   "unknown",
 ];
 
+const POINT_ROW_ACTION_BUTTON_CLASS =
+  "!min-h-9 !rounded-full !px-3.5 !py-1.5 !text-sm !shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_5%,transparent)] hover:!translate-y-0 hover:!shadow-[0_4px_10px_color-mix(in_srgb,var(--text-primary)_7%,transparent)]";
+
+const POINT_ROW_DELETE_BUTTON_CLASS = [
+  POINT_ROW_ACTION_BUTTON_CLASS,
+  "!bg-[var(--danger-surface)] hover:!bg-[var(--danger-surface-strong)]",
+].join(" ");
+
 function getUniqueSortedValues(values: (string | null | undefined)[]) {
   return Array.from(
     new Set(values.filter((value): value is string => Boolean(value)))
@@ -264,7 +272,7 @@ function GrammarPointAdminCard({
             variant="secondary"
             size="sm"
             icon="edit"
-            className="min-h-8 rounded-lg px-2.5 py-1 text-xs"
+            className={POINT_ROW_ACTION_BUTTON_CLASS}
           >
             Edit
           </Button>
@@ -275,7 +283,7 @@ function GrammarPointAdminCard({
               variant="danger"
               icon="delete"
               size="sm"
-              className="min-h-8 rounded-lg px-2.5 py-1 text-xs"
+              className={POINT_ROW_DELETE_BUTTON_CLASS}
               confirmMessage={`Delete ${point.title}? This also deletes examples and tables.`}
             >
               Delete
