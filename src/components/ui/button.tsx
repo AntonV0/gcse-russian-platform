@@ -89,7 +89,9 @@ function ButtonInner({
         </span>
       ) : null}
 
-      {children ? <span className="truncate">{children}</span> : null}
+      {children ? (
+        <span className="min-w-0 truncate leading-[1.35]">{children}</span>
+      ) : null}
 
       {icon && iconPosition === "right" ? (
         <span className="shrink-0">

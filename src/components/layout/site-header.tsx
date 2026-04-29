@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import LogoutButton from "@/components/layout/logout-button";
 import AppLogo from "@/components/ui/app-logo";
@@ -36,6 +36,7 @@ function isNavActive(pathname: string, href: string) {
 
 export default function SiteHeader({ user }: SiteHeaderProps) {
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const activeMap = useMemo(() => {
@@ -48,8 +49,37 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
     setIsMobileMenuOpen(false);
   }
 
+  useEffect(() => {
+    const header = headerRef.current;
+
+    if (!header) {
+      return;
+    }
+
+    function updateHeaderHeight() {
+      const height = header?.getBoundingClientRect().height;
+
+      if (height) {
+        document.documentElement.style.setProperty(
+          "--site-header-height",
+          `${Math.ceil(height)}px`
+        );
+      }
+    }
+
+    updateHeaderHeight();
+
+    const resizeObserver = new ResizeObserver(updateHeaderHeight);
+    resizeObserver.observe(header);
+
+    return () => {
+      resizeObserver.disconnect();
+      document.documentElement.style.removeProperty("--site-header-height");
+    };
+  }, []);
+
   return (
-    <header className="dev-marker-host app-site-header">
+    <header ref={headerRef} className="dev-marker-host app-site-header">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="SiteHeader"
