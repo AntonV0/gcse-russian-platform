@@ -222,7 +222,12 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
             grammarPoint.short_description ??
             "This grammar point is part of the full GCSE Russian course."
           }
-          badges={<GrammarPointRequirementBadges point={grammarPoint} />}
+          badges={
+            <GrammarPointRequirementBadges
+              point={grammarPoint}
+              showSpecReference={false}
+            />
+          }
           actions={
             <Button href="/grammar" variant="secondary" icon="back">
               All grammar
@@ -273,7 +278,12 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
         description={
           grammarPoint.short_description ?? "Grammar explanation and examples."
         }
-        badges={<GrammarPointRequirementBadges point={grammarPoint} />}
+        badges={
+          <GrammarPointRequirementBadges
+            point={grammarPoint}
+            showSpecReference={false}
+          />
+        }
         actions={
           <>
             <Button href={`/grammar/${grammarSet.slug}`} variant="secondary" icon="back">
@@ -396,10 +406,6 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
                       },
                     ]
                   : []),
-                {
-                  label: "Spec reference",
-                  value: grammarPoint.spec_reference ?? "Not specified",
-                },
                 {
                   label: "Set",
                   value: grammarSet.title,

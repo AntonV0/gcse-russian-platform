@@ -9,7 +9,7 @@ import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import GrammarSetSectionList from "@/components/grammar/grammar-set-section-list";
 import {
   filterGrammarSetsForDashboardAccess,
-  getGrammarThemeLabel,
+  getGrammarTopicLabel,
   getGrammarSetsDb,
   getPublishedGrammarSetsDb,
   type DbGrammarSetListItem,
@@ -21,7 +21,7 @@ type GrammarPageProps = {
   searchParams?: Promise<{
     search?: string;
     tier?: string;
-    themeKey?: string;
+    topicKey?: string;
   }>;
 };
 
@@ -39,11 +39,11 @@ function normalizeTierFilter(value?: string): GrammarSetFilters["tier"] {
 }
 
 function getTopicOptions(grammarSets: DbGrammarSetListItem[]) {
-  return [...new Set(grammarSets.map((set) => set.theme_key).filter(Boolean))]
-    .sort((a, b) => getGrammarThemeLabel(a).localeCompare(getGrammarThemeLabel(b)))
-    .map((themeKey) => ({
-      value: themeKey as string,
-      label: getGrammarThemeLabel(themeKey as string),
+  return [...new Set(grammarSets.map((set) => set.topic_key).filter(Boolean))]
+    .sort((a, b) => getGrammarTopicLabel(a).localeCompare(getGrammarTopicLabel(b)))
+    .map((topicKey) => ({
+      value: topicKey as string,
+      label: getGrammarTopicLabel(topicKey as string),
     }));
 }
 
@@ -53,7 +53,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
   const filters: GrammarSetFilters = {
     search: params.search ?? null,
     tier: normalizeTierFilter(params.tier),
-    themeKey: params.themeKey ?? null,
+    topicKey: params.topicKey ?? null,
   };
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
   const canSeeCoverage = dashboard.role === "admin";
@@ -121,12 +121,11 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
               <option value="all">All tiers</option>
               <option value="foundation">Foundation</option>
               <option value="higher">Higher</option>
-              <option value="both">Both tiers</option>
             </Select>
           </div>
 
           <div className="min-w-0 md:col-span-2 xl:col-span-1">
-            <Select name="themeKey" defaultValue={filters.themeKey ?? ""}>
+            <Select name="topicKey" defaultValue={filters.topicKey ?? ""}>
               <option value="">All topics</option>
               {topicOptions.map((topic) => (
                 <option key={topic.value} value={topic.value}>

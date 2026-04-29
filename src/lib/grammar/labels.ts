@@ -37,15 +37,21 @@ export function getGrammarKnowledgeRequirementLabel(
 
 export function getGrammarCategoryLabel(value: string | null) {
   if (!value) return "Uncategorised";
-  return value.replaceAll("_", " ");
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 export function getGrammarThemeLabel(value: string | null) {
   if (!value) return "General";
-  return value.replaceAll("_", " ");
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 export function getGrammarTopicLabel(value: string | null) {
   if (!value) return "Mixed";
-  return value.replaceAll("_", " ");
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
