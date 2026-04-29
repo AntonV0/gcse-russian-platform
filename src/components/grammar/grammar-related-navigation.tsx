@@ -46,7 +46,7 @@ export function RelatedGrammarSetsPanel({
   return (
     <PanelCard
       title="Related grammar"
-      description="Move sideways to other sets from the same GCSE theme."
+      description="Move sideways to other sets from the same grammar topic."
       tone="student"
     >
       <RelatedLinkList links={links} />

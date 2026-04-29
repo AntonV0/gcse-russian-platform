@@ -22,8 +22,8 @@ import GrammarCoverageBadges from "@/components/grammar/grammar-coverage-badges"
 import { deleteGrammarSetAction } from "@/app/actions/admin/admin-grammar-actions";
 import {
   getGrammarSetsDb,
-  getGrammarThemeLabel,
   getGrammarTierLabel,
+  getGrammarTopicLabel,
   type GrammarSetFilters,
 } from "@/lib/grammar/grammar-helpers-db";
 
@@ -31,7 +31,7 @@ type AdminGrammarPageProps = {
   searchParams?: Promise<{
     search?: string;
     tier?: string;
-    themeKey?: string;
+    topicKey?: string;
     sourceKey?: string;
     usageVariant?: string;
     published?: string;
@@ -125,7 +125,7 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
   const filters: GrammarSetFilters = {
     search: params.search ?? null,
     tier: normalizeTierFilter(params.tier),
-    themeKey: params.themeKey ?? null,
+    topicKey: params.topicKey ?? null,
     sourceKey: params.sourceKey ?? null,
     usageVariant: normalizeUsageVariantFilter(params.usageVariant),
     published: normalizePublishedFilter(params.published),
@@ -141,7 +141,7 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
     (sum, set) => sum + set.usage_stats.totalOccurrences,
     0
   );
-  const themeKeys = getUniqueSortedValues(allGrammarSets.map((set) => set.theme_key));
+  const topicKeys = getUniqueSortedValues(allGrammarSets.map((set) => set.topic_key));
   const sourceKeys = getUniqueSortedValues(allGrammarSets.map((set) => set.source_key));
   const missingSourceSets = allGrammarSets.filter((set) => !set.source_key).length;
   const missingTopicSets = allGrammarSets.filter((set) => !set.topic_key).length;
@@ -281,11 +281,11 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
             </div>
 
             <div className="min-w-0">
-              <Select name="themeKey" defaultValue={filters.themeKey ?? ""}>
-                <option value="">All themes</option>
-                {themeKeys.map((themeKey) => (
-                  <option key={themeKey} value={themeKey}>
-                    {getGrammarThemeLabel(themeKey)}
+              <Select name="topicKey" defaultValue={filters.topicKey ?? ""}>
+                <option value="">All topics</option>
+                {topicKeys.map((topicKey) => (
+                  <option key={topicKey} value={topicKey}>
+                    {getGrammarTopicLabel(topicKey)}
                   </option>
                 ))}
               </Select>
@@ -354,7 +354,7 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
               <DataTableHeaderRow>
                 <DataTableHeaderCell>Set</DataTableHeaderCell>
                 <DataTableHeaderCell>Tier</DataTableHeaderCell>
-                <DataTableHeaderCell>Theme</DataTableHeaderCell>
+                <DataTableHeaderCell>Topic</DataTableHeaderCell>
                 <DataTableHeaderCell>Points</DataTableHeaderCell>
                 <DataTableHeaderCell>Usage</DataTableHeaderCell>
                 <DataTableHeaderCell>Coverage</DataTableHeaderCell>
@@ -390,7 +390,7 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
                   </DataTableCell>
 
                   <DataTableCell className="capitalize">
-                    {getGrammarThemeLabel(grammarSet.theme_key)}
+                    {getGrammarTopicLabel(grammarSet.topic_key)}
                   </DataTableCell>
 
                   <DataTableCell>{grammarSet.point_count}</DataTableCell>

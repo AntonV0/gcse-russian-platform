@@ -123,7 +123,8 @@ export async function syncLessonGrammarSetUsagesForLesson(params: {
     .delete()
     .eq("lesson_id", params.lessonId)
     .eq("variant", params.variant)
-    .eq("usage_type", "lesson_block");
+    .eq("usage_type", "lesson_block")
+    .eq("link_type", "set");
 
   if (deleteError) {
     console.error("Error clearing lesson grammar links before sync:", deleteError);
