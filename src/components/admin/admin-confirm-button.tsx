@@ -3,6 +3,7 @@
 import Button from "@/components/ui/button";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
+import type { ButtonSize } from "@/components/ui/button-styles";
 
 type AdminConfirmButtonProps = {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ type AdminConfirmButtonProps = {
   className?: string;
   variant?: "danger" | "warning" | "secondary";
   icon?: AppIconKey;
+  size?: ButtonSize;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -20,6 +22,7 @@ export default function AdminConfirmButton({
   className,
   variant = "danger",
   icon = "warning",
+  size = "md",
 }: AdminConfirmButtonProps) {
   return (
     <span className="dev-marker-host relative inline-flex">
@@ -44,6 +47,7 @@ export default function AdminConfirmButton({
         type="submit"
         variant={variant}
         icon={icon}
+        size={size}
         className={className}
         onClick={(event) => {
           const confirmed = window.confirm(confirmMessage);
