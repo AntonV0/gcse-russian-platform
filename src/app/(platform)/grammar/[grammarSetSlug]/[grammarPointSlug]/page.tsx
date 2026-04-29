@@ -249,9 +249,6 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
     );
   }
 
-  const relatedVocabularyHref = grammarSet.theme_key
-    ? `/vocabulary?themeKey=${encodeURIComponent(grammarSet.theme_key)}`
-    : "/vocabulary";
   const setPoints = await getGrammarPointsBySetIdDb(grammarSet.id, {
     publishedOnly: true,
     scopeVariant: getStudyVariantForDashboard(dashboard),
@@ -435,7 +432,7 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
               >
                 Back to this set
               </Button>
-              <Button href={relatedVocabularyHref} variant="secondary" icon="vocabulary">
+              <Button href="/vocabulary" variant="secondary" icon="vocabulary">
                 Related vocabulary
               </Button>
               <Button href="/courses" variant="secondary" icon="lessons">
