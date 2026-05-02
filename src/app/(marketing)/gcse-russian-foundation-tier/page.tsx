@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import EvergreenGuidePage from "@/components/marketing/evergreen-guide-page";
+import StudyGuidePage from "@/components/marketing/study-guide-page";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -7,15 +8,20 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "A GCSE Russian Foundation tier guide for Pearson Edexcel 1RU0 students, explaining revision priorities, vocabulary, grammar, and exam preparation.",
   path: "/gcse-russian-foundation-tier",
+  ogTitle: "GCSE Russian Foundation Tier Guide",
+  ogDescription:
+    "Build GCSE Russian Foundation confidence with core vocabulary, grammar, exam tasks, and steady revision.",
+  ogImagePath: getOgImagePath("foundation"),
+  ogImageAlt: "GCSE Russian Foundation tier guide",
 });
 
 export default function GcseRussianFoundationTierPage() {
   return (
-    <EvergreenGuidePage
-      eyebrow="Foundation tier"
-      title="GCSE Russian Foundation tier guide"
-      description="Foundation tier students need secure core language, regular practice, and confidence with familiar exam tasks. The aim is accuracy, understanding, and steady progress."
+    <StudyGuidePage
       path="/gcse-russian-foundation-tier"
+      eyebrow="Foundation tier"
+      title="Build secure core Russian before adding complexity."
+      description="Foundation tier preparation should help students feel organised and capable: familiar topics, reliable sentences, regular retrieval, and exam tasks that build confidence."
       keywords={[
         "GCSE Russian Foundation tier",
         "Russian GCSE Foundation",
@@ -26,53 +32,115 @@ export default function GcseRussianFoundationTierPage() {
         { label: "Core vocabulary", icon: "vocabulary" },
         { label: "Exam confidence", icon: "exam" },
       ]}
-      sections={[
+      heroIcon="layers"
+      heroLabel="Foundation route"
+      heroMetric="Secure, repeat, apply"
+      heroRows={[
+        ["Core language", "High-frequency words and sentence patterns", "vocabulary"],
+        ["Confidence", "Familiar tasks before harder challenge", "completed"],
+        ["Exam link", "Practice still connects to all four papers", "exam"],
+      ]}
+      focusTitle="Foundation preparation should make the most useful language secure."
+      focusDescription="Students need enough vocabulary, grammar, and task confidence to recognise meaning and produce clear answers without being overloaded."
+      focusItems={[
         {
-          title: "Foundation tier priorities",
+          title: "Understand common topics",
           description:
-            "A focused Foundation plan should make the most common language secure before adding complexity.",
-          items: [
-            {
-              title: "Understand common topics",
-              description:
-                "Students should revise familiar themes such as identity, school, holidays, local area, free time, future plans, and global issues.",
-            },
-            {
-              title: "Build reliable sentences",
-              description:
-                "Short accurate sentences, opinions, reasons, negatives, time phrases, and simple tense control are more valuable than risky complexity.",
-            },
-            {
-              title: "Practise accessible tasks",
-              description:
-                "Foundation preparation should include regular listening, reading, translation, short writing, and speaking responses.",
-            },
-          ],
+            "Revise familiar GCSE themes such as identity, school, holidays, local area, free time, future plans, and global issues.",
+          icon: "vocabularySet",
         },
         {
-          title: "How the course can support Foundation students",
+          title: "Build reliable sentences",
           description:
-            "Foundation students often need structure, repetition, and clear feedback loops.",
-          items: [
-            {
-              title: "Small lesson steps",
-              description:
-                "Short lessons help students build confidence without being overwhelmed by too much grammar or vocabulary at once.",
-            },
-            {
-              title: "Repeated retrieval",
-              description:
-                "Core vocabulary and structures should return often so students can recognise and use them under exam conditions.",
-            },
-            {
-              title: "Exam-linked practice",
-              description:
-                "Practice should connect directly to GCSE task types rather than general Russian study alone.",
-            },
-          ],
+            "Short accurate sentences, opinions, reasons, negatives, time phrases, and simple tense control are more valuable than risky complexity.",
+          icon: "grammar",
+        },
+        {
+          title: "Practise accessible tasks",
+          description:
+            "Foundation preparation should still include listening, reading, translation, short writing, and speaking responses.",
+          icon: "exam",
+        },
+      ]}
+      routineTitle="Foundation students benefit from repetition they can trust."
+      routineDescription="The route should revisit core language often enough that students can recognise and use it under exam conditions."
+      routineItems={[
+        {
+          title: "Review one theme",
+          description:
+            "Keep the vocabulary set small enough to recall, then use it in short answers.",
+          icon: "vocabulary",
+        },
+        {
+          title: "Practise one grammar pattern",
+          description:
+            "Use a focused sentence pattern before moving into translation or writing.",
+          icon: "grammar",
+        },
+        {
+          title: "Apply to one paper task",
+          description:
+            "Use listening, reading, speaking, or writing practice to connect the language to the exam.",
+          icon: "questionSet",
+        },
+        {
+          title: "Repeat the weak point",
+          description:
+            "Return to errors until they become familiar rather than just corrected once.",
+          icon: "history",
+        },
+      ]}
+      warningTitle="Foundation does not mean revision can be vague."
+      warningDescription="The tier is more accessible, but students still lose marks when basic language is uncertain or practice is too passive."
+      warningItems={[
+        {
+          title: "Skipping retrieval",
+          description:
+            "Students need to recall words and sentence patterns, not only recognise them in notes.",
+          icon: "warning",
+        },
+        {
+          title: "Avoiding speaking and writing",
+          description:
+            "Short productive answers still need regular practice and correction.",
+          icon: "speaking",
+        },
+        {
+          title: "Adding complexity too early",
+          description:
+            "Risky language can damage confidence if core sentences are not secure first.",
+          icon: "star",
+        },
+      ]}
+      courseFitTitle="The course can keep Foundation work calm and repeatable."
+      courseFitDescription="Students can move through small lesson steps, repeated vocabulary and grammar, and paper-linked tasks without guessing what to do next."
+      courseFitItems={[
+        {
+          title: "Small lessons",
+          description:
+            "Short sections help students build confidence without too much content at once.",
+          icon: "lessonContent",
+        },
+        {
+          title: "Repeated retrieval",
+          description:
+            "Core words and patterns can return across lessons, revision, and practice.",
+          icon: "sync",
+        },
+        {
+          title: "Progress visibility",
+          description:
+            "Students and parents can see what has been practised and what comes next.",
+          icon: "completed",
         },
       ]}
       relatedLinks={[
+        {
+          title: "GCSE Russian Higher tier",
+          description: "Compare Foundation with the more demanding tier route.",
+          href: "/gcse-russian-higher-tier",
+          icon: "star",
+        },
         {
           title: "GCSE Russian vocabulary guide",
           description: "Plan Foundation vocabulary revision by theme and use.",
@@ -106,16 +174,13 @@ export default function GcseRussianFoundationTierPage() {
         {
           question: "What should Foundation students practise most?",
           answer:
-            "They should practise high-frequency vocabulary, accurate short sentences, opinions with reasons, key tenses, listening/reading recognition, and short speaking or writing answers.",
-        },
-        {
-          question: "Is Foundation tier easier to revise for?",
-          answer:
-            "It is more accessible, but it still needs steady revision. Students can lose marks through weak vocabulary, uncertain grammar, poor timing, or not answering the exact task.",
+            "They should practise high-frequency vocabulary, accurate short sentences, opinions with reasons, key tenses, listening and reading recognition, and short speaking or writing answers.",
         },
       ]}
-      ctaTitle="Build Foundation confidence step by step"
+      ctaTitle="Build Foundation confidence step by step."
       ctaDescription="Start with structured course access so students can practise core Russian regularly and see what still needs attention."
+      secondaryHref="/gcse-russian-higher-tier"
+      secondaryLabel="Higher guide"
     />
   );
 }

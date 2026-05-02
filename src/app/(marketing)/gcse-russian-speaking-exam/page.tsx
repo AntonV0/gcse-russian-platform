@@ -1,93 +1,114 @@
 import type { Metadata } from "next";
-import EvergreenGuidePage from "@/components/marketing/evergreen-guide-page";
+import ExamPaperGuidePage from "@/components/marketing/exam-paper-guide-page";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "GCSE Russian Speaking Exam Guide",
   description:
-    "Prepare for the GCSE Russian speaking exam with guidance on role play, picture-based tasks, conversation, pronunciation, and teacher-supported practice.",
+    "Prepare for GCSE Russian Paper 2 speaking with guidance on role play, picture-based tasks, conversation, pronunciation, and teacher-supported practice.",
   path: "/gcse-russian-speaking-exam",
+  ogTitle: "GCSE Russian Speaking Exam Guide",
+  ogDescription:
+    "Build speaking confidence for role play, picture-based tasks, conversation, and live response.",
+  ogImagePath: getOgImagePath("speaking"),
+  ogImageAlt: "GCSE Russian speaking exam guide",
 });
 
 export default function GcseRussianSpeakingExamPage() {
   return (
-    <EvergreenGuidePage
-      eyebrow="Paper 2: Speaking"
-      title="GCSE Russian speaking exam guide"
-      description="Speaking preparation needs confidence, accuracy, pronunciation, and the ability to respond naturally. It is one of the strongest reasons to combine platform study with teacher support."
+    <ExamPaperGuidePage
       path="/gcse-russian-speaking-exam"
+      eyebrow="Paper 2: Speaking"
+      paperLabel="Paper 2"
+      badgeLabel="Speaking"
+      title="Speaking confidence needs repetition, not memorised paragraphs alone."
+      description="GCSE Russian speaking preparation should build answer patterns, pronunciation, flexible responses, and confidence before the speaking window arrives."
       keywords={["GCSE Russian speaking", "Paper 2 speaking", "Russian speaking exam"]}
-      badges={[
-        { label: "Paper 2", icon: "speaking", tone: "info" },
-        { label: "Role play and conversation", icon: "chat" },
-        { label: "Teacher feedback useful", icon: "school", tone: "success" },
+      heroIcon="speaking"
+      heroMetric="Role play, picture, conversation"
+      heroFocus="Answer clearly, extend ideas, and recover from prompts"
+      heroSupport="Live feedback is often useful for pronunciation and confidence"
+      secondaryHref="/online-gcse-russian-lessons"
+      secondaryLabel="Online lessons"
+      skillFocus={[
+        {
+          title: "Role play responses",
+          description:
+            "Students need concise answers, simple questions, requests, and the ability to handle an unexpected prompt.",
+          icon: "chat",
+        },
+        {
+          title: "Picture-based answers",
+          description:
+            "Students should describe people, actions, opinions, and reasons without relying on one fixed paragraph.",
+          icon: "image",
+        },
+        {
+          title: "Conversation confidence",
+          description:
+            "The strongest preparation helps students expand answers, justify opinions, and repair mistakes.",
+          icon: "speaking",
+        },
       ]}
-      sections={[
+      practiceRoutine={[
         {
-          title: "What speaking preparation should include",
+          title: "Build flexible answer banks",
           description:
-            "Students need both prepared language and flexible response habits for the unpredictable parts of speaking.",
-          items: [
-            {
-              title: "Role play practice",
-              description:
-                "Students should practise concise answers, questions, requests, and unexpected prompts.",
-            },
-            {
-              title: "Picture-based answers",
-              description:
-                "Photo description works best when students have reusable structures for people, actions, opinions, and reasons.",
-            },
-            {
-              title: "Conversation confidence",
-              description:
-                "Students need to expand answers, justify opinions, repair mistakes, and respond without memorising every sentence.",
-            },
-          ],
+            "Prepare useful phrases for opinions, reasons, preferences, time frames, and asking simple questions.",
+          icon: "vocabulary",
         },
         {
-          title: "Where live support helps",
+          title: "Practise prompt changes",
           description:
-            "Speaking can be practised independently, but correction and confidence often grow faster with a teacher.",
-          items: [
-            {
-              title: "Pronunciation",
-              description:
-                "A teacher can catch sound patterns, stress, and clarity issues that students may not notice alone.",
-            },
-            {
-              title: "Spontaneous response",
-              description:
-                "Live questioning helps students move beyond memorised paragraphs into real exam readiness.",
-            },
-            {
-              title: "Exam technique",
-              description:
-                "Feedback can help students answer what was asked and use the best language they already know.",
-            },
-          ],
+            "Students should adapt to changed questions rather than depend on one memorised version.",
+          icon: "sync",
         },
         {
-          title: "Speaking practice routine",
+          title: "Record and review",
           description:
-            "Students should practise short answers, developed answers, and repair strategies before the speaking window.",
-          items: [
-            {
-              title: "Build answer banks",
-              description:
-                "Prepare flexible phrases for opinions, reasons, preferences, time frames, and asking simple questions.",
-            },
-            {
-              title: "Practise prompt changes",
-              description:
-                "Students should rehearse how to adapt when the question changes rather than relying on one memorised paragraph.",
-            },
-            {
-              title: "Record and review",
-              description:
-                "Short recordings help students notice pronunciation, hesitation, missing verbs, and answers that are too brief.",
-            },
-          ],
+            "Short recordings reveal hesitation, pronunciation issues, missing verbs, and answers that are too brief.",
+          icon: "audio",
+        },
+      ]}
+      commonErrors={[
+        {
+          title: "Over-memorising",
+          description:
+            "Prepared language helps, but memorised answers can fail when the question changes.",
+          icon: "warning",
+        },
+        {
+          title: "Short answers with no reason",
+          description:
+            "Students often need to add why, when, with whom, or what changed to show more useful language.",
+          icon: "idea",
+        },
+        {
+          title: "Leaving speaking too late",
+          description:
+            "Speaking confidence, pronunciation, and spontaneous response need time and repetition.",
+          icon: "calendar",
+        },
+      ]}
+      courseFit={[
+        {
+          title: "Lesson language",
+          description:
+            "Course lessons can build reusable opinions, reasons, tense patterns, and topic vocabulary.",
+          icon: "lessonContent",
+        },
+        {
+          title: "Teacher support",
+          description:
+            "Live support can help with pronunciation, question handling, and confidence under pressure.",
+          icon: "teacher",
+        },
+        {
+          title: "Private candidates",
+          description:
+            "Families should confirm speaking arrangements directly with their exam centre.",
+          icon: "userCheck",
         },
       ]}
       relatedLinks={[
@@ -95,7 +116,7 @@ export default function GcseRussianSpeakingExamPage() {
           title: "Online GCSE Russian lessons",
           description: "Explore teacher-supported speaking and writing preparation.",
           href: "/online-gcse-russian-lessons",
-          icon: "school",
+          icon: "teacher",
         },
         {
           title: "Russian GCSE private candidate guide",
@@ -127,10 +148,8 @@ export default function GcseRussianSpeakingExamPage() {
             "They should confirm with the exam centre how speaking will be arranged, who conducts it, what deadlines apply, and what preparation is expected.",
         },
       ]}
-      ctaTitle="Build speaking confidence before exam season"
-      ctaDescription="Use trial access to explore the platform, then add live teaching support when the student needs correction, fluency, and accountability."
-      ctaSecondaryHref="/online-gcse-russian-lessons"
-      ctaSecondaryLabel="Online lessons"
+      ctaTitle="Build speaking confidence before exam season."
+      ctaDescription="Trial access lets students inspect the course route, then online support can be added when correction, fluency, and accountability matter."
     />
   );
 }
