@@ -35,7 +35,7 @@
   --dark-control-bg-disabled: color-mix(in srgb, black 16%, var(--dark-surface-elevated));
 
   /* ========= Accent colours ========= */
-  --accent: #2563eb;
+  --accent: #3b82f6;
   --accent-fill: #2563eb;
   --accent-fill-hover: #1d4ed8;
   --accent-hover: var(--accent-fill-hover);
@@ -45,9 +45,9 @@
   --accent-soft: #eaf2ff;
   --accent-selected-bg: var(--accent-soft);
   --accent-selected-border: var(--accent-fill);
-  --accent-glow: rgba(37, 99, 235, 0.16);
-  --accent-ring: rgba(37, 99, 235, 0.14);
-  --accent-rgb: 37, 99, 235;
+  --accent-glow: rgba(59, 130, 246, 0.16);
+  --accent-ring: rgba(59, 130, 246, 0.14);
+  --accent-rgb: 59, 130, 246;
   --control-border: var(--border);
   --control-border-strong: var(--border-strong);
   --control-shadow:
@@ -89,19 +89,24 @@
   --success-ring: color-mix(in srgb, var(--success) 12%, transparent);
 
   --warning: #b7791f;
+  --warning-display: #f59e0b;
   --warning-soft: #fff8eb;
   --warning-text: #92400e;
   --warning-text-strong: #78350f;
-  --warning-surface: color-mix(in srgb, var(--warning) 9%, var(--background-elevated));
-  --warning-surface-strong: color-mix(
+  --warning-surface: color-mix(
     in srgb,
-    var(--warning) 14%,
+    var(--warning-display) 9%,
     var(--background-elevated)
   );
-  --warning-border: color-mix(in srgb, var(--warning) 24%, transparent);
-  --warning-border-strong: color-mix(in srgb, var(--warning) 38%, transparent);
-  --warning-shadow: color-mix(in srgb, var(--warning) 10%, transparent);
-  --warning-ring: color-mix(in srgb, var(--warning) 12%, transparent);
+  --warning-surface-strong: color-mix(
+    in srgb,
+    var(--warning-display) 14%,
+    var(--background-elevated)
+  );
+  --warning-border: color-mix(in srgb, var(--warning-display) 24%, transparent);
+  --warning-border-strong: color-mix(in srgb, var(--warning-display) 38%, transparent);
+  --warning-shadow: color-mix(in srgb, var(--warning-display) 10%, transparent);
+  --warning-ring: color-mix(in srgb, var(--warning-display) 12%, transparent);
 
   --danger: #c23b3b;
   --danger-soft: #fff1f1;

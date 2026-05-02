@@ -61,7 +61,7 @@
 }
 
 .app-accent-soft {
-  background: var(--danger-gradient-soft);
+  background: var(--accent-gradient-soft);
 }
 
 .app-interactive {

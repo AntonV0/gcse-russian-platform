@@ -46,7 +46,15 @@ export default function LessonRenderer({
   const sectionClassName =
     sectionSurface === "flat"
       ? "space-y-5"
-      : "space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--background-muted)]/60 p-4 md:p-6";
+      : "space-y-5 rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-5 shadow-[var(--shadow-sm)] md:p-6";
+  const firstImageBlockKey = visibleSections
+    .flatMap((section) =>
+      section.blocks.map((block, index) => ({
+        block,
+        key: `${section.id}:${index}`,
+      }))
+    )
+    .find(({ block }) => block.type === "image")?.key;
 
   return (
     <div className="dev-marker-host relative space-y-8">
@@ -83,7 +91,7 @@ export default function LessonRenderer({
             </div>
           ) : null}
 
-          <div className="space-y-5">
+          <div className="space-y-6">
             {section.blocks.map((block, index) => {
               switch (block.type) {
                 case "header":
@@ -128,6 +136,7 @@ export default function LessonRenderer({
                       src={block.src}
                       alt={block.alt}
                       caption={block.caption}
+                      priority={firstImageBlockKey === `${section.id}:${index}`}
                     />
                   );
 

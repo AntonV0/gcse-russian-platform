@@ -8,7 +8,7 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function TextBlock({ content }: TextBlockProps) {
   return (
-    <section className="dev-marker-host relative app-card app-section-padding">
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="TextBlock"
@@ -26,9 +26,11 @@ export default function TextBlock({ content }: TextBlockProps) {
         />
       ) : null}
 
-      <div className="max-w-none">
-        <p className="app-lesson-prose whitespace-pre-wrap">{content}</p>
-      </div>
-    </section>
+      <section className="max-w-3xl px-1">
+        <p className="whitespace-pre-wrap text-base leading-8 text-[var(--text-primary)]">
+          {content}
+        </p>
+      </section>
+    </div>
   );
 }

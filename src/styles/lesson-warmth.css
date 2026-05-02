@@ -1,0 +1,662 @@
+.app-lesson-mission {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border-subtle));
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 14%, var(--background-elevated)) 0%,
+      color-mix(in srgb, var(--warning) 5%, var(--background-elevated)) 46%,
+      color-mix(in srgb, var(--accent) 7%, var(--background-elevated)) 100%
+    );
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
+    0 22px 54px color-mix(in srgb, var(--accent) 11%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 64%, transparent);
+}
+
+.app-lesson-mission::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--accent-progress-gradient);
+}
+
+.app-lesson-mission::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  border-radius: calc(var(--radius-xl) - 3px);
+  background: linear-gradient(
+    115deg,
+    color-mix(in srgb, white 42%, transparent) 0%,
+    transparent 34%,
+    color-mix(in srgb, var(--accent) 5%, transparent) 100%
+  );
+  pointer-events: none;
+}
+
+.app-lesson-mission-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  padding: 1.35rem;
+}
+
+.app-lesson-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--accent-ink);
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.app-lesson-mission-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 16%, var(--border-subtle));
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, white 72%, var(--background-elevated)) 0%,
+      color-mix(in srgb, var(--accent) 4%, var(--background-elevated)) 100%
+    );
+  padding: 1rem;
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--accent) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 64%, transparent);
+}
+
+.app-lesson-mission-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100%;
+  background: linear-gradient(
+    155deg,
+    transparent 0%,
+    transparent 58%,
+    color-mix(in srgb, var(--accent) 7%, transparent) 100%
+  );
+  pointer-events: none;
+}
+
+.app-lesson-mission-card-top {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.app-lesson-progress-value {
+  margin-top: 0.1rem;
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.app-lesson-mission-kind {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-transform: capitalize;
+}
+
+.app-lesson-progress-track {
+  position: relative;
+  height: 0.65rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--border-subtle));
+  background: color-mix(in srgb, var(--background-muted) 72%, transparent);
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--text-primary) 7%, transparent);
+}
+
+.app-lesson-mission-pace {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 10%, var(--border-subtle));
+  padding-top: 0.85rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.app-lesson-mission-pace-icon {
+  display: inline-flex;
+  height: 1.35rem;
+  width: 1.35rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--background-elevated));
+  color: var(--accent-ink);
+}
+
+.app-lesson-mission-icon,
+.app-study-block-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--info-border);
+  background: var(--info-surface);
+  color: var(--info-text);
+  box-shadow: 0 10px 22px var(--info-shadow);
+}
+
+.app-lesson-mission-icon {
+  height: 2.75rem;
+  width: 2.75rem;
+}
+
+.app-lesson-workspace {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 3%, transparent) 0%,
+      transparent 14rem
+    );
+  padding: 0.15rem;
+}
+
+.app-lesson-workspace::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    var(--accent-fill) 0%,
+    var(--accent-fill-hover) 100%
+  );
+  opacity: 0.28;
+}
+
+.app-lesson-prose-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--border-subtle));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 3%, var(--background-elevated)) 0%,
+      var(--background-elevated) 100%
+    );
+  padding: 1.2rem;
+  box-shadow:
+    var(--shadow-xs),
+    inset 0 1px 0 color-mix(in srgb, white 54%, transparent);
+}
+
+.app-study-block {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 9%, var(--border-subtle));
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, white 44%, transparent) 0%,
+      var(--background-elevated) 100%
+    );
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 color-mix(in srgb, white 58%, transparent);
+}
+
+.app-study-block::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--accent-progress-gradient);
+  opacity: 0.72;
+}
+
+.app-study-block::after {
+  content: "";
+  position: absolute;
+  inset: 3px auto 1rem 0;
+  width: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  opacity: 0.58;
+}
+
+.app-study-block-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 6%, transparent) 0%,
+      transparent 100%
+    );
+  padding: 1rem 1.1rem;
+}
+
+.app-study-block-header-main {
+  display: flex;
+  min-width: 0;
+  gap: 0.85rem;
+}
+
+.app-study-block-actions {
+  flex-shrink: 0;
+}
+
+.app-study-block-body {
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+}
+
+.app-study-block-icon {
+  height: 2.4rem;
+  width: 2.4rem;
+}
+
+.app-study-block-eyebrow {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.app-study-block-coach {
+  border-color: var(--info-border);
+  background: linear-gradient(135deg, var(--info-surface) 0%, var(--background-elevated) 84%);
+}
+
+.app-study-block-practice {
+  border-color: var(--info-border);
+  background: linear-gradient(
+    135deg,
+    var(--info-surface) 0%,
+    var(--background-elevated) 84%
+  );
+}
+
+.app-study-block-exam {
+  border-color: var(--warning-border);
+  background: linear-gradient(
+    135deg,
+    var(--warning-surface) 0%,
+    var(--background-elevated) 84%
+  );
+}
+
+.app-study-block-media {
+  border-color: var(--surface-accent-border);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 9%, var(--background-elevated)) 0%,
+    var(--background-elevated) 84%
+  );
+}
+
+.app-study-block-coach::after {
+  background: color-mix(in srgb, var(--info-text) 22%, transparent);
+}
+
+.app-study-block-practice::before {
+  background: var(--accent-progress-gradient);
+}
+
+.app-study-block-practice::after {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.app-study-block-exam::before {
+  background: linear-gradient(90deg, var(--warning) 0%, var(--accent-fill) 100%);
+}
+
+.app-study-block-exam::after {
+  background: color-mix(in srgb, var(--warning) 32%, transparent);
+}
+
+.app-study-block-media::after {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.app-study-block-coach .app-study-block-icon {
+  border-color: var(--info-border);
+  background: var(--info-surface);
+  color: var(--info-text);
+}
+
+.app-study-block-practice .app-study-block-icon {
+  border-color: var(--info-border);
+  background: var(--info-surface);
+  color: var(--info-text);
+}
+
+.app-study-block-exam .app-study-block-icon {
+  border-color: var(--warning-border);
+  background: var(--warning-surface);
+  color: var(--warning-text);
+}
+
+.app-study-block-media .app-study-block-icon {
+  border-color: var(--surface-accent-border);
+  background: var(--accent-gradient-soft);
+  color: var(--accent-on-soft);
+}
+
+.app-practice-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 5%, var(--background-elevated)) 0%,
+      var(--background-elevated) 58%
+    );
+  box-shadow: var(--shadow-sm);
+}
+
+.app-practice-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--accent-progress-gradient);
+  opacity: 0.65;
+}
+
+.app-lesson-map {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1.35rem;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 2%, var(--background-elevated)) 0%,
+      var(--background-elevated) 100%
+    );
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
+    0 16px 36px color-mix(in srgb, var(--text-primary) 7%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 60%, transparent);
+}
+
+.app-lesson-map-header {
+  border-bottom: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 7%, var(--background-elevated)) 0%,
+      var(--background-elevated) 100%
+    );
+  padding: 1.15rem;
+}
+
+.app-lesson-map-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--accent-ink);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.app-lesson-map-percent {
+  display: inline-flex;
+  min-width: 3.4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border-subtle));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, white 72%, transparent) 0%,
+      var(--background-elevated) 100%
+    );
+  color: var(--accent-ink);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  box-shadow: var(--shadow-xs);
+}
+
+.app-lesson-map-segments {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 0.22rem;
+  min-height: 0.48rem;
+}
+
+.app-lesson-map-segment {
+  min-width: 0.7rem;
+  border-radius: 999px;
+  background: var(--background-muted);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+
+.app-lesson-map-segment-current {
+  background: var(--accent-gradient-fill);
+  box-shadow:
+    0 6px 14px color-mix(in srgb, var(--accent) 18%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, white 10%, transparent);
+}
+
+.app-lesson-map-segment-done {
+  background: color-mix(in srgb, var(--accent) 42%, var(--background-muted));
+}
+
+.app-lesson-map-segment-ready {
+  background: color-mix(in srgb, var(--accent) 20%, var(--background-muted));
+}
+
+.app-lesson-map-segment-locked {
+  background: color-mix(in srgb, var(--text-primary) 7%, var(--background-muted));
+}
+
+.app-lesson-map-list {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.75rem;
+}
+
+.app-lesson-map-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0.72rem;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+a:hover .app-lesson-map-item {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 10%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent) 3%, var(--background-muted));
+  box-shadow: var(--shadow-sm);
+}
+
+a:focus-visible .app-lesson-map-item {
+  outline: 2px solid var(--accent-fill);
+  outline-offset: 2px;
+}
+
+.app-lesson-map-node {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.85rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--background-muted);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.app-lesson-map-status {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.28rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--background-muted);
+  color: var(--text-secondary);
+  padding: 0.2rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.app-lesson-map-item-current {
+  border-color: color-mix(in srgb, var(--accent) 24%, var(--border-subtle));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 12%, var(--background-elevated)) 0%,
+      color-mix(in srgb, var(--accent) 4%, var(--background-elevated)) 100%
+    );
+  box-shadow:
+    0 10px 22px color-mix(in srgb, var(--accent) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 48%, transparent);
+}
+
+.app-lesson-map-item-current .app-lesson-map-node {
+  border-color: color-mix(in srgb, var(--accent-fill) 86%, transparent);
+  background: var(--accent-gradient-fill);
+  color: var(--accent-on-fill);
+}
+
+.app-lesson-map-item-current .app-lesson-map-status {
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent) 8%, var(--background-elevated));
+  color: var(--accent-ink);
+}
+
+.app-lesson-map-item-done .app-lesson-map-node {
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent) 8%, var(--background-muted));
+  color: var(--accent-ink);
+}
+
+.app-lesson-map-item-done .app-lesson-map-status {
+  border-color: color-mix(in srgb, var(--accent) 14%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent) 5%, var(--background-elevated));
+  color: var(--accent-ink);
+}
+
+.app-lesson-map-item-ready .app-lesson-map-status {
+  border-color: color-mix(in srgb, var(--accent) 16%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent) 5%, var(--background-elevated));
+  color: var(--accent-ink);
+}
+
+.app-lesson-map-item-locked {
+  color: var(--text-muted);
+  opacity: 0.68;
+}
+
+@media (min-width: 768px) {
+  .app-lesson-mission-content {
+    padding: 1.65rem;
+  }
+
+  .app-study-block-header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.15rem 1.25rem;
+  }
+
+  .app-study-block-body {
+    padding: 1.25rem;
+  }
+
+  .app-lesson-prose-card {
+    padding: 1.35rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-lesson-mission-content {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+
+  .app-lesson-mission-card {
+    width: min(20rem, 34%);
+    flex-shrink: 0;
+  }
+}
+
+[data-theme="dark"] .app-lesson-mission-card {
+  background: color-mix(in srgb, var(--dark-control-bg) 82%, transparent);
+}
+
+[data-theme="dark"] .app-lesson-workspace,
+[data-theme="dark"] .app-lesson-prose-card,
+[data-theme="dark"] .app-study-block,
+[data-theme="dark"] .app-practice-card,
+[data-theme="dark"] .app-lesson-map {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 3%, var(--dark-control-bg-hover)) 0%,
+    var(--dark-control-bg) 100%
+  );
+}

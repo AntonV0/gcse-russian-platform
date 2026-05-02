@@ -47,7 +47,7 @@ export function SectionPager({
     : null;
 
   return (
-    <div className="dev-marker-host relative app-card app-section-padding">
+    <div className="dev-marker-host relative border-t border-[var(--border-subtle)] pt-4">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="SectionPager"
@@ -66,10 +66,12 @@ export function SectionPager({
       ) : null}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="font-semibold text-[var(--text-primary)]">Keep going</h2>
+        <div className="min-w-0">
+          <h2 className="text-base font-semibold text-[var(--text-primary)]">
+            Ready to continue?
+          </h2>
           <p className="mt-1 text-sm app-text-muted">
-            Continue when you are ready, or revisit an earlier section to check a detail.
+            Move on when this part feels clear.
           </p>
         </div>
 
@@ -77,25 +79,27 @@ export function SectionPager({
           {previousHref ? (
             <Link
               href={previousHref}
-              className="app-btn-base app-btn-secondary min-h-11 rounded-lg px-4 py-2 text-sm"
+              prefetch={false}
+              className="app-btn-base app-btn-secondary min-h-10 rounded-xl px-4 py-2 text-sm"
             >
-              Previous
+              Back
             </Link>
           ) : (
-            <span className="flex min-h-11 items-center justify-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
-              Previous
+            <span className="flex min-h-10 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
+              Back
             </span>
           )}
 
           {nextHref ? (
             <Link
               href={nextHref}
-              className="app-btn-base app-btn-primary min-h-11 rounded-lg px-4 py-2 text-sm"
+              prefetch={false}
+              className="app-btn-base app-btn-primary min-h-10 rounded-xl px-4 py-2 text-sm"
             >
-              Next section
+              Next
             </Link>
           ) : (
-            <span className="flex min-h-11 items-center justify-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
+            <span className="flex min-h-10 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
               Final section
             </span>
           )}

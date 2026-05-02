@@ -1,12 +1,12 @@
 import Image from "next/image";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { StudyBlockShell } from "@/components/lesson-blocks/learning-warmth-kit";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export function HeaderBlock({ content }: { content: string }) {
   return (
     <div className="space-y-2">
-      <span className="app-pill app-pill-muted">Header</span>
       <h3 className="app-heading-section">{content}</h3>
     </div>
   );
@@ -15,7 +15,6 @@ export function HeaderBlock({ content }: { content: string }) {
 export function SubheaderBlock({ content }: { content: string }) {
   return (
     <div className="space-y-2">
-      <span className="app-pill app-pill-muted">Subheader</span>
       <h4 className="app-heading-subsection">{content}</h4>
     </div>
   );
@@ -27,7 +26,7 @@ export function DividerBlock() {
 
 export function CalloutBlock({ title, content }: { title?: string; content: string }) {
   return (
-    <div className="dev-marker-host relative rounded-2xl border border-[color-mix(in_srgb,var(--info)_24%,transparent)] bg-[var(--info-soft)] px-5 py-4">
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="CalloutBlock"
@@ -45,18 +44,20 @@ export function CalloutBlock({ title, content }: { title?: string; content: stri
         />
       ) : null}
 
-      <div className="mb-3 flex flex-wrap gap-2">
-        <span className="app-pill app-pill-info">{title ?? "Callout"}</span>
-      </div>
-
-      <p className="app-text-body whitespace-pre-wrap">{content}</p>
+      <StudyBlockShell
+        eyebrow="Worth remembering"
+        title={title ?? "Helpful hint"}
+        tone="coach"
+      >
+        <p className="app-text-body whitespace-pre-wrap">{content}</p>
+      </StudyBlockShell>
     </div>
   );
 }
 
 export function ExamTipBlock({ title, content }: { title?: string; content: string }) {
   return (
-    <div className="dev-marker-host relative rounded-2xl border border-[color-mix(in_srgb,var(--warning)_24%,transparent)] bg-[var(--warning-soft)] px-5 py-4">
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="ExamTipBlock"
@@ -74,11 +75,13 @@ export function ExamTipBlock({ title, content }: { title?: string; content: stri
         />
       ) : null}
 
-      <div className="mb-3 flex flex-wrap gap-2">
-        <span className="app-pill app-pill-warning">{title ?? "Exam tip"}</span>
-      </div>
-
-      <p className="app-text-body whitespace-pre-wrap">{content}</p>
+      <StudyBlockShell
+        eyebrow="Exam tip"
+        title={title ?? "Use this in the exam"}
+        tone="exam"
+      >
+        <p className="app-text-body whitespace-pre-wrap">{content}</p>
+      </StudyBlockShell>
     </div>
   );
 }
@@ -87,13 +90,15 @@ export function ImageBlock({
   src,
   alt,
   caption,
+  priority = false,
 }: {
   src: string;
   alt?: string;
   caption?: string;
+  priority?: boolean;
 }) {
   return (
-    <figure className="dev-marker-host relative app-card app-section-padding space-y-3">
+    <figure className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="ImageBlock"
@@ -111,17 +116,18 @@ export function ImageBlock({
         />
       ) : null}
 
-      <div className="relative aspect-[4/3] max-h-[70vh] w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] sm:aspect-[16/10] md:aspect-[16/9]">
-        <Image
-          src={src}
-          alt={alt ?? caption ?? "Lesson image"}
-          fill
-          sizes="(max-width: 768px) 100vw, 900px"
-          className="object-contain"
-        />
-      </div>
-
-      {caption ? <figcaption className="app-text-caption">{caption}</figcaption> : null}
+      <StudyBlockShell eyebrow="Look closely" tone="media" title={caption}>
+        <div className="relative aspect-[4/3] max-h-[70vh] w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] sm:aspect-[16/10] md:aspect-[16/9]">
+          <Image
+            src={src}
+            alt={alt ?? caption ?? "Lesson image"}
+            fill
+            loading={priority ? "eager" : "lazy"}
+            sizes="(max-width: 768px) 100vw, 900px"
+            className="object-contain"
+          />
+        </div>
+      </StudyBlockShell>
     </figure>
   );
 }
@@ -138,7 +144,7 @@ export function AudioBlock({
   autoPlay?: boolean;
 }) {
   return (
-    <div className="dev-marker-host relative app-card app-section-padding space-y-3">
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="AudioBlock"
@@ -156,16 +162,18 @@ export function AudioBlock({
         />
       ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        <span className="app-pill app-pill-muted">{title ?? "Audio"}</span>
-      </div>
-
-      <audio controls autoPlay={autoPlay} className="w-full">
-        <source src={src} />
-        Your browser does not support the audio element.
-      </audio>
-
-      {caption ? <div className="app-text-caption">{caption}</div> : null}
+      <StudyBlockShell
+        eyebrow="Listen"
+        title={title ?? "Audio practice"}
+        description={caption}
+        tone="practice"
+        icon="audio"
+      >
+        <audio controls autoPlay={autoPlay} className="w-full">
+          <source src={src} />
+          Your browser does not support the audio element.
+        </audio>
+      </StudyBlockShell>
     </div>
   );
 }

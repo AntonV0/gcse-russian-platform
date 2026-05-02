@@ -26,7 +26,7 @@ export function LessonCompletionPanel({
   allVisited,
 }: LessonCompletionPanelProps) {
   return (
-    <div className="dev-marker-host relative app-card space-y-4 p-5">
+    <div className="dev-marker-host relative app-study-block app-study-block-practice space-y-4 p-5">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="LessonCompletionPanel"
@@ -47,11 +47,10 @@ export function LessonCompletionPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-            Ready to finish?
+            Finish this lesson
           </h2>
           <p className="mt-1 text-sm app-text-muted">
-            Review the lesson checklist, then mark it complete when you are ready to move
-            on.
+            Mark it complete when you have opened every section and feel ready to move on.
           </p>
         </div>
 
@@ -62,19 +61,19 @@ export function LessonCompletionPanel({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
-          <div className="font-medium text-[var(--text-primary)]">Sections opened</div>
+          <div className="font-medium text-[var(--text-primary)]">Lesson sections</div>
           <div className="mt-1 text-2xl font-semibold text-[var(--text-primary)]">
             {visitedCount} / {totalSections}
           </div>
           <div className="mt-1 app-text-muted">
             {allVisited
               ? "Every section has been opened."
-              : "Open each section so progress reflects the full lesson."}
+              : "Open each section before saving this lesson as complete."}
           </div>
         </div>
 
         <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
-          <div className="font-medium text-[var(--text-primary)]">Next step</div>
+          <div className="font-medium text-[var(--text-primary)]">Before you go</div>
           <div className="mt-2 space-y-2">
             <div className="flex items-center gap-2">
               <Badge tone={allVisited ? "success" : "warning"} icon="list">

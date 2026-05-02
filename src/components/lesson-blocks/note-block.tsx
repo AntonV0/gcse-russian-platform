@@ -1,5 +1,6 @@
 import DevComponentMarker from "@/components/ui/dev-component-marker";
-import { Heading, type HeadingLevel } from "@/components/ui/heading";
+import { StudyBlockShell } from "@/components/lesson-blocks/learning-warmth-kit";
+import type { HeadingLevel } from "@/components/ui/heading";
 
 type NoteBlockProps = {
   title: string;
@@ -11,7 +12,7 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function NoteBlock({ title, content, headingLevel = 3 }: NoteBlockProps) {
   return (
-    <section className="dev-marker-host relative rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-6 shadow-sm">
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="NoteBlock"
@@ -29,15 +30,14 @@ export default function NoteBlock({ title, content, headingLevel = 3 }: NoteBloc
         />
       ) : null}
 
-      <div className="mb-3 flex flex-wrap gap-2">
-        <span className="app-pill app-pill-info">Note</span>
-      </div>
-
-      <Heading level={headingLevel} className="mb-2 app-heading-subsection">
-        {title}
-      </Heading>
-
-      <p className="app-text-body-muted whitespace-pre-wrap">{content}</p>
-    </section>
+      <StudyBlockShell
+        eyebrow="Teacher note"
+        title={title}
+        tone="coach"
+        headingLevel={headingLevel}
+      >
+        <p className="app-text-body-muted whitespace-pre-wrap">{content}</p>
+      </StudyBlockShell>
+    </div>
   );
 }
