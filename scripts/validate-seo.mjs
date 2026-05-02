@@ -90,10 +90,18 @@ for (const page of priorityPages) {
   );
   check(
     `${page.label}: breadcrumbs`,
-    source.includes("MarketingBreadcrumbs") || source.includes("EvergreenGuidePage"),
+    source.includes("MarketingBreadcrumbs") ||
+      source.includes("EvergreenGuidePage") ||
+      source.includes("StudyGuidePage") ||
+      source.includes("ExamPaperGuidePage"),
     page.path
   );
-  check(`${page.label}: structured data`, includesAll(source, page.required), page.path);
+  const structuredDataPassed =
+    includesAll(source, page.required) ||
+    (source.includes("buildFaqJsonLd(faqs)") &&
+      includesAll(source, page.required.filter((item) => item !== "faqs={[")));
+
+  check(`${page.label}: structured data`, structuredDataPassed, page.path);
 }
 
 const evergreen = read("src/components/marketing/evergreen-guide-page.tsx");
@@ -123,8 +131,8 @@ for (const route of [
 const robots = read("src/app/robots.ts");
 for (const disallow of ["/courses", "/grammar", "/mock-exams", "/vocabulary"]) {
   check(
-    `robots disallows ${disallow}`,
-    robots.includes(`"${disallow}"`),
+    `robots allows public resource route ${disallow}`,
+    !robots.includes(`"${disallow}"`),
     "src/app/robots.ts"
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import EvergreenGuidePage from "@/components/marketing/evergreen-guide-page";
+import StudyGuidePage from "@/components/marketing/study-guide-page";
+import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -7,15 +8,20 @@ export const metadata: Metadata = buildPublicMetadata({
   description:
     "A practical GCSE Russian vocabulary guide for Edexcel 1RU0 students, covering themes, tiers, active recall, receptive vocabulary, and exam preparation.",
   path: "/gcse-russian-vocabulary",
+  ogTitle: "GCSE Russian Vocabulary Guide",
+  ogDescription:
+    "Organise GCSE Russian vocabulary by theme, tier, active use, recognition, and exam task.",
+  ogImagePath: getOgImagePath("vocabulary"),
+  ogImageAlt: "GCSE Russian vocabulary guide",
 });
 
 export default function GcseRussianVocabularyPage() {
   return (
-    <EvergreenGuidePage
-      eyebrow="GCSE Russian vocabulary"
-      title="GCSE Russian vocabulary guide"
-      description="Vocabulary revision works best when students know which words they need to recognise, which they need to produce, and how vocabulary connects to exam tasks."
+    <StudyGuidePage
       path="/gcse-russian-vocabulary"
+      eyebrow="GCSE Russian vocabulary"
+      title="Learn vocabulary by how it will be used in the exam."
+      description="Vocabulary revision works best when students know which words they need to recognise, which they need to produce, and how words connect to specific GCSE tasks."
       keywords={[
         "GCSE Russian vocabulary",
         "Edexcel Russian vocabulary",
@@ -26,78 +32,112 @@ export default function GcseRussianVocabularyPage() {
         { label: "Themes and topics", icon: "vocabularySet" },
         { label: "Foundation and Higher", icon: "layers" },
       ]}
-      sections={[
+      heroIcon="vocabulary"
+      heroLabel="Vocabulary strategy"
+      heroMetric="Recognise, recall, reuse"
+      heroRows={[
+        ["Receptive", "Words students need to recognise", "preview"],
+        ["Productive", "Words students need to write or say", "write"],
+        ["Exam-linked", "Words practised inside paper tasks", "exam"],
+      ]}
+      focusTitle="Vocabulary should not be treated as one huge list."
+      focusDescription="Grouping words by theme helps, but the bigger question is whether the student needs to recognise the word, produce it, spell it, or use it in a sentence."
+      focusItems={[
         {
-          title: "How to organise GCSE Russian vocabulary",
+          title: "Theme-based learning",
           description:
-            "Students should not treat vocabulary as one huge list. Grouping by theme, tier, and use makes revision more effective.",
-          items: [
-            {
-              title: "Theme-based learning",
-              description:
-                "Topic groups help students predict the language they will meet in reading, listening, speaking, and writing.",
-            },
-            {
-              title: "Productive vocabulary",
-              description:
-                "Words needed for speaking and writing require active recall, spelling, and confident use in sentences.",
-            },
-            {
-              title: "Receptive vocabulary",
-              description:
-                "Some words mainly need recognition in listening and reading, so revision can focus on meaning and context.",
-            },
-          ],
+            "Topic groups help students predict language in reading, listening, speaking, and writing.",
+          icon: "vocabularySet",
         },
         {
-          title: "How the platform can help",
+          title: "Productive vocabulary",
           description:
-            "The public site can explain the vocabulary strategy. The app can organise sets, examples, and revision flow.",
-          items: [
-            {
-              title: "Vocabulary sets",
-              description:
-                "Sets can group Russian, English, transliteration, examples, notes, and tier metadata in one place.",
-            },
-            {
-              title: "Grammar links",
-              description:
-                "Vocabulary becomes more useful when students understand forms, endings, and sentence patterns.",
-            },
-            {
-              title: "Exam-linked use",
-              description:
-                "Students should revise vocabulary with the skill they need: listening, reading, speaking, or writing.",
-            },
-          ],
+            "Words for speaking and writing need active recall, spelling, and use in short sentences.",
+          icon: "write",
         },
         {
-          title: "Vocabulary revision methods that work",
+          title: "Receptive vocabulary",
           description:
-            "Students need more than rereading lists. The method should match whether the word must be recognised or produced.",
-          items: [
-            {
-              title: "Active recall",
-              description:
-                "For speaking and writing, students should recall Russian from English and use the word in a short sentence.",
-            },
-            {
-              title: "Mixed-topic review",
-              description:
-                "Once words feel familiar, mix themes so students can handle less predictable exam texts and audio.",
-            },
-            {
-              title: "Mistake-based lists",
-              description:
-                "Words missed in past papers, listening tasks, and writing corrections should return to the next revision cycle.",
-            },
-          ],
+            "Some words mainly need recognition in audio or texts, so revision can focus on meaning and context.",
+          icon: "preview",
+        },
+      ]}
+      routineTitle="Vocabulary improves when recall becomes regular."
+      routineDescription="Students should move beyond rereading lists into short repeated recall, sentence use, mixed review, and paper-linked practice."
+      routineItems={[
+        {
+          title: "Start with a theme",
+          description:
+            "Group words around a GCSE topic so they connect to likely texts, audio, and answers.",
+          icon: "vocabularySet",
+        },
+        {
+          title: "Recall both ways",
+          description:
+            "Recognition is useful, but speaking and writing need English-to-Russian recall too.",
+          icon: "sync",
+        },
+        {
+          title: "Use in sentences",
+          description:
+            "A word becomes more useful when the student can use it with verbs, opinions, and time phrases.",
+          icon: "grammar",
+        },
+        {
+          title: "Bring mistakes back",
+          description:
+            "Words missed in papers, listening tasks, or writing corrections should return to the next cycle.",
+          icon: "history",
+        },
+      ]}
+      warningTitle="Word lists look organised even when revision is passive."
+      warningDescription="A long list can feel complete, but students still need retrieval, context, and output practice."
+      warningItems={[
+        {
+          title: "Only revising Russian to English",
+          description:
+            "That helps reading, but speaking and writing need active English-to-Russian recall.",
+          icon: "warning",
+        },
+        {
+          title: "Ignoring spelling and endings",
+          description:
+            "Words used in writing need accurate forms, not only approximate recognition.",
+          icon: "edit",
+        },
+        {
+          title: "Keeping themes too separate",
+          description:
+            "Mixed-topic review prepares students for less predictable exam texts and audio.",
+          icon: "layers",
+        },
+      ]}
+      courseFitTitle="The course can make vocabulary reappear in useful places."
+      courseFitDescription="Words are strongest when students meet them in lessons, revision, question sets, and paper practice rather than one isolated list."
+      courseFitItems={[
+        {
+          title: "Reusable sets",
+          description:
+            "Vocabulary can be grouped with examples, notes, and tier context.",
+          icon: "vocabulary",
+        },
+        {
+          title: "Lesson links",
+          description:
+            "Words become more memorable when they appear in model sentences and tasks.",
+          icon: "lessonContent",
+        },
+        {
+          title: "Paper practice",
+          description:
+            "Students can practise vocabulary through listening, reading, speaking, and writing.",
+          icon: "exam",
         },
       ]}
       relatedLinks={[
         {
-          title: "GCSE Russian listening exam guide",
-          description: "Use vocabulary recognition to improve audio comprehension.",
+          title: "GCSE Russian listening exam",
+          description: "Use word recognition to improve audio comprehension.",
           href: "/gcse-russian-listening-exam",
           icon: "listening",
         },
@@ -108,10 +148,16 @@ export default function GcseRussianVocabularyPage() {
           icon: "grammar",
         },
         {
-          title: "GCSE Russian past papers",
-          description: "Use past papers to find vocabulary gaps before the exam.",
-          href: "/gcse-russian-past-papers",
-          icon: "pastPapers",
+          title: "GCSE Russian revision guide",
+          description: "Put vocabulary into a weekly revision cycle.",
+          href: "/gcse-russian-revision",
+          icon: "calendar",
+        },
+        {
+          title: "GCSE Russian course",
+          description: "Practise vocabulary inside a structured route.",
+          href: "/gcse-russian-course",
+          icon: "courses",
         },
       ]}
       faqs={[
@@ -123,7 +169,7 @@ export default function GcseRussianVocabularyPage() {
         {
           question: "Is a vocabulary list enough?",
           answer:
-            "No. Lists are a starting point, but students need retrieval, examples, listening/reading recognition, and sentence practice.",
+            "No. Lists are a starting point, but students need retrieval, examples, listening and reading recognition, and sentence practice.",
         },
         {
           question: "How often should vocabulary be reviewed?",
@@ -131,8 +177,10 @@ export default function GcseRussianVocabularyPage() {
             "Short repeated reviews work best. Students should revisit difficult words across several weeks and connect them to exam tasks.",
         },
       ]}
-      ctaTitle="Move from word lists to active revision"
+      ctaTitle="Move from word lists to active revision."
       ctaDescription="Start with trial access and use the platform to revise GCSE Russian vocabulary with structure and purpose."
+      secondaryHref="/gcse-russian-revision"
+      secondaryLabel="Revision guide"
     />
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import EvergreenGuidePage from "@/components/marketing/evergreen-guide-page";
+import StudyGuidePage from "@/components/marketing/study-guide-page";
 import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
@@ -17,11 +17,11 @@ export const metadata: Metadata = buildPublicMetadata({
 
 export default function GcseRussianPastPapersPage() {
   return (
-    <EvergreenGuidePage
-      eyebrow="GCSE Russian past papers"
-      title="GCSE Russian past papers and revision strategy"
-      description="Past papers are useful, but they work best when students know how to review mistakes, connect gaps to lessons, and practise before using full exam papers."
+    <StudyGuidePage
       path="/gcse-russian-past-papers"
+      eyebrow="GCSE Russian past papers"
+      title="Use past papers as diagnosis, not just a score."
+      description="GCSE Russian past papers are useful when students know how to review mistakes, connect gaps to lessons, and practise before attempting another full paper."
       keywords={[
         "GCSE Russian past papers",
         "Edexcel Russian past papers",
@@ -32,114 +32,133 @@ export default function GcseRussianPastPapersPage() {
         { label: "Pearson Edexcel 1RU0", icon: "school" },
         { label: "Mocks and review", icon: "mockExam" },
       ]}
-      sections={[
+      heroIcon="pastPapers"
+      heroLabel="Paper practice"
+      heroMetric="Attempt, review, target"
+      heroRows={[
+        ["Official papers", "Use Pearson source materials", "externalLink"],
+        ["Mock practice", "Keep platform-created mocks separate", "mockExam"],
+        ["Follow-up", "Return to the weak skill", "completed"],
+      ]}
+      focusTitle="A paper should reveal the next revision action."
+      focusDescription="The score matters less than the reason marks were lost. Vocabulary, grammar, timing, question interpretation, and technique all need different follow-up."
+      focusItems={[
         {
-          title: "How to use past papers well",
+          title: "Start with the right paper",
           description:
-            "A past paper is not just a test score. It should reveal exactly what the student needs to revise next.",
-          items: [
-            {
-              title: "Start with the right paper",
-              description:
-                "Choose listening, speaking, reading, or writing practice according to the skill you want to diagnose.",
-            },
-            {
-              title: "Review mistakes by cause",
-              description:
-                "A wrong answer may come from vocabulary, grammar, timing, question interpretation, or exam technique.",
-            },
-            {
-              title: "Do not use papers too early",
-              description:
-                "Students often benefit from topic practice and guided tasks before sitting a full paper.",
-            },
-          ],
+            "Choose listening, speaking, reading, or writing according to the skill you want to diagnose.",
+          icon: "exam",
         },
         {
-          title: "Where the platform fits",
+          title: "Review mistakes by cause",
           description:
-            "Public pages can link to official resources. The app can support mock exams, attempts, review, and next-step practice.",
-          items: [
-            {
-              title: "Official Pearson links",
-              description:
-                "Public pages should direct students to official source material rather than duplicating copyrighted exam files.",
-            },
-            {
-              title: "Original mock practice",
-              description:
-                "The app can provide platform-created GCSE-style mocks that sit separately from official past papers.",
-            },
-            {
-              title: "Targeted follow-up",
-              description:
-                "After a paper, students need to return to vocabulary, grammar, and lesson practice instead of only doing another paper.",
-            },
-          ],
+            "A wrong answer may come from vocabulary, grammar, timing, question interpretation, or technique.",
+          icon: "search",
         },
         {
-          title: "Past-paper review checklist",
+          title: "Avoid papers too early",
           description:
-            "The review after a paper is where most of the learning happens. Students should leave with a specific next action.",
-          items: [
-            {
-              title: "Separate skill gaps from knowledge gaps",
-              description:
-                "A student may know the Russian but lose marks through timing, task interpretation, spelling, or incomplete answers.",
-            },
-            {
-              title: "Track recurring vocabulary",
-              description:
-                "Add repeated unknown words, cognates, distractors, and topic phrases to the next revision cycle.",
-            },
-            {
-              title: "Revisit grammar errors",
-              description:
-                "Writing and translation mistakes often point back to tense, case, agreement, word order, or verb forms.",
-            },
-            {
-              title: "Practise one paper at a time",
-              description:
-                "Listening, speaking, reading, and writing papers test different habits, so full-paper practice should be targeted.",
-            },
-            {
-              title: "Use official source material",
-              description:
-                "Use Pearson's qualification materials for official papers and mark schemes, and keep platform-created mocks separate.",
-            },
-            {
-              title: "Repeat the weak task type",
-              description:
-                "After reviewing a paper, practise the weakest task type before attempting another complete paper.",
-            },
-          ],
+            "Students often benefit from topic practice and guided tasks before sitting a full paper.",
+          icon: "warning",
+        },
+      ]}
+      routineTitle="The review after a paper is where most learning happens."
+      routineDescription="Students should finish a paper with a short, specific action list rather than only a percentage or mark."
+      routineItems={[
+        {
+          title: "Mark the paper",
+          description:
+            "Use official mark schemes where available and avoid guessing why marks were lost.",
+          icon: "marked",
+        },
+        {
+          title: "Name the gap",
+          description:
+            "Separate skill gaps from knowledge gaps: timing, vocabulary, grammar, task reading, or answer quality.",
+          icon: "search",
+        },
+        {
+          title: "Practise the weak task",
+          description:
+            "Repeat the weakest task type before attempting another complete paper.",
+          icon: "questionSet",
+        },
+        {
+          title: "Return to lessons",
+          description:
+            "Use course content to repair the vocabulary or grammar behind repeated mistakes.",
+          icon: "lessons",
+        },
+      ]}
+      warningTitle="More papers do not automatically mean better preparation."
+      warningDescription="Full papers can expose weak points, but targeted follow-up is what turns that exposure into progress."
+      warningItems={[
+        {
+          title: "Chasing scores",
+          description:
+            "A score without mistake review does not tell the student what to change next.",
+          icon: "warning",
+        },
+        {
+          title: "Mixing official and mock materials",
+          description:
+            "Official Pearson papers and platform-created mocks should be clearly separated.",
+          icon: "pastPapers",
+        },
+        {
+          title: "Ignoring the paper difference",
+          description:
+            "Listening, speaking, reading, and writing test different habits, so practice should be targeted.",
+          icon: "exam",
+        },
+      ]}
+      courseFitTitle="The platform can turn paper weaknesses into targeted practice."
+      courseFitDescription="Public pages can point families to official resources. The app can organise mock practice, attempts, review, and next-step learning."
+      courseFitItems={[
+        {
+          title: "Official links",
+          description:
+            "Students should use Pearson’s source material for official papers, mark schemes, and audio.",
+          icon: "externalLink",
+        },
+        {
+          title: "Mock practice",
+          description:
+            "Platform-created GCSE-style mocks can build skill without replacing official papers.",
+          icon: "mockExam",
+        },
+        {
+          title: "Targeted follow-up",
+          description:
+            "After a paper, students can return to vocabulary, grammar, or lesson practice.",
+          icon: "completed",
         },
       ]}
       relatedLinks={[
         {
           title: "GCSE Russian exam guide",
-          description: "Understand the four papers before choosing practice resources.",
+          description: "Understand the four papers before choosing resources.",
           href: "/gcse-russian-exam-guide",
           icon: "exam",
         },
         {
-          title: "GCSE Russian reading exam guide",
-          description: "Use Paper 3 resources to practise comprehension and translation.",
-          href: "/gcse-russian-reading-exam",
-          icon: "lessonContent",
+          title: "GCSE Russian revision guide",
+          description: "Put papers into a weekly revision cycle.",
+          href: "/gcse-russian-revision",
+          icon: "calendar",
         },
         {
-          title: "GCSE Russian writing exam guide",
-          description: "Prepare for writing tasks before attempting full papers.",
-          href: "/gcse-russian-writing-exam",
-          icon: "write",
+          title: "GCSE Russian reading exam",
+          description: "Use Paper 3 resources for comprehension and translation.",
+          href: "/gcse-russian-reading-exam",
+          icon: "lessonContent",
         },
         {
           title: "Official Pearson GCSE Russian materials",
           description:
             "Use Pearson's page for official papers, mark schemes, and audio files.",
           href: "https://qualifications.pearson.com/en/qualifications/edexcel-gcses/russian-2017.coursematerials.html",
-          icon: "pastPapers",
+          icon: "externalLink",
         },
       ]}
       faqs={[
@@ -154,18 +173,15 @@ export default function GcseRussianPastPapersPage() {
             "Not necessarily. Full papers are useful checkpoints, but most weeks should include targeted practice on the specific skill or task type that needs work.",
         },
         {
-          question: "How should students review a low past-paper score?",
-          answer:
-            "Break the score down by cause: vocabulary, grammar, timing, listening speed, question interpretation, translation accuracy, or writing range.",
-        },
-        {
           question: "Can platform mock exams replace official past papers?",
           answer:
             "No. Platform-created mocks can build skill and confidence, but official Pearson papers remain the best source for real exam format and mark schemes.",
         },
       ]}
-      ctaTitle="Use papers as diagnosis, not just revision"
+      ctaTitle="Use papers to find the next useful practice."
       ctaDescription="Start with trial access and use the app to turn past-paper weaknesses into targeted GCSE Russian practice."
+      secondaryHref="/gcse-russian-revision"
+      secondaryLabel="Revision guide"
     />
   );
 }

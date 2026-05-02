@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import EvergreenGuidePage from "@/components/marketing/evergreen-guide-page";
+import StudyGuidePage from "@/components/marketing/study-guide-page";
 import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
@@ -17,11 +17,11 @@ export const metadata: Metadata = buildPublicMetadata({
 
 export default function GcseRussianRevisionPage() {
   return (
-    <EvergreenGuidePage
-      eyebrow="GCSE Russian revision"
-      title="GCSE Russian revision guide"
-      description="Effective GCSE Russian revision needs more than last-minute vocabulary lists. Students need a steady plan that combines language knowledge with exam-paper practice."
+    <StudyGuidePage
       path="/gcse-russian-revision"
+      eyebrow="GCSE Russian revision"
+      title="Turn GCSE Russian revision into a weekly rhythm."
+      description="Effective revision is not a pile of last-minute word lists. Students need a repeatable plan that combines vocabulary, grammar, paper skills, and mistake review."
       keywords={[
         "GCSE Russian revision",
         "Russian GCSE revision",
@@ -32,114 +32,139 @@ export default function GcseRussianRevisionPage() {
         { label: "Exam practice", icon: "exam" },
         { label: "Vocabulary and grammar", icon: "vocabulary" },
       ]}
-      sections={[
+      heroIcon="calendar"
+      heroLabel="Weekly revision"
+      heroMetric="Language, papers, review"
+      heroRows={[
+        ["Foundation", "Vocabulary and grammar that can be reused", "vocabulary"],
+        ["Paper practice", "Listening, speaking, reading, writing", "exam"],
+        ["Review", "Mistakes become the next action", "completed"],
+      ]}
+      focusTitle="A good revision plan balances exam papers with language foundations."
+      focusDescription="Students often spend too long on either notes or full papers. The useful middle ground is targeted practice that tells them what to revise next."
+      focusItems={[
         {
-          title: "What to revise first",
+          title: "High-frequency vocabulary",
           description:
-            "A good revision plan balances the four exam skills with the language foundations that support them.",
-          items: [
-            {
-              title: "High-frequency vocabulary",
-              description:
-                "Start with themes, opinions, time phrases, question words, common verbs, and words that appear across multiple papers.",
-            },
-            {
-              title: "Grammar that changes meaning",
-              description:
-                "Prioritise tense, cases, agreement, negatives, comparisons, and sentence structures that affect reading, listening, speaking, and writing.",
-            },
-            {
-              title: "Paper-specific technique",
-              description:
-                "Practise the task types separately so students know how to approach listening, speaking, reading, writing, and translation.",
-            },
-          ],
+            "Themes, opinions, time phrases, question words, common verbs, and words that appear across several papers.",
+          icon: "vocabulary",
         },
         {
-          title: "How to make revision measurable",
+          title: "Grammar that changes meaning",
           description:
-            "Students make faster progress when they can see what has been practised, what is secure, and what still needs attention.",
-          items: [
-            {
-              title: "Use short weekly cycles",
-              description:
-                "Plan one vocabulary theme, one grammar focus, one receptive task, and one productive task each week.",
-            },
-            {
-              title: "Review mistakes deliberately",
-              description:
-                "Keep a record of recurring errors in endings, tense choice, spelling, word order, and misunderstood question language.",
-            },
-            {
-              title: "Move from notes to retrieval",
-              description:
-                "Reading notes is useful at the start, but revision should quickly become recall, translation, listening, writing, and speaking practice.",
-            },
-          ],
+            "Tense, cases, agreement, negatives, comparisons, and sentence structures that affect comprehension and output.",
+          icon: "grammar",
         },
         {
-          title: "A weekly GCSE Russian revision cycle",
+          title: "Paper-specific technique",
           description:
-            "The best revision plans repeat the same core rhythm so students build fluency without losing sight of exam technique.",
-          items: [
-            {
-              title: "Day 1: vocabulary retrieval",
-              description:
-                "Review one theme, then test recall both ways: Russian to English and English to Russian.",
-            },
-            {
-              title: "Day 2: grammar in sentences",
-              description:
-                "Practise one grammar point in short sentences before using it in translation or writing.",
-            },
-            {
-              title: "Day 3: listening or reading",
-              description:
-                "Use one receptive task to practise speed, question language, distractors, and inference.",
-            },
-            {
-              title: "Day 4: speaking or writing",
-              description:
-                "Produce Russian from memory, then correct accuracy, range, word order, and endings.",
-            },
-            {
-              title: "Day 5: mistake review",
-              description:
-                "Turn mistakes into a short action list instead of simply recording a score.",
-            },
-            {
-              title: "Weekend: mixed practice",
-              description:
-                "Bring vocabulary, grammar, and exam tasks together in a short timed session.",
-            },
-          ],
+            "Listening, speaking, reading, writing, and translation each need their own habits and review routine.",
+          icon: "exam",
+        },
+      ]}
+      routineTitle="Revision should repeat the same clear cycle."
+      routineDescription="The exact topics can change, but the rhythm should stay familiar enough that students do not have to reinvent their plan every week."
+      routineItems={[
+        {
+          title: "Vocabulary retrieval",
+          description:
+            "Review one theme, then test recall both ways: Russian to English and English to Russian.",
+          icon: "vocabulary",
+        },
+        {
+          title: "Grammar in sentences",
+          description:
+            "Practise one grammar point in short sentences before using it in translation or writing.",
+          icon: "grammar",
+        },
+        {
+          title: "One paper task",
+          description:
+            "Use listening, reading, speaking, or writing practice to turn knowledge into exam behaviour.",
+          icon: "questionSet",
+        },
+        {
+          title: "Mistake review",
+          description:
+            "Turn errors into a short action list instead of simply recording a score.",
+          icon: "completed",
+        },
+      ]}
+      warningTitle="Revision becomes weaker when it only looks productive."
+      warningDescription="Open notes, colour-coded lists, and repeated full papers can feel reassuring while still avoiding the actual weak points."
+      warningItems={[
+        {
+          title: "Rereading instead of retrieval",
+          description:
+            "Students need to recall Russian, produce answers, and check what is missing.",
+          icon: "warning",
+        },
+        {
+          title: "Doing papers without review",
+          description:
+            "Past papers help only when the student knows why marks were lost and what to practise next.",
+          icon: "pastPapers",
+        },
+        {
+          title: "Avoiding the hardest paper",
+          description:
+            "Speaking and writing often need earlier attention because confidence and accuracy take repetition.",
+          icon: "speaking",
+        },
+      ]}
+      courseFitTitle="The course turns revision topics into next steps."
+      courseFitDescription="The platform can connect lessons, vocabulary, grammar, practice, and progress so revision feels less like guesswork."
+      courseFitItems={[
+        {
+          title: "Guided lessons",
+          description:
+            "Students can revisit the topic or grammar point behind a weak answer.",
+          icon: "lessonContent",
+        },
+        {
+          title: "Practice surfaces",
+          description:
+            "Vocabulary, grammar, question sets, and mocks each have a clearer place.",
+          icon: "surfaces",
+        },
+        {
+          title: "Visible progress",
+          description:
+            "A revision plan is easier to keep when the next useful step remains visible.",
+          icon: "completed",
         },
       ]}
       relatedLinks={[
         {
           title: "GCSE Russian past papers",
-          description: "Use past papers as part of a structured revision cycle.",
+          description: "Use papers as diagnosis, not only as tests.",
           href: "/gcse-russian-past-papers",
           icon: "pastPapers",
         },
         {
           title: "GCSE Russian vocabulary guide",
-          description: "Organise vocabulary by theme, tier, and exam use.",
+          description: "Organise words by theme, tier, and exam use.",
           href: "/gcse-russian-vocabulary",
           icon: "vocabulary",
         },
         {
-          title: "Online GCSE Russian course",
-          description: "Turn revision topics into guided lessons and practice.",
-          href: "/gcse-russian-course",
-          icon: "courses",
+          title: "GCSE Russian grammar guide",
+          description: "Prioritise grammar that changes meaning and output.",
+          href: "/gcse-russian-grammar",
+          icon: "grammar",
+        },
+        {
+          title: "GCSE Russian exam guide",
+          description: "Review how the four papers shape revision.",
+          href: "/gcse-russian-exam-guide",
+          icon: "exam",
         },
       ]}
       faqs={[
         {
           question: "How early should GCSE Russian revision start?",
           answer:
-            "Students should start steady revision well before the exam season because vocabulary, grammar, listening confidence, and speaking fluency need repeated practice.",
+            "Students should start steady revision well before exam season because vocabulary, grammar, listening confidence, and speaking fluency need repeated practice.",
         },
         {
           question: "Should revision begin with past papers?",
@@ -149,18 +174,11 @@ export default function GcseRussianRevisionPage() {
         {
           question: "What should students revise every week?",
           answer:
-            "A balanced week should include vocabulary retrieval, one grammar focus, one listening or reading task, one speaking or writing task, and a short mistake review.",
-        },
-        {
-          question: "How can parents tell whether revision is working?",
-          answer:
-            "Look for evidence of retrieval, corrected mistakes, repeated practice, and improved confidence across papers, not just time spent with notes open.",
+            "A balanced week should include vocabulary retrieval, one grammar focus, one listening or reading task, one speaking or writing task, and mistake review.",
         },
       ]}
-      ctaTitle="Turn revision into a weekly plan"
+      ctaTitle="Turn revision into a visible plan."
       ctaDescription="Use the public guides to choose what matters, then use the course platform for structured lessons, practice, and progress tracking."
-      ctaSecondaryHref="/gcse-russian-exam-guide"
-      ctaSecondaryLabel="Exam guide"
     />
   );
 }
