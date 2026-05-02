@@ -88,6 +88,25 @@ export function StudentDashboardPanel({
                 </Button>
               ) : null}
 
+              {dashboard.accessState === "trial" &&
+              (dashboard.variant === "foundation" || dashboard.variant === "higher") ? (
+                <Button
+                  href={`/courses/gcse-russian/${
+                    dashboard.variant === "foundation" ? "higher" : "foundation"
+                  }`}
+                  variant="secondary"
+                  icon="preview"
+                >
+                  Sample {dashboard.variant === "foundation" ? "Higher" : "Foundation"}
+                </Button>
+              ) : null}
+
+              {dashboard.accessState === "full_foundation" ? (
+                <Button href="/account/billing" variant="secondary" icon="billing">
+                  Upgrade to Higher
+                </Button>
+              ) : null}
+
               <Button href="/mock-exams" variant="secondary" icon="mockExam">
                 Mock exams
               </Button>

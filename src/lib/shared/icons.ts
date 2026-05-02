@@ -155,6 +155,7 @@ export const appIcons = {
   uiLab: WandSparkles,
   layers: Layers,
   star: Star,
+  sparkles: Sparkles,
 
   chevronRight: ChevronRight,
   chevronDown: ChevronDown,

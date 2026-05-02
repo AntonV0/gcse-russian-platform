@@ -6,10 +6,19 @@ export type DashboardInfo = {
   role: "admin" | "teacher" | "student" | "guest";
   variant: "foundation" | "higher" | "volna" | null;
   accessMode: "trial" | "full" | "volna" | null;
+  accessState:
+    | "guest_preview"
+    | "trial_needs_tier"
+    | "trial"
+    | "full_foundation"
+    | "full_higher"
+    | "volna"
+    | "expired";
 };
 
 type DashboardGrantRow = {
   access_mode: string;
+  is_active: boolean;
   starts_at: string | null;
   ends_at: string | null;
   products:
@@ -49,6 +58,7 @@ export const getDashboardInfo = cache(
         role: "guest",
         variant: null,
         accessMode: null,
+        accessState: "guest_preview",
       };
     }
 
@@ -63,6 +73,7 @@ export const getDashboardInfo = cache(
         role: "admin",
         variant: "volna",
         accessMode: "volna",
+        accessState: "volna",
       };
     }
 
@@ -78,6 +89,7 @@ export const getDashboardInfo = cache(
         role: "teacher",
         variant: "volna",
         accessMode: "volna",
+        accessState: "volna",
       };
     }
 
@@ -86,6 +98,7 @@ export const getDashboardInfo = cache(
       .select(
         `
       access_mode,
+      is_active,
       starts_at,
       ends_at,
       products (
@@ -93,20 +106,21 @@ export const getDashboardInfo = cache(
       )
     `
       )
-      .eq("user_id", user.id)
-      .eq("is_active", true);
+      .eq("user_id", user.id);
 
     if (!grants || grants.length === 0) {
       return {
         role: "student",
         variant: null,
         accessMode: null,
+        accessState: "trial_needs_tier",
       };
     }
 
     const now = new Date();
-    const typedGrants = (grants as DashboardGrantRow[]).filter((grant) =>
-      isGrantCurrentlyValid(grant, now)
+    const typedGrantRows = grants as (DashboardGrantRow & { is_active?: boolean })[];
+    const typedGrants = typedGrantRows.filter(
+      (grant) => grant.is_active !== false && isGrantCurrentlyValid(grant, now)
     );
 
     if (typedGrants.length === 0) {
@@ -114,6 +128,7 @@ export const getDashboardInfo = cache(
         role: "student",
         variant: null,
         accessMode: null,
+        accessState: "expired",
       };
     }
 
@@ -123,6 +138,7 @@ export const getDashboardInfo = cache(
           role: "student",
           variant: "volna",
           accessMode: "volna",
+          accessState: "volna",
         };
       }
     }
@@ -135,6 +151,7 @@ export const getDashboardInfo = cache(
           role: "student",
           variant: "higher",
           accessMode: grant.access_mode === "trial" ? "trial" : "full",
+          accessState: grant.access_mode === "trial" ? "trial" : "full_higher",
         };
       }
     }
@@ -147,6 +164,7 @@ export const getDashboardInfo = cache(
           role: "student",
           variant: "foundation",
           accessMode: grant.access_mode === "trial" ? "trial" : "full",
+          accessState: grant.access_mode === "trial" ? "trial" : "full_foundation",
         };
       }
     }
@@ -155,6 +173,7 @@ export const getDashboardInfo = cache(
       role: "student",
       variant: null,
       accessMode: null,
+      accessState: "expired",
     };
   }
 );

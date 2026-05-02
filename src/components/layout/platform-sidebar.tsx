@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AppLogo from "@/components/ui/app-logo";
 import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import LogoutButton from "@/components/layout/logout-button";
 import type { AppIconKey } from "@/lib/shared/icons";
@@ -32,6 +33,9 @@ type NavItem = {
   label: string;
   href: string;
   icon: AppIconKey;
+  locked?: boolean;
+  lockedHref?: string;
+  lockedLabel?: string;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -43,21 +47,23 @@ function isActive(pathname: string | undefined, href: string) {
   return false;
 }
 
-function itemClass(active: boolean) {
+function itemClass(active: boolean, locked = false) {
   return [
     "group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-transparent px-3 py-2.5 text-sm font-medium transition app-focus-ring",
     active
       ? "app-selected-surface before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-r-full before:[background:var(--accent-gradient-fill)]"
       : "text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
+    locked ? "opacity-85" : "",
   ].join(" ");
 }
 
-function mobileItemClass(active: boolean) {
+function mobileItemClass(active: boolean, locked = false) {
   return [
     "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 text-sm font-medium transition app-focus-ring",
     active
       ? "app-selected-surface"
       : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
+    locked ? "opacity-85" : "",
   ].join(" ");
 }
 
@@ -83,7 +89,22 @@ function getAccessLabel(
   if (role === "admin") return "Admin area";
   if (role === "teacher") return "Teacher area";
 
-  return "Platform area";
+  return "Explore the platform";
+}
+
+function getNavHref(item: NavItem) {
+  return item.locked ? (item.lockedHref ?? "/login") : item.href;
+}
+
+function NavLockMeta({ item }: { item: NavItem }) {
+  if (!item.locked) return null;
+
+  return (
+    <span className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border border-[var(--border-subtle)] bg-[var(--background-muted)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
+      <AppIcon icon="lock" size={11} />
+      <span>{item.lockedLabel ?? "Login"}</span>
+    </span>
+  );
 }
 
 export default function PlatformSidebar({
@@ -93,8 +114,13 @@ export default function PlatformSidebar({
 }: PlatformSidebarProps) {
   const currentPathname = usePathname();
   const activePathname = pathname ?? currentPathname;
+  const isGuest = role === "guest";
   const mainItems: NavItem[] = [
-    { label: "Dashboard", href: getDashboardPath(), icon: "dashboard" },
+    {
+      label: "Dashboard",
+      href: getDashboardPath(),
+      icon: "dashboard",
+    },
     { label: "Courses", href: getCoursesPath(), icon: "courses" },
     { label: "Vocabulary", href: getVocabularyPath(), icon: "vocabulary" },
     { label: "Grammar", href: getGrammarPath(), icon: "grammar" },
@@ -110,27 +136,69 @@ export default function PlatformSidebar({
   const isVolnaStudent = isStudent && accessMode === "volna";
   const isNonVolnaStudent = isStudent && accessMode !== "volna";
 
-  if (isVolnaStudent || isTeacher || isAdmin) {
-    conditionalItems.push({
-      label: "Assignments",
-      href: getAssignmentsPath(),
-      icon: "assignments",
-    });
-  }
+  conditionalItems.push({
+    label: "Assignments",
+    href: getAssignmentsPath(),
+    icon: "assignments",
+    locked: !(isVolnaStudent || isTeacher || isAdmin),
+    lockedHref: isGuest ? "/login" : "/online-classes",
+    lockedLabel: isGuest ? "Login" : "Volna",
+  });
 
-  if (isNonVolnaStudent || isTeacher || isAdmin) {
-    conditionalItems.push({
-      label: "Online Classes",
-      href: getOnlineClassesPath(),
-      icon: "school",
-    });
+  conditionalItems.push({
+    label: "Online Classes",
+    href: getOnlineClassesPath(),
+    icon: "school",
+    locked: isGuest,
+    lockedHref: "/login",
+    lockedLabel: "Login",
+  });
+
+  if (!isNonVolnaStudent && !isTeacher && !isAdmin && !isGuest) {
+    const onlineClasses = conditionalItems.find(
+      (item) => item.href === getOnlineClassesPath()
+    );
+
+    if (onlineClasses) {
+      onlineClasses.locked = true;
+      onlineClasses.lockedHref = getDashboardPath();
+      onlineClasses.lockedLabel = "N/A";
+    }
   }
 
   const utilityItems: NavItem[] = [
-    { label: "Overview", href: getAccountPath(), icon: "dashboard" },
-    { label: "Billing", href: getBillingPath(), icon: "billing" },
-    { label: "Profile", href: getProfilePath(), icon: "student" },
-    { label: "Settings", href: getSettingsPath(), icon: "settings" },
+    {
+      label: "Overview",
+      href: getAccountPath(),
+      icon: "dashboard",
+      locked: isGuest,
+      lockedHref: "/login",
+      lockedLabel: "Login",
+    },
+    {
+      label: "Billing",
+      href: getBillingPath(),
+      icon: "billing",
+      locked: isGuest,
+      lockedHref: "/login",
+      lockedLabel: "Login",
+    },
+    {
+      label: "Profile",
+      href: getProfilePath(),
+      icon: "student",
+      locked: isGuest,
+      lockedHref: "/login",
+      lockedLabel: "Login",
+    },
+    {
+      label: "Settings",
+      href: getSettingsPath(),
+      icon: "settings",
+      locked: isGuest,
+      lockedHref: "/login",
+      lockedLabel: "Login",
+    },
   ];
 
   return (
@@ -154,16 +222,23 @@ export default function PlatformSidebar({
               <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
                 {[...mainItems, ...conditionalItems].map((item) => {
                   const active = isActive(activePathname, item.href);
+                  const href = getNavHref(item);
 
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
-                      className={mobileItemClass(active)}
+                      href={href}
+                      className={mobileItemClass(active, item.locked)}
                       aria-current={active ? "page" : undefined}
+                      aria-label={
+                        item.locked
+                          ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
+                          : undefined
+                      }
                     >
                       <AppIcon icon={item.icon} size={16} />
                       <span className="whitespace-nowrap">{item.label}</span>
+                      {item.locked ? <AppIcon icon="lock" size={12} /> : null}
                     </Link>
                   );
                 })}
@@ -177,22 +252,40 @@ export default function PlatformSidebar({
               <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
                 {utilityItems.map((item) => {
                   const active = isActive(activePathname, item.href);
+                  const href = getNavHref(item);
 
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
-                      className={mobileItemClass(active)}
+                      href={href}
+                      className={mobileItemClass(active, item.locked)}
                       aria-current={active ? "page" : undefined}
+                      aria-label={
+                        item.locked
+                          ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
+                          : undefined
+                      }
                     >
                       <AppIcon icon={item.icon} size={16} />
                       <span className="whitespace-nowrap">{item.label}</span>
+                      {item.locked ? <AppIcon icon="lock" size={12} /> : null}
                     </Link>
                   );
                 })}
               </div>
               <div className="mt-3 px-1">
-                <LogoutButton />
+                {isGuest ? (
+                  <div className="flex flex-wrap gap-2">
+                    <Button href="/login" variant="secondary" size="sm" icon="user">
+                      Log in
+                    </Button>
+                    <Button href="/signup" variant="primary" size="sm" icon="create">
+                      Sign up
+                    </Button>
+                  </div>
+                ) : (
+                  <LogoutButton />
+                )}
               </div>
             </div>
           </nav>
@@ -232,13 +325,19 @@ export default function PlatformSidebar({
 
             {mainItems.map((item) => {
               const active = isActive(activePathname, item.href);
+              const href = getNavHref(item);
 
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
-                  className={itemClass(active)}
+                  href={href}
+                  className={itemClass(active, item.locked)}
                   aria-current={active ? "page" : undefined}
+                  aria-label={
+                    item.locked
+                      ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
+                      : undefined
+                  }
                 >
                   <AppIcon
                     icon={item.icon}
@@ -251,6 +350,7 @@ export default function PlatformSidebar({
                     ].join(" ")}
                   />
                   <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                  <NavLockMeta item={item} />
                 </Link>
               );
             })}
@@ -262,13 +362,19 @@ export default function PlatformSidebar({
 
               {conditionalItems.map((item) => {
                 const active = isActive(activePathname, item.href);
+                const href = getNavHref(item);
 
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
-                    className={itemClass(active)}
+                    href={href}
+                    className={itemClass(active, item.locked)}
                     aria-current={active ? "page" : undefined}
+                    aria-label={
+                      item.locked
+                        ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "access"}`
+                        : undefined
+                    }
                   >
                     <AppIcon
                       icon={item.icon}
@@ -281,6 +387,7 @@ export default function PlatformSidebar({
                       ].join(" ")}
                     />
                     <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    <NavLockMeta item={item} />
                   </Link>
                 );
               })}
@@ -295,13 +402,19 @@ export default function PlatformSidebar({
 
               {utilityItems.map((item) => {
                 const active = isActive(activePathname, item.href);
+                const href = getNavHref(item);
 
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
-                    className={itemClass(active)}
+                    href={href}
+                    className={itemClass(active, item.locked)}
                     aria-current={active ? "page" : undefined}
+                    aria-label={
+                      item.locked
+                        ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
+                        : undefined
+                    }
                   >
                     <AppIcon
                       icon={item.icon}
@@ -314,13 +427,25 @@ export default function PlatformSidebar({
                       ].join(" ")}
                     />
                     <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    <NavLockMeta item={item} />
                   </Link>
                 );
               })}
             </div>
 
             <div className="mt-4 pt-4">
-              <LogoutButton />
+              {isGuest ? (
+                <div className="grid gap-2">
+                  <Button href="/login" variant="secondary" size="sm" icon="user">
+                    Log in
+                  </Button>
+                  <Button href="/signup" variant="primary" size="sm" icon="create">
+                    Sign up
+                  </Button>
+                </div>
+              ) : (
+                <LogoutButton />
+              )}
             </div>
           </div>
         </nav>
