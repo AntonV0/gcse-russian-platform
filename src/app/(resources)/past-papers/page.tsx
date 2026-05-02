@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
@@ -21,6 +22,19 @@ import {
   type PastPaperResourceType,
   type PastPaperTier,
 } from "@/lib/past-papers/past-paper-helpers-db";
+import { getOgImagePath } from "@/lib/seo/og-images";
+import { buildPublicMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "GCSE Russian Past Papers",
+  description:
+    "Browse official Pearson Edexcel GCSE Russian 1RU0 past paper resources by series, paper, tier, and resource type.",
+  path: "/past-papers",
+  ogTitle: "GCSE Russian Past Papers",
+  ogDescription:
+    "Find official GCSE Russian past papers, mark schemes, transcripts, audio, and exam resources.",
+  ogImagePath: getOgImagePath("past-papers"),
+});
 
 type PastPapersPageProps = {
   searchParams?: Promise<{
@@ -125,6 +139,30 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
         title="External Pearson resources"
         description="These links open official Pearson pages or files in a new tab. Downloads happen from Pearson, not from this platform."
       />
+
+      {dashboard.role === "guest" ? (
+        <FeedbackBanner
+          tone="success"
+          icon="unlocked"
+          title="Past papers stay free"
+          description="You can use every official link here without an account. Create a trial account when you want lessons, saved progress, and mock exam attempts."
+        >
+          <Button href="/signup" variant="primary" size="sm" icon="create">
+            Start trial
+          </Button>
+        </FeedbackBanner>
+      ) : dashboard.accessMode === "trial" ? (
+        <FeedbackBanner
+          tone="info"
+          icon="billing"
+          title="Use papers alongside trial lessons"
+          description="Past papers stay fully open. Upgrade when you want the full lesson path, richer practice, and all tier-specific course content."
+        >
+          <Button href="/account/billing" variant="secondary" size="sm" icon="billing">
+            Review access
+          </Button>
+        </FeedbackBanner>
+      ) : null}
 
       <SectionCard
         title="Find resources"

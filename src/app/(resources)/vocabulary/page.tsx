@@ -1,9 +1,10 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
-import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import VocabularyFilterForm from "@/components/vocabulary/vocabulary-filter-form";
 import VocabularySetSectionList from "@/components/vocabulary/vocabulary-set-section-list";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -13,7 +14,20 @@ import {
   getVocabularySetsDb,
 } from "@/lib/vocabulary/sets/set-list-queries";
 import { getVocabularySetThemeKeysDb } from "@/lib/vocabulary/sets/set-options";
+import { getOgImagePath } from "@/lib/seo/og-images";
+import { buildPublicMetadata } from "@/lib/seo/site";
 import type { VocabularySetFilters } from "@/lib/vocabulary/shared/types";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "GCSE Russian Vocabulary",
+  description:
+    "Browse GCSE Russian vocabulary sets by topic, tier, and source for Pearson Edexcel 1RU0 revision and exam preparation.",
+  path: "/vocabulary",
+  ogTitle: "GCSE Russian Vocabulary",
+  ogDescription:
+    "Find topic vocabulary, tier-specific word lists, and useful GCSE Russian revision sets.",
+  ogImagePath: getOgImagePath("vocabulary"),
+});
 
 type VocabularyPageProps = {
   searchParams?: Promise<{
@@ -113,10 +127,14 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
           </>
         }
         visual={
-          <VisualPlaceholder
-            category="vocabulary"
-            size="wide"
-            ariaLabel="Abstract vocabulary card illustration"
+          <Image
+            src="/illustrations/vocabulary-hub-v1.png"
+            alt="Vocabulary cards and study tools illustration"
+            width={1720}
+            height={914}
+            priority
+            sizes="(min-width: 1280px) 320px, 80vw"
+            className="h-auto w-full max-w-[360px] drop-shadow-[0_18px_34px_color-mix(in_srgb,var(--text-primary)_10%,transparent)]"
           />
         }
       />

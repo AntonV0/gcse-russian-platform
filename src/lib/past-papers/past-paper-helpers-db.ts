@@ -162,31 +162,15 @@ export function canDashboardAccessPastPaperResource(
     return true;
   }
 
-  if (dashboard.role !== "student") {
-    return false;
-  }
-
-  if (dashboard.variant === "foundation" && resource.tier === "higher") {
-    return false;
-  }
-
-  if (dashboard.variant === "higher" && resource.tier === "foundation") {
-    return false;
-  }
-
-  if (dashboard.accessMode === "trial") {
-    return resource.is_trial_visible;
-  }
-
-  if (dashboard.accessMode === "full") {
+  if (dashboard.role === "guest") {
     return true;
   }
 
-  if (dashboard.accessMode === "volna") {
-    return resource.available_in_volna;
+  if (dashboard.role === "student") {
+    return true;
   }
 
-  return !resource.requires_paid_access;
+  return false;
 }
 
 export function filterPastPaperResourcesForDashboardAccess(

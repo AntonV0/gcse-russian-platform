@@ -140,3 +140,34 @@ export async function getCurrentCourseVariantAccessGrantDb(
 
   return validGrant ?? null;
 }
+
+export async function getCurrentCourseTrialAccessGrantDb(
+  courseSlug: string,
+  userId?: string
+) {
+  const variants = ["foundation", "higher"] as const;
+  const productLists = await Promise.all(
+    variants.map((variantSlug) => getProductsForCourseVariantDb(courseSlug, variantSlug))
+  );
+  const products = productLists.flat();
+  if (products.length === 0) return null;
+
+  const grants = await getCurrentUserAccessGrantsDb(userId);
+  if (grants.length === 0) return null;
+
+  const productIds = new Set(products.map((product) => product.id));
+  const now = new Date();
+
+  const validTrialGrant = grants.find((grant) => {
+    if (grant.access_mode !== "trial") return false;
+    if (!productIds.has(grant.product_id)) return false;
+    if (!grant.is_active) return false;
+
+    if (grant.starts_at && new Date(grant.starts_at) > now) return false;
+    if (grant.ends_at && new Date(grant.ends_at) < now) return false;
+
+    return true;
+  });
+
+  return validTrialGrant ?? null;
+}

@@ -5,6 +5,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import LockedContentCard from "@/components/ui/locked-content-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadModulePageData } from "@/lib/courses/course-helpers-db";
 import { getVariantPath, getLessonPath } from "@/lib/access/routes";
@@ -16,6 +17,7 @@ import {
   formatCoursePathRemainingMinutes,
 } from "@/lib/courses/path-progress";
 import { getLessonIdsWithPublishedSectionsDb } from "@/lib/lessons/lesson-content-helpers-db";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
 type ModulePageProps = {
   params: Promise<{
@@ -28,14 +30,35 @@ type ModulePageProps = {
 export default async function ModulePage({ params }: ModulePageProps) {
   const { courseSlug, variantSlug, moduleSlug } = await params;
 
-  const { course, module, lessons } = await loadModulePageData(
-    courseSlug,
-    variantSlug,
-    moduleSlug
-  );
+  const [{ course, module, lessons }, dashboard] = await Promise.all([
+    loadModulePageData(courseSlug, variantSlug, moduleSlug),
+    getDashboardInfo(),
+  ]);
 
   if (!course || !module) {
     notFound();
+  }
+
+  if (dashboard.role === "guest") {
+    return (
+      <main className="space-y-8">
+        <PageHeader
+          title={module.title}
+          description={module.description ?? "This module opens inside trial."}
+        />
+
+        <LockedContentCard
+          title="Create a trial account to open modules"
+          description="Module lessons require a trial account so your tier choice and lesson progress are saved."
+          accessLabel="Trial account"
+          statusLabel="Signup required"
+          primaryActionHref="/signup"
+          primaryActionLabel="Start trial"
+          secondaryActionHref={getVariantPath(course.slug, variantSlug)}
+          secondaryActionLabel="Back to path"
+        />
+      </main>
+    );
   }
 
   const [profile, access] = await Promise.all([
@@ -87,7 +110,10 @@ export default async function ModulePage({ params }: ModulePageProps) {
   const firstAccessibleLesson =
     visibleLessons.find((lesson) => lessonAccessMap.get(lesson.slug) === "accessible") ??
     null;
-  const primaryLesson = firstAccessibleIncompleteLesson ?? firstAccessibleLesson;
+  const firstCompletedLesson =
+    visibleLessons.find((lesson) => completedMap.get(lesson.slug)) ?? null;
+  const primaryLesson =
+    firstAccessibleIncompleteLesson ?? firstAccessibleLesson ?? firstCompletedLesson;
   const hasPublishedLessons = totalLessons > 0;
   const isModuleComplete = totalLessons > 0 && completedCount === totalLessons;
   const momentumMessage = !hasPublishedLessons
@@ -254,16 +280,23 @@ export default async function ModulePage({ params }: ModulePageProps) {
             const isCompleted = !!completedMap.get(lesson.slug);
             const accessState = lessonAccessMap.get(lesson.slug);
             const canAccessLesson = accessState === "accessible";
+            const canOpenLesson = canAccessLesson || isCompleted;
             const isNextLesson =
               firstAccessibleIncompleteLesson?.slug === lesson.slug && !isCompleted;
+            const lockedLabel =
+              dashboard.accessMode === "trial"
+                ? "Trial sample limit"
+                : dashboard.accessState === "full_foundation" && variantSlug === "higher"
+                  ? "Higher upgrade required"
+                  : "Access required";
 
             const cardContent = (
               <DashboardCard className="h-full transition hover:-translate-y-0.5">
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge tone="muted" icon="lesson">
+                    <p className="w-full text-xs font-semibold uppercase tracking-[0.14em] app-text-soft sm:w-auto">
                       Lesson {index + 1}
-                    </Badge>
+                    </p>
                     <Badge tone="muted" icon="pending">
                       {formatCoursePathMinutes(lesson.estimated_minutes)}
                     </Badge>
@@ -304,7 +337,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                             ? "Your next step"
                             : canAccessLesson
                               ? "Available when ready"
-                              : "Locked for now"}
+                              : lockedLabel}
                       </span>
                       <span className="app-text-muted">
                         Step {index + 1} of {totalLessons}
@@ -320,16 +353,16 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
                   <div className="pt-1 text-sm font-medium app-brand-text">
                     {isCompleted
-                      ? "Review lesson"
+                      ? "Review / restart lesson"
                       : canAccessLesson
                         ? "Open lesson"
-                        : "Locked until previous progress"}
+                        : lockedLabel}
                   </div>
                 </div>
               </DashboardCard>
             );
 
-            return canAccessLesson ? (
+            return canOpenLesson ? (
               <Link
                 key={lesson.slug}
                 href={getLessonPath(course.slug, variantSlug, module.slug, lesson.slug)}

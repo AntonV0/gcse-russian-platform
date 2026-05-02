@@ -3,12 +3,14 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
 import EmptyState from "@/components/ui/empty-state";
+import LockedContentCard from "@/components/ui/locked-content-card";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import VocabularyItemSectionList from "@/components/vocabulary/vocabulary-item-section-list";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { canDashboardAccessVocabularySet } from "@/lib/vocabulary/access";
 import {
   getVocabularyStudyVariant,
   groupVocabularyItemsByList,
@@ -45,6 +47,90 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
     (vocabularySet.set_type === "specification" && !canSeeDrafts)
   ) {
     notFound();
+  }
+
+  if (dashboard.role === "guest") {
+    return (
+      <main className="space-y-4">
+        <PageIntroPanel
+          tone="student"
+          eyebrow="Vocabulary set"
+          title={vocabularySet.title}
+          description={
+            vocabularySet.description ??
+            "Create a trial account to open the vocabulary study view."
+          }
+          badges={
+            <>
+              <Badge tone="info" icon="school">
+                {getVocabularyTierLabel(vocabularySet.tier)}
+              </Badge>
+              <Badge tone="muted" icon="vocabularySet">
+                {getVocabularyListModeLabel(vocabularySet.list_mode)}
+              </Badge>
+            </>
+          }
+          actions={
+            <Button href="/vocabulary" variant="secondary" icon="back">
+              All vocabulary
+            </Button>
+          }
+        />
+
+        <LockedContentCard
+          title="Create a trial account to study this vocabulary"
+          description="The vocabulary hub remains open for browsing. Detailed word lists and study context are part of the signed-in trial experience."
+          accessLabel="Trial account"
+          statusLabel="Signup required"
+          primaryActionHref="/signup"
+          primaryActionLabel="Start trial"
+          secondaryActionHref="/vocabulary"
+          secondaryActionLabel="Browse vocabulary"
+        />
+      </main>
+    );
+  }
+
+  if (!canDashboardAccessVocabularySet(vocabularySet, dashboard)) {
+    return (
+      <main className="space-y-4">
+        <PageIntroPanel
+          tone="student"
+          eyebrow="Vocabulary set"
+          title={vocabularySet.title}
+          description={
+            vocabularySet.description ??
+            "This vocabulary set is part of the full GCSE Russian course."
+          }
+          badges={
+            <>
+              <Badge tone="info" icon="school">
+                {getVocabularyTierLabel(vocabularySet.tier)}
+              </Badge>
+              <Badge tone="muted" icon="vocabularySet">
+                {getVocabularyListModeLabel(vocabularySet.list_mode)}
+              </Badge>
+            </>
+          }
+          actions={
+            <Button href="/vocabulary" variant="secondary" icon="back">
+              All vocabulary
+            </Button>
+          }
+        />
+
+        <LockedContentCard
+          title="Unlock this vocabulary set"
+          description="This set is visible in the vocabulary hub, but your current access does not include the detailed study view."
+          accessLabel="Full course"
+          statusLabel="Locked"
+          primaryActionHref="/account/billing"
+          primaryActionLabel="Review access"
+          secondaryActionHref="/vocabulary"
+          secondaryActionLabel="Browse vocabulary"
+        />
+      </main>
+    );
   }
 
   const itemSections = groupVocabularyItemsByList(lists, items, studyVariant);

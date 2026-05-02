@@ -50,6 +50,39 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
     notFound();
   }
 
+  if (dashboard.role === "guest") {
+    return (
+      <main className="space-y-4">
+        <PageIntroPanel
+          tone="student"
+          eyebrow="Grammar set"
+          title={grammarSet.title}
+          description={
+            grammarSet.description ??
+            "Create a trial account to open grammar explanations and examples."
+          }
+          badges={<GrammarSetRequirementBadges grammarSet={grammarSet} />}
+          actions={
+            <Button href="/grammar" variant="secondary" icon="back">
+              All grammar
+            </Button>
+          }
+        />
+
+        <LockedContentCard
+          title="Create a trial account to study this set"
+          description="The grammar hub is open for browsing, but detailed explanations and study flow are part of the signed-in trial experience."
+          accessLabel="Trial account"
+          statusLabel="Signup required"
+          primaryActionHref="/signup"
+          primaryActionLabel="Start trial"
+          secondaryActionHref="/grammar"
+          secondaryActionLabel="Browse grammar"
+        />
+      </main>
+    );
+  }
+
   if (!canDashboardAccessGrammarSet(grammarSet, dashboard)) {
     return (
       <main className="space-y-4">
@@ -152,7 +185,7 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
             <div className="space-y-3 text-sm leading-6 text-[var(--text-secondary)]">
               {GRAMMAR_SET_STUDY_STEPS.map((step, index) => (
                 <div key={step} className="flex gap-3">
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--accent-fill)]">
+                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--accent-ink)]">
                     {index + 1}
                   </span>
                   <p>{step}</p>

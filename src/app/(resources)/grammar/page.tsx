@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
@@ -16,6 +17,19 @@ import {
   type GrammarSetFilters,
 } from "@/lib/grammar/grammar-helpers-db";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { getOgImagePath } from "@/lib/seo/og-images";
+import { buildPublicMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "GCSE Russian Grammar",
+  description:
+    "Browse GCSE Russian grammar sets by topic and tier, with explanations, examples, and reference tables for Pearson Edexcel 1RU0.",
+  path: "/grammar",
+  ogTitle: "GCSE Russian Grammar",
+  ogDescription:
+    "Find grammar explanations, sentence patterns, examples, and reference material for GCSE Russian.",
+  ogImagePath: getOgImagePath("grammar"),
+});
 
 type GrammarPageProps = {
   searchParams?: Promise<{

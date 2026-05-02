@@ -211,6 +211,44 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
     notFound();
   }
 
+  if (dashboard.role === "guest") {
+    return (
+      <main className="space-y-4">
+        <PageIntroPanel
+          tone="student"
+          eyebrow={grammarSet.title}
+          title={grammarPoint.title}
+          description={
+            grammarPoint.short_description ??
+            "Create a trial account to open grammar explanations and examples."
+          }
+          badges={
+            <GrammarPointRequirementBadges
+              point={grammarPoint}
+              showSpecReference={false}
+            />
+          }
+          actions={
+            <Button href="/grammar" variant="secondary" icon="back">
+              All grammar
+            </Button>
+          }
+        />
+
+        <LockedContentCard
+          title="Create a trial account to study this grammar point"
+          description="Detailed explanations, examples, tables, and practice tasks are part of the signed-in trial experience."
+          accessLabel="Trial account"
+          statusLabel="Signup required"
+          primaryActionHref="/signup"
+          primaryActionLabel="Start trial"
+          secondaryActionHref="/grammar"
+          secondaryActionLabel="Browse grammar"
+        />
+      </main>
+    );
+  }
+
   if (!canDashboardAccessGrammarSet(grammarSet, dashboard)) {
     return (
       <main className="space-y-4">

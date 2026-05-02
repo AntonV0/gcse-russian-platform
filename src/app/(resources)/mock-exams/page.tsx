@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import LockedContentCard from "@/components/ui/locked-content-card";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
@@ -12,7 +14,20 @@ import { filterMockExamsForDashboardAccess } from "@/lib/mock-exams/access";
 import { mockExamTiers } from "@/lib/mock-exams/constants";
 import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
 import { getPublishedMockExamSetsDb } from "@/lib/mock-exams/queries";
+import { getOgImagePath } from "@/lib/seo/og-images";
+import { buildPublicMetadata } from "@/lib/seo/site";
 import type { MockExamFilters, MockExamTier } from "@/lib/mock-exams/types";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "GCSE Russian Mock Exams",
+  description:
+    "Browse GCSE-style Russian mock exams and exam-condition practice built for structured Pearson Edexcel 1RU0 preparation.",
+  path: "/mock-exams",
+  ogTitle: "GCSE Russian Mock Exams",
+  ogDescription:
+    "Preview original GCSE-style Russian mock exams and start account-based attempts when ready.",
+  ogImagePath: getOgImagePath("resources"),
+});
 
 type MockExamsPageProps = {
   searchParams?: Promise<{
@@ -46,6 +61,53 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
     paperNumber: normalizePaperNumberFilter(params.paperNumber),
     tier: normalizeTierFilter(params.tier),
   };
+
+  if (dashboard.role === "guest") {
+    return (
+      <main className="space-y-4">
+        <PageIntroPanel
+          tone="student"
+          eyebrow="Mock exams"
+          title="Mock Exams"
+          description="Original GCSE-style mocks are saved, submitted, and reviewed inside a signed-in account."
+          badges={
+            <>
+              <Badge tone="info" icon="mockExam">
+                Original practice
+              </Badge>
+              <Badge tone="muted" icon="locked">
+                Trial account required
+              </Badge>
+            </>
+          }
+          actions={
+            <Button href="/past-papers" variant="secondary" icon="pastPapers">
+              Past papers
+            </Button>
+          }
+          visual={
+            <VisualPlaceholder
+              category="mockExam"
+              size="wide"
+              ariaLabel="Abstract mock exam practice illustration"
+            />
+          }
+        />
+
+        <LockedContentCard
+          title="Create a trial account to open mock exams"
+          description="Past papers remain free and open. Platform mock exams require signup so attempts, marks, drafts, and feedback can be saved."
+          accessLabel="Trial account"
+          statusLabel="Signup required"
+          primaryActionHref="/signup"
+          primaryActionLabel="Start trial"
+          secondaryActionHref="/past-papers"
+          secondaryActionLabel="Open past papers"
+        />
+      </main>
+    );
+  }
+
   const exams = filterMockExamsForDashboardAccess(
     await getPublishedMockExamSetsDb(filters),
     dashboard

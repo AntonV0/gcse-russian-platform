@@ -92,6 +92,10 @@ export function canDashboardAccessGrammarSet(
     return true;
   }
 
+  if (dashboard.role === "guest") {
+    return !grammarSet.requires_paid_access;
+  }
+
   if (dashboard.role !== "student") {
     return false;
   }
