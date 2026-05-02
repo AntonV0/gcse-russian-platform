@@ -6,6 +6,7 @@ import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import LockedContentCard from "@/components/ui/locked-content-card";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import { startMockExamAttemptAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
@@ -34,7 +35,50 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
     { publishedOnly: dashboard.role !== "admin" && dashboard.role !== "teacher" }
   );
 
-  if (!exam || !canDashboardAccessMockExam(exam, dashboard)) {
+  if (!exam) {
+    notFound();
+  }
+
+  if (dashboard.role === "guest") {
+    return (
+      <main className="space-y-4">
+        <PageIntroPanel
+          tone="student"
+          eyebrow="Mock exam"
+          title={exam.title}
+          description={exam.description ?? "Original GCSE-style mock exam."}
+          badges={
+            <>
+              <Badge tone="info" icon="mockExam">
+                {exam.paper_name}
+              </Badge>
+              <Badge tone="muted" icon="school">
+                {getMockExamTierLabel(exam.tier)}
+              </Badge>
+            </>
+          }
+          actions={
+            <Button href="/mock-exams" variant="secondary" icon="back">
+              Mock exams
+            </Button>
+          }
+        />
+
+        <LockedContentCard
+          title="Create a trial account to preview mocks"
+          description="Mock exam attempts require an account so drafts, submissions, and feedback can be saved."
+          accessLabel="Trial account"
+          statusLabel="Signup required"
+          primaryActionHref="/signup"
+          primaryActionLabel="Start trial"
+          secondaryActionHref="/past-papers"
+          secondaryActionLabel="Open past papers"
+        />
+      </main>
+    );
+  }
+
+  if (!canDashboardAccessMockExam(exam, dashboard)) {
     notFound();
   }
 

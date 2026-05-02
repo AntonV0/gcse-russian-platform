@@ -8,7 +8,8 @@ import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import { canUserAccessLesson } from "@/lib/access/access";
 import { loadLessonContentByLessonIdDb } from "@/lib/lessons/lesson-content-helpers-db";
 import { getModulePath, getVariantPath } from "@/lib/access/routes";
-import { getCurrentProfile } from "@/lib/auth/auth";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
+import { getLessonProgress } from "@/lib/progress/progress";
 
 type LessonPageProps = {
   params: Promise<{
@@ -45,21 +46,22 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
     notFound();
   }
 
-  const profile = await getCurrentProfile();
+  const [profile, user] = await Promise.all([getCurrentProfile(), getCurrentUser()]);
   const canPreviewDraftLesson = !!profile?.is_admin || !!profile?.is_teacher;
 
   if (!lesson.is_published && !canPreviewDraftLesson) {
     notFound();
   }
 
-  const canAccess = await canUserAccessLesson(
-    courseSlug,
-    variantSlug,
-    moduleSlug,
-    lessonSlug
-  );
+  const [canAccess, lessonProgress] = await Promise.all([
+    canUserAccessLesson(courseSlug, variantSlug, moduleSlug, lessonSlug),
+    getLessonProgress(courseSlug, variantSlug, moduleSlug, lessonSlug),
+  ]);
+  const canReviewCompletedLesson = !!lessonProgress?.completed;
 
-  if (!canAccess) {
+  if (!canAccess && !canReviewCompletedLesson) {
+    const isGuest = !user;
+
     return (
       <main className="space-y-8">
         <section className="app-surface-brand app-section-padding-lg">
@@ -80,18 +82,19 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
               <div className="space-y-2">
                 <h1 className="app-title max-w-3xl">{lesson.title}</h1>
                 <p className="app-subtitle max-w-2xl">
-                  This lesson is locked for now. Continue through the module first, or
-                  review your course access if you expected this lesson to be available.
+                  {isGuest
+                    ? "Create a trial account to open sample lessons, choose a tier, and save progress."
+                    : "This lesson is locked for now. Continue through the module first, or review your course access if you expected this lesson to be available."}
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <Button
-                  href={getVariantPath(courseSlug, variantSlug)}
+                  href={isGuest ? "/signup" : getVariantPath(courseSlug, variantSlug)}
                   variant="primary"
-                  icon="back"
+                  icon={isGuest ? "create" : "back"}
                 >
-                  Back to module path
+                  {isGuest ? "Start trial" : "Back to module path"}
                 </Button>
 
                 <Button href="/courses" variant="secondary" icon="courses">
@@ -102,13 +105,19 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
 
             <LockedContentCard
               title="Unlock this lesson"
-              description="Lessons may unlock as you complete earlier work, and some lessons require the right course access. Start with the module path so the next available step is clear."
-              accessLabel={getVariantLabel(variantSlug)}
-              statusLabel="Locked"
-              primaryActionHref={getModulePath(courseSlug, variantSlug, moduleSlug)}
-              primaryActionLabel="Back to module"
-              secondaryActionHref="/account/billing"
-              secondaryActionLabel="Review access"
+              description={
+                isGuest
+                  ? "Lesson content is part of the trial account experience. Sign up to try sample lessons and see the full path in context."
+                  : "Lessons may unlock as you complete earlier work, and some lessons require the right course access. Start with the module path so the next available step is clear."
+              }
+              accessLabel={isGuest ? "Trial account" : getVariantLabel(variantSlug)}
+              statusLabel={isGuest ? "Signup required" : "Locked"}
+              primaryActionHref={
+                isGuest ? "/signup" : getModulePath(courseSlug, variantSlug, moduleSlug)
+              }
+              primaryActionLabel={isGuest ? "Create trial account" : "Back to module"}
+              secondaryActionHref={isGuest ? "/courses" : "/account/billing"}
+              secondaryActionLabel={isGuest ? "Course preview" : "Review access"}
             />
           </div>
         </section>
@@ -148,6 +157,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
       lessonSlug={lessonSlug}
       sections={lessonContent.sections}
       currentStep={currentStep}
+      lessonProgress={lessonProgress}
       lessonPageData={{
         ...lessonPageData,
         previousLesson: getAdjacentPublishedLesson(

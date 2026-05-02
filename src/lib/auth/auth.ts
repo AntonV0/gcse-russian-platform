@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentCourseVariantAccessGrantDb } from "@/lib/access/access-helpers-db";
+import {
+  getCurrentCourseTrialAccessGrantDb,
+  getCurrentCourseVariantAccessGrantDb,
+} from "@/lib/access/access-helpers-db";
 import { cache } from "react";
 
 export const getCurrentUser = cache(async function getCurrentUser() {
@@ -57,6 +60,24 @@ export const getCurrentCourseAccess = cache(async function getCurrentCourseAcces
       ends_at: grant.ends_at,
       is_active: grant.is_active,
     };
+  }
+
+  if (variantSlug === "foundation" || variantSlug === "higher") {
+    const trialGrant = await getCurrentCourseTrialAccessGrantDb(courseSlug, user.id);
+
+    if (trialGrant) {
+      return {
+        user_id: trialGrant.user_id,
+        course_slug: courseSlug,
+        course_variant: variantSlug,
+        access_mode: trialGrant.access_mode,
+        source: "user_access_grants",
+        product_id: trialGrant.product_id,
+        starts_at: trialGrant.starts_at,
+        ends_at: trialGrant.ends_at,
+        is_active: trialGrant.is_active,
+      };
+    }
   }
 
   // 2. Fallback to the old table during migration

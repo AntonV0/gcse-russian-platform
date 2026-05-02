@@ -5,9 +5,11 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import LockedContentCard from "@/components/ui/locked-content-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadCoursePageData } from "@/lib/courses/course-helpers-db";
 import { getCoursesPath, getVariantPath } from "@/lib/access/routes";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   formatCoursePathRemainingMinutes,
   getVariantPathProgressSummaries,
@@ -33,14 +35,43 @@ function getVariantLabel(slug: string) {
 
 export default async function CoursePage({ params }: CoursePageProps) {
   const { courseSlug } = await params;
-  const { course, variants } = await loadCoursePageData(courseSlug);
+  const [{ course, variants }, dashboard] = await Promise.all([
+    loadCoursePageData(courseSlug),
+    getDashboardInfo(),
+  ]);
 
   if (!course) {
     notFound();
   }
 
+  if (dashboard.role === "guest") {
+    return (
+      <main className="space-y-8">
+        <PageHeader
+          title={course.title}
+          description={course.description ?? "Preview this GCSE Russian course."}
+        />
+
+        <LockedContentCard
+          title="Create a trial account to choose a path"
+          description="Foundation and Higher path selection is saved to your account, so course modules and lesson progress start after signup."
+          accessLabel="Trial account"
+          statusLabel="Signup required"
+          primaryActionHref="/signup"
+          primaryActionLabel="Start trial"
+          secondaryActionHref="/courses"
+          secondaryActionLabel="Back to courses"
+        />
+      </main>
+    );
+  }
+
   const primaryVariant = variants[0] ?? null;
   const pathSummaries = await getVariantPathProgressSummaries(course.slug, variants);
+  const visibleVariants =
+    dashboard.accessState === "full_higher"
+      ? variants.filter((variant) => variant.slug === "higher")
+      : variants;
   const primaryVariantSummary = primaryVariant
     ? pathSummaries.get(primaryVariant.slug)
     : null;
@@ -160,10 +191,13 @@ export default async function CoursePage({ params }: CoursePageProps) {
         />
       ) : (
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {variants.map((variant, index) => {
+          {visibleVariants.map((variant, index) => {
             const summary = pathSummaries.get(variant.slug);
-            const href =
-              summary?.nextLesson?.href ?? getVariantPath(course.slug, variant.slug);
+            const isFoundationToHigherUpgrade =
+              dashboard.accessState === "full_foundation" && variant.slug === "higher";
+            const href = isFoundationToHigherUpgrade
+              ? "/account/billing"
+              : (summary?.nextLesson?.href ?? getVariantPath(course.slug, variant.slug));
 
             return (
               <Link key={variant.slug} href={href} className="block">
@@ -181,6 +215,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
                       ) : summary?.nextLesson ? (
                         <Badge tone="info" icon="next">
                           Up next
+                        </Badge>
+                      ) : dashboard.accessState === "full_foundation" &&
+                        variant.slug === "higher" ? (
+                        <Badge tone="warning" icon="billing">
+                          Upgrade path
                         </Badge>
                       ) : index === 0 ? (
                         <Badge tone="muted">Suggested</Badge>
@@ -236,6 +275,8 @@ export default async function CoursePage({ params }: CoursePageProps) {
                     <div className="pt-1 text-sm font-medium app-brand-text">
                       {summary?.nextLesson
                         ? `Continue: ${summary.nextLesson.title}`
+                        : isFoundationToHigherUpgrade
+                          ? "Upgrade to Higher"
                         : summary?.isComplete
                           ? "Review path"
                           : "Open path"}

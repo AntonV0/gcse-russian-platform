@@ -82,6 +82,9 @@ export type DbVocabularySet = {
   set_type: DbVocabularySetType;
   default_display_variant: DbVocabularyDisplayVariant;
   is_published: boolean;
+  is_trial_visible: boolean;
+  requires_paid_access: boolean;
+  available_in_volna: boolean;
   sort_order: number;
   source_key: string | null;
   source_version: string | null;

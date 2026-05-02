@@ -29,6 +29,10 @@ export function canDashboardAccessMockExam(
     return true;
   }
 
+  if (dashboard.role === "guest") {
+    return !exam.requires_paid_access;
+  }
+
   if (dashboard.role !== "student") {
     return false;
   }

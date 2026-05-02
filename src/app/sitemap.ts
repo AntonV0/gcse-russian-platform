@@ -43,6 +43,31 @@ const publicRoutes = [
     priority: 0.85,
   },
   {
+    path: "/courses",
+    changeFrequency: "weekly",
+    priority: 0.8,
+  },
+  {
+    path: "/vocabulary",
+    changeFrequency: "weekly",
+    priority: 0.75,
+  },
+  {
+    path: "/grammar",
+    changeFrequency: "weekly",
+    priority: 0.75,
+  },
+  {
+    path: "/past-papers",
+    changeFrequency: "weekly",
+    priority: 0.8,
+  },
+  {
+    path: "/mock-exams",
+    changeFrequency: "weekly",
+    priority: 0.65,
+  },
+  {
     path: "/gcse-russian-listening-exam",
     changeFrequency: "monthly",
     priority: 0.75,

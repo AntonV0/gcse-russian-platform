@@ -5,9 +5,11 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import LockedContentCard from "@/components/ui/locked-content-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadVariantPageData } from "@/lib/courses/course-helpers-db";
 import { getCoursePath, getModulePath } from "@/lib/access/routes";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   formatCoursePathRemainingMinutes,
   getVariantPathProgressSummary,
@@ -34,10 +36,35 @@ function getVariantLabel(slug: string) {
 
 export default async function VariantPage({ params }: VariantPageProps) {
   const { courseSlug, variantSlug } = await params;
-  const { course, variant, modules } = await loadVariantPageData(courseSlug, variantSlug);
+  const [{ course, variant, modules }, dashboard] = await Promise.all([
+    loadVariantPageData(courseSlug, variantSlug),
+    getDashboardInfo(),
+  ]);
 
   if (!course || !variant) {
     notFound();
+  }
+
+  if (dashboard.role === "guest") {
+    return (
+      <main className="space-y-8">
+        <PageHeader
+          title={variant.title}
+          description={variant.description ?? "This course path opens inside trial."}
+        />
+
+        <LockedContentCard
+          title="Start a trial to open this path"
+          description="Course modules and lessons are available after signup so your Foundation or Higher choice is saved to your dashboard."
+          accessLabel="Trial account"
+          statusLabel="Signup required"
+          primaryActionHref="/signup"
+          primaryActionLabel="Start trial"
+          secondaryActionHref={getCoursePath(course.slug)}
+          secondaryActionLabel={`Back to ${course.title}`}
+        />
+      </main>
+    );
   }
 
   const primaryModule = modules[0] ?? null;

@@ -1,5 +1,5 @@
 export const VOCABULARY_SET_SELECT =
-  "id, slug, title, description, theme_key, topic_key, tier, list_mode, set_type, default_display_variant, is_published, sort_order, source_key, source_version, import_key, created_at, updated_at";
+  "id, slug, title, description, theme_key, topic_key, tier, list_mode, set_type, default_display_variant, is_published, is_trial_visible, requires_paid_access, available_in_volna, sort_order, source_key, source_version, import_key, created_at, updated_at";
 
 export const VOCABULARY_LIST_SELECT =
   "id, vocabulary_set_id, slug, title, description, theme_key, topic_key, category_key, subcategory_key, tier, list_mode, default_display_variant, is_published, sort_order, source_key, source_version, source_section_ref, import_key, created_at, updated_at";
