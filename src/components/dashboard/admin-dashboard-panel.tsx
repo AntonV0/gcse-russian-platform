@@ -59,6 +59,36 @@ const adminWorkspaceLinks: {
 ];
 
 export function AdminDashboardPanel({ dashboard }: { dashboard: DashboardInfo }) {
+  const dashboardFacts: {
+    title: string;
+    value: string;
+    description: string;
+    icon: AppIconKey;
+    tone: string;
+  }[] = [
+    {
+      title: "Role",
+      value: formatDashboardLabel(dashboard.role),
+      description: "Elevated workspace permissions",
+      icon: "admin",
+      tone: "text-[var(--accent-ink)] [background:var(--accent-gradient-soft)] ring-[var(--accent-selected-border)]",
+    },
+    {
+      title: "Variant",
+      value: getDashboardVariantLabel(dashboard.variant),
+      description: "Current learning pathway context",
+      icon: "layers",
+      tone: "text-[var(--info)] bg-[var(--info-soft)] ring-[color-mix(in_srgb,var(--info)_18%,transparent)]",
+    },
+    {
+      title: "Access",
+      value: getDashboardAccessLabel(dashboard.accessMode),
+      description: "Account visibility and entitlement",
+      icon: "unlocked",
+      tone: "text-[var(--success)] bg-[var(--success-soft)] ring-[color-mix(in_srgb,var(--success)_18%,transparent)]",
+    },
+  ];
+
   return (
     <>
       <section className="dev-marker-host relative app-surface-brand app-section-padding-lg">
@@ -154,15 +184,32 @@ export function AdminDashboardPanel({ dashboard }: { dashboard: DashboardInfo })
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <DashboardCard title="Role">{formatDashboardLabel(dashboard.role)}</DashboardCard>
+        {dashboardFacts.map((fact) => (
+          <DashboardCard key={fact.title} className="h-full">
+            <div className="flex items-start gap-3">
+              <span
+                className={[
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ring-1",
+                  fact.tone,
+                ].join(" ")}
+              >
+                <AppIcon icon={fact.icon} size={18} />
+              </span>
 
-        <DashboardCard title="Variant">
-          {getDashboardVariantLabel(dashboard.variant)}
-        </DashboardCard>
-
-        <DashboardCard title="Access">
-          {getDashboardAccessLabel(dashboard.accessMode)}
-        </DashboardCard>
+              <span className="min-w-0">
+                <span className="block text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                  {fact.title}
+                </span>
+                <span className="mt-1 block text-lg font-semibold leading-7 text-[var(--text-primary)]">
+                  {fact.value}
+                </span>
+                <span className="mt-1 block text-sm leading-6 app-text-muted">
+                  {fact.description}
+                </span>
+              </span>
+            </div>
+          </DashboardCard>
+        ))}
       </section>
     </>
   );
