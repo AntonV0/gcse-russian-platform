@@ -39,7 +39,7 @@ export default function QuestionFeedback({
         <div className="relative">
           <div className="flex items-center gap-2 text-base font-semibold leading-6">
             <AppIcon icon={isCorrect ? "success" : "error"} size={17} />
-            <p>{statusLabel ?? (isCorrect ? "Correct." : "Not quite.")}</p>
+            <p>{statusLabel ?? (isCorrect ? "Nice work." : "Not quite yet.")}</p>
           </div>
 
           {!isCorrect && correctAnswerText ? (

@@ -33,6 +33,21 @@
   box-shadow: var(--surface-accent-shadow);
 }
 
+.marketing-dark-panel {
+  background:
+    radial-gradient(
+      circle at 14% 0%,
+      color-mix(in srgb, var(--accent-fill) 16%, transparent) 0%,
+      transparent 38%
+    ),
+    linear-gradient(135deg, #102033 0%, #091725 100%);
+  color: #f8fbff;
+}
+
+.marketing-dark-panel :where(h1, h2, h3, h4, h5, h6) {
+  color: inherit;
+}
+
 [data-theme="dark"] .app-surface-brand {
   border-color: var(--surface-accent-border);
   background: var(--surface-brand-bg);

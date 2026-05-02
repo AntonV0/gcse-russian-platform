@@ -163,44 +163,97 @@ export default function QuestionSetPracticeShell({
     : `${answeredCount}/${totalQuestions} answered`;
 
   return (
-    <div className="space-y-5">
-      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <p className="app-text-meta">Practice progress</p>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">
-              {progressLabel}
-            </p>
+    <div className="space-y-6">
+      <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] shadow-[var(--shadow-sm)]">
+        <div className="relative p-4 md:p-5">
+          <div
+            className="absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_7%,var(--background-elevated))_0%,var(--background-elevated)_68%,color-mix(in_srgb,var(--accent-fill)_5%,var(--background-elevated))_100%)]"
+            aria-hidden="true"
+          />
+
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex min-w-0 gap-3">
+              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[var(--info-border)] bg-[var(--info-surface)] text-[var(--info-text)] shadow-[0_10px_22px_var(--info-shadow)]">
+                <AppIcon icon="questionSet" size={20} />
+              </span>
+
+              <div className="min-w-0 space-y-1">
+                <p className="app-text-meta">Practice progress</p>
+                <p className="text-base font-semibold leading-6 text-[var(--text-primary)]">
+                  {progressLabel}
+                </p>
+                <p className="text-sm leading-6 text-[var(--text-secondary)]">
+                  Work through the set, then come back to any answers that need a second
+                  look.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <span className="app-pill app-pill-info">
+                {progressPercent}% attempted
+              </span>
+              {isComplete ? (
+                <span
+                  className={[
+                    "app-pill",
+                    incorrectQuestions.length > 0
+                      ? "app-pill-warning"
+                      : "app-pill-success",
+                  ].join(" ")}
+                >
+                  {scorePercent}% score
+                </span>
+              ) : null}
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <span className="app-pill app-pill-muted">{progressPercent}% attempted</span>
-            {isComplete ? (
-              <span
-                className={[
-                  "app-pill",
-                  incorrectQuestions.length > 0 ? "app-pill-warning" : "app-pill-success",
-                ].join(" ")}
-              >
-                {scorePercent}% score
-              </span>
-            ) : null}
+          <div
+            className="relative mt-5 h-2.5 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--background-muted)_78%,var(--background-elevated))]"
+            role="progressbar"
+            aria-label="Question set practice progress"
+            aria-valuemin={0}
+            aria-valuemax={totalQuestions}
+            aria-valuenow={answeredCount}
+            aria-valuetext={progressLabel}
+          >
+            <div
+              className="h-full rounded-full [background:var(--accent-progress-gradient)] shadow-[0_0_18px_color-mix(in_srgb,var(--accent)_18%,transparent)] transition-[width] duration-300"
+              style={{ width: `${progressPercent}%` }}
+            />
           </div>
         </div>
 
-        <div
-          className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--background-elevated)]"
-          role="progressbar"
-          aria-label="Question set practice progress"
-          aria-valuemin={0}
-          aria-valuemax={totalQuestions}
-          aria-valuenow={answeredCount}
-          aria-valuetext={progressLabel}
-        >
-          <div
-            className="h-full rounded-full bg-[var(--accent-fill)] transition-[width] duration-300"
-            style={{ width: `${progressPercent}%` }}
-          />
+        <div className="border-t border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_62%,var(--background-elevated))] px-4 py-3 md:px-5">
+          <div className="flex flex-wrap gap-2">
+            {questions.map((question) => {
+              const attempt = attempts[question.id];
+              const stateClass = !attempt
+                ? "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)]"
+                : attempt.isCorrect
+                  ? "border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text)]"
+                  : "border-[var(--warning-border)] bg-[var(--warning-surface)] text-[var(--warning-text)]";
+              const ariaLabel = !attempt
+                ? `Question ${question.number} not answered`
+                : attempt.isCorrect
+                  ? `Question ${question.number} answered correctly`
+                  : `Question ${question.number} needs review`;
+
+              return (
+                <a
+                  key={question.id}
+                  href={`#question-${question.id}`}
+                  aria-label={ariaLabel}
+                  className={[
+                    "inline-flex h-8 min-w-8 items-center justify-center rounded-full border px-2 text-xs font-bold transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-xs)]",
+                    stateClass,
+                  ].join(" ")}
+                >
+                  {question.number}
+                </a>
+              );
+            })}
+          </div>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
+import { StudyMissionPanel } from "@/components/lesson-blocks/learning-warmth-kit";
 import { LessonCompletionPanel } from "@/components/lesson-blocks/lesson-page-template/lesson-completion-panel";
 import { buildLessonStepHref } from "@/components/lesson-blocks/lesson-page-template/lesson-step-routes";
 import {
@@ -14,7 +15,6 @@ import {
   getMaxVisitedIndex,
 } from "@/components/lesson-blocks/lesson-page-template/progress-helpers";
 import { SectionPager } from "@/components/lesson-blocks/lesson-page-template/section-pager";
-import { StepMetaBar } from "@/components/lesson-blocks/lesson-page-template/step-meta-bar";
 import { StepTracker } from "@/components/lesson-blocks/lesson-page-template/step-tracker";
 import type { LessonSection } from "@/types/lesson";
 import {
@@ -37,6 +37,7 @@ type LessonPageTemplateProps = {
   sections: LessonSection[];
   currentStep?: string;
   lessonPageData?: Awaited<ReturnType<typeof loadLessonPageData>>;
+  lessonProgress?: Awaited<ReturnType<typeof getLessonProgress>>;
 };
 
 export default async function LessonPageTemplate({
@@ -47,17 +48,16 @@ export default async function LessonPageTemplate({
   sections,
   currentStep,
   lessonPageData,
+  lessonProgress,
 }: LessonPageTemplateProps) {
   const { course, module, lesson, previousLesson, nextLesson } =
     lessonPageData ??
     (await loadLessonPageData(courseSlug, variantSlug, moduleSlug, lessonSlug));
 
-  const progress = await getLessonProgress(
-    courseSlug,
-    variantSlug,
-    moduleSlug,
-    lessonSlug
-  );
+  const progress =
+    lessonProgress === undefined
+      ? await getLessonProgress(courseSlug, variantSlug, moduleSlug, lessonSlug)
+      : lessonProgress;
 
   if (!course || !module || !lesson) {
     return (
@@ -155,39 +155,20 @@ export default async function LessonPageTemplate({
         lessonDescription={lesson.summary ?? ""}
       />
 
-      <section className="app-surface-brand app-section-padding">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap gap-2">
-            <span className="app-pill app-pill-info">{course.title}</span>
-            <span className="app-pill app-pill-muted">{module.title}</span>
-            <span className="app-pill app-pill-muted">
-              Step {currentStepNumber} of {visibleSections.length}
-            </span>
-          </div>
-
-          <div>
-            <div className="text-xs font-medium uppercase tracking-wide text-[var(--accent-on-soft)] opacity-80">
-              Current section
-            </div>
-            <h2 className="mt-1 app-section-title text-lg">{currentSection.title}</h2>
-            {currentSection.description ? (
-              <p className="mt-1 text-sm app-text-muted">{currentSection.description}</p>
-            ) : null}
-          </div>
-        </div>
-      </section>
+      <StudyMissionPanel
+        courseTitle={course.title}
+        moduleTitle={module.title}
+        sectionTitle={currentSection.title}
+        sectionDescription={currentSection.description}
+        sectionKind={currentSection.sectionKind}
+        currentStepNumber={currentStepNumber}
+        totalSteps={visibleSections.length}
+        visitedPercent={progressSummary.percent}
+      />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-6">
-          <StepMetaBar
-            currentStepNumber={currentStepNumber}
-            totalSteps={visibleSections.length}
-            sectionKind={currentSection.sectionKind}
-            sectionDescription={currentSection.description}
-            visitedPercent={progressSummary.percent}
-          />
-
-          <div className="app-card app-section-padding">
+          <div className="space-y-6">
             <LessonRenderer
               sections={[currentSection]}
               lessonId={lesson.id}

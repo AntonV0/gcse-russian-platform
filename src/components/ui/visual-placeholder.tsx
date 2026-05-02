@@ -66,7 +66,7 @@ export default function VisualPlaceholder({
       {...accessibilityProps}
       className={[
         "relative isolate overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)]",
-        "bg-[var(--accent-gradient-soft)] shadow-[var(--shadow-sm)]",
+        "[background:var(--accent-gradient-soft)] shadow-[var(--shadow-sm)]",
         getSizeClass(size),
         className,
       ]

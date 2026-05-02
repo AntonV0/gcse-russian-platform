@@ -9,16 +9,16 @@ const accentOptions: Array<{
   label: string;
   swatch: string;
 }> = [
-  { value: "blue", label: "Blue", swatch: "#2563eb" },
-  { value: "purple", label: "Purple", swatch: "#7c3aed" },
-  { value: "pink", label: "Pink", swatch: "#db2777" },
-  { value: "red", label: "Red", swatch: "#dc2626" },
-  { value: "orange", label: "Orange", swatch: "#ea580c" },
-  { value: "yellow", label: "Yellow", swatch: "#a16207" },
-  { value: "green", label: "Green", swatch: "#16a34a" },
-  { value: "teal", label: "Teal/Cyan", swatch: "#0891b2" },
-  { value: "brown", label: "Brown", swatch: "#8b5e34" },
-  { value: "slate", label: "Slate", swatch: "#475569" },
+  { value: "blue", label: "Blue", swatch: "#3b82f6" },
+  { value: "purple", label: "Purple", swatch: "#8b5cf6" },
+  { value: "pink", label: "Pink", swatch: "#ec4899" },
+  { value: "red", label: "Red", swatch: "#ef4444" },
+  { value: "orange", label: "Orange", swatch: "#f97316" },
+  { value: "yellow", label: "Yellow", swatch: "#eab308" },
+  { value: "green", label: "Green", swatch: "#22c55e" },
+  { value: "teal", label: "Teal/Cyan", swatch: "#06b6d4" },
+  { value: "brown", label: "Brown", swatch: "#a16207" },
+  { value: "slate", label: "Slate", swatch: "#64748b" },
 ];
 
 function subscribeToHydration() {

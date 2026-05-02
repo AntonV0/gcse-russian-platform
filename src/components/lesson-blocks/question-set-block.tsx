@@ -2,7 +2,8 @@ import { loadRuntimeQuestionSetBySlugDb } from "@/lib/questions/question-helpers
 import QuestionRenderer from "@/components/questions/question-renderer";
 import QuestionSetPracticeShell from "@/components/questions/question-set-practice-shell";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
-import { Heading, type HeadingLevel } from "@/components/ui/heading";
+import { StudyBlockShell } from "@/components/lesson-blocks/learning-warmth-kit";
+import type { HeadingLevel } from "@/components/ui/heading";
 
 type QuestionSetBlockProps = {
   title?: string;
@@ -31,7 +32,7 @@ export default async function QuestionSetBlock({
   }
 
   return (
-    <section className="dev-marker-host relative app-card app-section-padding space-y-5">
+    <div className="dev-marker-host relative">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="QuestionSetBlock"
@@ -49,43 +50,37 @@ export default async function QuestionSetBlock({
         />
       ) : null}
 
-      <div className="space-y-3">
-        <div className="flex flex-wrap gap-2">
-          <span className="app-pill app-pill-info">Question set</span>
-          <span className="app-pill app-pill-muted">
+      <StudyBlockShell
+        eyebrow="Practice"
+        title={title}
+        description={questionSet.instructions ?? undefined}
+        tone="practice"
+        headingLevel={headingLevel}
+        actions={
+          <span className="app-pill app-pill-info">
             {questions.length} question{questions.length === 1 ? "" : "s"}
           </span>
-        </div>
-
-        {title ? (
-          <Heading level={headingLevel} className="app-heading-subsection">
-            {title}
-          </Heading>
-        ) : null}
-
-        {questionSet.instructions ? (
-          <p className="app-text-body-muted">{questionSet.instructions}</p>
-        ) : null}
-      </div>
-
-      <QuestionSetPracticeShell
-        questionSetSlug={questionSetSlug}
-        questions={questions.map((question, index) => ({
-          id: question.id,
-          number: index + 1,
-          prompt: question.prompt,
-        }))}
+        }
       >
-        <div className="space-y-5">
-          {questions.map((question, index) => (
-            <div id={`question-${question.id}`} key={question.id} className="space-y-3">
-              <div className="app-text-meta">Question {index + 1}</div>
+        <QuestionSetPracticeShell
+          questionSetSlug={questionSetSlug}
+          questions={questions.map((question, index) => ({
+            id: question.id,
+            number: index + 1,
+            prompt: question.prompt,
+          }))}
+        >
+          <div className="space-y-5">
+            {questions.map((question, index) => (
+              <div id={`question-${question.id}`} key={question.id} className="space-y-3">
+                <div className="app-text-meta">Question {index + 1}</div>
 
-              <QuestionRenderer question={question} lessonId={lessonId} />
-            </div>
-          ))}
-        </div>
-      </QuestionSetPracticeShell>
-    </section>
+                <QuestionRenderer question={question} lessonId={lessonId} />
+              </div>
+            ))}
+          </div>
+        </QuestionSetPracticeShell>
+      </StudyBlockShell>
+    </div>
   );
 }

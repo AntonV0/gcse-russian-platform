@@ -193,57 +193,59 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
       ) : null}
 
       {studyMode === "list" ? (
-        <div className="grid gap-2 xl:grid-cols-2">
-        {items.map((item, index) => {
-          const itemKey = getItemKey(item, index);
-          const isEnglishVisible = showAllEnglish || revealedItemKeys.has(itemKey);
+        <div className="grid gap-2">
+          {items.map((item, index) => {
+            const itemKey = getItemKey(item, index);
+            const isEnglishVisible = showAllEnglish || revealedItemKeys.has(itemKey);
 
-          return (
-            <div
-              key={itemKey}
-              className="group relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent)_24%,var(--border-strong))] hover:bg-[var(--background-elevated)]"
-            >
-              <div className="absolute inset-y-0 left-0 w-1 bg-[var(--accent-fill)] opacity-70" />
+            return (
+              <div
+                key={itemKey}
+                className="group relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent)_24%,var(--border-strong))] hover:bg-[var(--background-elevated)]"
+              >
+                <div className="absolute inset-y-0 left-0 w-1 bg-[var(--accent-fill)] opacity-70" />
 
-              <div className="grid min-h-[4.75rem] gap-3 px-4 py-3.5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center sm:pl-5">
-                <div className="flex min-w-0 gap-3">
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--text-muted)]">
-                    {index + 1}
-                  </span>
-                  <span className="min-w-0">
-                    <span lang="ru" className="block app-vocab-term">
-                      {item.russian}
+                <div className="grid min-h-[4.75rem] gap-3 px-4 py-3.5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center sm:pl-5">
+                  <div className="flex min-w-0 gap-3">
+                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--text-muted)]">
+                      {index + 1}
                     </span>
-                    {item.transliteration ? (
-                      <span className="mt-1 block text-sm app-text-soft">
-                        {item.transliteration}
+                    <span className="min-w-0">
+                      <span lang="ru" className="block app-vocab-term">
+                        {item.russian}
                       </span>
-                    ) : null}
-                  </span>
-                </div>
+                      {item.transliteration ? (
+                        <span className="mt-1 block text-sm app-text-soft">
+                          {item.transliteration}
+                        </span>
+                      ) : null}
+                    </span>
+                  </div>
 
-                <div className="min-w-0 border-t border-[var(--border-subtle)] pt-3 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
-                  {isEnglishVisible ? (
-                    <div className="text-[var(--text-secondary)]">{item.english}</div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => toggleItem(itemKey)}
-                      className={getButtonClassName({
-                        variant: "secondary",
-                        size: "sm",
-                        className: "w-full justify-center sm:w-auto",
-                      })}
-                    >
-                      <AppIcon icon="preview" size={15} />
-                      <span>Check</span>
-                    </button>
-                  )}
+                  <div className="min-w-0 border-t border-[var(--border-subtle)] pt-3 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
+                    {isEnglishVisible ? (
+                      <div className="text-[var(--text-secondary)]">
+                        {item.english}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => toggleItem(itemKey)}
+                        className={getButtonClassName({
+                          variant: "secondary",
+                          size: "sm",
+                          className: "w-full justify-center sm:w-auto",
+                        })}
+                      >
+                        <AppIcon icon="preview" size={15} />
+                        <span>Check</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
       ) : null}
     </div>
