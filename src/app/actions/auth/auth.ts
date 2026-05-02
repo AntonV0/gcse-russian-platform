@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getPublicSiteUrl } from "@/lib/seo/site";
 import { createClient } from "@/lib/supabase/server";
 
 function getString(formData: FormData, key: string) {
@@ -9,10 +10,45 @@ function getString(formData: FormData, key: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export async function signUp(formData: FormData) {
+function getSafeRedirectPath(value: string, fallback = "/dashboard") {
+  if (!value.startsWith("/") || value.startsWith("//")) {
+    return fallback;
+  }
+
+  if (value.includes("\\")) {
+    return fallback;
+  }
+
+  return value;
+}
+
+export type AuthActionState = {
+  message: string | null;
+};
+
+function authError(message: string): AuthActionState {
+  return { message };
+}
+
+export async function signUp(
+  _previousState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
   const email = getString(formData, "email");
   const password = getString(formData, "password");
   const fullName = getString(formData, "fullName");
+
+  if (!fullName) {
+    return authError("Enter the student's full name.");
+  }
+
+  if (!email) {
+    return authError("Enter the account email address.");
+  }
+
+  if (!password || password.length < 8) {
+    return authError("Password must be at least 8 characters.");
+  }
 
   const supabase = await createClient();
 
@@ -27,7 +63,7 @@ export async function signUp(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/signup?error=${encodeURIComponent(error.message)}`);
+    return authError(error.message);
   }
 
   const userId = data.user?.id;
@@ -50,16 +86,28 @@ export async function signUp(formData: FormData) {
     );
 
     if (profileError) {
-      redirect(`/signup?error=${encodeURIComponent(profileError.message)}`);
+      return authError(profileError.message);
     }
   }
 
   redirect("/dashboard");
 }
 
-export async function signIn(formData: FormData) {
+export async function signIn(
+  _previousState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
   const email = getString(formData, "email");
   const password = getString(formData, "password");
+  const next = getSafeRedirectPath(getString(formData, "next"));
+
+  if (!email) {
+    return authError("Enter the account email address.");
+  }
+
+  if (!password) {
+    return authError("Enter the account password.");
+  }
 
   const supabase = await createClient();
 
@@ -69,10 +117,31 @@ export async function signIn(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+    return authError(error.message);
   }
 
-  redirect("/dashboard");
+  redirect(next);
+}
+
+export async function requestPasswordReset(formData: FormData) {
+  const email = getString(formData, "email");
+
+  if (!email) {
+    redirect("/forgot-password?error=Enter%20the%20account%20email%20address");
+  }
+
+  const supabase = await createClient();
+  const redirectTo = getPublicSiteUrl("/auth/callback?next=/settings").toString();
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo,
+  });
+
+  if (error) {
+    redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect("/forgot-password?success=reset-email-sent");
 }
 
 export async function signOut() {
