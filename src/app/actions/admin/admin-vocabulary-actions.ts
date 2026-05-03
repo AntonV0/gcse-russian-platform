@@ -9,6 +9,7 @@ import {
   updateVocabularySetDb,
   type VocabularySetMutationPayload,
 } from "@/lib/vocabulary/items/mutations";
+import { loadVocabularySetByIdDb } from "@/lib/vocabulary/sets/loaders";
 import type {
   DbVocabularyDisplayVariant,
   DbVocabularyListMode,
@@ -184,6 +185,16 @@ export async function deleteVocabularySetAction(formData: FormData) {
 
   if (!vocabularySetId) {
     throw new Error("Vocabulary set id is required");
+  }
+
+  const { items, usageStats } = await loadVocabularySetByIdDb(vocabularySetId);
+
+  if (usageStats.totalOccurrences > 0) {
+    throw new Error("Remove this vocabulary set from lessons before deleting it");
+  }
+
+  if (items.length > 0) {
+    throw new Error("Delete the vocabulary items before deleting this set");
   }
 
   await deleteVocabularySetDb(vocabularySetId);
