@@ -30,10 +30,15 @@ type ModulePageProps = {
 export default async function ModulePage({ params }: ModulePageProps) {
   const { courseSlug, variantSlug, moduleSlug } = await params;
 
-  const [{ course, module, lessons }, dashboard] = await Promise.all([
-    loadModulePageData(courseSlug, variantSlug, moduleSlug),
-    getDashboardInfo(),
-  ]);
+  const dashboard = await getDashboardInfo();
+  const { course, module, lessons } = await loadModulePageData(
+    courseSlug,
+    variantSlug,
+    moduleSlug,
+    {
+      includeAdminTestingModules: dashboard.role === "admin",
+    }
+  );
 
   if (!course || !module) {
     notFound();
@@ -66,13 +71,15 @@ export default async function ModulePage({ params }: ModulePageProps) {
     getCurrentCourseAccess(courseSlug, variantSlug),
   ]);
   const canSeeDraftLessons = !!profile?.is_admin || !!profile?.is_teacher;
+  const isAdminTestingModule = module.position === 0 && !!profile?.is_admin;
   const contentReadyLessonIds = await getLessonIdsWithPublishedSectionsDb(
     lessons.map((lesson) => lesson.id),
     variantSlug as "foundation" | "higher" | "volna"
   );
   const visibleLessons = lessons.filter(
     (lesson) =>
-      (canSeeDraftLessons || lesson.is_published) && contentReadyLessonIds.has(lesson.id)
+      (canSeeDraftLessons || lesson.is_published) &&
+      (canSeeDraftLessons || isAdminTestingModule || contentReadyLessonIds.has(lesson.id))
   );
   const hiddenDraftLessonCount = lessons.length - visibleLessons.length;
   const progress = await getModuleProgress(courseSlug, variantSlug, moduleSlug);
@@ -81,6 +88,11 @@ export default async function ModulePage({ params }: ModulePageProps) {
     completedMap.get(lesson.slug)
   ).length;
   const totalLessons = visibleLessons.length;
+  const lessonCountLabel = isAdminTestingModule
+    ? "testing"
+    : canSeeDraftLessons
+      ? "visible"
+      : "published";
   const progressPercent =
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
   const estimatedMinutes = visibleLessons.reduce<number | null>(
@@ -141,7 +153,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                 {course.title}
               </Badge>
               <Badge tone="muted" icon="modules">
-                {totalLessons} published lesson{totalLessons === 1 ? "" : "s"}
+                {totalLessons} {lessonCountLabel} lesson{totalLessons === 1 ? "" : "s"}
               </Badge>
               <Badge tone="success" icon="completed">
                 {completedCount} completed

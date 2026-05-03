@@ -9,6 +9,11 @@ import type {
   LessonAccessMeta,
 } from "./types";
 
+type ModuleVisibilityOptions = {
+  includeAdminTestingModules?: boolean;
+  includeArchivedModules?: boolean;
+};
+
 export async function getCoursesDb(): Promise<DbCourse[]> {
   const supabase = await createClient();
 
@@ -119,15 +124,25 @@ export async function getVariantByIdDb(
 }
 
 export async function getModulesByVariantIdDb(
-  courseVariantId: string
+  courseVariantId: string,
+  options: ModuleVisibilityOptions = {}
 ): Promise<DbModule[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("modules")
     .select(MODULE_SELECT)
-    .eq("course_variant_id", courseVariantId)
-    .order("position", { ascending: true });
+    .eq("course_variant_id", courseVariantId);
+
+  if (!options.includeAdminTestingModules) {
+    query = query.gt("position", 0);
+  }
+
+  if (!options.includeArchivedModules) {
+    query = query.lt("position", 900);
+  }
+
+  const { data, error } = await query.order("position", { ascending: true });
 
   if (error) {
     console.error("Error fetching modules by variant id:", {
@@ -142,16 +157,26 @@ export async function getModulesByVariantIdDb(
 
 export async function getModuleBySlugForVariantIdDb(
   courseVariantId: string,
-  moduleSlug: string
+  moduleSlug: string,
+  options: ModuleVisibilityOptions = {}
 ): Promise<DbModule | null> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("modules")
     .select(MODULE_SELECT)
     .eq("course_variant_id", courseVariantId)
-    .eq("slug", moduleSlug)
-    .maybeSingle();
+    .eq("slug", moduleSlug);
+
+  if (!options.includeAdminTestingModules) {
+    query = query.gt("position", 0);
+  }
+
+  if (!options.includeArchivedModules) {
+    query = query.lt("position", 900);
+  }
+
+  const { data, error } = await query.maybeSingle();
 
   if (error) {
     console.error("Error fetching module:", {

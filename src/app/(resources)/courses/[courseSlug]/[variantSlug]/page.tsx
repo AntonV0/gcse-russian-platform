@@ -36,10 +36,14 @@ function getVariantLabel(slug: string) {
 
 export default async function VariantPage({ params }: VariantPageProps) {
   const { courseSlug, variantSlug } = await params;
-  const [{ course, variant, modules }, dashboard] = await Promise.all([
-    loadVariantPageData(courseSlug, variantSlug),
-    getDashboardInfo(),
-  ]);
+  const dashboard = await getDashboardInfo();
+  const { course, variant, modules } = await loadVariantPageData(
+    courseSlug,
+    variantSlug,
+    {
+      includeAdminTestingModules: dashboard.role === "admin",
+    }
+  );
 
   if (!course || !variant) {
     notFound();
@@ -67,8 +71,18 @@ export default async function VariantPage({ params }: VariantPageProps) {
     );
   }
 
-  const primaryModule = modules[0] ?? null;
-  const pathSummary = await getVariantPathProgressSummary(course.slug, variant, modules);
+  const pathModules = modules.filter((module) => module.position > 0);
+  const testingModuleCount = modules.length - pathModules.length;
+  const moduleCountLabel =
+    testingModuleCount > 0
+      ? `${pathModules.length} modules + Module 0`
+      : `${modules.length} module${modules.length === 1 ? "" : "s"}`;
+  const primaryModule = pathModules[0] ?? null;
+  const pathSummary = await getVariantPathProgressSummary(
+    course.slug,
+    variant,
+    pathModules
+  );
   const moduleSummaryMap = new Map(
     pathSummary.moduleSummaries.map((summary) => [summary.moduleSlug, summary])
   );
@@ -103,7 +117,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
                 {getVariantLabel(variant.slug)}
               </Badge>
               <Badge tone="muted" icon="modules">
-                {modules.length} module{modules.length === 1 ? "" : "s"}
+                {moduleCountLabel}
               </Badge>
             </div>
 
@@ -210,11 +224,13 @@ export default async function VariantPage({ params }: VariantPageProps) {
         />
       ) : (
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {modules.map((module, index) => {
+          {modules.map((module) => {
             const summary = moduleSummaryMap.get(module.slug);
             const href =
               summary?.nextLesson?.href ??
               getModulePath(course.slug, variant.slug, module.slug);
+            const moduleLabel =
+              module.position === 0 ? "Module 0" : `Module ${module.position}`;
 
             return (
               <Link
@@ -227,7 +243,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge tone="muted" icon="modules">
-                        Module {index + 1}
+                        {moduleLabel}
                       </Badge>
 
                       {summary?.isComplete ? (
@@ -238,7 +254,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
                         <Badge tone="info" icon="next">
                           Up next
                         </Badge>
-                      ) : index === 0 ? (
+                      ) : module.position === 1 ? (
                         <Badge tone="success">Start here</Badge>
                       ) : null}
                     </div>

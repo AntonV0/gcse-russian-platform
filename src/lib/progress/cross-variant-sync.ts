@@ -56,16 +56,24 @@ async function touchLessonSectionProgress(
   const now = new Date().toISOString();
 
   if (!existing) {
-    const { error: insertError } = await supabase.from("lesson_section_progress").insert({
-      user_id: userId,
-      lesson_id: lessonId,
-      section_id: sectionId,
-      first_visited_at: now,
-      last_visited_at: now,
-      visit_count: 1,
-      created_at: now,
-      updated_at: now,
-    });
+    const { error: insertError } = await supabase
+      .from("lesson_section_progress")
+      .upsert(
+        {
+          user_id: userId,
+          lesson_id: lessonId,
+          section_id: sectionId,
+          first_visited_at: now,
+          last_visited_at: now,
+          visit_count: 1,
+          created_at: now,
+          updated_at: now,
+        },
+        {
+          ignoreDuplicates: true,
+          onConflict: "user_id,lesson_id,section_id",
+        }
+      );
 
     if (insertError) {
       console.error("Error inserting synced lesson section visit:", insertError);

@@ -8,6 +8,11 @@ import {
 } from "./course-queries";
 import type { DbCourseVariant, DbLesson, DbModule } from "./types";
 
+type ModuleVisibilityOptions = {
+  includeAdminTestingModules?: boolean;
+  includeArchivedModules?: boolean;
+};
+
 export async function loadCoursePageData(courseSlug: string) {
   const course = await getCourseBySlugDb(courseSlug);
   if (!course) {
@@ -19,7 +24,11 @@ export async function loadCoursePageData(courseSlug: string) {
   return { course, variants };
 }
 
-export async function loadVariantPageData(courseSlug: string, variantSlug: string) {
+export async function loadVariantPageData(
+  courseSlug: string,
+  variantSlug: string,
+  options: ModuleVisibilityOptions = {}
+) {
   const course = await getCourseBySlugDb(courseSlug);
   if (!course) {
     return {
@@ -38,7 +47,7 @@ export async function loadVariantPageData(courseSlug: string, variantSlug: strin
     };
   }
 
-  const modules = await getModulesByVariantIdDb(variant.id);
+  const modules = await getModulesByVariantIdDb(variant.id, options);
 
   return { course, variant, modules };
 }
@@ -46,7 +55,8 @@ export async function loadVariantPageData(courseSlug: string, variantSlug: strin
 export async function loadModulePageData(
   courseSlug: string,
   variantSlug: string,
-  moduleSlug: string
+  moduleSlug: string,
+  options: ModuleVisibilityOptions = {}
 ) {
   const course = await getCourseBySlugDb(courseSlug);
   if (!course) {
@@ -68,7 +78,11 @@ export async function loadModulePageData(
     };
   }
 
-  const courseModule = await getModuleBySlugForVariantIdDb(variant.id, moduleSlug);
+  const courseModule = await getModuleBySlugForVariantIdDb(
+    variant.id,
+    moduleSlug,
+    options
+  );
   if (!courseModule) {
     return {
       course,
@@ -87,7 +101,8 @@ export async function loadLessonPageData(
   courseSlug: string,
   variantSlug: string,
   moduleSlug: string,
-  lessonSlug: string
+  lessonSlug: string,
+  options: ModuleVisibilityOptions = {}
 ) {
   const course = await getCourseBySlugDb(courseSlug);
   if (!course) {
@@ -115,7 +130,11 @@ export async function loadLessonPageData(
     };
   }
 
-  const courseModule = await getModuleBySlugForVariantIdDb(variant.id, moduleSlug);
+  const courseModule = await getModuleBySlugForVariantIdDb(
+    variant.id,
+    moduleSlug,
+    options
+  );
   if (!courseModule) {
     return {
       course,

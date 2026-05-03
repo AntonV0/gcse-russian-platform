@@ -41,7 +41,7 @@ export default async function AdminVariantDetailPage({
   const [course, variant, modules] = await Promise.all([
     getCourseByIdDb(courseId),
     getVariantByIdDb(variantId),
-    getModulesByVariantIdDb(variantId),
+    getModulesByVariantIdDb(variantId, { includeAdminTestingModules: true }),
   ]);
 
   if (!course || !variant || variant.course_id !== course.id) {
