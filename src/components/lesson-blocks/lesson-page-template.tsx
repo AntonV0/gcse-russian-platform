@@ -202,7 +202,7 @@ export default async function LessonPageTemplate({
           ) : null}
         </div>
 
-        <aside className="order-first xl:order-none xl:sticky xl:top-[var(--sticky-site-offset)] xl:self-start">
+        <aside className="order-first max-h-[20rem] overflow-y-auto xl:order-none xl:sticky xl:top-[var(--sticky-site-offset)] xl:max-h-none xl:self-start xl:overflow-visible">
           <StepTracker
             sections={visibleSections}
             currentStepIndex={effectiveStepIndex}
