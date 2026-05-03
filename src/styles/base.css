@@ -96,7 +96,8 @@ small {
 }
 
 .app-shell-main {
-  padding-block: var(--page-padding-y);
+  padding-top: var(--page-padding-y);
+  padding-bottom: var(--page-padding-bottom, 1rem);
   padding-left: max(var(--page-padding-x), env(safe-area-inset-left));
   padding-right: max(var(--page-padding-x), env(safe-area-inset-right));
 }

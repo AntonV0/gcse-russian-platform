@@ -102,7 +102,7 @@ export default async function ForgotPasswordPage({
 
               <Link
                 href="/login"
-                className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent-ink)] transition hover:text-[var(--accent-ink)]"
+                className="app-accent-link mt-6 inline-flex items-center gap-2 rounded-sm text-sm font-bold"
               >
                 Back to login
                 <AppIcon icon="arrowRight" size={15} />

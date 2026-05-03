@@ -3,6 +3,7 @@ import UiLabFutureSection from "@/components/admin/ui-lab/shell/ui-lab-future-se
 import UiLabPageNav from "@/components/admin/ui-lab/shell/ui-lab-page-nav";
 import UiLabShell from "@/components/admin/ui-lab/shell/ui-lab-shell";
 import UiLabSection from "@/components/admin/ui-lab/shell/ui-lab-section";
+import UiLabThemeQaGrid from "@/components/admin/ui-lab/theme/ui-lab-theme-qa-grid";
 import ThemeModeSelector from "@/components/settings/theme-mode-selector";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
@@ -15,6 +16,8 @@ import ThemeToggle from "@/components/ui/theme-toggle";
 
 const pageNavItems = [
   { id: "theme-controls", label: "Controls" },
+  { id: "theme-qa-grid", label: "QA grid" },
+  { id: "progress-semantics", label: "Progress" },
   { id: "colour-variables", label: "Colours" },
   { id: "token-checks", label: "Token checks" },
   { id: "dark-surfaces", label: "Dark surfaces" },
@@ -133,6 +136,76 @@ export default async function AdminUiThemePage() {
           >
             <ThemeModeSelector />
           </PanelCard>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="theme-qa-grid"
+        title="Theme QA grid"
+        description="A screenshot-friendly matrix for checking each accent across light and dark surfaces, progress bars, buttons, and semantic states."
+      >
+        <UiLabThemeQaGrid />
+      </UiLabSection>
+
+      <UiLabSection
+        id="progress-semantics"
+        title="Progress colour semantics"
+        description="Progress colour should describe the role of the state before it describes the accent preference."
+      >
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {[
+            {
+              title: "Accent progress",
+              badge: "In progress",
+              tone: "info" as const,
+              bar: "app-progress-bar",
+              description: "Use for neutral lesson, course, module, and question-set progress.",
+            },
+            {
+              title: "Success progress",
+              badge: "Complete",
+              tone: "success" as const,
+              bar: "app-progress-bar app-progress-bar-success",
+              description: "Use only when the state is actually complete, correct, or mastered.",
+            },
+            {
+              title: "Warning state",
+              badge: "Review",
+              tone: "warning" as const,
+              bar: "app-progress-bar",
+              description: "Use for pending review, incomplete requirements, and exam-tip emphasis.",
+            },
+            {
+              title: "Danger state",
+              badge: "Blocked",
+              tone: "danger" as const,
+              bar: "app-progress-bar",
+              description: "Use for incorrect, failed, destructive, or blocked workflows.",
+            },
+          ].map((item, index) => (
+            <Card key={item.title}>
+              <CardBody className="space-y-3 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                      {item.title}
+                    </h3>
+                    <p className="mt-1 text-xs leading-5 app-text-muted">
+                      {item.description}
+                    </p>
+                  </div>
+                  <Badge tone={item.tone}>{item.badge}</Badge>
+                </div>
+
+                <div className="app-progress-track">
+                  <div
+                    className={item.bar}
+                    style={{ width: `${index === 1 ? 100 : 62}%` }}
+                  />
+                </div>
+              </CardBody>
+            </Card>
+          ))}
         </div>
       </UiLabSection>
 
@@ -303,9 +376,7 @@ export default async function AdminUiThemePage() {
 
       <UiLabFutureSection
         items={[
-          "ThemePreviewGrid for side-by-side light, dark, and system examples.",
           "TokenInspector to document semantic variables and intended usage.",
-          "AccentThemePreview for future blue, green, or school-specific palettes.",
           "ContrastCheckPanel for badges, buttons, forms, and tables.",
           "ThemeAwareMedia guidance for images and illustration assets.",
           "ReducedMotionPreview for motion-sensitive interaction states.",

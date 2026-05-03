@@ -59,7 +59,7 @@ export default function LoginForm({ initialError, nextPath }: LoginFormProps) {
             </label>
             <Link
               href="/forgot-password"
-              className="text-xs font-bold text-[var(--accent-ink)] transition hover:text-[var(--accent-ink)]"
+              className="app-accent-link rounded-sm text-xs font-bold"
             >
               Forgot password?
             </Link>
@@ -91,7 +91,7 @@ export default function LoginForm({ initialError, nextPath }: LoginFormProps) {
         </p>
         <Link
           href="/signup"
-          className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent-ink)] transition hover:text-[var(--accent-ink)]"
+          className="app-accent-link mt-3 inline-flex items-center gap-2 rounded-sm text-sm font-bold"
         >
           Create trial account
           <AppIcon icon="arrowRight" size={15} />

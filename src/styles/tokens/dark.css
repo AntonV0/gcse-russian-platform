@@ -34,7 +34,7 @@
     var(--dark-surface-muted)
   );
   --background-soft-accent: var(--accent-soft);
-  --background-soft-blue: var(--accent-soft);
+  --background-soft-blue: color-mix(in srgb, var(--brand-blue) 14%, var(--dark-surface-muted));
   --background-soft-danger: color-mix(
     in srgb,
     var(--danger) 18%,
@@ -85,6 +85,22 @@
     var(--accent) 78%,
     var(--dark-surface-border)
   );
+  --accent-decorative-fill: color-mix(
+    in srgb,
+    var(--accent-fill) 92%,
+    var(--dark-surface-base)
+  );
+  --accent-decorative-fill-bright: color-mix(
+    in srgb,
+    var(--accent-fill-hover) 88%,
+    var(--accent-fill)
+  );
+  --accent-decorative-border: color-mix(
+    in srgb,
+    var(--accent-decorative-fill) 34%,
+    var(--dark-surface-border)
+  );
+  --accent-decorative-glow: color-mix(in srgb, var(--accent) 22%, transparent);
   --accent-glow: color-mix(in srgb, var(--accent) 24%, transparent);
   --accent-ring: rgba(79, 140, 255, 0.16);
   --accent-rgb: 79, 140, 255;
@@ -100,9 +116,9 @@
     0 0 0 4px var(--accent-ring), 0 1px 2px rgba(0, 0, 0, 0.24),
     0 12px 26px rgba(0, 0, 0, 0.24);
 
-  --brand-blue: var(--accent-fill);
-  --brand-blue-hover: var(--accent-fill-hover);
-  --brand-blue-soft: var(--accent-soft);
+  --brand-blue: #60a5fa;
+  --brand-blue-hover: #93c5fd;
+  --brand-blue-soft: color-mix(in srgb, var(--brand-blue) 14%, var(--dark-control-bg));
 
   --brand-red: #ef5a61;
   --brand-red-hover: #ff7378;
@@ -122,21 +138,33 @@
   --success-border-strong: color-mix(in srgb, var(--success) 42%, transparent);
   --success-shadow: color-mix(in srgb, var(--success) 12%, transparent);
   --success-ring: color-mix(in srgb, var(--success) 14%, transparent);
+  --success-progress-gradient: linear-gradient(
+    90deg,
+    var(--success) 0%,
+    color-mix(in srgb, var(--success) 82%, var(--success-text-strong)) 58%,
+    var(--success-text-strong) 100%
+  );
   --warning: #f59e0b;
   --warning-display: var(--warning);
   --warning-soft: #34260e;
   --warning-text: #fde68a;
   --warning-text-strong: #fef3c7;
-  --warning-surface: color-mix(in srgb, var(--warning) 10%, var(--dark-control-bg));
+  --warning-surface: color-mix(in srgb, var(--warning-display) 10%, var(--dark-control-bg));
   --warning-surface-strong: color-mix(
     in srgb,
-    var(--warning) 16%,
+    var(--warning-display) 16%,
     var(--dark-control-bg)
   );
-  --warning-border: color-mix(in srgb, var(--warning) 26%, transparent);
-  --warning-border-strong: color-mix(in srgb, var(--warning) 44%, transparent);
-  --warning-shadow: color-mix(in srgb, var(--warning) 12%, transparent);
-  --warning-ring: color-mix(in srgb, var(--warning) 14%, transparent);
+  --warning-border: color-mix(in srgb, var(--warning-display) 26%, transparent);
+  --warning-border-strong: color-mix(in srgb, var(--warning-display) 44%, transparent);
+  --warning-shadow: color-mix(in srgb, var(--warning-display) 12%, transparent);
+  --warning-ring: color-mix(in srgb, var(--warning-display) 14%, transparent);
+  --warning-progress-gradient: linear-gradient(
+    90deg,
+    var(--warning-display) 0%,
+    color-mix(in srgb, var(--warning-display) 82%, var(--warning-text-strong)) 58%,
+    var(--warning-text-strong) 100%
+  );
   --danger: #ef4444;
   --danger-soft: color-mix(in srgb, var(--danger) 18%, var(--dark-surface-muted));
   --danger-text: #fecaca;

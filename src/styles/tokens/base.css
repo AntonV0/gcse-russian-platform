@@ -45,6 +45,22 @@
   --accent-soft: #eaf2ff;
   --accent-selected-bg: var(--accent-soft);
   --accent-selected-border: var(--accent-fill);
+  --accent-decorative-fill: color-mix(
+    in srgb,
+    var(--accent-fill) 86%,
+    var(--accent-ink)
+  );
+  --accent-decorative-fill-bright: color-mix(
+    in srgb,
+    var(--accent-fill-hover) 82%,
+    var(--accent-fill)
+  );
+  --accent-decorative-border: color-mix(
+    in srgb,
+    var(--accent-decorative-fill) 34%,
+    var(--border-subtle)
+  );
+  --accent-decorative-glow: color-mix(in srgb, var(--accent) 18%, transparent);
   --accent-glow: rgba(59, 130, 246, 0.16);
   --accent-ring: rgba(59, 130, 246, 0.14);
   --accent-rgb: 59, 130, 246;
@@ -62,9 +78,9 @@
     0 10px 22px color-mix(in srgb, var(--text-primary) 6%, transparent);
 
   /* ========= Brand colours ========= */
-  --brand-blue: var(--accent-fill);
-  --brand-blue-hover: var(--accent-fill-hover);
-  --brand-blue-soft: var(--accent-soft);
+  --brand-blue: #2563eb;
+  --brand-blue-hover: #1d4ed8;
+  --brand-blue-soft: #eaf2ff;
 
   --brand-red: #d94b52;
   --brand-red-hover: #bf3940;
@@ -143,7 +159,7 @@
   --page-padding-x: 1rem;
   --page-padding-y: 1rem;
   --site-header-height: 65px;
-  --sticky-site-offset: calc(var(--site-header-height) + 1.5rem);
+  --sticky-site-offset: calc(var(--site-header-height) + var(--page-padding-y));
 
   /* ========= Radius ========= */
   --radius-xs: 0.4rem;
@@ -228,8 +244,21 @@
   );
   --accent-progress-gradient: linear-gradient(
     90deg,
-    var(--accent-fill) 0%,
-    var(--accent-fill-hover) 100%
+    var(--accent-decorative-fill) 0%,
+    var(--accent-fill) 48%,
+    var(--accent-decorative-fill-bright) 100%
+  );
+  --success-progress-gradient: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--success-text-strong) 82%, var(--success)) 0%,
+    var(--success) 54%,
+    color-mix(in srgb, var(--success) 76%, var(--brand-white)) 100%
+  );
+  --warning-progress-gradient: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--warning-text-strong) 78%, var(--warning-display)) 0%,
+    var(--warning-display) 54%,
+    color-mix(in srgb, var(--warning-display) 74%, var(--brand-white)) 100%
   );
   --accent-sheen-gradient: linear-gradient(
     180deg,
@@ -268,7 +297,12 @@
   );
   --gradient-brand-soft: var(--accent-gradient-soft);
   --gradient-accent-soft: var(--accent-gradient-soft);
-  --gradient-blue-soft: var(--accent-gradient-soft);
+  --gradient-blue-soft: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--brand-blue) 10%, var(--background-elevated)) 0%,
+    var(--background-elevated) 58%,
+    color-mix(in srgb, var(--brand-blue) 5%, var(--background-elevated)) 100%
+  );
   --gradient-danger-soft: var(--danger-gradient-soft);
   --gradient-red-soft: var(--danger-gradient-soft);
 }
