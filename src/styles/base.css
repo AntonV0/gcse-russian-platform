@@ -111,21 +111,21 @@ small {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--background-elevated) 94%, transparent) 0%,
-      color-mix(in srgb, var(--background-elevated) 90%, transparent) 48%,
-      color-mix(in srgb, var(--background) 86%, transparent) 100%
+      color-mix(in srgb, var(--background-elevated) 99%, transparent) 0%,
+      color-mix(in srgb, var(--background-elevated) 97%, transparent) 48%,
+      color-mix(in srgb, var(--background) 94%, transparent) 100%
     ),
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--brand-white) 16%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 5%, transparent) 28%,
-      transparent 44%,
-      color-mix(in srgb, var(--brand-white) 12%, transparent) 100%
+      color-mix(in srgb, var(--brand-white) 20%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 4%, transparent) 28%,
+      color-mix(in srgb, var(--background-elevated) 12%, transparent) 44%,
+      color-mix(in srgb, var(--brand-white) 16%, transparent) 100%
     );
   box-shadow:
     inset 0 -1px 0 color-mix(in srgb, var(--brand-white) 46%, transparent),
     0 1px 0 color-mix(in srgb, var(--brand-white) 38%, transparent),
-    0 16px 42px color-mix(in srgb, var(--text-primary) 8%, transparent);
+    0 12px 30px color-mix(in srgb, var(--text-primary) 7%, transparent);
   backdrop-filter: blur(26px) saturate(185%) contrast(106%);
   -webkit-backdrop-filter: blur(26px) saturate(185%) contrast(106%);
 }
