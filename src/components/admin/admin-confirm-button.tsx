@@ -24,8 +24,15 @@ export default function AdminConfirmButton({
   icon = "warning",
   size = "md",
 }: AdminConfirmButtonProps) {
+  const wrapperClassName = [
+    "dev-marker-host relative inline-flex max-w-full",
+    className?.split(/\s+/).includes("w-full") ? "w-full" : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <span className="dev-marker-host relative inline-flex">
+    <span className={wrapperClassName}>
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="AdminConfirmButton"
