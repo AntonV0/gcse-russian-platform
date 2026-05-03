@@ -34,11 +34,15 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   const resolvedSearchParams = await searchParams;
   const currentStep = resolvedSearchParams?.step;
 
+  const [profile, user] = await Promise.all([getCurrentProfile(), getCurrentUser()]);
   const lessonPageData = await loadLessonPageData(
     courseSlug,
     variantSlug,
     moduleSlug,
-    lessonSlug
+    lessonSlug,
+    {
+      includeAdminTestingModules: !!profile?.is_admin,
+    }
   );
   const { course, module, lesson } = lessonPageData;
 
@@ -46,7 +50,6 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
     notFound();
   }
 
-  const [profile, user] = await Promise.all([getCurrentProfile(), getCurrentUser()]);
   const canPreviewDraftLesson = !!profile?.is_admin || !!profile?.is_teacher;
 
   if (!lesson.is_published && !canPreviewDraftLesson) {
