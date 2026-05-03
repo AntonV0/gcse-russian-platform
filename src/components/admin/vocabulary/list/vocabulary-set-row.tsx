@@ -94,6 +94,13 @@ export default function VocabularySetRow({
 }: VocabularySetRowProps) {
   const displayTitle = getVocabularySetDisplayTitle(vocabularySet.title);
   const rowLabel = String(rowNumber).padStart(2, "0");
+  const lessonUsageCount = vocabularySet.usage_stats.totalOccurrences;
+  const cannotDeleteReason =
+    lessonUsageCount > 0
+      ? `Remove ${lessonUsageCount} lesson usage${lessonUsageCount === 1 ? "" : "s"} before deleting this set.`
+      : vocabularySet.item_count > 0
+        ? `Delete ${vocabularySet.item_count} item${vocabularySet.item_count === 1 ? "" : "s"} before deleting this set.`
+        : null;
 
   return (
     <DataTableRow>
@@ -208,11 +215,16 @@ export default function VocabularySetRow({
                     variant="danger"
                     size="sm"
                     icon="delete"
+                    disabled={Boolean(cannotDeleteReason)}
+                    title={cannotDeleteReason ?? undefined}
                     className="w-full justify-start !rounded-xl !border-[var(--danger-border)] !bg-[var(--danger-surface)] !text-[var(--danger-text)] !shadow-none hover:!border-[var(--danger-border-strong)] hover:!bg-[var(--danger-surface-strong)] hover:!text-[var(--danger-text-strong)] hover:!shadow-none"
                     confirmMessage={`Delete ${vocabularySet.title}? This also deletes its items and list links.`}
                   >
-                    Delete
+                    {cannotDeleteReason ? "Protected" : "Delete"}
                   </AdminConfirmButton>
+                  {cannotDeleteReason ? (
+                    <p className="px-2 pt-1 app-text-caption">{cannotDeleteReason}</p>
+                  ) : null}
                 </form>
               </div>
             </div>

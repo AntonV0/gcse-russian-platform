@@ -12,6 +12,8 @@ type AdminConfirmButtonProps = {
   variant?: "danger" | "warning" | "secondary";
   icon?: AppIconKey;
   size?: ButtonSize;
+  disabled?: boolean;
+  title?: string;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -23,6 +25,8 @@ export default function AdminConfirmButton({
   variant = "danger",
   icon = "warning",
   size = "md",
+  disabled = false,
+  title,
 }: AdminConfirmButtonProps) {
   const wrapperClassName = [
     "dev-marker-host relative inline-flex max-w-full",
@@ -55,8 +59,15 @@ export default function AdminConfirmButton({
         variant={variant}
         icon={icon}
         size={size}
+        disabled={disabled}
+        title={title}
         className={className}
         onClick={(event) => {
+          if (disabled) {
+            event.preventDefault();
+            return;
+          }
+
           const confirmed = window.confirm(confirmMessage);
 
           if (!confirmed) {
