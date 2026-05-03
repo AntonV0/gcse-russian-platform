@@ -28,6 +28,8 @@ export type AdminVocabularyMetadataHealth = {
   missingTransliterationItems: number;
   missingCategoryItems: number;
   duplicateCanonicalKeys: number;
+  repeatedCanonicalKeyGroups: number;
+  canonicalKeyCollisions: number;
   sampleIssues: {
     title: string;
     setId: string;
@@ -45,4 +47,5 @@ export type AdminVocabularyListProps = {
   params: AdminVocabularySearchParams;
   themeKeys: string[];
   sourceKeys: string[];
+  showVolnaUsageFilter: boolean;
 };

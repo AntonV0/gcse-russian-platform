@@ -56,8 +56,8 @@ export default function CreateVocabularySetPage() {
             <div className="space-y-2">
               <h2 className="app-heading-section">Create a reusable vocabulary set</h2>
               <p className="max-w-3xl app-text-body-muted">
-                Start with the core metadata. Item-level add, edit, reorder, and delete
-                can come next once the set exists.
+                Start with the core metadata. Once the set exists, add or review its
+                vocabulary items from the dedicated items page.
               </p>
             </div>
           </div>
@@ -166,43 +166,36 @@ export default function CreateVocabularySetPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <FormField
-                label="Tier"
+                label="Tier / path"
                 htmlFor="tier"
-                hint="Choose which course tier this set belongs to."
+                hint="Choose which course path this set belongs to."
               >
                 <Select id="tier" name="tier" defaultValue="both">
-                  <option value="both">Both tiers</option>
-                  <option value="foundation">Foundation</option>
-                  <option value="higher">Higher</option>
-                  <option value="unknown">Unknown</option>
+                  <option value="both">All paths</option>
+                  <option value="foundation">Foundation path</option>
+                  <option value="higher">Higher path</option>
                 </Select>
               </FormField>
 
               <FormField
-                label="List mode"
+                label="Source mode"
                 htmlFor="listMode"
-                hint="Defines the vocabulary source mix."
+                hint="Choose whether this set is a curated lesson set or a specification source set."
               >
                 <Select id="listMode" name="listMode" defaultValue="custom">
-                  <option value="custom">Custom</option>
-                  <option value="spec_only">Spec only</option>
-                  <option value="extended_only">Extended only</option>
-                  <option value="spec_and_extended">Spec + extended</option>
+                  <option value="custom">Lesson/custom</option>
+                  <option value="spec_only">Specification only</option>
                 </Select>
               </FormField>
 
               <FormField
-                label="Set type"
+                label="Set kind"
                 htmlFor="setType"
-                hint="Use this to classify the set for future admin filtering."
+                hint="Keep this aligned with the vocabulary-set filters used across admin."
               >
                 <Select id="setType" name="setType" defaultValue="lesson_custom">
-                  <option value="lesson_custom">Lesson custom</option>
+                  <option value="lesson_custom">Lesson set</option>
                   <option value="specification">Specification</option>
-                  <option value="core">Core</option>
-                  <option value="theme">Theme</option>
-                  <option value="phrase_bank">Phrase bank</option>
-                  <option value="exam_prep">Exam prep</option>
                 </Select>
               </FormField>
 

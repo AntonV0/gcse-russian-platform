@@ -87,6 +87,7 @@ export type BulkVocabularyItemMutationPayload = Pick<
   | "source_key"
   | "source_version"
   | "source_section_ref"
+  | "import_key"
 >;
 
 export async function createVocabularySetDb(
@@ -106,7 +107,23 @@ export async function createVocabularySetDb(
   }
 
   const vocabularySet = normalizeVocabularySet(data);
-  await ensureDefaultVocabularyListForSetDb(vocabularySet);
+  try {
+    await ensureDefaultVocabularyListForSetDb(vocabularySet);
+  } catch (listError) {
+    const { error: cleanupError } = await supabase
+      .from("vocabulary_sets")
+      .delete()
+      .eq("id", vocabularySet.id);
+
+    if (cleanupError) {
+      console.error("Error cleaning up vocabulary set after list creation failure:", {
+        vocabularySetId: vocabularySet.id,
+        error: cleanupError,
+      });
+    }
+
+    throw listError;
+  }
 
   return vocabularySet;
 }
@@ -229,6 +246,20 @@ export async function createVocabularyItemDb(params: {
   });
 
   if (listItemError) {
+    const { error: cleanupError } = await supabase
+      .from("vocabulary_items")
+      .delete()
+      .eq("id", item.id)
+      .eq("vocabulary_set_id", params.vocabularySetId);
+
+    if (cleanupError) {
+      console.error("Error cleaning up vocabulary item after list link failure:", {
+        vocabularyItemId: item.id,
+        vocabularySetId: params.vocabularySetId,
+        error: cleanupError,
+      });
+    }
+
     console.error("Error linking vocabulary item to list:", {
       vocabularySetId: params.vocabularySetId,
       vocabularyListId: vocabularyList.id,
@@ -282,6 +313,7 @@ export async function bulkCreateVocabularyItemsDb(params: {
         : params.payload.productive_receptive,
     tier_override: params.payload.tier === "unknown" ? null : params.payload.tier,
     source_section_ref: params.payload.source_section_ref,
+    import_key: params.payload.import_key,
   }));
 
   if (listItemPayloads.length > 0) {
@@ -290,6 +322,21 @@ export async function bulkCreateVocabularyItemsDb(params: {
       .insert(listItemPayloads);
 
     if (listItemError) {
+      const insertedItemIds = (insertedItems ?? []).map((item) => item.id);
+      const { error: cleanupError } = await supabase
+        .from("vocabulary_items")
+        .delete()
+        .in("id", insertedItemIds)
+        .eq("vocabulary_set_id", params.vocabularySetId);
+
+      if (cleanupError) {
+        console.error("Error cleaning up bulk vocabulary items after list link failure:", {
+          vocabularySetId: params.vocabularySetId,
+          vocabularyItemIds: insertedItemIds,
+          error: cleanupError,
+        });
+      }
+
       console.error("Error linking bulk vocabulary items to list:", {
         vocabularySetId: params.vocabularySetId,
         vocabularyListId: vocabularyList.id,

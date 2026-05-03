@@ -2,11 +2,64 @@ import { createClient } from "@/lib/supabase/server";
 import { getVocabularyThemeLabel } from "@/lib/vocabulary/shared/labels";
 import { chunkValues, fetchSupabasePages } from "@/lib/vocabulary/shared/pagination";
 import type {
+  DbVocabularyListMode,
   DbVocabularySet,
   DbVocabularySetType,
   DbVocabularySetOption,
   DbVocabularySetOptionList,
 } from "@/lib/vocabulary/shared/types";
+
+type VocabularySetKeyOptions = {
+  publishedOnly?: boolean;
+  excludeSetTypes?: DbVocabularySetType[];
+  setType?: DbVocabularySetType | "all" | null;
+  listMode?: DbVocabularyListMode | "all" | null;
+  themeKey?: string | null;
+  sourceKey?: string | null;
+};
+
+type VocabularySetKeyQuery<TQuery> = TQuery & {
+  eq: (column: string, value: unknown) => VocabularySetKeyQuery<TQuery>;
+  neq: (column: string, value: unknown) => VocabularySetKeyQuery<TQuery>;
+};
+
+function applyVocabularySetKeyOptions<TQuery>(
+  query: TQuery,
+  options?: VocabularySetKeyOptions
+) {
+  let nextQuery = query as VocabularySetKeyQuery<TQuery>;
+  const setType = options?.setType && options.setType !== "all" ? options.setType : null;
+  const listMode =
+    options?.listMode && options.listMode !== "all" ? options.listMode : null;
+  const themeKey = options?.themeKey?.trim();
+  const sourceKey = options?.sourceKey?.trim();
+
+  if (options?.publishedOnly) {
+    nextQuery = nextQuery.eq("is_published", true);
+  }
+
+  if (setType) {
+    nextQuery = nextQuery.eq("set_type", setType);
+  }
+
+  if (listMode) {
+    nextQuery = nextQuery.eq("list_mode", listMode);
+  }
+
+  if (themeKey) {
+    nextQuery = nextQuery.eq("theme_key", themeKey);
+  }
+
+  if (sourceKey) {
+    nextQuery = nextQuery.eq("source_key", sourceKey);
+  }
+
+  for (const excludedSetType of options?.excludeSetTypes ?? []) {
+    nextQuery = nextQuery.neq("set_type", excludedSetType);
+  }
+
+  return nextQuery as TQuery;
+}
 
 async function getVocabularyOptionListsBySetIdsDb(vocabularySetIds: string[]) {
   const uniqueVocabularySetIds = Array.from(new Set(vocabularySetIds));
@@ -108,28 +161,17 @@ export async function getVocabularySetOptionsDb(options?: {
   );
 }
 
-export async function getVocabularySetThemeKeysDb(options?: {
-  publishedOnly?: boolean;
-  excludeSetTypes?: DbVocabularySetType[];
-}) {
+export async function getVocabularySetThemeKeysDb(options?: VocabularySetKeyOptions) {
   const supabase = await createClient();
   const data = await fetchSupabasePages<{ theme_key: string | null }>({
     queryFactory: () => {
-      let query = supabase
+      const query = supabase
         .from("vocabulary_sets")
         .select("theme_key")
         .not("theme_key", "is", null)
         .order("theme_key", { ascending: true });
 
-      if (options?.publishedOnly) {
-        query = query.eq("is_published", true);
-      }
-
-      for (const excludedSetType of options?.excludeSetTypes ?? []) {
-        query = query.neq("set_type", excludedSetType);
-      }
-
-      return query;
+      return applyVocabularySetKeyOptions(query, options);
     },
     errorMessage: "Error fetching vocabulary theme keys:",
     errorContext: { options },
@@ -144,23 +186,17 @@ export async function getVocabularySetThemeKeysDb(options?: {
   ).sort((a, b) => getVocabularyThemeLabel(a).localeCompare(getVocabularyThemeLabel(b)));
 }
 
-export async function getVocabularySetSourceKeysDb(options?: {
-  publishedOnly?: boolean;
-}) {
+export async function getVocabularySetSourceKeysDb(options?: VocabularySetKeyOptions) {
   const supabase = await createClient();
   const data = await fetchSupabasePages<{ source_key: string | null }>({
     queryFactory: () => {
-      let query = supabase
+      const query = supabase
         .from("vocabulary_sets")
         .select("source_key")
         .not("source_key", "is", null)
         .order("source_key", { ascending: true });
 
-      if (options?.publishedOnly) {
-        query = query.eq("is_published", true);
-      }
-
-      return query;
+      return applyVocabularySetKeyOptions(query, options);
     },
     errorMessage: "Error fetching vocabulary source keys:",
     errorContext: { options },

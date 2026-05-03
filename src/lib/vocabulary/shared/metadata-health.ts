@@ -27,16 +27,58 @@ type VocabularyMetadataSetRow = {
   source_key: string | null;
 };
 
-function countDuplicateValues(values: (string | null)[]) {
-  const counts = new Map<string, number>();
+function normalizeMetadataValue(value: string | null) {
+  return (value ?? "")
+    .toLowerCase()
+    .replace(/[()'',.;/]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-  for (const value of values) {
-    const normalizedValue = value?.trim();
-    if (!normalizedValue) continue;
-    counts.set(normalizedValue, (counts.get(normalizedValue) ?? 0) + 1);
+function getUniqueNormalizedValues(
+  items: VocabularyMetadataItemRow[],
+  getValue: (item: VocabularyMetadataItemRow) => string | null
+) {
+  return new Set(items.map((item) => normalizeMetadataValue(getValue(item))));
+}
+
+function getDuplicateCanonicalKeyGroups(items: VocabularyMetadataItemRow[]) {
+  const groups = new Map<string, VocabularyMetadataItemRow[]>();
+
+  for (const item of items) {
+    const canonicalKey = item.canonical_key?.trim();
+    if (!canonicalKey) continue;
+    const group = groups.get(canonicalKey) ?? [];
+    group.push(item);
+    groups.set(canonicalKey, group);
   }
 
-  return Array.from(counts.values()).filter((count) => count > 1).length;
+  return Array.from(groups.entries())
+    .filter(([, groupItems]) => groupItems.length > 1)
+    .map(([canonicalKey, groupItems]) => {
+      const russianValues = getUniqueNormalizedValues(
+        groupItems,
+        (item) => item.russian
+      );
+      const englishValues = getUniqueNormalizedValues(
+        groupItems,
+        (item) => item.english
+      );
+      const partOfSpeechValues = getUniqueNormalizedValues(
+        groupItems,
+        (item) => item.part_of_speech
+      );
+
+      return {
+        canonicalKey,
+        items: groupItems,
+        isRepeatedSpecEntry:
+          groupItems.every((item) => item.source_type === "spec_required") &&
+          russianValues.size === 1 &&
+          englishValues.size === 1 &&
+          partOfSpeechValues.size === 1,
+      };
+    });
 }
 
 function getItemReviewHref(
@@ -108,21 +150,15 @@ export async function getVocabularyMetadataHealthDb() {
   const specItems = items.filter((item) => item.source_type === "spec_required");
   const specificationSets = sets.filter((set) => set.set_type === "specification");
   const setById = new Map(sets.map((set) => [set.id, set]));
-  const duplicateCanonicalKeyCounts = new Map<string, number>();
-
-  for (const item of items) {
-    const canonicalKey = item.canonical_key?.trim();
-    if (!canonicalKey) continue;
-    duplicateCanonicalKeyCounts.set(
-      canonicalKey,
-      (duplicateCanonicalKeyCounts.get(canonicalKey) ?? 0) + 1
-    );
-  }
-
-  const duplicateCanonicalKeys = new Set(
-    Array.from(duplicateCanonicalKeyCounts.entries())
-      .filter(([, count]) => count > 1)
-      .map(([canonicalKey]) => canonicalKey)
+  const duplicateCanonicalKeyGroups = getDuplicateCanonicalKeyGroups(items);
+  const repeatedCanonicalKeyGroups = duplicateCanonicalKeyGroups.filter(
+    (group) => group.isRepeatedSpecEntry
+  );
+  const collidingCanonicalKeyGroups = duplicateCanonicalKeyGroups.filter(
+    (group) => !group.isRepeatedSpecEntry
+  );
+  const collidingCanonicalKeys = new Set(
+    collidingCanonicalKeyGroups.map((group) => group.canonicalKey)
   );
   const sampleIssues = [
     ...items
@@ -159,11 +195,11 @@ export async function getVocabularyMetadataHealthDb() {
         })
       ),
     ...items
-      .filter((item) => duplicateCanonicalKeys.has(item.canonical_key?.trim() ?? ""))
+      .filter((item) => collidingCanonicalKeys.has(item.canonical_key?.trim() ?? ""))
       .slice(0, 3)
       .map((item) =>
         createIssueSample({
-          title: "Duplicate canonical key",
+          title: "Canonical key collision",
           item,
           setById,
           params: { itemSearch: item.canonical_key },
@@ -187,7 +223,9 @@ export async function getVocabularyMetadataHealthDb() {
     missingTopicItems: items.filter((item) => !item.topic_key?.trim()).length,
     missingThemeSets: sets.filter((set) => !set.theme_key?.trim()).length,
     missingTopicSets: sets.filter((set) => !set.topic_key?.trim()).length,
-    duplicateCanonicalKeys: countDuplicateValues(items.map((item) => item.canonical_key)),
+    duplicateCanonicalKeys: duplicateCanonicalKeyGroups.length,
+    repeatedCanonicalKeyGroups: repeatedCanonicalKeyGroups.length,
+    canonicalKeyCollisions: collidingCanonicalKeyGroups.length,
     specSetsInHighFrequency: specificationSets.filter(
       (set) => set.theme_key === "high_frequency_language"
     ).length,

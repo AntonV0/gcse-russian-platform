@@ -16,6 +16,11 @@ const VOCABULARY_THEME_LABELS: Record<string, string> = {
   local_area_holiday_travel: "Local area, holiday and travel",
   local_area_holiday_and_travel: "Local area, holiday and travel",
   school: "School",
+  theme_1_identity_culture: "Theme 1: Identity and culture",
+  theme_2_local_area_holiday_travel: "Theme 2: Local area, holiday and travel",
+  theme_3_school: "Theme 3: School",
+  theme_4_future_work: "Theme 4: Future aspirations, study and work",
+  theme_5_global_international: "Theme 5: International and global dimension",
 };
 
 const VOCABULARY_TOPIC_LABELS: Record<string, string> = {
@@ -59,6 +64,9 @@ const VOCABULARY_TOPIC_LABELS: Record<string, string> = {
 };
 
 const VOCABULARY_SOURCE_LABELS: Record<string, string> = {
+  "gcse-russian-course-map": "GCSE Russian course map",
+  "lesson-design-showcase": "Lesson design showcase",
+  lesson_design_showcase: "Lesson design showcase",
   pearson_edexcel_gcse_russian_1ru0: "Pearson Edexcel GCSE Russian 1RU0",
 };
 

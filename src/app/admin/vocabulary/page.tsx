@@ -112,13 +112,26 @@ export default async function AdminVocabularyPage({
     usageVariant: normalizeUsageVariantFilter(params.usageVariant),
     published: normalizePublishedFilter(params.published),
   };
+  const optionFilterScope = {
+    setType: filters.setType,
+    listMode: filters.listMode,
+  };
   const [vocabularySets, themeKeys, sourceKeys, metadataHealth] = await Promise.all([
-    getVocabularySetsDb({ filters }),
-    getVocabularySetThemeKeysDb(),
-    getVocabularySetSourceKeysDb(),
+    getVocabularySetsDb({ filters, useServiceRole: true }),
+    getVocabularySetThemeKeysDb({
+      ...optionFilterScope,
+      sourceKey: filters.sourceKey,
+    }),
+    getVocabularySetSourceKeysDb({
+      ...optionFilterScope,
+      themeKey: filters.themeKey,
+    }),
     getVocabularyMetadataHealthDb(),
   ]);
   const stats = getVocabularyListStats(vocabularySets);
+  const showVolnaUsageFilter =
+    filters.usageVariant === "volna" ||
+    vocabularySets.some((vocabularySet) => vocabularySet.usage_stats.usedInVolna);
 
   return (
     <main className="space-y-4">
@@ -138,15 +151,16 @@ export default async function AdminVocabularyPage({
 
       <SavedVocabularyViews />
 
-      <VocabularyMetadataHealthPanel metadataHealth={metadataHealth} />
-
       <VocabularySetsTable
         vocabularySets={vocabularySets}
         filters={filters}
         params={params}
         themeKeys={themeKeys}
         sourceKeys={sourceKeys}
+        showVolnaUsageFilter={showVolnaUsageFilter}
       />
+
+      <VocabularyMetadataHealthPanel metadataHealth={metadataHealth} />
     </main>
   );
 }

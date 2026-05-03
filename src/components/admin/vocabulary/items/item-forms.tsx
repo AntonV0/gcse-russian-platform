@@ -44,7 +44,7 @@ export function NewVocabularyItemForm({
               id="create-russian"
               name="russian"
               required
-              placeholder="ÑƒÑ€Ð¾Ðº"
+              placeholder="урок"
               autoComplete="off"
             />
           </VocabularyAdminFormField>
@@ -159,7 +159,7 @@ export function NewVocabularyItemForm({
               <span>
                 <span className="block app-label">Reflexive verb</span>
                 <span className="mt-1 block app-text-caption">
-                  Mark words such as Ð·Ð°Ð½Ð¸Ð¼Ð°Ñ‚ÑŒÑÑ or ÑƒÑ‡Ð¸Ñ‚ÑŒÑÑ.
+                  Mark words such as заниматься or учиться.
                 </span>
               </span>
             </label>
@@ -266,7 +266,7 @@ export function BulkVocabularyItemForm({
             name="bulkItems"
             rows={8}
             required
-            placeholder={"ÑƒÑ€Ð¾Ðº | lesson\nÑÐ»Ð¾Ð²Ð¾ | word\nÐ·Ð°Ð´Ð°Ð½Ð¸Ðµ | task"}
+            placeholder={"урок | lesson\nслово | word\nзадание | task"}
           />
         </VocabularyAdminFormField>
 
@@ -329,6 +329,10 @@ export function BulkVocabularyItemForm({
                 htmlFor="bulk-source-section-ref"
               >
                 <Input id="bulk-source-section-ref" name="sourceSectionRef" />
+              </VocabularyAdminFormField>
+
+              <VocabularyAdminFormField label="Import key" htmlFor="bulk-import-key">
+                <Input id="bulk-import-key" name="importKey" />
               </VocabularyAdminFormField>
             </div>
           </div>

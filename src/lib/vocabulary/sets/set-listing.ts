@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 import { getVocabularyThemeLabel } from "@/lib/vocabulary/shared/labels";
 import { normalizeVocabularySetSummaryRow } from "@/lib/vocabulary/shared/normalizers";
@@ -45,15 +46,50 @@ async function getVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds: string[])
   );
 }
 
+async function getAdminVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds: string[]) {
+  const uniqueVocabularySetIds = Array.from(new Set(vocabularySetIds));
+
+  if (uniqueVocabularySetIds.length === 0) {
+    return new Map<string, DbVocabularySetSummaryRow>();
+  }
+
+  const supabase = createServiceRoleClient();
+  const data = (
+    await Promise.all(
+      chunkValues(uniqueVocabularySetIds).map((setIdBatch) =>
+        fetchSupabasePages<Record<string, unknown>>({
+          queryFactory: () =>
+            supabase
+              .from("vocabulary_set_summaries")
+              .select(VOCABULARY_SET_SUMMARY_SELECT)
+              .in("vocabulary_set_id", setIdBatch),
+          errorMessage: "Error fetching admin vocabulary set summaries:",
+          errorContext: { vocabularySetIds: setIdBatch },
+        })
+      )
+    )
+  ).flat();
+
+  return new Map(
+    data.map((row) => {
+      const summary = normalizeVocabularySetSummaryRow(row);
+      return [summary.vocabulary_set_id, summary];
+    })
+  );
+}
+
 export async function attachVocabularyCountsAndUsage(
-  vocabularySets: DbVocabularySet[]
+  vocabularySets: DbVocabularySet[],
+  options?: { useServiceRole?: boolean }
 ): Promise<DbVocabularySetListItem[]> {
   if (vocabularySets.length === 0) {
     return [];
   }
 
   const vocabularySetIds = vocabularySets.map((vocabularySet) => vocabularySet.id);
-  const summariesBySetId = await getVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds);
+  const summariesBySetId = options?.useServiceRole
+    ? await getAdminVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds)
+    : await getVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds);
 
   return vocabularySets.map((vocabularySet) => {
     const summary = summariesBySetId.get(vocabularySet.id);
