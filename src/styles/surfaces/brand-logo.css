@@ -7,8 +7,8 @@
 .app-logo {
   --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-light-blue.png");
   --app-logo-navy: var(--text-primary);
-  --app-logo-blue: var(--accent-ink);
-  --app-logo-blue-strong: var(--accent-fill);
+  --app-logo-blue: var(--accent-decorative-fill);
+  --app-logo-blue-strong: var(--accent-decorative-fill-bright);
   --app-logo-red: var(--brand-red);
   --app-logo-muted: var(--text-muted);
 }
@@ -88,8 +88,8 @@
 [data-theme="dark"] .app-logo {
   --app-logo-icon: url("/brand/logo-final/theme-icons/logo-icon-dark-blue.png");
   --app-logo-navy: var(--text-primary);
-  --app-logo-blue: color-mix(in srgb, var(--accent) 52%, white);
-  --app-logo-blue-strong: color-mix(in srgb, var(--accent) 62%, white);
+  --app-logo-blue: var(--accent-decorative-fill);
+  --app-logo-blue-strong: var(--accent-decorative-fill-bright);
   --app-logo-muted: color-mix(in srgb, var(--text-secondary) 74%, white);
 }
 
@@ -181,8 +181,10 @@
   justify-content: center;
   border-radius: 0.8rem;
   background: var(--accent-gradient-soft);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--accent-decorative-border);
+  box-shadow:
+    var(--shadow-xs),
+    0 8px 18px var(--accent-decorative-glow);
 }
 
 [data-theme="dark"] .app-brand-mark {

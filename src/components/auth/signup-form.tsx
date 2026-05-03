@@ -99,7 +99,7 @@ export default function SignUpForm({ initialError }: SignUpFormProps) {
         </p>
         <Link
           href="/login"
-          className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent-ink)] transition hover:text-[var(--accent-ink)]"
+          className="app-accent-link mt-3 inline-flex items-center gap-2 rounded-sm text-sm font-bold"
         >
           Log in
           <AppIcon icon="arrowRight" size={15} />

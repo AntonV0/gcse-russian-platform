@@ -58,8 +58,27 @@ export default function ThemeModeSelector() {
   const displayedPreference = hasMounted ? themePreference : null;
 
   return (
-    <div className="space-y-5">
-      <div className="grid gap-3 sm:grid-cols-3">
+    <div className="space-y-4">
+      <div className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-decorative-border)] shadow-[0_8px_18px_var(--accent-decorative-glow)]">
+          <AppIcon icon="sun" size={18} />
+        </span>
+
+        <div className="min-w-0">
+          <h3 className="text-base font-bold text-[var(--text-primary)]">
+            Display mode
+          </h3>
+          <p className="mt-1 text-sm app-text-muted">
+            Pick the version that feels easiest to read while you study.
+          </p>
+        </div>
+      </div>
+
+      <div
+        className="grid gap-3 sm:grid-cols-3"
+        role="radiogroup"
+        aria-label="Display mode"
+      >
         {themeOptions.map((option) => {
           const isActive = displayedPreference === option.value;
 
@@ -69,20 +88,21 @@ export default function ThemeModeSelector() {
               type="button"
               onClick={() => setThemePreference(option.value)}
               className={[
-                "app-focus-ring rounded-2xl border p-4 text-left transition",
+                "app-focus-ring rounded-xl border p-4 text-left transition",
                 "hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
                 isActive
                   ? "app-selected-surface"
                   : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:border-[var(--border-strong)]",
               ].join(" ")}
-              aria-pressed={isActive}
+              role="radio"
+              aria-checked={isActive}
             >
-              <div className="flex items-start gap-3">
+              <span className="flex items-start gap-3">
                 <span
                   className={[
                     "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border",
                     isActive
-                      ? "border-[var(--accent-selected-border)] [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_12%,transparent)]"
+                      ? "border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] shadow-[0_8px_18px_var(--accent-decorative-glow)]"
                       : "border-[var(--border)] bg-[var(--background-muted)]",
                   ].join(" ")}
                 >
@@ -100,7 +120,7 @@ export default function ThemeModeSelector() {
                     {option.description}
                   </span>
                 </span>
-              </div>
+              </span>
 
               <span
                 className={[
@@ -117,7 +137,7 @@ export default function ThemeModeSelector() {
         })}
       </div>
 
-      <div className="rounded-2xl bg-[var(--background-muted)] p-4">
+      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <div className="mb-1 text-xs font-medium uppercase tracking-wide app-text-soft">
@@ -140,8 +160,8 @@ export default function ThemeModeSelector() {
       </div>
 
       <p className="text-sm app-text-muted">
-        The header theme button still works as a quick Light/Dark override. Choose System
-        here when you want the platform to follow your device setting again.
+        Saved automatically on this device. Choose System if you want the platform to
+        follow your device setting.
       </p>
     </div>
   );

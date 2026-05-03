@@ -151,6 +151,12 @@ export default function Button(props: ButtonProps) {
     className,
     disabled,
   });
+  const wrapperClassName = [
+    "dev-marker-host relative inline-flex max-w-full",
+    className?.split(/\s+/).includes("w-full") ? "w-full" : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   useEffect(() => {
     if (!SHOW_UI_DEBUG || !iconOnly || resolvedAriaLabel) {
@@ -165,7 +171,7 @@ export default function Button(props: ButtonProps) {
 
   if ("href" in props && props.href) {
     return (
-      <span className="dev-marker-host relative inline-flex max-w-full">
+      <span className={wrapperClassName}>
         <ButtonMarker />
 
         <Link
@@ -202,7 +208,7 @@ export default function Button(props: ButtonProps) {
   delete buttonProps.title;
 
   return (
-    <span className="dev-marker-host relative inline-flex max-w-full">
+    <span className={wrapperClassName}>
       <ButtonMarker />
 
       <button

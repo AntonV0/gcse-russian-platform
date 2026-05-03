@@ -162,6 +162,23 @@
   color: var(--accent-ink);
 }
 
+.app-accent-link {
+  color: var(--accent-ink);
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+  transition:
+    color var(--transition-fast),
+    text-decoration-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.app-accent-link:hover {
+  text-decoration-color: var(--accent-decorative-fill);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
 .app-danger-text {
   color: var(--danger);
 }

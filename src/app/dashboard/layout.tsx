@@ -23,7 +23,7 @@ export default async function DashboardLayout({
       <AppShell user={user ? { email: user.email } : null}>
         <PageContainer>
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
-            <div className="lg:sticky lg:top-[var(--sticky-site-offset)]">
+            <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh-var(--sticky-site-offset)-1rem)] lg:self-start">
               <PlatformSidebar role={dashboard.role} accessMode={dashboard.accessMode} />
             </div>
 

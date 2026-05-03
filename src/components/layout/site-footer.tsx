@@ -6,7 +6,10 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function SiteFooter() {
   return (
-    <footer className="dev-marker-host relative border-t border-[var(--border)] bg-[var(--background-elevated)]">
+    <footer
+      data-site-footer
+      className="dev-marker-host relative border-t border-[var(--border)] bg-[var(--background-elevated)]"
+    >
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="SiteFooter"

@@ -109,6 +109,7 @@
   height: 0.5rem;
   overflow: hidden;
   border-radius: 999px;
+  border: 1px solid var(--accent-decorative-border);
   background: color-mix(in srgb, var(--text-primary) 8%, var(--background-muted));
   box-shadow: inset 0 1px 2px color-mix(in srgb, var(--text-primary) 10%, transparent);
 }
@@ -117,8 +118,13 @@
   height: 100%;
   border-radius: 999px;
   background: var(--accent-progress-gradient);
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 18%, transparent);
+  box-shadow: 0 6px 16px var(--accent-decorative-glow);
   transition: width var(--transition-base);
+}
+
+.app-progress-bar-success {
+  background: var(--success-progress-gradient);
+  box-shadow: 0 6px 16px var(--success-shadow);
 }
 
 [data-theme="dark"] .app-stat-tile {
