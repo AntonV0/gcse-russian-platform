@@ -146,7 +146,7 @@ export default async function LessonPageTemplate({
   const isFinalStep = effectiveStepIndex === visibleSections.length - 1;
 
   return (
-    <main className="space-y-5">
+    <main className="space-y-4">
       <LessonHeader
         backHref={moduleHref}
         backLabel="Back to module"
@@ -167,8 +167,8 @@ export default async function LessonPageTemplate({
       />
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="space-y-5 pb-5">
-          <article className="rounded-xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_94%,var(--background-muted))] px-4 py-5 shadow-[var(--shadow-xs)] md:px-6 md:py-6">
+        <div className="space-y-5 pb-4">
+          <article className="rounded-xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_94%,var(--background-muted))] px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-5 shadow-[var(--shadow-xs)] md:px-6 md:pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pt-6">
             <LessonRenderer
               sections={[currentSection]}
               lessonId={lesson.id}
@@ -202,7 +202,7 @@ export default async function LessonPageTemplate({
           ) : null}
         </div>
 
-        <aside className="xl:sticky xl:top-[var(--sticky-site-offset)] xl:self-start">
+        <aside className="order-first xl:order-none xl:sticky xl:top-[var(--sticky-site-offset)] xl:self-start">
           <StepTracker
             sections={visibleSections}
             currentStepIndex={effectiveStepIndex}
