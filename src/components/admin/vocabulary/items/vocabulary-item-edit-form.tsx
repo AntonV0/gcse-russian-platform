@@ -12,19 +12,34 @@ import {
   VocabularyAdminDisclosurePanel,
   VocabularyAdminFormField,
 } from "@/components/admin/vocabulary/items/primitives";
-import type { DbVocabularyItem, DbVocabularyTier } from "@/lib/vocabulary/shared/types";
+import type {
+  DbVocabularyItem,
+  DbVocabularyItemCoverage,
+  DbVocabularyTier,
+} from "@/lib/vocabulary/shared/types";
 
 export default function VocabularyItemEditForm({
   item,
   vocabularySetId,
   vocabularyListId,
   defaultTier,
+  coverage,
 }: {
   item: DbVocabularyItem;
   vocabularySetId: string;
   vocabularyListId: string | null;
   defaultTier: DbVocabularyTier;
+  coverage: DbVocabularyItemCoverage | null;
 }) {
+  const lessonUsageCount =
+    (coverage?.foundation_occurrences ?? 0) +
+    (coverage?.higher_occurrences ?? 0) +
+    (coverage?.volna_occurrences ?? 0);
+  const deleteProtectionReason =
+    lessonUsageCount > 0
+      ? `This item is used in ${lessonUsageCount} lesson coverage link${lessonUsageCount === 1 ? "" : "s"}. Remove those lesson usages before deleting it.`
+      : null;
+
   return (
     <>
       <form action={updateVocabularyItemAction} className="space-y-5">
@@ -215,7 +230,10 @@ export default function VocabularyItemEditForm({
           </div>
         </VocabularyAdminDisclosurePanel>
 
-        <VocabularyAdminDisclosurePanel title="Taxonomy and import metadata">
+        <VocabularyAdminDisclosurePanel
+          title="Taxonomy and import metadata"
+          description="Advanced fields for import repair and metadata cleanup. Usually leave these unchanged during everyday editing."
+        >
           <div className="grid gap-4 md:grid-cols-2">
             <VocabularyAdminFormField label="Theme key" htmlFor={`theme-key-${item.id}`}>
               <Input
@@ -327,10 +345,15 @@ export default function VocabularyItemEditForm({
           <AdminConfirmButton
             variant="danger"
             icon="delete"
+            disabled={Boolean(deleteProtectionReason)}
+            title={deleteProtectionReason ?? undefined}
             confirmMessage={`Delete ${item.russian}? This removes it from this vocabulary set and any linked lists.`}
           >
-            Delete item
+            {deleteProtectionReason ? "Protected item" : "Delete item"}
           </AdminConfirmButton>
+          {deleteProtectionReason ? (
+            <p className="mt-2 app-text-caption">{deleteProtectionReason}</p>
+          ) : null}
         </form>
       </div>
     </>
