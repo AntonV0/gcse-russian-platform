@@ -9,7 +9,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint",
+    "course-map:dry-run": "node scripts/generate-course-map-dry-run.mjs",
+    "course-map:db-dry-run": "node scripts/course-map-db-dry-run.mjs",
+    "course-map:implement": "node scripts/implement-course-map.mjs",
+    "course-map:create-testing-module": "node scripts/create-admin-testing-module.mjs",
+    "vocab:backfill-transliteration": "node scripts/backfill-vocabulary-transliteration.mjs",
     "seo:check": "node scripts/validate-seo.mjs",
+    "theme:check": "node scripts/check-theme-system.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check . --no-error-on-unmatched-pattern"
   },

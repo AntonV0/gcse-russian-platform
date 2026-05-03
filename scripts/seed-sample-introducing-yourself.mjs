@@ -16,14 +16,14 @@ const SOURCE_VERSION = "v1";
 
 const RU = {
   privet: "\u041f\u0440\u0438\u0432\u0435\u0442",
-  zdravstvuyte: "\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435",
+  zdravstvuyte:
+    "\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435",
   menyaZovut: "\u041c\u0435\u043d\u044f \u0437\u043e\u0432\u0443\u0442...",
   menyaZovutAnton:
     "\u041c\u0435\u043d\u044f \u0437\u043e\u0432\u0443\u0442 \u0410\u043d\u0442\u043e\u043d.",
   kakTebyaZovut:
     "\u041a\u0430\u043a \u0442\u0435\u0431\u044f \u0437\u043e\u0432\u0443\u0442?",
-  yaUchuRusskiy:
-    "\u042f \u0443\u0447\u0443 \u0440\u0443\u0441\u0441\u043a\u0438\u0439.",
+  yaUchuRusskiy: "\u042f \u0443\u0447\u0443 \u0440\u0443\u0441\u0441\u043a\u0438\u0439.",
   ochenPriyatno:
     "\u041e\u0447\u0435\u043d\u044c \u043f\u0440\u0438\u044f\u0442\u043d\u043e.",
   aTebya: "\u0410 \u0442\u0435\u0431\u044f?",
@@ -83,6 +83,17 @@ async function insertMany(supabase, table, values, label = table) {
   if (error) throw new Error(`Insert failed for ${label}: ${error.message}`);
 
   return data ?? [];
+}
+
+async function updateRows(supabase, table, values, filters, label = table) {
+  let query = supabase.from(table).update(values);
+
+  for (const [column, value] of Object.entries(filters)) {
+    query = query.eq(column, value);
+  }
+
+  const { error } = await query;
+  if (error) throw new Error(`Update failed for ${label}: ${error.message}`);
 }
 
 async function getFoundationModule(supabase) {
@@ -172,7 +183,11 @@ async function ensureQuestionSet(supabase) {
         marks: 2,
         position: 3,
         metadata: {
-          items: ["\u0440\u0443\u0441\u0441\u043a\u0438\u0439", "\u042f", "\u0443\u0447\u0443"],
+          items: [
+            "\u0440\u0443\u0441\u0441\u043a\u0438\u0439",
+            "\u042f",
+            "\u0443\u0447\u0443",
+          ],
           correctOrder: [1, 2, 0],
           skill: "sentence-building",
         },
@@ -290,8 +305,10 @@ async function ensureGrammarSet(supabase) {
       },
       {
         slug: "ya-uchu-russkiy-pattern",
-        title: "Using \u042f \u0443\u0447\u0443 \u0440\u0443\u0441\u0441\u043a\u0438\u0439",
-        short_description: "Say I study Russian with \u042f + \u0443\u0447\u0443 + \u0440\u0443\u0441\u0441\u043a\u0438\u0439.",
+        title:
+          "Using \u042f \u0443\u0447\u0443 \u0440\u0443\u0441\u0441\u043a\u0438\u0439",
+        short_description:
+          "Say I study Russian with \u042f + \u0443\u0447\u0443 + \u0440\u0443\u0441\u0441\u043a\u0438\u0439.",
         full_explanation:
           "\u042f means I. \u0423\u0447\u0443 means I study or I learn. Together, \u042f \u0443\u0447\u0443 \u0440\u0443\u0441\u0441\u043a\u0438\u0439 gives a short, accurate sentence.",
         grammar_tag_key: "present-tense",
@@ -318,15 +335,23 @@ async function ensureGrammarSet(supabase) {
     "grammar_examples",
     [
       [0, RU.menyaZovutAnton, "My name is Anton.", RU.menyaZovut, "A fixed phrase."],
-      [1, RU.yaUchuRusskiy, "I study Russian.", "\u0443\u0447\u0443", "A short sentence pattern."],
-    ].map(([pointIndex, russian_text, english_translation, optional_highlight, note]) => ({
-      grammar_point_id: grammarPoints[pointIndex].id,
-      russian_text,
-      english_translation,
-      optional_highlight,
-      note,
-      sort_order: 1,
-    })),
+      [
+        1,
+        RU.yaUchuRusskiy,
+        "I study Russian.",
+        "\u0443\u0447\u0443",
+        "A short sentence pattern.",
+      ],
+    ].map(
+      ([pointIndex, russian_text, english_translation, optional_highlight, note]) => ({
+        grammar_point_id: grammarPoints[pointIndex].id,
+        russian_text,
+        english_translation,
+        optional_highlight,
+        note,
+        sort_order: 1,
+      })
+    ),
     "sample grammar examples"
   );
 
@@ -348,8 +373,15 @@ function createSections() {
         {
           block_type: "text",
           data: {
-            content:
-              "You will learn how to say hello, say your name, ask someone their name, and write one short sentence about studying Russian.",
+            content: [
+              "! This lesson gives you a safe first introduction: **hello**, **my name is...**, and **I study Russian**.",
+              "",
+              `- Say [[ru:${RU.privet}]] or [[ru:${RU.zdravstvuyte}]].`,
+              `- Use [[ru:${RU.menyaZovut}]] before your name.`,
+              `- Ask back with [[ru:${RU.aTebya}]] when the other person has asked you.`,
+              "",
+              "!! Aim for a short answer you can say clearly, not a long answer you cannot remember.",
+            ].join("\n"),
           },
         },
         {
@@ -368,6 +400,20 @@ function createSections() {
       section_kind: "content",
       canonical_section_key: "sample-useful-phrases",
       blocks: [
+        {
+          block_type: "text",
+          data: {
+            content: [
+              "! Learn these as useful chunks. Do not translate every word yet.",
+              "",
+              "- Start with the greeting.",
+              "- Add your name.",
+              "- Ask the other person back.",
+              "",
+              `!! Best first answer: [[ru:${RU.privet}!]] [[ru:${RU.menyaZovut}]] + [[key:your name]].`,
+            ].join("\n"),
+          },
+        },
         {
           block_type: "vocabulary",
           data: {
@@ -391,6 +437,19 @@ function createSections() {
       canonical_section_key: "sample-how-it-works",
       blocks: [
         {
+          block_type: "text",
+          data: {
+            content: [
+              "! Russian introductions are easier if you learn the sentence frame first.",
+              "",
+              `> [[ru:${RU.menyaZovut}]] + [[key:name]]`,
+              `> [[ru:${RU.yaUchuRusskiy}]]`,
+              "",
+              "The first frame changes only at the name. The second sentence can stay exactly the same.",
+            ].join("\n"),
+          },
+        },
+        {
           block_type: "grammar-set",
           data: {
             title: "Two patterns for a first introduction",
@@ -400,8 +459,8 @@ function createSections() {
         {
           block_type: "callout",
           data: {
-            title: "Useful pattern",
-            content: `${RU.menyaZovutAnton} = My name is Anton.`,
+            title: "Tiny grammar win",
+            content: `${RU.menyaZovutAnton} is a complete sentence. You can swap Anton for your own name without rebuilding the grammar.`,
           },
         },
       ],
@@ -415,7 +474,16 @@ function createSections() {
         {
           block_type: "text",
           data: {
-            content: `${RU.privet}! ${RU.menyaZovutAnton} ${RU.aTebya}\n${RU.ochenPriyatno} ${RU.yaUchuRusskiy}`,
+            content: [
+              "! Read the whole model once. Then read only the Russian lines and see if the meaning still feels clear.",
+              `> [[ru:${RU.privet}!]] [[en:Hello!]]`,
+              `> [[ru:${RU.menyaZovutAnton}]] [[en:My name is Anton.]]`,
+              `> [[ru:${RU.aTebya}]] [[en:And you?]]`,
+              `> [[ru:${RU.ochenPriyatno}]] [[en:Nice to meet you.]]`,
+              `> [[ru:${RU.yaUchuRusskiy}]] [[en:I study Russian.]]`,
+              "",
+              `Notice how the model stays short. The two most reusable chunks are [[ru:${RU.menyaZovut}]] and [[ru:${RU.yaUchuRusskiy}]].`,
+            ].join("\n"),
           },
         },
         {
@@ -442,8 +510,19 @@ function createSections() {
         {
           block_type: "text",
           data: {
-            content:
-              "Say each phrase slowly. Pause after your name. Then say the whole mini introduction without stopping.",
+            content: [
+              "! Practise the rhythm in small chunks before you try the whole answer.",
+              "",
+              `1. Say [[ru:${RU.privet}]] twice.`,
+              `2. Say [[ru:${RU.menyaZovutAnton}]] and pause after the name.`,
+              `3. Add [[ru:${RU.yaUchuRusskiy}]] as your final sentence.`,
+              "",
+              `> [[ru:${RU.privet}!]]`,
+              `> [[ru:${RU.menyaZovutAnton}]]`,
+              `> [[ru:${RU.yaUchuRusskiy}]]`,
+              "",
+              "==Slow is fine.== Clear pronunciation matters more than speed.",
+            ].join("\n"),
           },
         },
         {
@@ -465,8 +544,14 @@ function createSections() {
         {
           block_type: "text",
           data: {
-            content:
-              "Start with the model. Change the name if you want to make the sentence your own.",
+            content: [
+              "! Start with the frame, then change one detail.",
+              "",
+              `> [[ru:${RU.menyaZovut}]] + [[key:your name]]`,
+              `> [[ru:${RU.yaUchuRusskiy}]]`,
+              "",
+              `For this check, write the model sentence with [[key:Anton]]. After that, say the same frame with your own name.`,
+            ].join("\n"),
           },
         },
         {
@@ -490,6 +575,18 @@ function createSections() {
       canonical_section_key: "sample-quick-practice",
       blocks: [
         {
+          block_type: "text",
+          data: {
+            content: [
+              "! Use this as a quick check, not a test of everything.",
+              "",
+              "1. Answer the question.",
+              "2. Read the feedback.",
+              "3. Fix one mistake before moving on.",
+            ].join("\n"),
+          },
+        },
+        {
           block_type: "question-set",
           data: {
             title: "Practise your first introduction",
@@ -511,15 +608,23 @@ function createSections() {
         {
           block_type: "text",
           data: {
-            content: `Try to remember this mini version: ${RU.privet}! ${RU.menyaZovutAnton} ${RU.yaUchuRusskiy}`,
+            content: [
+              "!! Your mini introduction",
+              `> [[ru:${RU.privet}! ${RU.menyaZovutAnton} ${RU.yaUchuRusskiy}]]`,
+              "",
+              "- You can greet someone.",
+              "- You can say your name.",
+              "- You can add one simple sentence about learning Russian.",
+              "",
+              "A short, accurate answer is a strong first step.",
+            ].join("\n"),
           },
         },
         {
           block_type: "note",
           data: {
             title: "Next time",
-            content:
-              "You can add age, where you live, or why you are learning Russian.",
+            content: "You can add age, where you live, or why you are learning Russian.",
           },
         },
       ],
@@ -534,7 +639,15 @@ async function createSampleLesson(supabase, module, questionSet, grammar) {
   });
 
   if (existingLesson) {
-    return { lesson: existingLesson, created: false };
+    await updateExistingSampleLesson(
+      supabase,
+      module,
+      existingLesson,
+      questionSet,
+      grammar
+    );
+
+    return { lesson: existingLesson, created: false, updated: true };
   }
 
   const lesson = await insertOne(supabase, "lessons", {
@@ -618,7 +731,228 @@ async function createSampleLesson(supabase, module, questionSet, grammar) {
     });
   }
 
-  return { lesson, sections, blocks, created: true };
+  return { lesson, sections, blocks, created: true, updated: false };
+}
+
+async function updateExistingSampleLesson(
+  supabase,
+  module,
+  lesson,
+  questionSet,
+  grammar
+) {
+  await updateRows(
+    supabase,
+    "lessons",
+    {
+      module_id: module.id,
+      title: "Introducing Yourself in Russian",
+      summary:
+        "Learn how to greet someone, say your name, ask theirs, and write one short Russian sentence.",
+      lesson_type: "sample",
+      estimated_minutes: 15,
+      is_published: true,
+      is_trial_visible: true,
+      requires_paid_access: false,
+      available_in_volna: true,
+      content_source: "db",
+      content_key: `${SOURCE_KEY}:${SOURCE_VERSION}`,
+    },
+    { id: lesson.id },
+    "existing sample lesson"
+  );
+
+  const { data: existingSections, error: sectionsError } = await supabase
+    .from("lesson_sections")
+    .select("id, canonical_section_key, position")
+    .eq("lesson_id", lesson.id);
+
+  if (sectionsError) {
+    throw new Error(`Could not load existing sample sections: ${sectionsError.message}`);
+  }
+
+  const sectionByKey = new Map(
+    (existingSections ?? []).map((section) => [section.canonical_section_key, section])
+  );
+
+  for (const [sectionIndex, section] of createSections().entries()) {
+    const existingSection = sectionByKey.get(section.canonical_section_key);
+    let sectionId = existingSection?.id;
+
+    const sectionPayload = {
+      lesson_id: lesson.id,
+      title: section.title,
+      description: section.description,
+      section_kind: section.section_kind,
+      position: sectionIndex + 1,
+      is_published: true,
+      settings: {
+        sample: true,
+        designPurpose: "student-facing-sample",
+        blockCount: section.blocks.length,
+      },
+      variant_visibility: "shared",
+      canonical_section_key: section.canonical_section_key,
+    };
+
+    if (sectionId) {
+      await updateRows(
+        supabase,
+        "lesson_sections",
+        sectionPayload,
+        { id: sectionId },
+        `section ${section.title}`
+      );
+    } else {
+      const insertedSection = await insertOne(
+        supabase,
+        "lesson_sections",
+        sectionPayload,
+        `section ${section.title}`
+      );
+      sectionId = insertedSection.id;
+    }
+
+    const { data: existingBlocks, error: blocksError } = await supabase
+      .from("lesson_blocks")
+      .select("id, position")
+      .eq("lesson_section_id", sectionId);
+
+    if (blocksError) {
+      throw new Error(
+        `Could not load blocks for ${section.title}: ${blocksError.message}`
+      );
+    }
+
+    const blockByPosition = new Map(
+      (existingBlocks ?? []).map((block) => [block.position, block])
+    );
+
+    for (const [blockIndex, block] of section.blocks.entries()) {
+      const position = blockIndex + 1;
+      const blockPayload = {
+        lesson_section_id: sectionId,
+        block_type: block.block_type,
+        position,
+        data: block.data,
+        is_published: true,
+        settings: {
+          sample: true,
+          designPurpose: "student-facing-sample",
+        },
+      };
+
+      const existingBlock = blockByPosition.get(position);
+
+      if (existingBlock) {
+        await updateRows(
+          supabase,
+          "lesson_blocks",
+          blockPayload,
+          { id: existingBlock.id },
+          `block ${section.title} ${position}`
+        );
+      } else {
+        await insertOne(
+          supabase,
+          "lesson_blocks",
+          blockPayload,
+          `block ${section.title} ${position}`
+        );
+      }
+    }
+  }
+
+  await ensureLessonQuestionSetLink(supabase, lesson.id, questionSet.id);
+  await ensureLessonGrammarSetLink(supabase, lesson.id, grammar.grammarSet.id);
+}
+
+async function ensureLessonQuestionSetLink(supabase, lessonId, questionSetId) {
+  const existingLink = await maybeSingle(
+    supabase,
+    "lesson_question_sets",
+    "lesson_id, question_set_id",
+    {
+      lesson_id: lessonId,
+      question_set_id: questionSetId,
+    }
+  );
+
+  if (existingLink) return;
+
+  await insertOne(supabase, "lesson_question_sets", {
+    lesson_id: lessonId,
+    question_set_id: questionSetId,
+    position: 1,
+  });
+}
+
+async function ensureLessonGrammarSetLink(supabase, lessonId, grammarSetId) {
+  const { data: grammarBlock, error: blockError } = await supabase
+    .from("lesson_blocks")
+    .select("id, lesson_section_id")
+    .eq("block_type", "grammar-set")
+    .in(
+      "lesson_section_id",
+      (
+        await supabase.from("lesson_sections").select("id").eq("lesson_id", lessonId)
+      ).data?.map((section) => section.id) ?? []
+    )
+    .limit(1)
+    .maybeSingle();
+
+  if (blockError) {
+    throw new Error(
+      `Could not find grammar block for sample lesson: ${blockError.message}`
+    );
+  }
+
+  if (!grammarBlock) return;
+
+  const existingSetLink = await maybeSingle(
+    supabase,
+    "lesson_grammar_links",
+    "id, lesson_id, lesson_block_id",
+    {
+      lesson_id: lessonId,
+      grammar_set_id: grammarSetId,
+    }
+  );
+
+  if (existingSetLink) {
+    await updateRows(
+      supabase,
+      "lesson_grammar_links",
+      {
+        lesson_section_id: grammarBlock.lesson_section_id,
+        lesson_block_id: grammarBlock.id,
+        link_type: "set",
+        grammar_set_id: grammarSetId,
+        grammar_point_id: null,
+        grammar_tag_key: null,
+        variant: VARIANT_SLUG,
+        usage_type: "lesson_block",
+        position: 1,
+      },
+      { id: existingSetLink.id },
+      "sample grammar link"
+    );
+
+    return;
+  }
+
+  await insertOne(supabase, "lesson_grammar_links", {
+    lesson_id: lessonId,
+    lesson_section_id: grammarBlock.lesson_section_id,
+    lesson_block_id: grammarBlock.id,
+    link_type: "set",
+    grammar_set_id: grammarSetId,
+    grammar_point_id: null,
+    grammar_tag_key: null,
+    variant: VARIANT_SLUG,
+    usage_type: "lesson_block",
+    position: 1,
+  });
 }
 
 async function getLessonCounts(supabase, lessonId) {
@@ -677,6 +1011,7 @@ async function main() {
     JSON.stringify(
       {
         created: result.created,
+        updated: result.updated,
         lessonId: result.lesson.id,
         lessonSlug: result.lesson.slug,
         url,
