@@ -69,6 +69,8 @@ export function CurrentVocabularyItemsSection({
   categoryOptions,
   hasActiveItemFilters,
   defaultTier,
+  showVolnaCoverageFilter,
+  showExtendedSourceFilter,
 }: {
   vocabularySetId: string;
   vocabularyList: DbVocabularyList | null;
@@ -80,6 +82,8 @@ export function CurrentVocabularyItemsSection({
   categoryOptions: string[];
   hasActiveItemFilters: boolean;
   defaultTier: DbVocabularyTier;
+  showVolnaCoverageFilter: boolean;
+  showExtendedSourceFilter: boolean;
 }) {
   return (
     <section className="app-surface app-section-padding">
@@ -96,6 +100,8 @@ export function CurrentVocabularyItemsSection({
           vocabularySetId={vocabularySetId}
           itemFilters={itemFilters}
           categoryOptions={categoryOptions}
+          showVolnaCoverageFilter={showVolnaCoverageFilter}
+          showExtendedSourceFilter={showExtendedSourceFilter}
         />
 
         <div className="flex flex-wrap gap-2">
@@ -112,7 +118,7 @@ export function CurrentVocabularyItemsSection({
 
       {items.length === 0 ? (
         <VocabularyItemsEmptyState>
-          No items in this set yet. Use quick add or bulk add above to create the first
+          No items in this set yet. Use quick add or bulk add below to create the first
           entries.
         </VocabularyItemsEmptyState>
       ) : filteredItems.length === 0 ? (

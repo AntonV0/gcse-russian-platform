@@ -143,6 +143,7 @@ export async function bulkCreateVocabularyItemsAction(formData: FormData) {
   const sourceKey = getOptionalString(formData, "sourceKey");
   const sourceVersion = getOptionalString(formData, "sourceVersion");
   const sourceSectionRef = getOptionalString(formData, "sourceSectionRef");
+  const importKey = getOptionalString(formData, "importKey");
 
   if (bulkItems.length === 0) {
     throw new Error("Add at least one valid Russian and English pair");
@@ -165,6 +166,7 @@ export async function bulkCreateVocabularyItemsAction(formData: FormData) {
       source_key: sourceKey,
       source_version: sourceVersion,
       source_section_ref: sourceSectionRef,
+      import_key: importKey,
     },
   });
 

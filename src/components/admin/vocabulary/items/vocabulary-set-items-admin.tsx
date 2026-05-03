@@ -31,6 +31,10 @@ export default function VocabularySetItemsAdmin({
     items.flatMap((item) => [item.category_key, item.subcategory_key])
   );
   const hasActiveItemFilters = hasActiveVocabularyItemFilters(itemFilters);
+  const showVolnaCoverageFilter = Array.from(itemCoverageById.values()).some(
+    (coverage) => coverage.used_in_volna
+  );
+  const showExtendedSourceFilter = items.some((item) => item.source_type === "extended");
 
   return (
     <main className="space-y-8">
@@ -40,12 +44,6 @@ export default function VocabularySetItemsAdmin({
         items={items}
         lists={lists}
         usageStats={usageStats}
-      />
-
-      <VocabularyItemEntryFormsSection
-        vocabularySetId={vocabularySet.id}
-        vocabularyListId={vocabularyList?.id ?? null}
-        defaultTier={defaultTier}
       />
 
       <CurrentVocabularyItemsSection
@@ -59,6 +57,15 @@ export default function VocabularySetItemsAdmin({
         categoryOptions={categoryOptions}
         hasActiveItemFilters={hasActiveItemFilters}
         defaultTier={defaultTier}
+        showVolnaCoverageFilter={showVolnaCoverageFilter}
+        showExtendedSourceFilter={showExtendedSourceFilter}
+      />
+
+      <VocabularyItemEntryFormsSection
+        vocabularySetId={vocabularySet.id}
+        vocabularyListId={vocabularyList?.id ?? null}
+        defaultTier={defaultTier}
+        defaultOpen={items.length === 0}
       />
     </main>
   );

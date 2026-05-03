@@ -18,6 +18,7 @@ export default function VocabularySetsTable({
   params,
   themeKeys,
   sourceKeys,
+  showVolnaUsageFilter,
 }: AdminVocabularyListProps) {
   return (
     <TableShell
@@ -39,6 +40,7 @@ export default function VocabularySetsTable({
         params={params}
         themeKeys={themeKeys}
         sourceKeys={sourceKeys}
+        showVolnaUsageFilter={showVolnaUsageFilter}
       />
 
       {vocabularySets.length === 0 ? (
@@ -60,20 +62,17 @@ export default function VocabularySetsTable({
           <DataTableHead>
             <DataTableHeaderRow>
               <DataTableHeaderCell>Set</DataTableHeaderCell>
-              <DataTableHeaderCell>Tier</DataTableHeaderCell>
-              <DataTableHeaderCell>Mode</DataTableHeaderCell>
               <DataTableHeaderCell>Items</DataTableHeaderCell>
               <DataTableHeaderCell>Usage</DataTableHeaderCell>
-              <DataTableHeaderCell>Status</DataTableHeaderCell>
-              <DataTableHeaderCell>Metadata</DataTableHeaderCell>
               <DataTableHeaderCell>Actions</DataTableHeaderCell>
             </DataTableHeaderRow>
           </DataTableHead>
 
           <DataTableBody>
-            {vocabularySets.map((vocabularySet) => (
+            {vocabularySets.map((vocabularySet, index) => (
               <VocabularySetRow
                 key={vocabularySet.id}
+                rowNumber={index + 1}
                 vocabularySet={vocabularySet}
               />
             ))}

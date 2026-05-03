@@ -9,17 +9,51 @@ type VocabularyMetadataHealthPanelProps = {
 export default function VocabularyMetadataHealthPanel({
   metadataHealth,
 }: VocabularyMetadataHealthPanelProps) {
-  return (
-    <section className="app-surface app-section-padding">
-      <div className="mb-4 flex flex-col gap-2">
-        <h2 className="app-heading-subsection">Metadata health</h2>
-        <p className="app-text-body-muted">
-          Import-quality checks for finding words that need better labels,
-          transliteration, or coverage metadata.
-        </p>
-      </div>
+  const metadataGapCount =
+    metadataHealth.unknownPartOfSpeechItems +
+    metadataHealth.missingTransliterationItems +
+    metadataHealth.missingCategoryItems;
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+  return (
+    <section className="app-surface">
+      <details
+        className="group"
+        open={metadataHealth.canonicalKeyCollisions > 0 || metadataGapCount > 0}
+      >
+        <summary className="flex cursor-pointer list-none flex-col gap-3 px-5 py-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="app-heading-subsection">Metadata health</h2>
+            <p className="mt-1 app-text-body-muted">
+              Import-quality checks for labels, pronunciation aids, and coverage
+              metadata.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-[var(--warning-border)] bg-[var(--warning-surface)] px-3 py-1 text-sm font-semibold text-[var(--warning-text)]">
+              {metadataHealth.canonicalKeyCollisions} collisions
+            </span>
+            <span
+              className={[
+                "rounded-full border px-3 py-1 text-sm font-semibold",
+                metadataGapCount === 0
+                  ? "border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text)]"
+                  : "border-[var(--warning-border)] bg-[var(--warning-surface)] text-[var(--warning-text)]",
+              ].join(" ")}
+            >
+              {metadataGapCount} metadata gaps
+            </span>
+            <span className="text-sm font-semibold text-[var(--text-secondary)] group-open:hidden">
+              Open
+            </span>
+            <span className="hidden text-sm font-semibold text-[var(--text-secondary)] group-open:inline">
+              Hide
+            </span>
+          </div>
+        </summary>
+
+        <div className="space-y-5 border-t border-[var(--border-subtle)] px-5 py-5">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         <SummaryStatCard
           title="Unknown part of speech"
           value={metadataHealth.unknownPartOfSpeechItems}
@@ -47,11 +81,19 @@ export default function VocabularyMetadataHealthPanel({
           compact
         />
         <SummaryStatCard
-          title="Duplicate canonical keys"
-          value={metadataHealth.duplicateCanonicalKeys}
-          description="Repeated keys worth reviewing before custom-set reuse."
+          title="Canonical key collisions"
+          value={metadataHealth.canonicalKeyCollisions}
+          description="Same generated key attached to different entries."
           icon="duplicate"
-          tone={metadataHealth.duplicateCanonicalKeys === 0 ? "success" : "warning"}
+          tone={metadataHealth.canonicalKeyCollisions === 0 ? "success" : "warning"}
+          compact
+        />
+        <SummaryStatCard
+          title="Repeated spec entries"
+          value={metadataHealth.repeatedCanonicalKeyGroups}
+          description="Same word appears in more than one spec place."
+          icon="duplicate"
+          tone="info"
           compact
         />
       </div>
@@ -116,6 +158,8 @@ export default function VocabularyMetadataHealthPanel({
           </div>
         </div>
       ) : null}
+        </div>
+      </details>
     </section>
   );
 }

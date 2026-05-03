@@ -73,8 +73,8 @@ export default async function EditVocabularySetPage({
             <div className="space-y-2">
               <h2 className="app-heading-section">{vocabularySet.title}</h2>
               <p className="max-w-3xl app-text-body-muted">
-                Update the set metadata now. Item management can be added next as its own
-                dedicated flow.
+                Update set metadata here. Use the dedicated items page when you need to
+                review, add, edit, or delete vocabulary entries.
               </p>
             </div>
           </div>
@@ -172,36 +172,50 @@ export default async function EditVocabularySetPage({
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <FormField label="Tier" htmlFor="tier">
+              <FormField label="Tier / path" htmlFor="tier">
                 <Select id="tier" name="tier" defaultValue={vocabularySet.tier}>
-                  <option value="both">Both tiers</option>
-                  <option value="foundation">Foundation</option>
-                  <option value="higher">Higher</option>
-                  <option value="unknown">Unknown</option>
+                  <option value="both">All paths</option>
+                  <option value="foundation">Foundation path</option>
+                  <option value="higher">Higher path</option>
+                  {vocabularySet.tier === "unknown" ? (
+                    <option value="unknown">Unknown (legacy)</option>
+                  ) : null}
                 </Select>
               </FormField>
 
-              <FormField label="List mode" htmlFor="listMode">
+              <FormField label="Source mode" htmlFor="listMode">
                 <Select
                   id="listMode"
                   name="listMode"
                   defaultValue={vocabularySet.list_mode}
                 >
-                  <option value="custom">Custom</option>
-                  <option value="spec_only">Spec only</option>
-                  <option value="extended_only">Extended only</option>
-                  <option value="spec_and_extended">Spec + extended</option>
+                  <option value="custom">Lesson/custom</option>
+                  <option value="spec_only">Specification only</option>
+                  {vocabularySet.list_mode === "extended_only" ? (
+                    <option value="extended_only">Extended only (legacy)</option>
+                  ) : null}
+                  {vocabularySet.list_mode === "spec_and_extended" ? (
+                    <option value="spec_and_extended">Spec + extended (legacy)</option>
+                  ) : null}
                 </Select>
               </FormField>
 
-              <FormField label="Set type" htmlFor="setType">
+              <FormField label="Set kind" htmlFor="setType">
                 <Select id="setType" name="setType" defaultValue={vocabularySet.set_type}>
-                  <option value="lesson_custom">Lesson custom</option>
+                  <option value="lesson_custom">Lesson set</option>
                   <option value="specification">Specification</option>
-                  <option value="core">Core</option>
-                  <option value="theme">Theme</option>
-                  <option value="phrase_bank">Phrase bank</option>
-                  <option value="exam_prep">Exam prep</option>
+                  {vocabularySet.set_type === "core" ? (
+                    <option value="core">Core (legacy)</option>
+                  ) : null}
+                  {vocabularySet.set_type === "theme" ? (
+                    <option value="theme">Theme (legacy)</option>
+                  ) : null}
+                  {vocabularySet.set_type === "phrase_bank" ? (
+                    <option value="phrase_bank">Phrase bank (legacy)</option>
+                  ) : null}
+                  {vocabularySet.set_type === "exam_prep" ? (
+                    <option value="exam_prep">Exam prep (legacy)</option>
+                  ) : null}
                 </Select>
               </FormField>
 

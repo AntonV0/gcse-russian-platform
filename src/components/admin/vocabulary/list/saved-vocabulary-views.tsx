@@ -8,7 +8,7 @@ const VOCABULARY_ADMIN_SAVED_FILTERS = [
   },
   {
     label: "Custom lesson sets",
-    href: "/admin/vocabulary?listMode=custom&setType=lesson_custom",
+    href: "/admin/vocabulary?setType=lesson_custom&sourceKey=gcse-russian-course-map",
     description: "Teacher-built sets for lessons.",
   },
   {
@@ -25,11 +25,6 @@ const VOCABULARY_ADMIN_SAVED_FILTERS = [
     label: "Higher coverage",
     href: "/admin/vocabulary?setType=specification&usageVariant=higher",
     description: "Spec sets already used in Higher lessons.",
-  },
-  {
-    label: "Volna coverage",
-    href: "/admin/vocabulary?setType=specification&usageVariant=volna",
-    description: "Spec sets already used in Volna lessons.",
   },
 ] as const;
 

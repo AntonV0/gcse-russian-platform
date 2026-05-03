@@ -35,12 +35,15 @@ function getOptionalNonNegativeNumber(formData: FormData, key: string) {
   return value;
 }
 
-function assertVocabularyTier(value: string): DbVocabularyTier {
+function assertVocabularyTier(
+  value: string,
+  { allowLegacy = false }: { allowLegacy?: boolean } = {}
+): DbVocabularyTier {
   if (
     value === "foundation" ||
     value === "higher" ||
     value === "both" ||
-    value === "unknown"
+    (allowLegacy && value === "unknown")
   ) {
     return value;
   }
@@ -48,12 +51,15 @@ function assertVocabularyTier(value: string): DbVocabularyTier {
   throw new Error("Invalid vocabulary tier");
 }
 
-function assertVocabularyListMode(value: string): DbVocabularyListMode {
+function assertVocabularyListMode(
+  value: string,
+  { allowLegacy = false }: { allowLegacy?: boolean } = {}
+): DbVocabularyListMode {
   if (
     value === "spec_only" ||
-    value === "extended_only" ||
-    value === "spec_and_extended" ||
-    value === "custom"
+    value === "custom" ||
+    (allowLegacy && value === "extended_only") ||
+    (allowLegacy && value === "spec_and_extended")
   ) {
     return value;
   }
@@ -61,14 +67,17 @@ function assertVocabularyListMode(value: string): DbVocabularyListMode {
   throw new Error("Invalid vocabulary list mode");
 }
 
-function assertVocabularySetType(value: string): DbVocabularySetType {
+function assertVocabularySetType(
+  value: string,
+  { allowLegacy = false }: { allowLegacy?: boolean } = {}
+): DbVocabularySetType {
   if (
     value === "specification" ||
-    value === "core" ||
-    value === "theme" ||
-    value === "phrase_bank" ||
-    value === "exam_prep" ||
-    value === "lesson_custom"
+    value === "lesson_custom" ||
+    (allowLegacy && value === "core") ||
+    (allowLegacy && value === "theme") ||
+    (allowLegacy && value === "phrase_bank") ||
+    (allowLegacy && value === "exam_prep")
   ) {
     return value;
   }
@@ -85,15 +94,20 @@ function assertVocabularyDisplayVariant(value: string): DbVocabularyDisplayVaria
 }
 
 function getVocabularySetMutationPayload(
-  formData: FormData
+  formData: FormData,
+  { allowLegacyMetadata = false }: { allowLegacyMetadata?: boolean } = {}
 ): VocabularySetMutationPayload {
   const title = getTrimmedString(formData, "title");
-  const tier = assertVocabularyTier(getTrimmedString(formData, "tier") || "both");
+  const tier = assertVocabularyTier(getTrimmedString(formData, "tier") || "both", {
+    allowLegacy: allowLegacyMetadata,
+  });
   const listMode = assertVocabularyListMode(
-    getTrimmedString(formData, "listMode") || "custom"
+    getTrimmedString(formData, "listMode") || "custom",
+    { allowLegacy: allowLegacyMetadata }
   );
   const setType = assertVocabularySetType(
-    getTrimmedString(formData, "setType") || "lesson_custom"
+    getTrimmedString(formData, "setType") || "lesson_custom",
+    { allowLegacy: allowLegacyMetadata }
   );
   const defaultDisplayVariant = assertVocabularyDisplayVariant(
     getTrimmedString(formData, "defaultDisplayVariant") || "single_column"
@@ -148,7 +162,10 @@ export async function updateVocabularySetAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  await updateVocabularySetDb(vocabularySetId, getVocabularySetMutationPayload(formData));
+  await updateVocabularySetDb(
+    vocabularySetId,
+    getVocabularySetMutationPayload(formData, { allowLegacyMetadata: true })
+  );
 
   revalidatePath("/admin/vocabulary");
   revalidatePath(`/admin/vocabulary/${vocabularySetId}/edit`);

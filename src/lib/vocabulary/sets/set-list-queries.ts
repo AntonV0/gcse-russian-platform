@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { normalizeVocabularySet } from "@/lib/vocabulary/shared/normalizers";
 import { fetchSupabasePages } from "@/lib/vocabulary/shared/pagination";
 import { VOCABULARY_SET_SELECT } from "@/lib/vocabulary/shared/selects";
@@ -15,8 +16,11 @@ export async function getVocabularySetsDb(options?: {
   publishedOnly?: boolean;
   filters?: VocabularySetFilters;
   excludeSetTypes?: DbVocabularySetType[];
+  useServiceRole?: boolean;
 }) {
-  const supabase = await createClient();
+  const supabase = options?.useServiceRole
+    ? createServiceRoleClient()
+    : await createClient();
   const filters = options?.filters;
   const tier = filters?.tier && filters.tier !== "all" ? filters.tier : null;
   const themeKey = filters?.themeKey?.trim();
@@ -71,7 +75,8 @@ export async function getVocabularySetsDb(options?: {
   });
 
   const withCounts = await attachVocabularyCountsAndUsage(
-    data.map(normalizeVocabularySet)
+    data.map(normalizeVocabularySet),
+    { useServiceRole: options?.useServiceRole }
   );
 
   return applyVocabularySetFilters(withCounts, filters);
