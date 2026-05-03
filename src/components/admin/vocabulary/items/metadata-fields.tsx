@@ -11,6 +11,9 @@ export default function CoreMetadataFields({
   defaultTier: DbVocabularyTier;
   item?: DbVocabularyItem;
 }) {
+  const showLegacyTier = item?.tier === "unknown";
+  const showLegacySourceType = item?.source_type === "extended";
+
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <VocabularyAdminFormField label="Item type" htmlFor={`${idPrefix}-item-type`}>
@@ -48,20 +51,20 @@ export default function CoreMetadataFields({
         </Select>
       </VocabularyAdminFormField>
 
-      <VocabularyAdminFormField label="Tier" htmlFor={`${idPrefix}-tier`}>
+      <VocabularyAdminFormField label="Tier / path" htmlFor={`${idPrefix}-tier`}>
         <Select
           id={`${idPrefix}-tier`}
           name="tier"
           defaultValue={item?.tier ?? defaultTier}
         >
-          <option value="unknown">Unknown</option>
           <option value="both">Both tiers</option>
-          <option value="foundation">Foundation</option>
-          <option value="higher">Higher</option>
+          <option value="foundation">Foundation path</option>
+          <option value="higher">Higher path</option>
+          {showLegacyTier ? <option value="unknown">Unknown (legacy)</option> : null}
         </Select>
       </VocabularyAdminFormField>
 
-      <VocabularyAdminFormField label="Source type" htmlFor={`${idPrefix}-source-type`}>
+      <VocabularyAdminFormField label="Item source" htmlFor={`${idPrefix}-source-type`}>
         <Select
           id={`${idPrefix}-source-type`}
           name="sourceType"
@@ -69,7 +72,9 @@ export default function CoreMetadataFields({
         >
           <option value="custom">Custom</option>
           <option value="spec_required">Spec required</option>
-          <option value="extended">Extended</option>
+          {showLegacySourceType ? (
+            <option value="extended">Extended (legacy)</option>
+          ) : null}
         </Select>
       </VocabularyAdminFormField>
     </div>
