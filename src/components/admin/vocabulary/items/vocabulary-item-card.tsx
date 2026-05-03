@@ -7,7 +7,6 @@ import {
   getVocabularyItemTypeLabel,
   getVocabularyPartOfSpeechLabel,
 } from "@/components/admin/vocabulary/items/item-display";
-import { VocabularyAdminStatTile } from "@/components/admin/vocabulary/items/primitives";
 import {
   getVocabularyCategoryLabel,
   getVocabularyProductiveReceptiveLabel,
@@ -87,44 +86,12 @@ export default function VocabularyItemCard({
       </summary>
 
       <div className="space-y-5 border-t border-[var(--border)] p-5">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          <VocabularyAdminStatTile label="Russian" value={item.russian} />
-          <VocabularyAdminStatTile label="English" value={item.english} />
-          <VocabularyAdminStatTile
-            label="Type"
-            value={getVocabularyItemTypeLabel(item.item_type)}
-          />
-          <VocabularyAdminStatTile
-            label="Part of speech"
-            value={getVocabularyPartOfSpeechLabel(item.part_of_speech)}
-          />
-          <VocabularyAdminStatTile
-            label="Tier"
-            value={getVocabularyTierLabel(item.tier)}
-          />
-          <VocabularyAdminStatTile
-            label="Category"
-            value={getVocabularyCategoryLabel(item.category_key)}
-          />
-          <VocabularyAdminStatTile
-            label="Source section"
-            value={item.source_section_ref ?? "None"}
-          />
-          <VocabularyAdminStatTile label="Position" value={item.position} />
-        </div>
-
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3">
-          <div className="app-text-meta">Usage coverage</div>
-          <div className="mt-3">
-            <VocabularyItemCoverageBadges item={item} coverage={coverage} />
-          </div>
-        </div>
-
         <VocabularyItemEditForm
           item={item}
           vocabularySetId={vocabularySetId}
           vocabularyListId={vocabularyListId}
           defaultTier={defaultTier}
+          coverage={coverage}
         />
       </div>
     </details>
