@@ -96,6 +96,7 @@ next-env.d.ts
 .agents/
 
 # docs
+docs/gcse-russian-course-map.md
 docs/spec-private/
 docs/page-ui-private/
 docs/dev-workflow-private/
