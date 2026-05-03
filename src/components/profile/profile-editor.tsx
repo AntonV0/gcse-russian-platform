@@ -131,7 +131,7 @@ function ProfilePreviewCard({
   return (
     <div
       className={[
-        "rounded-xl border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)]/90 shadow-[0_10px_24px_color-mix(in_srgb,var(--accent)_7%,transparent)]",
+        "app-feature-panel-preview",
         compact ? "p-4" : "p-5",
       ].join(" ")}
       aria-live="polite"
@@ -430,32 +430,46 @@ export default function ProfileEditor({
 
   return (
     <form action={updateStudentProfile} className="space-y-6 xl:-mb-6">
-      <section className="app-surface-brand app-section-padding">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
-          <div className="space-y-4">
+      <section className="app-feature-panel">
+        <div className="app-feature-panel-grid">
+          <div className="app-feature-panel-main">
             <div className="space-y-2">
               <h2 className="app-heading-hero">Build your student profile</h2>
               <p className="app-subtitle max-w-2xl">
-                Choose the name and avatar that make your account easy to recognise
-                while you study.
+                Set the name and avatar students see around lessons.
               </p>
             </div>
 
             {showProfileUpdated ? <ProfileUpdatedInline /> : null}
 
-            <div className="flex flex-wrap gap-3">
-              <span className="app-pill app-pill-info">Names update the preview</span>
-              <span className="app-pill app-pill-muted">Security lives in Settings</span>
-            </div>
+            <div className="app-feature-panel-info">
+              <div className="app-feature-panel-info-item">
+                <span className="app-feature-panel-info-icon">
+                  <AppIcon icon="preview" size={15} />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-sm font-bold text-[var(--text-primary)]">
+                    Preview as you edit
+                  </div>
+                  <p className="mt-0.5 text-sm app-text-muted">
+                    Your student card updates before you save.
+                  </p>
+                </div>
+              </div>
 
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Button href="/settings" variant="quiet" size="sm" icon="settings">
-                Open settings
-              </Button>
-
-              <Button href="/dashboard" variant="quiet" size="sm" icon="dashboard">
-                Back to dashboard
-              </Button>
+              <div className="app-feature-panel-info-item">
+                <span className="app-feature-panel-info-icon">
+                  <AppIcon icon="settings" size={15} />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-sm font-bold text-[var(--text-primary)]">
+                    Account controls stay separate
+                  </div>
+                  <p className="mt-0.5 text-sm app-text-muted">
+                    Security, theme, and sign-in settings live in Settings.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -465,6 +479,16 @@ export default function ProfileEditor({
             displayName={previewName}
             initials={initials}
           />
+        </div>
+
+        <div className="app-feature-panel-actions">
+          <Button href="/settings" variant="quiet" size="sm" icon="settings">
+            Open settings
+          </Button>
+
+          <Button href="/dashboard" variant="quiet" size="sm" icon="dashboard">
+            Back to dashboard
+          </Button>
         </div>
       </section>
 
