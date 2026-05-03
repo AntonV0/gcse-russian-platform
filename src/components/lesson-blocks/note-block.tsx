@@ -31,7 +31,7 @@ export default function NoteBlock({ title, content, headingLevel = 3 }: NoteBloc
       ) : null}
 
       <StudyBlockShell
-        eyebrow="Teacher note"
+        eyebrow="Remember"
         title={title}
         tone="coach"
         headingLevel={headingLevel}

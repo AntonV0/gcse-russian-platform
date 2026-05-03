@@ -51,16 +51,11 @@ export default async function QuestionSetBlock({
       ) : null}
 
       <StudyBlockShell
-        eyebrow="Practice"
+        eyebrow="Try this"
         title={title}
         description={questionSet.instructions ?? undefined}
         tone="practice"
         headingLevel={headingLevel}
-        actions={
-          <span className="app-pill app-pill-info">
-            {questions.length} question{questions.length === 1 ? "" : "s"}
-          </span>
-        }
       >
         <QuestionSetPracticeShell
           questionSetSlug={questionSetSlug}
@@ -70,10 +65,12 @@ export default async function QuestionSetBlock({
             prompt: question.prompt,
           }))}
         >
-          <div className="space-y-5">
+          <div className="space-y-4">
             {questions.map((question, index) => (
               <div id={`question-${question.id}`} key={question.id} className="space-y-3">
-                <div className="app-text-meta">Question {index + 1}</div>
+                <div className="text-sm font-semibold text-[var(--text-secondary)]">
+                  Question {index + 1} of {questions.length}
+                </div>
 
                 <QuestionRenderer question={question} lessonId={lessonId} />
               </div>

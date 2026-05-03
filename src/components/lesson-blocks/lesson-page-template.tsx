@@ -146,7 +146,7 @@ export default async function LessonPageTemplate({
   const isFinalStep = effectiveStepIndex === visibleSections.length - 1;
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-5">
       <LessonHeader
         backHref={moduleHref}
         backLabel="Back to module"
@@ -166,9 +166,9 @@ export default async function LessonPageTemplate({
         visitedPercent={progressSummary.percent}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-6">
-          <div className="space-y-6">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="space-y-5 pb-5">
+          <article className="rounded-xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_94%,var(--background-muted))] px-4 py-5 shadow-[var(--shadow-xs)] md:px-6 md:py-6">
             <LessonRenderer
               sections={[currentSection]}
               lessonId={lesson.id}
@@ -176,7 +176,7 @@ export default async function LessonPageTemplate({
               sectionSurface="flat"
               showSectionHeader={false}
             />
-          </div>
+          </article>
 
           <SectionPager
             currentStepIndex={effectiveStepIndex}
@@ -216,35 +216,37 @@ export default async function LessonPageTemplate({
         </aside>
       </div>
 
-      <LessonFooterNav
-        moduleHref={moduleHref}
-        previousLesson={
-          previousLesson
-            ? {
-                href: getLessonPath(
-                  course.slug,
-                  variantSlug,
-                  moduleSlug,
-                  previousLesson.slug
-                ),
-                label: previousLesson.title,
-              }
-            : undefined
-        }
-        nextLesson={
-          nextLesson
-            ? {
-                href: getLessonPath(
-                  course.slug,
-                  variantSlug,
-                  moduleSlug,
-                  nextLesson.slug
-                ),
-                label: nextLesson.title,
-              }
-            : undefined
-        }
-      />
+      {isFinalStep ? (
+        <LessonFooterNav
+          moduleHref={moduleHref}
+          previousLesson={
+            previousLesson
+              ? {
+                  href: getLessonPath(
+                    course.slug,
+                    variantSlug,
+                    moduleSlug,
+                    previousLesson.slug
+                  ),
+                  label: previousLesson.title,
+                }
+              : undefined
+          }
+          nextLesson={
+            nextLesson
+              ? {
+                  href: getLessonPath(
+                    course.slug,
+                    variantSlug,
+                    moduleSlug,
+                    nextLesson.slug
+                  ),
+                  label: nextLesson.title,
+                }
+              : undefined
+          }
+        />
+      ) : null}
     </main>
   );
 }

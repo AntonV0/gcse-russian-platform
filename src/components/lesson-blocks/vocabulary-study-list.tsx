@@ -83,35 +83,35 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
 
         {studyMode === "list" ? (
           <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setShowAllEnglish((isShowing) => !isShowing);
-              setRevealedItemKeys(new Set());
-            }}
-            className={getButtonClassName({
-              variant: showAllEnglish ? "secondary" : "primary",
-              size: "sm",
-            })}
-          >
-            <AppIcon icon={showAllEnglish ? "hidden" : "preview"} size={15} />
-            <span>{showAllEnglish ? "Hide English" : "Show English"}</span>
-          </button>
-
-          {!showAllEnglish ? (
             <button
               type="button"
-              onClick={() =>
-                setRevealedItemKeys(
-                  new Set(items.map((item, index) => getItemKey(item, index)))
-                )
-              }
-              className={getButtonClassName({ variant: "secondary", size: "sm" })}
+              onClick={() => {
+                setShowAllEnglish((isShowing) => !isShowing);
+                setRevealedItemKeys(new Set());
+              }}
+              className={getButtonClassName({
+                variant: showAllEnglish ? "secondary" : "primary",
+                size: "sm",
+              })}
             >
-              <AppIcon icon="success" size={15} />
-              <span>Reveal all</span>
+              <AppIcon icon={showAllEnglish ? "hidden" : "preview"} size={15} />
+              <span>{showAllEnglish ? "Hide English" : "Show English"}</span>
             </button>
-          ) : null}
+
+            {!showAllEnglish ? (
+              <button
+                type="button"
+                onClick={() =>
+                  setRevealedItemKeys(
+                    new Set(items.map((item, index) => getItemKey(item, index)))
+                  )
+                }
+                className={getButtonClassName({ variant: "secondary", size: "sm" })}
+              >
+                <AppIcon icon="success" size={15} />
+                <span>Reveal all</span>
+              </button>
+            ) : null}
           </div>
         ) : null}
 
@@ -193,7 +193,7 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
       ) : null}
 
       {studyMode === "list" ? (
-        <div className="grid gap-2">
+        <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)]">
           {items.map((item, index) => {
             const itemKey = getItemKey(item, index);
             const isEnglishVisible = showAllEnglish || revealedItemKeys.has(itemKey);
@@ -201,13 +201,11 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
             return (
               <div
                 key={itemKey}
-                className="group relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent)_24%,var(--border-strong))] hover:bg-[var(--background-elevated)]"
+                className="group relative border-b border-[var(--border-subtle)] transition last:border-b-0 hover:bg-[var(--background-muted)]/45"
               >
-                <div className="absolute inset-y-0 left-0 w-1 bg-[var(--accent-fill)] opacity-70" />
-
-                <div className="grid min-h-[4.75rem] gap-3 px-4 py-3.5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center sm:pl-5">
+                <div className="grid min-h-[4rem] gap-3 px-4 py-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
                   <div className="flex min-w-0 gap-3">
-                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--text-muted)]">
+                    <span className="mt-0.5 w-5 shrink-0 text-sm font-semibold app-text-soft">
                       {index + 1}
                     </span>
                     <span className="min-w-0">
@@ -224,9 +222,7 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
 
                   <div className="min-w-0 border-t border-[var(--border-subtle)] pt-3 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
                     {isEnglishVisible ? (
-                      <div className="text-[var(--text-secondary)]">
-                        {item.english}
-                      </div>
+                      <div className="text-[var(--text-secondary)]">{item.english}</div>
                     ) : (
                       <button
                         type="button"

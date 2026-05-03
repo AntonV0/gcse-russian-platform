@@ -25,6 +25,7 @@ export function SectionPager({
 }: SectionPagerProps) {
   const hasPrevious = currentStepIndex > 0;
   const hasNext = currentStepIndex < Math.min(allowedMaxIndex, totalSteps - 1);
+  const currentStepNumber = currentStepIndex + 1;
 
   const previousHref = hasPrevious
     ? buildLessonStepHref({
@@ -47,33 +48,36 @@ export function SectionPager({
     : null;
 
   return (
-    <div className="dev-marker-host relative border-t border-[var(--border-subtle)] pt-4">
-      {SHOW_UI_DEBUG ? (
-        <DevComponentMarker
-          componentName="SectionPager"
-          filePath="src/components/lesson-blocks/lesson-page-template/section-pager.tsx"
-          tier="semantic"
-          componentRole="In-lesson section pager for moving between unlocked lesson steps"
-          bestFor="Section-based lesson pages where students move sequentially through unlocked content."
-          usageExamples={[
-            "Foundation lesson section navigation",
-            "Higher lesson step flow",
-            "Volna assignment lesson steps",
-            "Student course progression",
-          ]}
-          notes="Use for section-step navigation inside one lesson. Do not use for previous/next lesson navigation."
-        />
-      ) : null}
+    <div className="sticky bottom-0 z-30 -mb-9 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-6 lg:pb-4">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-transparent via-[color-mix(in_srgb,var(--background)_78%,transparent)] to-[var(--background)]"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[calc(100%-1.5rem)] bg-[var(--background)]"
+        aria-hidden="true"
+      />
+      <div className="dev-marker-host relative flex w-full flex-col gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] px-3 py-3 shadow-[0_10px_26px_color-mix(in_srgb,var(--text-primary)_8%,transparent)] sm:flex-row sm:items-center sm:justify-between">
+        {SHOW_UI_DEBUG ? (
+          <DevComponentMarker
+            componentName="SectionPager"
+            filePath="src/components/lesson-blocks/lesson-page-template/section-pager.tsx"
+            tier="semantic"
+            componentRole="In-lesson section pager for moving between unlocked lesson steps"
+            bestFor="Section-based lesson pages where students move sequentially through unlocked content."
+            usageExamples={[
+              "Foundation lesson section navigation",
+              "Higher lesson step flow",
+              "Volna assignment lesson steps",
+              "Student course progression",
+            ]}
+            notes="Use for section-step navigation inside one lesson. Do not use for previous/next lesson navigation."
+          />
+        ) : null}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <h2 className="text-base font-semibold text-[var(--text-primary)]">
-            Ready to continue?
-          </h2>
-          <p className="mt-1 text-sm app-text-muted">
-            Move on when this part feels clear.
-          </p>
-        </div>
+        <p className="text-sm app-text-muted">
+          Section {currentStepNumber} of {totalSteps}
+        </p>
 
         <div className="app-mobile-action-stack flex flex-col gap-3 sm:flex-row">
           {previousHref ? (
@@ -100,7 +104,7 @@ export function SectionPager({
             </Link>
           ) : (
             <span className="flex min-h-10 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft">
-              Final section
+              Recap reached
             </span>
           )}
         </div>
