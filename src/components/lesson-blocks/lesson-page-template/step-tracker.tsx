@@ -31,9 +31,9 @@ function getStepStatus({
       label: "Current",
       icon: "sparkles" as const,
       rowClassName:
-        "border-[color-mix(in_srgb,var(--accent)_28%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_7%,var(--background-elevated))] shadow-[var(--shadow-sm)] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r-full before:bg-[var(--accent-fill)]",
+        "border-[color-mix(in_srgb,var(--accent)_20%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-elevated))] before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-r-full before:bg-[var(--accent-fill)]",
       nodeClassName:
-        "border-[color-mix(in_srgb,var(--accent-fill)_72%,var(--border))] bg-[var(--accent-fill)] text-[var(--accent-on-fill)]",
+        "h-9 w-9 rounded-full border-[color-mix(in_srgb,var(--accent-fill)_72%,var(--border))] bg-[var(--accent-fill)] text-sm text-[var(--brand-white)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_18%,transparent)]",
       badgeClassName:
         "border-[color-mix(in_srgb,var(--accent)_22%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-ink)]",
       segmentClassName: "bg-[var(--accent-fill)]",
@@ -47,7 +47,7 @@ function getStepStatus({
       rowClassName:
         "border-transparent text-[var(--text-primary)] hover:border-[var(--border-subtle)] hover:bg-[var(--background-muted)]/70",
       nodeClassName:
-        "border-[var(--border-subtle)] bg-[var(--background-muted)] text-[var(--text-muted)]",
+        "border-transparent bg-transparent text-[var(--accent-fill)]",
       badgeClassName:
         "border-[var(--border-subtle)] bg-[var(--background-muted)] text-[var(--text-muted)]",
       segmentClassName:
@@ -75,7 +75,7 @@ function getStepStatus({
     icon: "lock" as const,
     rowClassName: "border-transparent text-[var(--text-muted)] opacity-70",
     nodeClassName:
-      "border-[var(--border-subtle)] bg-[var(--background-muted)] text-[var(--text-muted)]",
+      "border-transparent bg-transparent text-[var(--text-muted)]",
     badgeClassName:
       "border-[var(--border-subtle)] bg-[var(--background-muted)] text-[var(--text-muted)]",
     segmentClassName:
@@ -107,7 +107,7 @@ export function StepTracker({
   );
 
   return (
-    <div className="dev-marker-host relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-3 shadow-[var(--shadow-sm)]">
+    <div className="dev-marker-host relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-2">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="StepTracker"
@@ -125,65 +125,89 @@ export function StepTracker({
         />
       ) : null}
 
-      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-3">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex min-w-0 gap-3">
-            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_7%,var(--background-elevated))] text-[var(--accent-ink)]">
-              <AppIcon icon="navigation" size={17} />
-            </span>
-
-            <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
-                Lesson map
-              </p>
-              <p className="mt-1 text-base font-semibold leading-tight text-[var(--text-primary)]">
-                Section {currentStepIndex + 1} of {sections.length}
-              </p>
-              <p className="mt-1 text-xs leading-5 app-text-muted">
-                Opened sections stay available for review.
-              </p>
-            </div>
+      <div className="px-2 pb-2 pt-1.5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] app-text-soft">
+              Sections
+            </p>
+            <p className="mt-0.5 text-sm font-semibold leading-tight text-[var(--text-primary)]">
+              {currentStepIndex + 1} of {sections.length}
+            </p>
           </div>
 
-          <span className="shrink-0 rounded-full border border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] bg-[var(--background-elevated)] px-2.5 py-1 text-xs font-bold text-[var(--accent-ink)] shadow-[var(--shadow-xs)]">
-            {visitedCount}/{sections.length} opened
+          <span className="sr-only">
+            {visitedCount} of {sections.length} sections opened
           </span>
         </div>
 
-        <div className="mt-3">
-          <div className="mb-2 flex items-center justify-between gap-3 text-xs">
-            <span className="font-medium text-[var(--text-primary)]">
-              Opened for review
-            </span>
-            <span className="app-text-soft">{progressPercent}%</span>
-          </div>
-
-          <div className="h-1.5 overflow-hidden rounded-full bg-[var(--background-elevated)] shadow-[inset_0_0_0_1px_var(--border-subtle)]">
+        <div className="mt-2">
+          <div className="h-1.5 overflow-hidden rounded-full bg-[var(--background-muted)] shadow-[inset_0_0_0_1px_var(--border-subtle)]">
             <div
               className="h-full rounded-full [background:var(--accent-progress-gradient)]"
               style={{ width: progressBarWidth }}
             />
           </div>
 
-          <div className="mt-2 grid grid-flow-col auto-cols-fr gap-1" aria-hidden="true">
+          <nav
+            className="mt-1.5 grid grid-flow-col auto-cols-fr gap-1"
+            aria-label="Lesson section shortcuts"
+          >
             {sections.map((section, index) => {
               const isActive = index === currentStepIndex;
               const isVisited = visitedSectionIds.has(section.id);
               const isUnlocked = index <= allowedMaxIndex;
               const status = getStepStatus({ isActive, isVisited, isUnlocked });
+              const stepNumber = index + 1;
+              const segmentWrapperClassName = [
+                "group/segment flex h-4 items-center rounded-full",
+                isUnlocked ? "app-focus-ring" : "cursor-not-allowed opacity-70",
+              ].join(" ");
+              const segmentBarClassName = [
+                "block h-1.5 w-full rounded-full transition-[filter,box-shadow] duration-150",
+                status.segmentClassName,
+                isUnlocked
+                  ? "group-hover/segment:brightness-105 group-hover/segment:shadow-[0_4px_10px_color-mix(in_srgb,var(--accent)_14%,transparent)]"
+                  : "",
+              ].join(" ");
+
+              if (!isUnlocked) {
+                return (
+                  <span
+                    key={section.id}
+                    className={segmentWrapperClassName}
+                    aria-label={`Section ${stepNumber} locked`}
+                    aria-disabled="true"
+                  >
+                    <span className={segmentBarClassName} aria-hidden="true" />
+                  </span>
+                );
+              }
 
               return (
-                <span
+                <Link
                   key={section.id}
-                  className={["h-1 rounded-full", status.segmentClassName].join(" ")}
-                />
+                  href={buildLessonStepHref({
+                    courseSlug,
+                    variantSlug,
+                    moduleSlug,
+                    lessonSlug,
+                    stepNumber,
+                  })}
+                  prefetch={false}
+                  className={segmentWrapperClassName}
+                  aria-label={`Go to section ${stepNumber}: ${section.title}`}
+                  aria-current={isActive ? "step" : undefined}
+                >
+                  <span className={segmentBarClassName} aria-hidden="true" />
+                </Link>
               );
             })}
-          </div>
+          </nav>
         </div>
       </div>
 
-      <nav className="mt-2 space-y-1" aria-label="Lesson sections">
+      <nav className="mt-1 space-y-1" aria-label="Lesson sections">
         {sections.map((section, index) => {
           const stepNumber = index + 1;
           const isActive = index === currentStepIndex;
@@ -191,30 +215,30 @@ export function StepTracker({
           const isUnlocked = index <= allowedMaxIndex;
           const isNextStep = index === nextStepIndex;
           const status = getStepStatus({ isActive, isVisited, isUnlocked });
-          const showStatusBadge = isActive || isNextStep || !isUnlocked;
+          const showStatusBadge = !isUnlocked;
 
           const content = (
             <div
               className={[
-                "relative flex items-start gap-3 overflow-hidden rounded-xl border px-3 py-2.5 transition-colors app-focus-ring",
+                "relative flex items-center gap-2.5 overflow-hidden rounded-lg border px-2.5 py-2 transition-colors app-focus-ring",
                 status.rowClassName,
               ].join(" ")}
             >
               <div
                 className={[
-                  "mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border text-xs font-bold",
+                  "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-xs font-bold",
                   status.nodeClassName,
                 ].join(" ")}
               >
                 {isVisited && !isActive ? (
-                  <AppIcon icon="completed" size={14} />
+                  <AppIcon icon="completed" size={17} />
                 ) : (
                   <span>{stepNumber}</span>
                 )}
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center justify-between gap-3">
                   <div className="min-w-0 text-sm font-semibold leading-5 text-[var(--text-primary)]">
                     {section.title}
                   </div>
@@ -222,21 +246,20 @@ export function StepTracker({
                   {showStatusBadge ? (
                     <span
                       className={[
-                        "inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em]",
+                        "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border",
                         status.badgeClassName,
                       ].join(" ")}
+                      aria-label={status.label}
+                      title={status.label}
                     >
                       <AppIcon icon={status.icon} size={12} />
-                      <span>{status.label}</span>
                     </span>
                   ) : null}
                 </div>
 
-                {isActive && section.description ? (
-                  <p className="mt-1.5 line-clamp-2 text-xs leading-5 app-text-muted">
-                    {section.description}
-                  </p>
-                ) : null}
+                <span className="sr-only">
+                  {isActive ? "Current section" : isNextStep ? "Next section" : ""}
+                </span>
               </div>
             </div>
           );

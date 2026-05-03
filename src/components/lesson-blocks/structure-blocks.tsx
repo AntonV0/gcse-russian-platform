@@ -45,7 +45,7 @@ export function CalloutBlock({ title, content }: { title?: string; content: stri
       ) : null}
 
       <StudyBlockShell
-        eyebrow="Worth remembering"
+        eyebrow="Remember"
         title={title ?? "Helpful hint"}
         tone="coach"
       >

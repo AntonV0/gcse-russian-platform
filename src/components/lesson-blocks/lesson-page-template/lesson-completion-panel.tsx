@@ -25,8 +25,17 @@ export function LessonCompletionPanel({
   totalSections,
   allVisited,
 }: LessonCompletionPanelProps) {
+  const visitedPercent =
+    totalSections > 0 ? Math.round((visitedCount / totalSections) * 100) : 0;
+  const sectionProgressClass = [
+    "app-progress-bar",
+    allVisited ? "app-progress-bar-success" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className="dev-marker-host relative app-study-block app-study-block-practice space-y-4 p-5">
+    <div className="dev-marker-host relative rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-5">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="LessonCompletionPanel"
@@ -46,11 +55,11 @@ export function LessonCompletionPanel({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-            Finish this lesson
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+            Nice work - you have a first introduction.
           </h2>
           <p className="mt-1 text-sm app-text-muted">
-            Mark it complete when you have opened every section and feel ready to move on.
+            Mark the lesson complete when you can say the short model without looking.
           </p>
         </div>
 
@@ -59,35 +68,33 @@ export function LessonCompletionPanel({
         </Badge>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
-          <div className="font-medium text-[var(--text-primary)]">Lesson sections</div>
-          <div className="mt-1 text-2xl font-semibold text-[var(--text-primary)]">
-            {visitedCount} / {totalSections}
+      <div className="rounded-lg border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_38%,var(--background-elevated))] p-4 text-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="font-medium text-[var(--text-primary)]">
+              Sections opened: {visitedCount} of {totalSections}
+            </div>
+            <div className="mt-1 app-text-muted">
+              {allVisited
+                ? "You have reached every part of the lesson."
+                : "Open each section before saving this lesson as complete."}
+            </div>
           </div>
-          <div className="mt-1 app-text-muted">
-            {allVisited
-              ? "Every section has been opened."
-              : "Open each section before saving this lesson as complete."}
-          </div>
+
+          <Badge tone={completed ? "success" : allVisited ? "info" : "warning"}>
+            {completed ? "Saved" : allVisited ? "Ready to finish" : "Keep going"}
+          </Badge>
         </div>
 
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4 text-sm">
-          <div className="font-medium text-[var(--text-primary)]">Before you go</div>
-          <div className="mt-2 space-y-2">
-            <div className="flex items-center gap-2">
-              <Badge tone={allVisited ? "success" : "warning"} icon="list">
-                {allVisited ? "Checked" : "Incomplete"}
-              </Badge>
-              <span className="app-text-muted">All sections visited</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge tone={completed ? "success" : "muted"} icon="completed">
-                {completed ? "Saved" : "Pending"}
-              </Badge>
-              <span className="app-text-muted">Lesson progress saved</span>
-            </div>
-          </div>
+        <div
+          className="app-progress-track mt-3"
+          role="progressbar"
+          aria-label="Visited lesson sections"
+          aria-valuemin={0}
+          aria-valuemax={totalSections}
+          aria-valuenow={visitedCount}
+        >
+          <div className={sectionProgressClass} style={{ width: `${visitedPercent}%` }} />
         </div>
       </div>
 
