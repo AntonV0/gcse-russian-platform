@@ -147,6 +147,39 @@ export async function updateVocabularySetDb(
 
 export async function deleteVocabularySetDb(vocabularySetId: string) {
   const supabase = await createClient();
+  const { count: usageCount, error: usageCountError } = await supabase
+    .from("lesson_vocabulary_set_usages")
+    .select("id", { count: "exact", head: true })
+    .eq("vocabulary_set_id", vocabularySetId);
+
+  if (usageCountError) {
+    console.error("Error checking vocabulary set lesson usage before delete:", {
+      vocabularySetId,
+      error: usageCountError,
+    });
+    throw new Error("Failed to check vocabulary set usage before delete");
+  }
+
+  if ((usageCount ?? 0) > 0) {
+    throw new Error("Remove this vocabulary set from lessons before deleting it");
+  }
+
+  const { count: itemCount, error: itemCountError } = await supabase
+    .from("vocabulary_items")
+    .select("id", { count: "exact", head: true })
+    .eq("vocabulary_set_id", vocabularySetId);
+
+  if (itemCountError) {
+    console.error("Error checking vocabulary set items before delete:", {
+      vocabularySetId,
+      error: itemCountError,
+    });
+    throw new Error("Failed to check vocabulary set items before delete");
+  }
+
+  if ((itemCount ?? 0) > 0) {
+    throw new Error("Delete the vocabulary items before deleting this set");
+  }
 
   const { error } = await supabase
     .from("vocabulary_sets")
@@ -407,6 +440,23 @@ export async function deleteVocabularyItemDb(params: {
   vocabularySetId: string;
 }) {
   const supabase = await createClient();
+  const { count: lessonLinkCount, error: lessonLinkCountError } = await supabase
+    .from("lesson_vocabulary_links")
+    .select("id", { count: "exact", head: true })
+    .eq("vocabulary_item_id", params.vocabularyItemId);
+
+  if (lessonLinkCountError) {
+    console.error("Error checking vocabulary item lesson links before delete:", {
+      vocabularyItemId: params.vocabularyItemId,
+      vocabularySetId: params.vocabularySetId,
+      error: lessonLinkCountError,
+    });
+    throw new Error("Failed to check vocabulary item usage before delete");
+  }
+
+  if ((lessonLinkCount ?? 0) > 0) {
+    throw new Error("Remove this item from lesson-used vocabulary coverage before deleting it");
+  }
 
   const { error } = await supabase
     .from("vocabulary_items")

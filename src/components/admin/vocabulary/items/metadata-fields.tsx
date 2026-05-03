@@ -11,7 +11,7 @@ export default function CoreMetadataFields({
   defaultTier: DbVocabularyTier;
   item?: DbVocabularyItem;
 }) {
-  const showLegacyTier = item?.tier === "unknown";
+  const showLegacyTier = item?.tier === "unknown" || defaultTier === "unknown";
   const showLegacySourceType = item?.source_type === "extended";
 
   return (
