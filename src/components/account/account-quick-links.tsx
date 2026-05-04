@@ -17,11 +17,11 @@ const accountLinks = [
       "Manage your password, appearance, and future account preferences from one place.",
   },
   {
-    title: "Courses",
-    href: "/courses",
-    label: "Open courses",
+    title: "Billing",
+    href: "/account/billing",
+    label: "Open billing",
     description:
-      "Return to your learning content, modules, and lessons whenever you are ready.",
+      "Review Foundation and Higher access, upgrade options, and subscription actions.",
   },
   {
     title: "Dashboard",

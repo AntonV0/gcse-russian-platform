@@ -56,17 +56,15 @@ export function AccountDetailsPanels({
         </div>
       </DashboardCard>
 
-      <DashboardCard title="How this area is organised">
+      <DashboardCard title="Recommended next steps">
         <div className="space-y-3">
-          <p>
-            Account is the overview page for this section, while Profile and Settings
-            handle the main editable parts of your student account.
-          </p>
+          <p>Use this area when something about the account needs a decision.</p>
 
           <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-            <li>- Overview for account summary, access, and quick links</li>
-            <li>- Profile for names and avatar</li>
-            <li>- Settings for password, appearance, and future preferences</li>
+            <li>- Complete profile details so lessons and reports show the right name</li>
+            <li>- Review billing before changing Foundation or Higher access</li>
+            <li>- Update display preferences if the course feels hard to scan</li>
+            <li>- Return to the dashboard when the account looks correct</li>
           </ul>
         </div>
       </DashboardCard>

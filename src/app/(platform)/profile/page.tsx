@@ -96,10 +96,7 @@ async function getProfileLearningSnapshot(): Promise<ProfileLearningSnapshot> {
     };
   }
 
-  const progressSummary = await getCourseProgressSummary(
-    "gcse-russian",
-    activeVariant
-  );
+  const progressSummary = await getCourseProgressSummary("gcse-russian", activeVariant);
   const learningPlan = await getStudentLearningPlan(
     activeVariant,
     progressSummary.completedLessons
@@ -132,7 +129,7 @@ export default async function ProfilePage({
       <main className="space-y-6">
         <PageHeader
           title="Profile"
-          description="Choose the name and avatar shown around your student area."
+          description="Choose the name and avatar you want to see while you study."
         />
 
         <EmptyState
@@ -158,7 +155,7 @@ export default async function ProfilePage({
     <main className="space-y-8">
       <PageHeader
         title="Profile"
-        description="Choose the name and avatar shown around your student area."
+        description="Choose the name and avatar you want to see while you study."
       />
 
       {resolvedSearchParams.error ? (

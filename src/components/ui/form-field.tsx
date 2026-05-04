@@ -15,7 +15,7 @@ type FormFieldProps = {
   id?: string;
   htmlFor?: string;
   hint?: string;
-  description?: string;
+  description?: React.ReactNode;
   error?: string;
   success?: string;
   required?: boolean;

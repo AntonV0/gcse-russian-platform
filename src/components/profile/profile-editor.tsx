@@ -45,13 +45,7 @@ const defaultAvatar = {
   russian: "Инициалы",
 } satisfies ProfileAvatarOption;
 
-function AvatarEmoji({
-  children,
-  className,
-}: {
-  children: string;
-  className?: string;
-}) {
+function AvatarEmoji({ children, className }: { children: string; className?: string }) {
   return (
     <span
       className={[
@@ -69,10 +63,7 @@ function AvatarEmoji({
   );
 }
 
-function getAvatar(
-  avatars: ProfileAvatarOption[],
-  avatarKey: string | null | undefined
-) {
+function getAvatar(avatars: ProfileAvatarOption[], avatarKey: string | null | undefined) {
   return avatars.find((avatar) => avatar.key === avatarKey) ?? defaultAvatar;
 }
 
@@ -117,33 +108,30 @@ function getAvatarPageForKey(avatars: ProfileAvatarOption[], avatarKey: string) 
 
 function ProfilePreviewCard({
   avatar,
-  courseLabel,
   displayName,
+  hasChanges,
   initials,
   compact = false,
 }: {
   avatar: ProfileAvatarOption;
-  courseLabel: string;
   displayName: string;
+  hasChanges: boolean;
   initials: string;
   compact?: boolean;
 }) {
   return (
     <div
-      className={[
-        "app-feature-panel-preview",
-        compact ? "p-4" : "p-5",
-      ].join(" ")}
+      className={["app-feature-panel-preview", compact ? "p-4" : "p-5"].join(" ")}
       aria-live="polite"
     >
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--accent-ink)]">
             <AppIcon icon="preview" size={15} />
-            Student card preview
+            Your profile preview
           </div>
           <p className="mt-1 text-sm app-text-muted">
-            This is the name and avatar students see around lessons.
+            Check how your name and avatar look.
           </p>
         </div>
       </div>
@@ -158,94 +146,30 @@ function ProfilePreviewCard({
             {displayName}
           </div>
           <p className="mt-1.5 text-sm app-text-muted">
-            Shown around lessons and your student area.
+            Shown in lessons and your account.
           </p>
         </div>
       </div>
 
-      <div className="mt-5 space-y-2 border-t border-[var(--border-subtle)] pt-4">
-        <div className="flex items-center justify-between gap-3 rounded-lg bg-[var(--background-muted)] px-3 py-2">
-          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
-            <AppIcon icon="user" size={14} />
-            Visible name
-          </span>
-          <span className="min-w-0 truncate text-sm font-bold text-[var(--text-primary)]">
-            {displayName}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between gap-3 rounded-lg bg-[var(--background-muted)] px-3 py-2">
-          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
-            <AppIcon icon="courses" size={14} />
-            Course path
-          </span>
-          <span className="min-w-0 truncate text-sm font-bold text-[var(--text-primary)]">
-            {courseLabel}
-          </span>
-        </div>
-
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2.5">
-          <div className="flex items-center gap-2 text-sm font-bold text-[var(--text-secondary)]">
-            <AppIcon icon="preview" size={15} />
-            Changes update here before you save.
+      {hasChanges ? (
+        <div className="mt-5 border-t border-[var(--border-subtle)] pt-4">
+          <div className="flex flex-col gap-3 rounded-xl border border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-bold text-[var(--text-primary)]">
+              Ready to save this profile?
+            </p>
+            <Button
+              type="submit"
+              name="intent"
+              value="all"
+              variant="primary"
+              size="sm"
+              icon="save"
+            >
+              Save changes
+            </Button>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function ProfileIdentityCard({
-  displayName,
-  email,
-}: {
-  displayName: string;
-  email: string | null | undefined;
-}) {
-  return (
-    <div className="flex h-full flex-col rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4 shadow-[0_8px_20px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]">
-      <div>
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
-          <AppIcon icon="student" size={15} />
-          Profile guidance
-        </div>
-        <p className="mt-1 text-sm app-text-muted">
-          Where these details appear and what each field is used for.
-        </p>
-      </div>
-
-      <div className="mt-4 space-y-2">
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-elevated)]/76 p-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
-            <AppIcon icon="preview" size={14} />
-            Where this appears
-          </div>
-          <p className="mt-1 text-sm app-text-muted">
-            Display name and avatar appear in lessons, navigation, and student
-            account areas.
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-elevated)]/76 p-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
-            <AppIcon icon="user" size={14} />
-            Current display name
-          </div>
-          <p className="mt-1 truncate text-sm font-medium text-[var(--text-primary)]">
-            {displayName}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-elevated)]/76 p-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
-            <AppIcon icon="userCheck" size={14} />
-            Account email
-          </div>
-          <p className="mt-1 truncate text-sm font-medium text-[var(--text-primary)]">
-            {email ?? "No email connected"}
-          </p>
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -258,17 +182,13 @@ function ProfileUpdatedInline() {
         Profile updated
       </div>
       <p className="mt-0.5 text-sm app-text-muted">
-        Your saved name and avatar are now live around your student area.
+        Your saved name and avatar have been updated.
       </p>
     </div>
   );
 }
 
-function LearningSnapshotCard({
-  snapshot,
-}: {
-  snapshot: ProfileLearningSnapshot;
-}) {
+function LearningSnapshotCard({ snapshot }: { snapshot: ProfileLearningSnapshot }) {
   const progressLabel =
     snapshot.totalLessons > 0
       ? `${snapshot.completedLessons} of ${snapshot.totalLessons}`
@@ -283,7 +203,7 @@ function LearningSnapshotCard({
             Learning context
           </div>
           <p className="mt-1 text-sm app-text-muted">
-            Profile identity connects into this account and learning route.
+            Your profile stays connected to your course and lesson progress.
           </p>
         </div>
 
@@ -394,8 +314,7 @@ export default function ProfileEditor({
   const previewName = displayName.trim() || fullName.trim() || "Student";
   const initials = getProfileInitials(fullName || displayName, email);
   const hasDetailsChanges =
-    fullName !== (initialFullName ?? "") ||
-    displayName !== (initialDisplayName ?? "");
+    fullName !== (initialFullName ?? "") || displayName !== (initialDisplayName ?? "");
   const hasAvatarChanges = avatarKey !== (initialAvatarKey ?? "");
   const hasAnyChanges = hasDetailsChanges || hasAvatarChanges;
   const resetDetailsChanges = () => {
@@ -411,11 +330,8 @@ export default function ProfileEditor({
 
   useEffect(() => {
     if (!profileUpdated) {
-      setShowProfileUpdated(false);
       return;
     }
-
-    setShowProfileUpdated(true);
 
     const timeoutId = window.setTimeout(() => {
       setShowProfileUpdated(false);
@@ -436,168 +352,137 @@ export default function ProfileEditor({
             <div className="space-y-2">
               <h2 className="app-heading-hero">Build your student profile</h2>
               <p className="app-subtitle max-w-2xl">
-                Set the name and avatar students see around lessons.
+                Choose a name and avatar that make GCSE Russian feel like yours.
               </p>
             </div>
 
             {showProfileUpdated ? <ProfileUpdatedInline /> : null}
 
-            <div className="app-feature-panel-info">
-              <div className="app-feature-panel-info-item">
-                <span className="app-feature-panel-info-icon">
-                  <AppIcon icon="preview" size={15} />
-                </span>
-                <div className="min-w-0">
-                  <div className="text-sm font-bold text-[var(--text-primary)]">
-                    Preview as you edit
-                  </div>
-                  <p className="mt-0.5 text-sm app-text-muted">
-                    Your student card updates before you save.
-                  </p>
-                </div>
-              </div>
+            <div className="app-feature-panel-actions">
+              <Button href="#profile-details" variant="secondary" size="sm" icon="user">
+                Edit details
+              </Button>
 
-              <div className="app-feature-panel-info-item">
-                <span className="app-feature-panel-info-icon">
-                  <AppIcon icon="settings" size={15} />
-                </span>
-                <div className="min-w-0">
-                  <div className="text-sm font-bold text-[var(--text-primary)]">
-                    Account controls stay separate
-                  </div>
-                  <p className="mt-0.5 text-sm app-text-muted">
-                    Security, theme, and sign-in settings live in Settings.
-                  </p>
-                </div>
-              </div>
+              <Button href="#profile-avatar" variant="quiet" size="sm" icon="palette">
+                Choose avatar
+              </Button>
             </div>
           </div>
 
           <ProfilePreviewCard
             avatar={selectedAvatar}
-            courseLabel={learningSnapshot.courseLabel}
             displayName={previewName}
+            hasChanges={hasAnyChanges}
             initials={initials}
           />
         </div>
-
-        <div className="app-feature-panel-actions">
-          <Button href="/settings" variant="quiet" size="sm" icon="settings">
-            Open settings
-          </Button>
-
-          <Button href="/dashboard" variant="quiet" size="sm" icon="dashboard">
-            Back to dashboard
-          </Button>
-        </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-stretch">
-        <div className="app-surface app-section-padding flex h-full flex-col gap-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h2 className="app-heading-section">Your details</h2>
-              <p className="mt-1 text-sm app-text-muted">
-                These fields update the preview above before you save.
-              </p>
-            </div>
+      <section
+        id="profile-details"
+        className="app-surface app-section-padding flex flex-col gap-4"
+      >
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="app-heading-section">Your details</h2>
+            <p className="mt-1 text-sm app-text-muted">Choose how your name appears.</p>
           </div>
+        </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <FormField
-              label="Full name"
-              description="Used for account records and teacher/admin views."
-              className="lg:[&_.app-form-field-header]:min-h-[4.25rem]"
-            >
-              <Input
-                id="fullName"
-                name="fullName"
-                value={fullName}
-                onChange={(event) => setFullName(event.target.value)}
-                placeholder="Enter full name"
-              />
-            </FormField>
-
-            <FormField
-              label="Display name"
-              description="Shown around your student area when a shorter name feels better."
-              className="lg:[&_.app-form-field-header]:min-h-[4.25rem]"
-            >
-              <Input
-                id="displayName"
-                name="displayName"
-                value={displayName}
-                onChange={(event) => setDisplayName(event.target.value)}
-                placeholder="Enter display name"
-              />
-            </FormField>
-
-            <FormField
-              label="Email"
-              description="Sign-in email changes live in Settings."
-              className="lg:col-span-2"
-            >
-              <Input id="email" name="email" value={email ?? ""} disabled readOnly />
-            </FormField>
-          </div>
-
-          <div
-            className={[
-              "mt-auto flex flex-col gap-3 border sm:flex-row sm:items-center sm:justify-between",
-              hasDetailsChanges
-                ? "rounded-xl border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-4 shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]"
-                : "rounded-lg border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2.5",
-            ].join(" ")}
+        <div className="grid gap-4 lg:grid-cols-2">
+          <FormField
+            label="Full name"
+            description="For certificates, reports, and teacher feedback."
           >
-            <div>
-              <div className="text-sm font-bold text-[var(--text-primary)]">
-                {hasDetailsChanges
-                  ? "Ready to update your details?"
-                  : "No detail changes"}
-              </div>
-              {hasDetailsChanges ? (
-                <p className="mt-1 text-sm app-text-muted">
-                  Save after changing your full name or display name.
-                </p>
-              ) : null}
-            </div>
+            <Input
+              id="fullName"
+              name="fullName"
+              value={fullName}
+              onChange={(event) => setFullName(event.target.value)}
+              placeholder="Enter full name"
+            />
+          </FormField>
 
-            <div className="flex flex-wrap gap-2 sm:justify-end">
-              <Button
-                type="submit"
-                name="intent"
-                value="details"
-                variant={hasDetailsChanges ? "primary" : "quiet"}
-                size={hasDetailsChanges ? "md" : "sm"}
-                icon={hasDetailsChanges ? "save" : "completed"}
-                disabled={!hasDetailsChanges}
-              >
-                {hasDetailsChanges ? "Save profile details" : "Saved"}
-              </Button>
+          <FormField
+            label="Display name"
+            description="The shorter name you want to see in lessons."
+          >
+            <Input
+              id="displayName"
+              name="displayName"
+              value={displayName}
+              onChange={(event) => setDisplayName(event.target.value)}
+              placeholder="Enter display name"
+            />
+          </FormField>
 
-              {hasDetailsChanges ? (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  icon="cancel"
-                  iconOnly
-                  ariaLabel="Cancel profile detail changes"
-                  onClick={resetDetailsChanges}
-                />
-              ) : null}
-            </div>
-          </div>
+          <FormField
+            label="Email"
+            description={
+              <>
+                Sign-in email changes are found in{" "}
+                <a
+                  href="/settings"
+                  className="font-bold text-[var(--accent-ink)] underline-offset-4 hover:underline"
+                >
+                  Settings
+                </a>
+                .
+              </>
+            }
+            className="lg:col-span-2"
+          >
+            <Input id="email" name="email" value={email ?? ""} disabled readOnly />
+          </FormField>
         </div>
 
-        <div className="sticky top-[calc(var(--sticky-site-offset)+0.75rem)] h-full">
-          <ProfileIdentityCard
-            displayName={previewName}
-            email={email}
-          />
+        <div
+          className={[
+            "mt-auto flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between",
+            hasDetailsChanges
+              ? "border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]"
+              : "border-[var(--border-subtle)] bg-[var(--background-muted)]",
+          ].join(" ")}
+        >
+          <div>
+            <div className="text-sm font-bold text-[var(--text-primary)]">
+              {hasDetailsChanges ? "Ready to update your details?" : "No detail changes"}
+            </div>
+            <p className="mt-1 text-sm app-text-muted">
+              {hasDetailsChanges
+                ? "Save after changing your full name or display name."
+                : "Your details are saved."}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            <Button
+              type="submit"
+              name="intent"
+              value="details"
+              variant={hasDetailsChanges ? "primary" : "quiet"}
+              size="md"
+              icon={hasDetailsChanges ? "save" : "completed"}
+              disabled={!hasDetailsChanges}
+            >
+              {hasDetailsChanges ? "Save profile details" : "Saved"}
+            </Button>
+
+            {hasDetailsChanges ? (
+              <Button
+                type="button"
+                variant="secondary"
+                icon="cancel"
+                iconOnly
+                ariaLabel="Cancel profile detail changes"
+                onClick={resetDetailsChanges}
+              />
+            ) : null}
+          </div>
         </div>
       </section>
 
-      <section className="app-surface app-section-padding space-y-4">
+      <section id="profile-avatar" className="app-surface app-section-padding space-y-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h2 className="app-heading-section">Choose an avatar</h2>
@@ -719,28 +604,24 @@ export default function ProfileEditor({
 
         <div
           className={[
-            "flex flex-col gap-3 border sm:flex-row sm:items-center sm:justify-between",
+            "flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between",
             hasAvatarChanges
-              ? "rounded-xl border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-4 shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]"
-              : "rounded-lg border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2.5",
+              ? "border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]"
+              : "border-[var(--border-subtle)] bg-[var(--background-muted)]",
           ].join(" ")}
         >
           <div className="flex items-center gap-3">
-            {hasAvatarChanges ? (
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)] text-3xl shadow-[var(--shadow-xs)]">
-                <AvatarMark avatar={selectedAvatar} initials={initials} />
-              </span>
-            ) : null}
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)] text-3xl shadow-[var(--shadow-xs)]">
+              <AvatarMark avatar={selectedAvatar} initials={initials} />
+            </span>
 
             <div className="min-w-0">
               <div className="text-sm font-bold text-[var(--text-primary)]">
                 {hasAvatarChanges ? selectedAvatar.label : "Current avatar saved"}
               </div>
-              {hasAvatarChanges ? (
-                <div className="text-sm app-text-muted">
-                  Save this avatar to your profile.
-                </div>
-              ) : null}
+              <div className="text-sm app-text-muted">
+                {hasAvatarChanges ? "Save this avatar to your profile." : "\u00a0"}
+              </div>
             </div>
           </div>
 
@@ -750,7 +631,7 @@ export default function ProfileEditor({
               name="intent"
               value="avatar"
               variant={hasAvatarChanges ? "primary" : "quiet"}
-              size={hasAvatarChanges ? "md" : "sm"}
+              size="md"
               icon={hasAvatarChanges ? "save" : "completed"}
               disabled={!hasAvatarChanges}
             >

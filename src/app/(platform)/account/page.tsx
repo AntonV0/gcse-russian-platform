@@ -51,6 +51,7 @@ export default async function AccountPage() {
         dashboard={dashboard}
         profile={profileSummary}
         email={user.email}
+        currentPlan={currentPlan}
       />
 
       <AccountQuickLinks />
