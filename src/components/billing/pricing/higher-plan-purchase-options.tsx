@@ -39,7 +39,7 @@ export default function HigherPlanPurchaseOptions({
         billingType="one_time"
         label="Lifetime"
         priceLabel={lifetimeLabel}
-        meta="Best value, no renewals"
+        meta="One payment, no renewals"
         recommended
       />
     </ActionGroup>

@@ -9,7 +9,7 @@ import HigherPlanPanel from "@/components/billing/pricing/higher-plan-panel";
 import PlanCard from "@/components/billing/pricing/plan-card";
 import { getPricingPageData } from "@/components/billing/pricing/data";
 import { getCurrentUser } from "@/lib/auth/auth";
-import { getFromPriceLabel } from "@/lib/billing/pricing-ui";
+import { formatPriceLabel, getFromPriceLabel } from "@/lib/billing/pricing-ui";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 const checkoutSteps: Array<{
@@ -130,7 +130,8 @@ function VolnaSchoolRoute() {
               Volna School is a higher-support route for families who want regular live
               lessons, homework, feedback, and exam guidance. It is a bigger commitment
               than self-study, so it is best for students who need teaching and
-              accountability each week.
+              accountability each week. Platform access is included while you are
+              enrolled at Volna School.
             </p>
           </div>
 
@@ -192,8 +193,9 @@ function VolnaSchoolRoute() {
                 &pound;18/hour
               </p>
               <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-                Group GCSE classes usually run as two 1-hour lessons each week. The first
-                lesson is free, then Volna invoices by school term.
+                Group GCSE classes usually run as two 1-hour lessons each week, so most
+                families should expect about &pound;36 per teaching week. The first lesson
+                is free, then Volna invoices by school term.
               </p>
             </div>
 
@@ -257,6 +259,8 @@ export default async function BillingPage({
 
   const foundationPriceLabel = getFromPriceLabel(foundationPricing);
   const higherPriceLabel = getFromPriceLabel(higherPricing);
+  const foundationLifetimeLabel = formatPriceLabel(foundationPricing.lifetime);
+  const higherLifetimeLabel = formatPriceLabel(higherPricing.lifetime);
   const hasActiveSubscription = Boolean(
     activeSubscriptions.foundation || activeSubscriptions.higher
   );
@@ -321,12 +325,16 @@ export default async function BillingPage({
               subtitle="Beginner-friendly structured GCSE Russian learning"
               bestFor="For building confidence and Foundation-tier preparation"
               priceLabel={foundationPriceLabel}
+              recommendedPriceLabel={
+                foundationLifetimeLabel ? `${foundationLifetimeLabel} lifetime` : undefined
+              }
               optionNote="After checkout, it appears in your GCSE Russian dashboard."
               features={[
                 "Full Foundation course",
-                "Structured lessons and exercises",
+                "Step-by-step GCSE themes",
+                "Core grammar and vocabulary",
                 "Progress tracking",
-                "Exam-focused content",
+                "Confidence before exam practice",
                 "Suitable if you are starting out",
               ]}
             >
@@ -350,13 +358,16 @@ export default async function BillingPage({
               subtitle="Advanced GCSE Russian preparation"
               bestFor="For aiming towards Grades 7-9"
               priceLabel={higherPriceLabel}
+              recommendedPriceLabel={
+                higherLifetimeLabel ? `${higherLifetimeLabel} lifetime` : undefined
+              }
               tone="highlight"
               optionNote="After checkout, it appears in your GCSE Russian dashboard."
               features={[
                 "Full Higher course",
-                "Advanced grammar and vocabulary",
-                "Exam-style questions and mock exams",
-                "Speaking, writing, listening, and reading practice",
+                "Higher-tier exam technique",
+                "Longer speaking and writing answers",
+                "Mock exams and exam-style questions",
                 "Designed for Grades 7-9",
                 "Progress tracking and structured learning",
               ]}
@@ -404,8 +415,6 @@ export default async function BillingPage({
             />
           ) : null}
 
-          <VolnaSchoolRoute />
-
           <details className="app-card group px-4 py-3 text-sm text-[var(--text-secondary)]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold text-[var(--text-primary)]">
               <span className="inline-flex items-center gap-2">
@@ -431,6 +440,8 @@ export default async function BillingPage({
             </div>
           </details>
 
+          <VolnaSchoolRoute />
+
           <div className="app-card px-5 py-4 text-sm text-[var(--text-secondary)]">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
@@ -443,7 +454,7 @@ export default async function BillingPage({
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3 md:shrink-0 md:justify-end">
+              <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center md:shrink-0 md:justify-end">
                 <BillingPortalButton disabled={!hasActiveSubscription} />
 
                 <Link
