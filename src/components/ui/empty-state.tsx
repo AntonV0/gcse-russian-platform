@@ -72,9 +72,8 @@ export default function EmptyState({
 
       <div
         className={[
-          "relative overflow-hidden rounded-[1.5rem] border border-dashed border-[var(--border)]",
-          "bg-[linear-gradient(180deg,var(--background-elevated)_0%,var(--background-muted)_100%)]",
-          "px-5 py-8 text-center shadow-[0_10px_24px_color-mix(in_srgb,var(--text-primary)_5%,transparent)] sm:px-6 sm:py-9",
+          "app-empty-dashed-warm relative overflow-hidden rounded-[1.5rem] border",
+          "px-5 py-8 text-center sm:px-6 sm:py-9",
         ].join(" ")}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 [background:var(--accent-sheen-gradient)]" />

@@ -99,7 +99,12 @@ export default function SentenceBuilderBlock({
       <div className="space-y-2">
         <p className="text-sm font-medium text-[var(--text-secondary)]">Your sentence</p>
 
-        <div className="flex min-h-[60px] flex-wrap gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-3">
+        <div
+          className={[
+            "app-answer-bank app-answer-bank-target flex min-h-[60px] flex-wrap gap-2 rounded-xl border p-3",
+            safeSelectedTokens.length === 0 ? "app-answer-bank-empty" : "",
+          ].join(" ")}
+        >
           {safeSelectedTokens.length > 0 ? (
             safeSelectedTokens.map((token, index) => (
               <button
@@ -125,7 +130,7 @@ export default function SentenceBuilderBlock({
           Available words
         </p>
 
-        <div className="flex flex-wrap gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-3">
+        <div className="app-answer-bank flex flex-wrap gap-2 rounded-xl border p-3">
           {safeAvailableTokens.length > 0 ? (
             safeAvailableTokens.map((token, index) => (
               <button

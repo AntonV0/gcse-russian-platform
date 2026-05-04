@@ -44,7 +44,7 @@ export default function PracticeSurfaceCard({
       ) : null}
 
       <Card
-        className="border-[var(--warning-border)] bg-[var(--warning-surface)]"
+        className="app-student-surface app-student-surface-practice border-[var(--warning-border)] bg-[var(--warning-surface)]"
         interactive
       >
         <CardBody className="space-y-4 px-5 py-5">

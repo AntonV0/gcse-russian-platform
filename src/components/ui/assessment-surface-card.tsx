@@ -46,7 +46,7 @@ export default function AssessmentSurfaceCard({
       ) : null}
 
       <Card
-        className="border-[var(--danger-border)] bg-[var(--danger-surface)]"
+        className="app-student-surface app-student-surface-assessment border-[var(--danger-border)] bg-[var(--danger-surface)]"
         interactive
       >
         <CardBody className="space-y-4 px-5 py-5">

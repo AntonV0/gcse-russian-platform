@@ -43,7 +43,7 @@ export default function LessonSurfaceCard({
         />
       ) : null}
 
-      <Card className="app-section-tone-student" interactive>
+      <Card className="app-section-tone-student app-student-surface" interactive>
         <CardBody className="space-y-4 px-5 py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">

@@ -611,6 +611,130 @@ a:focus-visible .app-lesson-map-item {
   opacity: 0.68;
 }
 
+.app-question-shell {
+  position: relative;
+  border-color: color-mix(in srgb, var(--accent) 15%, var(--border-subtle));
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 color-mix(in srgb, white 54%, transparent);
+}
+
+.app-question-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 1;
+  width: 3px;
+  pointer-events: none;
+  background: var(--accent-progress-gradient);
+  opacity: 0.34;
+}
+
+.app-question-prompt-surface {
+  border-color: color-mix(in srgb, var(--accent) 16%, var(--border-subtle));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 6%, var(--background-elevated)) 0%,
+      color-mix(in srgb, var(--background-elevated) 88%, var(--background-muted)) 100%
+    );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 52%, transparent);
+}
+
+.app-question-workspace {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--background-muted) 44%, var(--background-elevated)) 0%,
+      color-mix(in srgb, var(--background-elevated) 76%, var(--background-muted)) 100%
+    );
+}
+
+.app-answer-option,
+.app-tactile-row {
+  border-color: var(--border);
+  background: var(--surface-plain-bg);
+  box-shadow: var(--shadow-xs);
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.app-answer-option:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 24%, var(--border-strong));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 7%, var(--background-elevated)) 0%,
+      var(--surface-muted-bg) 100%
+    );
+  box-shadow:
+    var(--shadow-sm),
+    0 10px 22px color-mix(in srgb, var(--accent) 7%, transparent);
+}
+
+.app-answer-option:active:not(:disabled) {
+  transform: translateY(0) scale(0.992);
+}
+
+.app-answer-option:focus {
+  outline: none;
+}
+
+.app-answer-option:focus-visible {
+  outline: 2px solid var(--accent-fill);
+  outline-offset: 2px;
+}
+
+.app-answer-option-selected {
+  border-color: var(--accent-selected-border);
+  background: var(--accent-gradient-selected);
+  color: var(--accent-on-soft);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 8%, transparent),
+    0 10px 24px color-mix(in srgb, var(--accent) 12%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 44%, transparent);
+}
+
+.app-answer-bank {
+  border-color: color-mix(in srgb, var(--accent) 14%, var(--border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--background-elevated) 82%, var(--accent-soft)) 0%,
+      var(--background-elevated) 100%
+    );
+  box-shadow:
+    var(--shadow-xs),
+    inset 0 1px 0 color-mix(in srgb, white 54%, transparent);
+}
+
+.app-answer-bank-target {
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 7%, var(--background-muted)) 0%,
+      var(--background-muted) 100%
+    );
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    0 0 0 3px color-mix(in srgb, var(--accent) 3%, transparent);
+}
+
+.app-answer-bank-empty {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
+}
+
+.app-question-number-pill {
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 36%, transparent);
+}
+
 @media (min-width: 768px) {
   .app-lesson-mission-content {
     padding: 1.65rem;
@@ -659,4 +783,24 @@ a:focus-visible .app-lesson-map-item {
     color-mix(in srgb, var(--accent) 3%, var(--dark-control-bg-hover)) 0%,
     var(--dark-control-bg) 100%
   );
+}
+
+[data-theme="dark"] .app-question-shell,
+[data-theme="dark"] .app-answer-option,
+[data-theme="dark"] .app-tactile-row,
+[data-theme="dark"] .app-answer-bank {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .app-question-prompt-surface,
+[data-theme="dark"] .app-answer-bank,
+[data-theme="dark"] .app-answer-bank-target {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 6%, var(--dark-control-bg-hover)) 0%,
+      var(--dark-control-bg) 100%
+    );
 }

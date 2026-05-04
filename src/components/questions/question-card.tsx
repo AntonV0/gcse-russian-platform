@@ -35,7 +35,7 @@ export default function QuestionCard({
   feedback,
 }: QuestionCardProps) {
   return (
-    <section className="dev-marker-host relative isolate overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)]">
+    <section className="app-question-shell dev-marker-host relative isolate overflow-hidden rounded-xl border bg-[var(--background-elevated)]">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="QuestionCard"
@@ -62,7 +62,7 @@ export default function QuestionCard({
               : ""}
           </div>
 
-          <div className="rounded-lg border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_88%,var(--background-muted))] px-3 py-2.5">
+          <div className="app-question-prompt-surface rounded-lg border px-3 py-2.5">
             {instruction ? (
               <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-ink)]">
                 {instruction}
@@ -75,7 +75,7 @@ export default function QuestionCard({
           </div>
 
           {audioUrl ? (
-            <div className="rounded-lg border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_82%,transparent)] p-3">
+            <div className="app-answer-bank rounded-lg border p-3">
               <AudioPlayer
                 src={audioUrl}
                 maxPlays={audioMaxPlays}
@@ -88,7 +88,7 @@ export default function QuestionCard({
           ) : null}
         </div>
 
-        <div className="border-t border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_34%,var(--background-elevated))] p-3.5 md:p-4">
+        <div className="app-question-workspace border-t border-[var(--border-subtle)] p-3.5 md:p-4">
           <div className="space-y-4">{children}</div>
         </div>
 

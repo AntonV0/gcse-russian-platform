@@ -282,7 +282,7 @@ function NextActionQueueCard({ actions }: { actions: StudentDashboardAction[] })
 
 function ActionRow({ action, index }: { action: StudentDashboardAction; index: number }) {
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-3">
+    <div className="app-tactile-row rounded-xl border p-3">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -410,7 +410,7 @@ function AssignmentFocusCard({ activity }: { activity: StudentDashboardActivity 
         {assignmentsToShow.map(({ assignment, items }) => (
           <div
             key={assignment.id}
-            className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-3"
+            className="app-tactile-row rounded-xl border p-3"
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
@@ -481,7 +481,7 @@ function MockAttemptRow({ item }: { item: StudentDashboardMockAttemptItem }) {
   const isDraft = item.attempt.status === "draft";
 
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-3">
+    <div className="app-tactile-row rounded-xl border p-3">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap gap-2">
@@ -592,7 +592,7 @@ function DashboardEmptyBlock({
   action: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background-muted)] px-4 py-6 text-center">
+    <div className="app-empty-dashed-warm rounded-2xl border px-4 py-6 text-center">
       <div className="mb-4 flex justify-center">
         <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--surface-elevated)] text-[var(--text-secondary)]">
           <AppIcon icon={icon} size={18} />

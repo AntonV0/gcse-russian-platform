@@ -164,7 +164,7 @@ export default function QuestionSetPracticeShell({
 
   return (
     <div className="space-y-5">
-      <div className="overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--background-elevated)]">
+      <div className="app-question-shell overflow-hidden rounded-lg border bg-[var(--background-elevated)]">
         <div className="p-3.5 md:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 space-y-1">
@@ -221,7 +221,7 @@ export default function QuestionSetPracticeShell({
                   href={`#question-${question.id}`}
                   aria-label={ariaLabel}
                   className={[
-                    "inline-flex h-7 min-w-7 items-center justify-center rounded-lg border px-2 text-xs font-bold transition hover:bg-[var(--background-muted)]",
+                    "app-question-number-pill inline-flex h-7 min-w-7 items-center justify-center rounded-lg border px-2 text-xs font-bold transition hover:-translate-y-[1px] hover:bg-[var(--background-muted)] hover:shadow-[var(--shadow-xs)]",
                     stateClass,
                   ].join(" ")}
                 >
