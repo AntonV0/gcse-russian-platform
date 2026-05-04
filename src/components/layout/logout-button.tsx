@@ -2,10 +2,22 @@ import { signOut } from "@/app/actions/auth/auth";
 import Button from "@/components/ui/button";
 import type { ButtonVariant } from "@/components/ui/button-styles";
 
-export default function LogoutButton({ variant = "exit" }: { variant?: ButtonVariant }) {
+export default function LogoutButton({
+  variant = "exit",
+  className,
+}: {
+  variant?: ButtonVariant;
+  className?: string;
+}) {
   return (
     <form action={signOut}>
-      <Button type="submit" variant={variant} size="sm" icon="userX">
+      <Button
+        type="submit"
+        variant={variant}
+        size="sm"
+        icon="userX"
+        className={className}
+      >
         Log out
       </Button>
     </form>

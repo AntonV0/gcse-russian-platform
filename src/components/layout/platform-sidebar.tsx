@@ -28,6 +28,7 @@ type PlatformSidebarProps = {
   accessMode: "trial" | "full" | "volna" | null;
   pathname?: string;
   userEmail?: string | null;
+  userDisplayName?: string | null;
 };
 
 type NavItem = {
@@ -119,6 +120,96 @@ function navIconClass(active: boolean) {
 function navIconFrameClass(active: boolean) {
   return [
     "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors",
+    active
+      ? [
+          "border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+          "bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]",
+          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_38%,transparent)]",
+          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+        ].join(" ")
+      : [
+          "border-transparent bg-transparent",
+          "group-hover:border-[var(--border-subtle)]",
+          "group-hover:bg-[var(--background-elevated)]",
+          "[html[data-theme=dark]_&]:group-hover:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+          "[html[data-theme=dark]_&]:group-hover:bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
+        ].join(" "),
+  ].join(" ");
+}
+
+function accountToggleClass(active: boolean) {
+  return [
+    "group flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left text-sm font-semibold transition app-focus-ring",
+    active
+      ? [
+          "border-[color-mix(in_srgb,var(--accent)_13%,var(--border-subtle))]",
+          "bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-elevated))]",
+          "text-[color-mix(in_srgb,var(--accent)_14%,var(--text-primary))]",
+          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_24%,var(--dark-surface-border))]",
+          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_8%,var(--dark-surface-muted))]",
+          "[html[data-theme=dark]_&]:text-[var(--text-primary)]",
+        ].join(" ")
+      : [
+          "border-transparent",
+          "text-[color-mix(in_srgb,var(--text-secondary)_90%,var(--text-primary))]",
+          "hover:bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-muted))]",
+          "hover:text-[var(--text-primary)]",
+          "[html[data-theme=dark]_&]:hover:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+          "[html[data-theme=dark]_&]:hover:bg-[color-mix(in_srgb,var(--accent)_7%,var(--dark-surface-muted))]",
+        ].join(" "),
+  ].join(" ");
+}
+
+function accountToggleIconFrameClass(active: boolean) {
+  return [
+    "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors",
+    active
+      ? [
+          "border-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
+          "bg-[color-mix(in_srgb,var(--accent)_4%,transparent)]",
+          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]",
+        ].join(" ")
+      : [
+          "border-transparent bg-transparent",
+          "group-hover:border-[var(--border-subtle)]",
+          "group-hover:bg-[var(--background-elevated)]",
+          "[html[data-theme=dark]_&]:group-hover:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+          "[html[data-theme=dark]_&]:group-hover:bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
+        ].join(" "),
+  ].join(" ");
+}
+
+function accountItemClass(active: boolean, locked = false) {
+  return [
+    "group relative flex items-center gap-2 overflow-hidden rounded-xl border border-transparent px-2 py-1.5 text-[13px] font-medium transition app-focus-ring",
+    active
+      ? [
+          "border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))]",
+          "bg-[color-mix(in_srgb,var(--accent)_6%,var(--background-elevated))]",
+          "text-[color-mix(in_srgb,var(--accent)_20%,var(--text-primary))]",
+          "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_3%,transparent)]",
+          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_34%,var(--dark-surface-border))]",
+          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_13%,var(--dark-surface-muted))]",
+          "[html[data-theme=dark]_&]:text-[var(--text-primary)]",
+          "[html[data-theme=dark]_&]:shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent)_10%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_8%,transparent)]",
+          "before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-r-full before:[background:var(--accent-gradient-fill)]",
+        ].join(" ")
+      : [
+          "text-[color-mix(in_srgb,var(--text-secondary)_84%,var(--text-primary))]",
+          "hover:bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-muted))]",
+          "hover:text-[var(--text-primary)]",
+          "[html[data-theme=dark]_&]:hover:border-[color-mix(in_srgb,var(--accent)_16%,transparent)]",
+          "[html[data-theme=dark]_&]:hover:bg-[color-mix(in_srgb,var(--accent)_6%,var(--dark-surface-muted))]",
+          "[html[data-theme=dark]_&]:hover:text-[var(--text-primary)]",
+        ].join(" "),
+    locked ? "opacity-85" : "",
+  ].join(" ");
+}
+
+function accountItemIconFrameClass(active: boolean) {
+  return [
+    "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition-colors",
     active
       ? [
           "border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
@@ -247,27 +338,29 @@ function getAccountInitials(userEmail: string | null | undefined) {
 function AccountFooter({
   isGuest,
   userEmail,
+  userDisplayName,
 }: {
   isGuest: boolean;
   userEmail?: string | null;
+  userDisplayName?: string | null;
 }) {
   if (isGuest) {
     return (
-      <div className="platform-sidebar-account-card rounded-2xl p-3">
-        <div className="flex items-center gap-3">
-          <div className="platform-sidebar-account-avatar flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+      <div className="platform-sidebar-account-card rounded-2xl p-2.5">
+        <div className="flex items-center gap-2.5">
+          <div className="platform-sidebar-account-avatar flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold">
             GR
           </div>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
               Guest preview
             </div>
-            <div className="truncate text-xs text-[var(--text-secondary)]">
+            <div className="truncate text-[11px] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-secondary))]">
               Save progress with an account
             </div>
           </div>
         </div>
-        <div className="mt-3 grid gap-2">
+        <div className="mt-2.5 grid gap-2">
           <Button href="/login" variant="secondary" size="sm" icon="user">
             Log in
           </Button>
@@ -280,21 +373,24 @@ function AccountFooter({
   }
 
   return (
-    <div className="platform-sidebar-account-card rounded-2xl p-3">
-      <div className="flex items-center gap-3">
-        <div className="platform-sidebar-account-avatar flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+    <div className="platform-sidebar-account-card rounded-2xl p-2.5">
+      <Link
+        href={getAccountPath()}
+        className="-m-1 flex items-center gap-2.5 rounded-xl p-1 transition hover:bg-[color-mix(in_srgb,var(--accent)_5%,transparent)] app-focus-ring"
+      >
+        <div className="platform-sidebar-account-avatar flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold">
           {getAccountInitials(userEmail)}
         </div>
         <div className="min-w-0">
           <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
-            Your account
+            {userDisplayName?.trim() || "Your account"}
           </div>
-          <div className="truncate text-xs text-[var(--text-secondary)]">
+          <div className="truncate text-[11px] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-secondary))]">
             {userEmail ?? "Signed in"}
           </div>
         </div>
-      </div>
-      <div className="mt-3">
+      </Link>
+      <div className="mt-2.5">
         <LogoutButton
           variant="secondary"
           className="w-full justify-start !shadow-none border-[color-mix(in_srgb,var(--danger)_12%,var(--border-subtle))] text-[color-mix(in_srgb,var(--danger-text)_54%,var(--text-secondary))] hover:border-[color-mix(in_srgb,var(--danger)_24%,var(--border))] hover:bg-[color-mix(in_srgb,var(--danger)_5%,var(--background-elevated))] hover:text-[var(--danger-text)]"
@@ -324,11 +420,16 @@ export default function PlatformSidebar({
   accessMode,
   pathname,
   userEmail,
+  userDisplayName,
 }: PlatformSidebarProps) {
   const desktopSidebarRef = useRef<HTMLElement>(null);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [accountNavOpenOverride, setAccountNavOpenOverride] = useState<
+    boolean | null
+  >(null);
   const currentPathname = usePathname();
   const activePathname = pathname ?? currentPathname;
+  const previousPathnameRef = useRef(activePathname);
   const isGuest = role === "guest";
   const isCourseView = activePathname?.startsWith("/courses");
   const mainItems: NavItem[] = [
@@ -428,6 +529,13 @@ export default function PlatformSidebar({
     { label: "Practice", items: practiceItems },
     { label: "Account", items: utilityItems },
   ];
+  const isAccountNavActive = utilityItems.some((item) =>
+    isActive(activePathname, item.href)
+  );
+  const isAccountSectionOpen = accountNavOpenOverride ?? isAccountNavActive;
+  const activeAccountItem = utilityItems.find((item) =>
+    isActive(activePathname, item.href)
+  );
   const activeNavItem =
     [...mainItems, ...practiceItems, ...utilityItems].find((item) =>
       isActive(activePathname, item.href)
@@ -438,7 +546,11 @@ export default function PlatformSidebar({
     utilityItems.some((item) => isActive(activePathname, item.href));
 
   useEffect(() => {
+    if (previousPathnameRef.current === activePathname) return;
+
+    previousPathnameRef.current = activePathname;
     setIsMobileNavOpen(false);
+    setAccountNavOpenOverride(null);
   }, [activePathname]);
 
   useEffect(() => {
@@ -820,38 +932,82 @@ export default function PlatformSidebar({
             <div className="space-y-1">
               {sectionLabel("Account")}
 
-              {utilityItems.map((item) => {
-                const active = isActive(activePathname, item.href);
-                const href = getNavHref(item);
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={href}
-                    className={itemClass(active, item.locked)}
-                    aria-current={active ? "page" : undefined}
-                    aria-label={
-                      item.locked
-                        ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
-                        : undefined
-                    }
-                  >
-                    <span className={navIconFrameClass(active)}>
-                      <AppIcon
-                        icon={item.icon}
-                        size={17}
-                        className={navIconClass(active)}
-                      />
+              <button
+                type="button"
+                className={accountToggleClass(isAccountNavActive)}
+                aria-expanded={isAccountSectionOpen}
+                aria-controls="platform-account-nav"
+                onClick={() =>
+                  setAccountNavOpenOverride((current) =>
+                    !(current ?? isAccountNavActive)
+                  )
+                }
+              >
+                <span className={accountToggleIconFrameClass(isAccountNavActive)}>
+                  <AppIcon
+                    icon="user"
+                    size={17}
+                    className={navIconClass(isAccountNavActive)}
+                  />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate">Your account</span>
+                  {!isAccountSectionOpen && activeAccountItem ? (
+                    <span className="mt-0.5 block truncate text-[11px] font-semibold text-[var(--text-muted)]">
+                      {activeAccountItem.label}
                     </span>
-                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                    <NavLockMeta item={item} />
-                  </Link>
-                );
-              })}
+                  ) : null}
+                </span>
+                <AppIcon
+                  icon={isAccountSectionOpen ? "chevronDown" : "chevronRight"}
+                  size={16}
+                  className="shrink-0 text-[var(--text-muted)] transition group-hover:text-[var(--text-primary)]"
+                />
+              </button>
+
+              {isAccountSectionOpen ? (
+                <div
+                  id="platform-account-nav"
+                  className="ml-3 mt-1 space-y-1 border-l border-[color-mix(in_srgb,var(--accent)_7%,var(--border-subtle))] pl-2 [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_14%,var(--dark-surface-border))]"
+                >
+                  {utilityItems.map((item) => {
+                    const active = isActive(activePathname, item.href);
+                    const href = getNavHref(item);
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={href}
+                        className={accountItemClass(active, item.locked)}
+                        aria-current={active ? "page" : undefined}
+                        aria-label={
+                          item.locked
+                            ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
+                            : undefined
+                        }
+                      >
+                        <span className={accountItemIconFrameClass(active)}>
+                          <AppIcon
+                            icon={item.icon}
+                            size={15}
+                            className={navIconClass(active)}
+                          />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                        <NavLockMeta item={item} />
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : null}
             </div>
 
             <div className="mt-4 pt-4">
-              <AccountFooter isGuest={isGuest} userEmail={userEmail} />
+              <AccountFooter
+                isGuest={isGuest}
+                userEmail={userEmail}
+                userDisplayName={userDisplayName}
+              />
             </div>
           </div>
         </nav>

@@ -4,7 +4,7 @@ import PlatformSidebar from "@/components/layout/platform-sidebar";
 import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import { getCurrentUser } from "@/lib/auth/auth";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo, type DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
 function ResourceAccessBanner({ dashboard }: { dashboard: DashboardInfo }) {
@@ -66,9 +66,10 @@ export default async function ResourcesLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, dashboard] = await Promise.all([
+  const [user, dashboard, profile] = await Promise.all([
     getCurrentUser(),
     getDashboardInfo(),
+    getCurrentProfile(),
   ]);
   const userShell = user ? { email: user.email } : null;
 
@@ -81,6 +82,8 @@ export default async function ResourcesLayout({
               <PlatformSidebar
                 role={dashboard.role}
                 accessMode={dashboard.accessMode}
+                userEmail={user?.email}
+                userDisplayName={profile?.display_name || profile?.full_name}
               />
             </div>
 

@@ -3,7 +3,7 @@ import AppShell from "@/components/layout/app-shell";
 import PageContainer from "@/components/layout/page-container";
 import PlatformSidebar from "@/components/layout/platform-sidebar";
 import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
-import { getCurrentUser } from "@/lib/auth/auth";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import { noIndexRobots } from "@/lib/seo/site";
 
@@ -16,7 +16,11 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, dashboard] = await Promise.all([getCurrentUser(), getDashboardInfo()]);
+  const [user, dashboard, profile] = await Promise.all([
+    getCurrentUser(),
+    getDashboardInfo(),
+    getCurrentProfile(),
+  ]);
 
   return (
     <DevMarkerProvider isAdmin={dashboard.role === "admin"}>
@@ -24,7 +28,12 @@ export default async function DashboardLayout({
         <PageContainer>
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
             <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh-var(--sticky-site-offset)-1rem)] lg:self-start">
-              <PlatformSidebar role={dashboard.role} accessMode={dashboard.accessMode} />
+              <PlatformSidebar
+                role={dashboard.role}
+                accessMode={dashboard.accessMode}
+                userEmail={user?.email}
+                userDisplayName={profile?.display_name || profile?.full_name}
+              />
             </div>
 
             <section className="min-w-0">{children}</section>
