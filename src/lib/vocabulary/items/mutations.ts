@@ -147,20 +147,70 @@ export async function updateVocabularySetDb(
 
 export async function deleteVocabularySetDb(vocabularySetId: string) {
   const supabase = await createClient();
-  const { count: usageCount, error: usageCountError } = await supabase
+  const { data: vocabularyLists, error: vocabularyListsError } = await supabase
+    .from("vocabulary_lists")
+    .select("id")
+    .eq("vocabulary_set_id", vocabularySetId);
+
+  if (vocabularyListsError) {
+    console.error("Error checking vocabulary set lists before delete:", {
+      vocabularySetId,
+      error: vocabularyListsError,
+    });
+    throw new Error("Failed to check vocabulary set lists before delete");
+  }
+
+  const vocabularyListIds = (vocabularyLists ?? []).map((list) => list.id as string);
+  const { count: setUsageCount, error: setUsageCountError } = await supabase
     .from("lesson_vocabulary_set_usages")
     .select("id", { count: "exact", head: true })
     .eq("vocabulary_set_id", vocabularySetId);
 
-  if (usageCountError) {
+  if (setUsageCountError) {
     console.error("Error checking vocabulary set lesson usage before delete:", {
       vocabularySetId,
-      error: usageCountError,
+      error: setUsageCountError,
     });
     throw new Error("Failed to check vocabulary set usage before delete");
   }
 
-  if ((usageCount ?? 0) > 0) {
+  let lessonLinkCount = 0;
+  const { count: directLessonLinkCount, error: directLessonLinkCountError } =
+    await supabase
+      .from("lesson_vocabulary_links")
+      .select("id", { count: "exact", head: true })
+      .eq("vocabulary_set_id", vocabularySetId);
+
+  if (directLessonLinkCountError) {
+    console.error("Error checking direct lesson vocabulary links before delete:", {
+      vocabularySetId,
+      error: directLessonLinkCountError,
+    });
+    throw new Error("Failed to check vocabulary set lesson links before delete");
+  }
+
+  lessonLinkCount += directLessonLinkCount ?? 0;
+
+  if (vocabularyListIds.length > 0) {
+    const { count: listLessonLinkCount, error: listLessonLinkCountError } =
+      await supabase
+        .from("lesson_vocabulary_links")
+        .select("id", { count: "exact", head: true })
+        .in("vocabulary_list_id", vocabularyListIds);
+
+    if (listLessonLinkCountError) {
+      console.error("Error checking list lesson vocabulary links before delete:", {
+        vocabularySetId,
+        vocabularyListIds,
+        error: listLessonLinkCountError,
+      });
+      throw new Error("Failed to check vocabulary set lesson links before delete");
+    }
+
+    lessonLinkCount += listLessonLinkCount ?? 0;
+  }
+
+  if ((setUsageCount ?? 0) > 0 || lessonLinkCount > 0) {
     throw new Error("Remove this vocabulary set from lessons before deleting it");
   }
 
@@ -179,6 +229,26 @@ export async function deleteVocabularySetDb(vocabularySetId: string) {
 
   if ((itemCount ?? 0) > 0) {
     throw new Error("Delete the vocabulary items before deleting this set");
+  }
+
+  if (vocabularyListIds.length > 0) {
+    const { count: listItemCount, error: listItemCountError } = await supabase
+      .from("vocabulary_list_items")
+      .select("id", { count: "exact", head: true })
+      .in("vocabulary_list_id", vocabularyListIds);
+
+    if (listItemCountError) {
+      console.error("Error checking vocabulary set list items before delete:", {
+        vocabularySetId,
+        vocabularyListIds,
+        error: listItemCountError,
+      });
+      throw new Error("Failed to check vocabulary set list items before delete");
+    }
+
+    if ((listItemCount ?? 0) > 0) {
+      throw new Error("Delete the vocabulary list items before deleting this set");
+    }
   }
 
   const { error } = await supabase
