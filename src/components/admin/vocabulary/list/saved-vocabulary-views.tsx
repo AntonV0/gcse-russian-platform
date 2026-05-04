@@ -30,13 +30,12 @@ const VOCABULARY_ADMIN_SAVED_FILTERS = [
 
 export default function SavedVocabularyViews() {
   return (
-    <section className="app-surface app-section-padding">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <div>
+    <section className="app-surface px-4 py-3 sm:px-5">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="min-w-0">
           <h2 className="app-heading-subsection">Saved vocabulary views</h2>
-          <p className="mt-2 app-text-body-muted">
-            Jump straight to the admin slices that matter most when planning lessons and
-            checking spec coverage.
+          <p className="mt-1 app-text-caption">
+            Shortcuts for planning, coverage checks, and course-map lesson sets.
           </p>
         </div>
 

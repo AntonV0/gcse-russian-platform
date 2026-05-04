@@ -31,6 +31,14 @@ export default function VocabularyItemCard({
   defaultTier: DbVocabularyTier;
   coverage: DbVocabularyItemCoverage | null;
 }) {
+  const showItemType = item.item_type === "phrase";
+  const showPriority = item.priority === "extension";
+  const showProductiveReceptive = item.productive_receptive !== "unknown";
+  const showTier = item.tier !== "both" && item.tier !== "unknown";
+  const showPartOfSpeech =
+    item.part_of_speech !== "unknown" &&
+    !(item.item_type === "phrase" && item.part_of_speech === "phrase");
+
   return (
     <details className="group overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] shadow-[var(--shadow-sm)]">
       <summary className="cursor-pointer list-none px-5 py-4 transition hover:bg-[var(--background-muted)]/55">
@@ -40,27 +48,34 @@ export default function VocabularyItemCard({
               <Badge tone="muted" icon="list">
                 Position {item.position}
               </Badge>
-              <Badge tone="info" icon="file">
-                {getVocabularyItemTypeLabel(item.item_type)}
-              </Badge>
+              {showItemType ? (
+                <Badge tone="info" icon="file">
+                  {getVocabularyItemTypeLabel(item.item_type)}
+                </Badge>
+              ) : null}
               <Badge tone="muted" icon="vocabularySet">
                 {getVocabularyItemSourceTypeLabel(item.source_type)}
               </Badge>
-              <Badge
-                tone={item.priority === "core" ? "success" : "warning"}
-                icon={item.priority === "core" ? "success" : "info"}
-              >
-                {getVocabularyItemPriorityLabel(item.priority)}
-              </Badge>
-              <Badge tone="muted" icon="info">
-                {getVocabularyProductiveReceptiveLabel(item.productive_receptive)}
-              </Badge>
-              <Badge tone="muted" icon="school">
-                {getVocabularyTierLabel(item.tier)}
-              </Badge>
-              <Badge tone="muted" icon="vocabulary">
-                {getVocabularyPartOfSpeechLabel(item.part_of_speech)}
-              </Badge>
+              {showPriority ? (
+                <Badge tone="warning" icon="info">
+                  {getVocabularyItemPriorityLabel(item.priority)}
+                </Badge>
+              ) : null}
+              {showProductiveReceptive ? (
+                <Badge tone="muted" icon="info">
+                  {getVocabularyProductiveReceptiveLabel(item.productive_receptive)}
+                </Badge>
+              ) : null}
+              {showTier ? (
+                <Badge tone="muted" icon="school">
+                  {getVocabularyTierLabel(item.tier)}
+                </Badge>
+              ) : null}
+              {showPartOfSpeech ? (
+                <Badge tone="muted" icon="vocabulary">
+                  {getVocabularyPartOfSpeechLabel(item.part_of_speech)}
+                </Badge>
+              ) : null}
               {item.category_key ? (
                 <Badge tone="muted" icon="folder">
                   {getVocabularyCategoryLabel(item.category_key)}

@@ -18,6 +18,8 @@ import type {
   VocabularySetFilters,
 } from "@/lib/vocabulary/shared/types";
 
+const ADMIN_VOCABULARY_PAGE_SIZE = 25;
+
 type AdminVocabularyPageProps = {
   searchParams?: Promise<AdminVocabularySearchParams>;
 };
@@ -83,6 +85,12 @@ function normalizeUsageVariantFilter(
   return "all";
 }
 
+function normalizePageParam(value?: string) {
+  const parsed = Number.parseInt(value ?? "", 10);
+  if (!Number.isFinite(parsed) || parsed < 1) return 1;
+  return parsed;
+}
+
 function getVocabularyListStats(
   vocabularySets: DbVocabularySetListItem[]
 ): AdminVocabularyListStats {
@@ -129,6 +137,28 @@ export default async function AdminVocabularyPage({
     getVocabularyMetadataHealthDb(),
   ]);
   const stats = getVocabularyListStats(vocabularySets);
+  const requestedPage = normalizePageParam(params.page);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(vocabularySets.length / ADMIN_VOCABULARY_PAGE_SIZE)
+  );
+  const currentPage = Math.min(requestedPage, totalPages);
+  const pageStartIndex = (currentPage - 1) * ADMIN_VOCABULARY_PAGE_SIZE;
+  const paginatedVocabularySets = vocabularySets.slice(
+    pageStartIndex,
+    pageStartIndex + ADMIN_VOCABULARY_PAGE_SIZE
+  );
+  const pagination = {
+    currentPage,
+    totalPages,
+    pageSize: ADMIN_VOCABULARY_PAGE_SIZE,
+    totalItems: vocabularySets.length,
+    startItem: vocabularySets.length === 0 ? 0 : pageStartIndex + 1,
+    endItem: Math.min(
+      pageStartIndex + ADMIN_VOCABULARY_PAGE_SIZE,
+      vocabularySets.length
+    ),
+  };
   const showVolnaUsageFilter =
     filters.usageVariant === "volna" ||
     vocabularySets.some((vocabularySet) => vocabularySet.usage_stats.usedInVolna);
@@ -146,18 +176,18 @@ export default async function AdminVocabularyPage({
         draftSets={stats.draftSets}
         totalItems={stats.totalItems}
         totalUsages={stats.totalUsages}
-        usageVariant={filters.usageVariant}
       />
 
       <SavedVocabularyViews />
 
       <VocabularySetsTable
-        vocabularySets={vocabularySets}
+        vocabularySets={paginatedVocabularySets}
         filters={filters}
         params={params}
         themeKeys={themeKeys}
         sourceKeys={sourceKeys}
         showVolnaUsageFilter={showVolnaUsageFilter}
+        pagination={pagination}
       />
 
       <VocabularyMetadataHealthPanel metadataHealth={metadataHealth} />

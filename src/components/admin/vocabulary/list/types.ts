@@ -12,6 +12,7 @@ export type AdminVocabularySearchParams = {
   sourceKey?: string;
   usageVariant?: string;
   published?: string;
+  page?: string;
 };
 
 export type AdminVocabularyListStats = {
@@ -48,4 +49,14 @@ export type AdminVocabularyListProps = {
   themeKeys: string[];
   sourceKeys: string[];
   showVolnaUsageFilter: boolean;
+  pagination: AdminVocabularyPagination;
+};
+
+export type AdminVocabularyPagination = {
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+  totalItems: number;
+  startItem: number;
+  endItem: number;
 };

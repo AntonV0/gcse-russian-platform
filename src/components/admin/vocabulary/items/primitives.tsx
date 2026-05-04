@@ -72,3 +72,18 @@ export function VocabularyAdminDisclosurePanel({
     </details>
   );
 }
+
+export function VocabularyAdminNoteList({ notes }: { notes: string[] }) {
+  return (
+    <div className="space-y-3">
+      {notes.map((note) => (
+        <div
+          key={note}
+          className="rounded-xl bg-[var(--background-muted)] px-4 py-3 app-text-body-muted"
+        >
+          {note}
+        </div>
+      ))}
+    </div>
+  );
+}

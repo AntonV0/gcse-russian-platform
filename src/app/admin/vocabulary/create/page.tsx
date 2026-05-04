@@ -5,7 +5,10 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
-import { VocabularyAdminFormField as FormField } from "@/components/admin/vocabulary/items/primitives";
+import {
+  VocabularyAdminFormField as FormField,
+  VocabularyAdminNoteList,
+} from "@/components/admin/vocabulary/items/primitives";
 import { createVocabularySetAction } from "@/app/actions/admin/admin-vocabulary-actions";
 
 function ToggleField({
@@ -278,20 +281,13 @@ export default function CreateVocabularySetPage() {
             <div className="space-y-4">
               <h2 className="app-heading-card">Before you save</h2>
 
-              <div className="space-y-3">
-                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 app-text-body-muted">
-                  Create the set first, then add vocabulary items and usage links after.
-                </div>
-
-                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 app-text-body-muted">
-                  Slug, theme key, and topic key can stay blank if you are not ready to
-                  structure them yet.
-                </div>
-
-                <div className="rounded-xl bg-[var(--background-muted)] px-4 py-3 app-text-body-muted">
-                  Draft is the safer default while the set is still being built.
-                </div>
-              </div>
+              <VocabularyAdminNoteList
+                notes={[
+                  "Create the set first, then add vocabulary items and usage links after.",
+                  "Slug, theme key, and topic key can stay blank if you are not ready to structure them yet.",
+                  "Draft is the safer default while the set is still being built.",
+                ]}
+              />
 
               <div className="flex flex-col gap-3 pt-2">
                 <Button variant="primary" icon="save">
