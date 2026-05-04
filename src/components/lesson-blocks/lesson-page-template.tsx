@@ -155,38 +155,43 @@ export default async function LessonPageTemplate({
         lessonDescription={lesson.summary ?? ""}
       />
 
-      <StudyMissionPanel
-        courseTitle={course.title}
-        moduleTitle={module.title}
-        sectionTitle={currentSection.title}
-        sectionDescription={currentSection.description}
-        sectionKind={currentSection.sectionKind}
-        currentStepNumber={currentStepNumber}
-        totalSteps={visibleSections.length}
-        visitedPercent={progressSummary.percent}
-      />
-
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="space-y-5 pb-4">
-          <article className="rounded-xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_94%,var(--background-muted))] px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-5 shadow-[var(--shadow-xs)] md:px-6 md:pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pt-6">
-            <LessonRenderer
-              sections={[currentSection]}
-              lessonId={lesson.id}
-              currentVariant={currentVariant}
-              sectionSurface="flat"
-              showSectionHeader={false}
+        <div className="pb-4">
+          <section className="rounded-2xl bg-[color-mix(in_srgb,var(--background-elevated)_96%,var(--background-muted))] shadow-[var(--shadow-xs)]">
+            <StudyMissionPanel
+              courseTitle={course.title}
+              moduleTitle={module.title}
+              sectionTitle={currentSection.title}
+              sectionDescription={currentSection.description}
+              sectionKind={currentSection.sectionKind}
+              currentStepNumber={currentStepNumber}
+              totalSteps={visibleSections.length}
+              visitedPercent={progressSummary.percent}
             />
-          </article>
 
-          <SectionPager
-            currentStepIndex={effectiveStepIndex}
-            allowedMaxIndex={allowedMaxIndex}
-            totalSteps={visibleSections.length}
-            courseSlug={courseSlug}
-            variantSlug={variantSlug}
-            moduleSlug={moduleSlug}
-            lessonSlug={lessonSlug}
-          />
+            <article className="border-x border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-5 md:px-6 md:pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pt-6 xl:pb-28">
+              <LessonRenderer
+                sections={[currentSection]}
+                lessonId={lesson.id}
+                currentVariant={currentVariant}
+                sectionSurface="flat"
+                showSectionHeader={false}
+              />
+            </article>
+
+            <div className="px-4 pb-4 md:px-6">
+              <SectionPager
+                currentStepIndex={effectiveStepIndex}
+                allowedMaxIndex={allowedMaxIndex}
+                totalSteps={visibleSections.length}
+                sectionTitle={currentSection.title}
+                courseSlug={courseSlug}
+                variantSlug={variantSlug}
+                moduleSlug={moduleSlug}
+                lessonSlug={lessonSlug}
+              />
+            </div>
+          </section>
 
           {isFinalStep ? (
             <LessonCompletionPanel
@@ -202,7 +207,7 @@ export default async function LessonPageTemplate({
           ) : null}
         </div>
 
-        <aside className="order-first max-h-[20rem] overflow-y-auto xl:order-none xl:sticky xl:top-[var(--sticky-site-offset)] xl:max-h-none xl:self-start xl:overflow-visible">
+        <aside className="order-first max-h-[20rem] overflow-y-auto xl:order-none xl:sticky xl:top-[var(--sticky-site-offset)] xl:z-[60] xl:max-h-none xl:self-start xl:overflow-visible">
           <StepTracker
             sections={visibleSections}
             currentStepIndex={effectiveStepIndex}

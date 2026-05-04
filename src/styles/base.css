@@ -110,17 +110,17 @@ small {
   border-bottom: 1px solid color-mix(in srgb, var(--border) 74%, transparent);
   background:
     linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--background-elevated) 99%, transparent) 0%,
-      color-mix(in srgb, var(--background-elevated) 97%, transparent) 48%,
-      color-mix(in srgb, var(--background) 94%, transparent) 100%
+      90deg,
+      color-mix(in srgb, var(--background-elevated) 92%, var(--brand-white)) 0%,
+      color-mix(in srgb, var(--accent) 4%, var(--background-elevated)) 28%,
+      color-mix(in srgb, var(--background-elevated) 94%, var(--background)) 44%,
+      color-mix(in srgb, var(--background-elevated) 92%, var(--brand-white)) 100%
     ),
     linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--brand-white) 20%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 4%, transparent) 28%,
-      color-mix(in srgb, var(--background-elevated) 12%, transparent) 44%,
-      color-mix(in srgb, var(--brand-white) 16%, transparent) 100%
+      180deg,
+      color-mix(in srgb, var(--background-elevated) 98%, var(--background)) 0%,
+      color-mix(in srgb, var(--background-elevated) 96%, var(--background)) 48%,
+      color-mix(in srgb, var(--background) 92%, var(--background-elevated)) 100%
     );
   box-shadow:
     inset 0 -1px 0 color-mix(in srgb, var(--brand-white) 46%, transparent),
@@ -128,6 +128,16 @@ small {
     0 12px 30px color-mix(in srgb, var(--text-primary) 7%, transparent);
   backdrop-filter: blur(26px) saturate(185%) contrast(106%);
   -webkit-backdrop-filter: blur(26px) saturate(185%) contrast(106%);
+}
+
+.app-site-header::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  height: var(--page-padding-y);
+  pointer-events: none;
+  background: var(--background);
 }
 
 .app-site-header .app-page {

@@ -95,7 +95,7 @@ export function StudyMissionPanel({
 
   return (
     <section
-      className="relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))]"
+      className="relative z-20 overflow-visible rounded-t-2xl border border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))] xl:sticky xl:top-[var(--sticky-site-offset)] xl:z-[60] xl:shadow-[0_10px_22px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]"
       aria-label={`${courseTitle}: ${moduleTitle}`}
     >
       <div className="relative p-4 md:p-5">

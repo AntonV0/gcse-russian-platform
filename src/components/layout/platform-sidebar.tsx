@@ -296,7 +296,10 @@ export default function PlatformSidebar({
       if (Math.abs(nextHeight - lastHeight) < 0.25) return;
 
       lastHeight = nextHeight;
-      sidebarElement.style.setProperty("--platform-sidebar-height", `${nextHeight.toFixed(2)}px`);
+      sidebarElement.style.setProperty(
+        "--platform-sidebar-height",
+        `${nextHeight.toFixed(2)}px`
+      );
     }
 
     function setFooterMode(enabled: boolean) {
@@ -319,7 +322,7 @@ export default function PlatformSidebar({
       sidebarElement.style.top = `${topOffset.toFixed(2)}px`;
       sidebarElement.style.left = `${wrapperRect.left.toFixed(2)}px`;
       sidebarElement.style.width = `${wrapperRect.width.toFixed(2)}px`;
-      sidebarElement.style.zIndex = "20";
+      sidebarElement.style.zIndex = "60";
     }
 
     function measureViewport() {
@@ -405,7 +408,7 @@ export default function PlatformSidebar({
   return (
     <>
       <section className="dev-marker-host relative lg:hidden">
-        <div className="rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)]">
+        <div className="platform-sidebar-shell rounded-3xl border p-4">
           <SidebarHeader
             eyebrow={sidebarEyebrow}
             title={sidebarTitle}
@@ -522,7 +525,7 @@ export default function PlatformSidebar({
 
       <aside
         ref={desktopSidebarRef}
-        className="dev-marker-host relative hidden h-[var(--platform-sidebar-height,calc(100dvh-var(--sticky-site-offset)-1rem))] min-h-0 flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-md)] lg:flex"
+        className="platform-sidebar-shell dev-marker-host relative z-[60] hidden h-[var(--platform-sidebar-height,calc(100dvh-var(--sticky-site-offset)-1rem))] min-h-0 flex-col overflow-hidden rounded-3xl border p-4 lg:flex"
       >
         {SHOW_UI_DEBUG ? (
           <DevComponentMarker
@@ -598,7 +601,11 @@ export default function PlatformSidebar({
                         : undefined
                     }
                   >
-                    <AppIcon icon={item.icon} size={18} className={navIconClass(active)} />
+                    <AppIcon
+                      icon={item.icon}
+                      size={18}
+                      className={navIconClass(active)}
+                    />
                     <span className="min-w-0 flex-1 truncate">{item.label}</span>
                     <NavLockMeta item={item} />
                   </Link>
@@ -629,7 +636,11 @@ export default function PlatformSidebar({
                         : undefined
                     }
                   >
-                    <AppIcon icon={item.icon} size={18} className={navIconClass(active)} />
+                    <AppIcon
+                      icon={item.icon}
+                      size={18}
+                      className={navIconClass(active)}
+                    />
                     <span className="min-w-0 flex-1 truncate">{item.label}</span>
                     <NavLockMeta item={item} />
                   </Link>
