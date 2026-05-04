@@ -1,4 +1,5 @@
 import CheckoutButton from "@/components/billing/checkout-button";
+import CheckoutOptionRow from "@/components/billing/checkout-option-row";
 import {
   ActionGroup,
   LockedOption,
@@ -55,48 +56,55 @@ export default function FoundationPlanPanel({
 
   if (!user) {
     return (
-      <ActionGroup title="Choose access" variant="compact">
-        <CheckoutButton
+      <ActionGroup title="Choose your plan" variant="compact">
+        <CheckoutOptionRow
           productCode="gcse-russian-foundation"
           billingType="subscription"
           intervalUnit="month"
           intervalCount={1}
-        >
-          Buy Foundation Monthly ({foundationMonthlyLabel})
-        </CheckoutButton>
+          label="Monthly"
+          priceLabel={foundationMonthlyLabel}
+          meta="Flexible monthly plan"
+        />
 
-        <CheckoutButton
+        <CheckoutOptionRow
           productCode="gcse-russian-foundation"
           billingType="subscription"
           intervalUnit="month"
           intervalCount={3}
-        >
-          Buy Foundation 3 Months ({foundationThreeMonthLabel})
-        </CheckoutButton>
+          label="3 Months"
+          priceLabel={foundationThreeMonthLabel}
+          meta="Good for a study term"
+        />
 
-        <CheckoutButton productCode="gcse-russian-foundation" billingType="one_time">
-          Buy Foundation Lifetime ({foundationLifetimeLabel})
-        </CheckoutButton>
+        <CheckoutOptionRow
+          productCode="gcse-russian-foundation"
+          billingType="one_time"
+          label="Lifetime"
+          priceLabel={foundationLifetimeLabel}
+          meta="One payment, no renewals"
+          recommended
+        />
       </ActionGroup>
     );
   }
 
   if (planState.higherLifetime) {
     return (
-      <ActionGroup title="Unavailable while Higher is active" variant="compact">
+      <ActionGroup title="Higher already covers this" variant="compact">
         <LockedOption
-          label="Foundation Monthly unavailable"
-          message="Foundation plans aren’t needed because you already have Higher lifetime access."
+          label="Foundation Monthly"
+          message="You already have Higher lifetime, which gives you the fuller course without renewals."
         />
 
         <LockedOption
-          label="Foundation 3-Month unavailable"
-          message="Foundation plans aren’t needed because you already have Higher lifetime access."
+          label="Foundation 3-Month"
+          message="You already have Higher lifetime, which gives you the fuller course without renewals."
         />
 
         <LockedOption
-          label="Foundation Lifetime unavailable"
-          message="Foundation plans aren’t needed because you already have Higher lifetime access."
+          label="Foundation Lifetime"
+          message="You already have Higher lifetime, which gives you the fuller course without renewals."
         />
       </ActionGroup>
     );
@@ -104,20 +112,20 @@ export default function FoundationPlanPanel({
 
   if (planState.higherThreeMonth) {
     return (
-      <ActionGroup title="Unavailable while Higher is active" variant="compact">
+      <ActionGroup title="Higher already covers this" variant="compact">
         <LockedOption
-          label="Foundation Monthly unavailable"
-          message="Foundation plans aren’t available while your active Higher 3-month plan is in place."
+          label="Foundation Monthly"
+          message="Your Higher 3-month plan already gives you the stronger course route."
         />
 
         <LockedOption
-          label="Foundation 3-Month unavailable"
-          message="Foundation plans aren’t available while your active Higher 3-month plan is in place."
+          label="Foundation 3-Month"
+          message="Your Higher 3-month plan already gives you the stronger course route."
         />
 
         <LockedOption
-          label="Foundation Lifetime unavailable"
-          message="Foundation plans aren’t available while your active Higher 3-month plan is in place."
+          label="Foundation Lifetime"
+          message="Your Higher 3-month plan already gives you the stronger course route."
         />
       </ActionGroup>
     );
@@ -125,10 +133,10 @@ export default function FoundationPlanPanel({
 
   if (planState.higherMonthly) {
     return (
-      <ActionGroup title="Unavailable while Higher is active" variant="compact">
+      <ActionGroup title="Higher already covers this" variant="compact">
         <LockedOption
-          label="Foundation unavailable"
-          message="Foundation plans aren’t available while you already have active Higher access."
+          label="Foundation"
+          message="Your Higher plan already gives you the stronger course route."
         />
       </ActionGroup>
     );
@@ -137,14 +145,14 @@ export default function FoundationPlanPanel({
   if (planState.foundationMonthly) {
     return (
       <div className="space-y-3">
-        <ActionGroup title="Current plan" variant="compact">
+        <ActionGroup title="Your plan" variant="compact">
           <OwnedButton label="Foundation Monthly active" />
           <RenewalMessage renewal={activeSubscriptions.foundation} />
         </ActionGroup>
 
         {canShowFoundationMonthlyToThreeMonthUpgrade ||
         canShowFoundationMonthlyToFoundationLifetimeUpgrade ? (
-          <ActionGroup title="Upgrade options" variant="compact">
+          <ActionGroup title="Ways to upgrade" variant="compact">
             {canShowFoundationMonthlyToThreeMonthUpgrade ? (
               <UpgradeOffer
                 quote={foundationMonthlyToThreeMonthQuote}
@@ -190,17 +198,17 @@ export default function FoundationPlanPanel({
     return (
       <div className="space-y-3">
         <LockedOption
-          label="Foundation Monthly unavailable"
-          message="Monthly plans can’t be selected while your current 3-month Foundation plan is active."
+          label="Foundation Monthly"
+          message="Your Foundation 3-month plan is already active."
         />
 
-        <ActionGroup title="Current plan" variant="compact">
+        <ActionGroup title="Your plan" variant="compact">
           <OwnedButton label="Foundation 3-Month active" />
           <RenewalMessage renewal={activeSubscriptions.foundation} />
         </ActionGroup>
 
         {canShowFoundationThreeMonthToFoundationLifetimeUpgrade ? (
-          <ActionGroup title="Upgrade options" variant="compact">
+          <ActionGroup title="Ways to upgrade" variant="compact">
             <UpgradeOffer
               quote={foundationThreeMonthToFoundationLifetimeQuote}
               targetPrice={pricing.lifetime}
@@ -225,19 +233,19 @@ export default function FoundationPlanPanel({
     return (
       <div className="space-y-3">
         <LockedOption
-          label="Foundation Monthly unavailable"
-          message="Monthly plans aren’t needed because you already have Foundation lifetime access."
+          label="Foundation Monthly"
+          message="You have Foundation lifetime, so there are no monthly renewals to manage."
         />
 
         <LockedOption
-          label="Foundation 3-Month unavailable"
-          message="3-month plans aren’t needed because you already have Foundation lifetime access."
+          label="Foundation 3-Month"
+          message="You have Foundation lifetime, so there are no 3-month renewals to manage."
         />
 
-        <ActionGroup title="Current plan" variant="compact">
+        <ActionGroup title="Your plan" variant="compact">
           <OwnedButton label="Foundation Lifetime active" />
           <p className="text-xs leading-5 text-[var(--text-secondary)]">
-            Your account already has active Foundation lifetime access.
+            You are all set with Foundation lifetime.
           </p>
         </ActionGroup>
       </div>
@@ -246,38 +254,45 @@ export default function FoundationPlanPanel({
 
   if (foundationOwned) {
     return (
-      <ActionGroup title="Current plan" variant="compact">
-        <OwnedButton label="Foundation already owned" />
+      <ActionGroup title="Your plan" variant="compact">
+        <OwnedButton label="Foundation already yours" />
         <p className="text-xs leading-5 text-[var(--text-secondary)]">
-          Your account already has active Foundation access.
+          You already have Foundation in your GCSE Russian dashboard.
         </p>
       </ActionGroup>
     );
   }
 
   return (
-    <ActionGroup title="Choose access" variant="compact">
-      <CheckoutButton
+    <ActionGroup title="Choose your plan" variant="compact">
+      <CheckoutOptionRow
         productCode="gcse-russian-foundation"
         billingType="subscription"
         intervalUnit="month"
         intervalCount={1}
-      >
-        Buy Foundation Monthly ({foundationMonthlyLabel})
-      </CheckoutButton>
+        label="Monthly"
+        priceLabel={foundationMonthlyLabel}
+        meta="Flexible monthly plan"
+      />
 
-      <CheckoutButton
+      <CheckoutOptionRow
         productCode="gcse-russian-foundation"
         billingType="subscription"
         intervalUnit="month"
         intervalCount={3}
-      >
-        Buy Foundation 3 Months ({foundationThreeMonthLabel})
-      </CheckoutButton>
+        label="3 Months"
+        priceLabel={foundationThreeMonthLabel}
+        meta="Good for a study term"
+      />
 
-      <CheckoutButton productCode="gcse-russian-foundation" billingType="one_time">
-        Buy Foundation Lifetime ({foundationLifetimeLabel})
-      </CheckoutButton>
+      <CheckoutOptionRow
+        productCode="gcse-russian-foundation"
+        billingType="one_time"
+        label="Lifetime"
+        priceLabel={foundationLifetimeLabel}
+        meta="One payment, no renewals"
+        recommended
+      />
     </ActionGroup>
   );
 }

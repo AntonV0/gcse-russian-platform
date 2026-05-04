@@ -161,6 +161,20 @@ export async function createStripeCheckoutSession(
   });
 }
 
+export async function createStripeBillingPortalSession(params: {
+  customerId: string;
+  returnPath?: string;
+}): Promise<Stripe.BillingPortal.Session> {
+  const stripe = getStripeClient();
+  const baseUrl = getStripeAppBaseUrl();
+  const returnUrl = new URL(params.returnPath ?? "/account/billing", baseUrl);
+
+  return stripe.billingPortal.sessions.create({
+    customer: params.customerId,
+    return_url: returnUrl.toString(),
+  });
+}
+
 export async function switchStripeSubscriptionToPrice(params: {
   providerSubscriptionId: string;
   newStripePriceId: string;

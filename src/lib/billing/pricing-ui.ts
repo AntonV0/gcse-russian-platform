@@ -122,15 +122,15 @@ export function getUpgradeMessage(
   }
 
   if (quote.upgradeFlow === "same_cadence") {
-    return `Pay a fixed upgrade fee now. Your access switches immediately and renews at ${targetStandardLabel} on your existing billing date.`;
+    return `Pay a fixed upgrade fee now. You move to the new course straight away, then renew at ${targetStandardLabel} on your existing billing date.`;
   }
 
   if (quote.upgradeFlow === "monthly_to_three_month") {
-    return `Pay a fixed upgrade fee now. Your access switches immediately and your new 3-month period keeps your original monthly start date as the anchor.`;
+    return "Pay a fixed upgrade fee now. You move to the new course straight away, and your new 3-month plan keeps the same monthly start date.";
   }
 
   if (quote.upgradeFlow === "lifetime") {
-    return "Lifetime upgrade is a one-time payment and activates access immediately.";
+    return "The lifetime upgrade is a one-time payment and starts straight away.";
   }
 
   return "";

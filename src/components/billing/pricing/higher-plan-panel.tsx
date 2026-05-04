@@ -71,19 +71,19 @@ export default function HigherPlanPanel({
     return (
       <div className="space-y-3">
         <LockedOption
-          label="Higher Monthly unavailable"
-          message="Monthly plans aren’t needed because you already have Higher lifetime access."
+          label="Higher Monthly"
+          message="You have Higher lifetime, so there are no monthly renewals to manage."
         />
 
         <LockedOption
-          label="Higher 3-Month unavailable"
-          message="3-month plans aren’t needed because you already have Higher lifetime access."
+          label="Higher 3-Month"
+          message="You have Higher lifetime, so there are no 3-month renewals to manage."
         />
 
-        <ActionGroup title="Current plan" variant="compact">
+        <ActionGroup title="Your plan" variant="compact">
           <OwnedButton label="Higher Lifetime active" />
           <p className="text-xs leading-5 text-[var(--text-secondary)]">
-            Your account already has active Higher lifetime access.
+            You are all set with Higher lifetime.
           </p>
         </ActionGroup>
       </div>
@@ -94,17 +94,17 @@ export default function HigherPlanPanel({
     return (
       <div className="space-y-3">
         <LockedOption
-          label="Higher Monthly unavailable"
-          message="Monthly plans can’t be selected while your current 3-month Higher plan is active."
+          label="Higher Monthly"
+          message="Your Higher 3-month plan is already active."
         />
 
-        <ActionGroup title="Current plan" variant="compact">
+        <ActionGroup title="Your plan" variant="compact">
           <OwnedButton label="Higher 3-Month active" />
           <RenewalMessage renewal={activeSubscriptions.higher} />
         </ActionGroup>
 
         {canShowHigherThreeMonthToHigherLifetimeUpgrade ? (
-          <ActionGroup title="Upgrade options" variant="compact">
+          <ActionGroup title="Ways to upgrade" variant="compact">
             <HigherPlanUpgradeOffer
               quote={higherThreeMonthToHigherLifetimeQuote}
               targetPrice={pricing.lifetime}
@@ -121,14 +121,14 @@ export default function HigherPlanPanel({
   if (planState.higherMonthly) {
     return (
       <div className="space-y-3">
-        <ActionGroup title="Current plan" variant="compact">
+        <ActionGroup title="Your plan" variant="compact">
           <OwnedButton label="Higher Monthly active" />
           <RenewalMessage renewal={activeSubscriptions.higher} />
         </ActionGroup>
 
         {canShowHigherMonthlyToThreeMonthUpgrade ||
         canShowHigherMonthlyToHigherLifetimeUpgrade ? (
-          <ActionGroup title="Upgrade options" variant="compact">
+          <ActionGroup title="Ways to upgrade" variant="compact">
             {canShowHigherMonthlyToThreeMonthUpgrade ? (
               <HigherPlanUpgradeOffer
                 quote={higherMonthlyToThreeMonthQuote}
@@ -160,17 +160,17 @@ export default function HigherPlanPanel({
     return (
       <div className="space-y-3">
         <LockedOption
-          label="Higher Monthly unavailable"
-          message="Monthly plans are not available from Foundation lifetime. You can upgrade straight to Higher lifetime instead."
+          label="Higher Monthly"
+          message="From Foundation lifetime, the best next step is straight to Higher lifetime."
         />
 
         <LockedOption
-          label="Higher 3-Month unavailable"
-          message="3-month Higher plans are not available from Foundation lifetime. You can upgrade straight to Higher lifetime instead."
+          label="Higher 3-Month"
+          message="From Foundation lifetime, the best next step is straight to Higher lifetime."
         />
 
         {canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-          <ActionGroup title="Upgrade options" variant="compact">
+          <ActionGroup title="Ways to upgrade" variant="compact">
             <HigherPlanUpgradeOffer
               quote={foundationLifetimeToHigherLifetimeQuote}
               targetPrice={pricing.lifetime}
@@ -188,13 +188,13 @@ export default function HigherPlanPanel({
     return (
       <div className="space-y-3">
         <LockedOption
-          label="Higher Monthly unavailable"
-          message="You can move to Higher on the same 3-month schedule, but not down to a monthly plan while your current 3-month access is active."
+          label="Higher Monthly"
+          message="You can move to Higher on the same 3-month plan. To keep billing clear, monthly switches wait until your Foundation plan finishes."
         />
 
         {canShowFoundationThreeMonthToHigherThreeMonthUpgrade ||
         canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-          <ActionGroup title="Upgrade options" variant="compact">
+          <ActionGroup title="Ways to upgrade" variant="compact">
             {canShowFoundationThreeMonthToHigherThreeMonthUpgrade ? (
               <HigherPlanUpgradeOffer
                 quote={foundationThreeMonthToHigherThreeMonthQuote}
@@ -225,7 +225,7 @@ export default function HigherPlanPanel({
   if (planState.foundationMonthly) {
     return (
       <div className="space-y-3">
-        <ActionGroup title="Current plan" variant="compact">
+        <ActionGroup title="Your plan" variant="compact">
           <OwnedButton label="Foundation Monthly active" />
           <RenewalMessage renewal={activeSubscriptions.foundation} />
         </ActionGroup>
@@ -233,7 +233,7 @@ export default function HigherPlanPanel({
         {canShowFoundationMonthlyToHigherMonthlyUpgrade ||
         canShowFoundationMonthlyToHigherThreeMonthUpgrade ||
         canShowFoundationLifetimeToHigherLifetimeUpgrade ? (
-          <ActionGroup title="Upgrade options" variant="compact">
+          <ActionGroup title="Ways to upgrade" variant="compact">
             {canShowFoundationMonthlyToHigherMonthlyUpgrade ? (
               <HigherPlanUpgradeOffer
                 quote={foundationMonthlyToHigherMonthlyQuote}
@@ -275,11 +275,11 @@ export default function HigherPlanPanel({
 
   if (higherOwned) {
     return (
-      <ActionGroup title="Current plan" variant="compact">
-        <OwnedButton label="Higher already owned" />
+      <ActionGroup title="Your plan" variant="compact">
+        <OwnedButton label="Higher already yours" />
 
         <p className="text-xs leading-5 text-[var(--text-secondary)]">
-          Your account already has active Higher access.
+          You already have Higher in your GCSE Russian dashboard.
         </p>
       </ActionGroup>
     );

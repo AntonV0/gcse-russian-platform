@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/button";
+import type { ButtonVariant } from "@/components/ui/button-styles";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 
@@ -11,6 +12,9 @@ type CheckoutButtonProps = {
   intervalUnit?: "month" | "year";
   intervalCount?: number;
   isUpgrade?: boolean;
+  variant?: ButtonVariant;
+  helperText?: string;
+  recommendedLabel?: string;
   children: React.ReactNode;
 };
 
@@ -22,6 +26,9 @@ export default function CheckoutButton({
   intervalUnit,
   intervalCount,
   isUpgrade = false,
+  variant = "primary",
+  helperText,
+  recommendedLabel,
   children,
 }: CheckoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -81,15 +88,27 @@ export default function CheckoutButton({
         />
       ) : null}
 
+      {recommendedLabel ? (
+        <div className="flex justify-end">
+          <span className="inline-flex rounded-full border border-[var(--accent-selected-border)] [background:var(--accent-gradient-selected)] px-2.5 py-1 text-[11px] font-bold text-[var(--accent-on-soft)]">
+            {recommendedLabel}
+          </span>
+        </div>
+      ) : null}
+
       <Button
         type="button"
         onClick={handleCheckout}
         disabled={isLoading}
-        variant="primary"
+        variant={variant}
         className="w-full"
       >
         {isLoading ? "Redirecting..." : children}
       </Button>
+
+      {helperText ? (
+        <p className="text-xs leading-5 text-[var(--text-secondary)]">{helperText}</p>
+      ) : null}
 
       {errorMessage ? <FeedbackBanner tone="danger" description={errorMessage} /> : null}
     </div>

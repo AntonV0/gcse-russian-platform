@@ -5,9 +5,12 @@ import DevComponentMarker from "@/components/ui/dev-component-marker";
 type PlanCardProps = {
   title: string;
   subtitle: string;
+  bestFor: string;
   priceLabel: string;
+  recommendedPriceLabel?: string;
   features: string[];
   tone?: "default" | "highlight";
+  optionNote?: string;
   children: React.ReactNode;
 };
 
@@ -16,9 +19,12 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 export default function PlanCard({
   title,
   subtitle,
+  bestFor,
   priceLabel,
+  recommendedPriceLabel,
   features,
   tone = "default",
+  optionNote,
   children,
 }: PlanCardProps) {
   const isHighlight = tone === "highlight";
@@ -49,7 +55,7 @@ export default function PlanCard({
         />
       ) : null}
 
-      <div className="border-b border-[var(--border-subtle)] px-5 py-5 md:px-6">
+      <div className="border-b border-[var(--border-subtle)] px-5 py-5 md:px-6 lg:min-h-[11rem]">
         <div className="space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1.5">
@@ -58,6 +64,9 @@ export default function PlanCard({
               </h2>
               <p className="max-w-xl text-sm leading-6 text-[var(--text-secondary)]">
                 {subtitle}
+              </p>
+              <p className="inline-flex rounded-full border border-[var(--border-subtle)] bg-[var(--background-muted)] px-2.5 py-1 text-xs font-semibold text-[var(--text-secondary)]">
+                {bestFor}
               </p>
             </div>
 
@@ -75,11 +84,16 @@ export default function PlanCard({
             <p className="text-2xl font-bold tracking-tight text-[var(--text-primary)] md:text-3xl">
               {priceLabel}
             </p>
+            {recommendedPriceLabel ? (
+              <p className="text-xs font-semibold text-[var(--accent-ink)]">
+                Best value: {recommendedPriceLabel}
+              </p>
+            ) : null}
           </div>
         </div>
       </div>
 
-      <div className="border-b border-[var(--border-subtle)] px-5 py-4 md:px-6">
+      <div className="border-b border-[var(--border-subtle)] px-5 py-4 md:px-6 lg:min-h-[15.5rem]">
         <div className="space-y-2.5">
           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text-muted)]">
             Included
@@ -104,6 +118,11 @@ export default function PlanCard({
             Options
           </p>
           {children}
+          {optionNote ? (
+            <p className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2 text-xs leading-5 text-[var(--text-secondary)]">
+              {optionNote}
+            </p>
+          ) : null}
         </div>
       </div>
     </div>

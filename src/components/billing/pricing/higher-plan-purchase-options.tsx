@@ -1,4 +1,4 @@
-import CheckoutButton from "@/components/billing/checkout-button";
+import CheckoutOptionRow from "@/components/billing/checkout-option-row";
 import { ActionGroup } from "@/components/billing/pricing/plan-state-elements";
 
 type HigherPlanPurchaseOptionsProps = {
@@ -13,28 +13,35 @@ export default function HigherPlanPurchaseOptions({
   lifetimeLabel,
 }: HigherPlanPurchaseOptionsProps) {
   return (
-    <ActionGroup title="Choose access" variant="compact">
-      <CheckoutButton
+    <ActionGroup title="Choose your plan" variant="compact">
+      <CheckoutOptionRow
         productCode="gcse-russian-higher"
         billingType="subscription"
         intervalUnit="month"
         intervalCount={1}
-      >
-        Buy Higher Monthly ({monthlyLabel})
-      </CheckoutButton>
+        label="Monthly"
+        priceLabel={monthlyLabel}
+        meta="Flexible monthly plan"
+      />
 
-      <CheckoutButton
+      <CheckoutOptionRow
         productCode="gcse-russian-higher"
         billingType="subscription"
         intervalUnit="month"
         intervalCount={3}
-      >
-        Buy Higher 3 Months ({threeMonthLabel})
-      </CheckoutButton>
+        label="3 Months"
+        priceLabel={threeMonthLabel}
+        meta="Good for a study term"
+      />
 
-      <CheckoutButton productCode="gcse-russian-higher" billingType="one_time">
-        Buy Higher Lifetime ({lifetimeLabel})
-      </CheckoutButton>
+      <CheckoutOptionRow
+        productCode="gcse-russian-higher"
+        billingType="one_time"
+        label="Lifetime"
+        priceLabel={lifetimeLabel}
+        meta="Best value, no renewals"
+        recommended
+      />
     </ActionGroup>
   );
 }
