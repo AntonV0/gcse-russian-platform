@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AppIcon from "@/components/ui/app-icon";
@@ -27,6 +27,7 @@ type PlatformSidebarProps = {
   role: "admin" | "teacher" | "student" | "guest";
   accessMode: "trial" | "full" | "volna" | null;
   pathname?: string;
+  userEmail?: string | null;
 };
 
 type NavItem = {
@@ -44,22 +45,34 @@ const FOOTER_STICKY_HANDOFF_MARGIN = 160;
 function isActive(pathname: string | undefined, href: string) {
   if (!pathname) return false;
   if (pathname === href) return true;
+  if (href === getAccountPath()) return false;
   if (href !== "/" && pathname.startsWith(`${href}/`)) return true;
   return false;
 }
 
 function itemClass(active: boolean, locked = false) {
   return [
-    "group relative flex items-center gap-3 overflow-hidden rounded-xl border border-transparent px-3 py-2.5 text-sm font-medium transition app-focus-ring",
+    "group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-transparent px-2.5 py-2 text-sm font-medium transition app-focus-ring",
     active
       ? [
-          "border-[color-mix(in_srgb,var(--accent)_24%,var(--border-subtle))]",
-          "bg-[color-mix(in_srgb,var(--accent)_9%,var(--background-elevated))]",
-          "text-[var(--text-primary)]",
-          "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_10%,transparent)]",
+          "border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))]",
+          "bg-[color-mix(in_srgb,var(--accent)_6%,var(--background-elevated))]",
+          "text-[color-mix(in_srgb,var(--accent)_20%,var(--text-primary))]",
+          "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_3%,transparent)]",
+          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_34%,var(--dark-surface-border))]",
+          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_13%,var(--dark-surface-muted))]",
+          "[html[data-theme=dark]_&]:text-[var(--text-primary)]",
+          "[html[data-theme=dark]_&]:shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent)_10%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_8%,transparent)]",
           "before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-r-full before:[background:var(--accent-gradient-fill)]",
         ].join(" ")
-      : "text-[color-mix(in_srgb,var(--text-secondary)_88%,var(--text-primary))] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
+      : [
+          "text-[color-mix(in_srgb,var(--text-secondary)_90%,var(--text-primary))]",
+          "hover:bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-muted))]",
+          "hover:text-[var(--text-primary)]",
+          "[html[data-theme=dark]_&]:hover:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+          "[html[data-theme=dark]_&]:hover:bg-[color-mix(in_srgb,var(--accent)_7%,var(--dark-surface-muted))]",
+          "[html[data-theme=dark]_&]:hover:text-[var(--text-primary)]",
+        ].join(" "),
     locked ? "opacity-85" : "",
   ].join(" ");
 }
@@ -79,31 +92,75 @@ function mobileItemClass(active: boolean, locked = false) {
   ].join(" ");
 }
 
+function mobileQuickItemClass(active: boolean, locked = false) {
+  return [
+    "group flex min-h-[4.15rem] min-w-0 flex-col items-center justify-center gap-1 rounded-2xl border px-1.5 py-2 text-center text-[0.72rem] font-semibold leading-tight transition app-focus-ring",
+    active
+      ? [
+          "border-[color-mix(in_srgb,var(--accent)_24%,var(--border-subtle))]",
+          "bg-[color-mix(in_srgb,var(--accent)_9%,var(--background-elevated))]",
+          "text-[var(--text-primary)]",
+          "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_9%,transparent)]",
+        ].join(" ")
+      : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_82%,transparent)] text-[color-mix(in_srgb,var(--text-secondary)_88%,var(--text-primary))] hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
+    locked ? "opacity-85" : "",
+  ].join(" ");
+}
+
 function navIconClass(active: boolean) {
   return [
     "shrink-0 transition-colors",
     active
       ? "text-[var(--accent-on-soft)]"
-      : "text-[color-mix(in_srgb,var(--text-muted)_68%,var(--text-secondary))] group-hover:text-[var(--text-primary)]",
+      : "text-[color-mix(in_srgb,var(--text-muted)_42%,var(--text-secondary))] group-hover:text-[var(--text-primary)]",
+  ].join(" ");
+}
+
+function navIconFrameClass(active: boolean) {
+  return [
+    "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors",
+    active
+      ? [
+          "border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+          "bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]",
+          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_38%,transparent)]",
+          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+        ].join(" ")
+      : [
+          "border-transparent bg-transparent",
+          "group-hover:border-[var(--border-subtle)]",
+          "group-hover:bg-[var(--background-elevated)]",
+          "[html[data-theme=dark]_&]:group-hover:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
+          "[html[data-theme=dark]_&]:group-hover:bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
+        ].join(" "),
   ].join(" ");
 }
 
 function sectionLabel(label: string) {
   return (
-    <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] app-text-soft">
+    <div className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[color-mix(in_srgb,var(--text-muted)_82%,var(--text-secondary))]">
       {label}
     </div>
   );
+}
+
+function getStatusIcon(role: PlatformSidebarProps["role"]): AppIconKey {
+  if (role === "admin") return "admin";
+  if (role === "teacher") return "teacher";
+  if (role === "student") return "student";
+  return "preview";
 }
 
 function SidebarHeader({
   eyebrow,
   title,
   subtitle,
+  statusIcon,
 }: {
   eyebrow: string;
   title: string;
   subtitle: string;
+  statusIcon: AppIconKey;
 }) {
   return (
     <div className="mb-5 px-2 pt-1">
@@ -113,11 +170,15 @@ function SidebarHeader({
       <h2 className="mt-1 text-xl font-semibold leading-tight text-[var(--text-primary)]">
         {title}
       </h2>
-      <div className="mt-2 flex items-center gap-2 text-xs font-medium text-[var(--text-secondary)]">
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-fill)] shadow-[0_0_0_4px_var(--accent-ring)]" />
+      <div className="mt-2 inline-flex max-w-full items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-muted))] px-2.5 py-1 text-xs font-semibold text-[color-mix(in_srgb,var(--accent)_18%,var(--text-secondary))]">
+        <AppIcon
+          icon={statusIcon}
+          size={13}
+          className="shrink-0 text-[var(--accent-on-soft)]"
+        />
         <span className="min-w-0 truncate">{subtitle}</span>
       </div>
-      <div className="mt-4 h-px bg-[linear-gradient(90deg,var(--surface-accent-border)_0%,var(--border-subtle)_54%,transparent_100%)]" />
+      <div className="mt-4 border-t border-[var(--border)]" />
     </div>
   );
 }
@@ -165,6 +226,84 @@ function getSidebarContextLabel(
   return role === "admin" ? "Course view" : "GCSE Russian course";
 }
 
+function getAccountInitials(userEmail: string | null | undefined) {
+  if (!userEmail) return "GR";
+
+  const localPart = userEmail.split("@")[0]?.trim();
+  if (!localPart) return "GR";
+
+  const words = localPart
+    .split(/[\s._-]+/)
+    .map((word) => word.trim())
+    .filter(Boolean);
+
+  if (words.length >= 2) {
+    return `${words[0][0] ?? ""}${words[1][0] ?? ""}`.toUpperCase();
+  }
+
+  return localPart.slice(0, 2).toUpperCase();
+}
+
+function AccountFooter({
+  isGuest,
+  userEmail,
+}: {
+  isGuest: boolean;
+  userEmail?: string | null;
+}) {
+  if (isGuest) {
+    return (
+      <div className="platform-sidebar-account-card rounded-2xl p-3">
+        <div className="flex items-center gap-3">
+          <div className="platform-sidebar-account-avatar flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+            GR
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
+              Guest preview
+            </div>
+            <div className="truncate text-xs text-[var(--text-secondary)]">
+              Save progress with an account
+            </div>
+          </div>
+        </div>
+        <div className="mt-3 grid gap-2">
+          <Button href="/login" variant="secondary" size="sm" icon="user">
+            Log in
+          </Button>
+          <Button href="/signup" variant="primary" size="sm" icon="create">
+            Sign up
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="platform-sidebar-account-card rounded-2xl p-3">
+      <div className="flex items-center gap-3">
+        <div className="platform-sidebar-account-avatar flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+          {getAccountInitials(userEmail)}
+        </div>
+        <div className="min-w-0">
+          <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
+            Your account
+          </div>
+          <div className="truncate text-xs text-[var(--text-secondary)]">
+            {userEmail ?? "Signed in"}
+          </div>
+        </div>
+      </div>
+      <div className="mt-3">
+        <LogoutButton
+          variant="secondary"
+          className="w-full justify-start !shadow-none border-[color-mix(in_srgb,var(--danger)_12%,var(--border-subtle))] text-[color-mix(in_srgb,var(--danger-text)_54%,var(--text-secondary))] hover:border-[color-mix(in_srgb,var(--danger)_24%,var(--border))] hover:bg-[color-mix(in_srgb,var(--danger)_5%,var(--background-elevated))] hover:text-[var(--danger-text)]"
+        />
+      </div>
+    </div>
+  );
+}
+
 function getNavHref(item: NavItem) {
   return item.locked ? (item.lockedHref ?? "/login") : item.href;
 }
@@ -184,8 +323,10 @@ export default function PlatformSidebar({
   role,
   accessMode,
   pathname,
+  userEmail,
 }: PlatformSidebarProps) {
   const desktopSidebarRef = useRef<HTMLElement>(null);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const currentPathname = usePathname();
   const activePathname = pathname ?? currentPathname;
   const isGuest = role === "guest";
@@ -212,6 +353,7 @@ export default function PlatformSidebar({
   const accessLabel = getSidebarContextLabel(activePathname, role, accessMode);
   const sidebarEyebrow = isCourseView ? "GCSE Russian" : "Platform";
   const sidebarTitle = isCourseView ? "Study Menu" : "Main Menu";
+  const statusIcon = getStatusIcon(role);
   const isVolnaStudent = isStudent && accessMode === "volna";
   const isNonVolnaStudent = isStudent && accessMode !== "volna";
 
@@ -279,6 +421,25 @@ export default function PlatformSidebar({
       lockedLabel: "Login",
     },
   ];
+
+  const mobileQuickItems = mainItems;
+  const navGroups = [
+    { label: "Learn", items: mainItems },
+    { label: "Practice", items: practiceItems },
+    { label: "Account", items: utilityItems },
+  ];
+  const activeNavItem =
+    [...mainItems, ...practiceItems, ...utilityItems].find((item) =>
+      isActive(activePathname, item.href)
+    ) ?? mainItems[0];
+  const isMobileMenuActive =
+    isMobileNavOpen ||
+    practiceItems.some((item) => isActive(activePathname, item.href)) ||
+    utilityItems.some((item) => isActive(activePathname, item.href));
+
+  useEffect(() => {
+    setIsMobileNavOpen(false);
+  }, [activePathname]);
 
   useEffect(() => {
     const sidebar = desktopSidebarRef.current;
@@ -408,118 +569,148 @@ export default function PlatformSidebar({
   return (
     <>
       <section className="dev-marker-host relative lg:hidden">
-        <div className="platform-sidebar-shell rounded-3xl border p-4">
-          <SidebarHeader
-            eyebrow={sidebarEyebrow}
-            title={sidebarTitle}
-            subtitle={accessLabel}
-          />
-
-          <nav className="space-y-3" aria-label="Platform navigation">
-            <div>
-              <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
-                Learn
+        <div className="platform-sidebar-shell rounded-[1.35rem] border p-3">
+          <div className="mb-3 flex items-center justify-between gap-3 px-1">
+            <div className="min-w-0">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] app-text-soft">
+                {sidebarEyebrow}
               </div>
-              <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
-                {mainItems.map((item) => {
-                  const active = isActive(activePathname, item.href);
-                  const href = getNavHref(item);
-
-                  return (
-                    <Link
-                      key={item.href}
-                      href={href}
-                      className={mobileItemClass(active, item.locked)}
-                      aria-current={active ? "page" : undefined}
-                      aria-label={
-                        item.locked
-                          ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
-                          : undefined
-                      }
-                    >
-                      <AppIcon icon={item.icon} size={16} />
-                      <span className="whitespace-nowrap">{item.label}</span>
-                      {item.locked ? <AppIcon icon="lock" size={12} /> : null}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
-                Practice
-              </div>
-              <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
-                {practiceItems.map((item) => {
-                  const active = isActive(activePathname, item.href);
-                  const href = getNavHref(item);
-
-                  return (
-                    <Link
-                      key={item.href}
-                      href={href}
-                      className={mobileItemClass(active, item.locked)}
-                      aria-current={active ? "page" : undefined}
-                      aria-label={
-                        item.locked
-                          ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "access"}`
-                          : undefined
-                      }
-                    >
-                      <AppIcon icon={item.icon} size={16} />
-                      <span className="whitespace-nowrap">{item.label}</span>
-                      {item.locked ? <AppIcon icon="lock" size={12} /> : null}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] app-text-soft">
-                Account
-              </div>
-              <div className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]">
-                {utilityItems.map((item) => {
-                  const active = isActive(activePathname, item.href);
-                  const href = getNavHref(item);
-
-                  return (
-                    <Link
-                      key={item.href}
-                      href={href}
-                      className={mobileItemClass(active, item.locked)}
-                      aria-current={active ? "page" : undefined}
-                      aria-label={
-                        item.locked
-                          ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
-                          : undefined
-                      }
-                    >
-                      <AppIcon icon={item.icon} size={16} />
-                      <span className="whitespace-nowrap">{item.label}</span>
-                      {item.locked ? <AppIcon icon="lock" size={12} /> : null}
-                    </Link>
-                  );
-                })}
-              </div>
-              <div className="mt-3 px-1">
-                {isGuest ? (
-                  <div className="flex flex-wrap gap-2">
-                    <Button href="/login" variant="secondary" size="sm" icon="user">
-                      Log in
-                    </Button>
-                    <Button href="/signup" variant="primary" size="sm" icon="create">
-                      Sign up
-                    </Button>
+              <div className="mt-1 flex min-w-0 items-center gap-2">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_7%,var(--background-muted))] text-[var(--accent-on-soft)]">
+                  <AppIcon icon={activeNavItem.icon} size={15} />
+                </span>
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
+                    {activeNavItem.label}
                   </div>
-                ) : (
-                  <LogoutButton variant="quiet" />
-                )}
+                  <div className="truncate text-xs app-text-muted">{accessLabel}</div>
+                </div>
               </div>
+            </div>
+
+            <button
+              type="button"
+              className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent)] transition hover:border-[color-mix(in_srgb,var(--accent)_20%,var(--border))] hover:bg-[var(--background-muted)] app-focus-ring"
+              aria-expanded={isMobileNavOpen}
+              aria-controls="platform-mobile-nav-panel"
+              onClick={() => setIsMobileNavOpen((current) => !current)}
+            >
+              <AppIcon icon={isMobileNavOpen ? "cancel" : "menu"} size={16} />
+              Menu
+            </button>
+          </div>
+
+          <nav aria-label="Platform quick navigation">
+            <div className="grid grid-cols-5 gap-2">
+              {mobileQuickItems.map((item) => {
+                const active = isActive(activePathname, item.href);
+                const href = getNavHref(item);
+                const label =
+                  item.label === "Dashboard"
+                    ? "Start"
+                    : item.label === "Vocabulary"
+                      ? "Vocab"
+                      : item.label;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={href}
+                    className={mobileQuickItemClass(active, item.locked)}
+                    aria-current={active ? "page" : undefined}
+                    aria-label={
+                      item.locked
+                        ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
+                        : item.label
+                    }
+                  >
+                    <AppIcon icon={item.icon} size={17} />
+                    <span className="max-w-full truncate">{label}</span>
+                    {item.locked ? (
+                      <span className="sr-only">{item.lockedLabel ?? "Locked"}</span>
+                    ) : null}
+                  </Link>
+                );
+              })}
+
+              <button
+                type="button"
+                className={mobileQuickItemClass(isMobileMenuActive)}
+                aria-expanded={isMobileNavOpen}
+                aria-controls="platform-mobile-nav-panel"
+                onClick={() => setIsMobileNavOpen((current) => !current)}
+              >
+                <AppIcon
+                  icon={isMobileNavOpen ? "chevronDown" : "navigation"}
+                  size={17}
+                />
+                <span className="max-w-full truncate">More</span>
+              </button>
             </div>
           </nav>
+
+          {isMobileNavOpen ? (
+            <div
+              id="platform-mobile-nav-panel"
+              className="mt-3 rounded-2xl border border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))] p-3 shadow-[0_10px_24px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]"
+            >
+              <div className="mb-3 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                <AppIcon icon={statusIcon} size={13} />
+                {sidebarTitle}
+              </div>
+
+              <nav className="space-y-4" aria-label="Full platform navigation">
+                {navGroups.map((group) => (
+                  <div key={group.label} className="space-y-1">
+                    {sectionLabel(group.label)}
+                    {group.items.map((item) => {
+                      const active = isActive(activePathname, item.href);
+                      const href = getNavHref(item);
+
+                      return (
+                        <Link
+                          key={item.href}
+                          href={href}
+                          className={itemClass(active, item.locked)}
+                          aria-current={active ? "page" : undefined}
+                          aria-label={
+                            item.locked
+                              ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "access"}`
+                              : undefined
+                          }
+                        >
+                          <span className={navIconFrameClass(active)}>
+                            <AppIcon
+                              icon={item.icon}
+                              size={17}
+                              className={navIconClass(active)}
+                            />
+                          </span>
+                          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                          <NavLockMeta item={item} />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ))}
+
+                <div className="border-t border-[var(--border)] pt-3">
+                  {isGuest ? (
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <Button href="/login" variant="secondary" size="sm" icon="user">
+                        Log in
+                      </Button>
+                      <Button href="/signup" variant="primary" size="sm" icon="create">
+                        Sign up
+                      </Button>
+                    </div>
+                  ) : (
+                    <LogoutButton variant="quiet" />
+                  )}
+                </div>
+              </nav>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -548,6 +739,7 @@ export default function PlatformSidebar({
           eyebrow={sidebarEyebrow}
           title={sidebarTitle}
           subtitle={accessLabel}
+          statusIcon={statusIcon}
         />
 
         <nav
@@ -573,7 +765,13 @@ export default function PlatformSidebar({
                       : undefined
                   }
                 >
-                  <AppIcon icon={item.icon} size={18} className={navIconClass(active)} />
+                  <span className={navIconFrameClass(active)}>
+                    <AppIcon
+                      icon={item.icon}
+                      size={17}
+                      className={navIconClass(active)}
+                    />
+                  </span>
                   <span className="min-w-0 flex-1 truncate">{item.label}</span>
                   <NavLockMeta item={item} />
                 </Link>
@@ -601,11 +799,13 @@ export default function PlatformSidebar({
                         : undefined
                     }
                   >
-                    <AppIcon
-                      icon={item.icon}
-                      size={18}
-                      className={navIconClass(active)}
-                    />
+                    <span className={navIconFrameClass(active)}>
+                      <AppIcon
+                        icon={item.icon}
+                        size={17}
+                        className={navIconClass(active)}
+                      />
+                    </span>
                     <span className="min-w-0 flex-1 truncate">{item.label}</span>
                     <NavLockMeta item={item} />
                   </Link>
@@ -636,11 +836,13 @@ export default function PlatformSidebar({
                         : undefined
                     }
                   >
-                    <AppIcon
-                      icon={item.icon}
-                      size={18}
-                      className={navIconClass(active)}
-                    />
+                    <span className={navIconFrameClass(active)}>
+                      <AppIcon
+                        icon={item.icon}
+                        size={17}
+                        className={navIconClass(active)}
+                      />
+                    </span>
                     <span className="min-w-0 flex-1 truncate">{item.label}</span>
                     <NavLockMeta item={item} />
                   </Link>
@@ -649,18 +851,7 @@ export default function PlatformSidebar({
             </div>
 
             <div className="mt-4 pt-4">
-              {isGuest ? (
-                <div className="grid gap-2">
-                  <Button href="/login" variant="secondary" size="sm" icon="user">
-                    Log in
-                  </Button>
-                  <Button href="/signup" variant="primary" size="sm" icon="create">
-                    Sign up
-                  </Button>
-                </div>
-              ) : (
-                <LogoutButton variant="quiet" />
-              )}
+              <AccountFooter isGuest={isGuest} userEmail={userEmail} />
             </div>
           </div>
         </nav>

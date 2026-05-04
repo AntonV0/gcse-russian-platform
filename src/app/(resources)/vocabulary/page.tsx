@@ -95,8 +95,9 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
   const topicOptions = getTopicOptions(themeKeys);
 
   return (
-    <main className="space-y-4">
+    <main className="flex flex-col gap-4">
       <PageIntroPanel
+        className="order-2 xl:order-1"
         tone="student"
         eyebrow="Vocabulary"
         title="Vocabulary"
@@ -140,6 +141,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
       />
 
       <SectionCard
+        className="order-1 xl:order-2"
         title="Find vocabulary"
         description="Search by keyword, then narrow by tier, list type, or topic."
         tone="student"
@@ -152,6 +154,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
       </SectionCard>
 
       <SectionCard
+        className="order-3"
         title="Vocabulary sets"
         description={`${vocabularySets.length} set${vocabularySets.length === 1 ? "" : "s"} available${canSeeDrafts ? " to your staff view" : ""}.`}
         tone="student"

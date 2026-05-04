@@ -114,8 +114,9 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
   );
 
   return (
-    <main className="space-y-4">
+    <main className="flex flex-col gap-4">
       <PageIntroPanel
+        className="order-1"
         tone="student"
         eyebrow="Mock exams"
         title="Mock Exams"
@@ -153,12 +154,14 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
       />
 
       <FeedbackBanner
+        className="order-3 xl:order-2"
         tone="info"
         title="Original mock exams"
         description="These mocks use GCSE-style structures, but the questions are platform-created content. Official Pearson past papers remain linked separately in the Past Papers library."
       />
 
       <SectionCard
+        className="order-4 xl:order-3"
         title="Volna School official virtual mocks"
         description="Volna School hosts two official virtual mock exam sessions each year for Volna School students."
         tone="brand"
@@ -201,6 +204,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
       </SectionCard>
 
       <SectionCard
+        className="order-2 xl:order-4"
         title="Find mock exams"
         description="Filter by paper and tier."
         tone="student"
@@ -242,6 +246,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
       </SectionCard>
 
       <SectionCard
+        className="order-5"
         title="Available mock exams"
         description={`${exams.length} exam${exams.length === 1 ? "" : "s"} available for your access level.`}
         tone="student"

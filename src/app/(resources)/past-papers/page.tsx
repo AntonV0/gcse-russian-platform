@@ -96,8 +96,9 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
   const examSeriesOptions = getPastPaperExamSeriesOptions(allAccessibleResources);
 
   return (
-    <main className="space-y-4">
+    <main className="flex flex-col gap-4">
       <PageIntroPanel
+        className="order-1"
         tone="student"
         eyebrow="Past papers"
         title="Past Papers"
@@ -135,6 +136,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
       />
 
       <FeedbackBanner
+        className="order-3 xl:order-2"
         tone="info"
         title="External Pearson resources"
         description="These links open official Pearson pages or files in a new tab. Downloads happen from Pearson, not from this platform."
@@ -142,6 +144,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
 
       {dashboard.role === "guest" ? (
         <FeedbackBanner
+          className="order-4 xl:order-3"
           tone="success"
           icon="unlocked"
           title="Past papers stay free"
@@ -153,6 +156,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
         </FeedbackBanner>
       ) : dashboard.accessMode === "trial" ? (
         <FeedbackBanner
+          className="order-4 xl:order-3"
           tone="info"
           icon="billing"
           title="Use papers alongside trial lessons"
@@ -165,6 +169,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
       ) : null}
 
       <SectionCard
+        className="order-2 xl:order-4"
         title="Find resources"
         description="Filter by paper, tier, exam series, and resource type."
         tone="student"
@@ -228,6 +233,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
       </SectionCard>
 
       <SectionCard
+        className="order-5"
         title="Official resources"
         description={`${resources.length} resource${resources.length === 1 ? "" : "s"} available for your filters.`}
         tone="student"
