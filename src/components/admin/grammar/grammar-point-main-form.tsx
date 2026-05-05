@@ -1,4 +1,5 @@
 import { updateGrammarPointAction } from "@/app/actions/admin/admin-grammar-point-actions";
+import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
@@ -8,15 +9,63 @@ import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import { GRAMMAR_TAGS } from "@/lib/curriculum/grammar-tags";
-import type { DbGrammarPoint, DbGrammarSet } from "@/lib/grammar/grammar-helpers-db";
+import {
+  getGrammarPointReadiness,
+  type DbGrammarExample,
+  type DbGrammarPoint,
+  type DbGrammarSet,
+  type DbGrammarTable,
+} from "@/lib/grammar/grammar-helpers-db";
+
+function ReadinessRow({
+  label,
+  isReady,
+  readyLabel,
+  missingLabel,
+  required = true,
+}: {
+  label: string;
+  isReady: boolean;
+  readyLabel: string;
+  missingLabel: string;
+  required?: boolean;
+}) {
+  const tone = isReady ? "success" : required ? "warning" : "muted";
+
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="min-w-0 app-text-body-muted">{label}</span>
+      <Badge tone={tone} icon={isReady ? "success" : required ? "warning" : "table"}>
+        {isReady ? readyLabel : missingLabel}
+      </Badge>
+    </div>
+  );
+}
 
 export default function GrammarPointMainForm({
   grammarSet,
   grammarPoint,
+  examples,
+  tables,
 }: {
   grammarSet: DbGrammarSet;
   grammarPoint: DbGrammarPoint;
+  examples: DbGrammarExample[];
+  tables: DbGrammarTable[];
 }) {
+  const readiness = getGrammarPointReadiness({
+    fullExplanation: grammarPoint.full_explanation,
+    exampleCount: examples.length,
+    tableCount: tables.length,
+  });
+  const publishDescription = grammarPoint.is_published
+    ? readiness.canPublish
+      ? "Visible on student grammar pages."
+      : "This legacy published point stays editable, but it should be reviewed."
+    : readiness.canPublish
+      ? "Ready for first publish."
+      : "First publish is blocked until required learner content is complete.";
+
   return (
     <form
       action={updateGrammarPointAction}
@@ -158,7 +207,51 @@ export default function GrammarPointMainForm({
               name="isPublished"
               label="Published"
               defaultChecked={grammarPoint.is_published}
+              description={publishDescription}
             />
+
+            <div className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="app-text-caption font-semibold">Content readiness</p>
+                <Badge tone={readiness.canPublish ? "success" : "warning"}>
+                  {readiness.canPublish ? "Ready" : "Needs content"}
+                </Badge>
+              </div>
+
+              <div className="space-y-2">
+                <ReadinessRow
+                  label="Full explanation"
+                  isReady={readiness.hasExplanation}
+                  readyLabel="Ready"
+                  missingLabel="Missing"
+                />
+                <ReadinessRow
+                  label="Student examples"
+                  isReady={readiness.hasExamples}
+                  readyLabel={`${examples.length} example${examples.length === 1 ? "" : "s"}`}
+                  missingLabel="Missing"
+                />
+                <ReadinessRow
+                  label="Tables"
+                  isReady={readiness.hasTables}
+                  readyLabel={`${tables.length} table${tables.length === 1 ? "" : "s"}`}
+                  missingLabel="Optional"
+                  required={false}
+                />
+              </div>
+
+              {readiness.canPublish ? (
+                <p className="app-text-body-muted">
+                  Tables stay advisory because some grammar points do not need a
+                  form table.
+                </p>
+              ) : (
+                <p className="app-text-body-muted">
+                  Draft points need a full explanation and at least one student
+                  example before first publish.
+                </p>
+              )}
+            </div>
 
             <div className="flex flex-col gap-3">
               <Button type="submit" variant="primary" icon="save">

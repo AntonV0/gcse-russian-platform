@@ -5,18 +5,31 @@ import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import {
   getGrammarCategoryLabel,
   getGrammarKnowledgeRequirementLabel,
+  getGrammarPointReadiness,
   getGrammarTierLabel,
+  type DbGrammarExample,
   type DbGrammarPoint,
   type DbGrammarSet,
+  type DbGrammarTable,
 } from "@/lib/grammar/grammar-helpers-db";
 
 export default function GrammarPointEditHeader({
   grammarSet,
   grammarPoint,
+  examples,
+  tables,
 }: {
   grammarSet: DbGrammarSet;
   grammarPoint: DbGrammarPoint;
+  examples: DbGrammarExample[];
+  tables: DbGrammarTable[];
 }) {
+  const readiness = getGrammarPointReadiness({
+    fullExplanation: grammarPoint.full_explanation,
+    exampleCount: examples.length,
+    tableCount: tables.length,
+  });
+
   return (
     <PageIntroPanel
       tone="admin"
@@ -39,6 +52,9 @@ export default function GrammarPointEditHeader({
             {getGrammarKnowledgeRequirementLabel(grammarPoint.knowledge_requirement)}
           </Badge>
           <PublishStatusBadge isPublished={grammarPoint.is_published} />
+          <Badge tone={readiness.canPublish ? "success" : "warning"}>
+            {readiness.canPublish ? "Publish ready" : "Publish blocked"}
+          </Badge>
         </>
       }
       actions={

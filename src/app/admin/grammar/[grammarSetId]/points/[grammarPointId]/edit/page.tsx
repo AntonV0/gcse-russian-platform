@@ -23,8 +23,18 @@ export default async function EditGrammarPointPage({
 
   return (
     <main className="space-y-4">
-      <GrammarPointEditHeader grammarSet={grammarSet} grammarPoint={grammarPoint} />
-      <GrammarPointMainForm grammarSet={grammarSet} grammarPoint={grammarPoint} />
+      <GrammarPointEditHeader
+        grammarSet={grammarSet}
+        grammarPoint={grammarPoint}
+        examples={examples}
+        tables={tables}
+      />
+      <GrammarPointMainForm
+        grammarSet={grammarSet}
+        grammarPoint={grammarPoint}
+        examples={examples}
+        tables={tables}
+      />
       <GrammarPointExamplesPanel
         grammarSet={grammarSet}
         grammarPoint={grammarPoint}

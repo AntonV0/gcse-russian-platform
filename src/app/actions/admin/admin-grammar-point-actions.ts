@@ -12,7 +12,11 @@ import type {
   DbGrammarKnowledgeRequirement,
   DbGrammarTier,
 } from "@/lib/grammar/grammar-helpers-db";
-import { getGrammarSetByIdDb } from "@/lib/grammar/grammar-helpers-db";
+import {
+  getGrammarPointPublishGateMessage,
+  getGrammarPointReadiness,
+  getGrammarSetByIdDb,
+} from "@/lib/grammar/grammar-helpers-db";
 import { createClient } from "@/lib/supabase/server";
 
 function slugify(value: string) {
@@ -96,6 +100,36 @@ function getPointsPath(grammarSetId: string) {
   return `/admin/grammar/${grammarSetId}/points`;
 }
 
+async function getGrammarPointContentCounts(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  grammarPointId: string
+) {
+  const [examplesResult, tablesResult] = await Promise.all([
+    supabase
+      .from("grammar_examples")
+      .select("id", { count: "exact", head: true })
+      .eq("grammar_point_id", grammarPointId),
+    supabase
+      .from("grammar_tables")
+      .select("id", { count: "exact", head: true })
+      .eq("grammar_point_id", grammarPointId),
+  ]);
+
+  if (examplesResult.error || tablesResult.error) {
+    console.error("Error checking grammar point readiness:", {
+      grammarPointId,
+      examplesError: examplesResult.error,
+      tablesError: tablesResult.error,
+    });
+    throw new Error("Failed to check grammar point readiness");
+  }
+
+  return {
+    exampleCount: examplesResult.count ?? 0,
+    tableCount: tablesResult.count ?? 0,
+  };
+}
+
 export async function createGrammarPointAction(formData: FormData) {
   await requireGrammarAdmin();
 
@@ -120,6 +154,12 @@ export async function createGrammarPointAction(formData: FormData) {
 
   if (!grammarSetId || !title) {
     throw new Error("Missing required fields");
+  }
+
+  if (isPublished) {
+    throw new Error(
+      "New grammar points start as drafts. Add examples and review the student content before publishing from the edit page."
+    );
   }
 
   const sortOrder = manualSortOrder ?? (await getNextGrammarPointOrder(grammarSetId));
@@ -184,6 +224,40 @@ export async function updateGrammarPointAction(formData: FormData) {
   }
 
   const supabase = await createClient();
+
+  const { data: existingPoint, error: existingPointError } = await supabase
+    .from("grammar_points")
+    .select("is_published")
+    .eq("id", grammarPointId)
+    .eq("grammar_set_id", grammarSetId)
+    .maybeSingle();
+
+  if (existingPointError) {
+    console.error("Error fetching grammar point before update:", {
+      grammarPointId,
+      grammarSetId,
+      error: existingPointError,
+    });
+    throw new Error("Failed to check grammar point status");
+  }
+
+  if (!existingPoint) {
+    throw new Error("Grammar point not found");
+  }
+
+  if (isPublished && !existingPoint.is_published) {
+    const counts = await getGrammarPointContentCounts(supabase, grammarPointId);
+    const readiness = getGrammarPointReadiness({
+      fullExplanation,
+      exampleCount: counts.exampleCount,
+      tableCount: counts.tableCount,
+    });
+    const gateMessage = getGrammarPointPublishGateMessage(readiness);
+
+    if (gateMessage) {
+      throw new Error(gateMessage);
+    }
+  }
 
   const { error } = await supabase
     .from("grammar_points")
