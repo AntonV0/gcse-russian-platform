@@ -1,9 +1,9 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import { DevOnlyComponentMarker } from "@/components/ui/dev-component-marker";
 import IconButton from "@/components/ui/icon-button";
-import { useTheme } from "@/components/providers/theme-provider";
+import { useOptionalTheme, type ThemeMode } from "@/components/providers/theme-provider";
 
 function subscribeToHydration() {
   return () => {};
@@ -18,12 +18,32 @@ function getServerHydrationSnapshot() {
 }
 
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const themeContext = useOptionalTheme();
+  const [fallbackTheme, setFallbackTheme] = useState<ThemeMode | null>(null);
   const hasMounted = useSyncExternalStore(
     subscribeToHydration,
     getClientHydrationSnapshot,
     getServerHydrationSnapshot
   );
+  const theme = themeContext?.theme ?? fallbackTheme;
+  const toggleTheme = useCallback(() => {
+    if (themeContext) {
+      themeContext.toggleTheme();
+      return;
+    }
+
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    const currentTheme =
+      document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    window.localStorage.setItem("theme", nextTheme);
+    setFallbackTheme(nextTheme);
+  }, [themeContext]);
 
   const title = "Toggle theme";
 
