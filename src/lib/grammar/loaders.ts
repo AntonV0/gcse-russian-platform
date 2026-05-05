@@ -16,6 +16,7 @@ import type {
 type GrammarSetLoadOptions = {
   publishedOnly?: boolean;
   scopeVariant?: DbGrammarStudyVariant | "all" | null;
+  useServiceRole?: boolean;
 };
 
 export async function loadGrammarSetByIdDb(
@@ -42,7 +43,9 @@ export async function loadGrammarSetBySlugDb(
   grammarSetSlug: string,
   options?: GrammarSetLoadOptions
 ): Promise<LoadedGrammarSetDetailDb> {
-  const grammarSet = await getGrammarSetBySlugDb(grammarSetSlug);
+  const grammarSet = await getGrammarSetBySlugDb(grammarSetSlug, {
+    useServiceRole: options?.useServiceRole,
+  });
 
   if (!grammarSet) {
     return {
@@ -61,6 +64,7 @@ export async function loadGrammarSetBySlugDb(
   const points = await getGrammarPointsBySetIdDb(grammarSet.id, {
     publishedOnly: options?.publishedOnly,
     scopeVariant: options?.scopeVariant,
+    useServiceRole: options?.useServiceRole,
   });
 
   return {
@@ -100,9 +104,11 @@ export async function loadGrammarPointByIdDb(
 export async function loadGrammarPointBySlugsDb(
   grammarSetSlug: string,
   grammarPointSlug: string,
-  options?: { publishedOnly?: boolean }
+  options?: { publishedOnly?: boolean; useServiceRole?: boolean }
 ): Promise<LoadedGrammarPointDetailDb> {
-  const grammarSet = await getGrammarSetBySlugDb(grammarSetSlug);
+  const grammarSet = await getGrammarSetBySlugDb(grammarSetSlug, {
+    useServiceRole: options?.useServiceRole,
+  });
 
   if (!grammarSet || (options?.publishedOnly && !grammarSet.is_published)) {
     return {
@@ -115,7 +121,8 @@ export async function loadGrammarPointBySlugsDb(
 
   const grammarPoint = await getGrammarPointBySlugForSetIdDb(
     grammarSet.id,
-    grammarPointSlug
+    grammarPointSlug,
+    { useServiceRole: options?.useServiceRole }
   );
 
   if (!grammarPoint || (options?.publishedOnly && !grammarPoint.is_published)) {
@@ -128,8 +135,12 @@ export async function loadGrammarPointBySlugsDb(
   }
 
   const [examples, tables] = await Promise.all([
-    getGrammarExamplesByPointIdDb(grammarPoint.id),
-    getGrammarTablesByPointIdDb(grammarPoint.id),
+    getGrammarExamplesByPointIdDb(grammarPoint.id, {
+      useServiceRole: options?.useServiceRole,
+    }),
+    getGrammarTablesByPointIdDb(grammarPoint.id, {
+      useServiceRole: options?.useServiceRole,
+    }),
   ]);
 
   return {

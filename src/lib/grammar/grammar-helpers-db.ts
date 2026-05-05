@@ -8,14 +8,17 @@ export {
 export * from "@/lib/grammar/access";
 export * from "@/lib/grammar/loaders";
 export * from "@/lib/grammar/queries";
+export * from "@/lib/grammar/readiness";
 export * from "@/lib/grammar/study-variants";
 export type {
   DbGrammarCoverageVariant,
   DbGrammarExample,
   DbGrammarKnowledgeRequirement,
+  DbGrammarPointContentHealth,
   DbGrammarPointCoverage,
   DbGrammarPoint,
   DbGrammarSet,
+  DbGrammarSetContentHealth,
   DbGrammarSetCoverageSummary,
   DbGrammarSetListItem,
   DbGrammarSetSummaryRow,

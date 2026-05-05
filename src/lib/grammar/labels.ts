@@ -3,6 +3,29 @@ import type {
   DbGrammarTier,
 } from "@/lib/grammar/types";
 
+const GRAMMAR_LABEL_OVERRIDES: Record<string, string> = {
+  impersonal_constructions: "Impersonal constructions",
+  numbers_and_quantity: "Numbers and quantity",
+  pronouns_other: "Other pronouns",
+  pronouns_personal: "Personal pronouns",
+  quantifiers_intensifiers: "Quantifiers and intensifiers",
+  starter_sentences: "Starter sentences",
+  times_and_dates: "Times and dates",
+};
+
+function getReadableGrammarLabel(value: string | null, fallback: string) {
+  if (!value) return fallback;
+
+  const normalized = value.replaceAll("-", "_");
+  const override = GRAMMAR_LABEL_OVERRIDES[normalized];
+
+  if (override) return override;
+
+  return normalized
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 export function getGrammarTierLabel(tier: DbGrammarTier) {
   switch (tier) {
     case "foundation":
@@ -36,22 +59,13 @@ export function getGrammarKnowledgeRequirementLabel(
 }
 
 export function getGrammarCategoryLabel(value: string | null) {
-  if (!value) return "Uncategorised";
-  return value
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (character) => character.toUpperCase());
+  return getReadableGrammarLabel(value, "Uncategorised");
 }
 
 export function getGrammarThemeLabel(value: string | null) {
-  if (!value) return "General";
-  return value
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (character) => character.toUpperCase());
+  return getReadableGrammarLabel(value, "General");
 }
 
 export function getGrammarTopicLabel(value: string | null) {
-  if (!value) return "Mixed";
-  return value
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (character) => character.toUpperCase());
+  return getReadableGrammarLabel(value, "Mixed");
 }

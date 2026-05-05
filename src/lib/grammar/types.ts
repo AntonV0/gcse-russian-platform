@@ -88,6 +88,21 @@ export type DbGrammarPointCoverage = {
   volna_occurrences: number;
 };
 
+export type DbGrammarPointContentHealth = {
+  grammar_point_id: string;
+  missing_explanation: boolean;
+  missing_examples: boolean;
+  missing_tables: boolean;
+};
+
+export type DbGrammarSetContentHealth = {
+  grammar_set_id: string;
+  published_points: number;
+  missing_explanation_points: number;
+  missing_example_points: number;
+  missing_table_points: number;
+};
+
 export type DbLessonGrammarLink = {
   id: string;
   lesson_id: string;
