@@ -14,6 +14,12 @@ type GrammarTableRendererProps = {
   table: DbGrammarTable;
 };
 
+const CYRILLIC_PATTERN = /[\u0400-\u04ff]/;
+
+function getCellLanguage(value: string) {
+  return CYRILLIC_PATTERN.test(value) ? "ru" : undefined;
+}
+
 export default function GrammarTableRenderer({ table }: GrammarTableRendererProps) {
   return (
     <PanelCard
@@ -23,11 +29,14 @@ export default function GrammarTableRenderer({ table }: GrammarTableRendererProp
       tone="student"
       contentClassName="p-0"
     >
-      <DataTable>
+      <DataTable tableClassName="text-[0.95rem]">
         <DataTableHead>
           <DataTableHeaderRow>
             {table.columns.map((column, index) => (
-              <DataTableHeaderCell key={`${table.id}-column-${index}`}>
+              <DataTableHeaderCell
+                key={`${table.id}-column-${index}`}
+                className="whitespace-normal text-[0.78rem] leading-5"
+              >
                 {column}
               </DataTableHeaderCell>
             ))}
@@ -37,18 +46,22 @@ export default function GrammarTableRenderer({ table }: GrammarTableRendererProp
         <DataTableBody>
           {table.rows.map((row, rowIndex) => (
             <DataTableRow key={`${table.id}-row-${rowIndex}`}>
-              {table.columns.map((_, columnIndex) => (
-                <DataTableCell
-                  key={`${table.id}-cell-${rowIndex}-${columnIndex}`}
-                  className={
-                    columnIndex === 0
-                      ? "font-semibold text-[var(--text-primary)]"
-                      : undefined
-                  }
-                >
-                  {row[columnIndex] ?? ""}
-                </DataTableCell>
-              ))}
+              {table.columns.map((_, columnIndex) => {
+                const cellValue = row[columnIndex] ?? "";
+
+                return (
+                  <DataTableCell
+                    key={`${table.id}-cell-${rowIndex}-${columnIndex}`}
+                    className={
+                      columnIndex === 0
+                        ? "font-semibold text-[var(--text-primary)]"
+                        : undefined
+                    }
+                  >
+                    <span lang={getCellLanguage(cellValue)}>{cellValue}</span>
+                  </DataTableCell>
+                );
+              })}
             </DataTableRow>
           ))}
         </DataTableBody>

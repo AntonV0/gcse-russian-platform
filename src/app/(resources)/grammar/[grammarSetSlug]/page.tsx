@@ -11,6 +11,7 @@ import GrammarPointSectionList from "@/components/grammar/grammar-point-section-
 import { RelatedGrammarSetsPanel } from "@/components/grammar/grammar-related-navigation";
 import {
   canDashboardAccessGrammarSet,
+  getGrammarPointContentHealthByPointIdsDb,
   getGrammarPointCoverageByPointIdsDb,
   getGrammarTopicLabel,
   getPublishedGrammarSetsDb,
@@ -44,6 +45,7 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
   const { grammarSet, points } = await loadGrammarSetBySlugDb(grammarSetSlug, {
     publishedOnly: !canSeeDrafts,
     scopeVariant,
+    useServiceRole: !canSeeDrafts,
   });
 
   if (!grammarSet) {
@@ -127,6 +129,9 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
   const pointCoverageById = canSeeDrafts
     ? await getGrammarPointCoverageByPointIdsDb(points.map((point) => point.id))
     : new Map();
+  const pointContentHealthById = canSeeDrafts
+    ? await getGrammarPointContentHealthByPointIdsDb(points.map((point) => point.id))
+    : new Map();
 
   return (
     <main className="space-y-4">
@@ -142,9 +147,20 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
           />
         }
         actions={
-          <Button href="/grammar" variant="secondary" icon="back">
-            All grammar
-          </Button>
+          <>
+            <Button href="/grammar" variant="secondary" icon="back">
+              All grammar
+            </Button>
+            {canSeeDrafts ? (
+              <Button
+                href={`/admin/grammar/${grammarSet.id}/points`}
+                variant="secondary"
+                icon="edit"
+              >
+                Edit points
+              </Button>
+            ) : null}
+          </>
         }
       />
 
@@ -171,6 +187,7 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
               grammarSet={grammarSet}
               points={points}
               pointCoverageById={pointCoverageById}
+              pointContentHealthById={pointContentHealthById}
               showStaffMetadata={canSeeDrafts}
             />
           )}
@@ -205,18 +222,26 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
                   label: "Points",
                   value: points.length,
                 },
-                {
-                  label: "Trial visible",
-                  value: grammarSet.is_trial_visible ? "Yes" : "No",
-                },
-                {
-                  label: "Access",
-                  value: grammarSet.requires_paid_access ? "Full course" : "Included",
-                },
-                {
-                  label: "Volna",
-                  value: grammarSet.available_in_volna ? "Included" : "Not included",
-                },
+                ...(canSeeDrafts
+                  ? [
+                      {
+                        label: "Trial visible",
+                        value: grammarSet.is_trial_visible ? "Yes" : "No",
+                      },
+                      {
+                        label: "Access",
+                        value: grammarSet.requires_paid_access
+                          ? "Full course"
+                          : "Included",
+                      },
+                      {
+                        label: "Volna",
+                        value: grammarSet.available_in_volna
+                          ? "Included"
+                          : "Not included",
+                      },
+                    ]
+                  : []),
               ]}
             />
           </PanelCard>

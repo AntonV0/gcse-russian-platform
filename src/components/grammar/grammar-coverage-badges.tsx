@@ -78,11 +78,14 @@ function CoverageProgressRing({
 export default function GrammarCoverageBadges({
   coverageSummary,
   fallbackTotalPoints,
+  hideEmptyVolna = false,
 }: {
   coverageSummary: DbGrammarSetCoverageSummary;
   fallbackTotalPoints: number;
+  hideEmptyVolna?: boolean;
 }) {
   const totalPoints = coverageSummary.totalPoints || fallbackTotalPoints;
+  const showVolna = !hideEmptyVolna || coverageSummary.volnaUsedPoints > 0;
 
   if (totalPoints === 0) return null;
 
@@ -100,12 +103,14 @@ export default function GrammarCoverageBadges({
         usedPoints={coverageSummary.higherUsedPoints}
         totalPoints={coverageSummary.higherTotalPoints || totalPoints}
       />
-      <CoverageProgressRing
-        letter="V"
-        label="Volna"
-        usedPoints={coverageSummary.volnaUsedPoints}
-        totalPoints={coverageSummary.volnaTotalPoints || totalPoints}
-      />
+      {showVolna ? (
+        <CoverageProgressRing
+          letter="V"
+          label="Volna"
+          usedPoints={coverageSummary.volnaUsedPoints}
+          totalPoints={coverageSummary.volnaTotalPoints || totalPoints}
+        />
+      ) : null}
     </>
   );
 }

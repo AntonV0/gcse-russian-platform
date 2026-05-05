@@ -198,13 +198,44 @@ function PracticeTasks({
   );
 }
 
+function StaffContentHealthBadges({
+  grammarPoint,
+  examples,
+  tables,
+}: {
+  grammarPoint: DbGrammarPoint;
+  examples: DbGrammarExample[];
+  tables: unknown[];
+}) {
+  return (
+    <>
+      {!grammarPoint.full_explanation?.trim() ? (
+        <Badge tone="warning" icon="warning">
+          No explanation
+        </Badge>
+      ) : null}
+      {examples.length === 0 ? (
+        <Badge tone="warning" icon="warning">
+          No examples
+        </Badge>
+      ) : null}
+      {tables.length === 0 ? (
+        <Badge tone="muted" icon="table">
+          No tables
+        </Badge>
+      ) : null}
+    </>
+  );
+}
+
 export default async function GrammarPointPage({ params }: GrammarPointPageProps) {
   const { grammarSetSlug, grammarPointSlug } = await params;
   const dashboard = await getDashboardInfo();
+  const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
   const { grammarSet, grammarPoint, examples, tables } = await loadGrammarPointBySlugsDb(
     grammarSetSlug,
     grammarPointSlug,
-    { publishedOnly: true }
+    { publishedOnly: true, useServiceRole: !canSeeDrafts }
   );
 
   if (!grammarSet || !grammarPoint) {
@@ -314,10 +345,19 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
           grammarPoint.short_description ?? "Grammar explanation and examples."
         }
         badges={
-          <GrammarPointRequirementBadges
-            point={grammarPoint}
-            showSpecReference={false}
-          />
+          <>
+            <GrammarPointRequirementBadges
+              point={grammarPoint}
+              showSpecReference={false}
+            />
+            {canSeeDrafts ? (
+              <StaffContentHealthBadges
+                grammarPoint={grammarPoint}
+                examples={examples}
+                tables={tables}
+              />
+            ) : null}
+          </>
         }
         actions={
           <>
@@ -327,6 +367,15 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
             <Button href="/grammar" variant="secondary" icon="lessonContent">
               All grammar
             </Button>
+            {canSeeDrafts ? (
+              <Button
+                href={`/admin/grammar/${grammarSet.id}/points/${grammarPoint.id}/edit`}
+                variant="secondary"
+                icon="edit"
+              >
+                Edit point
+              </Button>
+            ) : null}
           </>
         }
       />

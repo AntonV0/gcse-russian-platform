@@ -8,6 +8,7 @@ import {
   getGrammarCoverageVariantUsed,
   getRequiredGrammarCoverageVariants,
   type DbGrammarPoint,
+  type DbGrammarPointContentHealth,
   type DbGrammarPointCoverage,
   type DbGrammarSet,
 } from "@/lib/grammar/grammar-helpers-db";
@@ -35,7 +36,10 @@ function GrammarPointCoverageBadges({
   point: DbGrammarPoint;
   coverage: DbGrammarPointCoverage | null;
 }) {
-  const variants = getRequiredGrammarCoverageVariants(point.tier);
+  const variants = getRequiredGrammarCoverageVariants(point.tier).filter(
+    (variant) =>
+      variant !== "volna" || getGrammarCoverageVariantCount(coverage, variant) > 0
+  );
 
   if (variants.length === 0) {
     return (
@@ -56,6 +60,34 @@ function GrammarPointCoverageBadges({
         />
       ))}
     </div>
+  );
+}
+
+function GrammarPointHealthBadges({
+  health,
+}: {
+  health: DbGrammarPointContentHealth | null;
+}) {
+  if (!health) return null;
+
+  return (
+    <>
+      {health.missing_explanation ? (
+        <Badge tone="warning" icon="warning">
+          No explanation
+        </Badge>
+      ) : null}
+      {health.missing_examples ? (
+        <Badge tone="warning" icon="warning">
+          No examples
+        </Badge>
+      ) : null}
+      {health.missing_tables ? (
+        <Badge tone="muted" icon="table">
+          No tables
+        </Badge>
+      ) : null}
+    </>
   );
 }
 
@@ -81,12 +113,14 @@ function GrammarPointRow({
   grammarSet,
   point,
   coverage,
+  health,
   showStaffMetadata,
   position,
 }: {
   grammarSet: DbGrammarSet;
   point: DbGrammarPoint;
   coverage: DbGrammarPointCoverage | null;
+  health: DbGrammarPointContentHealth | null;
   showStaffMetadata: boolean;
   position: number;
 }) {
@@ -97,7 +131,7 @@ function GrammarPointRow({
     >
       <div className="absolute inset-y-0 left-0 w-1 bg-[var(--accent-fill)] opacity-70" />
 
-      <div className="grid gap-3 px-4 py-4 sm:pl-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+      <div className="grid gap-3 px-4 py-4 sm:pl-5">
         <div className="flex min-w-0 gap-3">
           <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--text-muted)]">
             {position}
@@ -113,13 +147,14 @@ function GrammarPointRow({
           </div>
         </div>
 
-        <div className="min-w-0 lg:max-w-[21rem]">
-          <div className="flex flex-wrap gap-2 lg:justify-end">
+        <div className="min-w-0">
+          <div className="flex flex-wrap gap-2">
             <GrammarPointRequirementBadges
               point={point}
               showSpecReference={false}
               showTag={false}
             />
+            {showStaffMetadata ? <GrammarPointHealthBadges health={health} /> : null}
           </div>
 
           {showStaffMetadata ? (
@@ -137,11 +172,13 @@ export default function GrammarPointSectionList({
   grammarSet,
   points,
   pointCoverageById,
+  pointContentHealthById,
   showStaffMetadata,
 }: {
   grammarSet: DbGrammarSet;
   points: DbGrammarPoint[];
   pointCoverageById: Map<string, DbGrammarPointCoverage>;
+  pointContentHealthById?: Map<string, DbGrammarPointContentHealth>;
   showStaffMetadata: boolean;
 }) {
   return (
@@ -166,6 +203,7 @@ export default function GrammarPointSectionList({
             grammarSet={grammarSet}
             point={point}
             coverage={pointCoverageById.get(point.id) ?? null}
+            health={pointContentHealthById?.get(point.id) ?? null}
             showStaffMetadata={showStaffMetadata}
             position={index + 1}
           />
