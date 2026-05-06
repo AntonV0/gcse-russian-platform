@@ -13,6 +13,11 @@ import {
   type StudentLearningPlan,
 } from "@/lib/dashboard/learning-plan";
 import {
+  getLearningMilestone,
+  getMasterySignals,
+  type MasterySignal,
+} from "@/lib/dashboard/mastery-signals";
+import {
   getStudentDashboardActionQueue,
   type StudentDashboardAction,
   type StudentDashboardActivity,
@@ -37,6 +42,8 @@ export function StudentDashboardPanel({
 }) {
   const nextActions = getStudentDashboardActionQueue(activity, nextStep);
   const primaryAction = nextActions[0];
+  const masterySignals = getMasterySignals({ learningPlan, activity });
+  const milestone = getLearningMilestone({ learningPlan, activity });
 
   return (
     <>
@@ -68,7 +75,7 @@ export function StudentDashboardPanel({
                   ) : null}
                 </div>
 
-                <h2 className="app-heading-hero max-w-3xl">{primaryAction.title}</h2>
+                <h1 className="app-heading-hero max-w-3xl">{primaryAction.title}</h1>
                 <p className="app-subtitle max-w-2xl">{primaryAction.description}</p>
               </div>
             </div>
@@ -161,6 +168,11 @@ export function StudentDashboardPanel({
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+        <SkillReadinessCard masterySignals={masterySignals} />
+        <LearningMilestoneCard milestone={milestone} />
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
         <NextActionQueueCard actions={nextActions} />
         <RecentFeedbackCard feedbackItems={activity.recentFeedback} />
       </section>
@@ -193,6 +205,83 @@ export function StudentDashboardPanel({
 
       <StudentSupportCard accessMode={dashboard.accessMode} />
     </>
+  );
+}
+
+function SkillReadinessCard({
+  masterySignals,
+}: {
+  masterySignals: MasterySignal[];
+}) {
+  return (
+    <DashboardCard title="Skill readiness" headingLevel={3} className="h-full">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
+        {masterySignals.map((signal) => (
+          <div key={signal.title} className="app-tactile-row rounded-xl border p-3">
+            <div className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--text-secondary)]">
+                <AppIcon icon={signal.icon} size={16} />
+              </span>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="truncate font-semibold text-[var(--text-primary)]">
+                    {signal.title}
+                  </div>
+                  <div className="shrink-0 font-semibold text-[var(--accent-ink)]">
+                    {signal.value}%
+                  </div>
+                </div>
+
+                <div
+                  className="app-progress-track mt-2 h-1.5"
+                  role="progressbar"
+                  aria-label={`${signal.title} readiness`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={signal.value}
+                >
+                  <div
+                    className="app-progress-bar"
+                    style={{ width: `${signal.value}%` }}
+                  />
+                </div>
+
+                <p className="mt-2 app-text-caption">{signal.evidence}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </DashboardCard>
+  );
+}
+
+function LearningMilestoneCard({
+  milestone,
+}: {
+  milestone: ReturnType<typeof getLearningMilestone>;
+}) {
+  const badgeTone = milestone.tone === "brand" ? "info" : milestone.tone;
+
+  return (
+    <DashboardCard title="Next milestone" headingLevel={3} className="h-full">
+      <div className="app-soft-panel p-4">
+        <div className="flex items-start gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-elevated)] text-[var(--accent-ink)]">
+            <AppIcon icon={milestone.icon} size={19} />
+          </span>
+
+          <div>
+            <Badge tone={badgeTone} icon={milestone.icon}>
+              {milestone.badge}
+            </Badge>
+            <div className="mt-3 app-heading-card">{milestone.title}</div>
+            <p className="mt-1 app-text-body-muted">{milestone.description}</p>
+          </div>
+        </div>
+      </div>
+    </DashboardCard>
   );
 }
 

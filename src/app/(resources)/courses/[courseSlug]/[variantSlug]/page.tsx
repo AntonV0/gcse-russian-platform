@@ -99,13 +99,6 @@ export default async function VariantPage({ params }: VariantPageProps) {
 
   return (
     <main className="space-y-8">
-      <PageHeader
-        title={variant.title}
-        description={
-          variant.description ?? "Choose a module and continue your learning journey."
-        }
-      />
-
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
           <div className="space-y-5">
@@ -122,11 +115,16 @@ export default async function VariantPage({ params }: VariantPageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">Choose your next module</h2>
+              <h1 className="app-heading-hero max-w-3xl">{variant.title}</h1>
               <p className="app-subtitle max-w-2xl">
-                Work through the modules in order to keep your learning structured and
-                easier to follow.
+                {variant.description ??
+                  "Work through the modules in order to keep your learning structured and easier to follow."}
               </p>
+              {variant.description ? (
+                <p className="text-sm app-text-muted">
+                  Choose your next module and keep your learning route easy to follow.
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-wrap gap-3">

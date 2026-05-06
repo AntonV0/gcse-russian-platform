@@ -37,7 +37,7 @@ export function TrialTierChoicePanel() {
           </div>
 
           <div className="space-y-2">
-            <h2 className="app-heading-hero max-w-3xl">Choose your trial path</h2>
+            <h1 className="app-heading-hero max-w-3xl">Choose your trial path</h1>
             <p className="app-subtitle max-w-2xl">
               Start with the route that best matches your goal. You can still sample the
               other tier during trial, but your dashboard will stay focused on this choice.

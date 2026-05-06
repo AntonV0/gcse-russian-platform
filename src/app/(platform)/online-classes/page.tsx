@@ -1,5 +1,4 @@
 import Link from "next/link";
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
@@ -47,11 +46,6 @@ export default async function OnlineClassesPage() {
 
   return (
     <main className="space-y-8">
-      <PageHeader
-        title="Online Classes"
-        description="Find out more about live GCSE Russian tuition through Volna School."
-      />
-
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_320px] xl:items-start">
           <div className="space-y-4">
@@ -72,7 +66,7 @@ export default async function OnlineClassesPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero">Learn with a live teacher</h2>
+              <h1 className="app-heading-hero">Learn with a live teacher</h1>
               <p className="app-subtitle max-w-2xl">
                 Volna School’s online GCSE Russian classes can support students who want
                 more structure, expert teaching, and a clearer path through the course.

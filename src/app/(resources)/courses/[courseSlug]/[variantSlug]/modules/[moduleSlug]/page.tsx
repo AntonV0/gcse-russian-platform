@@ -138,13 +138,6 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   return (
     <main className="space-y-8">
-      <PageHeader
-        title={module.title}
-        description={
-          module.description ?? "Work through the lessons in this module step by step."
-        }
-      />
-
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)] xl:items-start">
           <div className="space-y-5">
@@ -164,14 +157,13 @@ export default async function ModulePage({ params }: ModulePageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">
-                {!hasPublishedLessons
-                  ? "Module content is being prepared"
-                  : isModuleComplete
-                    ? "Module complete"
-                    : "Continue this module"}
-              </h2>
-              <p className="app-subtitle max-w-2xl">{momentumMessage}</p>
+              <h1 className="app-heading-hero max-w-3xl">{module.title}</h1>
+              <p className="app-subtitle max-w-2xl">
+                {module.description ?? momentumMessage}
+              </p>
+              {module.description ? (
+                <p className="text-sm app-text-muted">{momentumMessage}</p>
+              ) : null}
             </div>
 
             <div className="app-mobile-action-stack flex flex-wrap gap-3">

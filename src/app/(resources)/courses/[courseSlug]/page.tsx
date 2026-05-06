@@ -94,13 +94,6 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
   return (
     <main className="space-y-8">
-      <PageHeader
-        title={course.title}
-        description={
-          course.description ?? "Choose the learning path that fits your study goals."
-        }
-      />
-
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
           <div className="space-y-5">
@@ -117,11 +110,17 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">Choose your learning path</h2>
+              <h1 className="app-heading-hero max-w-3xl">{course.title}</h1>
               <p className="app-subtitle max-w-2xl">
-                Start with the course path that matches your level and study goals, then
-                work through modules and lessons step by step.
+                {course.description ??
+                  "Start with the course path that matches your level and study goals, then work through modules and lessons step by step."}
               </p>
+              {course.description ? (
+                <p className="text-sm app-text-muted">
+                  Choose the learning path that fits your study goals, then continue step
+                  by step.
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-wrap gap-3">

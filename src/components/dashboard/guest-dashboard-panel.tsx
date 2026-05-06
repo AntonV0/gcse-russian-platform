@@ -31,6 +31,7 @@ export function GuestDashboardPanel() {
         <EmptyState
           title="Preview the GCSE Russian app"
           description="Create a free trial account to choose Foundation or Higher, try sample lessons, save progress, and see the full dashboard experience."
+          headingLevel={1}
           visual={
             <VisualPlaceholder
               category="learningPath"

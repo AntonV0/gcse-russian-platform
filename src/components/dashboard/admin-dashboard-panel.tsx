@@ -121,7 +121,7 @@ export function AdminDashboardPanel({ dashboard }: { dashboard: DashboardInfo })
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">Admin control center</h2>
+              <h1 className="app-heading-hero max-w-3xl">Admin control center</h1>
               <p className="app-subtitle max-w-2xl">
                 Open content, question, template, user, and lesson-builder tools from one
                 place.

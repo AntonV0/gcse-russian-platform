@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import PageHeader from "@/components/layout/page-header";
 import AppIcon from "@/components/ui/app-icon";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
@@ -468,11 +467,6 @@ export default async function CoursesPage() {
   if (dashboard.role === "guest") {
     return (
       <main className="space-y-8">
-        <PageHeader
-          title="Courses"
-          description="Preview the GCSE Russian course structure before starting a free trial."
-        />
-
         <section className="app-surface-brand app-section-padding-lg overflow-hidden">
           <div className="grid gap-7 xl:grid-cols-[minmax(0,0.86fr)_minmax(430px,560px)] xl:items-stretch">
             <div className="space-y-5 xl:py-2">
@@ -486,9 +480,9 @@ export default async function CoursesPage() {
               </div>
 
               <div className="space-y-2">
-                <h2 className="app-heading-hero max-w-3xl">
+                <h1 className="app-heading-hero max-w-3xl">
                   Choose Foundation or Higher inside your trial
-                </h2>
+                </h1>
                 <p className="app-subtitle max-w-2xl">
                   Course paths, modules, and lessons unlock after signup so your tier
                   choice and progress are saved from the start.
@@ -560,11 +554,6 @@ export default async function CoursesPage() {
 
   return (
     <main className="space-y-8">
-      <PageHeader
-        title="Courses"
-        description="Continue your next lesson, start your selected path, or choose the Foundation/Higher route that fits."
-      />
-
       <section className="app-surface-brand app-section-padding-lg overflow-hidden">
         <div className="grid gap-7 xl:grid-cols-[minmax(0,0.86fr)_minmax(430px,560px)] xl:items-stretch">
           <div className="space-y-5 xl:py-2">
@@ -586,9 +575,9 @@ export default async function CoursesPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="app-heading-hero max-w-3xl">
+              <h1 className="app-heading-hero max-w-3xl">
                 {primaryAction?.title ?? "Your GCSE Russian course"}
-              </h2>
+              </h1>
               <p className="app-subtitle max-w-2xl">
                 {primaryAction?.description ??
                   "Open the course page to choose a route and begin structured GCSE Russian study."}

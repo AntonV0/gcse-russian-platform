@@ -31,7 +31,7 @@ export function TeacherDashboardPanel({
           </div>
 
           <div className="space-y-2">
-            <h2 className="app-heading-hero max-w-3xl">Teacher dashboard</h2>
+            <h1 className="app-heading-hero max-w-3xl">Teacher dashboard</h1>
             <p className="app-subtitle max-w-2xl">
               Manage assignments, review submissions, and support students through their
               teacher-led learning workflow.

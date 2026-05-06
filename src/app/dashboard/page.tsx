@@ -3,10 +3,9 @@ import { GuestDashboardPanel } from "@/components/dashboard/guest-dashboard-pane
 import { StudentDashboardPanel } from "@/components/dashboard/student-dashboard-panel";
 import { TeacherDashboardPanel } from "@/components/dashboard/teacher-dashboard-panel";
 import { TrialTierChoicePanel } from "@/components/dashboard/trial-tier-choice-panel";
-import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
-import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
+import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getDashboardNextStep,
@@ -17,7 +16,6 @@ import { getCourseProgressSummary } from "@/lib/progress/progress";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
-  const profile = await getCurrentProfile();
   const dashboard = await getDashboardInfo();
   const hasActiveStudentPath =
     dashboard.role === "student" &&
@@ -44,7 +42,6 @@ export default async function DashboardPage() {
         null,
       ];
 
-  const welcomeName = profile?.full_name ? `, ${profile.full_name}` : "";
   const nextStep = getDashboardNextStep(
     dashboard.variant,
     dashboard.accessMode,
@@ -54,15 +51,6 @@ export default async function DashboardPage() {
 
   return (
     <main className="space-y-8">
-      <PageHeader
-        title="Dashboard"
-        description={
-          user
-            ? `Welcome back${welcomeName}.`
-            : "Preview the GCSE Russian learning dashboard before creating a trial account."
-        }
-      />
-
       {dashboard.role === "guest" ? <GuestDashboardPanel /> : null}
 
       {dashboard.role === "student" && dashboard.accessState === "trial_needs_tier" ? (
@@ -99,6 +87,7 @@ function ExpiredAccessPanel() {
       iconTone="warning"
       title="Your course access is not active"
       description="This account has previous access history, so it is not treated as a fresh trial. Review billing to restore Foundation or Higher access."
+      headingLevel={1}
       action={
         <div className="flex flex-wrap justify-center gap-3">
           <Button href="/account/billing" variant="primary" icon="billing">
