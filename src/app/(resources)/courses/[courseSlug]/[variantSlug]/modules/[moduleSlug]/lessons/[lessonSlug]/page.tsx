@@ -136,8 +136,9 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
         <EmptyState
           icon="lessonContent"
           iconTone="brand"
-          title="Lesson content is not ready yet"
-          description="The lesson exists, but no published content is available right now. Return to the module and choose another lesson."
+          title={lesson.title}
+          description="Lesson content is not ready yet. Return to the module and choose another lesson for now."
+          headingLevel={1}
           action={
             <Button
               href={getModulePath(courseSlug, variantSlug, moduleSlug)}

@@ -91,8 +91,9 @@ export default async function LessonPageTemplate({
         <EmptyState
           icon="lessonContent"
           iconTone="brand"
-          title="No sections for this course path"
-          description="This lesson exists, but none of its sections are available for the current course variant."
+          title={lesson.title}
+          description="No sections are available for this course path yet. Return to the module and choose another lesson for now."
+          headingLevel={1}
           action={
             <Button href={moduleHref} variant="primary" icon="back">
               Back to module
