@@ -57,11 +57,11 @@
 }
 
 .app-brand-soft {
-  background: var(--accent-gradient-soft);
+  background: color-mix(in srgb, var(--accent) 7%, var(--background-elevated));
 }
 
 .app-accent-soft {
-  background: var(--accent-gradient-soft);
+  background: color-mix(in srgb, var(--accent) 7%, var(--background-elevated));
 }
 
 .app-interactive {

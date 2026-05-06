@@ -3,6 +3,7 @@ import DevComponentMarker from "@/components/ui/dev-component-marker";
 type DataTableProps = {
   children: React.ReactNode;
   className?: string;
+  tableClassName?: string;
 };
 
 type DataTableSectionProps = {
@@ -17,7 +18,7 @@ type DataTableRowProps = {
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-export function DataTable({ children, className }: DataTableProps) {
+export function DataTable({ children, className, tableClassName }: DataTableProps) {
   return (
     <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
       {SHOW_UI_DEBUG ? (
@@ -38,7 +39,16 @@ export function DataTable({ children, className }: DataTableProps) {
       ) : null}
 
       <div className="max-w-full overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
-        <table className="w-full min-w-[640px] border-collapse text-sm">{children}</table>
+        <table
+          className={[
+            "w-full border-collapse text-sm",
+            tableClassName ?? "min-w-[640px]",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {children}
+        </table>
       </div>
     </div>
   );
@@ -86,7 +96,7 @@ export function DataTableHeaderCell({ children, className }: DataTableSectionPro
   return (
     <th
       className={[
-        "whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)] sm:px-5",
+        "whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)] sm:px-5",
         className,
       ]
         .filter(Boolean)
@@ -119,7 +129,7 @@ export function DataTableCompactHeaderCell({
   return (
     <th
       className={[
-        "whitespace-nowrap px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]",
+        "whitespace-nowrap px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]",
         className,
       ]
         .filter(Boolean)

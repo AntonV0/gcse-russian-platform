@@ -107,6 +107,50 @@
     0 4px 11px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
+.app-btn-journey {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent-fill) 96%, var(--brand-white)) 0%,
+      var(--accent-fill) 42%,
+      color-mix(in srgb, var(--accent-fill-hover) 86%, var(--accent-fill)) 100%
+    );
+  color: var(--accent-on-fill);
+  border: 1px solid color-mix(in srgb, var(--accent-fill) 72%, var(--brand-white));
+  box-shadow:
+    0 10px 22px color-mix(in srgb, var(--accent) 22%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 28%, transparent);
+}
+
+.app-btn-journey::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    color-mix(in srgb, var(--brand-white) 18%, transparent) 42%,
+    transparent 72%
+  );
+  transform: translateX(-54%);
+  transition: transform var(--transition-base);
+}
+
+.app-btn-journey:hover {
+  filter: saturate(1.08) brightness(1.02);
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--accent) 28%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 32%, transparent);
+}
+
+.app-btn-journey:hover::after {
+  transform: translateX(42%);
+}
+
 .app-btn-danger {
   background: linear-gradient(
     135deg,

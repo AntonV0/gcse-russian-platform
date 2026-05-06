@@ -72,9 +72,10 @@
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: 3.5rem;
+  height: 1px;
   pointer-events: none;
   background: var(--feedback-sheen-gradient);
+  opacity: 0.72;
 }
 
 .app-feedback-banner-info,
@@ -122,11 +123,7 @@
 
 [data-theme="dark"] .app-empty-icon-default {
   border-color: color-mix(in srgb, var(--accent) 10%, transparent);
-  background: linear-gradient(
-    135deg,
-    var(--dark-control-bg-hover) 0%,
-    var(--dark-control-bg) 100%
-  );
+  background: color-mix(in srgb, var(--accent) 1.5%, var(--dark-control-bg));
   color: var(--text-secondary);
   box-shadow: var(--control-shadow);
 }

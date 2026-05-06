@@ -28,10 +28,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <DevMarkerProvider isAdmin>
       <AppShell user={{ email: user.email }}>
-        <div className="overflow-x-clip bg-[var(--background-muted)]">
+        <div className="app-admin-workspace overflow-x-clip">
           <AdminRouteTracker />
 
-          <div className="border-b border-[var(--border)] bg-[var(--background-muted)] px-4 py-4 lg:hidden">
+          <div className="border-b border-[var(--border)] bg-[var(--workspace-admin-bg)] px-4 py-4 lg:hidden">
             <details className="app-card overflow-hidden">
               <summary className="app-focus-ring flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[var(--text-primary)]">
                 <span>Admin navigation</span>
@@ -47,7 +47,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
 
           <div className="grid min-h-[calc(100vh-var(--site-header-height))] lg:grid-cols-[272px_minmax(0,1fr)]">
-            <div className="sticky top-[var(--site-header-height)] hidden h-[calc(100vh-var(--site-header-height))] border-r border-[var(--border)] bg-[var(--background-elevated)] lg:block">
+            <div className="sticky top-[var(--site-header-height)] hidden h-[calc(100vh-var(--site-header-height))] border-r border-[var(--border)] bg-[var(--surface-plain-bg)] lg:block">
               <AdminSidebar />
             </div>
 

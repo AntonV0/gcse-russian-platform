@@ -11,13 +11,35 @@ body {
   padding: 0;
   min-height: 100vh;
   overflow-x: clip;
-  background: var(--background);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--background-elevated) 20%, transparent) 0%,
+      transparent 18rem
+    ),
+    var(--background);
   color: var(--text-primary);
   font-family:
-    "Segoe UI", Aptos, "Trebuchet MS", "Noto Sans", Inter, Arial, Helvetica, sans-serif;
+    var(--font-app), Manrope, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Aptos, "Noto Sans", Arial, Helvetica, sans-serif;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.5;
   text-rendering: optimizeLegibility;
+}
+
+body:has(.app-route-lesson) {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--lesson-paper-bg) 42%, transparent) 0%,
+      transparent 22rem
+    ),
+    var(--workspace-lesson-bg);
+}
+
+body:has(.app-route-admin) {
+  background: var(--workspace-admin-bg);
 }
 
 *,
@@ -102,6 +124,10 @@ small {
   padding-right: max(var(--page-padding-x), env(safe-area-inset-right));
 }
 
+.app-shell-main.app-route-lesson {
+  padding-top: calc(var(--page-padding-y) + clamp(0.75rem, 1.4vw, 1.25rem));
+}
+
 .app-site-header {
   position: sticky;
   top: 0;
@@ -110,17 +136,9 @@ small {
   border-bottom: 1px solid color-mix(in srgb, var(--border) 74%, transparent);
   background:
     linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--background-elevated) 92%, var(--brand-white)) 0%,
-      color-mix(in srgb, var(--accent) 4%, var(--background-elevated)) 28%,
-      color-mix(in srgb, var(--background-elevated) 94%, var(--background)) 44%,
-      color-mix(in srgb, var(--background-elevated) 92%, var(--brand-white)) 100%
-    ),
-    linear-gradient(
       180deg,
-      color-mix(in srgb, var(--background-elevated) 98%, var(--background)) 0%,
-      color-mix(in srgb, var(--background-elevated) 96%, var(--background)) 48%,
-      color-mix(in srgb, var(--background) 92%, var(--background-elevated)) 100%
+      color-mix(in srgb, var(--background-elevated) 94%, transparent) 0%,
+      color-mix(in srgb, var(--background-elevated) 88%, var(--background)) 100%
     );
   box-shadow:
     inset 0 -1px 0 color-mix(in srgb, var(--brand-white) 46%, transparent),

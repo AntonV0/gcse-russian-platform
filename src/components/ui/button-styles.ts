@@ -18,14 +18,14 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
       return [
         "app-btn-variant-primary border border-transparent !text-[var(--accent-on-fill)]",
         "[background:var(--accent-gradient-fill)]",
-        "shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_18%,transparent),0_12px_26px_color-mix(in_srgb,var(--accent)_24%,transparent),0_2px_6px_color-mix(in_srgb,var(--accent)_14%,transparent)]",
+        "shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_16%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_18%,transparent),0_2px_6px_color-mix(in_srgb,var(--accent)_10%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:[background:var(--accent-gradient-fill-hover)]",
-              "hover:brightness-[1.04]",
-              "hover:saturate-[1.04]",
-              "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_22%,transparent),0_16px_34px_color-mix(in_srgb,var(--accent)_27%,transparent),0_5px_12px_color-mix(in_srgb,var(--accent)_16%,transparent)]",
+              "hover:brightness-[1.02]",
+              "hover:saturate-[1.02]",
+              "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_20%,transparent),0_14px_30px_color-mix(in_srgb,var(--accent)_22%,transparent),0_4px_10px_color-mix(in_srgb,var(--accent)_12%,transparent)]",
             ].join(" "),
       ].join(" ");
 
@@ -131,15 +131,15 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
         "app-btn-variant-soft",
         "border border-[color-mix(in_srgb,var(--accent)_14%,transparent)]",
         "text-[var(--accent-on-soft)]",
-        "[background:var(--accent-gradient-soft)]",
-        "shadow-[0_1px_2px_color-mix(in_srgb,var(--accent)_4%,transparent),0_8px_18px_color-mix(in_srgb,var(--accent)_7%,transparent)]",
+        "bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))]",
+        "shadow-[0_1px_2px_color-mix(in_srgb,var(--accent)_4%,transparent),0_6px_14px_color-mix(in_srgb,var(--text-primary)_4%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:text-[var(--accent-on-soft)]",
               "hover:border-[color-mix(in_srgb,var(--accent)_30%,transparent)]",
-              "hover:[background:var(--accent-gradient-soft-hover)]",
-              "hover:shadow-[0_13px_26px_color-mix(in_srgb,var(--accent)_14%,transparent),0_3px_8px_color-mix(in_srgb,var(--accent)_7%,transparent)]",
+              "hover:bg-[color-mix(in_srgb,var(--accent)_11%,var(--background-elevated))]",
+              "hover:shadow-[0_10px_22px_color-mix(in_srgb,var(--accent)_10%,transparent),0_3px_8px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]",
             ].join(" "),
       ].join(" ");
 

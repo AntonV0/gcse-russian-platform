@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Manrope } from "next/font/google";
 import {
   DEFAULT_OG_IMAGE_PATH,
   DEFAULT_SEO_DESCRIPTION,
@@ -8,6 +9,13 @@ import {
   getPublicSiteUrl,
 } from "@/lib/seo/site";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+
+const manrope = Manrope({
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-app",
+});
 
 export const metadata: Metadata = {
   metadataBase: getPublicSiteUrl(),
@@ -45,7 +53,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={manrope.variable}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <head>
         <link
           rel="icon"

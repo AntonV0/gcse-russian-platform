@@ -11,24 +11,166 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PanelCard from "@/components/ui/panel-card";
 
+const FONT_QA_SPECIMENS = [
+  {
+    title: "English hierarchy",
+    label: "Student dashboard heading",
+    content: "Build confidence before the exam",
+    description:
+      "Checks whether the chosen heading weight feels premium, direct, and warm without shouting.",
+    language: "en",
+    className: "text-3xl font-extrabold leading-[1.08]",
+  },
+  {
+    title: "Cyrillic vocabulary",
+    label: "Phrase card",
+    content: "Здравствуйте. Меня зовут...",
+    description: "Checks common student-facing Cyrillic at a strong vocabulary weight.",
+    language: "ru",
+    className: "text-2xl font-bold leading-snug",
+  },
+  {
+    title: "Long Russian words",
+    label: "Stress case",
+    content: "достопримечательность, путешествовать, преподавательница",
+    description: "Checks wrapping, counters, and dense Cyrillic rhythm in longer words.",
+    language: "ru",
+    className: "text-xl font-bold leading-snug",
+  },
+  {
+    title: "Glyph clarity",
+    label: "ё / й / щ / ж",
+    content: "семьёй, хороший, ещё, жизнь, следующий",
+    description: "Checks the Russian letters students often misread or mistype.",
+    language: "ru",
+    className: "text-xl font-semibold leading-snug",
+  },
+  {
+    title: "Mixed prompt",
+    label: "Translation prompt",
+    content: "Next summer I am going to travel with my family.",
+    russianContent: "Следующим летом я буду путешествовать с семьёй.",
+    description: "Checks English and Russian in one learning surface.",
+    language: "mixed",
+    className: "text-lg font-bold leading-snug",
+  },
+  {
+    title: "Compact UI",
+    label: "Metadata and numbers",
+    content: "Step 7 of 8 · 12 questions ready · 1RU0 Foundation",
+    description: "Checks labels, numerals, and exam-code text in small UI.",
+    language: "en",
+    className: "text-sm font-semibold leading-6",
+  },
+] as const;
+
+function DemoFontQa() {
+  return (
+    <div className="space-y-4">
+      <PanelCard
+        title="Chosen font"
+        description="Manrope is now the primary app font. This section exists to keep English, Cyrillic, and mixed learning text under review."
+        contentClassName="space-y-4"
+      >
+        <div className="flex flex-wrap gap-2">
+          <Badge tone="success">Manrope</Badge>
+          <Badge tone="muted">Latin + Cyrillic</Badge>
+          <Badge tone="muted">Single product font</Badge>
+        </div>
+
+        <p className="max-w-3xl app-text-body-muted">
+          Use one font family across headings, lesson prose, navigation, forms, and
+          admin. Distinction comes from role-based weights and spacing, not from
+          switching typefaces.
+        </p>
+      </PanelCard>
+
+      <div className="grid gap-4 xl:grid-cols-3">
+        {FONT_QA_SPECIMENS.map((specimen) => (
+          <PanelCard
+            key={specimen.title}
+            title={specimen.title}
+            description={specimen.description}
+            contentClassName="space-y-4"
+          >
+            <div className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] app-text-soft">
+              {specimen.label}
+            </div>
+            {specimen.language === "mixed" ? (
+              <p className={[specimen.className, "text-[var(--text-primary)]"].join(" ")}>
+                <span>{specimen.content}</span>{" "}
+                <span lang="ru">{specimen.russianContent}</span>
+              </p>
+            ) : (
+              <p
+                lang={specimen.language === "ru" ? "ru" : undefined}
+                className={[specimen.className, "text-[var(--text-primary)]"].join(" ")}
+              >
+                {specimen.content}
+              </p>
+            )}
+          </PanelCard>
+        ))}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <PanelCard
+          title="Lesson card QA"
+          description="A compact learning surface with the same role weights used in real lessons."
+          contentClassName="space-y-4"
+        >
+          <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+            <div className="text-sm font-semibold text-[var(--text-primary)]">
+              Vocabulary check
+            </div>
+            <div lang="ru" className="mt-3 text-2xl font-bold leading-snug">
+              Здравствуйте. Меня зовут...
+            </div>
+            <div className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+              Hello / good day. My name is...
+            </div>
+          </div>
+        </PanelCard>
+
+        <PanelCard
+          title="Mixed-script prompt QA"
+          description="Prompt and model-answer text should feel related, not like a fallback font changed underneath."
+          contentClassName="space-y-4"
+        >
+          <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4">
+            <div className="text-sm font-semibold text-[var(--accent-ink)]">
+              Translation prompt
+            </div>
+            <p className="mt-2 text-lg font-bold leading-snug text-[var(--text-primary)]">
+              Next summer I am going to travel with my family.
+            </p>
+            <p lang="ru" className="mt-3 text-base font-medium leading-7">
+              Следующим летом я буду путешествовать с семьёй.
+            </p>
+          </div>
+        </PanelCard>
+      </div>
+    </div>
+  );
+}
+
 function DemoFontSystemPreview() {
   return (
     <div className="space-y-4">
       <PanelCard
         title="Live direction now applied"
-        description="The base UI direction is now a warmer humanist sans stack with a neutral sans fallback."
+        description="Manrope is the product font for student learning, marketing, admin tools, and mixed English/Russian content."
         contentClassName="space-y-4"
       >
         <div className="flex flex-wrap gap-2">
           <Badge tone="success">Current direction</Badge>
-          <Badge tone="muted">Humanist sans</Badge>
-          <Badge tone="muted">English + Russian safe stack</Badge>
+          <Badge tone="muted">Manrope</Badge>
+          <Badge tone="muted">English + Russian</Badge>
         </div>
 
         <p className="text-sm app-text-muted">
-          This is still a system-stack direction, not a final hosted font decision. It
-          lets the product feel warmer right now while keeping performance and
-          implementation simple.
+          The app uses one hosted font family for its core brand voice. Mono and emoji
+          remain narrow exceptions for technical fields and avatar controls.
         </p>
       </PanelCard>
 
@@ -212,5 +354,17 @@ export function UiLabTypographyContentSections() {
 
       <UiLabFutureSection items={TYPOGRAPHY_FUTURE_ITEMS} />
     </>
+  );
+}
+
+export function UiLabTypographyFontPrototypeSection() {
+  return (
+    <UiLabSection
+      id="font-prototypes"
+      title="Font QA"
+      description="Permanent Manrope checks for English, Cyrillic, mixed learning text, long words, glyph clarity, and compact labels."
+    >
+      <DemoFontQa />
+    </UiLabSection>
   );
 }

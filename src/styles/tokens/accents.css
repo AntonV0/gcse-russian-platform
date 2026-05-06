@@ -1,4 +1,16 @@
 /* ========= Accent themes ========= */
+[data-accent="blue"] {
+  --accent: #3b82f6;
+  --accent-fill: #2563eb;
+  --accent-fill-hover: #1d4ed8;
+  --accent-hover: var(--accent-fill-hover);
+  --accent-ink: #1d4ed8;
+  --accent-on-fill: #ffffff;
+  --accent-soft: #eaf2ff;
+  --accent-ring: rgba(59, 130, 246, 0.14);
+  --accent-rgb: 59, 130, 246;
+}
+
 [data-accent="purple"] {
   --accent: #8b5cf6;
   --accent-fill: #6d28d9;
@@ -103,6 +115,28 @@
   --accent-soft: #e2e8f0;
   --accent-ring: rgba(71, 85, 105, 0.16);
   --accent-rgb: 71, 85, 105;
+}
+
+[data-theme="dark"][data-accent="blue"] {
+  --accent: #4f8cff;
+  --accent-fill: #4f8cff;
+  --accent-fill-hover: #76a7ff;
+  --accent-hover: var(--accent-fill-hover);
+  --accent-ink: var(--accent-fill);
+  --accent-on-fill: #071633;
+  --accent-on-soft: var(--accent-fill-hover);
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
+  --accent-selected-bg: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
+  --accent-selected-border: color-mix(
+    in srgb,
+    var(--accent) 78%,
+    var(--dark-surface-border)
+  );
+  --accent-ring: rgba(79, 140, 255, 0.16);
+  --accent-rgb: 79, 140, 255;
+  --accent-surface-strength: 0%;
+  --accent-elevated-strength: 0%;
+  --accent-muted-strength: 0%;
 }
 
 [data-theme="dark"][data-accent="purple"] {

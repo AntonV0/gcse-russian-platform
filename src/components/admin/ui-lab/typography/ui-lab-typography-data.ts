@@ -1,4 +1,5 @@
 export const TYPOGRAPHY_PAGE_NAV_ITEMS = [
+  { id: "font-prototypes", label: "Font QA" },
   { id: "hierarchy", label: "Hierarchy" },
   { id: "text-roles", label: "Text roles" },
   { id: "forms", label: "Forms" },

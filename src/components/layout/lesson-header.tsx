@@ -19,7 +19,7 @@ export default function LessonHeader({
   lessonDescription,
 }: LessonHeaderProps) {
   return (
-    <div className="dev-marker-host relative mb-4 space-y-2">
+    <div className="dev-marker-host relative mb-5 space-y-2.5 pt-3 md:pt-4">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="LessonHeader"
@@ -41,9 +41,11 @@ export default function LessonHeader({
         {backLabel}
       </Link>
 
-      <p className="text-xs font-semibold text-[var(--text-secondary)]">{moduleTitle}</p>
+      <p className="app-text-caption font-semibold text-[var(--text-secondary)]">
+        {moduleTitle}
+      </p>
 
-      <h1 className="max-w-4xl text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
+      <h1 className="max-w-4xl text-3xl font-bold leading-[1.08] text-[var(--text-primary)] md:text-4xl">
         {lessonTitle}
       </h1>
 
