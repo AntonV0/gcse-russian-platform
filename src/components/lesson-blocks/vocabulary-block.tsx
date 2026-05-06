@@ -56,7 +56,7 @@ export default function VocabularyBlock({
 
             <div className="min-w-0 space-y-2">
               <div className="flex flex-wrap gap-2">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--info-text)]">
+                <span className="app-text-meta text-[var(--info-text)]">
                   {eyebrow}
                 </span>
 

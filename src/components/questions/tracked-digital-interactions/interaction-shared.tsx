@@ -1,7 +1,10 @@
 "use client";
 
 import { type ReactNode } from "react";
+import { AutoLangText } from "@/components/typography/russian-text";
 import Button from "@/components/ui/button";
+export { AutoLangText } from "@/components/typography/russian-text";
+export { getTextLanguage } from "@/lib/typography/text-language";
 
 export type InteractionControlProps = {
   submitted: boolean;
@@ -31,7 +34,7 @@ export function ToggleChip({
         disabled ? "cursor-default" : "cursor-pointer",
       ].join(" ")}
     >
-      {children}
+      {typeof children === "string" ? <AutoLangText>{children}</AutoLangText> : children}
     </button>
   );
 }

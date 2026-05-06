@@ -128,7 +128,7 @@ export function StepTracker({
       <div className="px-2 pb-2 pt-1.5">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] app-text-soft">
+            <p className="app-text-meta app-text-soft">
               Sections
             </p>
             <p className="mt-0.5 text-sm font-semibold leading-tight text-[var(--text-primary)]">

@@ -167,7 +167,7 @@ function VocabularyItemRow({
           {item.example_ru || item.example_en ? (
             <div className="app-soft-panel px-3 py-3">
               {item.example_ru ? (
-                <div className="font-medium text-[var(--text-primary)]">
+                <div lang="ru" className="font-medium text-[var(--text-primary)]">
                   {item.example_ru}
                 </div>
               ) : null}

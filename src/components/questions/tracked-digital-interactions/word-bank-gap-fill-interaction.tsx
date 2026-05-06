@@ -1,7 +1,12 @@
 "use client";
 
 import type { RuntimeWordBankGapFillQuestion } from "@/lib/questions/question-engine";
-import { type InteractionControlProps, SubmitAnswerButton } from "./interaction-shared";
+import {
+  AutoLangText,
+  getTextLanguage,
+  type InteractionControlProps,
+  SubmitAnswerButton,
+} from "./interaction-shared";
 
 export function WordBankGapFillInteraction({
   question,
@@ -25,14 +30,16 @@ export function WordBankGapFillInteraction({
     <>
       {question.text ? (
         <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3 text-sm leading-6 text-[var(--text-secondary)]">
-          {question.text}
+          <AutoLangText>{question.text}</AutoLangText>
         </div>
       ) : null}
 
       <div className="grid gap-3">
         {question.gaps.map((gap) => (
           <label key={gap.id} className="grid gap-2 text-sm">
-            <span className="font-medium text-[var(--text-secondary)]">{gap.label}</span>
+            <span className="font-medium text-[var(--text-secondary)]">
+              <AutoLangText>{gap.label}</AutoLangText>
+            </span>
             <select
               value={gapAnswers[gap.id] ?? ""}
               onChange={(event) => onChangeGapAnswer(gap.id, event.target.value)}
@@ -41,7 +48,11 @@ export function WordBankGapFillInteraction({
             >
               <option value="">Choose answer</option>
               {question.wordBank.map((word) => (
-                <option key={`${gap.id}-${word}`} value={word}>
+                <option
+                  key={`${gap.id}-${word}`}
+                  value={word}
+                  lang={getTextLanguage(word)}
+                >
                   {word}
                 </option>
               ))}

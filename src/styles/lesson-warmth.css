@@ -1,16 +1,84 @@
+.app-lesson-page-surface {
+  border: 1px solid color-mix(in srgb, var(--accent) 10%, var(--border-subtle));
+  border-radius: var(--radius-xl);
+  background: var(--lesson-paper-bg);
+  box-shadow:
+    var(--shadow-xs),
+    0 16px 34px color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+
+.app-lesson-page-article {
+  border-inline: 1px solid color-mix(in srgb, var(--accent) 9%, var(--border-subtle));
+  background: color-mix(in srgb, var(--lesson-paper-bg) 96%, var(--background-elevated));
+}
+
+.app-section-pager-shell {
+  border-bottom-left-radius: calc(var(--radius-xl) - 1px);
+  border-bottom-right-radius: calc(var(--radius-xl) - 1px);
+  background: color-mix(in srgb, var(--lesson-paper-bg) 96%, var(--background-elevated));
+}
+
+.app-section-pager-dock {
+  --lesson-pager-apron-depth: 0px;
+  --lesson-pager-apron-surface: var(--workspace-lesson-bg);
+  --lesson-pager-bottom-offset: 0px;
+  --lesson-pager-shadow-opacity: 1;
+  --lesson-pager-top-border-color: transparent;
+  --lesson-pager-top-border-opacity: 0;
+  --lesson-pager-surface: color-mix(
+    in srgb,
+    var(--lesson-paper-bg) 96%,
+    var(--background-elevated)
+  );
+  position: relative;
+  background: transparent;
+}
+
+.app-section-pager-dock::before,
+.app-section-pager-dock::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.app-section-pager-dock::before {
+  inset-inline: 1px;
+  top: -2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--lesson-pager-surface) 82%, transparent) 58%,
+    var(--lesson-pager-surface) 100%
+  );
+  opacity: var(--lesson-pager-shadow-opacity);
+  transition: opacity 120ms linear;
+}
+
+.app-section-pager-dock::after {
+  inset-inline: 0;
+  bottom: calc(-1 * var(--lesson-pager-apron-depth));
+  top: 0;
+  background: var(--lesson-pager-apron-surface);
+}
+
+.app-section-pager-card {
+  position: relative;
+  z-index: 1;
+  background: color-mix(in srgb, var(--lesson-pager-surface) 94%, var(--accent-soft));
+  border-top-color: var(--lesson-pager-top-border-color);
+  transition: border-top-color 120ms linear;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--brand-white) 44%, transparent);
+}
+
 .app-lesson-mission {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   border: 1px solid var(--accent-decorative-border);
   border-radius: var(--radius-xl);
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 14%, var(--background-elevated)) 0%,
-      color-mix(in srgb, var(--warning) 5%, var(--background-elevated)) 46%,
-      color-mix(in srgb, var(--accent) 7%, var(--background-elevated)) 100%
-    );
+  background: color-mix(in srgb, var(--accent) 5%, var(--lesson-paper-bg));
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
     0 22px 54px color-mix(in srgb, var(--accent) 11%, transparent),
@@ -31,12 +99,7 @@
   inset: 3px;
   z-index: -1;
   border-radius: calc(var(--radius-xl) - 3px);
-  background: linear-gradient(
-    115deg,
-    color-mix(in srgb, white 42%, transparent) 0%,
-    transparent 34%,
-    color-mix(in srgb, var(--accent) 5%, transparent) 100%
-  );
+  background: color-mix(in srgb, white 18%, transparent);
   pointer-events: none;
 }
 
@@ -55,7 +118,7 @@
   gap: 0.45rem;
   color: var(--accent-ink);
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -65,17 +128,7 @@
   overflow: hidden;
   border: 1px solid var(--accent-decorative-border);
   border-radius: var(--radius-lg);
-  background:
-    radial-gradient(
-      circle at 100% 0%,
-      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
-      transparent 42%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, white 72%, var(--background-elevated)) 0%,
-      color-mix(in srgb, var(--accent) 4%, var(--background-elevated)) 100%
-    );
+  background: color-mix(in srgb, var(--lesson-paper-bg) 88%, var(--background-elevated));
   padding: 1rem;
   box-shadow:
     0 16px 34px color-mix(in srgb, var(--accent) 10%, transparent),
@@ -87,12 +140,8 @@
   position: absolute;
   inset: 0 0 auto;
   height: 100%;
-  background: linear-gradient(
-    155deg,
-    transparent 0%,
-    transparent 58%,
-    color-mix(in srgb, var(--accent) 7%, transparent) 100%
-  );
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+  opacity: 0.24;
   pointer-events: none;
 }
 
@@ -177,12 +226,7 @@
   position: relative;
   isolation: isolate;
   border-radius: var(--radius-xl);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent) 3%, transparent) 0%,
-      transparent 14rem
-    );
+  background: color-mix(in srgb, var(--accent) 1.5%, transparent);
   padding: 0.15rem;
 }
 
@@ -203,12 +247,7 @@
 .app-lesson-prose-card {
   border-radius: var(--radius-lg);
   border: 1px solid var(--accent-decorative-border);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent) 3%, var(--background-elevated)) 0%,
-      var(--background-elevated) 100%
-    );
+  background: var(--lesson-paper-bg);
   padding: 1.2rem;
   box-shadow:
     var(--shadow-xs),
@@ -221,12 +260,7 @@
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--accent) 9%, var(--border-subtle));
   border-radius: var(--radius-xl);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, white 44%, transparent) 0%,
-      var(--background-elevated) 100%
-    );
+  background: var(--lesson-paper-bg);
   box-shadow:
     var(--shadow-sm),
     inset 0 1px 0 color-mix(in srgb, white 58%, transparent);
@@ -256,12 +290,7 @@
   flex-direction: column;
   gap: 0.9rem;
   border-bottom: 1px solid var(--border-subtle);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent) 6%, transparent) 0%,
-      transparent 100%
-    );
+  background: color-mix(in srgb, var(--accent) 3.5%, transparent);
   padding: 1rem 1.1rem;
 }
 
@@ -289,7 +318,7 @@
 .app-study-block-eyebrow {
   color: var(--text-muted);
   font-size: 0.74rem;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 0.1em;
   line-height: 1.35;
   text-transform: uppercase;
@@ -297,34 +326,22 @@
 
 .app-study-block-coach {
   border-color: var(--info-border);
-  background: linear-gradient(135deg, var(--info-surface) 0%, var(--background-elevated) 84%);
+  background: color-mix(in srgb, var(--info-surface) 40%, var(--lesson-paper-bg));
 }
 
 .app-study-block-practice {
   border-color: var(--info-border);
-  background: linear-gradient(
-    135deg,
-    var(--info-surface) 0%,
-    var(--background-elevated) 84%
-  );
+  background: color-mix(in srgb, var(--info-surface) 40%, var(--lesson-paper-bg));
 }
 
 .app-study-block-exam {
   border-color: var(--warning-border);
-  background: linear-gradient(
-    135deg,
-    var(--warning-surface) 0%,
-    var(--background-elevated) 84%
-  );
+  background: color-mix(in srgb, var(--warning-surface) 42%, var(--lesson-paper-bg));
 }
 
 .app-study-block-media {
   border-color: var(--surface-accent-border);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent) 9%, var(--background-elevated)) 0%,
-    var(--background-elevated) 84%
-  );
+  background: color-mix(in srgb, var(--accent) 3.5%, var(--lesson-paper-bg));
 }
 
 .app-study-block-coach::after {
@@ -380,12 +397,7 @@
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
   border-radius: var(--radius-xl);
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 5%, var(--background-elevated)) 0%,
-      var(--background-elevated) 58%
-    );
+  background: color-mix(in srgb, var(--accent) 3.5%, var(--lesson-paper-bg));
   box-shadow: var(--shadow-sm);
 }
 
@@ -404,12 +416,7 @@
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 1.35rem;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent) 2%, var(--background-elevated)) 0%,
-      var(--background-elevated) 100%
-    );
+  background: var(--lesson-paper-bg);
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
     0 16px 36px color-mix(in srgb, var(--text-primary) 7%, transparent),
@@ -418,17 +425,7 @@
 
 .app-lesson-map-header {
   border-bottom: 1px solid var(--border-subtle);
-  background:
-    radial-gradient(
-      circle at 100% 0%,
-      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
-      transparent 34%
-    ),
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 7%, var(--background-elevated)) 0%,
-      var(--background-elevated) 100%
-    );
+  background: color-mix(in srgb, var(--accent) 3.5%, var(--lesson-paper-bg));
   padding: 1.15rem;
 }
 
@@ -451,12 +448,7 @@
   justify-content: center;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border-subtle));
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, white 72%, transparent) 0%,
-      var(--background-elevated) 100%
-    );
+  background: var(--lesson-paper-bg);
   color: var(--accent-ink);
   padding: 0.45rem 0.7rem;
   font-size: 0.95rem;
@@ -558,19 +550,14 @@ a:focus-visible .app-lesson-map-item {
   color: var(--text-secondary);
   padding: 0.2rem 0.45rem;
   font-size: 0.68rem;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 0;
   line-height: 1.2;
 }
 
 .app-lesson-map-item-current {
   border-color: color-mix(in srgb, var(--accent) 24%, var(--border-subtle));
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 12%, var(--background-elevated)) 0%,
-      color-mix(in srgb, var(--accent) 4%, var(--background-elevated)) 100%
-    );
+  background: color-mix(in srgb, var(--accent) 8%, var(--lesson-paper-bg));
   box-shadow:
     0 10px 22px color-mix(in srgb, var(--accent) 10%, transparent),
     inset 0 1px 0 color-mix(in srgb, white 48%, transparent);
@@ -631,23 +618,11 @@ a:focus-visible .app-lesson-map-item {
 }
 
 .app-question-prompt-surface {
-  border-color: color-mix(in srgb, var(--accent) 16%, var(--border-subtle));
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 6%, var(--background-elevated)) 0%,
-      color-mix(in srgb, var(--background-elevated) 88%, var(--background-muted)) 100%
-    );
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 52%, transparent);
+  background: transparent;
 }
 
 .app-question-workspace {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--background-muted) 44%, var(--background-elevated)) 0%,
-      color-mix(in srgb, var(--background-elevated) 76%, var(--background-muted)) 100%
-    );
+  background: color-mix(in srgb, var(--background-muted) 42%, var(--lesson-paper-bg));
 }
 
 .app-answer-option,
@@ -666,12 +641,7 @@ a:focus-visible .app-lesson-map-item {
 .app-answer-option:hover:not(:disabled) {
   transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--accent) 24%, var(--border-strong));
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 7%, var(--background-elevated)) 0%,
-      var(--surface-muted-bg) 100%
-    );
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-muted-bg));
   box-shadow:
     var(--shadow-sm),
     0 10px 22px color-mix(in srgb, var(--accent) 7%, transparent);
@@ -702,12 +672,7 @@ a:focus-visible .app-lesson-map-item {
 
 .app-answer-bank {
   border-color: color-mix(in srgb, var(--accent) 14%, var(--border));
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--background-elevated) 82%, var(--accent-soft)) 0%,
-      var(--background-elevated) 100%
-    );
+  background: color-mix(in srgb, var(--accent) 3%, var(--lesson-paper-bg));
   box-shadow:
     var(--shadow-xs),
     inset 0 1px 0 color-mix(in srgb, white 54%, transparent);
@@ -715,12 +680,7 @@ a:focus-visible .app-lesson-map-item {
 
 .app-answer-bank-target {
   border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 7%, var(--background-muted)) 0%,
-      var(--background-muted) 100%
-    );
+  background: color-mix(in srgb, var(--accent) 5%, var(--background-muted));
   box-shadow:
     inset 0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
     0 0 0 3px color-mix(in srgb, var(--accent) 3%, transparent);
@@ -756,6 +716,12 @@ a:focus-visible .app-lesson-map-item {
   }
 }
 
+@media (min-width: 1280px) {
+  .app-section-pager-dock {
+    background: transparent;
+  }
+}
+
 @media (min-width: 1024px) {
   .app-lesson-mission-content {
     flex-direction: row;
@@ -770,7 +736,11 @@ a:focus-visible .app-lesson-map-item {
 }
 
 [data-theme="dark"] .app-lesson-mission-card {
-  background: color-mix(in srgb, var(--dark-control-bg) 82%, transparent);
+  background: color-mix(in srgb, var(--lesson-paper-bg) 86%, var(--dark-control-bg));
+}
+
+[data-theme="dark"] .app-lesson-mission::after {
+  background: color-mix(in srgb, white 4%, transparent);
 }
 
 [data-theme="dark"] .app-lesson-workspace,
@@ -778,11 +748,7 @@ a:focus-visible .app-lesson-map-item {
 [data-theme="dark"] .app-study-block,
 [data-theme="dark"] .app-practice-card,
 [data-theme="dark"] .app-lesson-map {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent) 3%, var(--dark-control-bg-hover)) 0%,
-    var(--dark-control-bg) 100%
-  );
+  background: var(--lesson-paper-bg);
 }
 
 [data-theme="dark"] .app-question-shell,
@@ -794,13 +760,7 @@ a:focus-visible .app-lesson-map-item {
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-[data-theme="dark"] .app-question-prompt-surface,
 [data-theme="dark"] .app-answer-bank,
 [data-theme="dark"] .app-answer-bank-target {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 6%, var(--dark-control-bg-hover)) 0%,
-      var(--dark-control-bg) 100%
-    );
+  background: color-mix(in srgb, var(--accent) 3.5%, var(--lesson-paper-bg));
 }

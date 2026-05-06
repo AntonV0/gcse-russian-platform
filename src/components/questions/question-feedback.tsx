@@ -1,5 +1,6 @@
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { AutoLangText } from "@/components/typography/russian-text";
 
 type QuestionFeedbackProps = {
   isCorrect: boolean;
@@ -44,7 +45,8 @@ export default function QuestionFeedback({
 
           {!isCorrect && correctAnswerText ? (
             <p className="mt-3 text-sm leading-6">
-              <span className="font-medium">Correct answer:</span> {correctAnswerText}
+              <span className="font-medium">Correct answer:</span>{" "}
+              <AutoLangText>{correctAnswerText}</AutoLangText>
             </p>
           ) : null}
 
@@ -53,7 +55,9 @@ export default function QuestionFeedback({
               <p className="font-medium">Accepted answers:</p>
               <ul className="mt-1 list-disc pl-5">
                 {visibleAcceptedAnswers.map((answer) => (
-                  <li key={answer}>{answer}</li>
+                  <li key={answer}>
+                    <AutoLangText>{answer}</AutoLangText>
+                  </li>
                 ))}
               </ul>
             </div>

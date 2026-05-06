@@ -1,7 +1,12 @@
 "use client";
 
 import type { RuntimeMatchingQuestion } from "@/lib/questions/question-engine";
-import { type InteractionControlProps, SubmitAnswerButton } from "./interaction-shared";
+import {
+  AutoLangText,
+  getTextLanguage,
+  type InteractionControlProps,
+  SubmitAnswerButton,
+} from "./interaction-shared";
 
 export function MatchingInteraction({
   question,
@@ -27,7 +32,7 @@ export function MatchingInteraction({
         {question.prompts.map((prompt) => (
           <label key={prompt.id} className="grid gap-2 text-sm">
             <span className="font-medium text-[var(--text-secondary)]">
-              {prompt.text}
+              <AutoLangText>{prompt.text}</AutoLangText>
             </span>
             <select
               value={matches[prompt.id] ?? ""}
@@ -37,7 +42,11 @@ export function MatchingInteraction({
             >
               <option value="">Choose match</option>
               {question.options.map((option) => (
-                <option key={option.id} value={option.id}>
+                <option
+                  key={option.id}
+                  value={option.id}
+                  lang={getTextLanguage(option.text)}
+                >
                   {option.text}
                 </option>
               ))}

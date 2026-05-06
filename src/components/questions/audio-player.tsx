@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 
 type AudioPlayerProps = {
@@ -86,11 +87,27 @@ export default function AudioPlayer({
     listeningMode || effectiveMaxPlays !== undefined || hideNativeControls;
 
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
+    <div className="rounded-xl border border-[var(--info-border)] bg-[var(--info-surface)] p-4 shadow-[var(--shadow-xs)]">
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-elevated)] text-[var(--accent-ink)]">
+            <AppIcon icon="listening" size={17} />
+          </span>
+          <div>
+            <div className="text-sm font-bold text-[var(--text-primary)]">
+              Russian listening
+            </div>
+            <p className="mt-0.5 text-sm app-text-muted">
+              Listen carefully, then answer from what you hear.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {listeningMode || effectiveMaxPlays !== undefined ? (
         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs app-text-muted">
           {listeningMode ? (
-            <span className="app-pill app-pill-muted">Listening task</span>
+            <span className="app-pill app-pill-muted">GCSE audio</span>
           ) : null}
 
           {effectiveMaxPlays !== undefined ? (

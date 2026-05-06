@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AppIcon from "@/components/ui/app-icon";
+import { RussianText } from "@/components/typography/russian-text";
 import { getButtonClassName } from "@/components/ui/button-styles";
 
 type VocabularyStudyItem = {
@@ -28,6 +29,8 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
   const [isCardAnswerVisible, setIsCardAnswerVisible] = useState(false);
   const currentCardIndex = Math.min(cardIndex, Math.max(items.length - 1, 0));
   const currentCard = items[currentCardIndex];
+  const cardProgressPercent =
+    items.length > 0 ? Math.round(((currentCardIndex + 1) / items.length) * 100) : 0;
 
   function toggleItem(itemKey: string) {
     setRevealedItemKeys((currentKeys) => {
@@ -123,7 +126,7 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
       </div>
 
       {studyMode === "cards" && currentCard ? (
-        <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[linear-gradient(135deg,var(--background-elevated)_0%,var(--surface-muted-bg)_100%)] shadow-[var(--shadow-sm)]">
+        <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised-bg)] shadow-[var(--shadow-sm)]">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-4 py-3">
             <div className="app-text-caption">
               Card {currentCardIndex + 1} of {items.length}
@@ -158,6 +161,20 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
             </div>
           </div>
 
+          <div
+            className="h-1 bg-[var(--background-muted)]"
+            role="progressbar"
+            aria-label="Vocabulary flashcard progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={cardProgressPercent}
+          >
+            <div
+              className="h-full [background:var(--accent-progress-gradient)]"
+              style={{ width: `${cardProgressPercent}%` }}
+            />
+          </div>
+
           <button
             type="button"
             onClick={() => setIsCardAnswerVisible((isVisible) => !isVisible)}
@@ -165,9 +182,13 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
           >
             <span className="flex min-h-[13rem] flex-col justify-center gap-6">
               <span className="space-y-3">
-                <span lang="ru" className="block app-vocab-term text-3xl">
+                <span className="app-text-caption">Russian</span>
+                <RussianText
+                  variant="term"
+                  className="block text-2xl leading-tight sm:text-3xl"
+                >
                   {currentCard.russian}
-                </span>
+                </RussianText>
                 {currentCard.transliteration ? (
                   <span className="block text-base app-text-soft">
                     {currentCard.transliteration}
@@ -177,8 +198,11 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
 
               <span className="block border-t border-[var(--border-subtle)] pt-5">
                 {isCardAnswerVisible ? (
-                  <span className="block text-lg font-medium text-[var(--text-primary)]">
-                    {currentCard.english}
+                  <span className="block space-y-2">
+                    <span className="app-text-caption">English</span>
+                    <span className="block text-lg font-medium text-[var(--text-primary)]">
+                      {currentCard.english}
+                    </span>
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent-ink)]">
@@ -209,9 +233,9 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
                       {index + 1}
                     </span>
                     <span className="min-w-0">
-                      <span lang="ru" className="block app-vocab-term">
+                      <RussianText variant="term" className="block">
                         {item.russian}
-                      </span>
+                      </RussianText>
                       {item.transliteration ? (
                         <span className="mt-1 block text-sm app-text-soft">
                           {item.transliteration}

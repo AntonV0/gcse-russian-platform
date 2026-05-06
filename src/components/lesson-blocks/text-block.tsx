@@ -1,4 +1,6 @@
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import { RussianText } from "@/components/typography/russian-text";
+import { isCyrillicText } from "@/lib/typography/text-language";
 
 type TextBlockProps = {
   content: string;
@@ -7,6 +9,7 @@ type TextBlockProps = {
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 const INLINE_TOKEN_PATTERN =
   /(\*\*[^*]+\*\*|==[^=]+==|\[\[(?:ru|en|key|accent|muted):[^\]]+\]\])/g;
+const CYRILLIC_FRAGMENT_PATTERN = /([\u0400-\u04ff][\u0400-\u04ff\s!?.,…-]*)/g;
 
 type LessonProseBlock =
   | { type: "paragraph"; content: string; variant: "body" | "lead" | "key" }
@@ -143,13 +146,13 @@ function renderInlineLessonText(content: string) {
 
       if (kind === "ru") {
         return (
-          <span
+          <RussianText
             key={index}
-            lang="ru"
+            variant="inline"
             className="font-semibold text-[var(--text-primary)]"
           >
             {value}
-          </span>
+          </RussianText>
         );
       }
 
@@ -178,7 +181,25 @@ function renderInlineLessonText(content: string) {
       }
     }
 
-    return part;
+    if (!isCyrillicText(part)) {
+      return part;
+    }
+
+    return part.split(CYRILLIC_FRAGMENT_PATTERN).map((fragment, fragmentIndex) => {
+      if (!fragment) return null;
+
+      return isCyrillicText(fragment) ? (
+        <RussianText
+          key={`${index}-${fragmentIndex}`}
+          variant="inline"
+          className="font-semibold"
+        >
+          {fragment}
+        </RussianText>
+      ) : (
+        fragment
+      );
+    });
   });
 }
 
@@ -209,7 +230,7 @@ export default function TextBlock({ content }: TextBlockProps) {
           if (block.type === "paragraph") {
             const className =
               block.variant === "key"
-                ? "border-l-2 border-[var(--accent-fill)] py-1 pl-4 text-base font-semibold leading-7 text-[var(--text-primary)]"
+                ? "border-l-2 border-[var(--accent-fill)] py-1.5 pl-4 text-base font-medium leading-8 text-[var(--text-primary)]"
                 : block.variant === "lead"
                   ? "text-lg leading-8 text-[var(--text-primary)]"
                   : "text-base leading-8 text-[var(--text-primary)]";
@@ -227,7 +248,7 @@ export default function TextBlock({ content }: TextBlockProps) {
                 key={blockIndex}
                 className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)]"
               >
-                <div className="border-b border-[var(--border-subtle)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] app-text-soft">
+                <div className="app-text-meta border-b border-[var(--border-subtle)] px-4 py-2 app-text-soft">
                   Model
                 </div>
 
@@ -235,7 +256,7 @@ export default function TextBlock({ content }: TextBlockProps) {
                   {block.lines.map((line, lineIndex) => (
                     <div
                       key={`${blockIndex}-${lineIndex}`}
-                      className="grid gap-2 px-4 py-3 text-base leading-7 text-[var(--text-primary)] sm:grid-cols-[1.5rem_minmax(0,1fr)]"
+                      className="grid gap-2 px-4 py-3 text-base leading-8 text-[var(--text-primary)] sm:grid-cols-[1.5rem_minmax(0,1fr)]"
                     >
                       <span className="pt-0.5 text-xs font-semibold app-text-soft">
                         {lineIndex + 1}
@@ -255,6 +276,7 @@ export default function TextBlock({ content }: TextBlockProps) {
               key={blockIndex}
               className={[
                 "space-y-2 text-base leading-7 text-[var(--text-primary)]",
+                "marker:text-[var(--text-muted)]",
                 block.ordered ? "list-decimal pl-6" : "list-disc pl-6",
               ].join(" ")}
             >

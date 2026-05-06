@@ -1,7 +1,12 @@
 "use client";
 
 import type { RuntimeCategorisationQuestion } from "@/lib/questions/question-engine";
-import { type InteractionControlProps, SubmitAnswerButton } from "./interaction-shared";
+import {
+  AutoLangText,
+  getTextLanguage,
+  type InteractionControlProps,
+  SubmitAnswerButton,
+} from "./interaction-shared";
 
 export function CategorisationInteraction({
   question,
@@ -26,7 +31,9 @@ export function CategorisationInteraction({
       <div className="grid gap-3">
         {question.items.map((item) => (
           <label key={item.id} className="grid gap-2 text-sm">
-            <span className="font-medium text-[var(--text-secondary)]">{item.text}</span>
+            <span className="font-medium text-[var(--text-secondary)]">
+              <AutoLangText>{item.text}</AutoLangText>
+            </span>
             <select
               value={categoryAnswers[item.id] ?? ""}
               onChange={(event) => onChangeCategoryAnswer(item.id, event.target.value)}
@@ -35,7 +42,11 @@ export function CategorisationInteraction({
             >
               <option value="">Choose category</option>
               {question.categories.map((category) => (
-                <option key={category.id} value={category.id}>
+                <option
+                  key={category.id}
+                  value={category.id}
+                  lang={getTextLanguage(category.label)}
+                >
                   {category.label}
                 </option>
               ))}

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import AudioPlayer from "@/components/questions/audio-player";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import { Heading, type HeadingLevel } from "@/components/ui/heading";
+import { getTextLanguage } from "@/lib/typography/text-language";
 
 type QuestionCardProps = {
   heading?: string;
@@ -62,14 +63,18 @@ export default function QuestionCard({
               : ""}
           </div>
 
-          <div className="app-question-prompt-surface rounded-lg border px-3 py-2.5">
+          <div className="app-question-prompt-surface px-1 py-1">
             {instruction ? (
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-ink)]">
+              <p className="mb-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)]">
                 {instruction}
               </p>
             ) : null}
 
-            <Heading level={headingLevel} className="app-question-prompt">
+            <Heading
+              level={headingLevel}
+              lang={getTextLanguage(prompt)}
+              className="app-question-prompt"
+            >
               {prompt}
             </Heading>
           </div>

@@ -39,7 +39,7 @@ export function StepMetaBar({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <div className="text-xs font-medium uppercase tracking-wide app-text-soft">
+            <div className="text-[0.72rem] font-medium uppercase tracking-[0.08em] app-text-soft">
               Step {currentStepNumber} of {totalSteps}
             </div>
 

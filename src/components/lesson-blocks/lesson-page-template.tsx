@@ -158,7 +158,7 @@ export default async function LessonPageTemplate({
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="pb-4">
-          <section className="rounded-2xl bg-[color-mix(in_srgb,var(--background-elevated)_96%,var(--background-muted))] shadow-[var(--shadow-xs)]">
+          <section className="app-lesson-page-surface">
             <StudyMissionPanel
               courseTitle={course.title}
               moduleTitle={module.title}
@@ -170,7 +170,7 @@ export default async function LessonPageTemplate({
               visitedPercent={progressSummary.percent}
             />
 
-            <article className="border-x border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-5 md:px-6 md:pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pt-6 xl:pb-28">
+            <article className="app-lesson-page-article px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-5 md:px-6 md:pb-[calc(7.5rem+env(safe-area-inset-bottom))] md:pt-6 xl:pb-32">
               <LessonRenderer
                 sections={[currentSection]}
                 lessonId={lesson.id}
@@ -180,7 +180,7 @@ export default async function LessonPageTemplate({
               />
             </article>
 
-            <div className="px-4 pb-4 md:px-6">
+            <div className="app-section-pager-shell px-4 pb-4 md:px-6">
               <SectionPager
                 currentStepIndex={effectiveStepIndex}
                 allowedMaxIndex={allowedMaxIndex}

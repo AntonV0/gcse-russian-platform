@@ -95,12 +95,12 @@ export function StudyMissionPanel({
 
   return (
     <section
-      className="relative z-20 overflow-visible rounded-t-2xl border border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))] xl:sticky xl:top-[var(--sticky-site-offset)] xl:z-[60] xl:shadow-[0_10px_22px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]"
+      className="relative z-20 overflow-hidden rounded-t-[calc(var(--radius-xl)-1px)] border-b border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))]"
       aria-label={`${courseTitle}: ${moduleTitle}`}
     >
       <div className="relative p-4 md:p-5">
         <div className="min-w-0 space-y-2">
-          <div className="text-xs font-semibold text-[var(--accent-ink)]">
+          <div className="text-sm font-semibold leading-5 text-[var(--accent-ink)]">
             Step {currentStepNumber} of {totalSteps}
             <span className="sr-only">, {sectionKindLabel}</span>
           </div>
@@ -169,7 +169,7 @@ export function StudyBlockShell({
           </span>
 
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.14em] app-text-soft">
+            <div className="app-text-meta app-text-soft">
               {eyebrow}
             </div>
 
