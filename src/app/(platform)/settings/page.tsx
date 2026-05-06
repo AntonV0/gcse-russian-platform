@@ -15,7 +15,7 @@ import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 
 function AppearancePreview() {
   return (
-    <div className="rounded-xl border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)]/88 p-4 shadow-[var(--surface-accent-shadow)]">
+    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)]/90 p-4 shadow-[var(--shadow-sm)]">
       <div className="mb-4 flex items-center justify-between gap-3">
         <AppLogo
           variant="domain"
@@ -25,13 +25,13 @@ function AppearancePreview() {
           className="min-w-0"
         />
 
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-decorative-border)] shadow-[0_8px_18px_var(--accent-decorative-glow)]">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-decorative-border)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
           <AppIcon icon="palette" size={18} />
         </span>
       </div>
 
-      <div className="space-y-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-3">
-        <div className="rounded-lg border border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-3">
+      <div className="space-y-3 rounded-xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_70%,var(--background-elevated))] p-3">
+        <div className="rounded-lg border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)] p-3">
           <div className="mb-2 flex items-center justify-between gap-3">
             <div>
               <div className="text-xs font-bold uppercase tracking-wide text-[var(--accent-ink)]">
@@ -41,7 +41,7 @@ function AppearancePreview() {
                 Ready for the next small step
               </div>
             </div>
-            <span className="rounded-full [background:var(--accent-gradient-fill)] px-2.5 py-1 text-xs font-bold text-[var(--accent-on-fill)] shadow-[0_8px_18px_var(--accent-decorative-glow)]">
+            <span className="rounded-full bg-[var(--accent-fill)] px-2.5 py-1 text-xs font-bold text-[var(--accent-on-fill)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_12%,transparent)]">
               72%
             </span>
           </div>
@@ -54,7 +54,7 @@ function AppearancePreview() {
         <div className="grid gap-2 sm:grid-cols-2">
           <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-3">
             <div className="mb-2 flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)]">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
                 <AppIcon icon="lessons" size={15} />
               </span>
               <span className="text-sm font-bold text-[var(--text-primary)]">
@@ -111,11 +111,6 @@ export default async function SettingsPage({
 
   return (
     <main className="space-y-8">
-      <PageHeader
-        title="Settings"
-        description="Choose how the course looks, then manage your account security."
-      />
-
       {resolvedSearchParams.success ? (
         <FeedbackBanner
           tone="success"
@@ -141,12 +136,12 @@ export default async function SettingsPage({
                   Appearance
                 </Badge>
                 <Badge tone="muted" icon="sparkles">
-                  Saved on this device
+                  Personal display
                 </Badge>
               </div>
 
               <div className="space-y-2">
-                <h2 className="app-heading-hero">Make GCSE Russian feel like yours</h2>
+                <h1 className="app-heading-hero">Make GCSE Russian feel like yours</h1>
                 <p className="app-subtitle max-w-2xl">
                   Pick a comfortable display mode and a colour that makes the learning
                   space feel clear, bright, and easy to come back to.
@@ -155,10 +150,10 @@ export default async function SettingsPage({
 
               <div className="flex flex-wrap gap-3">
                 <span className="app-pill app-pill-info">
-                  Theme changes apply instantly
+                  Changes save as you choose
                 </span>
                 <span className="app-pill app-pill-muted">
-                  Account security stays below
+                  Password settings below
                 </span>
               </div>
             </div>

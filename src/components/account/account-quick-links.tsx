@@ -1,34 +1,41 @@
 import Link from "next/link";
-import DashboardCard from "@/components/ui/dashboard-card";
+import AppIcon from "@/components/ui/app-icon";
+import type { AppIconKey } from "@/lib/shared/icons";
 
-const accountLinks = [
+const accountLinks: {
+  title: string;
+  href: string;
+  label: string;
+  description: string;
+  icon: AppIconKey;
+}[] = [
   {
     title: "Profile",
     href: "/profile",
     label: "Open profile",
-    description:
-      "Update your display name, full name, and preset avatar from your profile area.",
+    description: "Choose the name and avatar you want to see while you study.",
+    icon: "user",
   },
   {
     title: "Settings",
     href: "/settings",
     label: "Open settings",
-    description:
-      "Manage your password, appearance, and future account preferences from one place.",
+    description: "Pick your theme, colour, and account security settings.",
+    icon: "settings",
   },
   {
     title: "Billing",
     href: "/account/billing",
     label: "Open billing",
-    description:
-      "Review Foundation and Higher access, upgrade options, and subscription actions.",
+    description: "Compare Foundation, Higher, and the ways to keep access active.",
+    icon: "billing",
   },
   {
     title: "Dashboard",
     href: "/dashboard",
     label: "Open dashboard",
-    description:
-      "Go back to your main student hub for progress, quick links, and next steps.",
+    description: "Return to your lessons, progress, assignments, and next steps.",
+    icon: "dashboard",
   },
 ];
 
@@ -36,19 +43,33 @@ export function AccountQuickLinks() {
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       {accountLinks.map((item) => (
-        <DashboardCard key={item.href} title={item.title}>
-          <div className="space-y-3">
-            <p>{item.description}</p>
+        <Link
+          key={item.href}
+          href={item.href}
+          className="app-card app-card-hover group flex min-h-[166px] flex-col justify-between gap-5 p-4 no-underline sm:p-5"
+        >
+          <span className="flex items-start justify-between gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[var(--accent-ink)]">
+              <AppIcon icon={item.icon} size={26} />
+            </span>
 
-            <Link
-              href={item.href}
-              className="inline-flex items-center gap-2 font-medium app-brand-text"
-            >
-              {item.label}
-              <span aria-hidden="true">-&gt;</span>
-            </Link>
-          </div>
-        </DashboardCard>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised-bg)] text-[var(--text-secondary)] transition group-hover:border-[var(--accent-decorative-border)] group-hover:text-[var(--accent-ink)]">
+              <AppIcon icon="chevronRight" size={16} />
+            </span>
+          </span>
+
+          <span>
+            <span className="block app-card-title">{item.title}</span>
+            <span className="mt-2 block text-sm leading-6 text-[var(--text-secondary)]">
+              {item.description}
+            </span>
+          </span>
+
+          <span className="inline-flex items-center gap-2 text-sm font-semibold app-brand-text">
+            {item.label}
+            <AppIcon icon="arrowRight" size={15} />
+          </span>
+        </Link>
       ))}
     </section>
   );

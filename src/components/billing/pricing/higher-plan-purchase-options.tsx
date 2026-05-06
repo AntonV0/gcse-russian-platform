@@ -13,13 +13,13 @@ export default function HigherPlanPurchaseOptions({
   lifetimeLabel,
 }: HigherPlanPurchaseOptionsProps) {
   return (
-    <ActionGroup title="Choose your plan" variant="compact">
+    <ActionGroup variant="compact">
       <CheckoutOptionRow
         productCode="gcse-russian-higher"
         billingType="subscription"
         intervalUnit="month"
         intervalCount={1}
-        label="Monthly"
+        label="Start monthly"
         priceLabel={monthlyLabel}
         meta="Flexible monthly plan"
       />
@@ -29,7 +29,7 @@ export default function HigherPlanPurchaseOptions({
         billingType="subscription"
         intervalUnit="month"
         intervalCount={3}
-        label="3 Months"
+        label="Choose 3 months"
         priceLabel={threeMonthLabel}
         meta="Good for a study term"
       />
@@ -37,9 +37,9 @@ export default function HigherPlanPurchaseOptions({
       <CheckoutOptionRow
         productCode="gcse-russian-higher"
         billingType="one_time"
-        label="Lifetime"
+        label="Choose lifetime"
         priceLabel={lifetimeLabel}
-        meta="One payment, no renewals"
+        meta="Best value, no renewals"
         recommended
       />
     </ActionGroup>

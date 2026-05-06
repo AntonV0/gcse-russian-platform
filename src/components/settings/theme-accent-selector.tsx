@@ -45,7 +45,7 @@ export default function ThemeAccentSelector() {
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-decorative-border)] shadow-[0_8px_18px_var(--accent-decorative-glow)]">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-decorative-border)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
           <AppIcon icon="palette" size={18} />
         </span>
 
@@ -87,7 +87,7 @@ export default function ThemeAccentSelector() {
               <span className="flex items-center gap-2">
                 <span
                   className={[
-                    "h-6 w-6 shrink-0 rounded-full [background:linear-gradient(135deg,var(--accent)_0%,var(--accent-fill-hover)_100%)] ring-2 ring-[var(--background-elevated)] shadow-[0_0_0_1px_color-mix(in_srgb,var(--text-primary)_16%,transparent)]",
+                    "h-6 w-6 shrink-0 rounded-full bg-[var(--accent-fill)] ring-2 ring-[var(--background-elevated)] shadow-[0_0_0_1px_color-mix(in_srgb,var(--text-primary)_16%,transparent)]",
                     isActive
                       ? "outline outline-2 outline-offset-2 outline-[var(--accent-selected-border)]"
                       : "",
@@ -107,13 +107,13 @@ export default function ThemeAccentSelector() {
               </span>
 
               <span
-                className="mt-3 block rounded-lg border border-[color-mix(in_srgb,var(--accent)_28%,var(--border-subtle))] [background:linear-gradient(135deg,color-mix(in_srgb,var(--accent)_13%,var(--background-elevated))_0%,var(--background-elevated)_100%)] p-2"
+                className="mt-3 block rounded-lg border border-[color-mix(in_srgb,var(--accent)_22%,var(--border-subtle))] bg-[var(--background-elevated)] p-2"
                 aria-hidden="true"
               >
-                <span className="mb-2 block h-1.5 rounded-full [background:linear-gradient(90deg,var(--accent)_0%,var(--accent-fill-hover)_100%)] shadow-[0_6px_16px_color-mix(in_srgb,var(--accent)_18%,transparent)]" />
+                <span className="mb-2 block h-1.5 rounded-full bg-[var(--accent-fill)] shadow-[0_6px_16px_color-mix(in_srgb,var(--accent)_12%,transparent)]" />
                 <span className="flex items-center justify-between gap-2">
                   <span className="h-2 w-10 rounded-full bg-[var(--background-muted)]" />
-                  <span className="h-5 w-5 rounded-md [background:linear-gradient(135deg,var(--accent)_0%,var(--accent-fill-hover)_100%)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_18%,transparent)]" />
+                  <span className="h-5 w-5 rounded-md bg-[color-mix(in_srgb,var(--accent)_12%,var(--background-elevated))] shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent)_20%,transparent)]" />
                 </span>
               </span>
 
@@ -121,7 +121,7 @@ export default function ThemeAccentSelector() {
                 className={[
                   "mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
                   isActive
-                    ? "[background:var(--accent-gradient-fill)] text-[var(--accent-on-fill)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_16%,transparent)]"
+                    ? "bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_12%,transparent)]"
                     : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
                 ].join(" ")}
               >

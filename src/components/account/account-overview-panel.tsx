@@ -1,13 +1,11 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import DashboardCard from "@/components/ui/dashboard-card";
 import type { CurrentPlanSummary } from "@/lib/billing/account-helpers";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import type { AppIconKey } from "@/lib/shared/icons";
 import {
-  formatAccessLabel,
-  formatRoleLabel,
   getAccountSummaryText,
-  getVariantLabel,
+  getStudyRouteLabel,
 } from "./account-formatters";
 
 export type AccountProfileSummary = {
@@ -18,118 +16,126 @@ export type AccountProfileSummary = {
 export function AccountOverviewPanel({
   dashboard,
   profile,
-  email,
   currentPlan,
 }: {
   dashboard: DashboardInfo;
   profile: AccountProfileSummary;
-  email: string | null | undefined;
   currentPlan: CurrentPlanSummary;
 }) {
-  const displayName = profile.displayName ?? profile.fullName ?? "Student";
-  const profileStatus = profile.fullName && profile.displayName ? "Complete" : "Needs details";
+  const isProfileComplete = Boolean(profile.fullName && profile.displayName);
+  const profileStatus = isProfileComplete ? "Complete" : "Needs details";
   const planStatus = currentPlan.hasPlan
     ? (currentPlan.planLabel ?? currentPlan.productName ?? "Active plan")
-    : "No paid plan";
+    : dashboard.accessMode === "volna"
+      ? "Included through Volna"
+    : "No self-study plan yet";
+  const studyRoute = getStudyRouteLabel(dashboard.variant, dashboard.accessMode);
+  const nextAction = getAccountNextAction({
+    isProfileComplete,
+    hasPlan: currentPlan.hasPlan,
+    accessMode: dashboard.accessMode,
+  });
 
   return (
     <section className="app-surface-brand app-section-padding-lg">
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_360px] xl:items-start">
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            <Badge tone="info" icon="dashboard">
-              Overview
-            </Badge>
+      <div className="space-y-5">
+        <div className="flex flex-wrap gap-2">
+          <Badge tone="info" icon="dashboard">
+            Account hub
+          </Badge>
+        </div>
 
-            <Badge tone="muted" icon="layers">
-              {getVariantLabel(dashboard.variant)}
-            </Badge>
+        <div className="space-y-2">
+          <h1 className="app-heading-hero">Your GCSE Russian account</h1>
+          <p className="app-subtitle max-w-3xl">
+            {getAccountSummaryText(dashboard.variant, dashboard.accessMode)}
+          </p>
+        </div>
 
-            <Badge tone="muted" icon="userCheck">
-              {formatAccessLabel(dashboard.accessMode)}
-            </Badge>
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="app-stat-tile">
+            <div className="app-stat-label">Profile</div>
+            <div className="app-stat-value">{profileStatus}</div>
           </div>
 
-          <div className="space-y-2">
-            <h2 className="app-heading-hero">Your account overview</h2>
-            <p className="app-subtitle max-w-2xl">
-              {getAccountSummaryText(dashboard.variant, dashboard.accessMode)}
-            </p>
+          <div className="app-stat-tile">
+            <div className="app-stat-label">Course plan</div>
+            <div className="app-stat-value">{planStatus}</div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 xl:max-w-3xl">
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Profile</div>
-              <div className="app-stat-value">{profileStatus}</div>
-            </div>
-
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Plan</div>
-              <div className="app-stat-value">{planStatus}</div>
-            </div>
-
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Course path</div>
-              <div className="app-stat-value">{getVariantLabel(dashboard.variant)}</div>
-            </div>
-
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Access</div>
-              <div className="app-stat-value">
-                {formatAccessLabel(dashboard.accessMode)}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Button href="/profile" variant="primary" icon="user">
-              Open profile
-            </Button>
-
-            <Button href="/account/billing" variant="secondary" icon="billing">
-              Manage billing
-            </Button>
-
-            <Button href="/settings" variant="secondary" icon="settings">
-              Open settings
-            </Button>
-
-            <Button href="/dashboard" variant="secondary" icon="dashboard">
-              Back to dashboard
-            </Button>
+          <div className="app-stat-tile">
+            <div className="app-stat-label">Study route</div>
+            <div className="app-stat-value">{studyRoute}</div>
           </div>
         </div>
 
-        <DashboardCard title="At a glance" headingLevel={3} className="h-full">
-          <div className="space-y-4">
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Display name</div>
-              <div className="app-stat-value">{displayName}</div>
-            </div>
-
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Email</div>
-              <div className="app-stat-value">{email ?? "Not logged in"}</div>
-            </div>
-
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Role</div>
-              <div className="app-stat-value">{formatRoleLabel(dashboard.role)}</div>
-            </div>
-
-            <div className="rounded-xl border border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-3">
-              <div className="text-sm font-bold text-[var(--text-primary)]">
-                Next best action
-              </div>
-              <p className="mt-1 text-sm app-text-muted">
-                {currentPlan.hasPlan
-                  ? "Check your dashboard and keep learning from the next suggested step."
-                  : "Choose the course access that matches your GCSE target."}
-              </p>
-            </div>
+        <div className="flex flex-col gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)]/78 p-4 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="app-stat-label">Next best action</div>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              {nextAction.description}
+            </p>
           </div>
-        </DashboardCard>
+
+          <Button
+            href={nextAction.href}
+            variant="primary"
+            icon={nextAction.icon}
+            className="shrink-0"
+          >
+            {nextAction.label}
+          </Button>
+        </div>
       </div>
     </section>
   );
+}
+
+function getAccountNextAction({
+  isProfileComplete,
+  hasPlan,
+  accessMode,
+}: {
+  isProfileComplete: boolean;
+  hasPlan: boolean;
+  accessMode: DashboardInfo["accessMode"];
+}): {
+  label: string;
+  href: string;
+  icon: AppIconKey;
+  description: string;
+} {
+  if (!isProfileComplete) {
+    return {
+      label: "Finish profile",
+      href: "/profile",
+      icon: "user",
+      description: "Add the name and avatar you want to see while studying.",
+    };
+  }
+
+  if (accessMode === "volna") {
+    return {
+      label: "Go to dashboard",
+      href: "/dashboard",
+      icon: "dashboard",
+      description: "Continue with lessons, assignments, and teacher-linked study.",
+    };
+  }
+
+  if (!hasPlan) {
+    return {
+      label: "Choose a course plan",
+      href: "/account/billing",
+      icon: "billing",
+      description: "Compare Foundation, Higher, and Volna options when you are ready.",
+    };
+  }
+
+  return {
+    label: "Continue learning",
+    href: "/dashboard",
+    icon: "dashboard",
+    description: "Head back to your dashboard and pick up from the next useful step.",
+  };
 }

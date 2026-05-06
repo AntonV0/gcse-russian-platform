@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { updateStudentProfile } from "@/app/actions/auth/auth";
 import AppIcon from "@/components/ui/app-icon";
+import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
@@ -91,7 +92,7 @@ function AvatarMark({
 }) {
   if (isInitialsAvatar(avatar)) {
     return (
-      <span className="text-[0.62em] font-extrabold leading-none tracking-normal text-[var(--accent-ink)]">
+      <span className="text-[0.62em] font-bold leading-none tracking-normal text-[var(--accent-ink)]">
         {initials}
       </span>
     );
@@ -126,7 +127,7 @@ function ProfilePreviewCard({
     >
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--accent-ink)]">
+          <div className="flex items-center gap-2 text-[0.78rem] font-semibold text-[var(--accent-ink)]">
             <AppIcon icon="preview" size={15} />
             Your profile preview
           </div>
@@ -137,12 +138,12 @@ function ProfilePreviewCard({
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] text-5xl shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_8%,transparent)]">
+        <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] text-5xl shadow-[0_10px_24px_color-mix(in_srgb,var(--accent)_7%,transparent)]">
           <AvatarMark avatar={avatar} initials={initials} />
         </span>
 
         <div className="min-w-0">
-          <div className="text-xl font-extrabold text-[var(--text-primary)]">
+          <div className="text-xl font-bold text-[var(--text-primary)]">
             {displayName}
           </div>
           <p className="mt-1.5 text-sm app-text-muted">
@@ -153,8 +154,8 @@ function ProfilePreviewCard({
 
       {hasChanges ? (
         <div className="mt-5 border-t border-[var(--border-subtle)] pt-4">
-          <div className="flex flex-col gap-3 rounded-xl border border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm font-bold text-[var(--text-primary)]">
+          <div className="flex flex-col gap-3 rounded-xl border border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] p-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
               Ready to save this profile?
             </p>
             <Button
@@ -177,7 +178,7 @@ function ProfilePreviewCard({
 function ProfileUpdatedInline() {
   return (
     <div className="rounded-lg border border-[var(--success-border)] bg-[var(--success-surface)] px-3.5 py-2.5 text-[var(--success-text)] shadow-[0_8px_18px_var(--success-shadow)]">
-      <div className="flex items-center gap-2 text-sm font-bold">
+      <div className="flex items-center gap-2 text-sm font-semibold">
         <AppIcon icon="completed" size={16} strokeWidth={2.2} />
         Profile updated
       </div>
@@ -198,7 +199,7 @@ function LearningSnapshotCard({ snapshot }: { snapshot: ProfileLearningSnapshot 
     <section className="app-surface-muted p-4">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
             <AppIcon icon="dashboard" size={15} />
             Learning context
           </div>
@@ -220,33 +221,33 @@ function LearningSnapshotCard({ snapshot }: { snapshot: ProfileLearningSnapshot 
 
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
             <AppIcon icon="userCheck" size={15} />
             Account role
           </div>
-          <div className="mt-1.5 text-base font-extrabold text-[var(--text-primary)]">
+          <div className="mt-1.5 text-base font-semibold text-[var(--text-primary)]">
             {snapshot.roleLabel}
           </div>
           <p className="mt-1 text-sm app-text-muted">{snapshot.accessLabel}</p>
         </div>
 
         <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
             <AppIcon icon="courses" size={15} />
             Course path
           </div>
-          <div className="mt-1.5 text-base font-extrabold text-[var(--text-primary)]">
+          <div className="mt-1.5 text-base font-semibold text-[var(--text-primary)]">
             {snapshot.courseLabel}
           </div>
           <p className="mt-1 text-sm app-text-muted">Current learning route</p>
         </div>
 
-        <div className="rounded-xl border border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--accent-ink)]">
+        <div className="rounded-xl border border-[var(--surface-accent-border)] bg-[var(--surface-muted-bg)] p-3 shadow-[var(--shadow-xs)]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--accent-ink)]">
             <AppIcon icon="completed" size={15} />
             Lesson progress
           </div>
-          <div className="mt-1.5 text-base font-extrabold text-[var(--text-primary)]">
+          <div className="mt-1.5 text-base font-semibold text-[var(--text-primary)]">
             {progressLabel}
           </div>
           <div
@@ -265,12 +266,12 @@ function LearningSnapshotCard({ snapshot }: { snapshot: ProfileLearningSnapshot 
         </div>
 
         <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[var(--text-secondary)]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
             <AppIcon icon={snapshot.nextLessonHref ? "next" : "dashboard"} size={15} />
             Next step
           </div>
           <div className="min-w-0">
-            <div className="mt-1.5 truncate text-base font-extrabold text-[var(--text-primary)]">
+            <div className="mt-1.5 truncate text-base font-semibold text-[var(--text-primary)]">
               {snapshot.nextLessonTitle ?? "Open your dashboard"}
             </div>
             <p className="mt-1 text-sm app-text-muted">
@@ -346,11 +347,20 @@ export default function ProfileEditor({
 
   return (
     <form action={updateStudentProfile} className="space-y-6 xl:-mb-6">
-      <section className="app-feature-panel">
-        <div className="app-feature-panel-grid">
-          <div className="app-feature-panel-main">
+      <section className="app-surface-brand app-section-padding-lg">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-center">
+          <div className="flex min-w-0 flex-col justify-center gap-4">
+            <div className="flex flex-wrap gap-2">
+              <Badge tone="info" icon="user">
+                Student profile
+              </Badge>
+              <Badge tone="muted" icon="palette">
+                Name and avatar
+              </Badge>
+            </div>
+
             <div className="space-y-2">
-              <h2 className="app-heading-hero">Build your student profile</h2>
+              <h1 className="app-heading-hero">Build your student profile</h1>
               <p className="app-subtitle max-w-2xl">
                 Choose a name and avatar that make GCSE Russian feel like yours.
               </p>
@@ -440,12 +450,12 @@ export default function ProfileEditor({
           className={[
             "mt-auto flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between",
             hasDetailsChanges
-              ? "border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]"
+              ? "border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_8%,transparent)]"
               : "border-[var(--border-subtle)] bg-[var(--background-muted)]",
           ].join(" ")}
         >
           <div>
-            <div className="text-sm font-bold text-[var(--text-primary)]">
+            <div className="text-sm font-semibold text-[var(--text-primary)]">
               {hasDetailsChanges ? "Ready to update your details?" : "No detail changes"}
             </div>
             <p className="mt-1 text-sm app-text-muted">
@@ -492,7 +502,7 @@ export default function ProfileEditor({
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
-            <div className="flex items-center gap-2 rounded-2xl border border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-1.5 shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_8%,transparent)]">
+            <div className="flex items-center gap-2 rounded-2xl border border-[var(--accent-decorative-border)] bg-[var(--surface-raised-bg)] p-1.5 shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_7%,transparent)]">
               <Button
                 type="button"
                 variant="secondary"
@@ -505,7 +515,7 @@ export default function ProfileEditor({
               />
 
               <div className="flex min-w-[7.5rem] flex-col items-center px-2 text-center">
-                <span className="text-xs font-bold uppercase tracking-wide text-[var(--accent-ink)]">
+                <span className="text-xs font-semibold text-[var(--accent-ink)]">
                   Avatar set {activeAvatarPage + 1} of {avatarPageCount}
                 </span>
                 <span className="mt-1 flex gap-1">
@@ -573,7 +583,7 @@ export default function ProfileEditor({
                 <span className="min-w-0 flex-1">
                   <span
                     className={[
-                      "block truncate text-sm font-bold",
+                      "block truncate text-sm font-semibold",
                       isSelected
                         ? "text-[var(--accent-on-soft)]"
                         : "text-[var(--text-primary)]",
@@ -581,7 +591,7 @@ export default function ProfileEditor({
                   >
                     {avatar.label}
                   </span>
-                  <span className="mt-0.5 block truncate text-sm app-text-muted">
+                  <span lang="ru" className="mt-0.5 block truncate text-sm app-text-muted">
                     {avatar.russian}
                   </span>
                 </span>
@@ -606,7 +616,7 @@ export default function ProfileEditor({
           className={[
             "flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between",
             hasAvatarChanges
-              ? "border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]"
+              ? "border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_8%,transparent)]"
               : "border-[var(--border-subtle)] bg-[var(--background-muted)]",
           ].join(" ")}
         >
@@ -616,7 +626,7 @@ export default function ProfileEditor({
             </span>
 
             <div className="min-w-0">
-              <div className="text-sm font-bold text-[var(--text-primary)]">
+              <div className="text-sm font-semibold text-[var(--text-primary)]">
                 {hasAvatarChanges ? selectedAvatar.label : "Current avatar saved"}
               </div>
               <div className="text-sm app-text-muted">

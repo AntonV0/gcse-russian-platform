@@ -56,13 +56,13 @@ export default function FoundationPlanPanel({
 
   if (!user) {
     return (
-      <ActionGroup title="Choose your plan" variant="compact">
+      <ActionGroup variant="compact">
         <CheckoutOptionRow
           productCode="gcse-russian-foundation"
           billingType="subscription"
           intervalUnit="month"
           intervalCount={1}
-          label="Monthly"
+          label="Start monthly"
           priceLabel={foundationMonthlyLabel}
           meta="Flexible monthly plan"
         />
@@ -72,7 +72,7 @@ export default function FoundationPlanPanel({
           billingType="subscription"
           intervalUnit="month"
           intervalCount={3}
-          label="3 Months"
+          label="Choose 3 months"
           priceLabel={foundationThreeMonthLabel}
           meta="Good for a study term"
         />
@@ -80,9 +80,9 @@ export default function FoundationPlanPanel({
         <CheckoutOptionRow
           productCode="gcse-russian-foundation"
           billingType="one_time"
-          label="Lifetime"
+          label="Choose lifetime"
           priceLabel={foundationLifetimeLabel}
-          meta="One payment, no renewals"
+          meta="Best value, no renewals"
           recommended
         />
       </ActionGroup>
@@ -264,13 +264,13 @@ export default function FoundationPlanPanel({
   }
 
   return (
-    <ActionGroup title="Choose your plan" variant="compact">
+    <ActionGroup variant="compact">
       <CheckoutOptionRow
         productCode="gcse-russian-foundation"
         billingType="subscription"
         intervalUnit="month"
         intervalCount={1}
-        label="Monthly"
+        label="Start monthly"
         priceLabel={foundationMonthlyLabel}
         meta="Flexible monthly plan"
       />
@@ -280,7 +280,7 @@ export default function FoundationPlanPanel({
         billingType="subscription"
         intervalUnit="month"
         intervalCount={3}
-        label="3 Months"
+        label="Choose 3 months"
         priceLabel={foundationThreeMonthLabel}
         meta="Good for a study term"
       />
@@ -288,9 +288,9 @@ export default function FoundationPlanPanel({
       <CheckoutOptionRow
         productCode="gcse-russian-foundation"
         billingType="one_time"
-        label="Lifetime"
+        label="Choose lifetime"
         priceLabel={foundationLifetimeLabel}
-        meta="One payment, no renewals"
+        meta="Best value, no renewals"
         recommended
       />
     </ActionGroup>

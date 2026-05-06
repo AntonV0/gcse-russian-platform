@@ -153,11 +153,6 @@ export default async function ProfilePage({
 
   return (
     <main className="space-y-8">
-      <PageHeader
-        title="Profile"
-        description="Choose the name and avatar you want to see while you study."
-      />
-
       {resolvedSearchParams.error ? (
         <FeedbackBanner
           tone="danger"

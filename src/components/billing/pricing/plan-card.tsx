@@ -1,14 +1,24 @@
 import Badge from "@/components/ui/badge";
 import AppIcon from "@/components/ui/app-icon";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import type { AppIconKey } from "@/lib/shared/icons";
+
+type CourseFocusItem = {
+  icon: AppIconKey;
+  title: string;
+  description: string;
+};
 
 type PlanCardProps = {
+  id?: string;
   title: string;
   subtitle: string;
   bestFor: string;
+  gradeBadge: string;
   priceLabel: string;
   recommendedPriceLabel?: string;
-  features: string[];
+  courseFocus: CourseFocusItem[];
+  actionTitle: string;
   tone?: "default" | "highlight";
   optionNote?: string;
   children: React.ReactNode;
@@ -17,12 +27,15 @@ type PlanCardProps = {
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
 export default function PlanCard({
+  id,
   title,
   subtitle,
   bestFor,
+  gradeBadge,
   priceLabel,
   recommendedPriceLabel,
-  features,
+  courseFocus,
+  actionTitle,
   tone = "default",
   optionNote,
   children,
@@ -30,7 +43,8 @@ export default function PlanCard({
   const isHighlight = tone === "highlight";
 
   return (
-    <div
+    <section
+      id={id}
       className={[
         "dev-marker-host relative app-card flex h-full flex-col overflow-hidden",
         isHighlight
@@ -43,7 +57,7 @@ export default function PlanCard({
           componentName="PlanCard"
           filePath="src/components/billing/pricing/plan-card.tsx"
           tier="container"
-          componentRole="Pricing plan container with title, price, included features, and purchasable options"
+          componentRole="Pricing plan container with title, price, course focus, and purchasable options"
           bestFor="Billing and pricing pages where a GCSE Russian access tier needs comparable pricing and action content."
           usageExamples={[
             "Foundation pricing panel",
@@ -57,8 +71,8 @@ export default function PlanCard({
 
       <div className="border-b border-[var(--border-subtle)] px-5 py-5 md:px-6 lg:min-h-[11rem]">
         <div className="space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="space-y-1.5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 space-y-1.5">
               <h2 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
                 {title}
               </h2>
@@ -70,52 +84,59 @@ export default function PlanCard({
               </p>
             </div>
 
-            {isHighlight ? (
-              <Badge tone="info" icon="star">
-                Best for exam prep
+            <span className="shrink-0">
+              <Badge tone={isHighlight ? "info" : "muted"} icon="exam">
+                {gradeBadge}
               </Badge>
-            ) : null}
+            </span>
           </div>
 
           <div className="space-y-1">
             <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text-muted)]">
-              Pricing
+              Best value
             </p>
-            <p className="text-2xl font-bold tracking-tight text-[var(--text-primary)] md:text-3xl">
-              {priceLabel}
+            <p className="text-xl font-bold tracking-tight text-[var(--text-primary)] md:text-2xl">
+              {recommendedPriceLabel ?? priceLabel}
             </p>
             {recommendedPriceLabel ? (
-              <p className="text-xs font-semibold text-[var(--accent-ink)]">
-                Best value: {recommendedPriceLabel}
+              <p className="text-sm font-semibold text-[var(--text-secondary)]">
+                or {priceLabel.toLowerCase()}
               </p>
             ) : null}
           </div>
         </div>
       </div>
 
-      <div className="border-b border-[var(--border-subtle)] px-5 py-4 md:px-6 lg:min-h-[15.5rem]">
-        <div className="space-y-2.5">
+      <div className="border-b border-[var(--border-subtle)] px-5 py-4 md:px-6 lg:min-h-[12.5rem]">
+        <div className="space-y-3">
           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text-muted)]">
-            Included
+            Course focus
           </p>
 
-          <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-            {features.map((feature) => (
-              <li key={feature} className="flex items-start gap-2.5">
-                <span className="mt-0.5 text-[var(--accent-ink)]">
-                  <AppIcon icon="completed" size={14} />
+          <div className="grid gap-3">
+            {courseFocus.map((item) => (
+              <div key={item.title} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--background-muted)] text-[var(--accent-ink)]">
+                  <AppIcon icon={item.icon} size={15} />
                 </span>
-                <span className="leading-6">{feature}</span>
-              </li>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-[var(--text-primary)]">
+                    {item.title}
+                  </span>
+                  <span className="mt-0.5 block text-xs leading-5 text-[var(--text-secondary)]">
+                    {item.description}
+                  </span>
+                </span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
 
       <div className="flex-1 px-5 py-4 md:px-6">
-        <div className="space-y-3">
-          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text-muted)]">
-            Options
+        <div className="space-y-3.5">
+          <p className="text-sm font-semibold text-[var(--text-primary)]">
+            {actionTitle}
           </p>
           {children}
           {optionNote ? (
@@ -125,6 +146,6 @@ export default function PlanCard({
           ) : null}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

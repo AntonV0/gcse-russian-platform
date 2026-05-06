@@ -20,23 +20,33 @@ export function getVariantLabel(variant: DashboardInfo["variant"]) {
   return "Volna";
 }
 
+export function getStudyRouteLabel(
+  variant: DashboardInfo["variant"],
+  accessMode: DashboardInfo["accessMode"]
+) {
+  if (accessMode === "volna") return "Volna student route";
+  if (variant === "foundation") return "Foundation self-study";
+  if (variant === "higher") return "Higher self-study";
+  return "No course selected yet";
+}
+
 export function getAccountSummaryText(
   variant: DashboardInfo["variant"],
   accessMode: DashboardInfo["accessMode"]
 ) {
   if (accessMode === "volna") {
-    return "Your account is set up for the Volna student experience, including teacher-linked learning and assignments.";
+    return "Your account is connected to the Volna learning route, with lessons, assignments, and teacher-linked study in one place.";
   }
 
   if (variant === "foundation") {
-    return "Your account is currently focused on the Foundation learning path.";
+    return "You are set up for Foundation, with the course plan and account tools close by whenever you need them.";
   }
 
   if (variant === "higher") {
-    return "Your account is currently focused on the Higher learning path.";
+    return "You are set up for Higher, with your course plan and account tools close by whenever you need them.";
   }
 
-  return "Your account is ready, and more personalisation and learning tools can be managed from here.";
+  return "Your account is ready. You can update your profile, adjust settings, and choose a GCSE Russian course plan when you are ready.";
 }
 
 export function formatDate(value: string | null | undefined) {

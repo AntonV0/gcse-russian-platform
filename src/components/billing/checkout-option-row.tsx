@@ -43,7 +43,7 @@ export default function CheckoutOptionRow({
           billingType,
           intervalUnit,
           intervalCount,
-          successPath: "/account",
+          successPath: "/account/billing",
           cancelPath: "/account/billing",
         }),
       });
@@ -83,7 +83,7 @@ export default function CheckoutOptionRow({
             <span className="text-sm font-bold text-[var(--text-primary)]">{label}</span>
             {recommended ? (
               <span className="rounded-full [background:var(--accent-gradient-fill)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--accent-on-fill)]">
-                Best value
+                Recommended
               </span>
             ) : null}
           </span>

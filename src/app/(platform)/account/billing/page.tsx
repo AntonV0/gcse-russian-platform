@@ -1,6 +1,5 @@
 import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
-import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import BillingPortalButton from "@/components/billing/billing-portal-button";
@@ -84,6 +83,36 @@ const volnaHighlights: Array<{
   },
 ];
 
+const sharedPlanBenefits: Array<{
+  icon: AppIconKey;
+  title: string;
+}> = [
+  {
+    icon: "lessonContent",
+    title: "Structured lessons",
+  },
+  {
+    icon: "exercise",
+    title: "Practice tasks",
+  },
+  {
+    icon: "vocabulary",
+    title: "Vocabulary support",
+  },
+  {
+    icon: "grammar",
+    title: "Grammar revision",
+  },
+  {
+    icon: "exam",
+    title: "Exam preparation",
+  },
+  {
+    icon: "completed",
+    title: "Progress tracking",
+  },
+];
+
 function BillingInfoCard({
   icon,
   title,
@@ -95,8 +124,8 @@ function BillingInfoCard({
 }) {
   return (
     <div className="app-card flex items-start gap-3 px-4 py-3">
-      <span className="mt-0.5 rounded-full bg-[var(--surface-secondary)] p-2 text-[var(--accent-ink)]">
-        <AppIcon icon={icon} size={16} />
+      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-[var(--accent-ink)]">
+        <AppIcon icon={icon} size={20} />
       </span>
       <div>
         <p className="text-sm font-semibold text-[var(--text-primary)]">{title}</p>
@@ -108,23 +137,121 @@ function BillingInfoCard({
   );
 }
 
+function SharedPlanBenefits() {
+  return (
+    <section className="app-card px-5 py-3.5 md:px-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="max-w-sm space-y-1">
+          <p className="text-sm font-bold text-[var(--text-primary)]">
+            Every course plan includes
+          </p>
+          <p className="text-xs leading-5 text-[var(--text-secondary)]">
+            Both courses use the same platform. Higher adds more lessons, harder
+            questions, and exams.
+          </p>
+        </div>
+
+        <div className="grid flex-1 gap-x-5 gap-y-3 sm:grid-cols-3">
+          {sharedPlanBenefits.map((benefit) => (
+            <div
+              key={benefit.title}
+              className="inline-flex items-center gap-2.5"
+            >
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[var(--accent-ink)]">
+                <AppIcon icon={benefit.icon} size={17} />
+              </span>
+              <span className="min-w-0 text-sm font-semibold text-[var(--text-primary)]">
+                {benefit.title}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MobilePlanJumpLinks({
+  foundationLifetimeLabel,
+  higherLifetimeLabel,
+}: {
+  foundationLifetimeLabel?: string | null;
+  higherLifetimeLabel?: string | null;
+}) {
+  const links = [
+    {
+      href: "#foundation-plan",
+      title: "Foundation",
+      grade: "Grades 1-5",
+      description: "Build confidence with the GCSE basics",
+      price: foundationLifetimeLabel
+        ? `${foundationLifetimeLabel} lifetime`
+        : "Lifetime option",
+    },
+    {
+      href: "#higher-plan",
+      title: "Higher",
+      grade: "Grades 4-9",
+      description: "Prepare for fuller exam answers",
+      price: higherLifetimeLabel ? `${higherLifetimeLabel} lifetime` : "Lifetime option",
+    },
+  ];
+
+  return (
+    <nav aria-label="Choose a course tier" className="app-card px-4 py-3 lg:hidden">
+      <div className="grid gap-2 sm:grid-cols-2">
+        {links.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="app-focus-ring group flex items-center justify-between gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-3 transition hover:border-[var(--border-strong)]"
+          >
+            <span className="min-w-0">
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-bold text-[var(--text-primary)]">
+                  {item.title}
+                </span>
+                <span className="rounded-full bg-[var(--surface-primary)] px-2 py-0.5 text-[11px] font-semibold text-[var(--text-secondary)]">
+                  {item.grade}
+                </span>
+              </span>
+              <span className="mt-1 block text-xs leading-5 text-[var(--text-secondary)]">
+                {item.description}
+              </span>
+              <span className="mt-1 block text-xs font-bold text-[var(--accent-ink)]">
+                Best value: {item.price}
+              </span>
+            </span>
+
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface-primary)] text-[var(--accent-ink)] transition group-hover:border-[var(--border-strong)]">
+              <AppIcon icon="down" size={15} />
+            </span>
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
 function VolnaSchoolRoute() {
   return (
     <section className="app-card overflow-hidden">
       <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_310px]">
         <div className="space-y-4 p-5">
-          <div className="flex flex-wrap gap-2">
-            <Badge tone="info" icon="school">
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-[var(--text-secondary)]">
+            <span className="inline-flex items-center gap-1.5">
+              <AppIcon icon="school" size={14} />
               Teacher-led route
-            </Badge>
-            <Badge tone="muted" icon="calendar">
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <AppIcon icon="calendar" size={14} />
               1-year or 2-year GCSE classes
-            </Badge>
+            </span>
           </div>
 
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-[var(--text-primary)]">
-              Want live GCSE Russian teaching as well as the course?
+              Want live teaching as well?
             </h2>
             <p className="max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
               Volna School is a higher-support route for families who want regular live
@@ -271,13 +398,9 @@ export default async function BillingPage({
         <div className="mx-auto max-w-5xl space-y-5">
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
             <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon="billing">
-                  Course plan
-                </Badge>
-                <Badge tone="muted" icon="pricing">
-                  Lifetime is best value
-                </Badge>
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)]">
+                <AppIcon icon="billing" size={14} />
+                <span>Self-study route</span>
               </div>
 
               <div className="space-y-2">
@@ -291,14 +414,6 @@ export default async function BillingPage({
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <span className="app-pill app-pill-info">
-                  Recommended: lifetime plan
-                </span>
-                <span className="app-pill app-pill-muted">
-                  Monthly and 3-month plans stay available
-                </span>
-              </div>
             </div>
 
             <div className="app-card px-4 py-4">
@@ -319,23 +434,56 @@ export default async function BillingPage({
             </div>
           </div>
 
+          {resolvedSearchParams.checkout === "success" ? (
+            <FeedbackBanner
+              tone="success"
+              title="Checkout complete"
+              description="Your course plan is being added. If it does not appear straight away, refresh the dashboard in a moment."
+            />
+          ) : null}
+
+          {resolvedSearchParams.checkout === "cancelled" ? (
+            <FeedbackBanner
+              tone="warning"
+              title="Checkout cancelled"
+              description="No payment was taken. You can choose a plan again whenever you are ready."
+            />
+          ) : null}
+
+          <MobilePlanJumpLinks
+            foundationLifetimeLabel={foundationLifetimeLabel ?? undefined}
+            higherLifetimeLabel={higherLifetimeLabel ?? undefined}
+          />
+
           <div className="grid gap-4 lg:grid-cols-2">
             <PlanCard
+              id="foundation-plan"
               title="Foundation"
               subtitle="Beginner-friendly structured GCSE Russian learning"
-              bestFor="For building confidence and Foundation-tier preparation"
+              bestFor="Foundation tier route"
+              gradeBadge="Grades 1-5"
               priceLabel={foundationPriceLabel}
               recommendedPriceLabel={
                 foundationLifetimeLabel ? `${foundationLifetimeLabel} lifetime` : undefined
               }
               optionNote="After checkout, it appears in your GCSE Russian dashboard."
-              features={[
-                "Full Foundation course",
-                "Step-by-step GCSE themes",
-                "Core grammar and vocabulary",
-                "Progress tracking",
-                "Confidence before exam practice",
-                "Suitable if you are starting out",
+              actionTitle="Choose a plan"
+              courseFocus={[
+                {
+                  icon: "learning",
+                  title: "Build confidence",
+                  description: "A calmer route for securing the GCSE basics.",
+                },
+                {
+                  icon: "layers",
+                  title: "Core GCSE themes",
+                  description: "Step-by-step practice across the main topic areas.",
+                },
+                {
+                  icon: "grammar",
+                  title: "Essential accuracy",
+                  description: "Grammar and vocabulary before harder exam answers.",
+                },
               ]}
             >
               <FoundationPlanPanel
@@ -354,22 +502,34 @@ export default async function BillingPage({
             </PlanCard>
 
             <PlanCard
+              id="higher-plan"
               title="Higher"
               subtitle="Advanced GCSE Russian preparation"
-              bestFor="For aiming towards Grades 7-9"
+              bestFor="Higher tier route"
+              gradeBadge="Grades 4-9"
               priceLabel={higherPriceLabel}
               recommendedPriceLabel={
                 higherLifetimeLabel ? `${higherLifetimeLabel} lifetime` : undefined
               }
               tone="highlight"
               optionNote="After checkout, it appears in your GCSE Russian dashboard."
-              features={[
-                "Full Higher course",
-                "Higher-tier exam technique",
-                "Longer speaking and writing answers",
-                "Mock exams and exam-style questions",
-                "Designed for Grades 7-9",
-                "Progress tracking and structured learning",
+              actionTitle="Choose a plan"
+              courseFocus={[
+                {
+                  icon: "star",
+                  title: "Grade 7-9 technique",
+                  description: "A stronger route for higher-tier exam preparation.",
+                },
+                {
+                  icon: "write",
+                  title: "Longer answers",
+                  description: "More confident speaking and writing responses.",
+                },
+                {
+                  icon: "mockExam",
+                  title: "Exam-style practice",
+                  description: "Harder questions, mocks, and paper-specific skills.",
+                },
               ]}
             >
               <HigherPlanPanel
@@ -399,21 +559,7 @@ export default async function BillingPage({
             </PlanCard>
           </div>
 
-          {resolvedSearchParams.checkout === "success" ? (
-            <FeedbackBanner
-              tone="success"
-              title="Checkout complete"
-              description="Your course plan is being added. If it does not appear straight away, refresh the dashboard in a moment."
-            />
-          ) : null}
-
-          {resolvedSearchParams.checkout === "cancelled" ? (
-            <FeedbackBanner
-              tone="warning"
-              title="Checkout cancelled"
-              description="No payment was taken. You can choose a plan again whenever you are ready."
-            />
-          ) : null}
+          <SharedPlanBenefits />
 
           <details className="app-card group px-4 py-3 text-sm text-[var(--text-secondary)]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold text-[var(--text-primary)]">
@@ -442,26 +588,26 @@ export default async function BillingPage({
 
           <VolnaSchoolRoute />
 
-          <div className="app-card px-5 py-4 text-sm text-[var(--text-secondary)]">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-1">
-                <p className="font-medium text-[var(--text-primary)]">
-                  Need to change a monthly or 3-month plan?
+          <div className="app-card px-5 py-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-2xl space-y-1">
+                <p className="text-sm font-bold text-[var(--text-primary)]">
+                  Manage your plan
                 </p>
                 <p className="text-sm leading-6 text-[var(--text-secondary)]">
-                  Open Stripe&apos;s secure page to update payment details, renewal, or
-                  cancellation.
+                  Monthly and 3-month plans are managed in Stripe. Lifetime access
+                  does not renew, so there is nothing to manage after checkout.
                 </p>
               </div>
 
-              <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center md:shrink-0 md:justify-end">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:shrink-0">
                 <BillingPortalButton disabled={!hasActiveSubscription} />
 
                 <Link
                   href="/pricing"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent-ink)] hover:underline"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)] transition hover:border-[var(--border-strong)]"
                 >
                   Open public pricing
                   <AppIcon icon="externalLink" size={14} />
@@ -469,7 +615,7 @@ export default async function BillingPage({
 
                 <Link
                   href="/account"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent-ink)] hover:underline"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)] transition hover:border-[var(--border-strong)]"
                 >
                   <AppIcon icon="back" size={14} />
                   Back to account
