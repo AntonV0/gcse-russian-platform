@@ -18,43 +18,31 @@ historical migration files for cosmetic cleanup.
 - Fix applied migration mistakes with new forward-only migrations.
 - Only edit a migration directly when it is the latest local migration, has not
   been pushed, and has not been applied to any shared database.
-- Prefer idempotent SQL for seed migrations: `insert ... where not exists`,
-  `on conflict`, `create ... if not exists`, and `alter table ... add column if
-not exists`.
-- Keep static reference-content seeds, such as GCSE specification vocabulary,
-  in migrations when the app depends on them being present after `db reset`.
+- Prefer idempotent SQL for operational seed migrations: `insert ... where not
+  exists`, `on conflict`, `create ... if not exists`, and `alter table ... add
+  column if not exists`.
+- Do not commit proprietary course content, vocabulary banks, grammar banks,
+  lesson maps, or production schema dumps to the public repository. Keep those
+  as private data exports, private migrations, or environment-owned seed jobs.
 - Do not commit environment-specific production placeholders such as
   `REPLACE_WITH_STRIPE_PRICE_ID...` as active seed data. Use real environment
   values through a dedicated seed/corrective migration, or keep the row inactive
   until the value is known.
 
-## Current Audit
+## Public Repository Policy
 
-The following historical files are intentionally retained because they may have
-been applied already:
+The public repository should contain the application code and schema evolution
+needed to understand the engineering work, but not the proprietary learning
+dataset. Before pushing, confirm that migrations do not include:
 
-- `20260403211956_remote_schema.sql` is empty.
-- `20260406091833_create_lesson_section_progress.sql` is empty. It is superseded
-  by `20260425103000_harden_profiles_and_create_lesson_section_progress.sql`.
-- `20260418145812_add_avatar_key_to_profiles.sql.sql`,
-  `20260418154343_add_lesson_section_visibility_fields.sql.sql`, and
-  `20260420091747_seed_higher_upgrade_product_and_prices.sql.sql` use the
-  suspicious `.sql.sql` extension. They must not be renamed unless the target
-  database migration history is explicitly repaired at the same time.
-- `20260404100727_remote_schema.sql` is a historical remote schema baseline.
-  Keep it as the project baseline unless the team performs an explicit database
-  rebaseline.
-- `20260420091747_seed_higher_upgrade_product_and_prices.sql.sql` contains
-  Stripe placeholder price IDs. It is superseded by
-  `20260420110816_seed_source_aware_higher_upgrade_prices.sql` and corrected by
-  `20260427130500_deactivate_placeholder_stripe_prices.sql`.
-- Later public-resource work is intentionally additive:
-  `20260429182500_allow_anon_public_resource_reads.sql` opens anonymous reads
-  for published public resource content, and
-  `20260430120000_add_vocabulary_access_flags.sql` adds vocabulary publication
-  and source access flags used by the public vocabulary surface.
-- The latest migration present in this audit is
-  `20260430120000_add_vocabulary_access_flags.sql`.
+- production schema dumps
+- full vocabulary or grammar banks
+- lesson maps or generated course scaffolds
+- user, teacher, billing, or uploaded-response data
+- active environment-specific payment identifiers
+
+Small synthetic fixtures are acceptable when they are clearly fake and only
+exist to support tests or demos.
 
 ## Stripe Price Seed Strategy
 
@@ -70,12 +58,11 @@ future active placeholder Stripe IDs. Runtime checkout/catalog code only reads
 active prices, so fake IDs are removed from active checkout paths without
 rewriting already-applied history.
 
-## Remote Schema Dumps
+## Schema Dumps
 
-Remote schema dumps should be rare. They are acceptable as an initial baseline
-or an explicit rebaseline, but normal schema evolution should use small,
-purpose-named migrations. If a new dump supersedes an old baseline, document the
-reason, source database, and date in this file before committing it.
+Do not commit production schema dumps to the public repository. If a private
+baseline or rebaseline is needed, keep it in private storage and mirror only the
+small, purpose-named migration files that are safe for public review.
 
 ## Validation
 
