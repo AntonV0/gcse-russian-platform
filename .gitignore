@@ -124,8 +124,7 @@ scripts/fix-vocabulary-*.mjs
 scripts/create-admin-testing-module.mjs
 
 # private brand/source imagery
-public/brand/
-public/illustrations/
+public/brand/logo-final/r-icons/r-icon-source.svg
 
 # local QA captures
 .playwright-qa-*.png
