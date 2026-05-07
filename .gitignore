@@ -97,9 +97,20 @@ next-env.d.ts
 
 # docs
 docs/gcse-russian-course-map.md
+docs/CURRENT_STATE.md
+docs/PROJECT_STRUCTURE.md
 docs/spec-private/
 docs/page-ui-private/
 docs/dev-workflow-private/
+
+# private course/data IP
+supabase/migrations/*remote_schema*.sql
+supabase/migrations/*seed_spec_vocabulary*.sql
+supabase/migrations/*seed_spec_grammar*.sql
+scripts/course-map-*.mjs
+scripts/generate-course-map-*.mjs
+scripts/implement-course-map.mjs
+scripts/seed-*.mjs
 
 # local QA captures
 .playwright-qa-*.png
