@@ -78,21 +78,6 @@ function itemClass(active: boolean, locked = false) {
   ].join(" ");
 }
 
-function mobileItemClass(active: boolean, locked = false) {
-  return [
-    "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition app-focus-ring",
-    active
-      ? [
-          "border-[color-mix(in_srgb,var(--accent)_24%,var(--border-subtle))]",
-          "bg-[color-mix(in_srgb,var(--accent)_9%,var(--background-elevated))]",
-          "text-[var(--text-primary)]",
-          "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_10%,transparent)]",
-        ].join(" ")
-      : "border-[var(--border)] bg-[var(--background-elevated)] text-[color-mix(in_srgb,var(--text-secondary)_88%,var(--text-primary))] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
-    locked ? "opacity-85" : "",
-  ].join(" ");
-}
-
 function mobileQuickItemClass(active: boolean, locked = false) {
   return [
     "group flex min-h-[4.15rem] min-w-0 flex-col items-center justify-center gap-1 rounded-2xl border px-1.5 py-2 text-center text-[0.72rem] font-semibold leading-tight transition app-focus-ring",
@@ -424,9 +409,9 @@ export default function PlatformSidebar({
 }: PlatformSidebarProps) {
   const desktopSidebarRef = useRef<HTMLElement>(null);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [accountNavOpenOverride, setAccountNavOpenOverride] = useState<
-    boolean | null
-  >(null);
+  const [accountNavOpenOverride, setAccountNavOpenOverride] = useState<boolean | null>(
+    null
+  );
   const currentPathname = usePathname();
   const activePathname = pathname ?? currentPathname;
   const previousPathnameRef = useRef(activePathname);
@@ -456,36 +441,26 @@ export default function PlatformSidebar({
   const sidebarTitle = isCourseView ? "Study Menu" : "Main Menu";
   const statusIcon = getStatusIcon(role);
   const isVolnaStudent = isStudent && accessMode === "volna";
-  const isNonVolnaStudent = isStudent && accessMode !== "volna";
+  const showAssignments = isVolnaStudent || isTeacher || isAdmin;
+  const showOnlineClasses = !isVolnaStudent;
 
-  practiceItems.push({
-    label: "Assignments",
-    href: getAssignmentsPath(),
-    icon: "assignments",
-    locked: !(isVolnaStudent || isTeacher || isAdmin),
-    lockedHref: isGuest ? "/login" : "/online-classes",
-    lockedLabel: isGuest ? "Login" : "Volna",
-  });
+  if (showAssignments) {
+    practiceItems.push({
+      label: "Assignments",
+      href: getAssignmentsPath(),
+      icon: "assignments",
+    });
+  }
 
-  practiceItems.push({
-    label: "Online Classes",
-    href: getOnlineClassesPath(),
-    icon: "school",
-    locked: isGuest,
-    lockedHref: "/login",
-    lockedLabel: "Login",
-  });
-
-  if (!isNonVolnaStudent && !isTeacher && !isAdmin && !isGuest) {
-    const onlineClasses = practiceItems.find(
-      (item) => item.href === getOnlineClassesPath()
-    );
-
-    if (onlineClasses) {
-      onlineClasses.locked = true;
-      onlineClasses.lockedHref = getDashboardPath();
-      onlineClasses.lockedLabel = "N/A";
-    }
+  if (showOnlineClasses) {
+    practiceItems.push({
+      label: "Online Classes",
+      href: getOnlineClassesPath(),
+      icon: "school",
+      locked: isGuest,
+      lockedHref: "/login",
+      lockedLabel: "Login",
+    });
   }
 
   const utilityItems: NavItem[] = [
@@ -549,8 +524,13 @@ export default function PlatformSidebar({
     if (previousPathnameRef.current === activePathname) return;
 
     previousPathnameRef.current = activePathname;
-    setIsMobileNavOpen(false);
-    setAccountNavOpenOverride(null);
+
+    const frameId = window.requestAnimationFrame(() => {
+      setIsMobileNavOpen(false);
+      setAccountNavOpenOverride(null);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
   }, [activePathname]);
 
   useEffect(() => {
@@ -938,9 +918,7 @@ export default function PlatformSidebar({
                 aria-expanded={isAccountSectionOpen}
                 aria-controls="platform-account-nav"
                 onClick={() =>
-                  setAccountNavOpenOverride((current) =>
-                    !(current ?? isAccountNavActive)
-                  )
+                  setAccountNavOpenOverride((current) => !(current ?? isAccountNavActive))
                 }
               >
                 <span className={accountToggleIconFrameClass(isAccountNavActive)}>
