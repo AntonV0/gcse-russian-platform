@@ -221,7 +221,7 @@ const faqs: FaqItem[] = [
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">{children}</p>
+    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
   );
 }
 
@@ -232,9 +232,9 @@ function ExamRouteVisual() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs opacity-70">GCSE Russian route</p>
-            <p className="mt-1 text-xl font-bold">Four papers, one study plan</p>
+            <p className="mt-1 text-xl font-semibold">Four papers, one study plan</p>
           </div>
-          <span className="rounded-md bg-[var(--accent-fill)] px-3 py-1 text-xs font-bold text-[var(--accent-on-fill)]">
+          <span className="rounded-md bg-[var(--accent-fill)] px-3 py-1 text-xs font-semibold text-[var(--accent-on-fill)]">
             1RU0
           </span>
         </div>
@@ -252,10 +252,10 @@ function ExamRouteVisual() {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-bold text-[var(--accent-ink)]">
+                <p className="text-xs font-semibold text-[var(--accent-ink)]">
                   {paper.paper}
                 </p>
-                <h3 className="mt-1 text-base font-bold text-[var(--text-primary)]">
+                <h3 className="mt-1 text-base font-semibold text-[var(--text-primary)]">
                   {paper.title}
                 </h3>
               </div>
@@ -281,7 +281,7 @@ function PaperGuideSection() {
       <div className="grid gap-8 lg:grid-cols-[0.45fr_1fr] lg:items-start">
         <div>
           <Eyebrow>The four papers</Eyebrow>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
             Each paper needs a different kind of practice.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -301,10 +301,10 @@ function PaperGuideSection() {
                 <AppIcon icon={paper.icon} size={22} />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">
+                <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)]">
                   {paper.paper}
                 </p>
-                <h3 className="mt-1 text-xl font-bold text-[var(--text-primary)]">
+                <h3 className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
                   {paper.title}
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -312,7 +312,7 @@ function PaperGuideSection() {
                 </p>
               </div>
               <div className="rounded-md border border-[var(--border-subtle)] p-3">
-                <p className="text-xs font-bold uppercase text-[var(--text-muted)]">
+                <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
                   Parent check
                 </p>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -342,10 +342,10 @@ function RevisionSequenceSection() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[var(--accent-ink)]">
+                <span className="text-xs font-semibold text-[var(--accent-ink)]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                   {item.title}
                 </h3>
               </div>
@@ -359,7 +359,7 @@ function RevisionSequenceSection() {
 
       <div>
         <Eyebrow>Revision sequence</Eyebrow>
-        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+        <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
           Exam preparation works best when practice has an order.
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -377,7 +377,7 @@ function TierSection() {
       <div className="grid lg:grid-cols-[0.72fr_1fr]">
         <div className="marketing-dark-panel p-6 sm:p-8 lg:p-10">
           <Eyebrow>Tier choice</Eyebrow>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold leading-tight md:text-4xl">
             Foundation or Higher should be a planning decision, not a guess.
           </h2>
           <p className="mt-4 text-base leading-7 opacity-80">
@@ -393,7 +393,7 @@ function TierSection() {
                 <AppIcon icon={item.icon} size={20} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                   {item.title}
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
@@ -413,7 +413,7 @@ function AppFitSection() {
     <section className="grid gap-8 lg:grid-cols-[0.48fr_1fr] lg:items-start">
       <div>
         <Eyebrow>Where the app fits</Eyebrow>
-        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+        <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
           The guide explains the exam. The course builds the routine.
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -430,7 +430,7 @@ function AppFitSection() {
             className="border-t-2 border-[var(--accent-fill)] pt-5"
           >
             <AppIcon icon={item.icon} size={22} className="text-[var(--accent-ink)]" />
-            <h3 className="mt-4 text-xl font-bold text-[var(--text-primary)]">
+            <h3 className="mt-4 text-xl font-semibold text-[var(--text-primary)]">
               {item.title}
             </h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -449,7 +449,7 @@ function RelatedLinksSection() {
       <div className="flex flex-col gap-5 border-b border-[var(--border-subtle)] pb-6 md:flex-row md:items-end md:justify-between">
         <div>
           <Eyebrow>Next decisions</Eyebrow>
-          <h2 className="mt-3 text-2xl font-extrabold text-[var(--text-primary)]">
+          <h2 className="mt-3 text-2xl font-bold text-[var(--text-primary)]">
             Go deeper without rereading the same overview
           </h2>
         </div>
@@ -482,14 +482,14 @@ function FaqSection() {
     <section className="grid gap-8 lg:grid-cols-[0.7fr_1fr]">
       <div>
         <Eyebrow>Exam questions</Eyebrow>
-        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)]">
+        <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)]">
           What families usually need clear before revising
         </h2>
       </div>
       <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
         {faqs.map((item) => (
           <div key={item.question} className="py-5">
-            <h3 className="text-base font-bold text-[var(--text-primary)]">
+            <h3 className="text-base font-semibold text-[var(--text-primary)]">
               {item.question}
             </h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -547,7 +547,7 @@ export default function GcseRussianExamGuidePage() {
             </div>
 
             <Eyebrow>GCSE Russian exam guide</Eyebrow>
-            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-none text-[var(--text-primary)] md:text-6xl">
+            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-[1.04] text-[var(--text-primary)] md:text-6xl">
               Understand the papers before building the revision plan.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-secondary)] md:text-lg">
@@ -579,7 +579,7 @@ export default function GcseRussianExamGuidePage() {
         <section className="rounded-lg marketing-dark-panel p-6 shadow-[var(--shadow-lg)] sm:p-8 lg:p-10">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <h2 className="text-2xl font-extrabold leading-tight md:text-3xl">
+              <h2 className="text-2xl font-bold leading-tight md:text-3xl">
                 Turn the exam overview into a study routine.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 opacity-80">

@@ -31,10 +31,10 @@ export default async function ForgotPasswordPage({
             <Badge tone="info" icon="unlocked">
               Account help
             </Badge>
-            <p className="mt-6 text-xs font-bold uppercase text-[var(--accent-ink)]">
+            <p className="app-text-meta mt-6 text-[var(--accent-ink)]">
               Password reset
             </p>
-            <h1 className="mt-3 text-4xl font-extrabold leading-none md:text-5xl">
+            <h1 className="mt-3 text-4xl font-extrabold leading-[1.04] md:text-5xl">
               Get back into the course without starting again.
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 opacity-80">
@@ -45,10 +45,10 @@ export default async function ForgotPasswordPage({
 
           <div className="p-5 sm:p-8 lg:p-10">
             <div className="mx-auto max-w-md">
-              <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">
+              <p className="app-text-meta text-[var(--accent-ink)]">
                 Reset access
               </p>
-              <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)]">
+              <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)]">
                 Send a reset email
               </h2>
               <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">

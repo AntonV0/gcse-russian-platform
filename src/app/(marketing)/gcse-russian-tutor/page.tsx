@@ -190,7 +190,7 @@ const faqs: FaqItem[] = [
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">{children}</p>
+    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
   );
 }
 
@@ -201,7 +201,7 @@ function TutorVisual() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs opacity-70">Support choice</p>
-            <p className="mt-1 text-xl font-bold">Course route + targeted feedback</p>
+            <p className="mt-1 text-xl font-semibold">Course route + targeted feedback</p>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-md bg-[var(--accent-fill)] text-[var(--accent-on-fill)]">
             <AppIcon icon="teacher" size={24} />
@@ -223,10 +223,10 @@ function TutorVisual() {
               <AppIcon icon={icon as AppIconKey} size={19} />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-[var(--text-muted)]">
+              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
                 {label}
               </p>
-              <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
+              <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
                 {value}
               </p>
             </div>
@@ -243,7 +243,7 @@ function OptionsSection() {
       <div className="grid gap-8 lg:grid-cols-[0.48fr_1fr] lg:items-start">
         <div>
           <Eyebrow>Choosing support</Eyebrow>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
             Start with the problem you are trying to solve.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -262,7 +262,7 @@ function OptionsSection() {
                 <AppIcon icon={item.icon} size={20} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                   {item.title}
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
@@ -283,7 +283,7 @@ function ComparisonSection() {
       <div className="grid lg:grid-cols-[0.58fr_1fr]">
         <div className="marketing-dark-panel p-6 sm:p-8 lg:p-10">
           <Eyebrow>Course or tutor?</Eyebrow>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold leading-tight md:text-4xl">
             Compare by learning need, not by label.
           </h2>
           <p className="mt-4 text-base leading-7 opacity-80">
@@ -293,7 +293,7 @@ function ComparisonSection() {
         </div>
 
         <div className="divide-y divide-[var(--border-subtle)]">
-          <div className="hidden grid-cols-[2.4rem_1fr_1fr] gap-4 px-5 py-4 text-xs font-bold uppercase text-[var(--text-muted)] md:grid">
+          <div className="hidden grid-cols-[2.4rem_1fr_1fr] gap-4 px-5 py-4 text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)] md:grid">
             <span />
             <span>Course helps with</span>
             <span>Tutor helps with</span>
@@ -307,7 +307,7 @@ function ComparisonSection() {
                 <AppIcon icon={item.icon} size={19} />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                <h3 className="text-base font-semibold text-[var(--text-primary)]">
                   {item.need}
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -315,7 +315,7 @@ function ComparisonSection() {
                 </p>
               </div>
               <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)] md:sr-only">
+                <h3 className="text-base font-semibold text-[var(--text-primary)] md:sr-only">
                   Tutor
                 </h3>
                 <p className="text-sm leading-6 text-[var(--text-secondary)]">
@@ -337,7 +337,7 @@ function QuestionsSection() {
         {tutorQuestions.map((item) => (
           <div key={item.title} className="border-t-2 border-[var(--accent-fill)] pt-5">
             <AppIcon icon={item.icon} size={22} className="text-[var(--accent-ink)]" />
-            <h3 className="mt-4 text-xl font-bold text-[var(--text-primary)]">
+            <h3 className="mt-4 text-xl font-semibold text-[var(--text-primary)]">
               {item.title}
             </h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -349,7 +349,7 @@ function QuestionsSection() {
 
       <div>
         <Eyebrow>Questions to ask</Eyebrow>
-        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+        <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
           A good tutor conversation should get specific quickly.
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -367,7 +367,7 @@ function WarningSection() {
       <div className="grid gap-8 lg:grid-cols-[0.42fr_1fr] lg:items-start">
         <div>
           <Eyebrow>What to avoid</Eyebrow>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
             Support should not become another disconnected resource.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -386,7 +386,7 @@ function WarningSection() {
                 <AppIcon icon={item.icon} size={20} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                   {item.title}
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
@@ -407,7 +407,7 @@ function RelatedLinksSection() {
       <div className="flex flex-col gap-5 border-b border-[var(--border-subtle)] pb-6 md:flex-row md:items-end md:justify-between">
         <div>
           <Eyebrow>Useful next pages</Eyebrow>
-          <h2 className="mt-3 text-2xl font-extrabold text-[var(--text-primary)]">
+          <h2 className="mt-3 text-2xl font-bold text-[var(--text-primary)]">
             Compare the support routes
           </h2>
         </div>
@@ -440,14 +440,14 @@ function FaqSection() {
     <section className="grid gap-8 lg:grid-cols-[0.7fr_1fr]">
       <div>
         <Eyebrow>Tutor questions</Eyebrow>
-        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)]">
+        <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)]">
           What families usually need to compare
         </h2>
       </div>
       <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
         {faqs.map((item) => (
           <div key={item.question} className="py-5">
-            <h3 className="text-base font-bold text-[var(--text-primary)]">
+            <h3 className="text-base font-semibold text-[var(--text-primary)]">
               {item.question}
             </h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -505,7 +505,7 @@ export default function GcseRussianTutorPage() {
             </div>
 
             <Eyebrow>GCSE Russian tutor or online course?</Eyebrow>
-            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-none text-[var(--text-primary)] md:text-6xl">
+            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-[1.04] text-[var(--text-primary)] md:text-6xl">
               Choose support by what the student actually needs.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-secondary)] md:text-lg">
@@ -541,7 +541,7 @@ export default function GcseRussianTutorPage() {
         <section className="rounded-lg marketing-dark-panel p-6 shadow-[var(--shadow-lg)] sm:p-8 lg:p-10">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <h2 className="text-2xl font-extrabold leading-tight md:text-3xl">
+              <h2 className="text-2xl font-bold leading-tight md:text-3xl">
                 Compare support with the course in front of you.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 opacity-80">

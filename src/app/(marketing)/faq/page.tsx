@@ -160,7 +160,7 @@ const relatedLinks = [
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">{children}</p>
+    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
   );
 }
 
@@ -171,7 +171,7 @@ function FaqHeroVisual() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs opacity-70">FAQ</p>
-            <p className="mt-1 text-xl font-bold">Answers by decision area</p>
+            <p className="mt-1 text-xl font-semibold">Answers by decision area</p>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-md bg-[var(--accent-fill)] text-[var(--accent-on-fill)]">
             <AppIcon icon="help" size={24} />
@@ -187,8 +187,8 @@ function FaqHeroVisual() {
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--surface-elevated)] text-[var(--accent-ink)]">
               <AppIcon icon={group.icon} size={19} />
             </div>
-            <p className="text-sm font-bold text-[var(--text-primary)]">{group.title}</p>
-            <span className="rounded-md bg-[var(--surface-elevated)] px-2 py-1 text-xs font-bold text-[var(--text-secondary)]">
+            <p className="text-sm font-semibold text-[var(--text-primary)]">{group.title}</p>
+            <span className="rounded-md bg-[var(--surface-elevated)] px-2 py-1 text-xs font-semibold text-[var(--text-secondary)]">
               {group.items.length}
             </span>
           </div>
@@ -208,7 +208,7 @@ function FaqGroupsSection() {
               <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--surface-elevated)] text-[var(--accent-ink)] shadow-[var(--shadow-sm)]">
                 <AppIcon icon={group.icon} size={21} />
               </div>
-              <h2 className="mt-4 text-2xl font-extrabold text-[var(--text-primary)]">
+              <h2 className="mt-4 text-2xl font-bold text-[var(--text-primary)]">
                 {group.title}
               </h2>
             </div>
@@ -219,7 +219,7 @@ function FaqGroupsSection() {
           <div className="mt-6 divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
             {group.items.map((item) => (
               <div key={item.question} className="py-5">
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                <h3 className="text-base font-semibold text-[var(--text-primary)]">
                   {item.question}
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -240,7 +240,7 @@ function RelatedLinksSection() {
       <div className="flex flex-col gap-5 border-b border-[var(--border-subtle)] pb-6 md:flex-row md:items-end md:justify-between">
         <div>
           <Eyebrow>Next pages</Eyebrow>
-          <h2 className="mt-3 text-2xl font-extrabold text-[var(--text-primary)]">
+          <h2 className="mt-3 text-2xl font-bold text-[var(--text-primary)]">
             Still deciding? Start with these.
           </h2>
         </div>
@@ -295,7 +295,7 @@ export default function MarketingFaqPage() {
             </div>
 
             <Eyebrow>FAQ</Eyebrow>
-            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-none text-[var(--text-primary)] md:text-6xl">
+            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-[1.04] text-[var(--text-primary)] md:text-6xl">
               Clear answers before choosing the route.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-secondary)] md:text-lg">
@@ -323,7 +323,7 @@ export default function MarketingFaqPage() {
         <section className="rounded-lg marketing-dark-panel p-6 shadow-[var(--shadow-lg)] sm:p-8 lg:p-10">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <h2 className="text-2xl font-extrabold leading-tight md:text-3xl">
+              <h2 className="text-2xl font-bold leading-tight md:text-3xl">
                 The simplest next step is a trial account.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 opacity-80">

@@ -189,7 +189,7 @@ const faqs: FaqItem[] = [
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">{children}</p>
+    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
   );
 }
 
@@ -200,9 +200,9 @@ function ParentRouteVisual() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs opacity-70">Parent view</p>
-            <p className="mt-1 text-xl font-bold">This week has a shape</p>
+            <p className="mt-1 text-xl font-semibold">This week has a shape</p>
           </div>
-          <span className="rounded-md bg-[var(--accent-fill)] px-3 py-1 text-xs font-bold text-[var(--accent-on-fill)]">
+          <span className="rounded-md bg-[var(--accent-fill)] px-3 py-1 text-xs font-semibold text-[var(--accent-on-fill)]">
             Calm plan
           </span>
         </div>
@@ -239,10 +239,10 @@ function ParentRouteVisual() {
               <AppIcon icon={icon as AppIconKey} size={19} />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-[var(--text-muted)]">
+              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
                 {label}
               </p>
-              <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
+              <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
                 {value}
               </p>
             </div>
@@ -259,7 +259,7 @@ function ConcernSection() {
       <div className="grid gap-8 lg:grid-cols-[0.52fr_1fr] lg:items-start">
         <div>
           <Eyebrow>What parents are really trying to work out</Eyebrow>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
             The hard part is not caring. It is knowing what help is actually useful.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -278,7 +278,7 @@ function ConcernSection() {
                 <AppIcon icon={item.icon} size={20} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                   {item.title}
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
@@ -300,7 +300,7 @@ function SupportSection() {
         {parentSupport.map((item) => (
           <div key={item.title} className="border-t-2 border-[var(--accent-fill)] pt-5">
             <AppIcon icon={item.icon} size={22} className="text-[var(--accent-ink)]" />
-            <h3 className="mt-4 text-xl font-bold text-[var(--text-primary)]">
+            <h3 className="mt-4 text-xl font-semibold text-[var(--text-primary)]">
               {item.title}
             </h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -312,7 +312,7 @@ function SupportSection() {
 
       <div>
         <Eyebrow>How to help without taking over</Eyebrow>
-        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+        <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
           Parents do not need to become the Russian teacher.
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -331,7 +331,7 @@ function MonthlyCheckSection() {
       <div className="grid lg:grid-cols-[0.72fr_1fr]">
         <div className="marketing-dark-panel p-6 sm:p-8 lg:p-10">
           <Eyebrow>Monthly check-in</Eyebrow>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold leading-tight md:text-4xl">
             A good parent check-in should reduce pressure, not create a lecture.
           </h2>
           <p className="mt-4 text-base leading-7 opacity-80">
@@ -347,7 +347,7 @@ function MonthlyCheckSection() {
                 <AppIcon icon={item.icon} size={20} />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                <h3 className="text-base font-semibold text-[var(--text-primary)]">
                   {item.question}
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
@@ -367,7 +367,7 @@ function DecisionSection() {
     <section className="grid gap-8 lg:grid-cols-[0.42fr_1fr] lg:items-start">
       <div>
         <Eyebrow>Support decisions</Eyebrow>
-        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+        <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
           Choose support based on the actual problem.
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -386,7 +386,7 @@ function DecisionSection() {
               <AppIcon icon={item.icon} size={20} />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[var(--text-primary)]">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                 {item.title}
               </h3>
               <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
@@ -406,7 +406,7 @@ function RelatedLinksSection() {
       <div className="flex flex-col gap-5 border-b border-[var(--border-subtle)] pb-6 md:flex-row md:items-end md:justify-between">
         <div>
           <Eyebrow>Useful next pages</Eyebrow>
-          <h2 className="mt-3 text-2xl font-extrabold text-[var(--text-primary)]">
+          <h2 className="mt-3 text-2xl font-bold text-[var(--text-primary)]">
             Keep parent decisions separate and clear
           </h2>
         </div>
@@ -439,14 +439,14 @@ function FaqSection() {
     <section className="grid gap-8 lg:grid-cols-[0.7fr_1fr]">
       <div>
         <Eyebrow>Parent questions</Eyebrow>
-        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)]">
+        <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)]">
           What parents usually need settled
         </h2>
       </div>
       <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
         {faqs.map((item) => (
           <div key={item.question} className="py-5">
-            <h3 className="text-base font-bold text-[var(--text-primary)]">
+            <h3 className="text-base font-semibold text-[var(--text-primary)]">
               {item.question}
             </h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -504,7 +504,7 @@ export default function GcseRussianForParentsPage() {
             </div>
 
             <Eyebrow>GCSE Russian for parents</Eyebrow>
-            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-none text-[var(--text-primary)] md:text-6xl">
+            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-[1.04] text-[var(--text-primary)] md:text-6xl">
               Help your child prepare without having to manage every lesson.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-secondary)] md:text-lg">
@@ -536,7 +536,7 @@ export default function GcseRussianForParentsPage() {
         <section className="rounded-lg marketing-dark-panel p-6 shadow-[var(--shadow-lg)] sm:p-8 lg:p-10">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <h2 className="text-2xl font-extrabold leading-tight md:text-3xl">
+              <h2 className="text-2xl font-bold leading-tight md:text-3xl">
                 Start with a low-pressure look inside the course.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 opacity-80">

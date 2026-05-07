@@ -211,7 +211,7 @@ const guideLinks = [
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">{children}</p>
+    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
   );
 }
 
@@ -257,10 +257,13 @@ function StudyDeskIllustration() {
         <AppIcon icon="listening" size={26} />
       </div>
       <div className="absolute bottom-5 left-5 right-16 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 shadow-[var(--shadow-sm)]">
-        <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">
+        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)]">
           GCSE Russian notes
         </p>
-        <p className="mt-3 text-2xl font-extrabold leading-none text-[var(--text-primary)]">
+        <p
+          lang="ru"
+          className="mt-3 text-2xl font-bold leading-tight text-[var(--text-primary)]"
+        >
           Я думаю...
         </p>
         <div className="mt-4 grid gap-2">
@@ -268,7 +271,7 @@ function StudyDeskIllustration() {
           <span className="h-2 w-1/2 rounded-full bg-[var(--background-muted)]" />
         </div>
       </div>
-      <div className="absolute left-6 top-6 rounded-md bg-[var(--surface-elevated)] px-3 py-2 text-sm font-bold text-[var(--text-primary)] shadow-[var(--shadow-sm)]">
+      <div className="absolute left-6 top-6 rounded-md bg-[var(--surface-elevated)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)]">
         1RU0
       </div>
       <div className="absolute bottom-10 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[var(--shadow-md)]">
@@ -288,9 +291,9 @@ function HeroProductVisual() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs opacity-70">Next step</p>
-                <p className="mt-1 text-lg font-bold">Present tense essentials</p>
+                <p className="mt-1 text-lg font-semibold">Present tense essentials</p>
               </div>
-              <span className="rounded-md bg-[var(--accent-fill)] px-2.5 py-1 text-xs font-bold text-[var(--accent-on-fill)]">
+              <span className="rounded-md bg-[var(--accent-fill)] px-2.5 py-1 text-xs font-semibold text-[var(--accent-on-fill)]">
                 Step 3 of 6
               </span>
             </div>
@@ -302,13 +305,13 @@ function HeroProductVisual() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-[var(--border-subtle)] p-3">
               <p className="text-xs font-semibold text-[var(--text-muted)]">Course</p>
-              <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
+              <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
                 Foundation pathway
               </p>
             </div>
             <div className="rounded-lg border border-[var(--border-subtle)] p-3">
               <p className="text-xs font-semibold text-[var(--text-muted)]">Practice</p>
-              <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
+              <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
                 12 questions ready
               </p>
             </div>
@@ -316,7 +319,7 @@ function HeroProductVisual() {
 
           <div className="rounded-lg bg-[var(--background-muted)] p-3">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-bold text-[var(--text-primary)]">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
                 Today&apos;s route
               </p>
               <AppIcon icon="learning" size={17} className="text-[var(--accent-ink)]" />
@@ -366,10 +369,10 @@ function CourseMapVisual() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[var(--accent-ink)]">
+              <span className="text-xs font-semibold text-[var(--accent-ink)]">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <h3 className="text-sm font-bold text-[var(--text-primary)]">
+              <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                 {layer.title}
               </h3>
             </div>
@@ -389,8 +392,8 @@ function LessonVisual() {
       <div className="grid gap-0 md:grid-cols-[1fr_220px]">
         <div className="space-y-4 p-4">
           <div className="rounded-lg bg-[var(--background-muted)] p-4">
-            <p className="text-xs font-bold text-[var(--accent-ink)]">Current section</p>
-            <h3 className="mt-1 text-xl font-bold text-[var(--text-primary)]">
+            <p className="text-xs font-semibold text-[var(--accent-ink)]">Current section</p>
+            <h3 className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
               Opinions and reasons
             </h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -409,7 +412,7 @@ function LessonVisual() {
                   size={17}
                   className="text-[var(--accent-ink)]"
                 />
-                <p className="mt-2 text-sm font-bold text-[var(--text-primary)]">
+                <p className="mt-2 text-sm font-semibold text-[var(--text-primary)]">
                   {block.title}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)]">
@@ -420,7 +423,7 @@ function LessonVisual() {
           </div>
 
           <div className="rounded-lg border border-[var(--border-subtle)] p-4">
-            <p className="text-sm font-bold text-[var(--text-primary)]">
+            <p lang="ru" className="text-sm font-semibold text-[var(--text-primary)]">
               Я думаю, что русский полезный, потому что...
             </p>
             <div className="mt-3 h-2 w-2/3 rounded-full bg-[var(--accent-fill)]" />
@@ -428,7 +431,7 @@ function LessonVisual() {
         </div>
 
         <aside className="border-t border-[var(--border-subtle)] bg-[var(--background-muted)] p-4 md:border-l md:border-t-0">
-          <p className="text-xs font-bold text-[var(--text-muted)]">Steps</p>
+          <p className="text-xs font-semibold text-[var(--text-muted)]">Steps</p>
           {["Intro", "Core teaching", "Guided practice", "Exam practice"].map(
             (step, index) => (
               <div
@@ -437,7 +440,7 @@ function LessonVisual() {
               >
                 <span
                   className={[
-                    "flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold",
+                    "flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold",
                     index < 2
                       ? "bg-[var(--accent-fill)] text-[var(--accent-on-fill)]"
                       : "bg-[var(--surface-elevated)] text-[var(--text-muted)]",
@@ -471,7 +474,7 @@ function PracticeVisual() {
             />
             <span className="h-2 w-16 rounded-full bg-[var(--background-muted)]" />
           </div>
-          <h3 className="text-base font-bold text-[var(--text-primary)]">
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">
             {surface.title}
           </h3>
           <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -501,7 +504,7 @@ export default function MarketingHomePage() {
             </div>
 
             <Eyebrow>GCSE Russian self-study course</Eyebrow>
-            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-none text-[var(--text-primary)] md:text-6xl">
+            <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-[1.04] text-[var(--text-primary)] md:text-6xl">
               GCSE Russian with a route students can actually follow.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-secondary)] md:text-lg">
@@ -541,7 +544,7 @@ export default function MarketingHomePage() {
           <div className="grid gap-8 lg:grid-cols-[0.7fr_1fr] lg:items-start">
             <div>
               <Eyebrow>Why structure matters</Eyebrow>
-              <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+              <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
                 The course is built for the moments where GCSE Russian usually unravels.
               </h2>
             </div>
@@ -567,10 +570,10 @@ export default function MarketingHomePage() {
 
         <section className="grid gap-4 rounded-lg marketing-dark-panel p-5 shadow-[var(--shadow-lg)] sm:p-8 lg:grid-cols-[0.8fr_1fr] lg:items-center">
           <div>
-            <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">
+            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)]">
               Trial access
             </p>
-            <h2 className="mt-3 text-3xl font-extrabold leading-tight">
+            <h2 className="mt-3 text-3xl font-bold leading-tight">
               Try the learning environment before choosing a plan.
             </h2>
           </div>
@@ -588,7 +591,7 @@ export default function MarketingHomePage() {
           {productHighlights.map((item) => (
             <div key={item.title} className="border-t-2 border-[var(--accent-fill)] pt-5">
               <AppIcon icon={item.icon} size={22} className="text-[var(--accent-ink)]" />
-              <h2 className="mt-4 text-xl font-bold text-[var(--text-primary)]">
+              <h2 className="mt-4 text-xl font-semibold text-[var(--text-primary)]">
                 {item.title}
               </h2>
               <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -602,7 +605,7 @@ export default function MarketingHomePage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(320px,0.65fr)] lg:items-center">
             <div>
               <Eyebrow>Course map</Eyebrow>
-              <h2 className="mt-3 max-w-2xl text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-5xl">
+              <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-5xl">
                 Built as a course, not a folder of worksheets.
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
@@ -618,7 +621,7 @@ export default function MarketingHomePage() {
         <section className="grid gap-8 lg:grid-cols-[0.5fr_1fr] lg:items-center">
           <div>
             <Eyebrow>Inside a lesson</Eyebrow>
-            <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
               Learn, practise, apply.
             </h2>
             <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -634,7 +637,7 @@ export default function MarketingHomePage() {
           <PracticeVisual />
           <div>
             <Eyebrow>Practice surfaces</Eyebrow>
-            <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
               The app connects the parts students usually revise separately.
             </h2>
             <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
@@ -649,7 +652,7 @@ export default function MarketingHomePage() {
           <div className="grid lg:grid-cols-[0.78fr_1fr]">
             <div className="marketing-dark-panel p-6 sm:p-8 lg:p-10">
               <Eyebrow>Who it helps</Eyebrow>
-              <h2 className="mt-3 text-3xl font-extrabold leading-tight md:text-4xl">
+              <h2 className="mt-3 text-3xl font-bold leading-tight md:text-4xl">
                 Designed for the family reality of GCSE Russian.
               </h2>
               <p className="mt-4 text-base leading-7 opacity-80">
@@ -664,7 +667,7 @@ export default function MarketingHomePage() {
                     <AppIcon icon={item.icon} size={20} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                    <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                       {item.title}
                     </h3>
                     <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
@@ -680,14 +683,14 @@ export default function MarketingHomePage() {
         <section className="grid gap-8 lg:grid-cols-[0.7fr_1fr]">
           <div>
             <Eyebrow>Questions</Eyebrow>
-            <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)]">
+            <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)]">
               Before you start
             </h2>
           </div>
           <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
             {faqs.map((item) => (
               <div key={item.question} className="py-5">
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                <h3 className="text-base font-semibold text-[var(--text-primary)]">
                   {item.question}
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -702,7 +705,7 @@ export default function MarketingHomePage() {
           <div className="flex flex-col gap-5 border-b border-[var(--border-subtle)] pb-6 md:flex-row md:items-end md:justify-between">
             <div>
               <Eyebrow>Explore the site</Eyebrow>
-              <h2 className="mt-3 text-2xl font-extrabold text-[var(--text-primary)]">
+              <h2 className="mt-3 text-2xl font-bold text-[var(--text-primary)]">
                 Deeper pages for specific decisions
               </h2>
             </div>
@@ -738,7 +741,7 @@ export default function MarketingHomePage() {
         <section className="rounded-lg marketing-dark-panel p-6 shadow-[var(--shadow-lg)] sm:p-8 lg:p-10">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <h2 className="text-2xl font-extrabold leading-tight md:text-3xl">
+              <h2 className="text-2xl font-bold leading-tight md:text-3xl">
                 Try the course before deciding.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 opacity-80">

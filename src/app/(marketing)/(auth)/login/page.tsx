@@ -38,7 +38,7 @@ const loginBenefits = [
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">{children}</p>
+    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
   );
 }
 
@@ -47,10 +47,10 @@ function LoginPreview() {
     <div className="mt-8 rounded-lg border border-white/10 bg-white/[0.07] p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase opacity-60">Next step</p>
-          <p className="mt-1 text-lg font-extrabold">Continue GCSE Russian revision</p>
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] opacity-60">Next step</p>
+          <p className="mt-1 text-lg font-bold">Continue GCSE Russian revision</p>
         </div>
-        <span className="rounded-md bg-[var(--accent-fill)] px-3 py-1 text-xs font-bold text-[var(--accent-on-fill)]">
+        <span className="rounded-md bg-[var(--accent-fill)] px-3 py-1 text-xs font-semibold text-[var(--accent-on-fill)]">
           Ready
         </span>
       </div>
@@ -96,10 +96,10 @@ export default async function LoginPage({
               </Badge>
             </div>
 
-            <p className="text-xs font-bold uppercase text-[var(--accent-ink)]">
+            <p className="app-text-meta text-[var(--accent-ink)]">
               Welcome back
             </p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-extrabold leading-none md:text-6xl">
+            <h1 className="mt-3 max-w-3xl text-4xl font-extrabold leading-[1.04] md:text-6xl">
               Pick up the GCSE Russian route where you left off.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 opacity-80 md:text-lg">
@@ -113,7 +113,7 @@ export default async function LoginPage({
           <div className="p-5 sm:p-8 lg:p-10">
             <div className="mx-auto max-w-md">
               <Eyebrow>Student access</Eyebrow>
-              <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)]">
+              <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)]">
                 Log in to your account
               </h2>
               <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
@@ -130,7 +130,7 @@ export default async function LoginPage({
         {loginBenefits.map((benefit) => (
           <div key={benefit.title} className="border-t-2 border-[var(--accent-fill)] pt-5">
             <AppIcon icon={benefit.icon} size={22} className="text-[var(--accent-ink)]" />
-            <h2 className="mt-4 text-lg font-extrabold text-[var(--text-primary)]">
+            <h2 className="mt-4 text-lg font-semibold text-[var(--text-primary)]">
               {benefit.title}
             </h2>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
