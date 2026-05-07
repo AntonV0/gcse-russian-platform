@@ -19,8 +19,6 @@
 }
 
 .app-section-pager-dock {
-  --lesson-pager-apron-depth: 0px;
-  --lesson-pager-apron-surface: var(--workspace-lesson-bg);
   --lesson-pager-bottom-offset: 0px;
   --lesson-pager-shadow-opacity: 1;
   --lesson-pager-top-border-color: transparent;
@@ -34,8 +32,7 @@
   background: transparent;
 }
 
-.app-section-pager-dock::before,
-.app-section-pager-dock::after {
+.app-section-pager-dock::before {
   content: "";
   position: absolute;
   z-index: 0;
@@ -54,13 +51,6 @@
   );
   opacity: var(--lesson-pager-shadow-opacity);
   transition: opacity 120ms linear;
-}
-
-.app-section-pager-dock::after {
-  inset-inline: 0;
-  bottom: calc(-1 * var(--lesson-pager-apron-depth));
-  top: 0;
-  background: var(--lesson-pager-apron-surface);
 }
 
 .app-section-pager-card {

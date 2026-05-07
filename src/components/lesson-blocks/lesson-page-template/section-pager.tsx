@@ -56,7 +56,10 @@ export function SectionPager({
       dock.style.removeProperty("width");
       dock.style.removeProperty("z-index");
       dock.style.removeProperty("--lesson-pager-bottom-offset");
-      dock.style.removeProperty("--lesson-pager-apron-depth");
+      document.body.style.removeProperty("--lesson-bottom-backing-height");
+      document.body.style.removeProperty("--lesson-bottom-backing-left");
+      document.body.style.removeProperty("--lesson-bottom-backing-offset");
+      document.body.style.removeProperty("--lesson-bottom-backing-width");
     }
 
     function updateShadowOpacity(bottomOffset = 0) {
@@ -104,9 +107,21 @@ export function SectionPager({
           "--lesson-pager-bottom-offset",
           `${bottomOffset.toFixed(2)}px`
         );
-        dock.style.setProperty(
-          "--lesson-pager-apron-depth",
-          `${DOCK_BOTTOM_GAP}px`
+        document.body.style.setProperty(
+          "--lesson-bottom-backing-height",
+          `${(dock.offsetHeight + DOCK_BOTTOM_GAP).toFixed(2)}px`
+        );
+        document.body.style.setProperty(
+          "--lesson-bottom-backing-left",
+          `${(columnRect.left - 1).toFixed(2)}px`
+        );
+        document.body.style.setProperty(
+          "--lesson-bottom-backing-offset",
+          `${Math.max(0, bottomOffset - DOCK_BOTTOM_GAP).toFixed(2)}px`
+        );
+        document.body.style.setProperty(
+          "--lesson-bottom-backing-width",
+          `${(columnRect.width + 2).toFixed(2)}px`
         );
 
         updateShadowOpacity(bottomOffset);

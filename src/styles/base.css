@@ -7,6 +7,12 @@ html {
 }
 
 body {
+  --app-page-background: var(--background);
+  --lesson-bottom-backing-background: var(--background);
+  --lesson-bottom-backing-height: 0px;
+  --lesson-bottom-backing-left: 0px;
+  --lesson-bottom-backing-offset: 0px;
+  --lesson-bottom-backing-width: 0px;
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -29,17 +35,32 @@ body {
 }
 
 body:has(.app-route-lesson) {
+  --app-page-background: var(--workspace-lesson-bg);
+  --lesson-bottom-backing-background: var(--background);
   background:
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--lesson-paper-bg) 42%, transparent) 0%,
       transparent 22rem
     ),
-    var(--workspace-lesson-bg);
+    var(--app-page-background);
 }
 
 body:has(.app-route-admin) {
-  background: var(--workspace-admin-bg);
+  --app-page-background: var(--workspace-admin-bg);
+  background: var(--app-page-background);
+}
+
+body:has(.app-route-lesson)::after {
+  content: "";
+  position: fixed;
+  z-index: 10;
+  left: var(--lesson-bottom-backing-left);
+  bottom: var(--lesson-bottom-backing-offset);
+  width: var(--lesson-bottom-backing-width);
+  height: var(--lesson-bottom-backing-height);
+  background: var(--lesson-bottom-backing-background);
+  pointer-events: none;
 }
 
 *,
