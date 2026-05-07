@@ -100,3 +100,6 @@ docs/gcse-russian-course-map.md
 docs/spec-private/
 docs/page-ui-private/
 docs/dev-workflow-private/
+
+# local QA captures
+.playwright-qa-*.png
