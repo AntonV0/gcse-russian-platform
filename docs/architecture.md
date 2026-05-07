@@ -1,5 +1,7 @@
 # Architecture Overview
 
+Last reviewed: 2026-05-04
+
 This document describes the current system architecture of the GCSE
 Russian Course Platform.
 
@@ -8,7 +10,8 @@ It reflects the **latest system design**, including:
 - the evolution of the lesson builder into a full CMS
 - variant-aware content delivery
 - shared section architecture
-- major UX improvements introduced in this phase
+- current lesson-builder and platform UX improvements
+- the marketing / resources / platform route split
 
 ---
 
@@ -61,6 +64,7 @@ Built with Next.js App Router and React.
 Responsibilities:
 
 - public marketing pages
+- public and access-aware resource pages
 - dashboards
 - course navigation
 - lesson rendering
@@ -71,14 +75,18 @@ Responsibilities:
 - role-aware navigation
 - account and settings UI
 
-Route groups separate public marketing pages from authenticated platform pages:
+Route groups separate public marketing pages, learning-resource pages, and
+authenticated personal workflows:
 
-- `(marketing)` contains temporary `/marketing/*` marketing pages and auth entry pages
-- `(platform)` contains authenticated LMS pages and uses the platform sidebar layout
+- `(marketing)` contains public conversion/SEO pages and auth entry pages.
+- `(resources)` contains public or access-aware courses, vocabulary, grammar,
+  past papers, and mock exam browsing.
+- `(platform)` contains signed-in personal workflows and uses the platform
+  sidebar layout.
 
-The app-facing landing page remains at `/` during local/single-domain development.
-Future host-based routing can map `www.gcserussian.com` to marketing root URLs and
-`app.gcserussian.com` to the app root.
+The app-facing landing page remains at `/` during local/single-domain
+development. Future host-based routing can map these surfaces to different
+domains or clean URLs without collapsing the internal separation.
 
 ---
 
@@ -337,7 +345,8 @@ Enables:
 
 - stored in DB
 - editable in CMS
-- not yet used in progression logic
+- used by the current V1 Foundation-to-Higher section progress sync
+- not yet a full canonical progress model
 
 ---
 
@@ -422,7 +431,7 @@ Tables:
 
 ## 16. Database relationships
 
-LESSONS → LESSON_SECTIONS → LESSON_BLOCKS
+LESSONS -> LESSON_SECTIONS -> LESSON_BLOCKS
 
 ---
 
@@ -434,7 +443,9 @@ UI visibility is derived from role + access mode.
 
 ## 18. Dashboard Architecture
 
-Aggregates role, variant, and progress.
+Aggregates role, variant, progress, next-step guidance, and a V1 learning plan.
+For active student paths, the dashboard can find the next accessible lesson and
+resume the next unlocked visible lesson section.
 
 ---
 
@@ -444,17 +455,20 @@ Includes profile, avatar system, and settings page.
 
 ---
 
-## 20. Architectural changes in this phase
+## 20. Current architectural changes
 
 Added:
 
 - variant visibility system
 - canonical section system
+- Foundation-to-Higher canonical section progress sync V1
 - UI Lab system
 - reusable table architecture
 - DevComponentMarker system
 - structured row interaction patterns
 - theme system
+- marketing / resources / platform route separation
+- Stripe billing and webhook-backed access grants
 
 Removed:
 
@@ -473,6 +487,6 @@ Removed:
 
 ## 22. Next architectural steps
 
-- progress syncing
-- dashboard improvements
+- full canonical progress model beyond the current V1 section sync
+- dashboard recommendations and analytics
 - builder UX upgrades

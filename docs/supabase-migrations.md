@@ -1,5 +1,7 @@
 # Supabase Migration Policy
 
+Status: current as of 2026-05-04.
+
 Supabase migrations are append-only once they may have been applied to any shared,
 preview, staging, or production database. Do not rename, delete, squash, or edit
 historical migration files for cosmetic cleanup.
@@ -46,6 +48,13 @@ been applied already:
   Stripe placeholder price IDs. It is superseded by
   `20260420110816_seed_source_aware_higher_upgrade_prices.sql` and corrected by
   `20260427130500_deactivate_placeholder_stripe_prices.sql`.
+- Later public-resource work is intentionally additive:
+  `20260429182500_allow_anon_public_resource_reads.sql` opens anonymous reads
+  for published public resource content, and
+  `20260430120000_add_vocabulary_access_flags.sql` adds vocabulary publication
+  and source access flags used by the public vocabulary surface.
+- The latest migration present in this audit is
+  `20260430120000_add_vocabulary_access_flags.sql`.
 
 ## Stripe Price Seed Strategy
 

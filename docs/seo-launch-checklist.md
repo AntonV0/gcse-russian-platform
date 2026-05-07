@@ -1,5 +1,9 @@
 # SEO Launch Checklist
 
+Status: current as of 2026-05-04.
+
+Source of truth: `src/app/sitemap.ts`, `src/app/robots.ts`, and `src/proxy.ts`.
+
 Use this checklist before opening public indexing for the GCSE Russian marketing cluster.
 
 ## URL And Indexing
@@ -7,7 +11,9 @@ Use this checklist before opening public indexing for the GCSE Russian marketing
 - Confirm `/` is intentionally the app home and `/marketing` is the marketing home.
 - Confirm clean public resource URLs are live: `/gcse-russian-course`, `/pricing`, `/resources`, `/edexcel-gcse-russian`, `/gcse-russian-revision`, `/gcse-russian-past-papers`, `/gcse-russian-vocabulary`, `/gcse-russian-grammar`, `/gcse-russian-exam-guide`, `/gcse-russian-listening-exam`, `/gcse-russian-speaking-exam`, `/gcse-russian-reading-exam`, `/gcse-russian-writing-exam`, `/gcse-russian-foundation-tier`, `/gcse-russian-higher-tier`, `/gcse-russian-for-parents`, `/gcse-russian-tutor`, `/online-gcse-russian-lessons`, `/russian-gcse-private-candidate`.
 - Confirm legacy `/marketing/:path*` redirects to the matching clean URL.
-- Confirm platform, admin, auth, account, dashboard, mock exam, grammar, vocabulary, courses, assignments, teacher, profile, and settings routes remain disallowed or noindexed as intended.
+- Confirm public resource routes remain indexable: `/resources`, `/courses`, `/vocabulary`, `/grammar`, `/past-papers`, and `/mock-exams`.
+- Confirm protected app routes remain disallowed or noindexed as intended: `/account`, `/admin`, `/api`, `/assignments`, `/auth`, `/dashboard`, `/forgot-password`, `/login`, `/online-classes`, `/profile`, `/question-sets`, `/settings`, `/signup`, and `/teacher`.
+- Confirm authenticated mock-exam attempt routes under `/mock-exams/:mockExamSlug/attempts/*` remain protected by `src/proxy.ts` and are not treated as public resource pages.
 - Submit `/sitemap.xml` in Google Search Console after production DNS and canonical host are final.
 
 ## Metadata And Structured Data

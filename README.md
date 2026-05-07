@@ -1,5 +1,7 @@
 # GCSE Russian Course Platform
 
+Last reviewed: 2026-05-04
+
 A full-stack online learning platform for GCSE Russian students,
 combining structured courses, interactive lessons, teacher-led
 assignment workflows, and a rapidly evolving internal CMS.
@@ -13,13 +15,19 @@ Online Russian School**.
 
 Project architecture notes are kept in `docs/`:
 
+- `docs/CURRENT_STATE.md`
 - `docs/architecture.md`
 - `docs/decisions.md`
 - `docs/image-strategy.md`
 - `docs/local-setup.md`
 - `docs/PROJECT_STRUCTURE.md`
+- `docs/question-design-system.md`
+- `docs/responsive-qa.md`
+- `docs/seo-launch-checklist.md`
 - `docs/supabase-migrations.md`
 - `docs/ui-system-guidelines.md`
+- `docs/vocabulary-admin-production-notes.md`
+- `docs/vocabulary-section-placement.md`
 
 ---
 
@@ -28,9 +36,11 @@ Project architecture notes are kept in `docs/`:
 This platform combines:
 
 - structured self-study course delivery
+- public/access-aware resource browsing
 - teacher-managed assignments and review workflows
 - a fully database-driven lesson system
 - a growing CMS for managing all learning content
+- Stripe-backed course access and billing workflows
 - a structured internal **UI design system (UI Lab)** for consistent UX across the platform
 
 It is designed as a **single unified system** that supports multiple
@@ -144,7 +154,7 @@ To support future content reuse, sections now include:
 ### Purpose
 
 - allows logically identical sections to exist across variants
-- enables **shared progress tracking (future)**
+- enables **shared progress tracking**
 - enables **content reuse without duplication constraints**
 
 ### Example
@@ -169,10 +179,15 @@ This is currently:
 
 - stored
 - editable in CMS
+- used by the V1 Foundation-to-Higher section progress sync
 
-But not yet used for:
+But not yet a complete canonical progress model. The current sync is intentionally
+narrow:
 
-- cross-variant progress syncing (future feature)
+- Foundation -> Higher only
+- matching module/lesson slugs only
+- matching canonical section keys only
+- section visits only, not a full completion/analytics model
 
 ---
 
@@ -302,7 +317,7 @@ A reusable table architecture has been introduced to replace raw table markup.
 
 ## Lesson Builder UX Improvements
 
-This phase focused heavily on **authoring experience**, not just
+Recent lesson-builder work focused heavily on **authoring experience**, not just
 functionality.
 
 ### 1. Block Creation Flow (Major Change)
@@ -427,11 +442,10 @@ This ensures:
 
 ### Settings system
 
-- Dedicated settings page scaffolded
-- Future-ready for:
-  - email change
-  - password update
-  - account management
+- Dedicated settings page
+- Theme appearance controls
+- Password update flow
+- Future-ready for deeper account management
 
 ---
 
@@ -452,14 +466,17 @@ The dashboard is evolving into a **central learning hub**, not just a landing pa
 
 ---
 
-### New additions in this phase
+### Current dashboard additions
 
 #### 1. Progress awareness
 
 - Integrated `getCourseProgressSummary`
+- Integrated `getStudentLearningPlan`
 - Displays:
   - completed lessons
   - contextual progress messaging
+  - next accessible lesson where available
+  - resume links to the next unlocked visible section
 
 #### 2. Next-step system (V1)
 
@@ -481,8 +498,9 @@ Examples:
 
 This version intentionally:
 
-- does NOT compute exact "next lesson"
-- does NOT depend on complex progression logic
+- computes the next accessible lesson from the current course path
+- resumes the next unlocked visible lesson section where possible
+- does NOT attempt to solve the full long-term canonical progress model
 - stays lightweight and safe
 
 ---
@@ -522,6 +540,7 @@ The platform is moving toward:
 - variant-aware course structure
 - intelligent student progression
 - a unified **design system-driven UI architecture**
+- resource-first public learning surfaces that can sit between marketing and the signed-in app
 
 ---
 
@@ -571,7 +590,7 @@ Core content:
 
 ### Dashboard
 
-- true "continue lesson" system
+- harden and expand the current V1 continue-lesson model
 - module-level progress tracking
 - personalised recommendations
 
@@ -596,7 +615,7 @@ Core content:
 
 ### Platform
 
-- payments
+- harden billing/account edge cases
 - analytics
 - speaking workflows
 - exam simulation features

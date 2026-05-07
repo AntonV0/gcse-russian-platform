@@ -1,7 +1,9 @@
 # Image Strategy
 
-This document defines the first implementation rules for images and visual
-placeholders in the GCSE Russian Course Platform.
+Status: current as of 2026-05-04.
+
+This document defines implementation rules for images and visual placeholders in
+the GCSE Russian Course Platform.
 
 ## Goals
 
@@ -11,8 +13,9 @@ placeholders in the GCSE Russian Course Platform.
   motivation.
 - Preserve the existing token-based theme system, including light mode, dark
   mode, and future accent colours.
-- Avoid adding real image assets until the placeholder and layout system has been
-  validated in UI Lab and production pages.
+- Add real image assets gradually, only where they clarify a page or learning
+  task. Placeholder patterns remain useful for empty states and categories that
+  do not yet have final assets.
 
 ## Current Implementation
 
@@ -22,10 +25,13 @@ placeholders in the GCSE Russian Course Platform.
   future illustration content.
 - `VisualPlaceholder` provides token-based placeholder visuals without adding
   image files.
+- Real raster illustrations now exist under `public/illustrations/` for selected
+  course-path and vocabulary surfaces.
 - UI Lab / Lesson Content includes a visual strategy section for reviewing these
   patterns before wider rollout.
-- The student vocabulary and grammar hubs use placeholder visuals in their
-  intro panels as the first production placement test.
+- The student vocabulary hub and selected course/path surfaces use real
+  illustrations where the visual supports orientation. Grammar and some resource
+  surfaces still use placeholder visuals where that is more restrained.
 - Past papers and mock exams also use intro placeholders to distinguish official
   resource browsing from platform-created practice without adding visual noise to
   filters or question lists.

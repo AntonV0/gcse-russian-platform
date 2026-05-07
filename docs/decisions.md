@@ -1,5 +1,7 @@
 # Architecture Decisions
 
+Last reviewed: 2026-05-04
+
 This document records the main technical decisions behind the GCSE
 Russian Course Platform.
 
@@ -41,7 +43,7 @@ Supports:
 
 ### Decision
 
-Role ≠ access mode
+Role != access mode
 
 ### Why
 
@@ -79,7 +81,7 @@ Remove hardcoded content.
 
 ### Decision
 
-Lesson → Section → Block
+Lesson -> Section -> Block
 
 ### Benefits
 
@@ -292,13 +294,13 @@ Support both:
 
 Different data needs different representation:
 
-- tables → comparison
-- hierarchy → structure
+- tables -> comparison
+- hierarchy -> structure
 
 ### Benefits
 
 - clearer UX
-- better alignment with LMS data (modules → lessons → blocks)
+- better alignment with LMS data (modules -> lessons -> blocks)
 
 ---
 
@@ -369,14 +371,15 @@ Implement a three-mode theme system (Light, Dark, System) using a client-side Th
 
 ---
 
-## 24. Why introduce marketing and platform route groups?
+## 24. Why introduce marketing, resources, and platform route groups?
 
 ### Decision
 
 Use Next.js App Router route groups to separate:
 
 - marketing pages in `(marketing)`
-- authenticated LMS pages in `(platform)`
+- public/access-aware learning resources in `(resources)`
+- authenticated personal LMS workflows in `(platform)`
 
 while preserving a future path to clean URLs.
 
@@ -386,12 +389,18 @@ The product needs to support:
 
 - `www.gcserussian.com` for public marketing and SEO pages
 - `app.gcserussian.com` for the LMS platform in future
-- one codebase during the current phase
+- public resource browsing that can sit between marketing and signed-in personal
+  workflows
+- one codebase during the current single-domain development model
 
 ### Key Choices
 
 - Keep `/` as the app-facing landing page during local/single-domain development.
-- Keep `/marketing/pricing` as the temporary public, trial-first marketing pricing page.
+- Keep clean public marketing URLs such as `/pricing`, `/resources`, and the
+  GCSE guide pages.
+- Keep `/marketing/:path+` redirects to the matching clean public URL.
+- Use `(resources)` for courses, vocabulary, grammar, past papers, and mock exam
+  browsing because these pages are public or access-aware, not purely personal.
 - Move authenticated Stripe checkout and upgrade UI to `/account/billing`.
 - Keep platform pages inside the authenticated platform layout with `PlatformSidebar`.
 - Keep marketing pages inside a separate public layout with marketing-only header and footer.
@@ -399,7 +408,9 @@ The product needs to support:
 
 ### Result
 
-Public pages can grow independently from platform workflows. When host-based routing is introduced, `www.gcserussian.com` can map marketing pages back to root-level marketing URLs and `app.gcserussian.com` can keep the app-facing root experience.
+Public pages and resource browsing can grow independently from personal platform
+workflows. When host-based routing is introduced, the surfaces can be mapped to
+the right hosts without changing the internal mental model.
 
 ---
 
@@ -429,3 +440,37 @@ page logic lived in one file.
 
 The codebase can become more modular without forcing risky all-at-once import
 changes across the app.
+
+---
+
+## 26. Why treat the course map as generated source material?
+
+### Decision
+
+Use the local generated course-map source document as the source material for
+the generated Foundation/Higher course scaffold and coverage allocation, while
+keeping final student-facing lesson authoring in the CMS. The default local path
+is `docs/gcse-russian-course-map.md`, but that file is ignored because it is a
+generated planning/export artifact.
+
+### Why
+
+The course map needs to allocate the full Pearson Edexcel vocabulary and grammar
+coverage across a coherent course path before every lesson is hand-authored.
+Keeping the map as a generated document makes coverage review easier and lets
+scripts produce repeatable DB writes.
+
+### Key Choices
+
+- The map drives generated modules, lesson records, custom vocabulary sets,
+  vocabulary lists, lesson-vocabulary links, and lesson-grammar links.
+- The latest local write report reused the generated scaffold rather than
+  creating it from scratch, which means the map has already been applied locally.
+- Generated course-map rows use `gcse-russian-course-map` as their source key.
+- The map is not the final lesson body. CMS sections and blocks remain the
+  authoring layer for polished teaching content.
+
+### Result
+
+AI agents should treat the course map as the current course-planning source for
+coverage and structure, not as a loose proposal and not as finished lesson copy.

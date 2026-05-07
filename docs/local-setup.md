@@ -1,5 +1,7 @@
 # Local Setup
 
+Status: current as of 2026-05-04.
+
 This project uses Next.js, Supabase, and Stripe. Keep real values in `.env.local`
 or your deployment environment; `.env.example` is only a blank template.
 
@@ -61,12 +63,18 @@ Use the webhook signing secret printed by the Stripe CLI as
 Stripe CLI listener secrets are different values, so keep local and deployed
 environments separate.
 
-The webhook route currently handles:
+The webhook route currently accepts these Stripe event types:
 
 - `checkout.session.completed`
 - `customer.subscription.created`
 - `customer.subscription.updated`
 - `customer.subscription.deleted`
+
+Current behavior lives in `src/app/api/stripe/webhook/route.ts` and
+`src/lib/billing/webhook-*.ts`. The handler records Stripe event processing state
+for idempotency, grants access for standard subscription/payment checkouts,
+handles Foundation-to-Higher upgrade flows, syncs subscription lifecycle changes,
+and deactivates Stripe grants when subscription status no longer provides access.
 
 ## 4. Run the app
 

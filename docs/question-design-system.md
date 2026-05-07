@@ -2,53 +2,30 @@
 title: "Question Design System (GCSE Russian Platform)"
 sourceType: "internal"
 isPublic: false
-status: phase_5_bridge_scaffold
+status: beta_bridge
 buildPriority: critical
-lastReviewed: "2026-04-25"
+lastReviewed: "2026-05-04"
 ---
 
 # Question Design System
 
-This file defines the phase 1 taxonomy for the GCSE Russian question system.
-It is a design-system reference, not a schema migration.
+This file defines the shared taxonomy and bridge rules for GCSE Russian
+questions. It is a design-system reference, not a schema migration.
 
-Phase 1 goals:
-
-- define a stable question taxonomy
-- map existing question-set types to the final taxonomy
-- map existing mock exam types to the final taxonomy
-- protect the key product principle: students should generally not need to type Russian
-- create a safe bridge for later renderer, admin, and data model work
-
-Phase 1 does not:
-
-- change the database
-- change admin forms
-- change student renderers
-- change marking behaviour
-- remove existing question types
+Use it to align question sets, mock exams, admin authoring, renderers, and future
+marking work without assuming every planned capability is production-ready.
 
 ## Implementation Status
 
-Phase 1 is complete: the shared taxonomy and compatibility maps exist.
-
-Phase 2 is complete in the current codebase: question sets now support shared
-digital interactions for multiple response, matching, ordering, word-bank gap
-fill, and categorisation, with admin authoring and structured validation.
-
-Phase 3 is scaffolded: reading and listening tasks can now carry parent stimulus
-metadata, child question-set links, replay limits, and time limits in mock exam
-question data. This does not yet change student rendering.
-
-Phase 4 is scaffolded: writing and speaking mock tasks can now carry response
-workflow metadata and future AI/teacher marking metadata, including criteria,
-level descriptors, mark scheme references, and word-count guidance. This does
-not yet implement uploads or recording storage.
-
-Phase 5 is scaffolded: mock exam question types and reusable question-set types
-now have a shared bridge into the question design taxonomy. Mock exams still use
-their existing runtime renderer, but new records can preserve the shared
-interaction/task metadata needed for unification.
+| Area                          | Status      | Current meaning                                                                                             |
+| ----------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------- |
+| Shared taxonomy               | implemented | Task contexts, interaction types, and compatibility maps exist.                                             |
+| Question-set digital UI       | implemented | Reusable practice supports multiple response, matching, ordering, word-bank gap fill, and categorisation.   |
+| Question-set admin validation | implemented | Admin authoring and structured validation exist for the current reusable practice interactions.             |
+| Reading/listening parent data | scaffolded  | Mock exam data can carry stimulus metadata, child question links, replay limits, and time limits.           |
+| Writing/speaking responses    | beta        | Attempts can store uploads, browser recordings, planning notes, and draft text.                             |
+| Teacher/AI marking metadata   | beta        | Mock tasks can carry criteria, level descriptors, mark references, and word-count guidance for review flow. |
+| Shared mock/runtime engine    | planned     | Mock exams still use their existing renderer while preserving bridge metadata for later unification.        |
 
 ## Core Principle
 
@@ -178,9 +155,9 @@ Current question-set types are defined in the reusable practice engine.
 | `translation`     | `answerStrategy: text_input`       | `translation_ru_en` or advanced typed Russian                          | Split by direction.                                    |
 | `translation`     | `answerStrategy: sentence_builder` | `translation_en_ru_tiles` or `sentence_builder`                        | Promote to first-class interaction.                    |
 | `translation`     | `answerStrategy: selection_based`  | `dropdown_gap_fill`, `grammar_form_selection`, or `word_bank_gap_fill` | Promote to first-class interaction.                    |
-| `translation`     | `answerStrategy: upload_required`  | `writing_upload`                                                       | Currently placeholder only.                            |
+| `translation`     | `answerStrategy: upload_required`  | `writing_upload`                                                       | Beta placeholder bridge.                               |
 
-Question-set phase 2 target:
+Question-set unification target:
 
 - keep existing records working
 - introduce first-class interaction keys
@@ -192,30 +169,30 @@ Question-set phase 2 target:
 Mock exams currently have broader type names. Many are exam-task labels rather
 than student interaction types.
 
-| Existing mock type         | Final interaction mapping                                          | Status                                                |
-| -------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------- |
-| `multiple_choice`          | `single_choice`                                                    | Covered.                                              |
-| `multiple_response`        | `multi_select`                                                     | Covered.                                              |
-| `short_answer`             | `short_answer_en`                                                  | Covered for English; avoid Russian typing.            |
-| `gap_fill`                 | `word_bank_gap_fill` or `dropdown_gap_fill`                        | Needs digital-first gap UI.                           |
-| `matching`                 | `matching`                                                         | Covered in mock UI; should become shared.             |
-| `sequencing`               | `ordering`                                                         | Needs tap/drag ordering, not comma-separated numbers. |
-| `opinion_recognition`      | `opinion_recognition`                                              | Covered in mock UI; should become shared.             |
-| `true_false_not_mentioned` | `true_false_not_mentioned`                                         | Covered in mock UI; should become shared.             |
-| `translation_into_english` | `translation_ru_en`                                                | Needs marking model beyond raw textarea.              |
-| `translation_into_russian` | `translation_en_ru_tiles` or `writing_upload`                      | Avoid default Cyrillic typing.                        |
-| `writing_task`             | `writing_upload` or `writing_draft_optional`                       | Needs upload workflow and rubric metadata.            |
-| `simple_sentences`         | `writing_upload`, `sentence_builder`, or `writing_draft_optional`  | Use scaffolded practice before open writing.          |
-| `short_paragraph`          | `writing_upload` or `writing_draft_optional`                       | Needs rubric metadata.                                |
-| `extended_writing`         | `writing_upload` or `writing_draft_optional`                       | Needs rubric metadata.                                |
-| `role_play`                | `role_play_response`, `speaking_prep_notes`, `speaking_recording`  | Needs speaking workflow.                              |
-| `photo_card`               | `photo_card_response`, `speaking_prep_notes`, `speaking_recording` | Needs image + prep + recording workflow.              |
-| `conversation`             | `conversation_response`, `speaking_recording`                      | Needs speaking workflow.                              |
-| `sentence_builder`         | `sentence_builder`                                                 | Covered conceptually; should use shared renderer.     |
-| `note_completion`          | `note_completion_en` or `word_bank_gap_fill`                       | Covered with text inputs; improve with choices.       |
-| `listening_comprehension`  | `listening_task` parent + child interactions                       | Needs parent-child task model.                        |
-| `reading_comprehension`    | `reading_task` parent + child interactions                         | Needs parent-child task model.                        |
-| `other`                    | `manual_marked_response`                                           | Migration-only escape hatch.                          |
+| Existing mock type         | Final interaction mapping                                          | Status                                                                          |
+| -------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `multiple_choice`          | `single_choice`                                                    | Covered.                                                                        |
+| `multiple_response`        | `multi_select`                                                     | Covered.                                                                        |
+| `short_answer`             | `short_answer_en`                                                  | Covered for English; avoid Russian typing.                                      |
+| `gap_fill`                 | `word_bank_gap_fill` or `dropdown_gap_fill`                        | Needs digital-first gap UI.                                                     |
+| `matching`                 | `matching`                                                         | Covered in mock UI; should become shared.                                       |
+| `sequencing`               | `ordering`                                                         | Needs tap/drag ordering, not comma-separated numbers.                           |
+| `opinion_recognition`      | `opinion_recognition`                                              | Covered in mock UI; should become shared.                                       |
+| `true_false_not_mentioned` | `true_false_not_mentioned`                                         | Covered in mock UI; should become shared.                                       |
+| `translation_into_english` | `translation_ru_en`                                                | Needs marking model beyond raw textarea.                                        |
+| `translation_into_russian` | `translation_en_ru_tiles` or `writing_upload`                      | Avoid default Cyrillic typing.                                                  |
+| `writing_task`             | `writing_upload` or `writing_draft_optional`                       | Beta upload/draft workflow exists; rubric flow needs hardening.                 |
+| `simple_sentences`         | `writing_upload`, `sentence_builder`, or `writing_draft_optional`  | Beta upload/draft workflow exists; use scaffolded practice before open writing. |
+| `short_paragraph`          | `writing_upload` or `writing_draft_optional`                       | Beta upload/draft workflow exists; rubric flow needs hardening.                 |
+| `extended_writing`         | `writing_upload` or `writing_draft_optional`                       | Beta upload/draft workflow exists; rubric flow needs hardening.                 |
+| `role_play`                | `role_play_response`, `speaking_prep_notes`, `speaking_recording`  | Beta prep/recording/upload workflow exists.                                     |
+| `photo_card`               | `photo_card_response`, `speaking_prep_notes`, `speaking_recording` | Beta prep/recording/upload workflow exists; image workflow needs polish.        |
+| `conversation`             | `conversation_response`, `speaking_recording`                      | Beta prep/recording/upload workflow exists.                                     |
+| `sentence_builder`         | `sentence_builder`                                                 | Covered conceptually; should use shared renderer.                               |
+| `note_completion`          | `note_completion_en` or `word_bank_gap_fill`                       | Covered with text inputs; improve with choices.                                 |
+| `listening_comprehension`  | `listening_task` parent + child interactions                       | Needs parent-child task model.                                                  |
+| `reading_comprehension`    | `reading_task` parent + child interactions                         | Needs parent-child task model.                                                  |
+| `other`                    | `manual_marked_response`                                           | Migration-only escape hatch.                                                    |
 
 ## GCSE Coverage Target
 
@@ -252,7 +229,7 @@ The complete question design system should cover:
 
 ## Data Model Direction
 
-Future questions should support these fields conceptually:
+The planned canonical question shape should support these fields conceptually:
 
 ```ts
 type FutureQuestionDesignShape = {
@@ -273,11 +250,12 @@ type FutureQuestionDesignShape = {
 };
 ```
 
-The exact database design can come later. Phase 1 only establishes the vocabulary.
+The exact canonical database design is not final. Existing records should keep
+working while new metadata moves toward this shape.
 
 ## Admin Authoring Rules
 
-Admin forms should eventually:
+Planned admin authoring rules:
 
 - ask for the interaction type first
 - warn when Russian typing would be required
@@ -289,7 +267,7 @@ Admin forms should eventually:
 
 ## Renderer Rules
 
-Renderers should eventually:
+Planned renderer rules:
 
 - use shared interaction components across lessons, question sets, mock exams, and assignments
 - render by interaction type, not by source system
@@ -311,9 +289,9 @@ Typed English short answers need accepted-answer handling with:
 - contradiction handling
 - partial credit where appropriate
 
-Writing and speaking should be teacher-marked first, with future AI assistance.
+Writing and speaking should be teacher-marked first, with later AI assistance.
 
-Future AI-assisted marking should store:
+Planned AI-assisted marking should store:
 
 - criteria
 - level descriptors
@@ -325,30 +303,21 @@ Future AI-assisted marking should store:
 - model answer or exemplar reference
 - teacher override
 
-## Phase Plan
+## Roadmap
 
-Phase 1:
+Already in place:
 
-- define taxonomy
-- add compatibility maps
-- do not change behaviour
+- shared taxonomy
+- compatibility maps
+- reusable objective/selective practice interactions
+- structured admin editors for the current reusable interactions
+- beta writing upload and speaking recording response storage
+- bridge metadata between mock exam types and shared question taxonomy
 
-Phase 2:
+Still to harden:
 
-- add shared renderer components for objective/selective digital interactions
-- add structured admin editors for the highest-priority interactions
-
-Phase 3:
-
-- add reading/listening parent task model
-- attach child interactions to a shared stimulus
-
-Phase 4:
-
-- add writing upload and speaking recording workflows
-- add rubric metadata
-
-Phase 5:
-
-- route mock exams and question sets through one shared engine
-- reduce duplicated marking/rendering logic
+- reading/listening parent task rendering with child interactions
+- final writing upload and speaking recording workflows
+- rubric review UX and teacher override flow
+- shared renderer/runtime path across mock exams, lessons, question sets, and assignments
+- reduced duplicated marking/rendering logic

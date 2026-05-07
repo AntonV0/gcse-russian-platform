@@ -1,193 +1,153 @@
 # UI System Guidelines
 
-This document defines the visual and interaction standards for the GCSE Russian Course Platform.
+Status: current as of 2026-05-04.
 
-It ensures consistency across Admin, Student, and Teacher experiences, while maintaining a premium, modern, and engaging interface suitable for students aged 12–16 and their parents.
+This document defines visual and interaction standards for the GCSE Russian
+Course Platform. Use it with the UI Lab and shared component code; the live
+source of truth for implementation remains `src/components/` and `src/styles/`.
 
----
-
-## 1. Design Philosophy
+## Design Philosophy
 
 The UI should feel:
 
-- **Premium** – clean, structured, and high-quality
-- **Approachable** – not overly corporate or cold
-- **Educational** – clear, readable, and focused
-- **Engaging (lightly)** – subtle colour, feedback, and interaction
-- **Consistent** – predictable patterns across all pages
+- premium: clean, structured, and high-quality
+- approachable: warm without becoming childish
+- educational: clear, readable, and focused
+- lightly engaging: subtle color, feedback, and interaction
+- consistent: predictable patterns across public, student, teacher, and admin
+  surfaces
 
-This is NOT a playful gamified app, but it should not feel sterile.
+This is not a playful gamified app, but it should not feel sterile.
 
----
+## Visual Tone
 
-## 2. Visual Tone
+Balance structure, polish, and approachability.
 
-### Balance
+Prefer:
 
-We aim for:
+- calm hierarchy
+- restrained color
+- useful whitespace
+- clear task focus
+- reusable layout patterns
 
-- Structure (Notion, Linear)
-- Polish (Stripe)
-- Approachability (Duolingo – toned down)
+Avoid:
 
-### Avoid
+- excessive bright colors
+- decorative gradients
+- cluttered UI
+- too many badges or pills
+- heavy animations
 
-- Excessive bright colours
-- Overuse of gradients
-- Cluttered UI
-- Too many badges or pills
-- Heavy animations
+## Typography
 
----
+Typography must prioritize readability across English and Russian.
 
-## 3. Typography
+Use:
 
-Typography must prioritise readability across both **English and Russian**.
+- clear hierarchy from page title to body and meta text
+- comfortable line height
+- readable body copy
+- subtle labels and metadata
 
-### Principles
+Avoid ultra-condensed, overly decorative, or harsh type treatments.
 
-- Clear hierarchy (title → section → body → meta)
-- Comfortable line height
-- Slightly softer tone (not ultra-condensed or harsh)
+## Color
 
-### Usage
+Color should be purposeful, consistent, and limited in scope.
 
-- Large headings: strong, confident, not aggressive
-- Body text: highly readable, neutral tone
-- Labels/meta: subtle, secondary emphasis
+Roles:
 
----
+- primary brand color for actions and focus states
+- success, warning, and error colors for feedback only
+- neutral tones for layout, surfaces, and text
 
-## 4. Colour Usage
+Use tint-based backgrounds before solid fills. Color should guide attention, not
+decorate randomly.
 
-Colour should be:
+## Spacing And Layout
 
-- Purposeful
-- Consistent
-- Limited in scope
+Use consistent spacing and avoid random one-off values.
 
-### Roles
+Preferred structure:
 
-- **Primary (brand blue)** → actions, focus states
-- **Success / warning / error** → feedback only
-- **Neutral tones** → layout, surfaces, text
+- page
+- section
+- repeated item card, table, panel, or form group
+- content
 
-### Guidelines
+Avoid deep nesting and card-inside-card layouts unless the inner card is a real
+repeated item or modal-like surface.
 
-- Do not mix too many colours in one view
-- Prefer **tint-based backgrounds** over solid fills
-- Use colour to guide attention, not decorate randomly
+## Surfaces
 
----
+Surfaces should provide structure without visual heaviness.
 
-## 5. Spacing & Layout
+Use:
 
-Spacing should create clarity and hierarchy.
+- subtle borders
+- soft elevation only where useful
+- consistent radius
+- clean internal spacing
 
-### Rules
+Avoid excessive shadows and stacked decorative panels.
 
-- Use consistent spacing scale (no random values)
-- Prefer breathing room over density
-- Group related elements visually
+## Components
 
-### Layout Patterns
+Do not build one-off UI when a shared component exists.
 
-- Page → Sections → Cards → Content
-- Avoid deep nesting where possible
+Prefer shared:
 
----
+- buttons
+- cards and panels
+- badges
+- inputs, selects, textareas, and controls
+- tables
+- navigation components
+- empty states
+- feedback messages
 
-## 6. Surfaces (Cards, Panels)
+If a better pattern is created, promote it into the shared system instead of
+forking variants page by page.
 
-Surfaces define structure.
+## Composition Patterns
 
-### Principles
+Pages should be assembled from reusable patterns:
 
-- Soft elevation (not heavy shadows)
-- Subtle borders
-- Rounded corners (consistent radius)
-- Clean internal spacing
+- page header
+- section block
+- card grid
+- inspector panel
+- toolbar and filters
+- empty state
+- locked content prompt
+- admin table shell
+- lesson builder layout
 
-### Avoid
+## Interaction And Feedback
 
-- Over-layering cards inside cards
-- Excessive shadow usage
+Use subtle motion and visible state changes:
 
----
+- hover
+- focus
+- pressed
+- selected
+- expanded/collapsed
+- disabled
+- loading
 
-## 7. Components
+Avoid large animations, delayed interactions, and motion that competes with the
+primary task.
 
-### Rule
+## Icons
 
-**Do NOT build one-off UI if a shared component exists.**
+Use Lucide icons consistently. Keep sizes consistent and pair unfamiliar icons
+with labels or tooltips. Icons should support meaning, not replace essential
+text.
 
-Always prefer:
+## Content Tone
 
-- Button
-- Card / Panel
-- Badge
-- Input / Select / Textarea
-- Table
-- Navigation components
-
----
-
-## 8. Composition Patterns (IMPORTANT)
-
-Pages should be built from reusable patterns, not raw elements.
-
-Examples:
-
-- Page header (title + description)
-- Section block (title + content)
-- Card grid (index pages)
-- Inspector panel (admin editing)
-- Toolbar + filters
-- Empty state
-- Locked content prompt
-
-These patterns should be reused across the platform.
-
----
-
-## 9. Interaction & Feedback
-
-### Use subtle motion
-
-- Hover states
-- Focus states
-- Press states
-- Expand/collapse transitions
-
-### Avoid
-
-- Large animations
-- Delayed interactions
-- Distracting motion
-
-### Goal
-
-Make the interface feel **responsive and alive**, not animated.
-
----
-
-## 10. Icons
-
-- Use consistent icon set (Lucide)
-- Keep sizes consistent
-- Do not mix icon styles
-- Use icons to support meaning, not replace text
-
----
-
-## 11. Content Tone
-
-Especially important for students:
-
-- Clear
-- Encouraging
-- Direct
-- Not overly formal
+Student-facing language should be clear, encouraging, and direct.
 
 Avoid:
 
@@ -195,67 +155,47 @@ Avoid:
 - overly technical wording
 - corporate tone
 
----
+Admin copy can be denser, but it should still be scannable.
 
-## 12. Admin vs Student UI
+## Admin, Student, And Teacher Surfaces
 
-### Admin
+Admin:
 
-- Slightly denser
-- More functional
-- Clear hierarchy
-- Minimal decoration
+- denser
+- functional
+- clear hierarchy
+- minimal decoration
 
-### Student
+Student:
 
-- Slightly more visual
-- More spacing
-- More feedback (progress, states)
-- More warmth in tone
+- more visual
+- more spacing
+- more progress and state feedback
+- warmer tone
 
----
+Teacher:
 
-## 13. Consistency Rule
+- work-focused
+- assignment and review oriented
+- clear student/context cues
 
-If a pattern already exists:
+## UI Lab Role
 
-- reuse it
-- do not redesign it per page
+The UI Lab is a reference environment, testing ground, and design-system preview.
+It is not the source of truth for styling logic.
 
-If a better version is created:
-
-- update the shared component
-- do not fork variants
-
----
-
-## 14. UI Lab Role
-
-The UI Lab is:
-
-- a **reference environment**
-- a **testing ground**
-- a **design system preview**
-
-It is NOT:
-
-- the source of truth for styling logic
-
-All real styling should live in:
+Real styling should live in:
 
 - shared components
 - shared patterns
+- CSS variables and tokenized styles
 
----
-
-## 15. Definition of “Done UI”
+## Definition Of Done
 
 A UI element is complete when:
 
 - it matches existing patterns
-- it uses shared components
+- it uses shared components where available
 - spacing is consistent
-- states are defined (hover, active, disabled)
-- it works in real pages, not just UI Lab
-
----
+- hover, focus, active, loading, empty, disabled, and error states are considered
+- it works in real pages, not only in UI Lab

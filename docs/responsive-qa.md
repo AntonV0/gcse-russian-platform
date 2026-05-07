@@ -1,5 +1,7 @@
 # Responsive QA Notes
 
+Status: current as of 2026-05-04.
+
 This document records the high-confidence responsive and authenticated QA checks
 for the GCSE Russian Course Platform.
 
@@ -12,24 +14,48 @@ for the GCSE Russian Course Platform.
 
 ## Authenticated Routes To Recheck
 
-Recheck these after changes to layout, navigation, vocabulary, questions, or lesson builder code:
+Recheck these after changes to layout, navigation, questions, account, or admin
+lesson builder code:
 
 - `/dashboard`
+- `/account/billing`
+- `/settings`
 - `/courses`
 - `/courses/gcse-russian`
 - `/courses/gcse-russian/foundation`
 - `/courses/gcse-russian/foundation/modules/introduction-to-the-course`
 - `/question-sets/foundation-intro-russian-output-test`
+- `/mock-exams/[mockExamSlug]/attempts/[attemptId]`
+- `/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]/lessons/[lessonId]`
+- `/admin/ui/lesson-builder`
+- `/admin/vocabulary`
+- `/admin/grammar`
+- `/admin/past-papers`
+- `/admin/mock-exams`
+
+## Public Resource Routes To Recheck
+
+Recheck these anonymously across mobile, tablet, and desktop viewport ranges
+after changes to SEO, resource navigation, content cards, or public data-loading:
+
+- `/resources`
+- `/courses`
+- `/courses/gcse-russian`
+- `/courses/gcse-russian/foundation`
+- `/courses/gcse-russian/foundation/modules/introduction-to-the-course`
 - `/vocabulary`
 - `/vocabulary/foundation-intro-starter-vocabulary`
-- `/admin/vocabulary`
-- `/admin/ui/lesson-builder`
-- `/admin/content/courses/[courseId]/variants/[variantId]/modules/[moduleId]/lessons/[lessonId]`
-- `/settings`
+- `/grammar`
+- `/grammar/[grammarSetSlug]`
+- `/grammar/[grammarSetSlug]/[grammarPointSlug]`
+- `/past-papers`
+- `/mock-exams`
+- `/mock-exams/[mockExamSlug]`
 
 ## Expected Signals
 
 - Protected routes should remain signed in and should not redirect to `/login`.
+- Public resource routes should render anonymously without invoking Supabase auth refresh middleware.
 - Page headings should render after navigation instead of staying on skeleton/loading shells.
 - Browser console warnings/errors should remain empty for the sweep.
 - Vocabulary list and detail pages should render real content for staff/admin users.
