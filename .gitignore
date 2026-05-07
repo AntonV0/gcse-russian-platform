@@ -104,13 +104,28 @@ docs/page-ui-private/
 docs/dev-workflow-private/
 
 # private course/data IP
+supabase/migrations/*.sql
+supabase/migrations/*.sql.sql
 supabase/migrations/*remote_schema*.sql
 supabase/migrations/*seed_spec_vocabulary*.sql
 supabase/migrations/*seed_spec_grammar*.sql
+supabase/migrations/*common_verbs*.sql
+supabase/migrations/*vocabulary_item_coverage*.sql
+supabase/migrations/*source_aware_higher_upgrade_prices*.sql
+supabase/migrations/*seed_*prices*.sql*
 scripts/course-map-*.mjs
+scripts/*course-map*.mjs
 scripts/generate-course-map-*.mjs
 scripts/implement-course-map.mjs
 scripts/seed-*.mjs
+scripts/audit-vocabulary-*.mjs
+scripts/backfill-vocabulary-*.mjs
+scripts/fix-vocabulary-*.mjs
+scripts/create-admin-testing-module.mjs
+
+# private brand/source imagery
+public/brand/
+public/illustrations/
 
 # local QA captures
 .playwright-qa-*.png

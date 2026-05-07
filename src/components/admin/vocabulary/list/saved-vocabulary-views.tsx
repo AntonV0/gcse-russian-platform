@@ -8,7 +8,7 @@ const VOCABULARY_ADMIN_SAVED_FILTERS = [
   },
   {
     label: "Custom lesson sets",
-    href: "/admin/vocabulary?setType=lesson_custom&sourceKey=gcse-russian-course-map",
+    href: "/admin/vocabulary?setType=lesson_custom",
     description: "Teacher-built sets for lessons.",
   },
   {
@@ -35,7 +35,7 @@ export default function SavedVocabularyViews() {
         <div className="min-w-0">
           <h2 className="app-heading-subsection">Saved vocabulary views</h2>
           <p className="mt-1 app-text-caption">
-            Shortcuts for planning, coverage checks, and course-map lesson sets.
+            Shortcuts for planning, coverage checks, and lesson-specific sets.
           </p>
         </div>
 

@@ -41,11 +41,7 @@ function getFilteredViewSummary({
   }
 
   if (filters.sourceKey) {
-    filterLabels.push(
-      filters.sourceKey === "gcse-russian-course-map"
-        ? "Course map"
-        : filters.sourceKey
-    );
+    filterLabels.push(filters.sourceKey);
   }
 
   if (filters.usageVariant && filters.usageVariant !== "all") {

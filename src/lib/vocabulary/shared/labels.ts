@@ -64,10 +64,8 @@ const VOCABULARY_TOPIC_LABELS: Record<string, string> = {
 };
 
 const VOCABULARY_SOURCE_LABELS: Record<string, string> = {
-  "gcse-russian-course-map": "GCSE Russian course map",
   "lesson-design-showcase": "Lesson design showcase",
   lesson_design_showcase: "Lesson design showcase",
-  pearson_edexcel_gcse_russian_1ru0: "Pearson Edexcel GCSE Russian 1RU0",
 };
 
 function getVocabularyKeyFallbackLabel(value: string) {

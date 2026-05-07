@@ -440,37 +440,3 @@ page logic lived in one file.
 
 The codebase can become more modular without forcing risky all-at-once import
 changes across the app.
-
----
-
-## 26. Why treat the course map as generated source material?
-
-### Decision
-
-Use the local generated course-map source document as the source material for
-the generated Foundation/Higher course scaffold and coverage allocation, while
-keeping final student-facing lesson authoring in the CMS. The default local path
-is `docs/gcse-russian-course-map.md`, but that file is ignored because it is a
-generated planning/export artifact.
-
-### Why
-
-The course map needs to allocate the full Pearson Edexcel vocabulary and grammar
-coverage across a coherent course path before every lesson is hand-authored.
-Keeping the map as a generated document makes coverage review easier and lets
-scripts produce repeatable DB writes.
-
-### Key Choices
-
-- The map drives generated modules, lesson records, custom vocabulary sets,
-  vocabulary lists, lesson-vocabulary links, and lesson-grammar links.
-- The latest local write report reused the generated scaffold rather than
-  creating it from scratch, which means the map has already been applied locally.
-- Generated course-map rows use `gcse-russian-course-map` as their source key.
-- The map is not the final lesson body. CMS sections and blocks remain the
-  authoring layer for polished teaching content.
-
-### Result
-
-AI agents should treat the course map as the current course-planning source for
-coverage and structure, not as a loose proposal and not as finished lesson copy.

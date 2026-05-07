@@ -36,11 +36,9 @@ function FilterControl({
 }
 
 function getCompactSourceLabel(sourceKey: string) {
-  if (sourceKey === "gcse-russian-course-map") return "Course map";
   if (sourceKey === "lesson-design-showcase" || sourceKey === "lesson_design_showcase") {
     return "Showcase";
   }
-  if (sourceKey === "pearson_edexcel_gcse_russian_1ru0") return "Pearson spec";
   return getVocabularySourceLabel(sourceKey);
 }
 
