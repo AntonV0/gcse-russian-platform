@@ -221,7 +221,7 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
           title="Assignment unavailable"
           description="This assignment could not be found for your student account. It may have been removed or assigned to a different group."
           action={
-            <Button href="/assignments" variant="primary" icon="back">
+            <Button href="/assignments" variant="secondary" icon="back">
               Back to assignments
             </Button>
           }

@@ -235,10 +235,10 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
           </div>
 
           <div className="app-mobile-action-stack flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:flex-wrap xl:justify-end">
-            <Button type="submit" variant="primary" icon="filter">
+            <Button type="submit" variant="secondary" icon="filter">
               Apply
             </Button>
-            <Button href="/mock-exams" variant="secondary" icon="refresh">
+            <Button href="/mock-exams" variant="quiet" icon="refresh">
               Reset
             </Button>
           </div>

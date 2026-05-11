@@ -7,6 +7,7 @@ import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import LockedContentCard from "@/components/ui/locked-content-card";
+import LoadingButton from "@/components/ui/loading-button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import { startMockExamAttemptAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
@@ -116,9 +117,12 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
           <>
             <form action={startMockExamAttemptAction}>
               <input type="hidden" name="mockExamSlug" value={exam.slug} />
-              <Button type="submit" variant="primary" icon="create">
-                Start attempt
-              </Button>
+              <LoadingButton
+                idleLabel="Start attempt"
+                pendingLabel="Starting attempt..."
+                variant="primary"
+                idleIcon="create"
+              />
             </form>
             <Button href="/mock-exams" variant="secondary" icon="back">
               Mock exams

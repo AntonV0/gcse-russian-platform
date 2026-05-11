@@ -152,10 +152,10 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
           </div>
 
           <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap md:col-span-2 xl:col-span-3 xl:justify-end">
-            <Button type="submit" variant="primary" icon="search">
+            <Button type="submit" variant="secondary" icon="search">
               Search
             </Button>
-            <Button href="/grammar" variant="secondary" icon="refresh">
+            <Button href="/grammar" variant="quiet" icon="refresh">
               Reset
             </Button>
           </div>

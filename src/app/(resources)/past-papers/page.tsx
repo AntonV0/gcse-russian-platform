@@ -3,7 +3,6 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import AppIcon from "@/components/ui/app-icon";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
@@ -222,10 +221,10 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
           </div>
 
           <div className="app-mobile-action-stack flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:flex-wrap xl:col-span-4 xl:justify-end">
-            <Button type="submit" variant="primary" icon="filter">
+            <Button type="submit" variant="secondary" icon="filter">
               Apply
             </Button>
-            <Button href="/past-papers" variant="secondary" icon="refresh">
+            <Button href="/past-papers" variant="quiet" icon="refresh">
               Reset
             </Button>
           </div>
@@ -298,15 +297,16 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
                           </div>
                         </div>
 
-                        <a
+                        <Button
                           href={resource.official_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="app-btn-base app-btn-primary min-h-10 w-full justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm sm:w-auto lg:shrink-0"
+                          variant="primary"
+                          icon="externalLink"
+                          className="w-full sm:w-auto lg:shrink-0"
                         >
                           Open Pearson resource
-                          <AppIcon icon="externalLink" size={14} />
-                        </a>
+                        </Button>
                       </div>
                     </div>
                   ))}

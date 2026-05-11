@@ -1,9 +1,10 @@
-import Link from "next/link";
 import PageHeader from "@/components/layout/page-header";
+import ActionPill from "@/components/ui/action-pill";
 import Badge from "@/components/ui/badge";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import PendingLinkCard from "@/components/ui/pending-link-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getStudentAssignmentsWithDetailsDb } from "@/lib/assignments/assignment-helpers-db";
 import StatusBadge from "@/components/ui/status-badge";
@@ -152,12 +153,14 @@ export default async function AssignmentsPage() {
                   : "";
 
             return (
-              <Link
+              <PendingLinkCard
                 key={assignment.id}
                 href={`/assignments/${assignment.id}`}
-                className="block"
+                className="app-focus-ring group block rounded-2xl"
+                ariaLabel={`${getNextActionLabel(status)}: ${assignment.title}`}
+                pendingLabel="Opening assignment..."
               >
-                <div className="transition hover:-translate-y-0.5">
+                <div className="app-card-interaction-subtle">
                   <DashboardCard title={assignment.title} className={cardToneClass}>
                     <div className="space-y-4">
                       <div className="flex flex-wrap gap-2">
@@ -224,15 +227,13 @@ export default async function AssignmentsPage() {
                       </div>
 
                       <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-3">
-                        <span className="text-sm font-medium text-[var(--accent-ink)]">
-                          {getNextActionLabel(status)}
-                        </span>
+                        <ActionPill>{getNextActionLabel(status)}</ActionPill>
                         <span className="text-sm text-[var(--text-muted)]">View</span>
                       </div>
                     </div>
                   </DashboardCard>
                 </div>
-              </Link>
+              </PendingLinkCard>
             );
           })}
         </section>
