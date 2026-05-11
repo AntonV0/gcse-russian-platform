@@ -73,10 +73,10 @@ export default function EmptyState({
       <div
         className={[
           "app-empty-dashed-warm relative overflow-hidden rounded-[1.5rem] border",
-          "px-5 py-8 text-center sm:px-6 sm:py-9",
+          "px-5 py-7 text-center sm:px-6 sm:py-8",
         ].join(" ")}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 [background:var(--accent-sheen-gradient)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[var(--accent-decorative-border)] opacity-50" />
 
         {visual ? (
           <div className="relative mb-5 flex justify-center">{visual}</div>

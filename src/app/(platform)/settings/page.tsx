@@ -10,6 +10,7 @@ import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import { updatePassword } from "@/app/actions/auth/auth";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 
@@ -127,7 +128,7 @@ export default async function SettingsPage({
         />
       ) : null}
 
-      <section className="app-surface-brand app-section-padding-lg">
+      <section className="app-settings-surface app-section-padding-lg">
         <div className="space-y-6">
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
             <div className="space-y-4">
@@ -149,12 +150,8 @@ export default async function SettingsPage({
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <span className="app-pill app-pill-info">
-                  Changes save as you choose
-                </span>
-                <span className="app-pill app-pill-muted">
-                  Password settings below
-                </span>
+                <span className="app-pill app-pill-info">Changes save as you choose</span>
+                <span className="app-pill app-pill-muted">Password settings below</span>
               </div>
             </div>
 
@@ -200,9 +197,12 @@ export default async function SettingsPage({
               Use at least 8 characters. You will keep using the same email to sign in.
             </p>
 
-            <Button type="submit" variant="primary" icon="save">
-              Update password
-            </Button>
+            <LoadingButton
+              idleLabel="Update password"
+              pendingLabel="Updating password..."
+              idleIcon="save"
+              variant="primary"
+            />
           </form>
         </DashboardCard>
 

@@ -16,6 +16,7 @@
 
 .app-btn-variant-primary,
 .app-btn-variant-accent,
+.app-btn-variant-journey,
 .app-btn-variant-inverse {
   background-clip: padding-box;
 }
@@ -32,6 +33,12 @@
     inset 0 1px 0 color-mix(in srgb, var(--brand-white) 18%, transparent),
     0 11px 25px color-mix(in srgb, var(--accent) 22%, transparent),
     0 2px 7px color-mix(in srgb, var(--accent) 13%, transparent);
+}
+
+.app-btn-variant-journey {
+  box-shadow:
+    0 10px 22px color-mix(in srgb, var(--accent) 22%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 28%, transparent);
 }
 
 .app-btn-variant-inverse {
@@ -54,6 +61,14 @@
 }
 
 .app-btn-variant-accent > :not(.dev-marker-anchor) {
+  color: inherit;
+}
+
+.app-btn-variant-journey {
+  color: var(--accent-on-fill);
+}
+
+.app-btn-variant-journey > :not(.dev-marker-anchor) {
   color: inherit;
 }
 

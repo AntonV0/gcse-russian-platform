@@ -1,11 +1,12 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import ActionPill from "@/components/ui/action-pill";
 import EmptyState from "@/components/ui/empty-state";
 import LockedContentCard from "@/components/ui/locked-content-card";
+import PendingLinkCard from "@/components/ui/pending-link-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadModulePageData } from "@/lib/courses/course-helpers-db";
 import { getVariantPath, getLessonPath } from "@/lib/access/routes";
@@ -138,7 +139,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   return (
     <main className="space-y-8">
-      <section className="app-surface-brand app-section-padding-lg">
+      <section className="app-surface-strong app-section-padding-compact">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)] xl:items-start">
           <div className="space-y-5">
             <div className="flex flex-wrap gap-2">
@@ -175,8 +176,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     module.slug,
                     primaryLesson.slug
                   )}
-                  variant="primary"
+                  variant="journey"
                   icon="next"
+                  iconPosition="right"
                 >
                   {firstAccessibleIncompleteLesson ? "Continue lesson" : "Review lesson"}
                 </Button>
@@ -295,7 +297,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                   : "Access required";
 
             const cardContent = (
-              <DashboardCard className="h-full transition hover:-translate-y-0.5">
+              <DashboardCard className="app-card-interaction-subtle h-full">
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="w-full text-xs font-semibold uppercase tracking-[0.14em] app-text-soft sm:w-auto">
@@ -355,25 +357,29 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     </div>
                   </div>
 
-                  <div className="pt-1 text-sm font-medium app-brand-text">
-                    {isCompleted
-                      ? "Review / restart lesson"
-                      : canAccessLesson
-                        ? "Open lesson"
-                        : lockedLabel}
+                  <div className="pt-1">
+                    <ActionPill icon={canOpenLesson ? "next" : "locked"}>
+                      {isCompleted
+                        ? "Review / restart lesson"
+                        : canAccessLesson
+                          ? "Open lesson"
+                          : lockedLabel}
+                    </ActionPill>
                   </div>
                 </div>
               </DashboardCard>
             );
 
             return canOpenLesson ? (
-              <Link
+              <PendingLinkCard
                 key={lesson.slug}
                 href={getLessonPath(course.slug, variantSlug, module.slug, lesson.slug)}
-                className="block"
+                className="app-focus-ring group block rounded-2xl"
+                ariaLabel={`Open ${lesson.title}`}
+                pendingLabel="Opening lesson..."
               >
                 {cardContent}
-              </Link>
+              </PendingLinkCard>
             ) : (
               <div key={lesson.slug} className="cursor-not-allowed opacity-75">
                 {cardContent}

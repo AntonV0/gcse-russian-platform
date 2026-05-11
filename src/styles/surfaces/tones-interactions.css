@@ -27,7 +27,7 @@
 .app-intro-panel-admin,
 .app-section-tone-admin,
 .app-panel-tone-admin {
-  background: var(--surface-accent-bg);
+  background: var(--surface-raised-bg);
 }
 
 .app-intro-panel-neutral,
@@ -77,10 +77,96 @@
   transform: translateY(-1px);
 }
 
+.app-card-interaction-subtle,
+.app-card-interaction-lift,
+.app-card-interaction-flat {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    filter var(--transition-fast);
+}
+
+.app-card-interaction-subtle:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 9px 20px color-mix(in srgb, var(--text-primary) 6%, transparent),
+    0 1px 3px color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+
+.app-card-interaction-lift:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    var(--shadow-md),
+    0 12px 28px color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.app-card-interaction-flat:hover {
+  transform: translateY(0);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+
+.app-card-interaction-subtle:active,
+.app-card-interaction-lift:active,
+.app-card-interaction-flat:active {
+  transform: translateY(0) scale(0.997);
+  filter: brightness(0.99);
+}
+
+.app-card-hover.app-card-interaction-subtle:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 9px 20px color-mix(in srgb, var(--text-primary) 6%, transparent),
+    0 1px 3px color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+
+.app-card-hover.app-card-interaction-flat:hover {
+  transform: translateY(0);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-card-interaction-subtle,
+  .app-card-interaction-lift,
+  .app-card-interaction-flat {
+    transition: none;
+  }
+
+  .app-card-interaction-subtle:hover,
+  .app-card-interaction-lift:hover,
+  .app-card-interaction-flat:hover,
+  .app-card-interaction-subtle:active,
+  .app-card-interaction-lift:active,
+  .app-card-interaction-flat:active {
+    transform: none;
+  }
+}
+
 .app-hover-surface:hover {
   background: var(--surface-muted-bg);
 }
 
 .app-hover-border:hover {
   border-color: var(--border-strong);
+}
+
+[data-theme="dark"] .app-tactile-row {
+  border-color: color-mix(in srgb, var(--dark-surface-border) 62%, transparent);
+}
+
+[data-theme="dark"] .app-intro-panel :where(.app-card, .app-stat-tile, .app-soft-panel),
+[data-theme="dark"] .app-surface-brand :where(.app-card, .app-stat-tile, .app-soft-panel),
+[data-theme="dark"]
+  .app-surface-strong
+  :where(.app-card, .app-stat-tile, .app-soft-panel),
+[data-theme="dark"]
+  .app-settings-surface
+  :where(.app-card, .app-stat-tile, .app-soft-panel) {
+  border-color: color-mix(in srgb, var(--dark-surface-border) 58%, transparent);
 }

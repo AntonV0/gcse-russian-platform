@@ -2,7 +2,11 @@
 
 import { useFormStatus } from "react-dom";
 import Button from "@/components/ui/button";
-import type { ButtonSize, ButtonVariant } from "@/components/ui/button-styles";
+import type {
+  ButtonInteraction,
+  ButtonSize,
+  ButtonVariant,
+} from "@/components/ui/button-styles";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 type LoadingButtonProps = Omit<
@@ -17,6 +21,7 @@ type LoadingButtonProps = Omit<
   idleIcon?: AppIconKey;
   pendingIcon?: AppIconKey;
   iconPosition?: "left" | "right";
+  interaction?: ButtonInteraction;
 };
 
 export default function LoadingButton({
@@ -26,8 +31,9 @@ export default function LoadingButton({
   size = "md",
   className,
   idleIcon,
-  pendingIcon = "pending",
+  pendingIcon = "sync",
   iconPosition = "left",
+  interaction,
   disabled,
   type = "submit",
   ...buttonProps
@@ -42,12 +48,15 @@ export default function LoadingButton({
       variant={variant}
       size={size}
       className={className}
-      icon={pending ? pendingIcon : idleIcon}
+      icon={idleIcon}
       iconPosition={iconPosition}
+      interaction={interaction}
       disabled={isDisabled}
-      aria-busy={pending || undefined}
+      loading={pending}
+      loadingLabel={pendingLabel}
+      loadingIcon={pendingIcon}
     >
-      {pending ? pendingLabel : idleLabel}
+      {idleLabel}
     </Button>
   );
 }

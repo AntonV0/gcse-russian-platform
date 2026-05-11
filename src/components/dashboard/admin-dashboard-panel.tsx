@@ -91,7 +91,7 @@ export function AdminDashboardPanel({ dashboard }: { dashboard: DashboardInfo })
 
   return (
     <>
-      <section className="dev-marker-host relative app-surface-brand app-section-padding-lg">
+      <section className="dev-marker-host relative app-surface-strong app-section-padding-compact">
         {SHOW_UI_DEBUG ? (
           <DevComponentMarker
             componentName="AdminDashboardPanel"
@@ -109,7 +109,7 @@ export function AdminDashboardPanel({ dashboard }: { dashboard: DashboardInfo })
           />
         ) : null}
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] xl:items-start">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,520px)] xl:items-start">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
               <Badge tone="info" icon="admin">
@@ -158,7 +158,7 @@ export function AdminDashboardPanel({ dashboard }: { dashboard: DashboardInfo })
               </span>
             </div>
 
-            <div className="grid gap-1.5 sm:grid-cols-2 xl:grid-cols-1">
+            <div className="grid gap-1.5 sm:grid-cols-2">
               {adminWorkspaceLinks.map((item) => (
                 <Link
                   key={item.href}

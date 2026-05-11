@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useLinkStatus } from "next/link";
 import { useEffect } from "react";
+import type { LinkProps } from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 import {
   getButtonClassName,
   getButtonIconSize,
+  type ButtonInteraction,
   type ButtonSize,
   type ButtonVariant,
 } from "@/components/ui/button-styles";
@@ -24,6 +27,10 @@ type BaseProps = {
   iconPosition?: "left" | "right";
   iconOnly?: boolean;
   ariaLabel?: string;
+  loading?: boolean;
+  loadingLabel?: string;
+  loadingIcon?: AppIconKey;
+  interaction?: ButtonInteraction;
 };
 
 type ButtonAsButtonProps = BaseProps &
@@ -33,8 +40,14 @@ type ButtonAsButtonProps = BaseProps &
 
 type ButtonAsLinkProps = BaseProps & {
   href: string;
-  title?: string;
-};
+  prefetch?: LinkProps["prefetch"];
+  replace?: LinkProps["replace"];
+  scroll?: LinkProps["scroll"];
+  onNavigate?: LinkProps["onNavigate"];
+} & Omit<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    "className" | "children" | "href" | "onNavigate"
+  >;
 
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 
@@ -68,34 +81,45 @@ function ButtonInner({
   iconPosition = "left",
   iconOnly = false,
   size = "md",
+  loading = false,
+  loadingLabel,
+  loadingIcon = "sync",
 }: {
   children?: React.ReactNode;
   icon?: AppIconKey;
   iconPosition?: "left" | "right";
   iconOnly?: boolean;
   size?: ButtonSize;
+  loading?: boolean;
+  loadingLabel?: string;
+  loadingIcon?: AppIconKey;
 }) {
   const iconSize = getButtonIconSize(size);
+  const resolvedIcon = loading ? loadingIcon : icon;
+  const resolvedChildren = loading && loadingLabel ? loadingLabel : children;
+  const iconClassName = loading ? "animate-spin motion-reduce:animate-none" : undefined;
 
   if (iconOnly) {
-    return icon ? <AppIcon icon={icon} size={iconSize} /> : null;
+    return resolvedIcon ? (
+      <AppIcon icon={resolvedIcon} size={iconSize} className={iconClassName} />
+    ) : null;
   }
 
   return (
     <>
-      {icon && iconPosition === "left" ? (
+      {resolvedIcon && iconPosition === "left" ? (
         <span className="shrink-0">
-          <AppIcon icon={icon} size={iconSize} />
+          <AppIcon icon={resolvedIcon} size={iconSize} className={iconClassName} />
         </span>
       ) : null}
 
-      {children ? (
-        <span className="min-w-0 truncate leading-[1.35]">{children}</span>
+      {resolvedChildren ? (
+        <span className="min-w-0 truncate leading-[1.35]">{resolvedChildren}</span>
       ) : null}
 
-      {icon && iconPosition === "right" ? (
+      {resolvedIcon && iconPosition === "right" ? (
         <span className="shrink-0">
-          <AppIcon icon={icon} size={iconSize} />
+          <AppIcon icon={resolvedIcon} size={iconSize} className={iconClassName} />
         </span>
       ) : null}
     </>
@@ -121,6 +145,34 @@ function ButtonMarker() {
   );
 }
 
+function ButtonLinkInner(props: {
+  children?: React.ReactNode;
+  icon?: AppIconKey;
+  iconPosition?: "left" | "right";
+  iconOnly?: boolean;
+  size?: ButtonSize;
+  loading?: boolean;
+  loadingLabel?: string;
+  loadingIcon?: AppIconKey;
+}) {
+  const { pending } = useLinkStatus();
+  const isLoading = props.loading || pending;
+
+  return (
+    <ButtonInner
+      icon={props.icon}
+      iconPosition={props.iconPosition}
+      iconOnly={props.iconOnly}
+      size={props.size}
+      loading={isLoading}
+      loadingLabel={props.loadingLabel}
+      loadingIcon={props.loadingIcon}
+    >
+      {props.children}
+    </ButtonInner>
+  );
+}
+
 export default function Button(props: ButtonProps) {
   const {
     children,
@@ -131,9 +183,13 @@ export default function Button(props: ButtonProps) {
     iconPosition = "left",
     iconOnly = false,
     ariaLabel,
+    loading = false,
+    loadingLabel,
+    loadingIcon = "sync",
+    interaction,
   } = props;
 
-  const disabled = "disabled" in props ? Boolean(props.disabled) : false;
+  const disabled = ("disabled" in props ? Boolean(props.disabled) : false) || loading;
   const resolvedAriaLabel = getResolvedAriaLabel({
     ariaLabel,
     children,
@@ -148,12 +204,16 @@ export default function Button(props: ButtonProps) {
     variant,
     size,
     iconOnly,
+    interaction,
     className,
     disabled,
   });
+  const classTokens = className?.split(/\s+/) ?? [];
   const wrapperClassName = [
     "dev-marker-host relative inline-flex max-w-full",
-    className?.split(/\s+/).includes("w-full") ? "w-full" : null,
+    classTokens.includes("w-full") ? "w-full" : null,
+    classTokens.includes("flex-1") ? "flex-1" : null,
+    classTokens.includes("sm:flex-none") ? "sm:flex-none" : null,
   ]
     .filter(Boolean)
     .join(" ");
@@ -170,24 +230,48 @@ export default function Button(props: ButtonProps) {
   }, [icon, iconOnly, resolvedAriaLabel, size, variant]);
 
   if ("href" in props && props.href) {
+    const linkProps = {
+      ...(props as ButtonAsLinkProps),
+    } as React.AnchorHTMLAttributes<HTMLAnchorElement> &
+      Partial<BaseProps> & {
+        href: string;
+      };
+
+    delete linkProps.variant;
+    delete linkProps.size;
+    delete linkProps.className;
+    delete linkProps.icon;
+    delete linkProps.iconPosition;
+    delete linkProps.iconOnly;
+    delete linkProps.ariaLabel;
+    delete linkProps.children;
+    delete linkProps.loading;
+    delete linkProps.loadingLabel;
+    delete linkProps.loadingIcon;
+    delete linkProps.interaction;
+
     return (
       <span className={wrapperClassName}>
         <ButtonMarker />
 
         <Link
-          href={props.href}
+          {...linkProps}
           className={mergedClassName}
           aria-label={resolvedAriaLabel}
+          aria-busy={loading || props["aria-busy"] || undefined}
           title={resolvedTitle}
         >
-          <ButtonInner
+          <ButtonLinkInner
             icon={icon}
             iconPosition={iconPosition}
             iconOnly={iconOnly}
             size={size}
+            loading={loading}
+            loadingLabel={loadingLabel}
+            loadingIcon={loadingIcon}
           >
             {children}
-          </ButtonInner>
+          </ButtonLinkInner>
         </Link>
       </span>
     );
@@ -204,6 +288,10 @@ export default function Button(props: ButtonProps) {
   delete buttonProps.iconPosition;
   delete buttonProps.iconOnly;
   delete buttonProps.ariaLabel;
+  delete buttonProps.loading;
+  delete buttonProps.loadingLabel;
+  delete buttonProps.loadingIcon;
+  delete buttonProps.interaction;
   delete buttonProps.children;
   delete buttonProps.title;
 
@@ -213,8 +301,10 @@ export default function Button(props: ButtonProps) {
 
       <button
         {...buttonProps}
+        disabled={disabled}
         className={mergedClassName}
         aria-label={resolvedAriaLabel}
+        aria-busy={loading || buttonProps["aria-busy"] || undefined}
         title={resolvedTitle}
       >
         <ButtonInner
@@ -222,6 +312,9 @@ export default function Button(props: ButtonProps) {
           iconPosition={iconPosition}
           iconOnly={iconOnly}
           size={size}
+          loading={loading}
+          loadingLabel={loadingLabel}
+          loadingIcon={loadingIcon}
         >
           {children}
         </ButtonInner>

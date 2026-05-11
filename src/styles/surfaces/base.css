@@ -69,16 +69,21 @@
   box-shadow: var(--surface-accent-shadow);
 }
 
+.app-settings-surface {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-raised-bg);
+  border: 1px solid var(--surface-panel-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--surface-raised-shadow);
+}
+
 .app-feature-panel {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--surface-accent-border);
   border-radius: var(--radius-xl);
-  background: color-mix(
-    in srgb,
-    var(--accent) 3.5%,
-    var(--background-elevated)
-  );
+  background: color-mix(in srgb, var(--accent) 3.5%, var(--background-elevated));
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
     0 16px 34px color-mix(in srgb, var(--accent) 7%, transparent);
@@ -371,15 +376,11 @@
 }
 
 .app-empty-dashed-warm {
-  border-style: dashed;
-  border-color: color-mix(in srgb, var(--accent) 13%, var(--border));
-  background: color-mix(
-    in srgb,
-    var(--background-elevated) 84%,
-    var(--background-muted)
-  );
+  border-style: solid;
+  border-color: var(--border-subtle);
+  background: var(--surface-raised-bg);
   box-shadow:
-    0 8px 18px color-mix(in srgb, var(--text-primary) 4%, transparent),
+    0 10px 24px color-mix(in srgb, var(--text-primary) 4%, transparent),
     inset 0 1px 0 color-mix(in srgb, white 58%, transparent);
 }
 
@@ -391,6 +392,10 @@
   padding: 1.35rem;
 }
 
+.app-section-padding-compact {
+  padding: 1.15rem;
+}
+
 @media (min-width: 768px) {
   .app-section-padding {
     padding: 1.5rem;
@@ -398,5 +403,9 @@
 
   .app-section-padding-lg {
     padding: 1.4rem 1.5rem;
+  }
+
+  .app-section-padding-compact {
+    padding: 1.15rem 1.25rem;
   }
 }

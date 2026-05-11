@@ -33,7 +33,7 @@ export function Card({ children, className, interactive = false }: CardProps) {
         className={[
           "app-card app-card-shell overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform]",
           interactive
-            ? "app-card-hover hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]"
+            ? "app-card-hover app-card-interaction-subtle hover:border-[var(--border-strong)]"
             : "",
           className,
         ]

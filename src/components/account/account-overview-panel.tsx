@@ -3,10 +3,7 @@ import Button from "@/components/ui/button";
 import type { CurrentPlanSummary } from "@/lib/billing/account-helpers";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import type { AppIconKey } from "@/lib/shared/icons";
-import {
-  getAccountSummaryText,
-  getStudyRouteLabel,
-} from "./account-formatters";
+import { getAccountSummaryText, getStudyRouteLabel } from "./account-formatters";
 
 export type AccountProfileSummary = {
   fullName: string | null;
@@ -28,16 +25,17 @@ export function AccountOverviewPanel({
     ? (currentPlan.planLabel ?? currentPlan.productName ?? "Active plan")
     : dashboard.accessMode === "volna"
       ? "Included through Volna"
-    : "No self-study plan yet";
+      : "No self-study plan yet";
   const studyRoute = getStudyRouteLabel(dashboard.variant, dashboard.accessMode);
   const nextAction = getAccountNextAction({
     isProfileComplete,
     hasPlan: currentPlan.hasPlan,
     accessMode: dashboard.accessMode,
   });
+  const nextActionVariant = nextAction.href === "/dashboard" ? "journey" : "primary";
 
   return (
-    <section className="app-surface-brand app-section-padding-lg">
+    <section className="app-surface-strong app-section-padding-lg">
       <div className="space-y-5">
         <div className="flex flex-wrap gap-2">
           <Badge tone="info" icon="dashboard">
@@ -79,7 +77,7 @@ export function AccountOverviewPanel({
 
           <Button
             href={nextAction.href}
-            variant="primary"
+            variant={nextActionVariant}
             icon={nextAction.icon}
             className="shrink-0"
           >

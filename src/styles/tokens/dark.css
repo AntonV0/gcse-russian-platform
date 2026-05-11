@@ -1,11 +1,11 @@
 /* ========= Dark mode ========= */
 [data-theme="dark"] {
-  --dark-page-bg: #090a0b;
-  --dark-surface-base: #0d0f12;
-  --dark-surface-elevated: #12161b;
-  --dark-surface-muted: #1a2028;
-  --dark-surface-strong: #252c36;
-  --dark-surface-border: #333944;
+  --dark-page-bg: #0f1115;
+  --dark-surface-base: #13161b;
+  --dark-surface-elevated: #171b21;
+  --dark-surface-muted: #20252d;
+  --dark-surface-strong: #2b313b;
+  --dark-surface-border: #3a414d;
   --dark-control-bg: color-mix(in srgb, var(--accent) 1.5%, var(--dark-surface-elevated));
   --dark-control-bg-hover: color-mix(
     in srgb,
@@ -71,13 +71,13 @@
   );
   --surface-secondary: var(--background-muted);
 
-  --accent: #4f8cff;
-  --accent-fill: #4f8cff;
-  --accent-fill-hover: #76a7ff;
+  --accent: #8db8ff;
+  --accent-fill: #2563eb;
+  --accent-fill-hover: #1d4ed8;
   --accent-hover: var(--accent-fill-hover);
-  --accent-ink: var(--accent-fill);
-  --accent-on-fill: #071633;
-  --accent-on-soft: var(--accent-fill-hover);
+  --accent-ink: var(--accent);
+  --accent-on-fill: #ffffff;
+  --accent-on-soft: var(--accent);
   --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-selected-bg: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
   --accent-selected-border: color-mix(
@@ -102,8 +102,8 @@
   );
   --accent-decorative-glow: color-mix(in srgb, var(--accent) 22%, transparent);
   --accent-glow: color-mix(in srgb, var(--accent) 24%, transparent);
-  --accent-ring: rgba(79, 140, 255, 0.16);
-  --accent-rgb: 79, 140, 255;
+  --accent-ring: rgba(141, 184, 255, 0.18);
+  --accent-rgb: 141, 184, 255;
   --control-border: color-mix(in srgb, var(--accent) 10%, var(--dark-surface-border));
   --control-border-strong: color-mix(
     in srgb,
@@ -224,4 +224,44 @@
     var(--accent) 14%,
     var(--dark-surface-border)
   );
+  --accent-gradient-fill: linear-gradient(
+    135deg,
+    var(--accent-fill) 0%,
+    color-mix(in srgb, var(--accent-fill) 90%, var(--accent-fill-hover)) 58%,
+    var(--accent-fill-hover) 100%
+  );
+  --accent-gradient-fill-hover: linear-gradient(
+    135deg,
+    var(--accent-fill-hover) 0%,
+    color-mix(in srgb, var(--accent-fill-hover) 92%, var(--dark-surface-base)) 100%
+  );
+  --accent-gradient-soft: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
+  --accent-gradient-soft-hover: color-mix(
+    in srgb,
+    var(--accent) 12%,
+    var(--dark-control-bg-hover)
+  );
+  --accent-gradient-selected: color-mix(
+    in srgb,
+    var(--accent) 10%,
+    var(--dark-control-bg)
+  );
+  --accent-progress-gradient: linear-gradient(
+    90deg,
+    var(--accent-decorative-fill) 0%,
+    var(--accent-fill) 52%,
+    color-mix(in srgb, var(--accent-fill) 70%, var(--accent)) 100%
+  );
+  --accent-sheen-gradient: color-mix(in srgb, var(--accent) 3%, transparent);
+  --feedback-sheen-gradient: color-mix(in srgb, var(--brand-white) 5%, transparent);
+  --feedback-info-bg: var(--info-surface);
+  --feedback-success-bg: var(--success-surface);
+  --feedback-warning-bg: var(--warning-surface);
+  --feedback-danger-bg: var(--danger-surface);
+  --danger-gradient-soft: color-mix(in srgb, var(--danger) 8%, var(--dark-control-bg));
+  --gradient-brand-soft: var(--accent-gradient-soft);
+  --gradient-accent-soft: var(--accent-gradient-soft);
+  --gradient-blue-soft: color-mix(in srgb, var(--brand-blue) 10%, var(--dark-control-bg));
+  --gradient-danger-soft: var(--danger-gradient-soft);
+  --gradient-red-soft: var(--danger-gradient-soft);
 }

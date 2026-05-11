@@ -67,7 +67,7 @@ export default function AdminDashboardMainPanels({
       <PanelCard
         title="Management areas"
         description="Primary admin tools for content and teaching workflows."
-        tone="brand"
+        tone="admin"
         contentClassName="space-y-4"
       >
         <div className="grid gap-4 md:grid-cols-2">

@@ -7,6 +7,7 @@
 [data-theme="dark"] .app-card-shell {
   background: var(--surface-raised-bg);
   box-shadow: var(--surface-panel-shadow);
+  border-color: color-mix(in srgb, var(--dark-surface-border) 68%, transparent);
 }
 
 .app-card-header {
@@ -73,11 +74,7 @@
 .app-stat-tile {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: color-mix(
-    in srgb,
-    var(--accent) 2.5%,
-    var(--surface-muted-bg)
-  );
+  background: color-mix(in srgb, var(--accent) 2.5%, var(--surface-muted-bg));
   padding: 0.85rem;
   box-shadow: var(--shadow-xs);
 }
@@ -128,13 +125,13 @@
 }
 
 [data-theme="dark"] .app-stat-tile {
-  border-color: var(--control-border);
+  border-color: color-mix(in srgb, var(--dark-surface-border) 64%, transparent);
   background: color-mix(in srgb, var(--accent) 2.5%, var(--dark-control-bg));
   box-shadow: var(--control-shadow);
 }
 
 [data-theme="dark"] .app-soft-panel {
-  border-color: var(--control-border);
+  border-color: color-mix(in srgb, var(--dark-surface-border) 64%, transparent);
   background: color-mix(in srgb, var(--accent) 1.5%, var(--dark-control-bg));
   box-shadow: var(--control-shadow);
 }

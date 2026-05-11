@@ -8,9 +8,11 @@ export type ButtonVariant =
   | "exit"
   | "soft"
   | "accent"
+  | "journey"
   | "inverse";
 
 export type ButtonSize = "sm" | "md";
+export type ButtonInteraction = "lift" | "subtle" | "flat";
 
 function getVariantClass(variant: ButtonVariant, disabled: boolean) {
   switch (variant) {
@@ -158,6 +160,12 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
             ].join(" "),
       ].join(" ");
 
+    case "journey":
+      return [
+        "app-btn-variant-journey app-btn-journey !text-[var(--accent-on-fill)]",
+        disabled ? "opacity-60" : "",
+      ].join(" ");
+
     case "inverse":
       return [
         "app-btn-variant-inverse border border-transparent !text-[var(--brand-white)]",
@@ -205,23 +213,29 @@ export function getButtonClassName({
   variant = "secondary",
   size = "md",
   iconOnly = false,
+  interaction,
   className,
   disabled = false,
 }: {
   variant?: ButtonVariant;
   size?: ButtonSize;
   iconOnly?: boolean;
+  interaction?: ButtonInteraction;
   className?: string;
   disabled?: boolean;
 }) {
+  const resolvedInteraction =
+    interaction ?? getDefaultButtonInteraction({ variant, size, iconOnly });
+
   return [
     "app-focus-ring app-btn-surface-fix inline-flex items-center justify-center gap-2 font-semibold leading-none",
+    `app-btn-interaction-${resolvedInteraction}`,
     "max-w-full select-none whitespace-nowrap",
-    "transition-[transform,background-color,border-color,color,box-shadow,opacity,filter] duration-200 ease-out motion-reduce:transition-none",
-    disabled
-      ? "cursor-not-allowed saturate-[0.72] grayscale-[0.08] !shadow-none"
-      : "hover:-translate-y-[2px] active:translate-y-[0px] active:scale-[0.985]",
+    "transition-[transform,background-color,border-color,color,box-shadow,opacity,filter] duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none",
+    disabled ? "cursor-not-allowed saturate-[0.72] grayscale-[0.08] !shadow-none" : "",
+    !disabled ? getInteractionClass(resolvedInteraction) : "",
     getVariantClass(variant, disabled),
+    !disabled ? getInteractionShadowClass(resolvedInteraction, variant) : "",
     getSizeClass(size, iconOnly),
     iconOnly
       ? "app-btn-icon-only aspect-square shrink-0 ring-1 ring-inset ring-[color-mix(in_srgb,var(--text-primary)_5%,transparent)]"
@@ -230,4 +244,95 @@ export function getButtonClassName({
   ]
     .filter(Boolean)
     .join(" ");
+}
+
+export function getDefaultButtonInteraction({
+  variant,
+  size,
+  iconOnly,
+}: {
+  variant: ButtonVariant;
+  size: ButtonSize;
+  iconOnly: boolean;
+}): ButtonInteraction {
+  if (iconOnly) return "flat";
+
+  if (variant === "journey") return "lift";
+
+  if (variant === "primary" || variant === "accent" || variant === "inverse") {
+    return size === "sm" ? "subtle" : "lift";
+  }
+
+  if (
+    variant === "secondary" ||
+    variant === "soft" ||
+    variant === "success" ||
+    variant === "warning"
+  ) {
+    return "subtle";
+  }
+
+  return "flat";
+}
+
+function getInteractionClass(interaction: ButtonInteraction) {
+  switch (interaction) {
+    case "lift":
+      return "hover:-translate-y-[2px] active:translate-y-0 active:scale-[0.985] active:brightness-[0.98]";
+    case "subtle":
+      return "hover:-translate-y-px active:translate-y-0 active:scale-[0.99] active:brightness-[0.985]";
+    case "flat":
+      return "hover:translate-y-0 active:translate-y-0 active:scale-[0.985] active:brightness-[0.985]";
+    default:
+      return "";
+  }
+}
+
+function getInteractionShadowClass(
+  interaction: ButtonInteraction,
+  variant: ButtonVariant
+) {
+  if (interaction === "lift") return "";
+
+  if (interaction === "flat") {
+    switch (variant) {
+      case "primary":
+      case "accent":
+      case "journey":
+        return "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_16%,transparent),0_7px_16px_color-mix(in_srgb,var(--accent)_15%,transparent),0_1px_4px_color-mix(in_srgb,var(--accent)_8%,transparent)]";
+      case "inverse":
+        return "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_8%,transparent),0_8px_18px_color-mix(in_srgb,var(--text-primary)_18%,transparent),0_1px_4px_color-mix(in_srgb,var(--text-primary)_8%,transparent)] [html[data-theme=dark]_&]:hover:shadow-[0_1px_2px_rgba(0,0,0,0.22),0_0_0_1px_color-mix(in_srgb,var(--accent)_14%,transparent),0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]";
+      case "danger":
+      case "exit":
+        return "hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--danger)_6%,transparent),0_0_0_1px_color-mix(in_srgb,var(--danger)_10%,transparent)]";
+      case "quiet":
+        return "hover:shadow-none";
+      case "success":
+        return "hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--success)_5%,transparent),0_4px_10px_color-mix(in_srgb,var(--success)_7%,transparent)]";
+      case "warning":
+        return "hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--warning)_5%,transparent),0_4px_10px_color-mix(in_srgb,var(--warning)_7%,transparent)]";
+      case "soft":
+        return "hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--accent)_5%,transparent),0_4px_10px_color-mix(in_srgb,var(--text-primary)_3%,transparent)]";
+      case "secondary":
+      default:
+        return "hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_5%,transparent),0_5px_12px_color-mix(in_srgb,var(--text-primary)_4%,transparent)]";
+    }
+  }
+
+  switch (variant) {
+    case "primary":
+    case "accent":
+      return "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_19%,transparent),0_11px_24px_color-mix(in_srgb,var(--accent)_20%,transparent),0_3px_8px_color-mix(in_srgb,var(--accent)_11%,transparent)]";
+    case "inverse":
+      return "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_10%,transparent),0_12px_25px_color-mix(in_srgb,var(--text-primary)_24%,transparent),0_3px_8px_color-mix(in_srgb,var(--text-primary)_11%,transparent)] [html[data-theme=dark]_&]:hover:shadow-[0_1px_2px_rgba(0,0,0,0.24),0_0_0_1px_color-mix(in_srgb,var(--accent)_17%,transparent),0_12px_26px_color-mix(in_srgb,var(--accent)_12%,transparent)]";
+    case "success":
+      return "hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--success)_11%,transparent),0_1px_3px_color-mix(in_srgb,var(--success)_5%,transparent)]";
+    case "warning":
+      return "hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--warning)_11%,transparent),0_1px_3px_color-mix(in_srgb,var(--warning)_5%,transparent)]";
+    case "soft":
+      return "hover:shadow-[0_7px_16px_color-mix(in_srgb,var(--accent)_8%,transparent),0_2px_6px_color-mix(in_srgb,var(--text-primary)_4%,transparent)]";
+    case "secondary":
+    default:
+      return "hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--text-primary)_7%,transparent),0_2px_6px_color-mix(in_srgb,var(--text-primary)_4%,transparent)]";
+  }
 }
