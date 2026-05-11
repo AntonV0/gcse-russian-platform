@@ -110,6 +110,24 @@ Prefer shared:
 If a better pattern is created, promote it into the shared system instead of
 forking variants page by page.
 
+### Button Hierarchy
+
+Use button variants by intent, not by decoration:
+
+- `journey`: forward learning actions such as continue lesson, next lesson,
+  resume, or the first recommended next action.
+- `primary`: save, create, publish, confirm, or the main non-learning action in
+  a section.
+- `accent`: upgrade, purchase, trial, live support, or other commercial/high
+  energy prompts.
+- `secondary`: back, browse, preview, and neutral alternatives.
+- `quiet`: low-emphasis row actions, utility links, and reset-like controls.
+- semantic variants (`success`, `warning`, `danger`, `exit`): actions whose
+  state or risk must be explicit.
+
+Use at most one `journey`, `primary`, or `accent` button in a compact action
+cluster unless the actions are clearly separated.
+
 ## Composition Patterns
 
 Pages should be assembled from reusable patterns:

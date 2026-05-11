@@ -57,6 +57,71 @@ export default function UiLabButtonsFoundationSections() {
       </UiLabSection>
 
       <UiLabSection
+        id="interaction-levels"
+        title="Interaction levels"
+        description="Button motion is now hierarchical. Use lift for important CTAs, subtle for supporting actions, and flat for dense controls or destructive actions."
+      >
+        <div className="grid gap-4 lg:grid-cols-3">
+          <ButtonExampleCard title="Lift: key CTAs">
+            <div className="space-y-3">
+              <p className="text-sm app-text-muted">
+                Full lift is reserved for primary progression and high-value actions.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="journey" icon="next" iconPosition="right">
+                  Continue lesson
+                </Button>
+                <Button variant="primary" icon="completed">
+                  Save plan
+                </Button>
+              </div>
+            </div>
+          </ButtonExampleCard>
+
+          <ButtonExampleCard title="Subtle: support actions">
+            <div className="space-y-3">
+              <p className="text-sm app-text-muted">
+                Subtle motion keeps admin and account actions responsive without making
+                every control jump.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="secondary" icon="preview">
+                  Preview
+                </Button>
+                <Button variant="soft" icon="next" iconPosition="right">
+                  Open practice
+                </Button>
+              </div>
+            </div>
+          </ButtonExampleCard>
+
+          <ButtonExampleCard title="Flat: dense and serious">
+            <div className="space-y-3">
+              <p className="text-sm app-text-muted">
+                Flat controls still change border, tint, and pressed state, but avoid
+                floaty movement.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="quiet" icon="refresh" interaction="flat">
+                  Refresh
+                </Button>
+                <Button variant="danger" icon="delete">
+                  Delete
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon="settings"
+                  iconOnly
+                  ariaLabel="Dense settings"
+                />
+              </div>
+            </div>
+          </ButtonExampleCard>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
         id="variant-matrix"
         title="Variant matrix"
         description="Every shared variant should show a clear role, readable default state, strong focus state, and predictable disabled state in both light and dark mode."
@@ -186,7 +251,7 @@ export default function UiLabButtonsFoundationSections() {
         <div className="grid gap-4 lg:grid-cols-3">
           <ButtonExampleCard title="Primary progression">
             <div className="flex flex-wrap gap-3">
-              <Button variant="primary" icon="next" iconPosition="right">
+              <Button variant="journey" icon="next" iconPosition="right">
                 Keep going
               </Button>
               <Button variant="secondary" icon="preview">

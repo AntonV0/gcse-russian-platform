@@ -1,6 +1,6 @@
-import Link from "next/link";
 import Card from "@/components/ui/card";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import PendingLinkCard from "@/components/ui/pending-link-card";
 
 type CardListItemProps = {
   title: string;
@@ -75,12 +75,13 @@ export default function CardListItem({
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           {href ? (
-            <Link
+            <PendingLinkCard
               href={href}
               className="app-focus-ring -m-2 block min-w-0 flex-1 rounded-xl p-2"
+              pendingLabel="Opening..."
             >
               {content}
-            </Link>
+            </PendingLinkCard>
           ) : (
             content
           )}

@@ -1,7 +1,11 @@
 "use client";
 
 import Button from "@/components/ui/button";
-import type { ButtonSize, ButtonVariant } from "@/components/ui/button-styles";
+import type {
+  ButtonInteraction,
+  ButtonSize,
+  ButtonVariant,
+} from "@/components/ui/button-styles";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 type IconButtonBaseProps = {
@@ -11,6 +15,7 @@ type IconButtonBaseProps = {
   size?: ButtonSize;
   className?: string;
   title?: string;
+  interaction?: ButtonInteraction;
 };
 
 type IconButtonAsButtonProps = IconButtonBaseProps &
@@ -28,7 +33,7 @@ type IconButtonAsLinkProps = IconButtonBaseProps & {
 type IconButtonProps = IconButtonAsButtonProps | IconButtonAsLinkProps;
 
 export default function IconButton(props: IconButtonProps) {
-  const { icon, label, variant = "secondary", size = "sm", className } = props;
+  const { icon, label, variant = "secondary", size = "sm", className, interaction } = props;
 
   if ("href" in props && props.href) {
     return (
@@ -40,6 +45,7 @@ export default function IconButton(props: IconButtonProps) {
         iconOnly
         ariaLabel={label}
         className={className}
+        interaction={interaction}
       />
     );
   }
@@ -53,6 +59,7 @@ export default function IconButton(props: IconButtonProps) {
   delete buttonProps.variant;
   delete buttonProps.size;
   delete buttonProps.className;
+  delete buttonProps.interaction;
 
   return (
     <Button
@@ -63,6 +70,7 @@ export default function IconButton(props: IconButtonProps) {
       iconOnly
       ariaLabel={label}
       className={className}
+      interaction={interaction}
     />
   );
 }

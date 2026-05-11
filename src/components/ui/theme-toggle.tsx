@@ -45,7 +45,10 @@ export default function ThemeToggle() {
     setFallbackTheme(nextTheme);
   }, [themeContext]);
 
-  const title = "Toggle theme";
+  const isDarkTheme = hasMounted && theme === "dark";
+  const title = hasMounted
+    ? `Switch to ${isDarkTheme ? "light" : "dark"} theme`
+    : "Switch theme";
 
   return (
     <span className="dev-marker-host relative inline-flex">
@@ -66,8 +69,10 @@ export default function ThemeToggle() {
       <IconButton
         type="button"
         onClick={toggleTheme}
-        icon={hasMounted && theme === "dark" ? "sun" : "moon"}
+        icon={isDarkTheme ? "sun" : "moon"}
         label={title}
+        title={title}
+        aria-pressed={hasMounted ? isDarkTheme : undefined}
       />
     </span>
   );

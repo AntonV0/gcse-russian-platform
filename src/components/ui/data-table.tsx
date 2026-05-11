@@ -40,10 +40,7 @@ export function DataTable({ children, className, tableClassName }: DataTableProp
 
       <div className="max-w-full overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
         <table
-          className={[
-            "w-full border-collapse text-sm",
-            tableClassName ?? "min-w-[640px]",
-          ]
+          className={["w-full border-collapse text-sm", tableClassName ?? "min-w-[640px]"]
             .filter(Boolean)
             .join(" ")}
         >

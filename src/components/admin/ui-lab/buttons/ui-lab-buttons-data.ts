@@ -4,10 +4,12 @@ import type { AppIconKey } from "@/lib/shared/icons";
 export const BUTTONS_PAGE_NAV_ITEMS = [
   { id: "dev-markers", label: "Dev markers" },
   { id: "core-hierarchy", label: "Core hierarchy" },
+  { id: "interaction-levels", label: "Interactions" },
   { id: "variant-matrix", label: "Variants" },
   { id: "states", label: "States" },
   { id: "exit-loading", label: "Exit + loading" },
   { id: "dense-patterns", label: "Dense patterns" },
+  { id: "card-choice-interactions", label: "Cards + choices" },
   { id: "project-examples", label: "Project examples" },
   { id: "future-components", label: "Future" },
 ];
@@ -21,13 +23,19 @@ export const buttonVariantMatrix: Array<{
   {
     variant: "primary",
     label: "Primary",
-    role: "Main page or section action",
+    role: "Main page or section action, usually save/create",
     icon: "completed",
+  },
+  {
+    variant: "journey",
+    label: "Journey",
+    role: "Forward learning action such as continue, next, or resume",
+    icon: "next",
   },
   {
     variant: "accent",
     label: "Accent",
-    role: "Promotional or high-energy learning CTA",
+    role: "Promotional, upgrade, or high-energy CTA",
     icon: "create",
   },
   {

@@ -1,8 +1,11 @@
 import ButtonExampleCard from "@/components/admin/ui-lab/buttons/ui-lab-button-example-card";
 import UiLabFutureSection from "@/components/admin/ui-lab/shell/ui-lab-future-section";
 import UiLabSection from "@/components/admin/ui-lab/shell/ui-lab-section";
+import { PricingOptionButton } from "@/components/billing/pricing/pricing-option-button";
+import ActionPill from "@/components/ui/action-pill";
 import Button from "@/components/ui/button";
 import Card, { CardBody } from "@/components/ui/card";
+import SelectableCardButton from "@/components/ui/selectable-card-button";
 
 export default function UiLabButtonsPatternSections() {
   return (
@@ -24,7 +27,13 @@ export default function UiLabButtonsPatternSections() {
               <Button key="settings" variant="secondary" size="sm" icon="settings">
                 Settings
               </Button>,
-              <Button key="refresh" variant="quiet" size="sm" icon="refresh">
+              <Button
+                key="refresh"
+                variant="quiet"
+                size="sm"
+                icon="refresh"
+                interaction="flat"
+              >
                 Refresh
               </Button>,
               <Button key="add" variant="primary" size="sm" icon="create">
@@ -74,7 +83,7 @@ export default function UiLabButtonsPatternSections() {
 
       <UiLabSection
         title="Form action rows"
-        description="These are common action combinations for create, edit, and settings forms. The primary action should remain visually clear."
+        description="These are common action combinations for create, edit, and settings forms. The primary action should remain visually clear while supporting actions stay calmer."
       >
         <div className="grid gap-4 lg:grid-cols-2">
           <ButtonExampleCard title="Standard edit form">
@@ -119,10 +128,94 @@ export default function UiLabButtonsPatternSections() {
           <ButtonExampleCard title="Account / membership action row">
             <div className="flex flex-wrap gap-3">
               <Button variant="secondary">Manage subscription</Button>
-              <Button variant="primary" icon="next" iconPosition="right">
+              <Button variant="accent" icon="billing">
                 Upgrade plan
               </Button>
               <Button variant="quiet">Compare options</Button>
+            </div>
+          </ButtonExampleCard>
+        </div>
+      </UiLabSection>
+
+      <UiLabSection
+        id="card-choice-interactions"
+        title="Card and choice interactions"
+        description="Clickable cards, selection rows, pricing options, and card CTAs use their own tactile layer so they do not compete with primary button motion."
+      >
+        <div className="grid gap-4 xl:grid-cols-2">
+          <ButtonExampleCard title="Clickable card CTAs">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="app-card app-card-hover app-card-interaction-subtle group flex min-h-36 flex-col justify-between rounded-2xl p-4">
+                <div>
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">
+                    Continue module
+                  </p>
+                  <p className="mt-1 text-sm app-text-muted">
+                    Card lift stays softer than a journey button.
+                  </p>
+                </div>
+                <ActionPill>Open module</ActionPill>
+              </div>
+
+              <div className="app-card app-card-hover app-card-interaction-flat group flex min-h-36 flex-col justify-between rounded-2xl p-4">
+                <div>
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">
+                    Admin utility
+                  </p>
+                  <p className="mt-1 text-sm app-text-muted">
+                    Flat cards use border and tint before elevation.
+                  </p>
+                </div>
+                <ActionPill tone="muted" icon="settings">
+                  Configure
+                </ActionPill>
+              </div>
+
+              <div className="app-card app-card-interaction-flat group flex min-h-36 flex-col justify-between rounded-2xl border-dashed p-4 opacity-85">
+                <div>
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">
+                    Locked lesson
+                  </p>
+                  <p className="mt-1 text-sm app-text-muted">
+                    Locked CTAs stay calm and informational.
+                  </p>
+                </div>
+                <ActionPill tone="locked" icon="locked">
+                  Access required
+                </ActionPill>
+              </div>
+            </div>
+          </ButtonExampleCard>
+
+          <ButtonExampleCard title="Selection and pricing rows">
+            <div className="grid gap-3 lg:grid-cols-2">
+              <SelectableCardButton
+                active
+                label="Foundation practice"
+                description="Selected cards should feel anchored, not floatier than buttons."
+                icon="completed"
+                statusLabel="Current"
+              />
+              <SelectableCardButton
+                active={false}
+                label="Higher extension"
+                description="Unselected cards can respond without shouting."
+                icon="modules"
+                statusLabel="Available"
+              />
+              <PricingOptionButton
+                label="Unlock Volna"
+                meta="Full course access and practice tools"
+                badgeLabel="Best value"
+                trailingLabel="Upgrade"
+                recommended
+              />
+              <PricingOptionButton
+                label="Current plan"
+                meta="You already have access to this tier"
+                trailingLabel="Active"
+                state="owned"
+              />
             </div>
           </ButtonExampleCard>
         </div>

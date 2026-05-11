@@ -16,8 +16,8 @@ export default function UiLabButtonsStateSections() {
           <Button variant="primary" icon="dashboard">
             With icon
           </Button>
-          <Button variant="primary" icon="next" iconPosition="right">
-            Continue
+          <Button variant="primary" icon="save">
+            Save
           </Button>
           <Button variant="primary" disabled>
             Disabled
@@ -71,8 +71,11 @@ export default function UiLabButtonsStateSections() {
         <div className="grid gap-4 lg:grid-cols-3">
           <ButtonExampleCard title="Lesson / learning actions">
             <div className="flex flex-wrap gap-3">
+              <Button variant="journey" icon="next" iconPosition="right">
+                Continue lesson
+              </Button>
               <Button variant="soft" icon="next" iconPosition="right">
-                Start lesson
+                Open practice
               </Button>
               <Button variant="soft" icon="completed">
                 Mark ready
@@ -106,7 +109,7 @@ export default function UiLabButtonsStateSections() {
 
       <UiLabSection
         title="Dark-surface contrast check"
-        description="Use this section to quickly validate contrast and hover clarity on darker surfaces, especially for inverse, accent, and soft variants."
+        description="Use this section to quickly validate contrast and hover clarity on darker surfaces, especially for journey, inverse, accent, and soft variants."
       >
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(135deg,var(--dark-surface-elevated)_0%,var(--dark-surface-muted)_58%,var(--dark-surface-strong)_100%)] p-5 shadow-[0_14px_30px_rgba(16,32,51,0.22)]">
@@ -114,7 +117,10 @@ export default function UiLabButtonsStateSections() {
               Strong CTAs on dark surface
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button variant="primary" icon="next" iconPosition="right">
+              <Button variant="primary" icon="save">
+                Save plan
+              </Button>
+              <Button variant="journey" icon="next" iconPosition="right">
                 Continue course
               </Button>
               <Button variant="accent" icon="create">
@@ -218,7 +224,7 @@ export default function UiLabButtonsStateSections() {
       <UiLabSection
         id="exit-loading"
         title="Exit and loading states"
-        description="Logout should be noticeable without looking like account deletion. Pending examples show the current disabled-button pattern before a dedicated LoadingButton exists."
+        description="Logout should be noticeable without looking like account deletion. Loading examples use the shared spinner, label, and disabled treatment."
       >
         <div className="grid gap-4 lg:grid-cols-2">
           <ButtonExampleCard title="Account exit">
@@ -237,14 +243,19 @@ export default function UiLabButtonsStateSections() {
 
           <ButtonExampleCard title="Pending actions">
             <div className="flex flex-wrap gap-3">
-              <Button variant="primary" disabled icon="pending">
-                Saving...
+              <Button variant="primary" icon="save" loading loadingLabel="Saving...">
+                Save
               </Button>
-              <Button variant="secondary" disabled icon="pending">
-                Loading preview...
+              <Button
+                variant="secondary"
+                icon="preview"
+                loading
+                loadingLabel="Loading preview..."
+              >
+                Preview
               </Button>
-              <Button variant="danger" disabled icon="pending">
-                Deleting...
+              <Button variant="danger" icon="delete" loading loadingLabel="Deleting...">
+                Delete
               </Button>
             </div>
           </ButtonExampleCard>
