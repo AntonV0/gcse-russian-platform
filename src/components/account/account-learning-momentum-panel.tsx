@@ -35,7 +35,9 @@ export function AccountLearningMomentumPanel({
   nextStep,
   activity,
 }: AccountLearningMomentumPanelProps) {
-  const actions = getStudentDashboardActionQueue(activity, nextStep);
+  const actions = getStudentDashboardActionQueue(activity, nextStep, {
+    preferLearningPlan: dashboard.accessMode === "volna",
+  });
   const primaryAction = actions[0];
   const masterySignals = getMasterySignals({ learningPlan, activity });
   const milestone = getLearningMilestone({ learningPlan, activity });
@@ -67,7 +69,7 @@ export function AccountLearningMomentumPanel({
             <div className="app-mobile-action-stack flex flex-wrap gap-3">
               <Button
                 href={primaryAction.href}
-                variant="primary"
+                variant="journey"
                 icon={primaryAction.icon}
               >
                 {primaryAction.label}
@@ -159,11 +161,7 @@ export function AccountLearningMomentumPanel({
         </div>
       </DashboardCard>
 
-      <DashboardCard
-        title="Skill readiness"
-        headingLevel={3}
-        className="xl:col-span-2"
-      >
+      <DashboardCard title="Skill readiness" headingLevel={3} className="xl:col-span-2">
         <div className="space-y-3">
           {masterySignals.map((signal) => (
             <MasterySignalRow key={signal.title} signal={signal} />

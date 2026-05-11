@@ -1,7 +1,6 @@
-import AppIcon from "@/components/ui/app-icon";
+import ActionPill from "@/components/ui/action-pill";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import { getButtonClassName } from "@/components/ui/button-styles";
 import CardListItem from "@/components/ui/card-list-item";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import VocabularyCoverageBadges from "@/components/vocabulary/vocabulary-coverage-badges";
@@ -131,19 +130,9 @@ function groupVocabularySetsBySection(vocabularySets: VocabularySet[]) {
 
 function SectionToggleButton() {
   return (
-    <span
-      className={getButtonClassName({
-        variant: "secondary",
-        size: "sm",
-        className: "pointer-events-none shrink-0 px-3 sm:px-3.5",
-      })}
-      aria-hidden="true"
-    >
-      <span className="shrink-0">
-        <AppIcon icon="next" size={16} />
-      </span>
+    <ActionPill className="pointer-events-none shrink-0 px-3 sm:px-3.5" aria-hidden="true">
       <span className="hidden sm:inline">Open</span>
-    </span>
+    </ActionPill>
   );
 }
 

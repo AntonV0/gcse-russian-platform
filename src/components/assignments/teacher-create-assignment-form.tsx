@@ -302,14 +302,11 @@ export default function TeacherCreateAssignmentForm({
             onClick={handleSubmit}
             disabled={isSubmitting}
             variant="primary"
+            icon={isEditMode ? "save" : "create"}
+            loading={isSubmitting}
+            loadingLabel={isEditMode ? "Saving changes..." : "Creating assignment..."}
           >
-            {isSubmitting
-              ? isEditMode
-                ? "Saving..."
-                : "Creating..."
-              : isEditMode
-                ? "Save changes"
-                : "Create assignment"}
+            {isEditMode ? "Save changes" : "Create assignment"}
           </Button>
 
           <Button href="/teacher/assignments" variant="quiet">

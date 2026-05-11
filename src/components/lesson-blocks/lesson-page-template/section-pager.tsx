@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
-import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
 import { buildLessonStepHref } from "./lesson-step-routes";
 
 type SectionPagerProps = {
@@ -201,13 +200,15 @@ export function SectionPager({
 
         <div className="app-mobile-action-stack flex flex-row gap-2 sm:gap-3">
           {previousHref ? (
-            <Link
+            <Button
               href={previousHref}
               prefetch={false}
-              className="app-btn-base app-btn-secondary min-h-10 flex-1 rounded-xl px-4 py-2 text-sm sm:flex-none"
+              variant="secondary"
+              size="sm"
+              className="min-h-10 flex-1 rounded-xl px-4 py-2 text-sm sm:flex-none"
             >
               Back
-            </Link>
+            </Button>
           ) : (
             <span className="flex min-h-10 flex-1 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft sm:flex-none">
               Back
@@ -215,14 +216,17 @@ export function SectionPager({
           )}
 
           {nextHref ? (
-            <Link
+            <Button
               href={nextHref}
               prefetch={false}
-              className="app-btn-base app-btn-journey min-h-10 flex-1 rounded-xl px-4 py-2 text-sm !text-[var(--text-inverse)] sm:flex-none"
+              variant="journey"
+              size="sm"
+              icon="next"
+              iconPosition="right"
+              className="min-h-10 flex-1 rounded-xl px-4 py-2 text-sm !text-[var(--text-inverse)] sm:flex-none"
             >
-              <span>Next</span>
-              <AppIcon icon="next" size={16} />
-            </Link>
+              Next
+            </Button>
           ) : (
             <span className="flex min-h-10 flex-1 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft sm:flex-none">
               Recap reached

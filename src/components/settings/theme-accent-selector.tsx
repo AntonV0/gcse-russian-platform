@@ -1,7 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, type KeyboardEvent } from "react";
 import AppIcon from "@/components/ui/app-icon";
+import SelectableCardButton from "@/components/ui/selectable-card-button";
 import { useTheme, type AccentPreference } from "@/components/providers/theme-provider";
 
 const accentOptions: Array<{
@@ -30,6 +31,26 @@ function getClientHydrationSnapshot() {
 
 function getServerHydrationSnapshot() {
   return false;
+}
+
+function getNextAccentOptionIndex(key: string, currentIndex: number) {
+  if (key === "ArrowRight" || key === "ArrowDown") {
+    return (currentIndex + 1) % accentOptions.length;
+  }
+
+  if (key === "ArrowLeft" || key === "ArrowUp") {
+    return (currentIndex - 1 + accentOptions.length) % accentOptions.length;
+  }
+
+  if (key === "Home") {
+    return 0;
+  }
+
+  if (key === "End") {
+    return accentOptions.length - 1;
+  }
+
+  return null;
 }
 
 export default function ThemeAccentSelector() {
@@ -64,27 +85,44 @@ export default function ThemeAccentSelector() {
         role="radiogroup"
         aria-label="Accent colour"
       >
-        {accentOptions.map((option) => {
+        {accentOptions.map((option, index) => {
           const isActive = displayedAccent === option.value;
+          const isTabStop = isActive || (!displayedAccent && index === 0);
+
+          function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+            const nextIndex = getNextAccentOptionIndex(event.key, index);
+
+            if (nextIndex === null) {
+              return;
+            }
+
+            event.preventDefault();
+
+            const nextOption = accentOptions[nextIndex];
+
+            setAccentPreference(nextOption.value);
+            event.currentTarget.parentElement
+              ?.querySelector<HTMLButtonElement>(
+                `[data-radio-value="${nextOption.value}"]`
+              )
+              ?.focus();
+          }
 
           return (
-            <button
+            <SelectableCardButton
               key={option.value}
-              type="button"
+              data-radio-value={option.value}
               data-theme={displayedTheme ?? undefined}
               data-accent={option.value}
               onClick={() => setAccentPreference(option.value)}
-              className={[
-                "app-focus-ring min-h-28 overflow-hidden rounded-xl border p-3 text-left transition",
-                "hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
-                isActive
-                  ? "app-selected-surface"
-                  : "border-[var(--border)] bg-[var(--background-elevated)] hover:border-[var(--border-strong)]",
-              ].join(" ")}
+              onKeyDown={handleKeyDown}
               role="radio"
               aria-checked={isActive}
-            >
-              <span className="flex items-center gap-2">
+              tabIndex={isTabStop ? 0 : -1}
+              active={isActive}
+              label={option.label}
+              className="min-h-28 overflow-hidden p-3"
+              leadingVisual={
                 <span
                   className={[
                     "h-6 w-6 shrink-0 rounded-full bg-[var(--accent-fill)] ring-2 ring-[var(--background-elevated)] shadow-[0_0_0_1px_color-mix(in_srgb,var(--text-primary)_16%,transparent)]",
@@ -94,18 +132,9 @@ export default function ThemeAccentSelector() {
                   ].join(" ")}
                   aria-hidden="true"
                 />
-                <span
-                  className={[
-                    "text-sm font-semibold",
-                    isActive
-                      ? "text-[var(--accent-on-soft)]"
-                      : "text-[var(--text-primary)]",
-                  ].join(" ")}
-                >
-                  {option.label}
-                </span>
-              </span>
-
+              }
+              statusLabel={isActive ? "Selected" : "Choose"}
+            >
               <span
                 className="mt-3 block rounded-lg border border-[color-mix(in_srgb,var(--accent)_22%,var(--border-subtle))] bg-[var(--background-elevated)] p-2"
                 aria-hidden="true"
@@ -116,18 +145,7 @@ export default function ThemeAccentSelector() {
                   <span className="h-5 w-5 rounded-md bg-[color-mix(in_srgb,var(--accent)_12%,var(--background-elevated))] shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent)_20%,transparent)]" />
                 </span>
               </span>
-
-              <span
-                className={[
-                  "mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
-                  isActive
-                    ? "bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_12%,transparent)]"
-                    : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
-                ].join(" ")}
-              >
-                {isActive ? "Selected" : "Choose"}
-              </span>
-            </button>
+            </SelectableCardButton>
           );
         })}
       </div>

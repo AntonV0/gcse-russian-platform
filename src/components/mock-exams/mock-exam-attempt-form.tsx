@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormStatus } from "react-dom";
 import Button from "@/components/ui/button";
 
 export type MockExamAttemptFormQuestion = {
@@ -16,6 +17,41 @@ type MockExamAttemptFormProps = {
   showControls: boolean;
   children: React.ReactNode;
 };
+
+function MockExamSubmitButton({
+  intent,
+  idleLabel,
+  pendingLabel,
+  variant,
+  icon,
+  ariaLabel,
+}: {
+  intent: "save" | "submit";
+  idleLabel: string;
+  pendingLabel: string;
+  variant: "primary" | "secondary";
+  icon: "save" | "confirm";
+  ariaLabel: string;
+}) {
+  const { pending, data } = useFormStatus();
+  const isCurrentPending = pending && data?.get("submitIntent") === intent;
+
+  return (
+    <Button
+      type="submit"
+      name="submitIntent"
+      value={intent}
+      variant={variant}
+      icon={icon}
+      ariaLabel={ariaLabel}
+      disabled={pending}
+      loading={isCurrentPending}
+      loadingLabel={pendingLabel}
+    >
+      {idleLabel}
+    </Button>
+  );
+}
 
 function hasUsableFormValue(value: FormDataEntryValue) {
   if (typeof value === "string") {
@@ -98,26 +134,22 @@ export default function MockExamAttemptForm({
 
       {showControls ? (
         <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <Button
-            type="submit"
-            name="submitIntent"
-            value="save"
+          <MockExamSubmitButton
+            intent="save"
+            idleLabel="Save draft"
+            pendingLabel="Saving draft..."
             variant="secondary"
             icon="save"
             ariaLabel="Save mock exam draft"
-          >
-            Save draft
-          </Button>
-          <Button
-            type="submit"
-            name="submitIntent"
-            value="submit"
+          />
+          <MockExamSubmitButton
+            intent="submit"
+            idleLabel="Submit attempt"
+            pendingLabel="Submitting attempt..."
             variant="primary"
             icon="confirm"
             ariaLabel="Submit mock exam attempt for marking"
-          >
-            Submit attempt
-          </Button>
+          />
         </div>
       ) : null}
     </form>

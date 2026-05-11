@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import SectionCard from "@/components/ui/section-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
-import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { buildPublicMetadata } from "@/lib/seo/site";
+import type { AppIconKey } from "@/lib/shared/icons";
 
 export const metadata: Metadata = buildPublicMetadata({
   title: "Taking Your GCSE Russian Exams",
@@ -14,106 +16,113 @@ export const metadata: Metadata = buildPublicMetadata({
     "A practical guide to registering for GCSE Russian as a private candidate, arranging the speaking exam, and preparing with Volna School support.",
 });
 
-const readinessChecks = [
+const examSetupChecklist: Array<{
+  title: string;
+  description: string;
+  ask: string;
+  icon: AppIconKey;
+}> = [
   {
-    title: "Centre found",
-    value: "1",
-    description: "A school, college, or exam centre has said they accept private candidates.",
-    icon: "school" as const,
-    tone: "brand" as const,
-  },
-  {
-    title: "Full entry confirmed",
-    value: "2",
-    description: "Listening, speaking, reading, writing, tier, fees, and deadlines are clear.",
-    icon: "exam" as const,
-    tone: "info" as const,
-  },
-  {
-    title: "Speaking arranged",
-    value: "3",
-    description: "The centre has confirmed who conducts it, when it happens, and what you do.",
-    icon: "speaking" as const,
-    tone: "warning" as const,
-  },
-  {
-    title: "Timetable saved",
-    value: "4",
-    description: "Written paper dates, centre start times, room details, and results day are stored.",
-    icon: "calendar" as const,
-    tone: "success" as const,
-  },
-];
-
-const decisionFlow = [
-  {
-    title: "Find a centre",
-    yes: "Ask whether they accept private candidates for Pearson Edexcel GCSE Russian 1RU0.",
-    no: "Contact more centres early. Availability, fees, deadlines, and speaking arrangements vary by centre.",
+    title: "Find an exam centre",
+    description:
+      "Contact schools, colleges, or private-candidate centres and ask whether they accept Pearson Edexcel GCSE Russian entries.",
+    ask: "Do you accept private candidates for Pearson Edexcel GCSE Russian 1RU0?",
+    icon: "search",
   },
   {
     title: "Confirm the full entry",
-    yes: "Check the qualification, tier, all papers, entry deadline, fee, candidate number, and any access arrangements.",
-    no: "Do not assume a written-paper entry automatically covers the speaking component.",
+    description:
+      "GCSE Russian is not one paper. The centre must be able to enter you for listening, speaking, reading, and writing at the right tier.",
+    ask: "Can you enter me for all four GCSE Russian papers at Foundation or Higher?",
+    icon: "exam",
   },
   {
-    title: "Arrange speaking",
-    yes: "Get the speaking window, appointment process, examiner details, recording plan, and preparation rules in writing.",
-    no: "Escalate this before paying if the centre cannot explain how GCSE Russian speaking will be handled.",
+    title: "Arrange speaking early",
+    description:
+      "Speaking is the part most likely to need extra planning because the centre needs someone suitable to conduct the Russian assessment.",
+    ask: "How will the speaking exam be arranged, and who conducts it?",
+    icon: "speaking",
   },
   {
     title: "Save the timetable",
-    yes: "Use both the exam-board dates and the centre timetable, because centre start times and rooms are final.",
-    no: "Add calendar reminders for written papers, speaking, contingency day, results, and any centre deadlines.",
+    description:
+      "Use the official exam calendar as a planning baseline, but rely on your centre for exact rooms, start times, and instructions.",
+    ask: "When will I receive my personal timetable and candidate instructions?",
+    icon: "calendar",
   },
 ];
 
-const speakingPrompts = [
-  "Who will conduct the GCSE Russian speaking assessment, and are they approved or arranged by the centre?",
-  "When will the speaking exam take place, and how will I receive the exact appointment time?",
-  "What do I need to bring, and where should I arrive on the day?",
-  "How will the assessment be recorded, stored, and submitted to the exam board?",
-  "Are there centre deadlines, forms, ID checks, access arrangements, or extra speaking fees?",
-  "What happens if the speaking appointment clashes with another exam or unavoidable commitment?",
-];
-
-const confirmationItems = [
-  "Exam board and qualification code",
-  "Foundation or Higher tier",
-  "All four components: listening, speaking, reading, writing",
-  "Entry fee, speaking fee, payment deadline, and refund policy",
-  "Candidate number, centre number, and contact person",
-  "Exact written-paper start times from the centre timetable",
-];
-
-const supportLinks = [
+const paperOverview = [
   {
-    title: "Exam calendar",
-    description: "Check written-paper dates, speaking window reminders, contingency day, and results day.",
-    href: "/exam-calendar",
-    label: "Open calendar",
-    icon: "calendar" as const,
+    title: "Paper 1",
+    value: "Listening",
+    description: "Audio comprehension, answers in English or non-verbal formats.",
+    icon: "listening" as const,
   },
   {
-    title: "Past papers",
-    description: "Use real papers and mark schemes to practise the format before the final exam window.",
-    href: "/past-papers",
-    label: "Use past papers",
-    icon: "pastPapers" as const,
-  },
-  {
-    title: "Speaking guide",
-    description: "Prepare role play, picture-based tasks, conversation, pronunciation, and live response.",
-    href: "/gcse-russian-speaking-exam",
-    label: "Speaking guide",
+    title: "Paper 2",
+    value: "Speaking",
+    description: "Centre-arranged appointment with preparation time and live tasks.",
     icon: "speaking" as const,
   },
   {
-    title: "Volna support",
-    description: "Add teacher support for speaking, writing, accountability, and private-candidate planning.",
+    title: "Paper 3",
+    value: "Reading",
+    description: "Text comprehension and translation into English.",
+    icon: "text" as const,
+  },
+  {
+    title: "Paper 4",
+    value: "Writing",
+    description: "Written responses and translation into Russian.",
+    icon: "write" as const,
+  },
+];
+
+const speakingQuestions = [
+  "Can the centre provide the speaking examiner, or do I need to help source one?",
+  "Which date window do you expect to use for speaking appointments?",
+  "Will the same centre handle recording, paperwork, and secure submission?",
+  "What happens if access arrangements or timetable clashes are needed?",
+];
+
+const preparationRoutes: Array<{
+  title: string;
+  description: string;
+  href: string;
+  label: string;
+  icon: AppIconKey;
+}> = [
+  {
+    title: "Check the exam calendar",
+    description:
+      "Keep written paper dates, contingency day, and results day in one place.",
+    href: "/exam-calendar",
+    label: "Exam calendar",
+    icon: "calendar",
+  },
+  {
+    title: "Practise official papers",
+    description:
+      "Use Pearson links for paper format, timing, mark schemes, and audio resources.",
+    href: "/past-papers",
+    label: "Past papers",
+    icon: "pastPapers",
+  },
+  {
+    title: "Rehearse speaking",
+    description:
+      "Role play, picture-based questions, and conversation need spoken practice.",
+    href: "/gcse-russian-speaking-exam",
+    label: "Speaking guide",
+    icon: "speaking",
+  },
+  {
+    title: "Add live support",
+    description: "Volna School can help when you need teacher-led exam preparation.",
     href: "/online-classes",
     label: "Volna support",
-    icon: "school" as const,
+    icon: "school",
   },
 ];
 
@@ -123,18 +132,18 @@ export default function TakingYourExamsPage() {
       <PageIntroPanel
         eyebrow="Private candidate guide"
         title="Taking your GCSE Russian exams"
-        description="Use this as a practical planning page for exam entry, centre checks, speaking arrangements, written-paper dates, and support before GCSE Russian exam season."
+        description="Use this as a practical planning page before you rely on any exam route. The centre you enter with is always the final source for availability, fees, rooms, exact start times, speaking arrangements, and candidate instructions."
         tone="student"
         badges={
           <>
             <Badge tone="info" icon="exam">
               Pearson Edexcel 1RU0
             </Badge>
-            <Badge tone="muted" icon="school">
+            <Badge tone="muted" icon="student">
               Private candidates
             </Badge>
             <Badge tone="warning" icon="warning">
-              Centre arrangements vary
+              Centre confirmation needed
             </Badge>
           </>
         }
@@ -151,133 +160,169 @@ export default function TakingYourExamsPage() {
             </Button>
           </>
         }
-        visual={
-          <VisualPlaceholder
-            category="mockExam"
-            size="wide"
-            ariaLabel="GCSE Russian exam planning"
-          />
-        }
       >
-        <FeedbackBanner
-          tone="warning"
-          title="Your centre is the final source"
-          description="The exam board timetable is the planning baseline, but your chosen centre controls entry deadlines, fees, speaking arrangements, rooms, exact start times, and local instructions."
-        />
-      </PageIntroPanel>
-
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {readinessChecks.map((check) => (
-          <SummaryStatCard
-            key={check.title}
-            title={check.title}
-            value={check.value}
-            description={check.description}
-            icon={check.icon}
-            tone={check.tone}
-            compact
-          />
-        ))}
-      </section>
-
-      <section>
-        <div className="mb-4">
-          <h2 className="app-heading-section">Checklist and decision flow</h2>
-          <p className="mt-2 max-w-3xl app-text-body-muted">
-            Move through these in order. If any answer is unclear, pause and confirm it
-            with the centre before assuming your exam plan is complete.
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {decisionFlow.map((step, index) => (
-            <DashboardCard key={step.title} title={`${index + 1}. ${step.title}`}>
-              <div className="space-y-3">
-                <div className="rounded-2xl bg-[var(--success-surface)] px-4 py-3 text-[var(--success-text)]">
-                  <div className="font-semibold">If yes</div>
-                  <p className="mt-1">{step.yes}</p>
-                </div>
-                <div className="rounded-2xl bg-[var(--warning-surface)] px-4 py-3 text-[var(--warning-text)]">
-                  <div className="font-semibold">If not yet</div>
-                  <p className="mt-1">{step.no}</p>
-                </div>
-              </div>
-            </DashboardCard>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {paperOverview.map((paper) => (
+            <SummaryStatCard
+              key={paper.title}
+              title={paper.title}
+              value={paper.value}
+              description={paper.description}
+              icon={paper.icon}
+              compact
+            />
           ))}
         </div>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-        <DashboardCard title="Speaking exam: questions to ask your centre">
-          <div className="space-y-4">
-            <p>
-              Speaking is the part private candidates should clarify earliest. It needs a
-              suitable person, a centre process, an appointment, recording arrangements,
-              and exam-board compliance.
-            </p>
-
-            <ul className="grid gap-2">
-              {speakingPrompts.map((prompt) => (
-                <li
-                  key={prompt}
-                  className="rounded-2xl bg-[var(--background-muted)] px-4 py-3 text-sm text-[var(--text-primary)]"
-                >
-                  {prompt}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Get these confirmations in writing">
-          <div className="space-y-4">
-            <p>
-              A useful confirmation email should make the whole entry visible, not just
-              say that you are registered.
-            </p>
-
-            <ul className="grid gap-2">
-              {confirmationItems.map((item) => (
-                <li
-                  key={item}
-                  className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] px-4 py-3 text-sm text-[var(--text-primary)]"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </DashboardCard>
-      </section>
+      </PageIntroPanel>
 
       <FeedbackBanner
-        tone="danger"
-        title="Do not rely on another student&apos;s centre plan"
-        description="Two centres can handle GCSE Russian private candidates differently. One may offer speaking support, another may not. One may use different payment deadlines, ID rules, start times, or access-arrangement processes."
+        tone="warning"
+        title="Do not leave the speaking exam until last"
+        description="Most private-candidate problems happen around speaking: examiner availability, appointment timing, recording, and centre paperwork. Ask about it before you commit to a centre."
       />
 
-      <section>
-        <div className="mb-4">
-          <h2 className="app-heading-section">Planning resources</h2>
-          <p className="mt-2 max-w-2xl app-text-body-muted">
-            Use these pages together: logistics first, then practice against the exam
-            format, then targeted support where the student needs it.
-          </p>
-        </div>
+      <SectionCard
+        title="Private candidate decision flow"
+        description="Work through these checks in order before building your revision plan around a centre."
+        tone="student"
+      >
+        <div className="grid gap-3">
+          {examSetupChecklist.map((step, index) => (
+            <div
+              key={step.title}
+              className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+            >
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--accent-ink)]">
+                    <AppIcon icon={step.icon} size={18} />
+                  </span>
+                  <div>
+                    <Badge tone="muted">Step {index + 1}</Badge>
+                    <h2 className="mt-2 app-heading-card">{step.title}</h2>
+                    <p className="mt-1 app-text-body-muted">{step.description}</p>
+                  </div>
+                </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {supportLinks.map((link) => (
-            <DashboardCard key={link.title} title={link.title}>
+                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] p-3 lg:max-w-sm">
+                  <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                    Ask the centre
+                  </div>
+                  <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                    {step.ask}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
+        <SectionCard
+          title="Speaking exam planning"
+          description="Speaking is a live assessment, so your centre must be confident about the practical details."
+          tone="brand"
+        >
+          <div className="space-y-4">
+            <p className="app-text-body-muted">
+              GCSE Russian speaking is not simply another written paper. The centre needs
+              a suitable person to conduct the assessment in Russian and must follow the
+              exam board process for timing, recording, paperwork, and submission.
+            </p>
+            <div className="grid gap-2">
+              {speakingQuestions.map((question) => (
+                <div
+                  key={question}
+                  className="flex items-start gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm"
+                >
+                  <AppIcon
+                    icon="help"
+                    size={15}
+                    className="mt-0.5 shrink-0 text-[var(--accent-ink)]"
+                  />
+                  <span>{question}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </SectionCard>
+
+        <DashboardCard title="When Volna support may help">
+          <div className="space-y-4">
+            <p>
+              Volna School is useful when a student needs guided speaking practice,
+              teacher correction, exam-style rehearsal, or a clearer preparation routine.
+            </p>
+            <div className="grid gap-2">
+              {[
+                "Private candidate planning",
+                "Speaking exam preparation",
+                "Short intensive speaking support",
+                "Private tuition with a Russian teacher",
+                "Exam-style role play and conversation rehearsal",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-xl bg-[var(--background-muted)] px-3 py-2 text-sm text-[var(--text-primary)]"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+            <Button href="/online-classes" variant="primary" icon="school">
+              Explore Volna support
+            </Button>
+          </div>
+        </DashboardCard>
+      </section>
+
+      <SectionCard
+        title="Build the revision plan around the entry"
+        description="Once the centre route is realistic, use the platform resources to prepare for each part of the exam."
+        tone="student"
+      >
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {preparationRoutes.map((route) => (
+            <DashboardCard key={route.title} className="h-full">
               <div className="space-y-4">
-                <p>{link.description}</p>
-                <Button href={link.href} variant="secondary" size="sm" icon={link.icon}>
-                  {link.label}
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--accent-ink)]">
+                  <AppIcon icon={route.icon} size={19} />
+                </span>
+                <div>
+                  <h3 className="app-heading-card">{route.title}</h3>
+                  <p className="mt-2 app-text-body-muted">{route.description}</p>
+                </div>
+                <Button href={route.href} variant="secondary" size="sm" icon={route.icon}>
+                  {route.label}
                 </Button>
               </div>
             </DashboardCard>
           ))}
         </div>
-      </section>
+      </SectionCard>
+
+      <DashboardCard title="Centre confirmation checklist" headingLevel={2}>
+        <div className="grid gap-3 md:grid-cols-2">
+          {[
+            "Candidate number, centre number, and entry confirmation received.",
+            "Tier decision confirmed for every relevant paper.",
+            "Speaking appointment, preparation time, and arrival instructions confirmed.",
+            "Written paper dates, rooms, start times, and equipment rules saved.",
+            "Fees, deadlines, access arrangements, and contingency instructions understood.",
+            "Contact details saved for urgent centre questions.",
+          ].map((item) => (
+            <div key={item} className="flex items-start gap-2 rounded-xl border p-3">
+              <AppIcon
+                icon="confirm"
+                size={15}
+                className="mt-0.5 shrink-0 text-[var(--accent-ink)]"
+              />
+              <span className="text-sm text-[var(--text-secondary)]">{item}</span>
+            </div>
+          ))}
+        </div>
+      </DashboardCard>
     </main>
   );
 }

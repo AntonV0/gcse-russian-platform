@@ -44,21 +44,21 @@ export default function TeacherAssignmentSubmissionsPanel({
         <InlineActions align="end">
           <Button
             href={`/teacher/assignments/${assignmentId}?filter=all&sort=${sort}`}
-            variant={filter === "all" ? "primary" : "secondary"}
+            variant={filter === "all" ? "soft" : "secondary"}
             size="sm"
           >
             All ({pendingCount + reviewedCount})
           </Button>
           <Button
             href={`/teacher/assignments/${assignmentId}?filter=pending&sort=${sort}`}
-            variant={filter === "pending" ? "primary" : "secondary"}
+            variant={filter === "pending" ? "soft" : "secondary"}
             size="sm"
           >
             Pending ({pendingCount})
           </Button>
           <Button
             href={`/teacher/assignments/${assignmentId}?filter=reviewed&sort=${sort}`}
-            variant={filter === "reviewed" ? "primary" : "secondary"}
+            variant={filter === "reviewed" ? "soft" : "secondary"}
             size="sm"
           >
             Reviewed ({reviewedCount})
@@ -69,28 +69,28 @@ export default function TeacherAssignmentSubmissionsPanel({
       <InlineActions align="end">
         <Button
           href={`/teacher/assignments/${assignmentId}?filter=${filter}&sort=pending_first`}
-          variant={sort === "pending_first" ? "primary" : "secondary"}
+          variant={sort === "pending_first" ? "soft" : "secondary"}
           size="sm"
         >
           Pending first
         </Button>
         <Button
           href={`/teacher/assignments/${assignmentId}?filter=${filter}&sort=reviewed_first`}
-          variant={sort === "reviewed_first" ? "primary" : "secondary"}
+          variant={sort === "reviewed_first" ? "soft" : "secondary"}
           size="sm"
         >
           Reviewed first
         </Button>
         <Button
           href={`/teacher/assignments/${assignmentId}?filter=${filter}&sort=newest`}
-          variant={sort === "newest" ? "primary" : "secondary"}
+          variant={sort === "newest" ? "soft" : "secondary"}
           size="sm"
         >
           Newest
         </Button>
         <Button
           href={`/teacher/assignments/${assignmentId}?filter=${filter}&sort=oldest`}
-          variant={sort === "oldest" ? "primary" : "secondary"}
+          variant={sort === "oldest" ? "soft" : "secondary"}
           size="sm"
         >
           Oldest

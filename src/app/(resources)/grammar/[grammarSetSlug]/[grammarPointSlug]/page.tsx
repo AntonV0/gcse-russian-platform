@@ -137,10 +137,7 @@ function getStudyVariantForDashboard(
   return null;
 }
 
-function getPracticeTasks(
-  grammarPoint: DbGrammarPoint,
-  examples: DbGrammarExample[]
-) {
+function getPracticeTasks(grammarPoint: DbGrammarPoint, examples: DbGrammarExample[]) {
   const firstExample = examples[0];
   const highlightedText =
     firstExample?.optional_highlight ?? firstExample?.russian_text ?? grammarPoint.title;
@@ -324,14 +321,13 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
   });
   const currentPointIndex = setPoints.findIndex((point) => point.id === grammarPoint.id);
   const previousPoint =
-    currentPointIndex > 0 ? setPoints[currentPointIndex - 1] ?? null : null;
+    currentPointIndex > 0 ? (setPoints[currentPointIndex - 1] ?? null) : null;
   const nextPoint =
-    currentPointIndex >= 0 ? setPoints[currentPointIndex + 1] ?? null : null;
+    currentPointIndex >= 0 ? (setPoints[currentPointIndex + 1] ?? null) : null;
   const relatedPoints = setPoints
     .filter(
       (point) =>
-        point.id !== grammarPoint.id &&
-        point.category_key === grammarPoint.category_key
+        point.id !== grammarPoint.id && point.category_key === grammarPoint.category_key
     )
     .slice(0, 4);
 

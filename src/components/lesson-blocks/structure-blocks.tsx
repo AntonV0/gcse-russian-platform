@@ -44,11 +44,7 @@ export function CalloutBlock({ title, content }: { title?: string; content: stri
         />
       ) : null}
 
-      <StudyBlockShell
-        eyebrow="Remember"
-        title={title ?? "Helpful hint"}
-        tone="coach"
-      >
+      <StudyBlockShell eyebrow="Remember" title={title ?? "Helpful hint"} tone="coach">
         <p className="app-text-body whitespace-pre-wrap">{content}</p>
       </StudyBlockShell>
     </div>

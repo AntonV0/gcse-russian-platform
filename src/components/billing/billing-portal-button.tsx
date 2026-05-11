@@ -47,10 +47,12 @@ export default function BillingPortalButton({
           icon="settings"
           onClick={openBillingPortal}
           disabled={disabled || isLoading}
+          loading={isLoading}
+          loadingLabel="Opening..."
           aria-describedby={showDisabledReason ? disabledReasonId : undefined}
           title={showDisabledReason ? disabledReason : undefined}
         >
-          {isLoading ? "Opening..." : showDisabledReason ? "No plan to manage" : "Manage plan"}
+          {showDisabledReason ? "No plan to manage" : "Manage plan"}
         </Button>
       </span>
 

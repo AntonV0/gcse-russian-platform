@@ -1,6 +1,7 @@
 "use client";
 
 import QuestionCard from "@/components/questions/question-card";
+import QuestionChoiceButton from "@/components/questions/question-choice-button";
 import QuestionFeedback from "@/components/questions/question-feedback";
 import Button from "@/components/ui/button";
 
@@ -107,15 +108,14 @@ export default function SentenceBuilderBlock({
         >
           {safeSelectedTokens.length > 0 ? (
             safeSelectedTokens.map((token, index) => (
-              <button
+              <QuestionChoiceButton
                 key={`${token}-${index}`}
-                type="button"
                 onClick={() => onRemoveToken(index)}
                 disabled={hasSubmitted || isSubmitting}
-                className="app-choice-chip app-choice-chip-selected px-3 py-2 text-sm disabled:cursor-default"
+                selected
               >
                 {token}
-              </button>
+              </QuestionChoiceButton>
             ))
           ) : (
             <span className="text-sm app-text-muted">
@@ -133,15 +133,13 @@ export default function SentenceBuilderBlock({
         <div className="app-answer-bank flex flex-wrap gap-2 rounded-xl border p-3">
           {safeAvailableTokens.length > 0 ? (
             safeAvailableTokens.map((token, index) => (
-              <button
+              <QuestionChoiceButton
                 key={`${token}-${index}`}
-                type="button"
                 onClick={() => onAddToken(index)}
                 disabled={hasSubmitted || isSubmitting}
-                className="app-choice-chip px-3 py-2 text-sm disabled:cursor-default"
               >
                 {token}
-              </button>
+              </QuestionChoiceButton>
             ))
           ) : (
             <span className="text-sm app-text-muted">
@@ -158,9 +156,11 @@ export default function SentenceBuilderBlock({
           disabled={!canSubmit}
           variant="primary"
           size="sm"
-          icon={isSubmitting ? "pending" : "confirm"}
+          icon="confirm"
+          loading={isSubmitting}
+          loadingLabel="Saving..."
         >
-          {hasSubmitted ? "Submitted" : isSubmitting ? "Saving..." : "Check answer"}
+          {hasSubmitted ? "Submitted" : "Check answer"}
         </Button>
 
         <Button

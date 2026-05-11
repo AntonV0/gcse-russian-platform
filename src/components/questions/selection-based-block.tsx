@@ -1,6 +1,7 @@
 "use client";
 
 import QuestionCard from "@/components/questions/question-card";
+import QuestionChoiceButton from "@/components/questions/question-choice-button";
 import QuestionFeedback from "@/components/questions/question-feedback";
 import Button from "@/components/ui/button";
 
@@ -126,21 +127,14 @@ export default function SelectionBasedBlock({
                     const isSelected = selectedOptions[group.id] === option;
 
                     return (
-                      <button
+                      <QuestionChoiceButton
                         key={option}
-                        type="button"
                         onClick={() => onSelectOption(group.id, option)}
                         disabled={hasSubmitted || isSubmitting}
-                        className={[
-                          "app-choice-chip px-3 py-2 text-sm",
-                          isSelected ? "app-choice-chip-selected" : "",
-                          hasSubmitted || isSubmitting
-                            ? "cursor-default"
-                            : "cursor-pointer",
-                        ].join(" ")}
+                        selected={isSelected}
                       >
                         {option}
-                      </button>
+                      </QuestionChoiceButton>
                     );
                   })}
                 </div>
@@ -164,21 +158,14 @@ export default function SelectionBasedBlock({
                   const isSelected = selectedOptions[group.id] === option;
 
                   return (
-                    <button
+                    <QuestionChoiceButton
                       key={option}
-                      type="button"
                       onClick={() => onSelectOption(group.id, option)}
                       disabled={hasSubmitted || isSubmitting}
-                      className={[
-                        "app-choice-chip px-3 py-2 text-sm",
-                        isSelected ? "app-choice-chip-selected" : "",
-                        hasSubmitted || isSubmitting
-                          ? "cursor-default"
-                          : "cursor-pointer",
-                      ].join(" ")}
+                      selected={isSelected}
                     >
                       {option}
-                    </button>
+                    </QuestionChoiceButton>
                   );
                 })}
               </div>
@@ -194,9 +181,11 @@ export default function SelectionBasedBlock({
           disabled={!canSubmit}
           variant="primary"
           size="sm"
-          icon={isSubmitting ? "pending" : "confirm"}
+          icon="confirm"
+          loading={isSubmitting}
+          loadingLabel="Saving..."
         >
-          {hasSubmitted ? "Submitted" : isSubmitting ? "Saving..." : "Check answer"}
+          {hasSubmitted ? "Submitted" : "Check answer"}
         </Button>
 
         <Button

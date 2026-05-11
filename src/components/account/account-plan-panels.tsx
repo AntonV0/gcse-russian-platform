@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import type { CurrentPlanSummary } from "@/lib/billing/account-helpers";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -105,12 +105,13 @@ function PlanDetail({ label, children }: { label: string; children: ReactNode })
 
 function AccountBillingLink({ label }: { label: string }) {
   return (
-    <Link
+    <Button
       href="/account/billing"
-      className="inline-flex items-center gap-2 font-medium app-brand-text"
+      variant="secondary"
+      size="sm"
+      icon="billing"
     >
       {label}
-      <AppIcon icon="arrowRight" size={15} />
-    </Link>
+    </Button>
   );
 }

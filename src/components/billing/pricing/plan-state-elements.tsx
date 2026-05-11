@@ -1,4 +1,5 @@
 import type { DbPrice, UpgradeQuoteResolution } from "@/lib/billing/catalog";
+import { PricingOptionButton } from "@/components/billing/pricing/pricing-option-button";
 import {
   formatRenewalDate,
   getUpgradeFeeLabel,
@@ -8,27 +9,13 @@ import {
 } from "@/lib/billing/pricing-ui";
 
 export function OwnedButton({ label }: { label: string }) {
-  return (
-    <button
-      type="button"
-      disabled
-      className="inline-flex w-full items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)] px-4 py-2.5 text-sm font-semibold text-[var(--text-primary)] opacity-90"
-    >
-      {label}
-    </button>
-  );
+  return <PricingOptionButton label={label} state="owned" disabled />;
 }
 
 export function LockedOption({ label, message }: { label: string; message: string }) {
   return (
     <div className="space-y-2">
-      <button
-        type="button"
-        disabled
-        className="inline-flex w-full items-center justify-center rounded-xl border border-dashed border-[var(--border-subtle)] bg-[var(--surface-secondary)]/75 px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] opacity-85"
-      >
-        {label}
-      </button>
+      <PricingOptionButton label={label} state="locked" disabled />
 
       <p className="text-xs leading-5 text-[var(--text-secondary)]">{message}</p>
     </div>

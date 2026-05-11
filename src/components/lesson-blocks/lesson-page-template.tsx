@@ -70,7 +70,7 @@ export default async function LessonPageTemplate({
           action={
             <Button
               href={getModulePath(courseSlug, variantSlug, moduleSlug)}
-              variant="primary"
+              variant="secondary"
               icon="back"
             >
               Back to module
@@ -95,7 +95,7 @@ export default async function LessonPageTemplate({
           description="No sections are available for this course path yet. Return to the module and choose another lesson for now."
           headingLevel={1}
           action={
-            <Button href={moduleHref} variant="primary" icon="back">
+            <Button href={moduleHref} variant="secondary" icon="back">
               Back to module
             </Button>
           }

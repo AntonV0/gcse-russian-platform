@@ -6,11 +6,7 @@ export const metadata: Metadata = {
   robots: noIndexRobots,
 };
 
-export default async function ProfileLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function ProfileLayout({ children }: { children: React.ReactNode }) {
   await requireAuthenticatedUser();
 
   return <>{children}</>;

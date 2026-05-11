@@ -34,6 +34,12 @@ function getNumberString(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? String(value) : "";
 }
 
+function getStringArray(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
+
 function CriterionList({
   title,
   items,
@@ -90,6 +96,10 @@ export default function MockExamMarkingAssistant({
   const markSchemeReference = getString(markingMetadata.markSchemeReference);
   const wordCountGuidance = getString(markingMetadata.wordCountGuidance);
   const aiMarkingNotes = getString(markingMetadata.aiMarkingNotes);
+  const extractedText = getString(aiMarking.extractedText);
+  const generatedAt = getString(aiMarking.generatedAt);
+  const markingModel = getString(aiMarking.markingModel);
+  const flags = getStringArray(aiMarking.flags);
   const hasRubric =
     criteria.length > 0 ||
     levelDescriptors.length > 0 ||
@@ -143,6 +153,31 @@ export default function MockExamMarkingAssistant({
                   {aiMarkingNotes}
                 </div>
               ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {generatedAt || markingModel || extractedText || flags.length > 0 ? (
+        <div className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {generatedAt ? <Badge tone="info">Generated {generatedAt}</Badge> : null}
+            {markingModel ? <Badge tone="muted">{markingModel}</Badge> : null}
+            {flags.map((flag) => (
+              <Badge key={flag} tone="warning">
+                {flag.replaceAll("_", " ")}
+              </Badge>
+            ))}
+          </div>
+
+          {extractedText ? (
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                Extracted / transcribed response
+              </div>
+              <p className="mt-2 max-h-56 overflow-auto whitespace-pre-wrap rounded-lg border border-[var(--border)] bg-[var(--background-muted)] px-3 py-2 text-sm leading-6 text-[var(--text-secondary)]">
+                {extractedText}
+              </p>
             </div>
           ) : null}
         </div>

@@ -153,10 +153,7 @@ function SharedPlanBenefits() {
 
         <div className="grid flex-1 gap-x-5 gap-y-3 sm:grid-cols-3">
           {sharedPlanBenefits.map((benefit) => (
-            <div
-              key={benefit.title}
-              className="inline-flex items-center gap-2.5"
-            >
+            <div key={benefit.title} className="inline-flex items-center gap-2.5">
               <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[var(--accent-ink)]">
                 <AppIcon icon={benefit.icon} size={17} />
               </span>
@@ -257,8 +254,8 @@ function VolnaSchoolRoute() {
               Volna School is a higher-support route for families who want regular live
               lessons, homework, feedback, and exam guidance. It is a bigger commitment
               than self-study, so it is best for students who need teaching and
-              accountability each week. Platform access is included while you are
-              enrolled at Volna School.
+              accountability each week. Platform access is included while you are enrolled
+              at Volna School.
             </p>
           </div>
 
@@ -404,16 +401,13 @@ export default async function BillingPage({
               </div>
 
               <div className="space-y-2">
-                <h1 className="app-heading-hero">
-                  Choose a GCSE Russian course plan
-                </h1>
+                <h1 className="app-heading-hero">Choose a GCSE Russian course plan</h1>
                 <p className="app-subtitle max-w-2xl">
                   Pick the course tier that fits you, then choose how long you want to
-                  keep it. Lifetime is the simplest option if you want GCSE
-                  preparation covered without renewals.
+                  keep it. Lifetime is the simplest option if you want GCSE preparation
+                  covered without renewals.
                 </p>
               </div>
-
             </div>
 
             <div className="app-card px-4 py-4">
@@ -464,7 +458,9 @@ export default async function BillingPage({
               gradeBadge="Grades 1-5"
               priceLabel={foundationPriceLabel}
               recommendedPriceLabel={
-                foundationLifetimeLabel ? `${foundationLifetimeLabel} lifetime` : undefined
+                foundationLifetimeLabel
+                  ? `${foundationLifetimeLabel} lifetime`
+                  : undefined
               }
               optionNote="After checkout, it appears in your GCSE Russian dashboard."
               actionTitle="Choose a plan"
@@ -595,31 +591,33 @@ export default async function BillingPage({
                   Manage your plan
                 </p>
                 <p className="text-sm leading-6 text-[var(--text-secondary)]">
-                  Monthly and 3-month plans are managed in Stripe. Lifetime access
-                  does not renew, so there is nothing to manage after checkout.
+                  Monthly and 3-month plans are managed in Stripe. Lifetime access does
+                  not renew, so there is nothing to manage after checkout.
                 </p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:shrink-0">
                 <BillingPortalButton disabled={!hasActiveSubscription} />
 
-                <Link
+                <Button
                   href="/pricing"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)] transition hover:border-[var(--border-strong)]"
+                  variant="secondary"
+                  size="sm"
+                  icon="externalLink"
                 >
                   Open public pricing
-                  <AppIcon icon="externalLink" size={14} />
-                </Link>
+                </Button>
 
-                <Link
+                <Button
                   href="/account"
-                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)] transition hover:border-[var(--border-strong)]"
+                  variant="secondary"
+                  size="sm"
+                  icon="back"
                 >
-                  <AppIcon icon="back" size={14} />
                   Back to account
-                </Link>
+                </Button>
               </div>
             </div>
           </div>

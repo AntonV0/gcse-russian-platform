@@ -1,6 +1,5 @@
-import AppIcon from "@/components/ui/app-icon";
+import ActionPill from "@/components/ui/action-pill";
 import Badge from "@/components/ui/badge";
-import { getButtonClassName } from "@/components/ui/button-styles";
 import type { VocabularyItemSectionGroup } from "@/lib/vocabulary/items/item-sections";
 import { getVocabularyTierLabel } from "@/lib/vocabulary/shared/labels";
 import {
@@ -9,7 +8,10 @@ import {
   getVocabularyCoverageVariantLabel,
   getVocabularyCoverageVariantUsed,
 } from "@/lib/vocabulary/shared/study-variants";
-import type { DbVocabularyItem, DbVocabularyItemCoverage } from "@/lib/vocabulary/shared/types";
+import type {
+  DbVocabularyItem,
+  DbVocabularyItemCoverage,
+} from "@/lib/vocabulary/shared/types";
 
 function getItemBadgeTone(item: DbVocabularyItem) {
   if (item.source_type === "spec_required") return "info";
@@ -88,19 +90,9 @@ function VocabularyItemCoverageBadges({
 
 function SectionToggleButton() {
   return (
-    <span
-      className={getButtonClassName({
-        variant: "secondary",
-        size: "sm",
-        className: "pointer-events-none",
-      })}
-      aria-hidden="true"
-    >
-      <span className="shrink-0">
-        <AppIcon icon="next" size={16} />
-      </span>
-      <span className="truncate">Open</span>
-    </span>
+    <ActionPill className="pointer-events-none" aria-hidden="true">
+      Open
+    </ActionPill>
   );
 }
 

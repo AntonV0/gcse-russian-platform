@@ -4,7 +4,6 @@ import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import ProfileEditor, {
   type ProfileLearningSnapshot,
-  type ProfileAvatarOption,
 } from "@/components/profile/profile-editor";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 import {
@@ -13,58 +12,13 @@ import {
   getStudentLearningPlan,
 } from "@/lib/dashboard/learning-plan";
 import { getDashboardInfo, type DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import {
+  getSafeAvatarBackgroundKey,
+  getSafeAvatarFrameKey,
+  getUnlockedAvatarFrameKeys,
+  profileAvatarOptions,
+} from "@/lib/profile/avatar-customization";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
-
-const presetAvatars: ProfileAvatarOption[] = [
-  { key: "", emoji: "", label: "Initials", russian: "Инициалы" },
-  { key: "snow-fox", emoji: "🦊", label: "Fox", russian: "Лиса" },
-  { key: "cat", emoji: "🐱", label: "Cat", russian: "Кот" },
-  { key: "dog", emoji: "🐶", label: "Dog", russian: "Собака" },
-  { key: "owl", emoji: "🦉", label: "Owl", russian: "Сова" },
-  { key: "wolf", emoji: "🐺", label: "Wolf", russian: "Волк" },
-  { key: "tiger", emoji: "🐯", label: "Tiger", russian: "Тигр" },
-  { key: "lion", emoji: "🦁", label: "Lion", russian: "Лев" },
-  { key: "bear", emoji: "🐻", label: "Bear", russian: "Медведь" },
-  { key: "panda", emoji: "🐼", label: "Panda", russian: "Панда" },
-  { key: "koala", emoji: "🐨", label: "Koala", russian: "Коала" },
-  { key: "monkey", emoji: "🐵", label: "Monkey", russian: "Обезьяна" },
-  { key: "rabbit", emoji: "🐰", label: "Rabbit", russian: "Кролик" },
-  { key: "hedgehog", emoji: "🦔", label: "Hedgehog", russian: "Ёж" },
-  { key: "frog", emoji: "🐸", label: "Frog", russian: "Лягушка" },
-  { key: "penguin", emoji: "🐧", label: "Penguin", russian: "Пингвин" },
-  { key: "turtle", emoji: "🐢", label: "Turtle", russian: "Черепаха" },
-  { key: "dolphin", emoji: "🐬", label: "Dolphin", russian: "Дельфин" },
-  { key: "whale", emoji: "🐋", label: "Whale", russian: "Кит" },
-  { key: "butterfly", emoji: "🦋", label: "Butterfly", russian: "Бабочка" },
-  { key: "eagle", emoji: "🦅", label: "Eagle", russian: "Орёл" },
-  { key: "parrot", emoji: "🦜", label: "Parrot", russian: "Попугай" },
-  { key: "dragon", emoji: "🐉", label: "Dragon", russian: "Дракон" },
-  { key: "unicorn", emoji: "🦄", label: "Unicorn", russian: "Единорог" },
-  { key: "robot", emoji: "🤖", label: "Robot", russian: "Робот" },
-  { key: "rocket", emoji: "🚀", label: "Rocket", russian: "Ракета" },
-  { key: "astronaut", emoji: "🧑‍🚀", label: "Astronaut", russian: "Космонавт" },
-  { key: "artist", emoji: "🧑‍🎨", label: "Artist", russian: "Художник" },
-  { key: "mage", emoji: "🧙", label: "Mage", russian: "Маг" },
-  { key: "ninja", emoji: "🥷", label: "Ninja", russian: "Ниндзя" },
-  { key: "star", emoji: "⭐", label: "Star", russian: "Звезда" },
-  { key: "sparkles", emoji: "✨", label: "Sparkles", russian: "Искры" },
-  { key: "crown", emoji: "👑", label: "Crown", russian: "Корона" },
-  { key: "medal", emoji: "🏅", label: "Medal", russian: "Медаль" },
-  { key: "gem", emoji: "💎", label: "Gem", russian: "Алмаз" },
-  { key: "book", emoji: "📘", label: "Book", russian: "Книга" },
-  { key: "globe", emoji: "🌍", label: "Globe", russian: "Мир" },
-  { key: "compass", emoji: "🧭", label: "Compass", russian: "Компас" },
-  { key: "moon", emoji: "🌙", label: "Moon", russian: "Луна" },
-  { key: "sun", emoji: "☀️", label: "Sun", russian: "Солнце" },
-  { key: "mountain", emoji: "⛰️", label: "Mountain", russian: "Гора" },
-  { key: "wave", emoji: "🌊", label: "Wave", russian: "Волна" },
-  { key: "anchor", emoji: "⚓", label: "Anchor", russian: "Якорь" },
-  { key: "camera", emoji: "📷", label: "Camera", russian: "Камера" },
-  { key: "palette", emoji: "🎨", label: "Palette", russian: "Палитра" },
-  { key: "guitar", emoji: "🎸", label: "Guitar", russian: "Гитара" },
-  { key: "octopus", emoji: "🐙", label: "Octopus", russian: "Осьминог" },
-  { key: "crab", emoji: "🦀", label: "Crab", russian: "Краб" },
-];
 
 function getDashboardRoleLabel(role: DashboardInfo["role"]) {
   if (role === "admin") return "Admin";
@@ -149,7 +103,25 @@ export default async function ProfilePage({
     "avatar_key" in (profile ?? {}) && typeof profile?.avatar_key === "string"
       ? profile.avatar_key
       : null;
+  const currentAvatarBackgroundKey = getSafeAvatarBackgroundKey(
+    "avatar_background_key" in (profile ?? {}) &&
+      typeof profile?.avatar_background_key === "string"
+      ? profile.avatar_background_key
+      : null
+  );
+  const currentAvatarFrameKey = getSafeAvatarFrameKey(
+    "equipped_avatar_frame_key" in (profile ?? {}) &&
+      typeof profile?.equipped_avatar_frame_key === "string"
+      ? profile.equipped_avatar_frame_key
+      : null
+  );
   const learningSnapshot = await getProfileLearningSnapshot();
+  const unlockedAvatarFrameKeys = Array.from(
+    getUnlockedAvatarFrameKeys({
+      completedLessons: learningSnapshot.completedLessons,
+      totalLessons: learningSnapshot.totalLessons,
+    })
+  );
 
   return (
     <main className="space-y-8">
@@ -162,11 +134,14 @@ export default async function ProfilePage({
       ) : null}
 
       <ProfileEditor
-        avatars={presetAvatars}
+        avatars={profileAvatarOptions}
         email={user.email}
         initialFullName={profile?.full_name}
         initialDisplayName={profile?.display_name}
         initialAvatarKey={currentAvatarKey}
+        initialAvatarBackgroundKey={currentAvatarBackgroundKey}
+        initialAvatarFrameKey={currentAvatarFrameKey}
+        unlockedAvatarFrameKeys={unlockedAvatarFrameKeys}
         learningSnapshot={learningSnapshot}
         profileUpdated={Boolean(resolvedSearchParams.success)}
       />

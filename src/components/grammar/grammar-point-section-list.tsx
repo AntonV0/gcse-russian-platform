@@ -1,6 +1,5 @@
-import AppIcon from "@/components/ui/app-icon";
+import ActionPill from "@/components/ui/action-pill";
 import Badge from "@/components/ui/badge";
-import { getButtonClassName } from "@/components/ui/button-styles";
 import { GrammarPointRequirementBadges } from "@/components/grammar/grammar-requirement-badges";
 import {
   getGrammarCoverageVariantCount,
@@ -93,19 +92,9 @@ function GrammarPointHealthBadges({
 
 function SectionToggleButton() {
   return (
-    <span
-      className={getButtonClassName({
-        variant: "secondary",
-        size: "sm",
-        className: "pointer-events-none",
-      })}
-      aria-hidden="true"
-    >
-      <span className="shrink-0">
-        <AppIcon icon="next" size={16} />
-      </span>
-      <span className="truncate">Open</span>
-    </span>
+    <ActionPill className="pointer-events-none" aria-hidden="true">
+      Open
+    </ActionPill>
   );
 }
 

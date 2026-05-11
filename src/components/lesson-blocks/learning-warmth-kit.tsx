@@ -169,9 +169,7 @@ export function StudyBlockShell({
           </span>
 
           <div className="min-w-0 flex-1">
-            <div className="app-text-meta app-text-soft">
-              {eyebrow}
-            </div>
+            <div className="app-text-meta app-text-soft">{eyebrow}</div>
 
             {title ? (
               <Heading

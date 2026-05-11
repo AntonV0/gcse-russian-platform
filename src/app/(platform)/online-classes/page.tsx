@@ -1,339 +1,317 @@
+import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
+import SectionCard from "@/components/ui/section-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
-import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import type { AppIconKey } from "@/lib/shared/icons";
 
-const decisionStats = [
-  {
-    title: "Teaching format",
-    value: "Live",
-    description: "Online GCSE Russian lessons with a teacher-led weekly rhythm.",
-    icon: "school" as const,
-    tone: "brand" as const,
-  },
-  {
-    title: "Best for",
-    value: "Support",
-    description: "Students who need speaking practice, writing feedback, and accountability.",
-    icon: "speaking" as const,
-    tone: "info" as const,
-  },
-  {
-    title: "Platform role",
-    value: "Practice",
-    description: "Use the course platform between lessons for revision and assignments.",
-    icon: "assignments" as const,
-    tone: "success" as const,
-  },
-  {
-    title: "Cost guide",
-    value: "Ask",
-    description: "Confirm current group, 1:1, trial, and term fees with Volna before booking.",
-    icon: "pricing" as const,
-    tone: "warning" as const,
-  },
-];
+const VOLNA_GCSE_URL = "https://www.volnaschool.com/gcse-courses";
 
-const fitSignals = [
-  "The student is preparing for Pearson Edexcel GCSE Russian and wants a teacher-led route.",
-  "Speaking and writing need regular correction, not just independent practice.",
-  "The family wants weekly accountability while exam entry is arranged separately.",
-  "Self-study is useful, but the student needs help turning knowledge into exam answers.",
+const decisionPoints: Array<{
+  icon: AppIconKey;
+  title: string;
+  description: string;
+}> = [
+  {
+    icon: "teacher",
+    title: "You want a teacher in the room",
+    description:
+      "Best for students who need explanations, correction, and someone to keep the GCSE route moving each week.",
+  },
+  {
+    icon: "speaking",
+    title: "Speaking needs live practice",
+    description:
+      "A teacher can rehearse role play, picture-based tasks, conversation answers, pronunciation, and follow-up questions.",
+  },
+  {
+    icon: "assignments",
+    title: "Homework helps you stay accountable",
+    description:
+      "Volna students get regular tasks, feedback, and a clearer study rhythm between live lessons.",
+  },
 ];
 
 const lessonRhythm = [
-  {
-    title: "Before class",
-    description:
-      "Use the platform to revise vocabulary, grammar, listening, reading, and assigned preparation.",
-  },
-  {
-    title: "During class",
-    description:
-      "Work through GCSE Russian skills with a teacher: explanation, speaking practice, writing improvement, and exam technique.",
-  },
-  {
-    title: "After class",
-    description:
-      "Complete assignments, revisit mistakes, and bring questions back to the next lesson cycle.",
-  },
+  "Two 1-hour online GCSE Russian lessons each week during teaching weeks.",
+  "Small groups, so students can ask questions and receive direct feedback.",
+  "Weekly homework to reinforce grammar, vocabulary, translation, and exam technique.",
+  "Platform access supports lessons, assignments, revision resources, and progress.",
 ];
 
-const platformConnections = [
-  "Course content gives students a study spine between live lessons.",
-  "Assignments can turn teacher guidance into a concrete task with a submission deadline.",
-  "Past papers, mock-style practice, and exam resources support revision outside class.",
-  "Dashboard progress helps students keep the next step visible rather than guessing what to do.",
-];
-
-const volnaStudentWorkflow = [
+const platformConnections: Array<{
+  icon: AppIconKey;
+  title: string;
+  description: string;
+  href: string;
+  label: string;
+}> = [
   {
-    title: "Check assignments first",
+    icon: "assignments",
+    title: "Teacher-set assignments",
     description:
-      "Your teacher may use assignments to set homework, request speaking or writing work, and keep your next action clear.",
+      "Volna students use the platform to receive homework, submit work, and review feedback.",
+    href: "/assignments",
+    label: "Open assignments",
   },
   {
-    title: "Use feedback as the lesson bridge",
+    icon: "courses",
+    title: "Course and revision resources",
     description:
-      "Teacher comments should feed into the next practice session, especially repeated grammar, pronunciation, and writing issues.",
-  },
-  {
-    title: "Bring class questions back here",
-    description:
-      "If a live lesson exposes a weak topic, use the platform resources to practise it before the next class.",
-  },
-];
-
-const nextSteps = [
-  {
-    title: "Visit Volna",
-    description:
-      "Use this when you want live lesson availability, current pricing, teacher support, and joining details.",
-    href: "https://volnaschool.com",
-    label: "Visit Volna",
-    icon: "externalLink" as const,
-    variant: "primary" as const,
-    external: true,
-  },
-  {
-    title: "Compare self-study",
-    description:
-      "Use this if the student may be able to work independently with structured course resources first.",
+      "Lessons, vocabulary, grammar, past papers, and mocks stay in the same GCSE Russian workspace.",
     href: "/courses",
-    label: "Compare self-study",
-    icon: "courses" as const,
-    variant: "secondary" as const,
+    label: "Browse courses",
   },
   {
-    title: "Back to dashboard",
+    icon: "dashboard",
+    title: "Dashboard next steps",
     description:
-      "Return to the student workspace for assignments, course progress, and the next platform task.",
+      "The dashboard keeps the next useful action visible across self-study and Volna-linked learning.",
     href: "/dashboard",
-    label: "Back to dashboard",
-    icon: "dashboard" as const,
-    variant: "quiet" as const,
+    label: "Open dashboard",
   },
 ];
+
+function VolnaStudentPanel() {
+  return (
+    <FeedbackBanner
+      tone="success"
+      icon="userCheck"
+      title="You are already in the Volna student route"
+      description="Use this page as a map of how live teaching connects to the platform. Your day-to-day work should continue through assignments, teacher feedback, and your dashboard next step."
+    >
+      <div className="flex flex-wrap gap-2">
+        <Button href="/assignments" variant="primary" size="sm" icon="assignments">
+          Open assignments
+        </Button>
+        <Button href="/dashboard" variant="secondary" size="sm" icon="dashboard">
+          Dashboard
+        </Button>
+      </div>
+    </FeedbackBanner>
+  );
+}
 
 export default async function OnlineClassesPage() {
-  const user = await getCurrentUser();
-  const dashboard = await getDashboardInfo();
-
+  const [user, dashboard] = await Promise.all([getCurrentUser(), getDashboardInfo()]);
   const isVolnaStudent = dashboard.role === "student" && dashboard.accessMode === "volna";
 
   return (
     <main className="space-y-8">
       <PageIntroPanel
-        eyebrow="Online classes"
-        title={isVolnaStudent ? "Your Volna lesson support" : "Choose Volna GCSE Russian support"}
+        tone="student"
+        eyebrow="Volna live teaching"
+        title={
+          isVolnaStudent
+            ? "Your Volna GCSE Russian route"
+            : "Add live teaching to GCSE Russian"
+        }
         description={
           isVolnaStudent
-            ? "Use this page as a bridge between live lessons and the platform: assignments, teacher feedback, course practice, and class questions should work together."
-            : "Volna is the teacher-led route for GCSE Russian students who want live online lessons alongside the platform, especially for speaking, writing, grammar, and accountability."
+            ? "Your platform account is connected to Volna-style teacher support: live classes, assignments, feedback, and structured GCSE Russian study in one place."
+            : "Volna School is the teacher-led route for families who want regular GCSE Russian lessons, weekly homework, speaking practice, and accountability alongside the platform."
         }
-        tone="student"
         badges={
           <>
             <Badge tone="info" icon="school">
-              Volna GCSE Russian
+              Volna School
             </Badge>
-            <Badge tone="muted" icon="speaking">
-              Speaking and writing support
+            <Badge tone="muted" icon="calendar">
+              2 lessons per week
             </Badge>
-            {user ? (
-              <Badge tone={isVolnaStudent ? "success" : "muted"} icon="userCheck">
-                {isVolnaStudent ? "Volna student" : "Student account"}
-              </Badge>
-            ) : null}
+            <Badge
+              tone={isVolnaStudent ? "success" : "muted"}
+              icon={isVolnaStudent ? "userCheck" : "student"}
+            >
+              {isVolnaStudent
+                ? "Volna student"
+                : user
+                  ? "Student account"
+                  : "Open enquiry"}
+            </Badge>
           </>
         }
         actions={
           <>
             <Button
-              href="https://volnaschool.com"
+              href={VOLNA_GCSE_URL}
               target="_blank"
               rel="noreferrer"
               variant="primary"
-              icon="externalLink"
+              icon="school"
             >
               Visit Volna
             </Button>
-            <Button href="/courses" variant="secondary" icon="courses">
+            <Button href="/account/billing" variant="secondary" icon="billing">
               Compare self-study
             </Button>
-            <Button href="/dashboard" variant="quiet" icon="dashboard">
+            <Button href="/dashboard" variant="secondary" icon="dashboard">
               Back to dashboard
             </Button>
           </>
         }
-        visual={
-          <VisualPlaceholder
-            category="school"
-            size="wide"
-            ariaLabel="Volna online class support"
-          />
-        }
       >
-        <FeedbackBanner
-          tone={isVolnaStudent ? "success" : "info"}
-          title={isVolnaStudent ? "Make the teacher workflow visible" : "Live lessons and platform access are separate choices"}
-          description={
-            isVolnaStudent
-              ? "Start with your assignments, use teacher feedback to choose the next practice task, and bring platform questions back into class support."
-              : "Some students can self-study effectively. Volna is worth considering when a student needs regular teacher explanation, speaking practice, writing correction, or a weekly routine."
-          }
-        />
-      </PageIntroPanel>
-
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {decisionStats.map((stat) => (
+        <div className="grid gap-3 sm:grid-cols-3">
           <SummaryStatCard
-            key={stat.title}
-            title={stat.title}
-            value={stat.value}
-            description={stat.description}
-            icon={stat.icon}
-            tone={stat.tone}
+            title="Live teaching"
+            value="2x"
+            description="1-hour lessons each week"
+            icon="teacher"
+            tone="brand"
             compact
           />
+          <SummaryStatCard
+            title="Cost guide"
+            value="£18"
+            description="per teaching hour"
+            icon="pricing"
+            tone="info"
+            compact
+          />
+          <SummaryStatCard
+            title="Best fit"
+            value="Guided"
+            description="teaching, feedback, homework"
+            icon="learning"
+            tone="success"
+            compact
+          />
+        </div>
+      </PageIntroPanel>
+
+      {isVolnaStudent ? <VolnaStudentPanel /> : null}
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {decisionPoints.map((item) => (
+          <DashboardCard key={item.title} className="h-full">
+            <div className="space-y-4">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--accent-ink)]">
+                <AppIcon icon={item.icon} size={19} />
+              </span>
+              <div>
+                <h2 className="app-heading-card">{item.title}</h2>
+                <p className="mt-2 app-text-body-muted">{item.description}</p>
+              </div>
+            </div>
+          </DashboardCard>
         ))}
       </section>
 
-      {isVolnaStudent ? (
-        <section>
-          <div className="mb-4">
-            <h2 className="app-heading-section">Your Volna workflow</h2>
-            <p className="mt-2 max-w-2xl app-text-body-muted">
-              Treat the platform as the place where live teaching becomes concrete:
-              assignments, feedback, revision, and the next question for class.
-            </p>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {volnaStudentWorkflow.map((item) => (
-              <DashboardCard key={item.title} title={item.title}>
-                <p>{item.description}</p>
-              </DashboardCard>
-            ))}
-          </div>
-        </section>
-      ) : (
-        <section>
-          <div className="mb-4">
-            <h2 className="app-heading-section">Who Volna is for</h2>
-            <p className="mt-2 max-w-2xl app-text-body-muted">
-              Use these checks to decide whether live online classes are the right next
-              layer, or whether self-study is enough for now.
-            </p>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-2">
-            {fitSignals.map((signal) => (
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
+        <SectionCard
+          title="Typical Volna lesson rhythm"
+          description="The live route is for students who benefit from structure, teacher correction, and a weekly study routine."
+          tone="student"
+        >
+          <div className="grid gap-3">
+            {lessonRhythm.map((item, index) => (
               <div
-                key={signal}
-                className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] px-4 py-3 text-sm text-[var(--text-primary)] shadow-[var(--shadow-xs)]"
+                key={item}
+                className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] p-3"
               >
-                {signal}
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--background-muted)] text-sm font-semibold text-[var(--accent-ink)]">
+                  {index + 1}
+                </span>
+                <p className="text-sm leading-6 text-[var(--text-secondary)]">{item}</p>
               </div>
             ))}
           </div>
-        </section>
-      )}
+        </SectionCard>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
-        <DashboardCard title="Lesson rhythm">
+        <SectionCard
+          title="Cost and commitment"
+          description="Use this as a planning guide before checking current availability with Volna School."
+          tone="brand"
+        >
           <div className="space-y-4">
-            <p>
-              Volna works best when lessons are not isolated events. The platform gives
-              students something to prepare, practise, and revisit between live sessions.
-            </p>
-
-            <div className="grid gap-3">
-              {lessonRhythm.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-2xl bg-[var(--background-muted)] px-4 py-3"
-                >
-                  <div className="font-semibold text-[var(--text-primary)]">
-                    {item.title}
-                  </div>
-                  <p className="mt-1">{item.description}</p>
-                </div>
-              ))}
+            <div className="app-soft-panel p-4">
+              <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
+                Group class guide
+              </div>
+              <div className="mt-2 text-3xl font-semibold text-[var(--text-primary)]">
+                £36 per teaching week
+              </div>
+              <p className="mt-2 app-text-body-muted">
+                Based on two 1-hour weekly lessons at £18 per hour. Volna normally
+                invoices by school term after the first free lesson.
+              </p>
             </div>
-          </div>
-        </DashboardCard>
 
-        <DashboardCard title="Cost guide and questions to ask">
-          <div className="space-y-3">
-            <p>
-              Before committing, ask Volna for the current GCSE Russian lesson options,
-              fees, timetable, group size, teacher availability, and whether a trial or
-              short intensive route is available.
-            </p>
-            <p>
-              Also confirm what is included: live teaching, homework, speaking practice,
-              writing feedback, assignment marking, and support with private-candidate
-              planning.
-            </p>
             <FeedbackBanner
-              tone="warning"
-              title="Exam entry is still separate"
-              description="Volna can support preparation, but families must confirm exam entry, tier, fees, deadlines, and speaking arrangements with their chosen exam centre."
+              tone="info"
+              title="Self-study is still the lower-cost route"
+              description="Choose self-study if you mainly need structured lessons and revision tools. Choose Volna if live teaching and accountability matter more."
             />
           </div>
-        </DashboardCard>
+        </SectionCard>
       </section>
 
-      <section>
-        <div className="mb-4">
-          <h2 className="app-heading-section">How it works with the platform</h2>
-          <p className="mt-2 max-w-2xl app-text-body-muted">
-            The platform should reduce guesswork between classes, not replace the teacher.
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {platformConnections.map((connection) => (
-            <DashboardCard key={connection}>
-              <p>{connection}</p>
-            </DashboardCard>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="mb-4">
-          <h2 className="app-heading-section">Next steps</h2>
-          <p className="mt-2 max-w-2xl app-text-body-muted">
-            Choose the route that matches the student&apos;s current need.
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          {nextSteps.map((step) => (
-            <DashboardCard key={step.title} title={step.title}>
+      <SectionCard
+        title="How live teaching connects to the platform"
+        description="Volna support should feel like an extension of the app, not a separate maze."
+        tone="student"
+      >
+        <div className="grid gap-3 md:grid-cols-3">
+          {platformConnections.map((item) => (
+            <DashboardCard key={item.title} className="h-full">
               <div className="space-y-4">
-                <p>{step.description}</p>
-                <Button
-                  href={step.href}
-                  target={step.external ? "_blank" : undefined}
-                  rel={step.external ? "noreferrer" : undefined}
-                  variant={step.variant}
-                  size="sm"
-                  icon={step.icon}
-                >
-                  {step.label}
+                <Badge tone="muted" icon={item.icon}>
+                  {item.title}
+                </Badge>
+                <p className="app-text-body-muted">{item.description}</p>
+                <Button href={item.href} variant="secondary" size="sm" icon={item.icon}>
+                  {item.label}
                 </Button>
               </div>
             </DashboardCard>
           ))}
         </div>
+      </SectionCard>
+
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.7fr)]">
+        <DashboardCard title="Next steps">
+          <div className="space-y-4">
+            <p>
+              If live teaching sounds right, check the current GCSE Russian class route
+              with Volna School. If you are not ready for that commitment, compare the
+              self-study course plans first.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                href={VOLNA_GCSE_URL}
+                target="_blank"
+                rel="noreferrer"
+                variant="primary"
+                icon="externalLink"
+              >
+                Visit Volna
+              </Button>
+              <Button href="/account/billing" variant="secondary" icon="billing">
+                Compare self-study
+              </Button>
+              <Button href="/courses" variant="secondary" icon="courses">
+                Browse courses
+              </Button>
+            </div>
+          </div>
+        </DashboardCard>
+
+        <DashboardCard title="Already enrolled?">
+          <div className="space-y-3">
+            <p>
+              Your main Volna workflow lives in assignments, feedback, and dashboard next
+              actions.
+            </p>
+            <Button href="/assignments" variant="secondary" size="sm" icon="assignments">
+              Open assignments
+            </Button>
+          </div>
+        </DashboardCard>
       </section>
     </main>
   );

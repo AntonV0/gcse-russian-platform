@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
 import { RussianText } from "@/components/typography/russian-text";
-import { getButtonClassName } from "@/components/ui/button-styles";
 
 type VocabularyStudyItem = {
   russian: string;
@@ -54,66 +54,61 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2">
-          <button
+        <div className="flex flex-wrap gap-1 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-1 shadow-[var(--shadow-xs)]">
+          <Button
             type="button"
             onClick={() => setStudyMode("list")}
-            className={getButtonClassName({
-              variant: studyMode === "list" ? "primary" : "secondary",
-              size: "sm",
-            })}
+            variant={studyMode === "list" ? "primary" : "quiet"}
+            size="sm"
+            icon="list"
             aria-pressed={studyMode === "list"}
           >
-            <AppIcon icon="list" size={15} />
-            <span>List</span>
-          </button>
-          <button
+            List
+          </Button>
+          <Button
             type="button"
             onClick={() => {
               setStudyMode("cards");
               setIsCardAnswerVisible(false);
             }}
-            className={getButtonClassName({
-              variant: studyMode === "cards" ? "primary" : "secondary",
-              size: "sm",
-            })}
+            variant={studyMode === "cards" ? "primary" : "quiet"}
+            size="sm"
+            icon="brain"
             aria-pressed={studyMode === "cards"}
           >
-            <AppIcon icon="brain" size={15} />
-            <span>Flashcards</span>
-          </button>
+            Flashcards
+          </Button>
         </div>
 
         {studyMode === "list" ? (
           <div className="flex flex-wrap gap-2">
-            <button
+            <Button
               type="button"
               onClick={() => {
                 setShowAllEnglish((isShowing) => !isShowing);
                 setRevealedItemKeys(new Set());
               }}
-              className={getButtonClassName({
-                variant: showAllEnglish ? "secondary" : "primary",
-                size: "sm",
-              })}
+              variant={showAllEnglish ? "secondary" : "primary"}
+              size="sm"
+              icon={showAllEnglish ? "hidden" : "preview"}
             >
-              <AppIcon icon={showAllEnglish ? "hidden" : "preview"} size={15} />
-              <span>{showAllEnglish ? "Hide English" : "Show English"}</span>
-            </button>
+              {showAllEnglish ? "Hide English" : "Show English"}
+            </Button>
 
             {!showAllEnglish ? (
-              <button
+              <Button
                 type="button"
                 onClick={() =>
                   setRevealedItemKeys(
                     new Set(items.map((item, index) => getItemKey(item, index)))
                   )
                 }
-                className={getButtonClassName({ variant: "secondary", size: "sm" })}
+                variant="secondary"
+                size="sm"
+                icon="success"
               >
-                <AppIcon icon="success" size={15} />
-                <span>Reveal all</span>
-              </button>
+                Reveal all
+              </Button>
             ) : null}
           </div>
         ) : null}
@@ -132,32 +127,27 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
               Card {currentCardIndex + 1} of {items.length}
             </div>
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
                 type="button"
                 onClick={() => showCard(currentCardIndex - 1)}
                 disabled={currentCardIndex === 0}
-                className={getButtonClassName({
-                  variant: "secondary",
-                  size: "sm",
-                  disabled: currentCardIndex === 0,
-                })}
+                variant="secondary"
+                size="sm"
+                icon="back"
               >
-                <AppIcon icon="back" size={15} />
-                <span>Previous</span>
-              </button>
-              <button
+                Previous
+              </Button>
+              <Button
                 type="button"
                 onClick={() => showCard(currentCardIndex + 1)}
                 disabled={currentCardIndex >= items.length - 1}
-                className={getButtonClassName({
-                  variant: "secondary",
-                  size: "sm",
-                  disabled: currentCardIndex >= items.length - 1,
-                })}
+                variant="secondary"
+                size="sm"
+                icon="next"
+                iconPosition="right"
               >
-                <span>Next</span>
-                <AppIcon icon="next" size={15} />
-              </button>
+                Next
+              </Button>
             </div>
           </div>
 
@@ -178,7 +168,7 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
           <button
             type="button"
             onClick={() => setIsCardAnswerVisible((isVisible) => !isVisible)}
-            className="app-focus-ring block w-full px-5 py-8 text-left sm:px-7 sm:py-10"
+            className="app-focus-ring block w-full px-5 py-8 text-left transition hover:bg-[color-mix(in_srgb,var(--accent)_4%,transparent)] sm:px-7 sm:py-10"
           >
             <span className="flex min-h-[13rem] flex-col justify-center gap-6">
               <span className="space-y-3">
@@ -205,7 +195,7 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
                     </span>
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent-ink)]">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--accent)_18%,transparent)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_8%,transparent)]">
                     <AppIcon icon="preview" size={16} />
                     Check answer
                   </span>
@@ -248,18 +238,16 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
                     {isEnglishVisible ? (
                       <div className="text-[var(--text-secondary)]">{item.english}</div>
                     ) : (
-                      <button
+                      <Button
                         type="button"
                         onClick={() => toggleItem(itemKey)}
-                        className={getButtonClassName({
-                          variant: "secondary",
-                          size: "sm",
-                          className: "w-full justify-center sm:w-auto",
-                        })}
+                        variant="secondary"
+                        size="sm"
+                        icon="preview"
+                        className="w-full justify-center sm:w-auto"
                       >
-                        <AppIcon icon="preview" size={15} />
-                        <span>Check</span>
-                      </button>
+                        Check
+                      </Button>
                     )}
                   </div>
                 </div>

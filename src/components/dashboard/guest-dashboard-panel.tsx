@@ -6,7 +6,8 @@ import VisualPlaceholder from "@/components/ui/visual-placeholder";
 const previewCards = [
   {
     title: "Past papers",
-    description: "Free Pearson paper links stay open so families can use official resources.",
+    description:
+      "Free Pearson paper links stay open so families can use official resources.",
     href: "/past-papers",
     label: "Open past papers",
   },
@@ -67,8 +68,8 @@ export function GuestDashboardPanel() {
       <DashboardCard title="Course lessons are trial-only">
         <div className="space-y-3">
           <p>
-            Course paths, modules, and lesson content unlock after signup so your trial can
-            save the tier decision and lesson progress.
+            Course paths, modules, and lesson content unlock after signup so your trial
+            can save the tier decision and lesson progress.
           </p>
           <Button href="/signup" variant="primary" icon="create">
             Create trial account

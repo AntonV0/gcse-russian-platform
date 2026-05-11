@@ -102,8 +102,12 @@ export default function CheckoutButton({
         disabled={isLoading}
         variant={variant}
         className="w-full"
+        icon={isUpgrade ? "billing" : "next"}
+        iconPosition="right"
+        loading={isLoading}
+        loadingLabel="Redirecting..."
       >
-        {isLoading ? "Redirecting..." : children}
+        {children}
       </Button>
 
       {helperText ? (

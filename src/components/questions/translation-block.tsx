@@ -205,13 +205,11 @@ export default function TranslationBlock({
             }
             variant="primary"
             size="sm"
-            icon={isSubmitting ? "pending" : "confirm"}
+            icon="confirm"
+            loading={isSubmitting}
+            loadingLabel="Saving..."
           >
-            {resolvedHasSubmitted
-              ? "Submitted"
-              : isSubmitting
-                ? "Saving..."
-                : "Check answer"}
+            {resolvedHasSubmitted ? "Submitted" : "Check answer"}
           </Button>
         </div>
       </div>

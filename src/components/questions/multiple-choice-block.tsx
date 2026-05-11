@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import QuestionCard from "@/components/questions/question-card";
+import QuestionChoiceButton from "@/components/questions/question-choice-button";
 import QuestionFeedback from "@/components/questions/question-feedback";
 import Button from "@/components/ui/button";
 
@@ -115,18 +116,12 @@ export default function MultipleChoiceBlock({
           const isSelected = resolvedSelectedOptionId === option.id;
 
           return (
-            <button
+            <QuestionChoiceButton
               key={option.id}
-              type="button"
               onClick={() => handleSelect(option.id)}
               disabled={resolvedHasSubmitted || isSubmitting}
-              className={[
-                "app-answer-option min-h-12 w-full rounded-xl border px-4 py-3 text-left",
-                isSelected ? "app-answer-option-selected" : "",
-                resolvedHasSubmitted || isSubmitting
-                  ? "cursor-default"
-                  : "cursor-pointer",
-              ].join(" ")}
+              selected={isSelected}
+              display="option"
             >
               <div className="flex items-start gap-3">
                 <span className="app-question-number-pill mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-semibold">
@@ -134,7 +129,7 @@ export default function MultipleChoiceBlock({
                 </span>
                 <span className="min-w-0 [overflow-wrap:anywhere]">{option.text}</span>
               </div>
-            </button>
+            </QuestionChoiceButton>
           );
         })}
       </div>
@@ -146,13 +141,11 @@ export default function MultipleChoiceBlock({
           disabled={!resolvedSelectedOptionId || resolvedHasSubmitted || isSubmitting}
           variant="primary"
           size="sm"
-          icon={isSubmitting ? "pending" : "confirm"}
+          icon="confirm"
+          loading={isSubmitting}
+          loadingLabel="Saving..."
         >
-          {resolvedHasSubmitted
-            ? "Submitted"
-            : isSubmitting
-              ? "Saving..."
-              : "Check answer"}
+          {resolvedHasSubmitted ? "Submitted" : "Check answer"}
         </Button>
       </div>
     </QuestionCard>

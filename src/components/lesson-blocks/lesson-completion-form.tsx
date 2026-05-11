@@ -2,7 +2,7 @@ import {
   markLessonComplete,
   markLessonIncomplete,
 } from "@/app/actions/progress/progress";
-import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 
 type LessonCompletionFormProps = {
   courseSlug: string;
@@ -37,9 +37,13 @@ export default function LessonCompletionForm({
           <input type="hidden" name="variantSlug" value={variantSlug} />
           <input type="hidden" name="moduleSlug" value={moduleSlug} />
           <input type="hidden" name="lessonSlug" value={lessonSlug} />
-          <Button type="submit" variant="secondary" size="sm" icon="refresh">
-            Mark incomplete
-          </Button>
+          <LoadingButton
+            idleLabel="Mark incomplete"
+            pendingLabel="Saving..."
+            variant="secondary"
+            size="sm"
+            idleIcon="refresh"
+          />
         </form>
       ) : (
         <form action={markLessonComplete}>
@@ -47,15 +51,14 @@ export default function LessonCompletionForm({
           <input type="hidden" name="variantSlug" value={variantSlug} />
           <input type="hidden" name="moduleSlug" value={moduleSlug} />
           <input type="hidden" name="lessonSlug" value={lessonSlug} />
-          <Button
-            type="submit"
+          <LoadingButton
+            idleLabel="Mark complete"
+            pendingLabel="Saving..."
             variant="primary"
             size="sm"
-            icon="completed"
+            idleIcon="completed"
             disabled={!canComplete}
-          >
-            Mark complete
-          </Button>
+          />
         </form>
       )}
     </div>

@@ -1,5 +1,6 @@
-import Link from "next/link";
+import ActionPill from "@/components/ui/action-pill";
 import AppIcon from "@/components/ui/app-icon";
+import PendingLinkCard from "@/components/ui/pending-link-card";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 const accountLinks: {
@@ -43,10 +44,12 @@ export function AccountQuickLinks() {
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       {accountLinks.map((item) => (
-        <Link
+        <PendingLinkCard
           key={item.href}
           href={item.href}
-          className="app-card app-card-hover group flex min-h-[166px] flex-col justify-between gap-5 p-4 no-underline sm:p-5"
+          className="app-card app-card-hover app-card-interaction-subtle group flex min-h-[166px] flex-col justify-between gap-5 p-4 no-underline sm:p-5"
+          ariaLabel={item.label}
+          pendingLabel="Opening..."
         >
           <span className="flex items-start justify-between gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[var(--accent-ink)]">
@@ -65,11 +68,8 @@ export function AccountQuickLinks() {
             </span>
           </span>
 
-          <span className="inline-flex items-center gap-2 text-sm font-semibold app-brand-text">
-            {item.label}
-            <AppIcon icon="arrowRight" size={15} />
-          </span>
-        </Link>
+          <ActionPill>{item.label}</ActionPill>
+        </PendingLinkCard>
       ))}
     </section>
   );

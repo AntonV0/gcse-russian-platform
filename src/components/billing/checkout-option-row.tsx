@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import AppIcon from "@/components/ui/app-icon";
+import { PricingOptionButton } from "@/components/billing/pricing/pricing-option-button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 
 type CheckoutOptionRowProps = {
@@ -64,51 +64,17 @@ export default function CheckoutOptionRow({
 
   return (
     <div className="space-y-2">
-      <button
-        type="button"
+      <PricingOptionButton
         onClick={handleCheckout}
         disabled={isLoading}
-        className={[
-          "app-focus-ring group flex w-full flex-col gap-3 rounded-xl border px-3.5 py-3 text-left transition sm:flex-row sm:items-center sm:justify-between",
-          isLoading
-            ? "cursor-not-allowed opacity-70"
-            : "hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
-          recommended
-            ? "border-[var(--accent-selected-border)] [background:var(--accent-gradient-selected)] shadow-[0_10px_24px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
-            : "border-[var(--border-subtle)] bg-[var(--background-elevated)] hover:border-[var(--border-strong)]",
-        ].join(" ")}
-      >
-        <span className="min-w-0 space-y-1">
-          <span className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-bold text-[var(--text-primary)]">{label}</span>
-            {recommended ? (
-              <span className="rounded-full [background:var(--accent-gradient-fill)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--accent-on-fill)]">
-                Recommended
-              </span>
-            ) : null}
-          </span>
-          <span className="block text-xs leading-5 text-[var(--text-secondary)]">
-            {meta}
-          </span>
-        </span>
-
-        <span className="flex shrink-0 items-center justify-between gap-3 sm:justify-end">
-          <span className="text-sm font-extrabold text-[var(--text-primary)]">
-            {priceLabel}
-          </span>
-          <span
-            className={[
-              "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition",
-              recommended
-                ? "border-transparent [background:var(--accent-gradient-fill)] text-[var(--accent-on-fill)]"
-                : "border-[var(--border)] bg-[var(--background-muted)] text-[var(--text-secondary)] group-hover:text-[var(--accent-ink)]",
-            ].join(" ")}
-            aria-hidden="true"
-          >
-            <AppIcon icon={isLoading ? "refresh" : "next"} size={15} />
-          </span>
-        </span>
-      </button>
+        label={label}
+        meta={meta}
+        badgeLabel={recommended ? "Recommended" : undefined}
+        trailingLabel={priceLabel}
+        recommended={recommended}
+        loading={isLoading}
+        loadingLabel="Opening checkout..."
+      />
 
       {errorMessage ? <FeedbackBanner tone="danger" description={errorMessage} /> : null}
     </div>

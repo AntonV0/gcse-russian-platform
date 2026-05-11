@@ -46,8 +46,7 @@ function getStepStatus({
       icon: "completed" as const,
       rowClassName:
         "border-transparent text-[var(--text-primary)] hover:border-[var(--border-subtle)] hover:bg-[var(--background-muted)]/70",
-      nodeClassName:
-        "border-transparent bg-transparent text-[var(--accent-fill)]",
+      nodeClassName: "border-transparent bg-transparent text-[var(--accent-fill)]",
       badgeClassName:
         "border-[var(--border-subtle)] bg-[var(--background-muted)] text-[var(--text-muted)]",
       segmentClassName:
@@ -74,8 +73,7 @@ function getStepStatus({
     label: "Locked",
     icon: "lock" as const,
     rowClassName: "border-transparent text-[var(--text-muted)] opacity-70",
-    nodeClassName:
-      "border-transparent bg-transparent text-[var(--text-muted)]",
+    nodeClassName: "border-transparent bg-transparent text-[var(--text-muted)]",
     badgeClassName:
       "border-[var(--border-subtle)] bg-[var(--background-muted)] text-[var(--text-muted)]",
     segmentClassName:
@@ -128,9 +126,7 @@ export function StepTracker({
       <div className="px-2 pb-2 pt-1.5">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="app-text-meta app-text-soft">
-              Sections
-            </p>
+            <p className="app-text-meta app-text-soft">Sections</p>
             <p className="mt-0.5 text-sm font-semibold leading-tight text-[var(--text-primary)]">
               {currentStepIndex + 1} of {sections.length}
             </p>

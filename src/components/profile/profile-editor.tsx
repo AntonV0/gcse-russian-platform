@@ -1,19 +1,24 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { updateStudentProfile } from "@/app/actions/auth/auth";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-
-export type ProfileAvatarOption = {
-  key: string;
-  emoji: string;
-  label: string;
-  russian: string;
-};
+import StudentAvatar from "@/components/profile/student-avatar";
+import {
+  DEFAULT_AVATAR_BACKGROUND_KEY,
+  DEFAULT_AVATAR_FRAME_KEY,
+  avatarBackgroundOptions,
+  avatarFrameOptions,
+  getSafeAvatarBackgroundKey,
+  getSafeAvatarFrameKey,
+  type AvatarFrameOption,
+  type AvatarBackgroundKey,
+  type AvatarFrameKey,
+  type ProfileAvatarOption,
+} from "@/lib/profile/avatar-customization";
 
 export type ProfileLearningSnapshot = {
   roleLabel: string;
@@ -33,10 +38,27 @@ type ProfileEditorProps = {
   initialFullName: string | null | undefined;
   initialDisplayName: string | null | undefined;
   initialAvatarKey: string | null | undefined;
+  initialAvatarBackgroundKey: AvatarBackgroundKey;
+  initialAvatarFrameKey: AvatarFrameKey;
+  unlockedAvatarFrameKeys: AvatarFrameKey[];
   learningSnapshot: ProfileLearningSnapshot;
   profileUpdated?: boolean;
 };
 
+type SavedProfileResponse = {
+  savedProfile?: {
+    fullName: string;
+    displayName: string;
+    avatarKey: string;
+    avatarBackgroundKey: string;
+    avatarFrameKey: string;
+  };
+  message?: string;
+};
+
+const PROFILE_SAVE_TIMEOUT_MS = 10000;
+const PROFILE_RECONCILE_TIMEOUT_MS = 6000;
+const PROFILE_UPDATED_EVENT = "profile:updated";
 const AVATARS_PER_PAGE = 12;
 
 const defaultAvatar = {
@@ -107,19 +129,133 @@ function getAvatarPageForKey(avatars: ProfileAvatarOption[], avatarKey: string) 
   return selectedIndex >= 0 ? Math.floor(selectedIndex / AVATARS_PER_PAGE) : 0;
 }
 
+async function fetchProfileJson(url: string, options: RequestInit, timeoutMs: number) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+        ...options.headers,
+      },
+      signal: controller.signal,
+    });
+    const payload = (await response.json().catch(() => ({}))) as SavedProfileResponse;
+
+    return { response, payload };
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+function ProfileSubmitButton({
+  intent,
+  hasChanges,
+  idleLabel,
+  pending,
+  size = "md",
+  className,
+}: {
+  intent: "all" | "details" | "avatar";
+  hasChanges: boolean;
+  idleLabel: string;
+  pending: boolean;
+  size?: "sm" | "md";
+  className?: string;
+}) {
+  if (!hasChanges) {
+    return null;
+  }
+
+  return (
+    <Button
+      type="submit"
+      name="intent"
+      value={intent}
+      variant="primary"
+      size={size}
+      className={className}
+      icon="save"
+      disabled={pending}
+      loading={pending}
+      loadingLabel="Saving..."
+    >
+      {idleLabel}
+    </Button>
+  );
+}
+
+function getFrameProgress(
+  frameKey: AvatarFrameKey,
+  snapshot: ProfileLearningSnapshot,
+  isUnlocked: boolean
+) {
+  if (frameKey === DEFAULT_AVATAR_FRAME_KEY) {
+    return {
+      label: "Always available",
+      percent: 100,
+    };
+  }
+
+  if (frameKey === "course-complete") {
+    const totalLessons = Math.max(0, snapshot.totalLessons);
+    const completedLessons = Math.max(0, snapshot.completedLessons);
+    const percent =
+      totalLessons > 0
+        ? Math.min(100, Math.round((completedLessons / totalLessons) * 100))
+        : 0;
+
+    return {
+      label: isUnlocked
+        ? "Unlocked"
+        : totalLessons > 0
+          ? `${Math.min(completedLessons, totalLessons)} / ${totalLessons} lessons`
+          : "Complete all lessons",
+      percent: isUnlocked ? 100 : percent,
+    };
+  }
+
+  const targetLessons =
+    frameKey === "first-lesson" ? 1 : frameKey === "five-lessons" ? 5 : 10;
+  const completedLessons = Math.max(0, snapshot.completedLessons);
+
+  return {
+    label: isUnlocked
+      ? "Unlocked"
+      : `${Math.min(completedLessons, targetLessons)} / ${targetLessons} lessons`,
+    percent: isUnlocked
+      ? 100
+      : Math.min(100, Math.round((completedLessons / targetLessons) * 100)),
+  };
+}
+
 function ProfilePreviewCard({
   avatar,
+  backgroundKey,
   displayName,
+  frameKey,
   hasChanges,
   initials,
+  pending,
+  earnedFrames,
   compact = false,
 }: {
   avatar: ProfileAvatarOption;
+  backgroundKey: AvatarBackgroundKey;
   displayName: string;
+  frameKey: AvatarFrameKey;
   hasChanges: boolean;
   initials: string;
+  pending: boolean;
+  earnedFrames: AvatarFrameOption[];
   compact?: boolean;
 }) {
+  const equippedFrame = avatarFrameOptions.find((frame) => frame.key === frameKey);
+
   return (
     <div
       className={["app-feature-panel-preview", compact ? "p-4" : "p-5"].join(" ")}
@@ -138,9 +274,14 @@ function ProfilePreviewCard({
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] text-5xl shadow-[0_10px_24px_color-mix(in_srgb,var(--accent)_7%,transparent)]">
-          <AvatarMark avatar={avatar} initials={initials} />
-        </span>
+        <StudentAvatar
+          avatar={avatar}
+          initials={initials}
+          backgroundKey={backgroundKey}
+          frameKey={frameKey}
+          size="lg"
+          aria-label={`${displayName} avatar preview`}
+        />
 
         <div className="min-w-0">
           <div className="text-xl font-bold text-[var(--text-primary)]">
@@ -152,22 +293,58 @@ function ProfilePreviewCard({
         </div>
       </div>
 
+      <div className="mt-5 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
+              Achievement borders
+            </div>
+            <p className="mt-1 text-sm app-text-muted">
+              {earnedFrames.length > 0
+                ? `${earnedFrames.length} earned${
+                    equippedFrame && equippedFrame.key !== DEFAULT_AVATAR_FRAME_KEY
+                      ? `, ${equippedFrame.label.toLowerCase()} equipped`
+                      : ""
+                  }.`
+                : "Complete lessons to unlock your first border."}
+            </p>
+          </div>
+          <div className="flex -space-x-2">
+            {(earnedFrames.length > 0
+              ? earnedFrames
+              : avatarFrameOptions.slice(1, 2)
+            ).map((frame) => (
+              <StudentAvatar
+                key={frame.key}
+                avatar={avatar}
+                initials={initials}
+                backgroundKey={backgroundKey}
+                frameKey={frame.key}
+                size="xs"
+                className={
+                  earnedFrames.length > 0
+                    ? "ring-2 ring-[var(--background-muted)]"
+                    : "opacity-55"
+                }
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
       {hasChanges ? (
         <div className="mt-5 border-t border-[var(--border-subtle)] pt-4">
           <div className="flex flex-col gap-3 rounded-xl border border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-semibold text-[var(--text-primary)]">
               Ready to save this profile?
             </p>
-            <Button
-              type="submit"
-              name="intent"
-              value="all"
-              variant="primary"
+            <ProfileSubmitButton
+              intent="all"
+              hasChanges
+              idleLabel="Save changes"
+              pending={pending}
               size="sm"
-              icon="save"
-            >
-              Save changes
-            </Button>
+            />
           </div>
         </div>
       ) : null}
@@ -185,6 +362,18 @@ function ProfileUpdatedInline() {
       <p className="mt-0.5 text-sm app-text-muted">
         Your saved name and avatar have been updated.
       </p>
+    </div>
+  );
+}
+
+function ProfileActionErrorInline({ message }: { message: string }) {
+  return (
+    <div className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-surface)] px-3.5 py-2.5 text-[var(--danger-text)] shadow-[0_8px_18px_var(--danger-shadow)]">
+      <div className="flex items-center gap-2 text-sm font-semibold">
+        <AppIcon icon="warning" size={16} strokeWidth={2.2} />
+        Profile update failed
+      </div>
+      <p className="mt-0.5 text-sm">{message}</p>
     </div>
   );
 }
@@ -209,7 +398,12 @@ function LearningSnapshotCard({ snapshot }: { snapshot: ProfileLearningSnapshot 
         </div>
 
         {snapshot.nextLessonHref ? (
-          <Button href={snapshot.nextLessonHref} variant="secondary" icon="next">
+          <Button
+            href={snapshot.nextLessonHref}
+            variant="journey"
+            icon="next"
+            iconPosition="right"
+          >
             Continue learning
           </Button>
         ) : (
@@ -291,12 +485,33 @@ export default function ProfileEditor({
   initialFullName,
   initialDisplayName,
   initialAvatarKey,
+  initialAvatarBackgroundKey,
+  initialAvatarFrameKey,
+  unlockedAvatarFrameKeys,
   learningSnapshot,
   profileUpdated = false,
 }: ProfileEditorProps) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [savedFullName, setSavedFullName] = useState(initialFullName ?? "");
+  const [savedDisplayName, setSavedDisplayName] = useState(initialDisplayName ?? "");
+  const [savedAvatarKey, setSavedAvatarKey] = useState(initialAvatarKey ?? "");
+  const [savedAvatarBackgroundKey, setSavedAvatarBackgroundKey] =
+    useState<AvatarBackgroundKey>(
+      initialAvatarBackgroundKey ?? DEFAULT_AVATAR_BACKGROUND_KEY
+    );
+  const [savedAvatarFrameKey, setSavedAvatarFrameKey] = useState<AvatarFrameKey>(
+    initialAvatarFrameKey ?? DEFAULT_AVATAR_FRAME_KEY
+  );
   const [fullName, setFullName] = useState(initialFullName ?? "");
   const [displayName, setDisplayName] = useState(initialDisplayName ?? "");
   const [avatarKey, setAvatarKey] = useState(initialAvatarKey ?? "");
+  const [avatarBackgroundKey, setAvatarBackgroundKey] = useState<AvatarBackgroundKey>(
+    initialAvatarBackgroundKey ?? DEFAULT_AVATAR_BACKGROUND_KEY
+  );
+  const [avatarFrameKey, setAvatarFrameKey] = useState<AvatarFrameKey>(
+    initialAvatarFrameKey ?? DEFAULT_AVATAR_FRAME_KEY
+  );
   const [showProfileUpdated, setShowProfileUpdated] = useState(profileUpdated);
   const [avatarPage, setAvatarPage] = useState(() => {
     return getAvatarPageForKey(avatars, initialAvatarKey ?? "");
@@ -314,23 +529,114 @@ export default function ProfileEditor({
   );
   const previewName = displayName.trim() || fullName.trim() || "Student";
   const initials = getProfileInitials(fullName || displayName, email);
+  const unlockedFrameKeys = useMemo(
+    () => new Set<AvatarFrameKey>([...unlockedAvatarFrameKeys, savedAvatarFrameKey]),
+    [savedAvatarFrameKey, unlockedAvatarFrameKeys]
+  );
+  const earnedFrames = avatarFrameOptions.filter(
+    (frame) => frame.key !== DEFAULT_AVATAR_FRAME_KEY && unlockedFrameKeys.has(frame.key)
+  );
   const hasDetailsChanges =
-    fullName !== (initialFullName ?? "") || displayName !== (initialDisplayName ?? "");
-  const hasAvatarChanges = avatarKey !== (initialAvatarKey ?? "");
+    fullName !== savedFullName || displayName !== savedDisplayName;
+  const hasAvatarChanges =
+    avatarKey !== savedAvatarKey ||
+    avatarBackgroundKey !== savedAvatarBackgroundKey ||
+    avatarFrameKey !== savedAvatarFrameKey;
   const hasAnyChanges = hasDetailsChanges || hasAvatarChanges;
   const resetDetailsChanges = () => {
-    setFullName(initialFullName ?? "");
-    setDisplayName(initialDisplayName ?? "");
+    setFullName(savedFullName);
+    setDisplayName(savedDisplayName);
   };
   const resetAvatarChanges = () => {
-    const savedAvatarKey = initialAvatarKey ?? "";
-
     setAvatarKey(savedAvatarKey);
+    setAvatarBackgroundKey(savedAvatarBackgroundKey);
+    setAvatarFrameKey(savedAvatarFrameKey);
     setAvatarPage(getAvatarPageForKey(avatars, savedAvatarKey));
+  };
+  const shouldShowProfileUpdated = showProfileUpdated && !hasAnyChanges;
+
+  const handleProfileSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (isSaving || !hasAnyChanges) {
+      return;
+    }
+
+    const formData = new FormData(event.currentTarget);
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      let result: Awaited<ReturnType<typeof fetchProfileJson>>;
+
+      try {
+        result = await fetchProfileJson(
+          "/api/profile",
+          {
+            method: "POST",
+            body: formData,
+          },
+          PROFILE_SAVE_TIMEOUT_MS
+        );
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          throw error;
+        }
+
+        await new Promise((resolve) => window.setTimeout(resolve, 800));
+        result = await fetchProfileJson(
+          `/api/profile?reconcile=${Date.now()}`,
+          {
+            method: "GET",
+          },
+          PROFILE_RECONCILE_TIMEOUT_MS
+        );
+      }
+
+      const { response, payload } = result;
+
+      if (!response.ok || !payload.savedProfile) {
+        throw new Error(payload.message || "Profile update failed.");
+      }
+
+      const savedProfile = payload.savedProfile;
+      const nextAvatarBackgroundKey = getSafeAvatarBackgroundKey(
+        savedProfile.avatarBackgroundKey
+      );
+      const nextAvatarFrameKey = getSafeAvatarFrameKey(savedProfile.avatarFrameKey);
+
+      setFullName(savedProfile.fullName);
+      setDisplayName(savedProfile.displayName);
+      setAvatarKey(savedProfile.avatarKey);
+      setAvatarBackgroundKey(nextAvatarBackgroundKey);
+      setAvatarFrameKey(nextAvatarFrameKey);
+      setSavedFullName(savedProfile.fullName);
+      setSavedDisplayName(savedProfile.displayName);
+      setSavedAvatarKey(savedProfile.avatarKey);
+      setSavedAvatarBackgroundKey(nextAvatarBackgroundKey);
+      setSavedAvatarFrameKey(nextAvatarFrameKey);
+      setAvatarPage(getAvatarPageForKey(avatars, savedProfile.avatarKey));
+      setShowProfileUpdated(true);
+      window.dispatchEvent(
+        new CustomEvent(PROFILE_UPDATED_EVENT, {
+          detail: savedProfile,
+        })
+      );
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete("success");
+      url.searchParams.delete("error");
+      window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Profile update failed.");
+      setShowProfileUpdated(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   useEffect(() => {
-    if (!profileUpdated) {
+    if (!shouldShowProfileUpdated) {
       return;
     }
 
@@ -343,10 +649,10 @@ export default function ProfileEditor({
     }, 5200);
 
     return () => window.clearTimeout(timeoutId);
-  }, [profileUpdated]);
+  }, [shouldShowProfileUpdated]);
 
   return (
-    <form action={updateStudentProfile} className="space-y-6 xl:-mb-6">
+    <form onSubmit={handleProfileSubmit} className="space-y-6 xl:-mb-6">
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-center">
           <div className="flex min-w-0 flex-col justify-center gap-4">
@@ -366,7 +672,8 @@ export default function ProfileEditor({
               </p>
             </div>
 
-            {showProfileUpdated ? <ProfileUpdatedInline /> : null}
+            {shouldShowProfileUpdated ? <ProfileUpdatedInline /> : null}
+            {saveError ? <ProfileActionErrorInline message={saveError} /> : null}
 
             <div className="app-feature-panel-actions">
               <Button href="#profile-details" variant="secondary" size="sm" icon="user">
@@ -381,9 +688,13 @@ export default function ProfileEditor({
 
           <ProfilePreviewCard
             avatar={selectedAvatar}
+            backgroundKey={avatarBackgroundKey}
             displayName={previewName}
+            frameKey={avatarFrameKey}
             hasChanges={hasAnyChanges}
             initials={initials}
+            pending={isSaving}
+            earnedFrames={earnedFrames}
           />
         </div>
       </section>
@@ -466,17 +777,12 @@ export default function ProfileEditor({
           </div>
 
           <div className="flex flex-wrap gap-2 sm:justify-end">
-            <Button
-              type="submit"
-              name="intent"
-              value="details"
-              variant={hasDetailsChanges ? "primary" : "quiet"}
-              size="md"
-              icon={hasDetailsChanges ? "save" : "completed"}
-              disabled={!hasDetailsChanges}
-            >
-              {hasDetailsChanges ? "Save profile details" : "Saved"}
-            </Button>
+            <ProfileSubmitButton
+              intent="details"
+              hasChanges={hasDetailsChanges}
+              idleLabel="Save profile details"
+              pending={isSaving}
+            />
 
             {hasDetailsChanges ? (
               <Button
@@ -554,7 +860,7 @@ export default function ProfileEditor({
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4">
           {visibleAvatars.map((avatar) => {
             const isSelected = avatarKey === avatar.key;
 
@@ -562,8 +868,7 @@ export default function ProfileEditor({
               <label
                 key={avatar.key}
                 className={[
-                  "app-focus-ring app-card flex cursor-pointer items-center gap-3 rounded-xl p-3 transition",
-                  "hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
+                  "app-focus-ring app-card app-card-interaction-subtle flex cursor-pointer items-center gap-2 rounded-xl p-2 sm:gap-3 sm:p-3",
                   isSelected ? "app-selected-surface" : "",
                 ].join(" ")}
               >
@@ -576,14 +881,14 @@ export default function ProfileEditor({
                   className="sr-only"
                 />
 
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] bg-[var(--background-muted)] text-3xl shadow-[var(--shadow-xs)]">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] bg-[var(--background-muted)] text-2xl shadow-[var(--shadow-xs)] sm:h-14 sm:w-14 sm:text-3xl">
                   <AvatarMark avatar={avatar} initials={initials} />
                 </span>
 
                 <span className="min-w-0 flex-1">
                   <span
                     className={[
-                      "block truncate text-sm font-semibold",
+                      "block text-xs font-semibold leading-tight sm:truncate sm:text-sm",
                       isSelected
                         ? "text-[var(--accent-on-soft)]"
                         : "text-[var(--text-primary)]",
@@ -591,14 +896,17 @@ export default function ProfileEditor({
                   >
                     {avatar.label}
                   </span>
-                  <span lang="ru" className="mt-0.5 block truncate text-sm app-text-muted">
+                  <span
+                    lang="ru"
+                    className="mt-0.5 block text-xs leading-tight app-text-muted sm:truncate sm:text-sm"
+                  >
                     {avatar.russian}
                   </span>
                 </span>
 
                 <span
                   className={[
-                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition",
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition sm:h-7 sm:w-7",
                     isSelected
                       ? "border-[var(--accent-selected-border)] [background:var(--accent-gradient-fill)] text-[var(--accent-on-fill)] shadow-[0_8px_18px_var(--accent-decorative-glow)]"
                       : "border-[var(--border)] bg-[var(--background-muted)] text-transparent",
@@ -612,6 +920,162 @@ export default function ProfileEditor({
           })}
         </div>
 
+        <div className="space-y-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                  Avatar background
+                </h3>
+                <p className="mt-1 text-sm app-text-muted">
+                  Pick the colour behind your avatar mark.
+                </p>
+              </div>
+              <StudentAvatar
+                avatar={selectedAvatar}
+                initials={initials}
+                backgroundKey={avatarBackgroundKey}
+                frameKey={avatarFrameKey}
+                size="sm"
+                aria-label="Selected avatar background preview"
+              />
+            </div>
+
+            <div
+              className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7"
+              role="radiogroup"
+              aria-label="Avatar background colour"
+            >
+              {avatarBackgroundOptions.map((background) => {
+                const isSelected = avatarBackgroundKey === background.key;
+
+                return (
+                  <label
+                    key={background.key}
+                    className={[
+                      "app-focus-ring flex cursor-pointer items-center gap-2 rounded-lg border p-2 text-sm font-semibold transition",
+                      isSelected
+                        ? "border-[var(--accent-selected-border)] bg-[var(--accent-selected-bg)] text-[var(--accent-on-soft)]"
+                        : "border-[var(--border-subtle)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:border-[var(--accent-decorative-border)] hover:text-[var(--text-primary)]",
+                    ].join(" ")}
+                  >
+                    <input
+                      type="radio"
+                      name="avatarBackgroundKey"
+                      value={background.key}
+                      checked={isSelected}
+                      onChange={() => setAvatarBackgroundKey(background.key)}
+                      className="sr-only"
+                    />
+                    <span
+                      className="h-6 w-6 shrink-0 rounded-full border border-white/70 shadow-[0_0_0_1px_color-mix(in_srgb,var(--text-primary)_10%,transparent)]"
+                      style={{ background: background.background }}
+                      aria-hidden="true"
+                    />
+                    <span className="min-w-0 leading-tight">
+                      <span className="block truncate">{background.label}</span>
+                      <span
+                        lang="ru"
+                        className="block truncate text-[0.72rem] font-medium opacity-75"
+                      >
+                        {background.russian}
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+            <div>
+              <h3 className="text-base font-bold text-[var(--text-primary)]">
+                Achievement frame
+              </h3>
+              <p className="mt-1 text-sm app-text-muted">
+                Equip an unlocked border around your avatar.
+              </p>
+            </div>
+
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+              {avatarFrameOptions.map((frame) => {
+                const isUnlocked = unlockedFrameKeys.has(frame.key);
+                const isSelected = avatarFrameKey === frame.key;
+                const progress = getFrameProgress(
+                  frame.key,
+                  learningSnapshot,
+                  isUnlocked
+                );
+
+                return (
+                  <label
+                    key={frame.key}
+                    className={[
+                      "app-focus-ring flex min-h-24 gap-3 rounded-xl border p-3 transition",
+                      isUnlocked
+                        ? "cursor-pointer bg-[var(--background-elevated)] hover:border-[var(--accent-decorative-border)]"
+                        : "cursor-not-allowed bg-[color-mix(in_srgb,var(--background-muted)_78%,var(--background-elevated))] opacity-72",
+                      isSelected
+                        ? "border-[var(--accent-selected-border)] shadow-[0_10px_22px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
+                        : "border-[var(--border-subtle)]",
+                    ].join(" ")}
+                  >
+                    <input
+                      type="radio"
+                      name="avatarFrameKey"
+                      value={frame.key}
+                      checked={isSelected}
+                      disabled={!isUnlocked}
+                      onChange={() => {
+                        if (isUnlocked) {
+                          setAvatarFrameKey(frame.key);
+                        }
+                      }}
+                      className="sr-only"
+                    />
+                    <StudentAvatar
+                      avatar={selectedAvatar}
+                      initials={initials}
+                      backgroundKey={avatarBackgroundKey}
+                      frameKey={frame.key}
+                      size="sm"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2">
+                        <span className="text-sm font-bold leading-tight text-[var(--text-primary)]">
+                          {frame.label}
+                        </span>
+                        {!isUnlocked ? (
+                          <AppIcon
+                            icon="locked"
+                            size={13}
+                            className="text-[var(--text-muted)]"
+                          />
+                        ) : null}
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 app-text-muted">
+                        {isUnlocked ? frame.description : frame.requirementLabel}
+                      </span>
+                      <span className="mt-2 block">
+                        <span className="flex items-center justify-between gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.06em] text-[var(--text-muted)]">
+                          <span>{progress.label}</span>
+                          <span>{progress.percent}%</span>
+                        </span>
+                        <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-[var(--background-muted)]">
+                          <span
+                            className="block h-full rounded-full [background:var(--accent-gradient-fill)]"
+                            style={{ width: `${progress.percent}%` }}
+                          />
+                        </span>
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         <div
           className={[
             "flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between",
@@ -621,13 +1085,18 @@ export default function ProfileEditor({
           ].join(" ")}
         >
           <div className="flex items-center gap-3">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)] text-3xl shadow-[var(--shadow-xs)]">
-              <AvatarMark avatar={selectedAvatar} initials={initials} />
-            </span>
+            <StudentAvatar
+              avatar={selectedAvatar}
+              initials={initials}
+              backgroundKey={avatarBackgroundKey}
+              frameKey={avatarFrameKey}
+              size="sm"
+              aria-label="Current avatar appearance preview"
+            />
 
             <div className="min-w-0">
               <div className="text-sm font-semibold text-[var(--text-primary)]">
-                {hasAvatarChanges ? selectedAvatar.label : "Current avatar saved"}
+                {hasAvatarChanges ? "Avatar appearance ready" : "Current avatar saved"}
               </div>
               <div className="text-sm app-text-muted">
                 {hasAvatarChanges ? "Save this avatar to your profile." : "\u00a0"}
@@ -636,17 +1105,14 @@ export default function ProfileEditor({
           </div>
 
           <div className="flex flex-wrap gap-2 sm:justify-end">
-            <Button
-              type="submit"
-              name="intent"
-              value="avatar"
-              variant={hasAvatarChanges ? "primary" : "quiet"}
-              size="md"
-              icon={hasAvatarChanges ? "save" : "completed"}
-              disabled={!hasAvatarChanges}
-            >
-              {hasAvatarChanges ? "Save avatar" : "Saved"}
-            </Button>
+            {hasAvatarChanges ? (
+              <ProfileSubmitButton
+                intent="avatar"
+                hasChanges={hasAvatarChanges}
+                idleLabel="Save avatar"
+                pending={isSaving}
+              />
+            ) : null}
 
             {hasAvatarChanges ? (
               <Button
@@ -664,20 +1130,18 @@ export default function ProfileEditor({
 
       <LearningSnapshotCard snapshot={learningSnapshot} />
 
-      <div className="sticky bottom-3 z-20 flex justify-end xl:hidden">
-        <div className="rounded-xl border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)]/92 p-2 shadow-[var(--shadow-md)] backdrop-blur">
-          <Button
-            type="submit"
-            name="intent"
-            value="all"
-            variant={hasAnyChanges ? "primary" : "secondary"}
-            icon={hasAnyChanges ? "save" : "completed"}
-            disabled={!hasAnyChanges}
-          >
-            {hasAnyChanges ? "Save changes" : "Saved"}
-          </Button>
+      {hasAnyChanges ? (
+        <div className="sticky bottom-3 z-20 flex justify-end xl:hidden">
+          <div className="rounded-xl border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)]/92 p-2 shadow-[var(--shadow-md)] backdrop-blur">
+            <ProfileSubmitButton
+              intent="all"
+              hasChanges={hasAnyChanges}
+              idleLabel="Save changes"
+              pending={isSaving}
+            />
+          </div>
         </div>
-      </div>
+      ) : null}
     </form>
   );
 }

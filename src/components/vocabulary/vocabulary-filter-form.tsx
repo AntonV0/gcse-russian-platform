@@ -60,10 +60,10 @@ export default function VocabularyFilterForm({
       </div>
 
       <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap md:col-span-2 xl:col-span-4 xl:justify-end">
-        <Button type="submit" variant="primary" icon="search">
+        <Button type="submit" variant="secondary" icon="search">
           Search
         </Button>
-        <Button href="/vocabulary" variant="secondary" icon="refresh">
+        <Button href="/vocabulary" variant="quiet" icon="refresh">
           Reset
         </Button>
       </div>

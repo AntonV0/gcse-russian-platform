@@ -267,6 +267,8 @@ export default function AssignmentSubmissionForm({
           disabled={isPending || !canSubmit || isLocked}
           variant="primary"
           icon={hasExistingSubmission ? "save" : "submitted"}
+          loading={isPending}
+          loadingLabel="Saving..."
           aria-describedby={!isLocked && !canSubmit ? submitHelpId : undefined}
           ariaLabel={
             hasExistingSubmission
@@ -274,11 +276,7 @@ export default function AssignmentSubmissionForm({
               : "Submit homework response"
           }
         >
-          {isPending
-            ? "Saving..."
-            : hasExistingSubmission
-              ? "Save changes"
-              : "Submit homework"}
+          {hasExistingSubmission ? "Save changes" : "Submit homework"}
         </Button>
       </div>
 

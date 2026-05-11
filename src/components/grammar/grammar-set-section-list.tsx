@@ -1,13 +1,10 @@
-import AppIcon from "@/components/ui/app-icon";
+import ActionPill from "@/components/ui/action-pill";
 import Button from "@/components/ui/button";
-import { getButtonClassName } from "@/components/ui/button-styles";
 import CardListItem from "@/components/ui/card-list-item";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import GrammarCoverageBadges from "@/components/grammar/grammar-coverage-badges";
 import { GrammarSetRequirementBadges } from "@/components/grammar/grammar-requirement-badges";
-import {
-  type DbGrammarSetListItem,
-} from "@/lib/grammar/grammar-helpers-db";
+import { type DbGrammarSetListItem } from "@/lib/grammar/grammar-helpers-db";
 
 const GRAMMAR_SECTION_DEFINITIONS = [
   {
@@ -83,19 +80,9 @@ function groupGrammarSetsBySection(grammarSets: DbGrammarSetListItem[]) {
 
 function SectionToggleButton() {
   return (
-    <span
-      className={getButtonClassName({
-        variant: "secondary",
-        size: "sm",
-        className: "pointer-events-none shrink-0 px-3 sm:px-3.5",
-      })}
-      aria-hidden="true"
-    >
-      <span className="shrink-0">
-        <AppIcon icon="next" size={16} />
-      </span>
+    <ActionPill className="pointer-events-none shrink-0 px-3 sm:px-3.5" aria-hidden="true">
       <span className="hidden sm:inline">Open</span>
-    </span>
+    </ActionPill>
   );
 }
 

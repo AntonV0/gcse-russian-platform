@@ -136,8 +136,11 @@ export default function TeacherSubmissionReviewForm({
         disabled={isPending}
         variant="primary"
         className="w-full"
+        icon="save"
+        loading={isPending}
+        loadingLabel="Saving review..."
       >
-        {isPending ? "Saving..." : "Save review"}
+        Save review
       </Button>
 
       {saved ? (

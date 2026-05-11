@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
+import QuestionChoiceButton from "@/components/questions/question-choice-button";
 import { AutoLangText } from "@/components/typography/russian-text";
 import Button from "@/components/ui/button";
 export { AutoLangText } from "@/components/typography/russian-text";
@@ -24,18 +25,13 @@ export function ToggleChip({
   onClick: () => void;
 }) {
   return (
-    <button
-      type="button"
+    <QuestionChoiceButton
       onClick={onClick}
       disabled={disabled}
-      className={[
-        "app-choice-chip px-3 py-2 text-sm",
-        selected ? "app-choice-chip-selected" : "",
-        disabled ? "cursor-default" : "cursor-pointer",
-      ].join(" ")}
+      selected={selected}
     >
       {typeof children === "string" ? <AutoLangText>{children}</AutoLangText> : children}
-    </button>
+    </QuestionChoiceButton>
   );
 }
 
@@ -57,9 +53,11 @@ export function SubmitAnswerButton({
       disabled={!canSubmit}
       variant="primary"
       size="sm"
-      icon={isPending ? "pending" : "confirm"}
+      icon="confirm"
+      loading={isPending}
+      loadingLabel="Saving..."
     >
-      {submitted ? "Submitted" : isPending ? "Saving..." : "Check answer"}
+      {submitted ? "Submitted" : "Check answer"}
     </Button>
   );
 }
