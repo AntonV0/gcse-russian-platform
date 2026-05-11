@@ -20,14 +20,14 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
       return [
         "app-btn-variant-primary border border-transparent !text-[var(--accent-on-fill)]",
         "[background:var(--accent-gradient-fill)]",
-        "shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_16%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_18%,transparent),0_2px_6px_color-mix(in_srgb,var(--accent)_10%,transparent)]",
+        "shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--brand-white)_14%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_16%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_18%,transparent),0_2px_6px_color-mix(in_srgb,var(--accent)_10%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:[background:var(--accent-gradient-fill-hover)]",
               "hover:brightness-[1.02]",
               "hover:saturate-[1.02]",
-              "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_20%,transparent),0_14px_30px_color-mix(in_srgb,var(--accent)_22%,transparent),0_4px_10px_color-mix(in_srgb,var(--accent)_12%,transparent)]",
+              "hover:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--brand-white)_16%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_20%,transparent),0_14px_30px_color-mix(in_srgb,var(--accent)_22%,transparent),0_4px_10px_color-mix(in_srgb,var(--accent)_12%,transparent)]",
             ].join(" "),
       ].join(" ");
 
@@ -149,14 +149,14 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
       return [
         "app-btn-variant-accent border border-transparent !text-[var(--accent-on-fill)]",
         "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent-fill)_94%,var(--brand-white))_0%,var(--accent-fill)_48%,color-mix(in_srgb,var(--accent-fill-hover)_92%,var(--accent-fill))_100%)]",
-        "shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_18%,transparent),0_11px_25px_color-mix(in_srgb,var(--accent)_22%,transparent),0_2px_7px_color-mix(in_srgb,var(--accent)_13%,transparent)]",
+        "shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--brand-white)_14%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_18%,transparent),0_11px_25px_color-mix(in_srgb,var(--accent)_22%,transparent),0_2px_7px_color-mix(in_srgb,var(--accent)_13%,transparent)]",
         disabled
           ? "opacity-60"
           : [
               "hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent-fill-hover)_88%,var(--brand-white))_0%,var(--accent-fill-hover)_100%)]",
               "hover:brightness-[1.04]",
               "hover:saturate-[1.04]",
-              "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_22%,transparent),0_16px_34px_color-mix(in_srgb,var(--accent)_28%,transparent),0_4px_11px_color-mix(in_srgb,var(--accent)_16%,transparent)]",
+              "hover:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--brand-white)_16%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_22%,transparent),0_16px_34px_color-mix(in_srgb,var(--accent)_28%,transparent),0_4px_11px_color-mix(in_srgb,var(--accent)_16%,transparent)]",
             ].join(" "),
       ].join(" ");
 
@@ -299,7 +299,7 @@ function getInteractionShadowClass(
       case "primary":
       case "accent":
       case "journey":
-        return "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_16%,transparent),0_7px_16px_color-mix(in_srgb,var(--accent)_15%,transparent),0_1px_4px_color-mix(in_srgb,var(--accent)_8%,transparent)]";
+        return "hover:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--brand-white)_14%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_16%,transparent),0_7px_16px_color-mix(in_srgb,var(--accent)_15%,transparent),0_1px_4px_color-mix(in_srgb,var(--accent)_8%,transparent)]";
       case "inverse":
         return "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_8%,transparent),0_8px_18px_color-mix(in_srgb,var(--text-primary)_18%,transparent),0_1px_4px_color-mix(in_srgb,var(--text-primary)_8%,transparent)] [html[data-theme=dark]_&]:hover:shadow-[0_1px_2px_rgba(0,0,0,0.22),0_0_0_1px_color-mix(in_srgb,var(--accent)_14%,transparent),0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]";
       case "danger":
@@ -322,7 +322,7 @@ function getInteractionShadowClass(
   switch (variant) {
     case "primary":
     case "accent":
-      return "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_19%,transparent),0_11px_24px_color-mix(in_srgb,var(--accent)_20%,transparent),0_3px_8px_color-mix(in_srgb,var(--accent)_11%,transparent)]";
+      return "hover:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--brand-white)_15%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_19%,transparent),0_11px_24px_color-mix(in_srgb,var(--accent)_20%,transparent),0_3px_8px_color-mix(in_srgb,var(--accent)_11%,transparent)]";
     case "inverse":
       return "hover:shadow-[inset_0_1px_0_color-mix(in_srgb,var(--brand-white)_10%,transparent),0_12px_25px_color-mix(in_srgb,var(--text-primary)_24%,transparent),0_3px_8px_color-mix(in_srgb,var(--text-primary)_11%,transparent)] [html[data-theme=dark]_&]:hover:shadow-[0_1px_2px_rgba(0,0,0,0.24),0_0_0_1px_color-mix(in_srgb,var(--accent)_17%,transparent),0_12px_26px_color-mix(in_srgb,var(--accent)_12%,transparent)]";
     case "success":
