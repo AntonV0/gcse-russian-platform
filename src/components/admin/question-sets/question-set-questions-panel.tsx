@@ -11,6 +11,7 @@ import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import SectionHeader from "@/components/ui/section-header";
 
 function formatQuestionType(value: string) {
@@ -33,9 +34,13 @@ export function QuestionSetQuestionsPanel({
         actions={
           <form action={normalizeQuestionPositionsAction}>
             <input type="hidden" name="questionSetId" value={questionSetId} />
-            <Button type="submit" variant="secondary" size="sm" icon="refresh">
-              Normalize positions
-            </Button>
+            <LoadingButton
+              idleLabel="Normalize positions"
+              pendingLabel="Normalizing..."
+              variant="secondary"
+              size="sm"
+              idleIcon="refresh"
+            />
           </form>
         }
       />
@@ -130,37 +135,39 @@ function QuestionSetQuestionActions({
       <form action={duplicateQuestionAction}>
         <input type="hidden" name="questionId" value={question.id} />
         <input type="hidden" name="questionSetId" value={questionSetId} />
-        <Button type="submit" variant="secondary" size="sm" icon="create">
-          Duplicate
-        </Button>
+        <LoadingButton
+          idleLabel="Duplicate"
+          pendingLabel="Duplicating..."
+          variant="secondary"
+          size="sm"
+          idleIcon="create"
+        />
       </form>
 
       <form action={moveQuestionAction}>
         <input type="hidden" name="questionId" value={question.id} />
         <input type="hidden" name="questionSetId" value={questionSetId} />
         <input type="hidden" name="direction" value="up" />
-        <Button
-          type="submit"
+        <LoadingButton
+          idleLabel="Move up"
+          pendingLabel="Moving..."
           variant="secondary"
           size="sm"
           disabled={question.position === 1}
-        >
-          Move up
-        </Button>
+        />
       </form>
 
       <form action={moveQuestionAction}>
         <input type="hidden" name="questionId" value={question.id} />
         <input type="hidden" name="questionSetId" value={questionSetId} />
         <input type="hidden" name="direction" value="down" />
-        <Button
-          type="submit"
+        <LoadingButton
+          idleLabel="Move down"
+          pendingLabel="Moving..."
           variant="secondary"
           size="sm"
           disabled={question.position === questionCount}
-        >
-          Move down
-        </Button>
+        />
       </form>
 
       <form action={toggleQuestionActiveAction}>
@@ -171,17 +178,25 @@ function QuestionSetQuestionActions({
           name="nextState"
           value={question.is_active ? "inactive" : "active"}
         />
-        <Button type="submit" variant="secondary" size="sm">
-          {question.is_active ? "Deactivate" : "Activate"}
-        </Button>
+        <LoadingButton
+          idleLabel={question.is_active ? "Deactivate" : "Activate"}
+          pendingLabel="Updating..."
+          variant="secondary"
+          size="sm"
+        />
       </form>
 
       <form action={deleteQuestionAction}>
         <input type="hidden" name="questionId" value={question.id} />
         <input type="hidden" name="questionSetId" value={questionSetId} />
-        <Button type="submit" variant="danger" size="sm" icon="delete">
-          Delete
-        </Button>
+        <LoadingButton
+          idleLabel="Delete"
+          pendingLabel="Deleting..."
+          variant="danger"
+          size="sm"
+          idleIcon="delete"
+          interaction="flat"
+        />
       </form>
     </InlineActions>
   );

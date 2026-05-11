@@ -3,6 +3,7 @@ import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import {
@@ -98,18 +99,24 @@ function StudentRowActions({
             </option>
           ))}
         </Select>
-        <Button type="submit" variant="secondary" size="sm">
-          Apply
-        </Button>
+        <LoadingButton
+          idleLabel="Apply"
+          pendingLabel="Applying..."
+          variant="secondary"
+          size="sm"
+        />
       </form>
 
       <form action={setTeacherRoleAction}>
         <input type="hidden" name="userId" value={student.id} />
         <input type="hidden" name="redirectTo" value={currentPathWithFilters} />
         <input type="hidden" name="mode" value="enable" />
-        <Button type="submit" variant="secondary" size="sm">
-          Make teacher
-        </Button>
+        <LoadingButton
+          idleLabel="Make teacher"
+          pendingLabel="Updating..."
+          variant="secondary"
+          size="sm"
+        />
       </form>
 
       <Button

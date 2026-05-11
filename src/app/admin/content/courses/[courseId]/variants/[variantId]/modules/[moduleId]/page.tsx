@@ -160,12 +160,13 @@ export default async function AdminModuleDetailPage({
                             <input type="hidden" name="moduleId" value={module.id} />
                             <input type="hidden" name="lessonId" value={lesson.id} />
                             <input type="hidden" name="direction" value="up" />
-                            <Button
-                              type="submit"
+                            <LoadingButton
+                              idleLabel="Move lesson up"
+                              pendingLabel="Moving..."
                               size="sm"
                               variant="secondary"
                               disabled={index === 0}
-                              icon="up"
+                              idleIcon="up"
                               iconOnly
                               ariaLabel="Move lesson up"
                             />
@@ -177,12 +178,13 @@ export default async function AdminModuleDetailPage({
                             <input type="hidden" name="moduleId" value={module.id} />
                             <input type="hidden" name="lessonId" value={lesson.id} />
                             <input type="hidden" name="direction" value="down" />
-                            <Button
-                              type="submit"
+                            <LoadingButton
+                              idleLabel="Move lesson down"
+                              pendingLabel="Moving..."
                               size="sm"
                               variant="secondary"
                               disabled={index === lessons.length - 1}
-                              icon="down"
+                              idleIcon="down"
                               iconOnly
                               ariaLabel="Move lesson down"
                             />

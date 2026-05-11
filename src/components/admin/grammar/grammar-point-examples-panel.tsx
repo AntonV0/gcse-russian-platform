@@ -4,7 +4,6 @@ import {
   updateGrammarExampleAction,
 } from "@/app/actions/admin/admin-grammar-example-actions";
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
-import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
@@ -92,9 +91,13 @@ function GrammarExampleEditor({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" variant="secondary" size="sm" icon="save">
-            Save example
-          </Button>
+          <LoadingButton
+            idleLabel="Save example"
+            pendingLabel="Saving example..."
+            variant="secondary"
+            size="sm"
+            idleIcon="save"
+          />
         </div>
       </form>
 

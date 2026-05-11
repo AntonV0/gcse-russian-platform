@@ -1,6 +1,7 @@
 import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
@@ -271,9 +272,12 @@ export default async function AdminQuestionEditPage({
           <form action={duplicateQuestionAction}>
             <input type="hidden" name="questionId" value={question.id} />
             <input type="hidden" name="questionSetId" value={question.question_set_id} />
-            <Button type="submit" variant="secondary" icon="create">
-              Duplicate question
-            </Button>
+            <LoadingButton
+              idleLabel="Duplicate question"
+              pendingLabel="Duplicating question..."
+              variant="secondary"
+              idleIcon="create"
+            />
           </form>
         </PanelCard>
       </section>
@@ -287,9 +291,13 @@ export default async function AdminQuestionEditPage({
           <form action={deleteQuestionAction}>
             <input type="hidden" name="questionId" value={question.id} />
             <input type="hidden" name="questionSetId" value={question.question_set_id} />
-            <Button type="submit" variant="danger" icon="delete">
-              Delete question
-            </Button>
+            <LoadingButton
+              idleLabel="Delete question"
+              pendingLabel="Deleting question..."
+              variant="danger"
+              idleIcon="delete"
+              interaction="flat"
+            />
           </form>
         </PanelCard>
       </section>

@@ -1,7 +1,7 @@
 import { deleteQuestionSetAction } from "@/app/actions/admin/admin-question-actions";
 import type { DbQuestionSet } from "@/lib/questions/question-db-types";
-import Button from "@/components/ui/button";
 import DangerZone from "@/components/ui/danger-zone";
+import LoadingButton from "@/components/ui/loading-button";
 
 export function QuestionSetDangerZone({
   questionSet,
@@ -30,9 +30,13 @@ export function QuestionSetDangerZone({
           </p>
         ) : null}
 
-        <Button type="submit" variant="danger" icon="delete">
-          Delete question set
-        </Button>
+        <LoadingButton
+          idleLabel="Delete question set"
+          pendingLabel="Deleting question set..."
+          variant="danger"
+          idleIcon="delete"
+          interaction="flat"
+        />
       </form>
     </DangerZone>
   );

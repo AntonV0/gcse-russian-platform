@@ -8,6 +8,7 @@ import DetailList from "@/components/ui/detail-list";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import {
@@ -134,9 +135,12 @@ export default async function AdminTeacherProfilePage({
               name="mode"
               value={teacher.is_teacher ? "disable" : "enable"}
             />
-            <Button type="submit" variant="secondary" icon="settings">
-              {teacher.is_teacher ? "Remove teacher role" : "Enable teacher role"}
-            </Button>
+            <LoadingButton
+              idleLabel={teacher.is_teacher ? "Remove teacher role" : "Enable teacher role"}
+              pendingLabel="Updating role..."
+              variant="secondary"
+              idleIcon="settings"
+            />
           </form>
         </PanelCard>
       </section>
@@ -168,9 +172,12 @@ export default async function AdminTeacherProfilePage({
                 </Select>
               </FormField>
 
-              <Button type="submit" variant="secondary" icon="create">
-                Add to group
-              </Button>
+              <LoadingButton
+                idleLabel="Add to group"
+                pendingLabel="Adding..."
+                variant="secondary"
+                idleIcon="create"
+              />
             </form>
           )}
         </PanelCard>

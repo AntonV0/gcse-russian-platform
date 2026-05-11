@@ -240,7 +240,7 @@ export default function LessonInspectorPanel(props: {
                   confirmMessage={`Delete this ${getLessonBlockLabel(
                     props.block.block_type
                   ).toLowerCase()} block?`}
-                  className="w-full rounded-xl border border-[var(--danger-border)] bg-[var(--danger-surface)] px-3 py-2 text-sm font-medium text-[var(--danger-text)] hover:border-[var(--danger-border-strong)]"
+                  className="w-full"
                 >
                   Delete block
                 </ConfirmSubmitButton>
@@ -369,7 +369,7 @@ export default function LessonInspectorPanel(props: {
               <input type="hidden" name="sectionId" value={props.section.id} />
               <ConfirmSubmitButton
                 confirmMessage={`Delete section "${props.section.title}"? This will remove the section and all blocks inside it.`}
-                className="w-full rounded-xl border border-[var(--danger-border)] bg-[var(--danger-surface)] px-3 py-2 text-sm font-medium text-[var(--danger-text)] hover:border-[var(--danger-border-strong)]"
+                className="w-full"
               >
                 Delete section
               </ConfirmSubmitButton>

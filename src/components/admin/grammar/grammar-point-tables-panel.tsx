@@ -5,7 +5,6 @@ import {
 } from "@/app/actions/admin/admin-grammar-table-actions";
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import GrammarTableEditor from "@/components/admin/grammar/grammar-table-editor";
-import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
@@ -81,9 +80,13 @@ function GrammarTableForm({
 
         <GrammarTableEditor defaultColumns={table.columns} defaultRows={table.rows} />
 
-        <Button type="submit" variant="secondary" size="sm" icon="save">
-          Save table
-        </Button>
+        <LoadingButton
+          idleLabel="Save table"
+          pendingLabel="Saving table..."
+          variant="secondary"
+          size="sm"
+          idleIcon="save"
+        />
       </form>
 
       <form action={deleteGrammarTableAction} className="mt-3">

@@ -1,7 +1,7 @@
 import { createGrammarPointAction } from "@/app/actions/admin/admin-grammar-point-actions";
-import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import { GRAMMAR_TAGS } from "@/lib/curriculum/grammar-tags";
@@ -143,9 +143,12 @@ export function GrammarPointEntryFormSection({
               </p>
             </div>
 
-            <Button type="submit" variant="primary" icon="create">
-              Add grammar point
-            </Button>
+            <LoadingButton
+              idleLabel="Add grammar point"
+              pendingLabel="Adding grammar point..."
+              variant="primary"
+              idleIcon="create"
+            />
           </div>
         </div>
       </form>

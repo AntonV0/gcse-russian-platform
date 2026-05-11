@@ -134,12 +134,13 @@ export default async function AdminVariantDetailPage({
                             <input type="hidden" name="variantId" value={variant.id} />
                             <input type="hidden" name="moduleId" value={module.id} />
                             <input type="hidden" name="direction" value="up" />
-                            <Button
-                              type="submit"
+                            <LoadingButton
+                              idleLabel="Move module up"
+                              pendingLabel="Moving..."
                               size="sm"
                               variant="secondary"
                               disabled={index === 0}
-                              icon="up"
+                              idleIcon="up"
                               iconOnly
                               ariaLabel="Move module up"
                             />
@@ -150,12 +151,13 @@ export default async function AdminVariantDetailPage({
                             <input type="hidden" name="variantId" value={variant.id} />
                             <input type="hidden" name="moduleId" value={module.id} />
                             <input type="hidden" name="direction" value="down" />
-                            <Button
-                              type="submit"
+                            <LoadingButton
+                              idleLabel="Move module down"
+                              pendingLabel="Moving..."
                               size="sm"
                               variant="secondary"
                               disabled={index === modules.length - 1}
-                              icon="down"
+                              idleIcon="down"
                               iconOnly
                               ariaLabel="Move module down"
                             />

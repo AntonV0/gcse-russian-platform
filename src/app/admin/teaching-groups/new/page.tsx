@@ -4,6 +4,7 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import { createTeachingGroupAction } from "@/app/actions/admin/admin-teaching-group-actions";
@@ -99,9 +100,12 @@ export default async function AdminTeachingGroupNewPage() {
           />
 
           <InlineActions>
-            <Button type="submit" variant="primary" icon="create">
-              Create teaching group
-            </Button>
+            <LoadingButton
+              idleLabel="Create teaching group"
+              pendingLabel="Creating teaching group..."
+              variant="primary"
+              idleIcon="create"
+            />
 
             <Button href="/admin/teaching-groups" variant="secondary" icon="cancel">
               Cancel

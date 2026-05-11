@@ -123,12 +123,13 @@ export default async function AdminCourseDetailPage({
                             <input type="hidden" name="courseId" value={course.id} />
                             <input type="hidden" name="variantId" value={variant.id} />
                             <input type="hidden" name="direction" value="up" />
-                            <Button
-                              type="submit"
+                            <LoadingButton
+                              idleLabel="Move variant up"
+                              pendingLabel="Moving..."
                               size="sm"
                               variant="secondary"
                               disabled={index === 0}
-                              icon="up"
+                              idleIcon="up"
                               iconOnly
                               ariaLabel="Move variant up"
                             />
@@ -138,12 +139,13 @@ export default async function AdminCourseDetailPage({
                             <input type="hidden" name="courseId" value={course.id} />
                             <input type="hidden" name="variantId" value={variant.id} />
                             <input type="hidden" name="direction" value="down" />
-                            <Button
-                              type="submit"
+                            <LoadingButton
+                              idleLabel="Move variant down"
+                              pendingLabel="Moving..."
                               size="sm"
                               variant="secondary"
                               disabled={index === variants.length - 1}
-                              icon="down"
+                              idleIcon="down"
                               iconOnly
                               ariaLabel="Move variant down"
                             />

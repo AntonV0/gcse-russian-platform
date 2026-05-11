@@ -4,6 +4,7 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import { updateTeachingGroupAction } from "@/app/actions/admin/admin-teaching-group-actions";
@@ -136,9 +137,12 @@ export default async function AdminTeachingGroupEditPage({
           />
 
           <InlineActions>
-            <Button type="submit" variant="primary" icon="save">
-              Save teaching group
-            </Button>
+            <LoadingButton
+              idleLabel="Save teaching group"
+              pendingLabel="Saving teaching group..."
+              variant="primary"
+              idleIcon="save"
+            />
 
             <Button
               href={`/admin/teaching-groups/${teachingGroup.id}`}

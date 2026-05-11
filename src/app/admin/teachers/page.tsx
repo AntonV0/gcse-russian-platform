@@ -7,6 +7,7 @@ import FeedbackBanner from "@/components/ui/feedback-banner";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import { setTeacherRoleAction } from "@/app/actions/admin/admin-user-actions";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
@@ -249,9 +250,12 @@ export default async function AdminTeachersPage({
                         value={currentPathWithFilters}
                       />
                       <input type="hidden" name="mode" value="disable" />
-                      <Button type="submit" variant="secondary" size="sm">
-                        Remove teacher
-                      </Button>
+                      <LoadingButton
+                        idleLabel="Remove teacher"
+                        pendingLabel="Removing..."
+                        variant="secondary"
+                        size="sm"
+                      />
                     </form>
                   ) : null}
 
