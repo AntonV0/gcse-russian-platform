@@ -41,6 +41,19 @@ function getNextActionLabel(status?: "not_started" | "submitted" | "reviewed") {
   return "Open assignment";
 }
 
+function getNextActionTone({
+  status,
+  dueStatus,
+}: {
+  status: "not_started" | "submitted" | "reviewed";
+  dueStatus: "none" | "normal" | "soon" | "overdue";
+}) {
+  if (status === "reviewed") return "success";
+  if (dueStatus === "overdue") return "danger";
+  if (status === "submitted") return "muted";
+  return "accent";
+}
+
 export default async function AssignmentsPage() {
   const assignmentCards = await getStudentAssignmentsWithDetailsDb();
   const now = new Date();
@@ -227,7 +240,9 @@ export default async function AssignmentsPage() {
                       </div>
 
                       <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-3">
-                        <ActionPill>{getNextActionLabel(status)}</ActionPill>
+                        <ActionPill tone={getNextActionTone({ status, dueStatus })}>
+                          {getNextActionLabel(status)}
+                        </ActionPill>
                         <span className="text-sm text-[var(--text-muted)]">View</span>
                       </div>
                     </div>
