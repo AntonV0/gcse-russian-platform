@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLinkStatus } from "next/link";
+import { useState } from "react";
 import type { LinkProps } from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 
@@ -14,10 +15,11 @@ type PendingLinkCardProps = {
   prefetch?: LinkProps["prefetch"];
 };
 
-function PendingCardOverlay({ label }: { label: string }) {
+function PendingCardOverlay({ label, forcePending = false }: { label: string; forcePending?: boolean }) {
   const { pending } = useLinkStatus();
+  const isPending = pending || forcePending;
 
-  if (!pending) return null;
+  if (!isPending) return null;
 
   return (
     <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-[inherit] border border-[color-mix(in_srgb,var(--accent)_18%,transparent)] bg-[color-mix(in_srgb,var(--background-elevated)_78%,transparent)] backdrop-blur-[2px]">
@@ -29,6 +31,27 @@ function PendingCardOverlay({ label }: { label: string }) {
   );
 }
 
+function shouldShowNavigationPending(
+  event: React.MouseEvent<HTMLAnchorElement>,
+  href: string
+) {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:")
+  ) {
+    return false;
+  }
+
+  return href.startsWith("/");
+}
+
 export default function PendingLinkCard({
   href,
   children,
@@ -37,15 +60,30 @@ export default function PendingLinkCard({
   pendingLabel = "Opening...",
   prefetch,
 }: PendingLinkCardProps) {
+  const [isClickPending, setIsClickPending] = useState(false);
+
   return (
     <Link
       href={href}
       prefetch={prefetch}
       className={["relative", className].filter(Boolean).join(" ")}
       aria-label={ariaLabel}
+      aria-busy={isClickPending || undefined}
+      aria-disabled={isClickPending || undefined}
+      data-pending={isClickPending ? "" : undefined}
+      onClick={(event) => {
+        if (isClickPending) {
+          event.preventDefault();
+          return;
+        }
+
+        if (shouldShowNavigationPending(event, href)) {
+          setIsClickPending(true);
+        }
+      }}
     >
       {children}
-      <PendingCardOverlay label={pendingLabel} />
+      <PendingCardOverlay label={pendingLabel} forcePending={isClickPending} />
     </Link>
   );
 }

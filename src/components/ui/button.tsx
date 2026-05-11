@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLinkStatus } from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { LinkProps } from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 import {
@@ -173,6 +173,29 @@ function ButtonLinkInner(props: {
   );
 }
 
+function shouldShowNavigationPending(
+  event: React.MouseEvent<HTMLAnchorElement>,
+  href: string,
+  target?: string
+) {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    target === "_blank" ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:")
+  ) {
+    return false;
+  }
+
+  return href.startsWith("/");
+}
+
 export default function Button(props: ButtonProps) {
   const {
     children,
@@ -188,8 +211,10 @@ export default function Button(props: ButtonProps) {
     loadingIcon = "sync",
     interaction,
   } = props;
+  const [linkPending, setLinkPending] = useState(false);
 
-  const disabled = ("disabled" in props ? Boolean(props.disabled) : false) || loading;
+  const disabled =
+    ("disabled" in props ? Boolean(props.disabled) : false) || loading || linkPending;
   const resolvedAriaLabel = getResolvedAriaLabel({
     ariaLabel,
     children,
@@ -213,7 +238,12 @@ export default function Button(props: ButtonProps) {
     "dev-marker-host relative inline-flex max-w-full",
     classTokens.includes("w-full") ? "w-full" : null,
     classTokens.includes("flex-1") ? "flex-1" : null,
+    classTokens.includes("sm:w-auto") ? "sm:w-auto" : null,
+    classTokens.includes("md:w-auto") ? "md:w-auto" : null,
+    classTokens.includes("lg:w-auto") ? "lg:w-auto" : null,
     classTokens.includes("sm:flex-none") ? "sm:flex-none" : null,
+    classTokens.includes("sm:shrink-0") ? "sm:shrink-0" : null,
+    classTokens.includes("lg:shrink-0") ? "lg:shrink-0" : null,
   ]
     .filter(Boolean)
     .join(" ");
@@ -250,6 +280,9 @@ export default function Button(props: ButtonProps) {
     delete linkProps.loadingIcon;
     delete linkProps.interaction;
 
+    const linkOnClick = linkProps.onClick;
+    const isBusy = loading || linkPending;
+
     return (
       <span className={wrapperClassName}>
         <ButtonMarker />
@@ -258,15 +291,29 @@ export default function Button(props: ButtonProps) {
           {...linkProps}
           className={mergedClassName}
           aria-label={resolvedAriaLabel}
-          aria-busy={loading || props["aria-busy"] || undefined}
+          aria-busy={isBusy || props["aria-busy"] || undefined}
+          aria-disabled={isBusy || undefined}
+          data-pending={isBusy ? "" : undefined}
           title={resolvedTitle}
+          onClick={(event) => {
+            if (isBusy) {
+              event.preventDefault();
+              return;
+            }
+
+            linkOnClick?.(event);
+
+            if (shouldShowNavigationPending(event, props.href, props.target)) {
+              setLinkPending(true);
+            }
+          }}
         >
           <ButtonLinkInner
             icon={icon}
             iconPosition={iconPosition}
             iconOnly={iconOnly}
             size={size}
-            loading={loading}
+            loading={isBusy}
             loadingLabel={loadingLabel}
             loadingIcon={loadingIcon}
           >

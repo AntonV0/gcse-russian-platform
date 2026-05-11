@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { requestPasswordReset } from "@/app/actions/auth/auth";
+import AuthSubmitButton from "@/components/auth/auth-submit-button";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import FeedbackBanner from "@/components/ui/feedback-banner";
@@ -31,9 +32,7 @@ export default async function ForgotPasswordPage({
             <Badge tone="info" icon="unlocked">
               Account help
             </Badge>
-            <p className="app-text-meta mt-6 text-[var(--accent-ink)]">
-              Password reset
-            </p>
+            <p className="app-text-meta mt-6 text-[var(--accent-ink)]">Password reset</p>
             <h1 className="mt-3 text-4xl font-extrabold leading-[1.04] md:text-5xl">
               Get back into the course without starting again.
             </h1>
@@ -45,9 +44,7 @@ export default async function ForgotPasswordPage({
 
           <div className="p-5 sm:p-8 lg:p-10">
             <div className="mx-auto max-w-md">
-              <p className="app-text-meta text-[var(--accent-ink)]">
-                Reset access
-              </p>
+              <p className="app-text-meta text-[var(--accent-ink)]">Reset access</p>
               <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)]">
                 Send a reset email
               </h2>
@@ -89,15 +86,11 @@ export default async function ForgotPasswordPage({
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="app-btn-base app-btn-primary min-h-11 w-full px-4 py-3 text-sm"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <AppIcon icon="chat" size={16} />
-                    Send reset email
-                  </span>
-                </button>
+                <AuthSubmitButton
+                  idleLabel="Send reset email"
+                  pendingLabel="Sending reset email..."
+                  idleIcon="chat"
+                />
               </form>
 
               <Link

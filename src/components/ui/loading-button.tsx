@@ -22,6 +22,8 @@ type LoadingButtonProps = Omit<
   pendingIcon?: AppIconKey;
   iconPosition?: "left" | "right";
   interaction?: ButtonInteraction;
+  iconOnly?: boolean;
+  ariaLabel?: string;
 };
 
 export default function LoadingButton({
@@ -34,6 +36,8 @@ export default function LoadingButton({
   pendingIcon = "sync",
   iconPosition = "left",
   interaction,
+  iconOnly = false,
+  ariaLabel,
   disabled,
   type = "submit",
   ...buttonProps
@@ -50,6 +54,8 @@ export default function LoadingButton({
       className={className}
       icon={idleIcon}
       iconPosition={iconPosition}
+      iconOnly={iconOnly}
+      ariaLabel={ariaLabel}
       interaction={interaction}
       disabled={isDisabled}
       loading={pending}
