@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -167,9 +167,12 @@ export default function AdminQuestionForm({
       </PanelCard>
 
       <InlineActions>
-        <Button type="submit" variant="primary" icon="save">
-          {submitLabel}
-        </Button>
+        <LoadingButton
+          idleLabel={submitLabel}
+          pendingLabel={mode === "edit" ? "Saving question..." : "Creating question..."}
+          idleIcon={mode === "edit" ? "save" : "create"}
+          variant="primary"
+        />
       </InlineActions>
     </form>
   );

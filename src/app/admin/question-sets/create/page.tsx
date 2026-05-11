@@ -1,10 +1,10 @@
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import PageHeader from "@/components/layout/page-header";
-import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Textarea from "@/components/ui/textarea";
 import { createQuestionSetAction } from "@/app/actions/admin/admin-question-actions";
@@ -73,9 +73,12 @@ export default async function CreateQuestionSetPage() {
         </PanelCard>
 
         <InlineActions>
-          <Button type="submit" variant="primary" icon="write">
-            Create question set
-          </Button>
+          <LoadingButton
+            idleLabel="Create question set"
+            pendingLabel="Creating question set..."
+            idleIcon="create"
+            variant="primary"
+          />
         </InlineActions>
       </form>
     </main>

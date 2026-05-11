@@ -116,7 +116,8 @@ function StudentRowActions({
         href={`/admin/students/${student.id}`}
         variant="secondary"
         size="sm"
-        icon="preview"
+        icon="next"
+        iconPosition="right"
       >
         View
       </Button>

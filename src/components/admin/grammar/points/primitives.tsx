@@ -17,7 +17,12 @@ export function GrammarPointAdminStatTile({
         : "border-[var(--border-subtle)] bg-[var(--background-elevated)] text-[var(--text-primary)]";
 
   return (
-    <div className={["rounded-2xl border px-4 py-3 shadow-[var(--shadow-xs)]", toneClass].join(" ")}>
+    <div
+      className={[
+        "rounded-2xl border px-4 py-3 shadow-[var(--shadow-xs)]",
+        toneClass,
+      ].join(" ")}
+    >
       <div className="app-text-meta">{label}</div>
       <div className="mt-1.5 font-semibold app-text-detail">{value}</div>
     </div>

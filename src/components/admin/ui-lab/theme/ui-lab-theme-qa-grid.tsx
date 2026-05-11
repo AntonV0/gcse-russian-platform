@@ -36,10 +36,7 @@ function ProgressPreview({
       </div>
       <div className="app-progress-track">
         <div
-          className={[
-            "app-progress-bar",
-            success ? "app-progress-bar-success" : "",
-          ]
+          className={["app-progress-bar", success ? "app-progress-bar-success" : ""]
             .filter(Boolean)
             .join(" ")}
           style={{ width: `${value}%` }}
@@ -133,7 +130,11 @@ export default function UiLabThemeQaGrid() {
 
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
             {accentOptions.map((accent) => (
-              <ThemeQaCard key={`${mode.value}-${accent.value}`} accent={accent} mode={mode} />
+              <ThemeQaCard
+                key={`${mode.value}-${accent.value}`}
+                accent={accent}
+                mode={mode}
+              />
             ))}
           </div>
         </div>

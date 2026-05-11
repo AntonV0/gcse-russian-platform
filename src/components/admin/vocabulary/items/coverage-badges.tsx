@@ -5,7 +5,10 @@ import {
   getVocabularyCoverageVariantLabel,
   getVocabularyCoverageVariantUsed,
 } from "@/lib/vocabulary/shared/study-variants";
-import type { DbVocabularyItem, DbVocabularyItemCoverage } from "@/lib/vocabulary/shared/types";
+import type {
+  DbVocabularyItem,
+  DbVocabularyItemCoverage,
+} from "@/lib/vocabulary/shared/types";
 
 function CoverageBadge({
   label,

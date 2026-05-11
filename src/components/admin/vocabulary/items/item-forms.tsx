@@ -1,5 +1,5 @@
-import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import CoreMetadataFields from "@/components/admin/vocabulary/items/metadata-fields";
@@ -228,9 +228,12 @@ export function NewVocabularyItemForm({
           </div>
         </VocabularyAdminDisclosurePanel>
 
-        <Button variant="primary" icon="save">
-          Add item
-        </Button>
+        <LoadingButton
+          idleLabel="Add item"
+          pendingLabel="Adding item..."
+          idleIcon="create"
+          variant="primary"
+        />
       </form>
     </section>
   );
@@ -338,9 +341,12 @@ export function BulkVocabularyItemForm({
           </div>
         </VocabularyAdminDisclosurePanel>
 
-        <Button variant="primary" icon="create">
-          Add pasted items
-        </Button>
+        <LoadingButton
+          idleLabel="Add pasted items"
+          pendingLabel="Adding pasted items..."
+          idleIcon="create"
+          variant="primary"
+        />
       </form>
     </section>
   );

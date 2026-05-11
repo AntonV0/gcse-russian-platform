@@ -11,10 +11,7 @@ import type { AdminGrammarListProps } from "@/components/admin/grammar/list/type
 import GrammarCoverageBadges from "@/components/grammar/grammar-coverage-badges";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import {
-  DataTableCompactCell,
-  DataTableRow,
-} from "@/components/ui/data-table";
+import { DataTableCompactCell, DataTableRow } from "@/components/ui/data-table";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import {
   getGrammarTopicLabel,
@@ -70,9 +67,7 @@ export default function GrammarSetRow({
                   Trial
                 </Badge>
               ) : null}
-              {grammarSet.available_in_volna ? (
-                <Badge tone="muted">Volna</Badge>
-              ) : null}
+              {grammarSet.available_in_volna ? <Badge tone="muted">Volna</Badge> : null}
               {grammarSet.requires_paid_access ? (
                 <Badge tone="muted" icon="lock">
                   Paid
@@ -92,9 +87,7 @@ export default function GrammarSetRow({
       </DataTableCompactCell>
 
       <DataTableCompactCell className="whitespace-nowrap">
-        <div className="font-semibold app-text-detail">
-          {grammarSet.point_count}
-        </div>
+        <div className="font-semibold app-text-detail">{grammarSet.point_count}</div>
         <div className="app-text-caption">
           {contentHealth?.published_points ?? 0} published
         </div>

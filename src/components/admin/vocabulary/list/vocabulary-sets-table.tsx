@@ -81,12 +81,7 @@ export default function VocabularySetsTable({
       title="Vocabulary sets"
       description="Find sets, manage items, and preview student-facing vocabulary."
       actions={
-        <Button
-          href="/admin/vocabulary/create"
-          variant="primary"
-          size="sm"
-          icon="create"
-        >
+        <Button href="/admin/vocabulary/create" variant="primary" size="sm" icon="create">
           New set
         </Button>
       }

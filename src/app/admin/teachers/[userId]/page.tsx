@@ -217,7 +217,8 @@ export default async function AdminTeacherProfilePage({
                       <input type="hidden" name="redirectTo" value={teacherHref} />
                       <AdminConfirmButton
                         confirmMessage="Remove this teacher from the teaching group?"
-                        className="app-btn-base app-btn-danger min-h-9 rounded-xl px-3.5 py-2 text-sm"
+                        size="sm"
+                        pendingLabel="Removing..."
                       >
                         Remove
                       </AdminConfirmButton>

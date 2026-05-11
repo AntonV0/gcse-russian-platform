@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
-import AppIcon from "@/components/ui/app-icon";
-import { getButtonClassName } from "@/components/ui/button-styles";
+import ActionPill from "@/components/ui/action-pill";
 import PanelCard from "@/components/ui/panel-card";
+import PendingLinkCard from "@/components/ui/pending-link-card";
 
 export type AdminNavCard = {
   title: string;
@@ -20,31 +19,26 @@ export default function AdminLinkCard({
   ctaLabel,
 }: AdminNavCard) {
   return (
-    <Link href={href} className="block h-full">
+    <PendingLinkCard
+      href={href}
+      className="app-focus-ring group block h-full rounded-2xl"
+      ariaLabel={ctaLabel}
+      pendingLabel="Opening..."
+    >
       <PanelCard
         title={title}
         description={description}
         headingLevel={3}
         density="compact"
-        className="h-full min-h-[162px] transition-transform duration-200 hover:-translate-y-0.5"
+        className="app-card-interaction-subtle h-full min-h-[162px]"
         headerClassName="min-h-[92px]"
         actions={badge}
         footer={
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-sm app-text-muted">{ctaLabel}</div>
-            <span
-              aria-hidden="true"
-              className={getButtonClassName({
-                variant: "quiet",
-                size: "sm",
-                iconOnly: true,
-              })}
-            >
-              <AppIcon icon="next" size={16} />
-            </span>
+          <div className="flex items-center gap-3">
+            <ActionPill>{ctaLabel}</ActionPill>
           </div>
         }
       />
-    </Link>
+    </PendingLinkCard>
   );
 }

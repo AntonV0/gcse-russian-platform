@@ -9,6 +9,7 @@ import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
@@ -126,9 +127,12 @@ function AddGrammarTablePanel({
 
         <GrammarTableEditor />
 
-        <Button type="submit" variant="primary" icon="create">
-          Add table
-        </Button>
+        <LoadingButton
+          idleLabel="Add table"
+          pendingLabel="Adding table..."
+          idleIcon="create"
+          variant="primary"
+        />
       </form>
     </PanelCard>
   );

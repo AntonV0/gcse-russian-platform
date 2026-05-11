@@ -20,8 +20,8 @@ export function GrammarPointEntryFormSection({
         <span>
           <span className="block app-heading-subsection">Add grammar point</span>
           <span className="mt-2 block app-text-body-muted">
-            Create the core teaching point first; examples and tables are edited
-            after creation.
+            Create the core teaching point first; examples and tables are edited after
+            creation.
           </span>
         </span>
         <span className="font-semibold app-text-caption group-open:hidden">Open</span>
@@ -30,7 +30,10 @@ export function GrammarPointEntryFormSection({
         </span>
       </summary>
 
-      <form action={createGrammarPointAction} className="mt-4 app-surface app-section-padding space-y-4">
+      <form
+        action={createGrammarPointAction}
+        className="mt-4 app-surface app-section-padding space-y-4"
+      >
         <input type="hidden" name="grammarSetId" value={grammarSet.id} />
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.7fr)]">
@@ -135,8 +138,8 @@ export function GrammarPointEntryFormSection({
             <div className="rounded-xl border border-[var(--border)] bg-[var(--background-muted)] p-4">
               <p className="app-text-caption font-semibold">Draft first</p>
               <p className="mt-1 app-text-body-muted">
-                New grammar points start as drafts. Add examples, review the
-                student content, then publish from the edit page.
+                New grammar points start as drafts. Add examples, review the student
+                content, then publish from the edit page.
               </p>
             </div>
 

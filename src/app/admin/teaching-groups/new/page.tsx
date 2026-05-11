@@ -99,7 +99,7 @@ export default async function AdminTeachingGroupNewPage() {
           />
 
           <InlineActions>
-            <Button type="submit" variant="primary" icon="write">
+            <Button type="submit" variant="primary" icon="create">
               Create teaching group
             </Button>
 

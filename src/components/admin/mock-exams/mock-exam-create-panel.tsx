@@ -1,7 +1,7 @@
 import { createMockExamSetAction } from "@/app/actions/admin/admin-mock-exam-actions";
-import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import { mockExamPaperNames, mockExamTiers } from "@/lib/mock-exams/constants";
@@ -97,9 +97,12 @@ export function MockExamCreatePanel() {
           </label>
         </div>
 
-        <Button type="submit" variant="primary" icon="create">
-          Create mock exam
-        </Button>
+        <LoadingButton
+          idleLabel="Create mock exam"
+          pendingLabel="Creating mock exam..."
+          idleIcon="create"
+          variant="primary"
+        />
       </form>
     </PanelCard>
   );

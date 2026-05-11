@@ -8,6 +8,7 @@ import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -110,17 +111,23 @@ export default async function AdminLessonTemplateDetailPage({
           />
 
           <InlineActions className="md:col-span-2">
-            <Button type="submit" variant="primary" icon="save">
-              Save lesson template
-            </Button>
+            <LoadingButton
+              idleLabel="Save lesson template"
+              pendingLabel="Saving lesson template..."
+              variant="primary"
+              idleIcon="save"
+            />
           </InlineActions>
         </form>
 
         <form action={deleteLessonTemplateAction} className="mt-5">
           <input type="hidden" name="templateId" value={detail.template.id} />
-          <Button type="submit" variant="danger" icon="delete">
-            Delete lesson template
-          </Button>
+          <LoadingButton
+            idleLabel="Delete lesson template"
+            pendingLabel="Deleting lesson template..."
+            variant="danger"
+            idleIcon="delete"
+          />
         </form>
       </PanelCard>
 
@@ -171,9 +178,12 @@ export default async function AdminLessonTemplateDetailPage({
             </FormField>
 
             <InlineActions className="md:col-span-3">
-              <Button type="submit" variant="primary" icon="create">
-                Add section template
-              </Button>
+              <LoadingButton
+                idleLabel="Add section template"
+                pendingLabel="Adding section template..."
+                variant="primary"
+                idleIcon="create"
+              />
             </InlineActions>
           </form>
         )}
@@ -206,9 +216,12 @@ export default async function AdminLessonTemplateDetailPage({
                     className="font-mono"
                   />
                 </FormField>
-                <Button type="submit" variant="secondary" icon="save">
-                  Save section order
-                </Button>
+                <LoadingButton
+                  idleLabel="Save section order"
+                  pendingLabel="Saving section order..."
+                  variant="secondary"
+                  idleIcon="save"
+                />
               </form>
             </PanelCard>
 
@@ -271,9 +284,12 @@ export default async function AdminLessonTemplateDetailPage({
                     </FormField>
 
                     <InlineActions className="md:col-span-2">
-                      <Button type="submit" variant="secondary" icon="save">
-                        Save linked section
-                      </Button>
+                      <LoadingButton
+                        idleLabel="Save linked section"
+                        pendingLabel="Saving linked section..."
+                        variant="secondary"
+                        idleIcon="save"
+                      />
                     </InlineActions>
                   </form>
 
@@ -297,9 +313,13 @@ export default async function AdminLessonTemplateDetailPage({
                           name="lessonTemplateSectionId"
                           value={section.id}
                         />
-                        <Button type="submit" variant="danger" size="sm" icon="delete">
-                          Remove section
-                        </Button>
+                        <LoadingButton
+                          idleLabel="Remove section"
+                          pendingLabel="Removing section..."
+                          variant="danger"
+                          size="sm"
+                          idleIcon="delete"
+                        />
                       </form>
                     }
                   />

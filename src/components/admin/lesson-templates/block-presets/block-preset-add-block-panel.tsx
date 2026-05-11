@@ -4,7 +4,7 @@ import {
   getLessonBlockGroupLabel,
   getLessonBlockLabel,
 } from "@/lib/lessons/lesson-blocks";
-import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import { BlockPresetBlockFields, templateBlockTypes } from "./block-preset-block-fields";
 
@@ -41,9 +41,13 @@ export function BlockPresetAddBlockPanel({ presetId }: { presetId: string }) {
             <BlockPresetBlockFields blockType={blockType} />
 
             <div className="mt-3">
-              <Button type="submit" variant="secondary" size="sm" icon="create">
-                Add {getLessonBlockLabel(blockType).toLowerCase()}
-              </Button>
+              <LoadingButton
+                idleLabel={`Add ${getLessonBlockLabel(blockType).toLowerCase()}`}
+                pendingLabel="Adding preset block..."
+                variant="secondary"
+                size="sm"
+                idleIcon="create"
+              />
             </div>
           </form>
         ))}

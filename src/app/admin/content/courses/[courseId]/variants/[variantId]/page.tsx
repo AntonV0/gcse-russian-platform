@@ -1,7 +1,9 @@
 import BackNav from "@/components/ui/back-nav";
+import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import ActiveStatusBadge from "@/components/ui/active-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
@@ -217,9 +219,12 @@ export default async function AdminVariantDetailPage({
 
               <CheckboxField name="isPublished" label="Published" />
 
-              <Button type="submit" variant="primary" icon="create">
-                Create module
-              </Button>
+              <LoadingButton
+                idleLabel="Create module"
+                pendingLabel="Creating module..."
+                idleIcon="create"
+                variant="primary"
+              />
             </form>
           </ExpandableAdminFormPanel>
 
@@ -230,9 +235,14 @@ export default async function AdminVariantDetailPage({
               <form action={archiveVariantAction}>
                 <input type="hidden" name="courseId" value={course.id} />
                 <input type="hidden" name="variantId" value={variant.id} />
-                <Button type="submit" variant="danger" icon="delete">
+                <AdminConfirmButton
+                  variant="danger"
+                  icon="inactive"
+                  confirmMessage={`Archive ${variant.title}? This will disable and unpublish it.`}
+                  pendingLabel="Archiving..."
+                >
                   Archive variant
-                </Button>
+                </AdminConfirmButton>
               </form>
             }
           />

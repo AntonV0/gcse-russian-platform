@@ -1,6 +1,7 @@
 import BackNav from "@/components/ui/back-nav";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
@@ -54,7 +55,7 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
           title="Lesson not found"
           description="This lesson could not be found in the selected course structure."
           action={
-            <Button href="/admin/content" variant="primary" icon="back">
+            <Button href="/admin/content" variant="secondary" icon="back">
               Back to content
             </Button>
           }
@@ -224,9 +225,12 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <Button type="submit" variant="primary" icon="completed">
-                Save lesson
-              </Button>
+              <LoadingButton
+                idleLabel="Save lesson"
+                pendingLabel="Saving lesson..."
+                idleIcon="save"
+                variant="primary"
+              />
 
               <Button
                 href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}

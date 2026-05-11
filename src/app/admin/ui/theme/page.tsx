@@ -159,28 +159,32 @@ export default async function AdminUiThemePage() {
               badge: "In progress",
               tone: "info" as const,
               bar: "app-progress-bar",
-              description: "Use for neutral lesson, course, module, and question-set progress.",
+              description:
+                "Use for neutral lesson, course, module, and question-set progress.",
             },
             {
               title: "Success progress",
               badge: "Complete",
               tone: "success" as const,
               bar: "app-progress-bar app-progress-bar-success",
-              description: "Use only when the state is actually complete, correct, or mastered.",
+              description:
+                "Use only when the state is actually complete, correct, or mastered.",
             },
             {
               title: "Warning state",
               badge: "Review",
               tone: "warning" as const,
               bar: "app-progress-bar",
-              description: "Use for pending review, incomplete requirements, and exam-tip emphasis.",
+              description:
+                "Use for pending review, incomplete requirements, and exam-tip emphasis.",
             },
             {
               title: "Danger state",
               badge: "Blocked",
               tone: "danger" as const,
               bar: "app-progress-bar",
-              description: "Use for incorrect, failed, destructive, or blocked workflows.",
+              description:
+                "Use for incorrect, failed, destructive, or blocked workflows.",
             },
           ].map((item, index) => (
             <Card key={item.title}>
@@ -320,7 +324,7 @@ export default async function AdminUiThemePage() {
           </div>
 
           <div className="mt-4 flex flex-wrap gap-3">
-            <Button variant="primary" icon="next">
+            <Button variant="journey" icon="next" iconPosition="right">
               Continue lesson
             </Button>
             <Button variant="secondary" icon="settings">

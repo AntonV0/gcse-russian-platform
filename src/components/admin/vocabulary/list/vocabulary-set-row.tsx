@@ -6,10 +6,7 @@ import {
 } from "@/components/admin/admin-action-menu";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import {
-  DataTableCompactCell,
-  DataTableRow,
-} from "@/components/ui/data-table";
+import { DataTableCompactCell, DataTableRow } from "@/components/ui/data-table";
 import VocabularyUsageCount from "@/components/admin/vocabulary/list/vocabulary-usage-count";
 import type { AdminVocabularyListProps } from "@/components/admin/vocabulary/list/types";
 import {
@@ -72,8 +69,7 @@ export default function VocabularySetRow({
   const showListModeBadge = filters.listMode === "all";
   const showSetTypeBadge = filters.setType === "all";
   const showStatusBadge = filters.published === "all";
-  const showDisplayVariantBadge =
-    vocabularySet.default_display_variant !== "two_column";
+  const showDisplayVariantBadge = vocabularySet.default_display_variant !== "two_column";
   const cannotDeleteReason =
     lessonUsageCount > 0
       ? `Remove ${lessonUsageCount} lesson usage${lessonUsageCount === 1 ? "" : "s"} before deleting this set.`
@@ -105,20 +101,14 @@ export default function VocabularySetRow({
                 </Badge>
               ) : null}
               {showListModeBadge ? (
-                <Badge tone="muted">
-                  {getShortModeLabel(vocabularySet.list_mode)}
-                </Badge>
+                <Badge tone="muted">{getShortModeLabel(vocabularySet.list_mode)}</Badge>
               ) : null}
               {showSetTypeBadge ? (
-                <Badge tone="muted">
-                  {getShortSetTypeLabel(vocabularySet.set_type)}
-                </Badge>
+                <Badge tone="muted">{getShortSetTypeLabel(vocabularySet.set_type)}</Badge>
               ) : null}
               {showDisplayVariantBadge ? (
                 <Badge tone="muted">
-                  {getShortDisplayVariantLabel(
-                    vocabularySet.default_display_variant
-                  )}
+                  {getShortDisplayVariantLabel(vocabularySet.default_display_variant)}
                 </Badge>
               ) : null}
               {showStatusBadge ? (
@@ -132,9 +122,7 @@ export default function VocabularySetRow({
       </DataTableCompactCell>
 
       <DataTableCompactCell className="whitespace-nowrap">
-        <div className="font-semibold app-text-detail">
-          {vocabularySet.item_count}
-        </div>
+        <div className="font-semibold app-text-detail">{vocabularySet.item_count}</div>
         <div className="app-text-caption">
           {vocabularySet.list_count} list
           {vocabularySet.list_count === 1 ? "" : "s"}
@@ -179,7 +167,10 @@ export default function VocabularySetRow({
             >
               Edit
             </AdminActionMenuItem>
-            <AdminActionMenuItem href={getVocabularySetHref(vocabularySet)} icon="preview">
+            <AdminActionMenuItem
+              href={getVocabularySetHref(vocabularySet)}
+              icon="preview"
+            >
               View
             </AdminActionMenuItem>
             <AdminActionMenuConfirmItem

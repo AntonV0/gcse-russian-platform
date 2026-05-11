@@ -4,6 +4,7 @@ import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
@@ -242,21 +243,24 @@ export default function GrammarPointMainForm({
 
               {readiness.canPublish ? (
                 <p className="app-text-body-muted">
-                  Tables stay advisory because some grammar points do not need a
-                  form table.
+                  Tables stay advisory because some grammar points do not need a form
+                  table.
                 </p>
               ) : (
                 <p className="app-text-body-muted">
-                  Draft points need a full explanation and at least one student
-                  example before first publish.
+                  Draft points need a full explanation and at least one student example
+                  before first publish.
                 </p>
               )}
             </div>
 
             <div className="flex flex-col gap-3">
-              <Button type="submit" variant="primary" icon="save">
-                Save point
-              </Button>
+              <LoadingButton
+                idleLabel="Save point"
+                pendingLabel="Saving point..."
+                idleIcon="save"
+                variant="primary"
+              />
               <Button
                 href={`/admin/grammar/${grammarSet.id}/points`}
                 variant="secondary"

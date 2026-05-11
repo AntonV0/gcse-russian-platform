@@ -3,6 +3,7 @@ import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
@@ -161,9 +162,12 @@ export default function CreateGrammarSetPage() {
 
           <PanelCard tone="admin">
             <div className="flex flex-col gap-3">
-              <Button type="submit" variant="primary" icon="save">
-                Create grammar set
-              </Button>
+              <LoadingButton
+                idleLabel="Create grammar set"
+                pendingLabel="Creating grammar set..."
+                idleIcon="create"
+                variant="primary"
+              />
               <Button href="/admin/grammar" variant="secondary" icon="cancel">
                 Cancel
               </Button>

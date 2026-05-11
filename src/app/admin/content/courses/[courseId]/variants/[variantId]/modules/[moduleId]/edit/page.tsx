@@ -1,6 +1,7 @@
 import BackNav from "@/components/ui/back-nav";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
@@ -147,9 +148,12 @@ export default async function AdminModuleEditPage({ params }: AdminModuleEditPag
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <Button type="submit" variant="primary" icon="completed">
-                Save module
-              </Button>
+              <LoadingButton
+                idleLabel="Save module"
+                pendingLabel="Saving module..."
+                idleIcon="save"
+                variant="primary"
+              />
 
               <Button
                 href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}

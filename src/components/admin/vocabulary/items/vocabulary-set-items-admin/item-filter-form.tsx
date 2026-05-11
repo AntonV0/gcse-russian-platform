@@ -75,9 +75,7 @@ export function VocabularyItemFilterForm({
           <option value="all">All sources</option>
           <option value="spec_required">Spec required</option>
           <option value="custom">Custom</option>
-          {showExtendedSourceFilter ? (
-            <option value="extended">Extended</option>
-          ) : null}
+          {showExtendedSourceFilter ? <option value="extended">Extended</option> : null}
         </Select>
 
         <Select name="tier" defaultValue={normalizeTierFilter(itemFilters.tier)}>
@@ -115,9 +113,7 @@ export function VocabularyItemFilterForm({
           <option value="all">All coverage</option>
           <option value="foundation">Used in Foundation</option>
           <option value="higher">Used in Higher</option>
-          {showVolnaCoverageFilter ? (
-            <option value="volna">Used in Volna</option>
-          ) : null}
+          {showVolnaCoverageFilter ? <option value="volna">Used in Volna</option> : null}
           <option value="custom">Used in custom list</option>
           <option value="unused">Unused</option>
         </Select>

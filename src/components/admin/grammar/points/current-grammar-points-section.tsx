@@ -79,8 +79,8 @@ export function CurrentGrammarPointsSection({
 
       {points.length === 0 ? (
         <GrammarPointsEmptyState>
-          No grammar points in this set yet. Open the add panel below to create the
-          first teaching point.
+          No grammar points in this set yet. Open the add panel below to create the first
+          teaching point.
         </GrammarPointsEmptyState>
       ) : filteredPoints.length === 0 ? (
         <GrammarPointsEmptyState>

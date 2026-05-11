@@ -35,7 +35,13 @@ export function AdminActionMenuItem({
   children: React.ReactNode;
 }) {
   return (
-    <Button href={href} variant="quiet" size="sm" icon={icon} className="w-full justify-start">
+    <Button
+      href={href}
+      variant="quiet"
+      size="sm"
+      icon={icon}
+      className="w-full justify-start"
+    >
       {children}
     </Button>
   );
@@ -72,7 +78,9 @@ export function AdminActionMenuConfirmItem({
       >
         {children}
       </AdminConfirmButton>
-      {disabledReason ? <p className="px-2 pt-1 app-text-caption">{disabledReason}</p> : null}
+      {disabledReason ? (
+        <p className="px-2 pt-1 app-text-caption">{disabledReason}</p>
+      ) : null}
     </form>
   );
 }

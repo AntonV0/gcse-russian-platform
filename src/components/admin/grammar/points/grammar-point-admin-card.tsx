@@ -35,8 +35,7 @@ export default function GrammarPointAdminCard({
   health: DbGrammarPointContentHealth | null;
   position: number;
 }) {
-  const knowledgeTone =
-    point.knowledge_requirement === "receptive" ? "warning" : "muted";
+  const knowledgeTone = point.knowledge_requirement === "receptive" ? "warning" : "muted";
 
   return (
     <article className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] px-4 py-3 shadow-[var(--shadow-xs)]">

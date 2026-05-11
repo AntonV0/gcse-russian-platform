@@ -1,7 +1,7 @@
 import { createMockExamSectionAction } from "@/app/actions/admin/admin-mock-exam-actions";
-import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -46,9 +46,12 @@ export default function MockExamSectionCreatePanel({
           <Textarea name="instructions" rows={3} />
         </FormField>
 
-        <Button type="submit" variant="primary" icon="create">
-          Add section
-        </Button>
+        <LoadingButton
+          idleLabel="Add section"
+          pendingLabel="Adding section..."
+          idleIcon="create"
+          variant="primary"
+        />
       </form>
     </SectionCard>
   );

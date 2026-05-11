@@ -5,9 +5,7 @@ import {
   type GrammarSetFilters,
 } from "@/lib/grammar/grammar-helpers-db";
 
-export function getGrammarUsageFilterLabel(
-  value?: GrammarSetFilters["usageVariant"]
-) {
+export function getGrammarUsageFilterLabel(value?: GrammarSetFilters["usageVariant"]) {
   switch (value) {
     case "foundation":
       return "Foundation usage";
@@ -22,9 +20,7 @@ export function getGrammarUsageFilterLabel(
   }
 }
 
-export function getShortGrammarTierLabel(
-  tier: DbGrammarTier | "all"
-) {
+export function getShortGrammarTierLabel(tier: DbGrammarTier | "all") {
   if (tier === "both") return "Both";
   if (tier === "unknown") return "Unknown";
   if (tier === "all") return "All";

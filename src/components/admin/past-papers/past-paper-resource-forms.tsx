@@ -1,6 +1,6 @@
-import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -48,9 +48,12 @@ export default function PastPaperResourceForms() {
             Skip duplicate official URLs
           </label>
 
-          <Button type="submit" variant="primary" icon="upload">
-            Import links
-          </Button>
+          <LoadingButton
+            idleLabel="Import links"
+            pendingLabel="Importing links..."
+            idleIcon="upload"
+            variant="primary"
+          />
         </form>
       </PanelCard>
 
@@ -158,9 +161,12 @@ export default function PastPaperResourceForms() {
             </label>
           </div>
 
-          <Button type="submit" variant="primary" icon="create">
-            Add resource
-          </Button>
+          <LoadingButton
+            idleLabel="Add resource"
+            pendingLabel="Adding resource..."
+            idleIcon="create"
+            variant="primary"
+          />
         </form>
       </PanelCard>
     </>

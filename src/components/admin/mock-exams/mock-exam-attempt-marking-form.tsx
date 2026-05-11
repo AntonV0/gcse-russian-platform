@@ -1,12 +1,15 @@
-import { markMockExamAttemptAction } from "@/app/actions/admin/admin-mock-exam-actions";
+import {
+  generateAiMockExamMarkingAction,
+  markMockExamAttemptAction,
+} from "@/app/actions/admin/admin-mock-exam-actions";
 import MockExamMarkingAssistant from "@/components/mock-exams/mock-exam-marking-assistant";
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
 import MockExamResponseSummary from "@/components/mock-exams/mock-exam-response-summary";
 import Badge from "@/components/ui/badge";
-import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
 import { getMockExamSectionTypeLabel } from "@/lib/mock-exams/labels";
@@ -26,7 +29,19 @@ type MockExamAttemptMarkingFormProps = {
   responsesByQuestionId: Record<string, DbMockExamResponse>;
   score: DbMockExamScore | null;
   canMark: boolean;
+  canGenerateAiMarking?: boolean;
 };
+
+const aiMarkingQuestionTypes = new Set<DbMockExamQuestion["question_type"]>([
+  "writing_task",
+  "simple_sentences",
+  "short_paragraph",
+  "extended_writing",
+  "translation_into_russian",
+  "role_play",
+  "photo_card",
+  "conversation",
+]);
 
 function MarkGuidance({ value }: { value: unknown }) {
   const markGuidance = getString(value);
@@ -50,12 +65,20 @@ function MockExamAttemptQuestionMarkingCard({
   questionIndex,
   response,
   canMark,
+  canGenerateAiMarking,
 }: {
   question: DbMockExamQuestion;
   questionIndex: number;
   response: DbMockExamResponse | undefined;
   canMark: boolean;
+  canGenerateAiMarking: boolean;
 }) {
+  const canGenerateAiSuggestion =
+    canMark &&
+    canGenerateAiMarking &&
+    Boolean(response) &&
+    aiMarkingQuestionTypes.has(question.question_type);
+
   return (
     <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4">
       <MockExamQuestionPreview question={question} index={questionIndex} />
@@ -98,6 +121,21 @@ function MockExamAttemptQuestionMarkingCard({
         </FormField>
       </div>
 
+      {canGenerateAiSuggestion ? (
+        <div className="flex justify-end">
+          <LoadingButton
+            name="questionId"
+            value={question.id}
+            formAction={generateAiMockExamMarkingAction}
+            idleLabel="Generate AI suggestion"
+            pendingLabel="Generating suggestion..."
+            variant="soft"
+            size="sm"
+            idleIcon="sparkles"
+          />
+        </div>
+      ) : null}
+
       <MockExamMarkingAssistant
         question={question}
         response={response}
@@ -123,11 +161,13 @@ function MockExamAttemptSectionMarkingPanel({
   questions,
   responsesByQuestionId,
   canMark,
+  canGenerateAiMarking,
 }: {
   section: DbMockExamSection;
   questions: DbMockExamQuestion[];
   responsesByQuestionId: Record<string, DbMockExamResponse>;
   canMark: boolean;
+  canGenerateAiMarking: boolean;
 }) {
   return (
     <SectionCard
@@ -157,6 +197,7 @@ function MockExamAttemptSectionMarkingPanel({
               questionIndex={questionIndex}
               response={responsesByQuestionId[question.id]}
               canMark={canMark}
+              canGenerateAiMarking={canGenerateAiMarking}
             />
           ))}
         </div>
@@ -224,9 +265,12 @@ function MockExamAttemptFinalScorePanel({
 
       {canMark ? (
         <div className="mt-4">
-          <Button type="submit" variant="primary" icon="save">
-            Save marking
-          </Button>
+          <LoadingButton
+            idleLabel="Save marking"
+            pendingLabel="Saving marking..."
+            variant="primary"
+            idleIcon="save"
+          />
         </div>
       ) : null}
     </SectionCard>
@@ -240,6 +284,7 @@ export default function MockExamAttemptMarkingForm({
   responsesByQuestionId,
   score,
   canMark,
+  canGenerateAiMarking = true,
 }: MockExamAttemptMarkingFormProps) {
   if (sections.length === 0) {
     return (
@@ -269,6 +314,7 @@ export default function MockExamAttemptMarkingForm({
           questions={questionsBySectionId[section.id] ?? []}
           responsesByQuestionId={responsesByQuestionId}
           canMark={canMark}
+          canGenerateAiMarking={canGenerateAiMarking}
         />
       ))}
 

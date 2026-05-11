@@ -5,6 +5,7 @@ import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
@@ -187,9 +188,12 @@ export default async function EditGrammarSetPage({ params }: EditGrammarSetPageP
 
           <PanelCard title="Save changes" tone="admin">
             <div className="flex flex-col gap-3">
-              <Button type="submit" variant="primary" icon="save">
-                Save grammar set
-              </Button>
+              <LoadingButton
+                idleLabel="Save grammar set"
+                pendingLabel="Saving grammar set..."
+                idleIcon="save"
+                variant="primary"
+              />
               <Button href="/admin/grammar" variant="secondary" icon="cancel">
                 Cancel
               </Button>

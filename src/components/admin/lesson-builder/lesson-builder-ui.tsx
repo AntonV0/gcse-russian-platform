@@ -123,17 +123,29 @@ export function ConfirmSubmitButton({
   children,
   confirmMessage,
   className,
+  pendingLabel = "Working...",
 }: {
   children: React.ReactNode;
   confirmMessage: string;
   className?: string;
+  pendingLabel?: string;
 }) {
+  const { pending } = useFormStatus();
+
   return (
     <Button
       type="submit"
       variant="danger"
       className={className}
+      icon="warning"
+      loading={pending}
+      loadingLabel={pendingLabel}
       onClick={(event) => {
+        if (pending) {
+          event.preventDefault();
+          return;
+        }
+
         const confirmed = window.confirm(confirmMessage);
         if (!confirmed) event.preventDefault();
       }}

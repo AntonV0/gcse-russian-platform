@@ -1,7 +1,7 @@
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
-import Button from "@/components/ui/button";
 import { DataTableCell, DataTableRow } from "@/components/ui/data-table";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import {
@@ -190,9 +190,13 @@ export default function PastPaperResourceRow({
         <div className="flex flex-wrap gap-2">
           <form id={formId} action={updatePastPaperResourceAction}>
             <input type="hidden" name="resourceId" value={resource.id} />
-            <Button type="submit" variant="primary" size="sm" icon="save">
-              Save
-            </Button>
+            <LoadingButton
+              idleLabel="Save"
+              pendingLabel="Saving..."
+              idleIcon="save"
+              variant="primary"
+              size="sm"
+            />
           </form>
 
           <form action={deletePastPaperResourceAction}>

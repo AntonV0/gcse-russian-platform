@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { DbQuestionSet } from "@/lib/questions/question-db-types";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
@@ -55,14 +54,15 @@ export function QuestionSetOverviewPanel({
         </Button>
 
         {questionSet.slug ? (
-          <Link
+          <Button
             href={`/question-sets/${questionSet.slug}`}
-            className="app-btn-base app-btn-secondary min-h-10 rounded-2xl px-4 py-2.5 text-sm"
+            variant="secondary"
+            icon="preview"
             target="_blank"
             rel="noreferrer"
           >
             Open public view
-          </Link>
+          </Button>
         ) : null}
       </InlineActions>
     </PanelCard>

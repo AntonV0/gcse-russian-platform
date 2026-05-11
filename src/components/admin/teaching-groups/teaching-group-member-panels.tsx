@@ -141,7 +141,8 @@ export function TeachingGroupMemberSection({
                     <input type="hidden" name="redirectTo" value={redirectTo} />
                     <AdminConfirmButton
                       confirmMessage={confirmMessage}
-                      className="app-btn-base app-btn-danger min-h-9 rounded-xl px-3.5 py-2 text-sm"
+                      size="sm"
+                      pendingLabel="Removing..."
                     >
                       Remove
                     </AdminConfirmButton>

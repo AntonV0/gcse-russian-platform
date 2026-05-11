@@ -116,9 +116,7 @@ export default function VocabularyFilterToolbar({
               <option value="all">All usage</option>
               <option value="foundation">Used in Foundation</option>
               <option value="higher">Used in Higher</option>
-              {showVolnaUsageFilter ? (
-                <option value="volna">Used in Volna</option>
-              ) : null}
+              {showVolnaUsageFilter ? <option value="volna">Used in Volna</option> : null}
               <option value="unused">Unused</option>
             </Select>
           </FilterControl>

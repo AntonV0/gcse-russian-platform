@@ -25,15 +25,11 @@ function getFilteredViewSummary({
   }
 
   if (filters.topicKey) {
-    filterLabels.push(
-      getGrammarFilterLabel({ key: "topic", value: filters.topicKey })
-    );
+    filterLabels.push(getGrammarFilterLabel({ key: "topic", value: filters.topicKey }));
   }
 
   if (filters.sourceKey) {
-    filterLabels.push(
-      getGrammarFilterLabel({ key: "source", value: filters.sourceKey })
-    );
+    filterLabels.push(getGrammarFilterLabel({ key: "source", value: filters.sourceKey }));
   }
 
   if (filters.usageVariant && filters.usageVariant !== "all") {

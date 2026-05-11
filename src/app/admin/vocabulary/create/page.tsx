@@ -3,6 +3,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import {
@@ -290,9 +291,12 @@ export default function CreateVocabularySetPage() {
               />
 
               <div className="flex flex-col gap-3 pt-2">
-                <Button variant="primary" icon="save">
-                  Create vocabulary set
-                </Button>
+                <LoadingButton
+                  idleLabel="Create vocabulary set"
+                  pendingLabel="Creating vocabulary set..."
+                  idleIcon="create"
+                  variant="primary"
+                />
 
                 <Button href="/admin/vocabulary" variant="secondary" icon="cancel">
                   Cancel

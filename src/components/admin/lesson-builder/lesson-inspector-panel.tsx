@@ -39,6 +39,7 @@ import {
 } from "@/lib/lessons/lesson-blocks";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
@@ -175,15 +176,14 @@ export default function LessonInspectorPanel(props: {
                 <input type="hidden" name="sectionId" value={props.section.id} />
                 <input type="hidden" name="blockId" value={props.block.id} />
                 <input type="hidden" name="direction" value="up" />
-                <Button
-                  type="submit"
+                <LoadingButton
+                  idleLabel="Move block up"
+                  pendingLabel="Moving block..."
                   disabled={props.blockIndex === 0}
                   variant="secondary"
                   size="sm"
                   className="w-full"
-                >
-                  Move block up
-                </Button>
+                />
               </form>
 
               <form action={moveBlockAction}>
@@ -191,24 +191,27 @@ export default function LessonInspectorPanel(props: {
                 <input type="hidden" name="sectionId" value={props.section.id} />
                 <input type="hidden" name="blockId" value={props.block.id} />
                 <input type="hidden" name="direction" value="down" />
-                <Button
-                  type="submit"
+                <LoadingButton
+                  idleLabel="Move block down"
+                  pendingLabel="Moving block..."
                   disabled={props.blockIndex === props.section.blocks.length - 1}
                   variant="secondary"
                   size="sm"
                   className="w-full"
-                >
-                  Move block down
-                </Button>
+                />
               </form>
 
               <form action={duplicateBlockAction}>
                 <BuilderHiddenFields {...props.routeFields} />
                 <input type="hidden" name="sectionId" value={props.section.id} />
                 <input type="hidden" name="blockId" value={props.block.id} />
-                <Button type="submit" variant="secondary" size="sm" className="w-full">
-                  Duplicate block
-                </Button>
+                <LoadingButton
+                  idleLabel="Duplicate block"
+                  pendingLabel="Duplicating block..."
+                  variant="secondary"
+                  size="sm"
+                  className="w-full"
+                />
               </form>
 
               <form action={toggleBlockPublishedAction}>
@@ -219,9 +222,15 @@ export default function LessonInspectorPanel(props: {
                   name="nextState"
                   value={props.block.is_published ? "draft" : "published"}
                 />
-                <Button type="submit" variant="secondary" size="sm" className="w-full">
-                  {props.block.is_published ? "Unpublish block" : "Publish block"}
-                </Button>
+                <LoadingButton
+                  idleLabel={props.block.is_published ? "Unpublish block" : "Publish block"}
+                  pendingLabel={
+                    props.block.is_published ? "Unpublishing block..." : "Publishing block..."
+                  }
+                  variant="secondary"
+                  size="sm"
+                  className="w-full"
+                />
               </form>
 
               <form action={deleteBlockAction}>
@@ -296,38 +305,40 @@ export default function LessonInspectorPanel(props: {
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="sectionId" value={props.section.id} />
               <input type="hidden" name="direction" value="up" />
-              <Button
-                type="submit"
+              <LoadingButton
+                idleLabel="Move section up"
+                pendingLabel="Moving section..."
                 disabled={props.sectionIndex === 0}
                 variant="secondary"
                 size="sm"
                 className="w-full"
-              >
-                Move section up
-              </Button>
+              />
             </form>
 
             <form action={moveSectionAction}>
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="sectionId" value={props.section.id} />
               <input type="hidden" name="direction" value="down" />
-              <Button
-                type="submit"
+              <LoadingButton
+                idleLabel="Move section down"
+                pendingLabel="Moving section..."
                 disabled={props.sectionIndex === props.totalSections - 1}
                 variant="secondary"
                 size="sm"
                 className="w-full"
-              >
-                Move section down
-              </Button>
+              />
             </form>
 
             <form action={duplicateSectionAction}>
               <BuilderHiddenFields {...props.routeFields} />
               <input type="hidden" name="sectionId" value={props.section.id} />
-              <Button type="submit" variant="secondary" size="sm" className="w-full">
-                Duplicate section
-              </Button>
+              <LoadingButton
+                idleLabel="Duplicate section"
+                pendingLabel="Duplicating section..."
+                variant="secondary"
+                size="sm"
+                className="w-full"
+              />
             </form>
 
             <form action={toggleSectionPublishedAction}>
@@ -338,9 +349,19 @@ export default function LessonInspectorPanel(props: {
                 name="nextState"
                 value={props.section.is_published ? "draft" : "published"}
               />
-              <Button type="submit" variant="secondary" size="sm" className="w-full">
-                {props.section.is_published ? "Unpublish section" : "Publish section"}
-              </Button>
+              <LoadingButton
+                idleLabel={
+                  props.section.is_published ? "Unpublish section" : "Publish section"
+                }
+                pendingLabel={
+                  props.section.is_published
+                    ? "Unpublishing section..."
+                    : "Publishing section..."
+                }
+                variant="secondary"
+                size="sm"
+                className="w-full"
+              />
             </form>
 
             <form action={deleteSectionAction}>

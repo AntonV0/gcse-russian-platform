@@ -3,9 +3,9 @@ import {
   updateMockExamSetAction,
 } from "@/app/actions/admin/admin-mock-exam-actions";
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
-import Button from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -142,9 +142,12 @@ export default function MockExamSettingsPanels({ exam }: { exam: DbMockExamSet }
             </label>
           </div>
 
-          <Button type="submit" variant="primary" icon="save">
-            Save exam
-          </Button>
+          <LoadingButton
+            idleLabel="Save exam"
+            pendingLabel="Saving exam..."
+            idleIcon="save"
+            variant="primary"
+          />
         </form>
       </PanelCard>
 

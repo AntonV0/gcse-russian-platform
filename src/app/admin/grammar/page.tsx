@@ -38,9 +38,7 @@ function normalizeTierFilter(value?: string): GrammarSetFilters["tier"] {
   return "all";
 }
 
-function normalizeUsageVariantFilter(
-  value?: string
-): GrammarSetFilters["usageVariant"] {
+function normalizeUsageVariantFilter(value?: string): GrammarSetFilters["usageVariant"] {
   if (
     value === "foundation" ||
     value === "higher" ||
@@ -65,9 +63,7 @@ function getUniqueSortedValues(values: (string | null | undefined)[]) {
   ).sort((a, b) => a.localeCompare(b));
 }
 
-function getGrammarListStats(
-  grammarSets: DbGrammarSetListItem[]
-): AdminGrammarListStats {
+function getGrammarListStats(grammarSets: DbGrammarSetListItem[]): AdminGrammarListStats {
   const totalSets = grammarSets.length;
   const publishedSets = grammarSets.filter((set) => set.is_published).length;
   const draftSets = totalSets - publishedSets;
@@ -80,9 +76,7 @@ function getGrammarListStats(
   return { totalSets, publishedSets, draftSets, totalPoints, totalUsages };
 }
 
-export default async function AdminGrammarPage({
-  searchParams,
-}: AdminGrammarPageProps) {
+export default async function AdminGrammarPage({ searchParams }: AdminGrammarPageProps) {
   const params = (await searchParams) ?? {};
   const filters: GrammarSetFilters = {
     search: params.search ?? null,
@@ -107,10 +101,7 @@ export default async function AdminGrammarPage({
     missingTopicSets: allGrammarSets.filter((set) => !set.topic_key).length,
   };
   const requestedPage = normalizePageParam(params.page);
-  const totalPages = Math.max(
-    1,
-    Math.ceil(grammarSets.length / ADMIN_GRAMMAR_PAGE_SIZE)
-  );
+  const totalPages = Math.max(1, Math.ceil(grammarSets.length / ADMIN_GRAMMAR_PAGE_SIZE));
   const currentPage = Math.min(requestedPage, totalPages);
   const pageStartIndex = (currentPage - 1) * ADMIN_GRAMMAR_PAGE_SIZE;
   const paginatedGrammarSets = grammarSets.slice(
@@ -133,10 +124,7 @@ export default async function AdminGrammarPage({
         publishedSets={stats.publishedSets}
       />
 
-      <GrammarSummaryStats
-        stats={stats}
-        usageVariant={filters.usageVariant}
-      />
+      <GrammarSummaryStats stats={stats} usageVariant={filters.usageVariant} />
 
       <SavedGrammarViews />
 

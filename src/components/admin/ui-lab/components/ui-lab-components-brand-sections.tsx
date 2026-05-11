@@ -232,7 +232,7 @@ function DemoIntroPanels() {
             <Button variant="secondary" icon="preview">
               Review overview
             </Button>
-            <Button variant="primary" icon="next" iconPosition="right">
+            <Button variant="journey" icon="next" iconPosition="right">
               Continue lesson
             </Button>
           </>

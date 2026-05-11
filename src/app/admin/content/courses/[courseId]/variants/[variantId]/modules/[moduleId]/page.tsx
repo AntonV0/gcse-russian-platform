@@ -1,6 +1,8 @@
 import BackNav from "@/components/ui/back-nav";
+import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
@@ -273,9 +275,12 @@ export default async function AdminModuleDetailPage({
                 <CheckboxField name="availableInVolna" label="Available in Volna" />
               </div>
 
-              <Button type="submit" variant="primary" icon="create">
-                Create lesson
-              </Button>
+              <LoadingButton
+                idleLabel="Create lesson"
+                pendingLabel="Creating lesson..."
+                idleIcon="create"
+                variant="primary"
+              />
             </form>
           </ExpandableAdminFormPanel>
 
@@ -287,9 +292,14 @@ export default async function AdminModuleDetailPage({
                 <input type="hidden" name="courseId" value={course.id} />
                 <input type="hidden" name="variantId" value={variant.id} />
                 <input type="hidden" name="moduleId" value={module.id} />
-                <Button type="submit" variant="danger" icon="delete">
+                <AdminConfirmButton
+                  variant="danger"
+                  icon="inactive"
+                  confirmMessage={`Unpublish ${module.title}?`}
+                  pendingLabel="Unpublishing..."
+                >
                   Unpublish module
-                </Button>
+                </AdminConfirmButton>
               </form>
             }
           />

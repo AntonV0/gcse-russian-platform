@@ -25,6 +25,9 @@ type MockExamAttemptReviewHeaderProps = {
 };
 
 type MockExamAttemptReviewNoticesProps = {
+  aiError?: string;
+  aiMarked?: boolean;
+  aiReady?: boolean;
   saved: boolean;
   canMark: boolean;
 };
@@ -39,6 +42,14 @@ type MockExamAttemptReviewSummaryProps = {
 
 function formatDateTime(value: string | null) {
   return value ? new Date(value).toLocaleString("en-GB") : "-";
+}
+
+function safeDecodeURIComponent(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
 
 export function MockExamAttemptReviewHeader({
@@ -87,6 +98,9 @@ export function MockExamAttemptReviewHeader({
 }
 
 export function MockExamAttemptReviewNotices({
+  aiError,
+  aiMarked = false,
+  aiReady = true,
   saved,
   canMark,
 }: MockExamAttemptReviewNoticesProps) {
@@ -97,6 +111,30 @@ export function MockExamAttemptReviewNotices({
           tone="success"
           title="Marks saved"
           description="The response marks, feedback, attempt score, and predicted grade note have been updated."
+        />
+      ) : null}
+
+      {aiMarked ? (
+        <FeedbackBanner
+          tone="success"
+          title="AI suggestion generated"
+          description="The suggested mark, rationale, evidence, and extracted or transcribed response have been saved for teacher review."
+        />
+      ) : null}
+
+      {aiError ? (
+        <FeedbackBanner
+          tone="danger"
+          title="AI suggestion failed"
+          description={safeDecodeURIComponent(aiError)}
+        />
+      ) : null}
+
+      {!aiReady ? (
+        <FeedbackBanner
+          tone="warning"
+          title="AI marking is not configured"
+          description="Add OPENAI_API_KEY to the server environment before generating AI marking suggestions."
         />
       ) : null}
 

@@ -6,6 +6,7 @@ import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import { createLessonBlockPresetAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import {
@@ -32,9 +33,12 @@ function CreatePresetCard() {
         </FormField>
 
         <div className="md:col-span-3">
-          <Button type="submit" variant="primary" icon="create">
-            Create preset
-          </Button>
+          <LoadingButton
+            idleLabel="Create preset"
+            pendingLabel="Creating preset..."
+            variant="primary"
+            idleIcon="create"
+          />
         </div>
       </form>
     </PanelCard>

@@ -8,6 +8,7 @@ import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -136,17 +137,23 @@ export default async function AdminLessonSectionTemplateDetailPage({
           />
 
           <InlineActions className="md:col-span-2">
-            <Button type="submit" variant="primary" icon="save">
-              Save section template
-            </Button>
+            <LoadingButton
+              idleLabel="Save section template"
+              pendingLabel="Saving section template..."
+              variant="primary"
+              idleIcon="save"
+            />
           </InlineActions>
         </form>
 
         <form action={deleteLessonSectionTemplateAction} className="mt-5">
           <input type="hidden" name="templateId" value={detail.template.id} />
-          <Button type="submit" variant="danger" icon="delete">
-            Delete section template
-          </Button>
+          <LoadingButton
+            idleLabel="Delete section template"
+            pendingLabel="Deleting section template..."
+            variant="danger"
+            idleIcon="delete"
+          />
         </form>
       </PanelCard>
 
@@ -182,9 +189,12 @@ export default async function AdminLessonSectionTemplateDetailPage({
             </FormField>
 
             <InlineActions className="items-end">
-              <Button type="submit" variant="primary" icon="create">
-                Add preset
-              </Button>
+              <LoadingButton
+                idleLabel="Add preset"
+                pendingLabel="Adding preset..."
+                variant="primary"
+                idleIcon="create"
+              />
             </InlineActions>
           </form>
         )}
@@ -220,9 +230,12 @@ export default async function AdminLessonSectionTemplateDetailPage({
                     className="font-mono"
                   />
                 </FormField>
-                <Button type="submit" variant="secondary" icon="save">
-                  Save preset order
-                </Button>
+                <LoadingButton
+                  idleLabel="Save preset order"
+                  pendingLabel="Saving preset order..."
+                  variant="secondary"
+                  idleIcon="save"
+                />
               </form>
             </PanelCard>
 
@@ -266,9 +279,13 @@ export default async function AdminLessonSectionTemplateDetailPage({
                         name="presetId"
                         value={link.lesson_block_preset_id}
                       />
-                      <Button type="submit" variant="danger" size="sm" icon="delete">
-                        Remove
-                      </Button>
+                      <LoadingButton
+                        idleLabel="Remove"
+                        pendingLabel="Removing preset..."
+                        variant="danger"
+                        size="sm"
+                        idleIcon="delete"
+                      />
                     </form>
                   }
                 />

@@ -3,11 +3,11 @@ import {
   updateQuestionSetAction,
 } from "@/app/actions/admin/admin-question-actions";
 import type { DbQuestionSet } from "@/lib/questions/question-db-types";
-import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Textarea from "@/components/ui/textarea";
 
@@ -68,17 +68,23 @@ export function QuestionSetEditPanel({ questionSet }: { questionSet: DbQuestionS
         </PanelCard>
 
         <InlineActions>
-          <Button type="submit" variant="primary" icon="save">
-            Save question set
-          </Button>
+          <LoadingButton
+            idleLabel="Save question set"
+            pendingLabel="Saving question set..."
+            idleIcon="save"
+            variant="primary"
+          />
         </InlineActions>
       </form>
 
       <form action={duplicateQuestionSetAction} className="mt-4">
         <input type="hidden" name="questionSetId" value={questionSet.id} />
-        <Button type="submit" variant="secondary" icon="create">
-          Duplicate question set
-        </Button>
+        <LoadingButton
+          idleLabel="Duplicate question set"
+          pendingLabel="Duplicating question set..."
+          idleIcon="create"
+          variant="secondary"
+        />
       </form>
     </PanelCard>
   );

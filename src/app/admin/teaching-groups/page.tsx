@@ -128,7 +128,7 @@ export default async function AdminTeachingGroupsPage() {
           description="View groups, teacher assignment, and membership structure."
         />
 
-        <Button href="/admin/teaching-groups/new" variant="primary" icon="write">
+        <Button href="/admin/teaching-groups/new" variant="primary" icon="create">
           New teaching group
         </Button>
       </div>
@@ -145,7 +145,7 @@ export default async function AdminTeachingGroupsPage() {
             title="No teaching groups yet"
             description="Create a teaching group to organise students, teachers, and course access."
             action={
-              <Button href="/admin/teaching-groups/new" variant="primary" icon="write">
+              <Button href="/admin/teaching-groups/new" variant="primary" icon="create">
                 New teaching group
               </Button>
             }
@@ -218,7 +218,8 @@ export default async function AdminTeachingGroupsPage() {
                       href={`/admin/teaching-groups/${group.id}`}
                       variant="secondary"
                       size="sm"
-                      icon="preview"
+                      icon="next"
+                      iconPosition="right"
                     >
                       Open
                     </Button>

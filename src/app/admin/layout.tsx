@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/auth";
+import { getCurrentAppearancePreferences, getCurrentUser } from "@/lib/auth/auth";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import AdminSidebar from "@/components/admin/admin-sidebar";
 import AdminRouteTracker from "@/components/admin/admin-route-tracker";
 import AppShell from "@/components/layout/app-shell";
+import AppearancePreferenceSync from "@/components/providers/appearance-preference-sync";
 import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import { noIndexRobots } from "@/lib/seo/site";
 
@@ -19,7 +20,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/login");
   }
 
-  const isAdmin = await requireAdminAccess();
+  const [isAdmin, appearancePreferences] = await Promise.all([
+    requireAdminAccess(),
+    getCurrentAppearancePreferences(),
+  ]);
 
   if (!isAdmin) {
     redirect("/dashboard");
@@ -27,6 +31,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <DevMarkerProvider isAdmin>
+      <AppearancePreferenceSync
+        themePreference={appearancePreferences?.theme_preference}
+        accentPreference={appearancePreferences?.accent_preference}
+      />
       <AppShell user={{ email: user.email }}>
         <div className="app-admin-workspace overflow-x-clip">
           <AdminRouteTracker />

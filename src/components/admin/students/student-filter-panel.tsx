@@ -53,11 +53,11 @@ export default function StudentFilterPanel({
           </FormField>
 
           <InlineActions className="items-end" align="end">
-            <Button type="submit" variant="primary" icon="filter">
+            <Button type="submit" variant="secondary" icon="filter">
               Apply
             </Button>
 
-            <Button href="/admin/students" variant="secondary" icon="back">
+            <Button href="/admin/students" variant="quiet" icon="refresh">
               Reset
             </Button>
           </InlineActions>

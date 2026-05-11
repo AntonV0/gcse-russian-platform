@@ -2,6 +2,7 @@ import BackNav from "@/components/ui/back-nav";
 import ActiveStatusBadge from "@/components/ui/active-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
@@ -139,9 +140,12 @@ export default async function AdminVariantEditPage({
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <Button type="submit" variant="primary" icon="completed">
-                Save variant
-              </Button>
+              <LoadingButton
+                idleLabel="Save variant"
+                pendingLabel="Saving variant..."
+                idleIcon="save"
+                variant="primary"
+              />
 
               <Button
                 href={`/admin/content/courses/${course.id}/variants/${variant.id}`}

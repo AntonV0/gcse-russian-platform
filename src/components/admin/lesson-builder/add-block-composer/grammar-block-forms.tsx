@@ -40,13 +40,7 @@ export function AddGrammarSetBlockForm(props: AddGrammarSetBlockFormProps) {
 
       if (!normalizedSearch) return true;
 
-      return [
-        option.title,
-        option.slug,
-        option.tier,
-        option.themeKey,
-        option.topicKey,
-      ]
+      return [option.title, option.slug, option.tier, option.themeKey, option.topicKey]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()

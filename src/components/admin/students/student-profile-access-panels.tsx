@@ -9,6 +9,7 @@ import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import type {
@@ -124,9 +125,12 @@ export function SwitchAccessPanel({
           </FormField>
 
           <InlineActions className="items-end">
-            <Button type="submit" variant="primary" icon="refresh">
-              Switch access
-            </Button>
+            <LoadingButton
+              idleLabel="Switch access"
+              pendingLabel="Switching access..."
+              idleIcon="refresh"
+              variant="primary"
+            />
           </InlineActions>
         </form>
       )}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormStatus } from "react-dom";
 import Button from "@/components/ui/button";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
@@ -14,6 +15,7 @@ type AdminConfirmButtonProps = {
   size?: ButtonSize;
   disabled?: boolean;
   title?: string;
+  pendingLabel?: string;
 };
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
@@ -27,7 +29,10 @@ export default function AdminConfirmButton({
   size = "md",
   disabled = false,
   title,
+  pendingLabel = "Working...",
 }: AdminConfirmButtonProps) {
+  const { pending } = useFormStatus();
+  const isDisabled = disabled || pending;
   const wrapperClassName = [
     "dev-marker-host relative inline-flex max-w-full",
     className?.split(/\s+/).includes("w-full") ? "w-full" : null,
@@ -59,11 +64,13 @@ export default function AdminConfirmButton({
         variant={variant}
         icon={icon}
         size={size}
-        disabled={disabled}
+        disabled={isDisabled}
         title={title}
         className={className}
+        loading={pending}
+        loadingLabel={pendingLabel}
         onClick={(event) => {
-          if (disabled) {
+          if (isDisabled) {
             event.preventDefault();
             return;
           }

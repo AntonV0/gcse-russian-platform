@@ -12,6 +12,8 @@ type AdminMockExamAttemptReviewPageProps = {
     attemptId: string;
   }>;
   searchParams?: Promise<{
+    aiError?: string;
+    aiMarked?: string;
     saved?: string;
   }>;
 };
@@ -48,6 +50,7 @@ export default async function AdminMockExamAttemptReviewPage({
     (response) => response.awarded_marks !== null
   ).length;
   const canMark = attempt.status !== "draft";
+  const canGenerateAiMarking = Boolean(process.env.OPENAI_API_KEY);
 
   return (
     <main className="space-y-4">
@@ -59,7 +62,13 @@ export default async function AdminMockExamAttemptReviewPage({
         questionCount={questions.length}
       />
 
-      <MockExamAttemptReviewNotices saved={query.saved === "1"} canMark={canMark} />
+      <MockExamAttemptReviewNotices
+        aiError={query.aiError}
+        aiMarked={Boolean(query.aiMarked)}
+        aiReady={canGenerateAiMarking}
+        saved={query.saved === "1"}
+        canMark={canMark}
+      />
 
       <MockExamAttemptReviewSummary
         attempt={attempt}
@@ -76,6 +85,7 @@ export default async function AdminMockExamAttemptReviewPage({
         responsesByQuestionId={responsesByQuestionId}
         score={score}
         canMark={canMark}
+        canGenerateAiMarking={canGenerateAiMarking}
       />
     </main>
   );

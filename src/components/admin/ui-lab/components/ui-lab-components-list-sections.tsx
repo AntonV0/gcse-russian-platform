@@ -120,7 +120,7 @@ function DemoPanelDetails() {
               <Button variant="secondary" icon="edit">
                 Edit
               </Button>
-              <Button variant="primary" icon="next">
+              <Button variant="secondary" icon="next">
                 Open course
               </Button>
             </InlineActions>

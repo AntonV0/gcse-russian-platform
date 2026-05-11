@@ -11,11 +11,11 @@ import {
   getLessonBlockPreview,
 } from "@/lib/lessons/lesson-blocks";
 import Badge from "@/components/ui/badge";
-import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Textarea from "@/components/ui/textarea";
 import { BlockPresetBlockFields } from "./block-preset-block-fields";
@@ -71,9 +71,12 @@ function BlockPresetOrderForm({
             className="font-mono"
           />
         </FormField>
-        <Button type="submit" variant="secondary" icon="save">
-          Save block order
-        </Button>
+        <LoadingButton
+          idleLabel="Save block order"
+          pendingLabel="Saving block order..."
+          variant="secondary"
+          idleIcon="save"
+        />
       </form>
     </PanelCard>
   );
@@ -130,18 +133,24 @@ function BlockPresetBlockEditor({
         <CheckboxField name="isActive" label="Active" defaultChecked={block.is_active} />
 
         <InlineActions>
-          <Button type="submit" variant="secondary" icon="save">
-            Save block
-          </Button>
+          <LoadingButton
+            idleLabel="Save block"
+            pendingLabel="Saving block..."
+            variant="secondary"
+            idleIcon="save"
+          />
         </InlineActions>
       </form>
 
       <form action={deleteLessonBlockPresetBlockAction} className="mt-3">
         <input type="hidden" name="presetId" value={presetId} />
         <input type="hidden" name="presetBlockId" value={block.id} />
-        <Button type="submit" variant="danger" icon="delete">
-          Delete block
-        </Button>
+        <LoadingButton
+          idleLabel="Delete block"
+          pendingLabel="Deleting block..."
+          variant="danger"
+          idleIcon="delete"
+        />
       </form>
     </PanelCard>
   );

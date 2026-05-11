@@ -4,11 +4,11 @@ import {
 } from "@/app/actions/admin/admin-lesson-builder-actions";
 import type { DbLessonBlockPreset } from "@/lib/lessons/lesson-template-types";
 import Badge from "@/components/ui/badge";
-import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 
 export function BlockPresetDetailsPanel({
@@ -62,17 +62,23 @@ export function BlockPresetDetailsPanel({
         />
 
         <InlineActions className="md:col-span-2">
-          <Button type="submit" variant="primary" icon="save">
-            Save preset
-          </Button>
+          <LoadingButton
+            idleLabel="Save preset"
+            pendingLabel="Saving preset..."
+            variant="primary"
+            idleIcon="save"
+          />
         </InlineActions>
       </form>
 
       <form action={deleteLessonBlockPresetAction} className="mt-4">
         <input type="hidden" name="presetId" value={preset.id} />
-        <Button type="submit" variant="danger" icon="delete">
-          Delete preset
-        </Button>
+        <LoadingButton
+          idleLabel="Delete preset"
+          pendingLabel="Deleting preset..."
+          variant="danger"
+          idleIcon="delete"
+        />
       </form>
     </PanelCard>
   );

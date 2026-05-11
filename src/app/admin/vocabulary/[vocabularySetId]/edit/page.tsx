@@ -4,6 +4,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -315,9 +316,12 @@ export default async function EditVocabularySetPage({
               </div>
 
               <div className="flex flex-col gap-3 pt-2">
-                <Button variant="primary" icon="save">
-                  Save changes
-                </Button>
+                <LoadingButton
+                  idleLabel="Save changes"
+                  pendingLabel="Saving changes..."
+                  idleIcon="save"
+                  variant="primary"
+                />
 
                 <Button href="/admin/vocabulary" variant="secondary" icon="cancel">
                   Cancel

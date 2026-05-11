@@ -188,11 +188,11 @@ export default async function AdminTeachersPage({
             </FormField>
 
             <InlineActions className="items-end md:pt-6">
-              <Button type="submit" variant="primary" icon="filter">
+              <Button type="submit" variant="secondary" icon="filter">
                 Apply
               </Button>
 
-              <Button href="/admin/teachers" variant="secondary" icon="back">
+              <Button href="/admin/teachers" variant="quiet" icon="refresh">
                 Reset
               </Button>
             </InlineActions>
@@ -212,7 +212,7 @@ export default async function AdminTeachersPage({
             title="No teacher accounts found"
             description="Try a broader search or clear the active filter."
             action={
-              <Button href="/admin/teachers" variant="secondary" icon="back">
+              <Button href="/admin/teachers" variant="secondary" icon="refresh">
                 Reset search
               </Button>
             }
@@ -259,7 +259,8 @@ export default async function AdminTeachersPage({
                     href={`/admin/teachers/${teacher.id}`}
                     variant="secondary"
                     size="sm"
-                    icon="preview"
+                    icon="next"
+                    iconPosition="right"
                   >
                     View
                   </Button>

@@ -87,12 +87,7 @@ export default function GrammarPagination({
                 ) : null}
 
                 {page === currentPage ? (
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="sm"
-                    aria-current="page"
-                  >
+                  <Button type="button" variant="primary" size="sm" aria-current="page">
                     {page}
                   </Button>
                 ) : (

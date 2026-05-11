@@ -12,6 +12,7 @@ import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -80,9 +81,13 @@ function SectionSettingsForm({
       </FormField>
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" variant="primary" size="sm" icon="save">
-          Save section
-        </Button>
+        <LoadingButton
+          idleLabel="Save section"
+          pendingLabel="Saving section..."
+          idleIcon="save"
+          variant="primary"
+          size="sm"
+        />
       </div>
     </form>
   );

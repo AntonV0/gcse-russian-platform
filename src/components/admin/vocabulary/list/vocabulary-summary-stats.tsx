@@ -32,19 +32,8 @@ export default function VocabularySummaryStats({
         tone="warning"
         compact
       />
-      <SummaryStatCard
-        title="Items"
-        value={totalItems}
-        icon="list"
-        tone="info"
-        compact
-      />
-      <SummaryStatCard
-        title="Lesson usage"
-        value={totalUsages}
-        icon="lessons"
-        compact
-      />
+      <SummaryStatCard title="Items" value={totalItems} icon="list" tone="info" compact />
+      <SummaryStatCard title="Lesson usage" value={totalUsages} icon="lessons" compact />
     </section>
   );
 }

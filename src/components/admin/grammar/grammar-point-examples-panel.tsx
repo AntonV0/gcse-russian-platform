@@ -8,6 +8,7 @@ import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
@@ -144,9 +145,12 @@ function AddGrammarExamplePanel({
           <Input name="sortOrder" type="number" min={0} step={1} />
         </FormField>
 
-        <Button type="submit" variant="primary" icon="create">
-          Add example
-        </Button>
+        <LoadingButton
+          idleLabel="Add example"
+          pendingLabel="Adding example..."
+          idleIcon="create"
+          variant="primary"
+        />
       </form>
     </PanelCard>
   );

@@ -1,6 +1,7 @@
 import ActiveStatusBadge from "@/components/ui/active-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import ExpandableAdminFormPanel from "@/components/admin/expandable-admin-form-panel";
@@ -222,9 +223,12 @@ export default async function AdminCourseDetailPage({
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button type="submit" variant="primary" icon="create">
-                  Create variant
-                </Button>
+                <LoadingButton
+                  idleLabel="Create variant"
+                  pendingLabel="Creating variant..."
+                  idleIcon="create"
+                  variant="primary"
+                />
               </div>
             </form>
           </ExpandableAdminFormPanel>

@@ -128,13 +128,7 @@ export default function ContinueWhereLeftOffPanel() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button
-              href={recentRoute.href}
-              variant="primary"
-              size="sm"
-              icon="next"
-              iconPosition="right"
-            >
+            <Button href={recentRoute.href} variant="secondary" size="sm" icon="history">
               Reopen page
             </Button>
           </div>

@@ -31,7 +31,11 @@ export default function PointCoverageBadges({
         const isUsed = getGrammarCoverageVariantUsed(coverage, variant);
 
         return (
-          <Badge key={variant} tone={isUsed ? "success" : "danger"} icon={isUsed ? "success" : "cancel"}>
+          <Badge
+            key={variant}
+            tone={isUsed ? "success" : "danger"}
+            icon={isUsed ? "success" : "cancel"}
+          >
             {usageCount > 0
               ? `${getGrammarCoverageVariantLabel(variant)} ${usageCount}`
               : getGrammarCoverageVariantLabel(variant)}

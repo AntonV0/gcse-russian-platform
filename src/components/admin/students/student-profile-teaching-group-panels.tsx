@@ -9,6 +9,7 @@ import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
+import LoadingButton from "@/components/ui/loading-button";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import type { AdminTeachingGroupRow } from "@/lib/users/admin-user-helpers-db";
@@ -49,9 +50,12 @@ export function AddStudentToTeachingGroupPanel({
           </FormField>
 
           <InlineActions className="items-end">
-            <Button type="submit" variant="primary" icon="create">
-              Add to group
-            </Button>
+            <LoadingButton
+              idleLabel="Add to group"
+              pendingLabel="Adding to group..."
+              idleIcon="create"
+              variant="primary"
+            />
           </InlineActions>
         </form>
       )}

@@ -79,9 +79,9 @@ function DemoFontQa() {
         </div>
 
         <p className="max-w-3xl app-text-body-muted">
-          Use one font family across headings, lesson prose, navigation, forms, and
-          admin. Distinction comes from role-based weights and spacing, not from
-          switching typefaces.
+          Use one font family across headings, lesson prose, navigation, forms, and admin.
+          Distinction comes from role-based weights and spacing, not from switching
+          typefaces.
         </p>
       </PanelCard>
 

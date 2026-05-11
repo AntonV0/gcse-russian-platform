@@ -1,5 +1,8 @@
 import { DEMO_TABLE_ROWS } from "@/components/admin/ui-lab/tables/ui-lab-tables-data";
-import { StatusBadge, VariantBadge } from "@/components/admin/ui-lab/tables/ui-lab-tables-badges";
+import {
+  StatusBadge,
+  VariantBadge,
+} from "@/components/admin/ui-lab/tables/ui-lab-tables-badges";
 import UiLabSection from "@/components/admin/ui-lab/shell/ui-lab-section";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";

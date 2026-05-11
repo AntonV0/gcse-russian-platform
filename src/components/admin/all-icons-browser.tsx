@@ -195,7 +195,7 @@ export default function AllIconsBrowser() {
               return (
                 <div
                   key={name}
-                  className={`rounded-2xl border p-3 text-center shadow-sm transition hover:-translate-y-0.5 ${
+                  className={`app-card-interaction-subtle rounded-2xl border p-3 text-center shadow-sm ${
                     isCurated
                       ? "border-[color-mix(in_srgb,var(--success)_24%,transparent)] bg-[var(--success-soft)]"
                       : "border-[var(--border)] bg-[var(--background-elevated)]"

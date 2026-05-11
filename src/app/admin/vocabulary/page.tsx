@@ -154,10 +154,7 @@ export default async function AdminVocabularyPage({
     pageSize: ADMIN_VOCABULARY_PAGE_SIZE,
     totalItems: vocabularySets.length,
     startItem: vocabularySets.length === 0 ? 0 : pageStartIndex + 1,
-    endItem: Math.min(
-      pageStartIndex + ADMIN_VOCABULARY_PAGE_SIZE,
-      vocabularySets.length
-    ),
+    endItem: Math.min(pageStartIndex + ADMIN_VOCABULARY_PAGE_SIZE, vocabularySets.length),
   };
   const showVolnaUsageFilter =
     filters.usageVariant === "volna" ||

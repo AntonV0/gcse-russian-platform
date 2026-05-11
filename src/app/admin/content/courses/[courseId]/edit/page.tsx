@@ -2,6 +2,7 @@ import BackNav from "@/components/ui/back-nav";
 import ActiveStatusBadge from "@/components/ui/active-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
@@ -114,9 +115,12 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <Button type="submit" variant="primary" icon="completed">
-                Save course
-              </Button>
+              <LoadingButton
+                idleLabel="Save course"
+                pendingLabel="Saving course..."
+                idleIcon="save"
+                variant="primary"
+              />
 
               <Button
                 href={`/admin/content/courses/${course.id}`}
