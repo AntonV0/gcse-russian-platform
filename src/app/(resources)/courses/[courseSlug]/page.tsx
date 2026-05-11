@@ -1,11 +1,12 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import ActionPill from "@/components/ui/action-pill";
 import EmptyState from "@/components/ui/empty-state";
 import LockedContentCard from "@/components/ui/locked-content-card";
+import PendingLinkCard from "@/components/ui/pending-link-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadCoursePageData } from "@/lib/courses/course-helpers-db";
 import { getCoursesPath, getVariantPath } from "@/lib/access/routes";
@@ -125,7 +126,12 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
             <div className="flex flex-wrap gap-3">
               {primaryActionHref && primaryActionLabel ? (
-                <Button href={primaryActionHref} variant="primary" icon="next">
+                <Button
+                  href={primaryActionHref}
+                  variant="journey"
+                  icon="next"
+                  iconPosition="right"
+                >
                   {primaryActionLabel}
                 </Button>
               ) : null}
@@ -199,8 +205,14 @@ export default async function CoursePage({ params }: CoursePageProps) {
               : (summary?.nextLesson?.href ?? getVariantPath(course.slug, variant.slug));
 
             return (
-              <Link key={variant.slug} href={href} className="block">
-                <DashboardCard className="h-full transition hover:-translate-y-0.5">
+              <PendingLinkCard
+                key={variant.slug}
+                href={href}
+                className="app-focus-ring group block rounded-2xl"
+                ariaLabel={`Open ${variant.title}`}
+                pendingLabel="Opening path..."
+              >
+                <DashboardCard className="app-card-interaction-subtle h-full">
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge tone={getVariantTone(variant.slug)} icon="layers">
@@ -271,18 +283,20 @@ export default async function CoursePage({ params }: CoursePageProps) {
                       </div>
                     </div>
 
-                    <div className="pt-1 text-sm font-medium app-brand-text">
-                      {summary?.nextLesson
-                        ? `Continue: ${summary.nextLesson.title}`
-                        : isFoundationToHigherUpgrade
-                          ? "Upgrade to Higher"
-                        : summary?.isComplete
-                          ? "Review path"
-                          : "Open path"}
+                    <div className="pt-1">
+                      <ActionPill icon={isFoundationToHigherUpgrade ? "billing" : "next"}>
+                        {summary?.nextLesson
+                          ? `Continue: ${summary.nextLesson.title}`
+                          : isFoundationToHigherUpgrade
+                            ? "Upgrade to Higher"
+                            : summary?.isComplete
+                              ? "Review path"
+                              : "Open path"}
+                      </ActionPill>
                     </div>
                   </div>
                 </DashboardCard>
-              </Link>
+              </PendingLinkCard>
             );
           })}
         </section>

@@ -336,16 +336,22 @@ export async function getStudentDashboardActivity(
 
 export function getStudentDashboardActionQueue(
   activity: StudentDashboardActivity,
-  fallback: StudentDashboardFallbackAction
+  fallback: StudentDashboardFallbackAction,
+  options: { preferLearningPlan?: boolean } = {}
 ) {
-  return [
-    activity.pendingAssignments[0]
-      ? getAssignmentAction(activity.pendingAssignments[0])
-      : null,
+  const learningPlanAction = getFallbackAction(fallback);
+  const assignmentAction = activity.pendingAssignments[0]
+    ? getAssignmentAction(activity.pendingAssignments[0])
+    : null;
+  const activityActions = [
+    assignmentAction,
     activity.draftMockAttempts[0]
       ? getMockAttemptAction(activity.draftMockAttempts[0])
       : null,
     activity.recentFeedback[0] ? getFeedbackAction(activity.recentFeedback[0]) : null,
-    getFallbackAction(fallback),
   ].filter((action): action is StudentDashboardAction => action !== null);
+
+  return options.preferLearningPlan
+    ? [learningPlanAction, ...activityActions]
+    : [...activityActions, learningPlanAction];
 }

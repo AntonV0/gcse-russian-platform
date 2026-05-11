@@ -76,6 +76,8 @@ describe("dashboard learning-plan progress helpers", () => {
         nextLesson: {
           title: "Questions",
           moduleTitle: "Basics",
+          moduleNumber: 1,
+          lessonNumber: 2,
           href: "/courses/gcse-russian/foundation/modules/basics/questions",
           estimatedMinutes: 15,
         },
@@ -86,7 +88,7 @@ describe("dashboard learning-plan progress helpers", () => {
     expect(nextStep.label).toBe("Continue lesson");
   });
 
-  it("keeps Volna students on the assignments next step", () => {
+  it("uses lesson progress before Volna assignments when a lesson is ready", () => {
     const nextStep = getDashboardNextStep(
       "volna",
       "volna",
@@ -96,14 +98,33 @@ describe("dashboard learning-plan progress helpers", () => {
         nextLesson: {
           title: "Speaking practice",
           moduleTitle: "Classwork",
+          moduleNumber: 2,
+          lessonNumber: 5,
           href: "/courses/gcse-russian/volna/modules/classwork/speaking-practice",
           estimatedMinutes: 20,
         },
       })
     );
 
-    expect(nextStep.href).toBe("/assignments");
-    expect(nextStep.label).toBe("Open assignments");
+    expect(nextStep.href).toBe(
+      "/courses/gcse-russian/volna/modules/classwork/speaking-practice"
+    );
+    expect(nextStep.label).toBe("Continue lesson");
+  });
+
+  it("uses the course path fallback for Volna students without a next lesson", () => {
+    const nextStep = getDashboardNextStep(
+      "volna",
+      "volna",
+      4,
+      learningPlan({
+        completedLessons: 4,
+        nextLesson: null,
+      })
+    );
+
+    expect(nextStep.href).toBe("/courses");
+    expect(nextStep.label).toBe("Continue learning");
   });
 
   it("resumes the next unlocked visible lesson section", () => {

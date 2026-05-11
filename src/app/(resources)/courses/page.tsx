@@ -14,11 +14,7 @@ import {
   type DbCourse,
   type DbCourseVariant,
 } from "@/lib/courses/course-helpers-db";
-import {
-  getCoursePath,
-  getOnlineClassesPath,
-  getVariantPath,
-} from "@/lib/access/routes";
+import { getCoursePath, getOnlineClassesPath, getVariantPath } from "@/lib/access/routes";
 import {
   formatCoursePathRemainingMinutes,
   getVariantPathProgressSummaries,
@@ -180,10 +176,10 @@ async function getCourseHubItems(
       const variants = await getVariantsByCourseIdDb(course.id);
       const summaries = await getVariantPathProgressSummaries(course.slug, variants);
       const activeVariant = activeVariantSlug
-        ? variants.find((variant) => variant.slug === activeVariantSlug) ?? null
+        ? (variants.find((variant) => variant.slug === activeVariantSlug) ?? null)
         : null;
       const activeSummary = activeVariant
-        ? summaries.get(activeVariant.slug) ?? null
+        ? (summaries.get(activeVariant.slug) ?? null)
         : null;
 
       return {
@@ -224,9 +220,7 @@ function CourseHubCard({ item }: { item: CourseHubItem }) {
 
         <div className="space-y-2">
           <h2 className="app-heading-section">{action.title}</h2>
-          <p className="app-text-body-muted">
-            {action.description}
-          </p>
+          <p className="app-text-body-muted">{action.description}</p>
         </div>
 
         <div>
@@ -277,7 +271,7 @@ function CourseHubCard({ item }: { item: CourseHubItem }) {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Button href={action.href} variant="primary" icon={action.icon}>
+          <Button href={action.href} variant="journey" icon={action.icon}>
             {action.label}
           </Button>
           <Button
@@ -339,7 +333,7 @@ function VariantPathCards({
             <DashboardCard
               key={variant.slug}
               className={[
-                "h-full transition hover:-translate-y-0.5",
+                "app-card-interaction-subtle h-full",
                 isActive
                   ? "border-[var(--accent-border)] shadow-[0_16px_34px_color-mix(in_srgb,var(--accent-fill)_14%,transparent)]"
                   : "",
@@ -391,14 +385,15 @@ function VariantPathCards({
 
                 {dashboard.accessState === "full_foundation" &&
                 variant.slug === "higher" ? (
-                  <Button href="/account/billing" variant="primary" icon="billing">
+                  <Button href="/account/billing" variant="accent" icon="billing">
                     Upgrade to Higher
                   </Button>
                 ) : (
                   <Button
                     href={href}
-                    variant={isActive ? "primary" : "secondary"}
+                    variant={isActive ? "journey" : "secondary"}
                     icon="next"
+                    iconPosition="right"
                   >
                     {label}
                   </Button>
@@ -449,7 +444,7 @@ function SpeakingIntensiveCard() {
         </ul>
 
         <div className="flex flex-wrap gap-3 pt-1">
-          <Button href={getOnlineClassesPath()} variant="primary" icon="speaking">
+          <Button href={getOnlineClassesPath()} variant="accent" icon="speaking">
             Explore speaking support
           </Button>
           <Button href="/gcse-russian-speaking-exam" variant="secondary" icon="exam">
@@ -586,7 +581,11 @@ export default async function CoursesPage() {
 
             <div className="flex flex-wrap gap-3">
               {primaryAction ? (
-                <Button href={primaryAction.href} variant="primary" icon={primaryAction.icon}>
+                <Button
+                  href={primaryAction.href}
+                  variant="journey"
+                  icon={primaryAction.icon}
+                >
                   {primaryAction.label}
                 </Button>
               ) : null}

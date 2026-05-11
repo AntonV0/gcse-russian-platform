@@ -1,11 +1,12 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import ActionPill from "@/components/ui/action-pill";
 import LockedContentCard from "@/components/ui/locked-content-card";
+import PendingLinkCard from "@/components/ui/pending-link-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { loadVariantPageData } from "@/lib/courses/course-helpers-db";
 import { getCoursePath, getModulePath } from "@/lib/access/routes";
@@ -129,7 +130,12 @@ export default async function VariantPage({ params }: VariantPageProps) {
 
             <div className="flex flex-wrap gap-3">
               {primaryActionHref && primaryActionLabel ? (
-                <Button href={primaryActionHref} variant="primary" icon="next">
+                <Button
+                  href={primaryActionHref}
+                  variant="journey"
+                  icon="next"
+                  iconPosition="right"
+                >
                   {primaryActionLabel}
                 </Button>
               ) : null}
@@ -231,13 +237,14 @@ export default async function VariantPage({ params }: VariantPageProps) {
               module.position === 0 ? "Module 0" : `Module ${module.position}`;
 
             return (
-              <Link
+              <PendingLinkCard
                 key={module.slug}
                 href={href}
-                className="app-focus-ring block rounded-2xl"
-                aria-label={`Open ${module.title}`}
+                className="app-focus-ring group block rounded-2xl"
+                ariaLabel={`Open ${module.title}`}
+                pendingLabel="Opening module..."
               >
-                <DashboardCard className="h-full transition hover:-translate-y-0.5">
+                <DashboardCard className="app-card-interaction-subtle h-full">
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge tone="muted" icon="modules">
@@ -311,16 +318,18 @@ export default async function VariantPage({ params }: VariantPageProps) {
                       </div>
                     </div>
 
-                    <div className="pt-1 text-sm font-medium app-brand-text">
-                      {summary?.nextLesson
-                        ? `Continue: ${summary.nextLesson.title}`
-                        : summary?.isComplete
-                          ? "Review module"
-                          : "Open module"}
+                    <div className="pt-1">
+                      <ActionPill>
+                        {summary?.nextLesson
+                          ? `Continue: ${summary.nextLesson.title}`
+                          : summary?.isComplete
+                            ? "Review module"
+                            : "Open module"}
+                      </ActionPill>
                     </div>
                   </div>
                 </DashboardCard>
-              </Link>
+              </PendingLinkCard>
             );
           })}
         </section>

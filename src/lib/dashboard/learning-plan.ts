@@ -22,6 +22,8 @@ export type StudentLearningPlan = {
   nextLesson: {
     title: string;
     moduleTitle: string;
+    moduleNumber: number;
+    lessonNumber: number;
     href: string;
     estimatedMinutes: number | null;
   } | null;
@@ -233,7 +235,7 @@ export async function getStudentLearningPlan(
   const canSeeDraftLessons = !!profile?.is_admin || !!profile?.is_teacher;
   const contentReadyLessons = lessons.filter(
     (lesson) =>
-      (canSeeDraftLessons || lesson.is_published) && contentReadyLessonIds.has(lesson.id)
+      canSeeDraftLessons || (lesson.is_published && contentReadyLessonIds.has(lesson.id))
   );
   const lessonsByModuleId = new Map<string, typeof contentReadyLessons>();
 
@@ -259,11 +261,14 @@ export async function getStudentLearningPlan(
       ? Math.min(100, Math.round((completedLessons / totalLessons) * 100))
       : 0;
   const completedLessonKeys = getCompletedLessonKeys(progress);
+  let lessonNumber = 0;
 
   for (const courseModule of modules) {
     const moduleLessons = lessonsByModuleId.get(courseModule.id) ?? [];
 
     for (const lesson of moduleLessons) {
+      lessonNumber += 1;
+
       if (completedLessonKeys.has(getLessonProgressKey(courseModule.slug, lesson.slug))) {
         continue;
       }
@@ -279,6 +284,8 @@ export async function getStudentLearningPlan(
         nextLesson: {
           title: lesson.title,
           moduleTitle: courseModule.title,
+          moduleNumber: Math.max(1, courseModule.position),
+          lessonNumber,
           href: await getDashboardLessonResumeHref({
             courseSlug: course.slug,
             variant,
@@ -308,17 +315,6 @@ export function getDashboardNextStep(
 ) {
   const completedLessonCount =
     learningPlan.totalLessons > 0 ? learningPlan.completedLessons : completedLessons;
-
-  if (accessMode === "volna") {
-    return {
-      title: "Continue your guided work",
-      description:
-        "Open your assignments and continue through the lesson content linked to your teacher-led learning.",
-      href: "/assignments",
-      label: "Open assignments",
-      icon: "assignments" as const,
-    };
-  }
 
   if (learningPlan.nextLesson) {
     return {

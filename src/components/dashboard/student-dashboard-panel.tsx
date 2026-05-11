@@ -1,4 +1,3 @@
-import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -40,7 +39,9 @@ export function StudentDashboardPanel({
   nextStep: DashboardNextStep;
   activity: StudentDashboardActivity;
 }) {
-  const nextActions = getStudentDashboardActionQueue(activity, nextStep);
+  const nextActions = getStudentDashboardActionQueue(activity, nextStep, {
+    preferLearningPlan: dashboard.accessMode === "volna",
+  });
   const primaryAction = nextActions[0];
   const masterySignals = getMasterySignals({ learningPlan, activity });
   const milestone = getLearningMilestone({ learningPlan, activity });
@@ -83,7 +84,7 @@ export function StudentDashboardPanel({
             <div className="app-mobile-action-stack flex flex-wrap gap-3">
               <Button
                 href={primaryAction.href}
-                variant="primary"
+                variant="journey"
                 icon={primaryAction.icon}
               >
                 {primaryAction.label}
@@ -208,11 +209,7 @@ export function StudentDashboardPanel({
   );
 }
 
-function SkillReadinessCard({
-  masterySignals,
-}: {
-  masterySignals: MasterySignal[];
-}) {
+function SkillReadinessCard({ masterySignals }: { masterySignals: MasterySignal[] }) {
   return (
     <DashboardCard title="Skill readiness" headingLevel={3} className="h-full">
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
@@ -392,7 +389,7 @@ function ActionRow({ action, index }: { action: StudentDashboardAction; index: n
 
         <Button
           href={action.href}
-          variant={index === 0 ? "primary" : "secondary"}
+          variant={index === 0 ? "journey" : "secondary"}
           size="sm"
           icon={action.icon}
           ariaLabel={`${action.label}: ${action.title}`}
@@ -450,14 +447,16 @@ function RecentFeedbackCard({
                 : item.description}
             </p>
 
-            <Link
+            <Button
               href={item.href}
-              className="mt-3 inline-flex items-center gap-2 font-medium app-brand-text"
-              aria-label={`Review feedback for ${item.title}`}
+              className="mt-3"
+              variant="secondary"
+              size="sm"
+              icon="feedback"
+              ariaLabel={`Review feedback for ${item.title}`}
             >
               Review feedback
-              <AppIcon icon="next" size={14} />
-            </Link>
+            </Button>
           </div>
         ))}
       </div>
@@ -497,10 +496,7 @@ function AssignmentFocusCard({ activity }: { activity: StudentDashboardActivity 
     <DashboardCard title="Pending assignments" headingLevel={3} className="h-full">
       <div className="space-y-3">
         {assignmentsToShow.map(({ assignment, items }) => (
-          <div
-            key={assignment.id}
-            className="app-tactile-row rounded-xl border p-3"
-          >
+          <div key={assignment.id} className="app-tactile-row rounded-xl border p-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="flex flex-wrap gap-2">
@@ -618,13 +614,15 @@ function DashboardLinkCard({
     <DashboardCard title={title}>
       <div className="space-y-3">
         <p>{description}</p>
-        <Link
+        <Button
           href={href}
-          className="inline-flex items-center gap-2 font-medium app-brand-text"
+          variant="secondary"
+          size="sm"
+          icon="next"
+          iconPosition="right"
         >
           {linkLabel}
-          <AppIcon icon="next" size={14} />
-        </Link>
+        </Button>
       </div>
     </DashboardCard>
   );
@@ -640,13 +638,14 @@ function StudentSupportCard({ accessMode }: { accessMode: DashboardInfo["accessM
               Your Volna student area includes teacher-led assignments and guided support.
             </p>
 
-            <Link
+            <Button
               href="/assignments"
-              className="inline-flex items-center gap-2 font-medium app-brand-text"
+              variant="secondary"
+              size="sm"
+              icon="assignments"
             >
               View assignments
-              <AppIcon icon="next" size={14} />
-            </Link>
+            </Button>
           </>
         ) : (
           <>
@@ -655,13 +654,14 @@ function StudentSupportCard({ accessMode }: { accessMode: DashboardInfo["accessM
               online GCSE Russian classes.
             </p>
 
-            <Link
+            <Button
               href="/online-classes"
-              className="inline-flex items-center gap-2 font-medium app-brand-text"
+              variant="secondary"
+              size="sm"
+              icon="school"
             >
               Explore online classes
-              <AppIcon icon="next" size={14} />
-            </Link>
+            </Button>
           </>
         )}
       </div>

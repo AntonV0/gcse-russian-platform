@@ -1,5 +1,3 @@
-import Link from "next/link";
-import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
@@ -39,11 +37,11 @@ export function TeacherDashboardPanel({
           </div>
 
           <div className="app-mobile-action-stack flex flex-wrap gap-3">
-            <Button href="/teacher/assignments" variant="primary" icon="assignments">
+            <Button href="/teacher/assignments" variant="secondary" icon="assignments">
               Open assignments
             </Button>
 
-            <Button href="/teacher/assignments/new" variant="secondary" icon="create">
+            <Button href="/teacher/assignments/new" variant="primary" icon="create">
               Create assignment
             </Button>
           </div>
@@ -67,13 +65,14 @@ export function TeacherDashboardPanel({
           <div className="space-y-3">
             <p>View, create, and manage teacher assignments for your student groups.</p>
 
-            <Link
+            <Button
               href="/teacher/assignments"
-              className="inline-flex items-center gap-2 font-medium app-brand-text"
+              variant="secondary"
+              size="sm"
+              icon="assignments"
             >
               Open teacher assignments
-              <AppIcon icon="next" size={14} />
-            </Link>
+            </Button>
           </div>
         </DashboardCard>
 

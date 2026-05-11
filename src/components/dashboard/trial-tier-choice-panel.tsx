@@ -1,7 +1,7 @@
 import { chooseTrialTierAction } from "@/app/actions/access/trial-access-actions";
 import Badge from "@/components/ui/badge";
-import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
+import LoadingButton from "@/components/ui/loading-button";
 
 const tierOptions = [
   {
@@ -40,7 +40,8 @@ export function TrialTierChoicePanel() {
             <h1 className="app-heading-hero max-w-3xl">Choose your trial path</h1>
             <p className="app-subtitle max-w-2xl">
               Start with the route that best matches your goal. You can still sample the
-              other tier during trial, but your dashboard will stay focused on this choice.
+              other tier during trial, but your dashboard will stay focused on this
+              choice.
             </p>
           </div>
         </div>
@@ -72,9 +73,13 @@ export function TrialTierChoicePanel() {
               </div>
 
               <div className="mt-auto">
-                <Button type="submit" variant={index === 0 ? "primary" : "secondary"} icon="next">
-                  Start {option.label} trial
-                </Button>
+                <LoadingButton
+                  idleLabel={`Start ${option.label} trial`}
+                  pendingLabel={`Starting ${option.label} trial...`}
+                  variant={index === 0 ? "journey" : "secondary"}
+                  idleIcon="next"
+                  iconPosition="right"
+                />
               </div>
             </form>
           </DashboardCard>
