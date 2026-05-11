@@ -8,6 +8,7 @@ import DevComponentMarker from "@/components/ui/dev-component-marker";
 type AppShellProps = {
   user: {
     email?: string | null;
+    variant?: "foundation" | "higher" | "volna" | null;
   } | null;
   children: React.ReactNode;
 };
@@ -56,7 +57,7 @@ export default function AppShell({ user, children }: AppShellProps) {
         {children}
       </div>
 
-      <SiteFooter />
+      <SiteFooter user={user} />
     </div>
   );
 }

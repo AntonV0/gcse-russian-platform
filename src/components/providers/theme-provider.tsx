@@ -30,11 +30,16 @@ type ThemeContextValue = {
   accentPreference: AccentPreference | null;
   setThemePreference: (preference: ThemePreference) => void;
   setAccentPreference: (preference: AccentPreference) => void;
+  hydrateAppearancePreferences: (preferences: {
+    themePreference?: ThemePreference | null;
+    accentPreference?: AccentPreference | null;
+  }) => void;
   toggleTheme: () => void;
 };
 
 const THEME_STORAGE_KEY = "theme";
 const ACCENT_STORAGE_KEY = "accent";
+const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 const DEFAULT_ACCENT: AccentPreference = "blue";
 const ACCENT_OPTIONS = new Set<AccentPreference>([
   "blue",
@@ -66,6 +71,14 @@ function readStoredThemePreference(): ThemePreference | null {
 
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   return stored === "light" || stored === "dark" || stored === "system" ? stored : null;
+}
+
+function writeAppearanceCookie(name: string, value: string) {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
 }
 
 function isAccentPreference(value: string | null): value is AccentPreference {
@@ -179,6 +192,7 @@ export function ThemeProvider({
     const resolvedTheme = resolveTheme(nextPreference);
 
     localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
+    writeAppearanceCookie(THEME_STORAGE_KEY, nextPreference);
     applyTheme(resolvedTheme);
     setThemePreferenceState(nextPreference);
     setThemeState(resolvedTheme);
@@ -190,6 +204,7 @@ export function ThemeProvider({
     const nextTheme: ThemeMode = currentResolvedTheme === "dark" ? "light" : "dark";
 
     localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    writeAppearanceCookie(THEME_STORAGE_KEY, nextTheme);
     applyTheme(nextTheme);
     setThemePreferenceState(nextTheme);
     setThemeState(nextTheme);
@@ -198,10 +213,39 @@ export function ThemeProvider({
 
   const setAccentPreference = useCallback((nextPreference: AccentPreference) => {
     localStorage.setItem(ACCENT_STORAGE_KEY, nextPreference);
+    writeAppearanceCookie(ACCENT_STORAGE_KEY, nextPreference);
     applyAccent(nextPreference);
     setAccentPreferenceState(nextPreference);
     void updateAppearancePreferences({ accentPreference: nextPreference });
   }, []);
+
+  const hydrateAppearancePreferences = useCallback(
+    ({
+      themePreference: nextThemePreference,
+      accentPreference: nextAccentPreference,
+    }: {
+      themePreference?: ThemePreference | null;
+      accentPreference?: AccentPreference | null;
+    }) => {
+      if (nextThemePreference) {
+        const resolvedTheme = resolveTheme(nextThemePreference);
+
+        localStorage.setItem(THEME_STORAGE_KEY, nextThemePreference);
+        writeAppearanceCookie(THEME_STORAGE_KEY, nextThemePreference);
+        applyTheme(resolvedTheme, false);
+        setThemePreferenceState(nextThemePreference);
+        setThemeState(resolvedTheme);
+      }
+
+      if (nextAccentPreference) {
+        localStorage.setItem(ACCENT_STORAGE_KEY, nextAccentPreference);
+        writeAppearanceCookie(ACCENT_STORAGE_KEY, nextAccentPreference);
+        applyAccent(nextAccentPreference, false);
+        setAccentPreferenceState(nextAccentPreference);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     applyTheme(theme ?? readResolvedTheme(), false);
@@ -211,6 +255,8 @@ export function ThemeProvider({
     );
     localStorage.setItem(THEME_STORAGE_KEY, themePreference ?? "system");
     localStorage.setItem(ACCENT_STORAGE_KEY, accentPreference ?? DEFAULT_ACCENT);
+    writeAppearanceCookie(THEME_STORAGE_KEY, themePreference ?? "system");
+    writeAppearanceCookie(ACCENT_STORAGE_KEY, accentPreference ?? DEFAULT_ACCENT);
 
     function handleStorage(event: StorageEvent) {
       if (event.key === ACCENT_STORAGE_KEY) {
@@ -271,6 +317,7 @@ export function ThemeProvider({
       accentPreference,
       setThemePreference,
       setAccentPreference,
+      hydrateAppearancePreferences,
       toggleTheme,
     }),
     [
@@ -279,6 +326,7 @@ export function ThemeProvider({
       accentPreference,
       setThemePreference,
       setAccentPreference,
+      hydrateAppearancePreferences,
       toggleTheme,
     ]
   );

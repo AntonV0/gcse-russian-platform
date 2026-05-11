@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type {
@@ -25,6 +26,11 @@ const accentPreferences = new Set<AccentPreference>([
   "brown",
   "slate",
 ]);
+const appearanceCookieOptions = {
+  path: "/",
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: "lax" as const,
+};
 
 export async function updateAppearancePreferences(update: AppearancePreferenceUpdate) {
   const supabase = await createClient();
@@ -60,6 +66,16 @@ export async function updateAppearancePreferences(update: AppearancePreferenceUp
   if (error) {
     console.error("Error updating appearance preferences:", error);
     return { ok: false };
+  }
+
+  const cookieStore = await cookies();
+
+  if (payload.theme_preference) {
+    cookieStore.set("theme", payload.theme_preference, appearanceCookieOptions);
+  }
+
+  if (payload.accent_preference) {
+    cookieStore.set("accent", payload.accent_preference, appearanceCookieOptions);
   }
 
   revalidatePath("/settings");

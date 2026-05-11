@@ -23,7 +23,9 @@ export const getCurrentProfile = cache(async function getCurrentProfile() {
 
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("id, email, full_name, display_name, avatar_key, is_admin, is_teacher")
+    .select(
+      "id, email, full_name, display_name, avatar_key, avatar_background_key, equipped_avatar_frame_key, is_admin, is_teacher"
+    )
     .eq("id", user.id)
     .single();
 
@@ -31,6 +33,25 @@ export const getCurrentProfile = cache(async function getCurrentProfile() {
 
   return profile;
 });
+
+export const getCurrentAppearancePreferences = cache(
+  async function getCurrentAppearancePreferences() {
+    const supabase = await createClient();
+    const user = await getCurrentUser();
+
+    if (!user) return null;
+
+    const { data: preferences, error } = await supabase
+      .from("profiles")
+      .select("theme_preference, accent_preference")
+      .eq("id", user.id)
+      .single();
+
+    if (error) return null;
+
+    return preferences;
+  }
+);
 
 export const getCurrentCourseAccess = cache(async function getCurrentCourseAccess(
   courseSlug: string,

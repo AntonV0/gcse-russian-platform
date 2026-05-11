@@ -1,10 +1,33 @@
 import Link from "next/link";
 import AppLogo from "@/components/ui/app-logo";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import {
+  getActiveCoursePath,
+  getDashboardPath,
+  getProgressPath,
+  getTakingYourExamsPath,
+} from "@/lib/access/routes";
 
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
+const CURRENT_YEAR = 2026;
 
-export default function SiteFooter() {
+type SiteFooterProps = {
+  user?: {
+    variant?: "foundation" | "higher" | "volna" | null;
+  } | null;
+};
+
+export default function SiteFooter({ user }: SiteFooterProps) {
+  const footerLinks = [
+    { href: getDashboardPath(), label: "Dashboard" },
+    { href: getActiveCoursePath(user?.variant), label: "My Course" },
+    { href: getProgressPath(), label: "Progress" },
+    { href: getTakingYourExamsPath(), label: "Taking Your Exams" },
+    { href: "/support", label: "Support" },
+    { href: "/privacy", label: "Privacy" },
+    { href: "/terms", label: "Terms" },
+  ];
+
   return (
     <footer
       data-site-footer
@@ -36,19 +59,17 @@ export default function SiteFooter() {
               Structured GCSE Russian learning for Pearson Edexcel 1RU0.
             </p>
 
-            <p className="text-xs app-text-soft">Private development build</p>
+            <p className="text-xs app-text-soft">
+              © {CURRENT_YEAR} GCSE Russian
+            </p>
           </div>
 
           <nav className="app-footer-link-row text-sm" aria-label="Footer navigation">
-            <Link href="/courses" className="app-nav-link">
-              Courses
-            </Link>
-            <Link href="/dashboard" className="app-nav-link">
-              Dashboard
-            </Link>
-            <Link href="/account" className="app-nav-link">
-              Account
-            </Link>
+            {footerLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="app-nav-link">
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
       </div>

@@ -54,7 +54,7 @@ export default function LessonFooterNav({
           {nextLesson ? (
             <Button
               href={nextLesson.href}
-              variant="primary"
+              variant="journey"
               icon="next"
               iconPosition="right"
             >

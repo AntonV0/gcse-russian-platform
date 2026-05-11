@@ -1,5 +1,5 @@
 import { signOut } from "@/app/actions/auth/auth";
-import Button from "@/components/ui/button";
+import LoadingButton from "@/components/ui/loading-button";
 import type { ButtonVariant } from "@/components/ui/button-styles";
 
 export default function LogoutButton({
@@ -11,15 +11,14 @@ export default function LogoutButton({
 }) {
   return (
     <form action={signOut}>
-      <Button
-        type="submit"
+      <LoadingButton
+        idleLabel="Log out"
+        pendingLabel="Logging out..."
         variant={variant}
         size="sm"
-        icon="userX"
+        idleIcon="userX"
         className={className}
-      >
-        Log out
-      </Button>
+      />
     </form>
   );
 }

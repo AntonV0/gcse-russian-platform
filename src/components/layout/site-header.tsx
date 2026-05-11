@@ -9,22 +9,39 @@ import AppLogo from "@/components/ui/app-logo";
 import Button from "@/components/ui/button";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
 import IconButton from "@/components/ui/icon-button";
-import { getAccountPath, getCoursesPath, getDashboardPath } from "@/lib/access/routes";
+import {
+  getAccountPath,
+  getActiveCoursePath,
+  getCoursesPath,
+  getDashboardPath,
+  getProgressPath,
+} from "@/lib/access/routes";
 
 type SiteHeaderProps = {
   user: {
     email?: string | null;
+    variant?: "foundation" | "higher" | "volna" | null;
   } | null;
 };
 
+type HeaderCourseVariant = NonNullable<SiteHeaderProps["user"]>["variant"];
+
 const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 
-const navItems = [
+const publicNavItems = [
   { href: "/", label: "Home" },
   { href: getDashboardPath(), label: "Dashboard" },
   { href: getCoursesPath(), label: "Courses" },
   { href: getAccountPath(), label: "Account" },
 ];
+
+function getSignedInNavItems(variant: HeaderCourseVariant) {
+  return [
+    { href: getDashboardPath(), label: "Dashboard" },
+    { href: getActiveCoursePath(variant), label: "My Course" },
+    { href: getProgressPath(), label: "Progress" },
+  ];
+}
 
 function isNavActive(pathname: string, href: string) {
   if (href === "/") {
@@ -39,11 +56,17 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
   const headerRef = useRef<HTMLElement>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const navItems = useMemo(
+    () => (user ? getSignedInNavItems(user.variant) : publicNavItems),
+    [user]
+  );
+  const logoHref = user ? getDashboardPath() : "/";
+
   const activeMap = useMemo(() => {
     return Object.fromEntries(
       navItems.map((item) => [item.href, isNavActive(pathname, item.href)])
     );
-  }, [pathname]);
+  }, [navItems, pathname]);
 
   function closeMobileMenu() {
     setIsMobileMenuOpen(false);
@@ -99,7 +122,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
 
       <div className="app-page px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" className="min-w-0 shrink-0" onClick={closeMobileMenu}>
+          <Link href={logoHref} className="min-w-0 shrink-0" onClick={closeMobileMenu}>
             <span className="sm:hidden">
               <AppLogo variant="domain" size="sm" />
             </span>

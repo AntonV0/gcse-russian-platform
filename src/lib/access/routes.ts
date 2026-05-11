@@ -27,8 +27,16 @@ export function getDashboardPath() {
   return "/dashboard";
 }
 
+export function getProgressPath() {
+  return "/progress";
+}
+
 export function getCoursesPath() {
   return "/courses";
+}
+
+export function getActiveCoursePath(variantSlug: string | null | undefined) {
+  return variantSlug ? getVariantPath("gcse-russian", variantSlug) : getCoursesPath();
 }
 
 export function getAssignmentsPath() {
@@ -49,6 +57,14 @@ export function getPastPapersPath() {
 
 export function getMockExamsPath() {
   return "/mock-exams";
+}
+
+export function getExamCalendarPath() {
+  return "/exam-calendar";
+}
+
+export function getTakingYourExamsPath() {
+  return "/taking-your-exams";
 }
 
 export function getProfilePath() {
