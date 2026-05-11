@@ -1,238 +1,341 @@
-import Link from "next/link";
 import AppShell from "@/components/layout/app-shell";
+import PageContainer from "@/components/layout/page-container";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import PageContainer from "@/components/layout/page-container";
+import DashboardCard from "@/components/ui/dashboard-card";
+import FeedbackBanner from "@/components/ui/feedback-banner";
+import PageIntroPanel from "@/components/ui/page-intro-panel";
+import SummaryStatCard from "@/components/ui/summary-stat-card";
+import VisualPlaceholder from "@/components/ui/visual-placeholder";
+import { getCurrentUser } from "@/lib/auth/auth";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import {
+  getDashboardAccessLabel,
+  getDashboardVariantLabel,
+} from "@/lib/dashboard/learning-plan";
 import type { AppIconKey } from "@/lib/shared/icons";
 
-type HighlightItem = {
-  title: string;
-  description: string;
-  icon: AppIconKey;
-};
-
-type AppLinkItem = {
+type HubCard = {
   title: string;
   description: string;
   href: string;
+  label: string;
   icon: AppIconKey;
+  tone?: "default" | "info" | "success" | "warning";
 };
 
-type AudienceItem = {
-  title: string;
-  description: string;
-  icon: AppIconKey;
-};
-
-const platformHighlights: HighlightItem[] = [
+const signedInHubCards: HubCard[] = [
   {
-    title: "Structured learning",
-    description:
-      "Clear lesson pathways across topics, designed specifically for GCSE Russian progression.",
-    icon: "lessons",
+    title: "Dashboard",
+    description: "Pick up the next lesson, assignment, mock, or feedback item.",
+    href: "/dashboard",
+    label: "Open dashboard",
+    icon: "dashboard",
+    tone: "success",
   },
   {
-    title: "Exam-focused practice",
-    description:
-      "Translation, listening, vocabulary, and exam-style tasks aligned with Edexcel 1RU0.",
-    icon: "exam",
+    title: "Course path",
+    description: "Browse Foundation, Higher, or Volna modules and continue lessons.",
+    href: "/courses",
+    label: "Open courses",
+    icon: "courses",
   },
   {
-    title: "Track progress",
-    description:
-      "See what you have completed, what is next, and stay organised throughout your revision.",
-    icon: "completed",
+    title: "Mock exams",
+    description: "Start or resume GCSE-style platform mock attempts.",
+    href: "/mock-exams",
+    label: "Open mocks",
+    icon: "mockExam",
   },
-];
-
-const appLinks: AppLinkItem[] = [
   {
-    title: "Billing",
-    description:
-      "Choose Foundation or Higher access and manage signed-in checkout options.",
-    href: "/account/billing",
+    title: "Account and billing",
+    description: "Check profile, access, plan, upgrade, and payment options.",
+    href: "/account",
+    label: "Open account",
     icon: "billing",
   },
+];
+
+const guestHubCards: HubCard[] = [
   {
-    title: "Lessons",
-    description:
-      "Follow structured modules covering themes, grammar, and vocabulary step by step.",
+    title: "Start a trial",
+    description: "Create an account to choose a path, save progress, and try lessons.",
+    href: "/signup",
+    label: "Start trial",
+    icon: "create",
+    tone: "success",
+  },
+  {
+    title: "Browse courses",
+    description: "Preview how course paths, modules, and lessons are organised.",
     href: "/courses",
-    icon: "lessons",
+    label: "Open courses",
+    icon: "courses",
   },
   {
-    title: "Progress",
-    description: "Track completion and continue your learning without losing your place.",
-    href: "/dashboard",
-    icon: "completed",
+    title: "Past papers",
+    description: "Use official Pearson resource links without creating an account.",
+    href: "/past-papers",
+    label: "Open papers",
+    icon: "pastPapers",
+  },
+  {
+    title: "Vocabulary and grammar",
+    description: "Browse public revision hubs before committing to a study route.",
+    href: "/vocabulary",
+    label: "Open vocabulary",
+    icon: "vocabulary",
   },
 ];
 
-const audience: AudienceItem[] = [
-  {
-    title: "Students",
-    description:
-      "Ideal for GCSE Russian students who want a clear structure for revision and learning.",
-    icon: "student",
-  },
-  {
-    title: "Parents",
-    description:
-      "A reliable, structured platform to support your child's GCSE Russian preparation.",
-    icon: "users",
-  },
-  {
-    title: "Volna students",
-    description:
-      "Integrated with teacher-led learning, assignments, and feedback workflows.",
-    icon: "teacher",
-  },
-];
+function getHeroContent(isSignedIn: boolean) {
+  if (isSignedIn) {
+    return {
+      eyebrow: "Platform hub",
+      title: "Welcome back to GCSE Russian",
+      description:
+        "Use this hub to get back to the most useful part of the platform: dashboard, course path, mock exams, assignments, resources, and account settings.",
+      primaryHref: "/dashboard",
+      primaryLabel: "Open dashboard",
+      primaryIcon: "dashboard" as const,
+      secondaryHref: "/courses",
+      secondaryLabel: "Browse courses",
+      secondaryIcon: "courses" as const,
+    };
+  }
 
-export default function AppHomePage() {
+  return {
+    eyebrow: "GCSE Russian platform",
+    title: "Start from the right GCSE Russian workspace",
+    description:
+      "Preview resources, browse the course structure, or create a trial account when you want saved progress, lessons, mock exams, and a personal dashboard.",
+    primaryHref: "/signup",
+    primaryLabel: "Start trial",
+    primaryIcon: "create" as const,
+    secondaryHref: "/courses",
+    secondaryLabel: "Browse courses",
+    secondaryIcon: "courses" as const,
+  };
+}
+
+function HubCardGrid({ cards }: { cards: HubCard[] }) {
   return (
-    <AppShell user={null}>
+    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      {cards.map((item) => (
+        <DashboardCard key={item.title} className="h-full">
+          <div className="space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--accent-ink)]">
+                <AppIcon icon={item.icon} size={19} />
+              </span>
+              {item.tone ? (
+                <Badge tone={item.tone} icon={item.icon}>
+                  Recommended
+                </Badge>
+              ) : null}
+            </div>
+
+            <div>
+              <h2 className="app-heading-card">{item.title}</h2>
+              <p className="mt-2 app-text-body-muted">{item.description}</p>
+            </div>
+
+            <Button
+              href={item.href}
+              variant={item.tone === "success" ? "journey" : "secondary"}
+              size="sm"
+              icon={item.icon}
+            >
+              {item.label}
+            </Button>
+          </div>
+        </DashboardCard>
+      ))}
+    </section>
+  );
+}
+
+export default async function AppHomePage() {
+  const [user, dashboard] = await Promise.all([getCurrentUser(), getDashboardInfo()]);
+  const isSignedIn = Boolean(user);
+  const hero = getHeroContent(isSignedIn);
+  const hubCards = isSignedIn ? signedInHubCards : guestHubCards;
+
+  return (
+    <AppShell
+      user={
+        user
+          ? {
+              email: user.email,
+              variant: dashboard.variant,
+            }
+          : null
+      }
+    >
       <PageContainer>
         <div className="space-y-8 py-8 md:py-12">
-          <section className="app-surface-brand app-section-padding-lg overflow-hidden">
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.92fr)] lg:items-start">
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <Badge tone="info" icon="info">
-                    Private development build
-                  </Badge>
+          <PageIntroPanel
+            tone="brand"
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            badges={
+              <>
+                <Badge tone="info" icon="school">
+                  Edexcel GCSE 1RU0
+                </Badge>
+                <Badge tone="muted" icon="layers">
+                  {getDashboardVariantLabel(dashboard.variant)}
+                </Badge>
+                <Badge
+                  tone={isSignedIn ? "success" : "muted"}
+                  icon={isSignedIn ? "userCheck" : "preview"}
+                >
+                  {isSignedIn
+                    ? getDashboardAccessLabel(dashboard.accessMode)
+                    : "Preview mode"}
+                </Badge>
+              </>
+            }
+            actions={
+              <>
+                <Button href={hero.primaryHref} variant="journey" icon={hero.primaryIcon}>
+                  {hero.primaryLabel}
+                </Button>
+                <Button
+                  href={hero.secondaryHref}
+                  variant="secondary"
+                  icon={hero.secondaryIcon}
+                >
+                  {hero.secondaryLabel}
+                </Button>
+              </>
+            }
+            visual={
+              <VisualPlaceholder
+                category="learningPath"
+                size="wide"
+                ariaLabel="GCSE Russian platform hub illustration"
+              />
+            }
+          >
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <SummaryStatCard
+                title="Courses"
+                value="Paths"
+                description="Foundation, Higher, and Volna routes"
+                icon="courses"
+                compact
+              />
+              <SummaryStatCard
+                title="Resources"
+                value="Open"
+                description="Vocabulary, grammar, papers"
+                icon="pastPapers"
+                compact
+              />
+              <SummaryStatCard
+                title="Practice"
+                value="Mocks"
+                description="Account-based mock exams"
+                icon="mockExam"
+                compact
+              />
+              <SummaryStatCard
+                title="Progress"
+                value={isSignedIn ? "Saved" : "Trial"}
+                description={
+                  isSignedIn ? "continue from dashboard" : "create account to save"
+                }
+                icon="completed"
+                tone={isSignedIn ? "success" : "brand"}
+                compact
+              />
+            </div>
+          </PageIntroPanel>
 
-                  <div className="app-header-block">
-                    <h1 className="app-title max-w-3xl">GCSE Russian Course Platform</h1>
+          {!isSignedIn ? (
+            <FeedbackBanner
+              tone="info"
+              title="Past papers and resource previews stay open"
+              description="You can browse revision resources first. Create a trial account when you want saved lesson progress, mock attempts, and a personal dashboard."
+            >
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  href="/past-papers"
+                  variant="secondary"
+                  size="sm"
+                  icon="pastPapers"
+                >
+                  Past papers
+                </Button>
+                <Button href="/grammar" variant="secondary" size="sm" icon="grammar">
+                  Grammar
+                </Button>
+                <Button href="/login" variant="secondary" size="sm" icon="user">
+                  Log in
+                </Button>
+              </div>
+            </FeedbackBanner>
+          ) : null}
 
-                    <p className="app-subtitle max-w-2xl">
-                      A structured online learning platform for Pearson Edexcel GCSE
-                      Russian (1RU0), combining structured lessons, exam-focused practice,
-                      and progress tracking for Foundation and Higher students.
-                    </p>
-                  </div>
-                </div>
+          <HubCardGrid cards={hubCards} />
 
+          <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+            <DashboardCard title="Main learning route">
+              <div className="space-y-4">
+                <p>
+                  The dashboard is the main launch point once you are signed in. It can
+                  surface lessons, assignments, mocks, feedback, and account-specific next
+                  steps without making you hunt through the app.
+                </p>
                 <div className="flex flex-wrap gap-3">
                   <Button href="/dashboard" variant="primary" icon="dashboard">
                     Open dashboard
                   </Button>
-
-                  <Button href="/courses" variant="secondary" icon="lessons">
-                    Browse courses
+                  <Button href="/progress" variant="secondary" icon="completed">
+                    Progress
+                  </Button>
+                  <Button href="/account/billing" variant="secondary" icon="billing">
+                    Billing
                   </Button>
                 </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <Badge tone="muted" icon="school">
-                    Edexcel GCSE 1RU0
-                  </Badge>
-                  <Badge tone="muted" icon="layers">
-                    Foundation + Higher
-                  </Badge>
-                  <Badge tone="muted" icon="learning">
-                    Themes, grammar, mocks
-                  </Badge>
-                </div>
               </div>
+            </DashboardCard>
 
-              <div className="app-card app-section-padding">
-                <div className="mb-4 flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <h2 className="app-section-title">Built for GCSE Russian</h2>
-                    <p className="mt-1 text-sm app-text-muted">
-                      Designed to support both independent study and teacher-led learning.
-                    </p>
-                  </div>
-
-                  <AppIcon
-                    icon="uiLab"
-                    size={18}
-                    className="mt-0.5 shrink-0 app-brand-text"
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  {platformHighlights.map((item) => (
-                    <div
-                      key={item.title}
-                      className="app-card app-card-hover flex items-start gap-4 p-4"
-                    >
-                      <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] ring-1 ring-[var(--accent-selected-border)]">
-                        <AppIcon
-                          icon={item.icon}
-                          size={20}
-                          className="text-[var(--accent-on-soft)]"
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <h3 className="text-base font-semibold text-[var(--text-primary)]">
-                          {item.title}
-                        </h3>
-                        <p className="text-sm text-[var(--text-secondary)]">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+            <DashboardCard title="Revision shortcuts">
+              <div className="grid gap-2">
+                {[
+                  {
+                    href: "/vocabulary",
+                    label: "Vocabulary",
+                    icon: "vocabulary" as const,
+                  },
+                  { href: "/grammar", label: "Grammar", icon: "grammar" as const },
+                  {
+                    href: "/exam-calendar",
+                    label: "Exam calendar",
+                    icon: "calendar" as const,
+                  },
+                  {
+                    href: "/taking-your-exams",
+                    label: "Taking your exams",
+                    icon: "exam" as const,
+                  },
+                ].map((item) => (
+                  <Button
+                    key={item.href}
+                    href={item.href}
+                    variant="secondary"
+                    size="sm"
+                    icon={item.icon}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
               </div>
-            </div>
-          </section>
-
-          <section className="grid gap-4 md:grid-cols-3">
-            {appLinks.map((item) => (
-              <Link
-                key={item.title}
-                href={item.href}
-                className="app-card app-card-hover app-section-padding block cursor-pointer transition"
-              >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <AppIcon icon={item.icon} size={18} className="app-brand-text" />
-                    <h2 className="app-section-title">{item.title}</h2>
-                  </div>
-
-                  <AppIcon
-                    icon="next"
-                    size={16}
-                    className="app-text-soft app-card-link-arrow"
-                  />
-                </div>
-
-                <p className="app-text-muted text-sm">{item.description}</p>
-              </Link>
-            ))}
-          </section>
-
-          <section>
-            <div className="mb-4">
-              <h2 className="app-section-title text-lg">Who this platform is for</h2>
-              <p className="mt-1 text-sm app-text-muted">
-                Designed to support GCSE Russian students and families at every stage of
-                preparation.
-              </p>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-3">
-              {audience.map((item) => (
-                <div
-                  key={item.title}
-                  className="app-card app-section-padding flex items-start gap-4"
-                >
-                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--background-muted)]">
-                    <AppIcon icon={item.icon} size={18} />
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold">{item.title}</h3>
-                    <p className="mt-1 text-sm app-text-muted">{item.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            </DashboardCard>
           </section>
         </div>
       </PageContainer>
