@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
@@ -8,6 +9,13 @@ import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import {
+  examPaperPathways,
+  getExamPaperPathway,
+  getResourceActionLabel,
+  getResourcePracticeHint,
+  getResourceTypeIcon,
+} from "@/lib/exam-prep/exam-prep-helpers";
 import {
   filterPastPaperResourcesForDashboardAccess,
   getPastPaperExamSeriesOptions,
@@ -93,6 +101,16 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
   );
   const groupedResources = groupPastPaperResourcesBySeries(resources);
   const examSeriesOptions = getPastPaperExamSeriesOptions(allAccessibleResources);
+  const activePathway =
+    typeof filters.paperNumber === "number"
+      ? getExamPaperPathway(filters.paperNumber)
+      : null;
+  const hasActiveFilters = Boolean(
+    params.examSeries ||
+      filters.paperNumber !== "all" ||
+      filters.tier !== "all" ||
+      filters.resourceType !== "all"
+  );
 
   return (
     <main className="flex flex-col gap-4">
@@ -101,7 +119,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
         tone="student"
         eyebrow="Past papers"
         title="Past Papers"
-        description="Browse official Pearson Edexcel GCSE Russian 1RU0 resource links by series, paper, tier, and resource type."
+        description="Browse official Pearson Edexcel GCSE Russian 1RU0 resources and choose the next useful practice task with a paper, mark scheme, transcript, or audio file."
         badges={
           <>
             <Badge tone="info" icon="pastPapers">
@@ -117,6 +135,9 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
         }
         actions={
           <>
+            <Button href="/taking-your-exams" variant="primary" icon="exam">
+              Exam guidance
+            </Button>
             <Button href="/dashboard" variant="secondary" icon="dashboard">
               Dashboard
             </Button>
@@ -138,7 +159,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
         className="order-3 xl:order-2"
         tone="info"
         title="External Pearson resources"
-        description="These links open official Pearson pages or files in a new tab. Downloads happen from Pearson, not from this platform."
+        description="Open the question paper first, answer under timed conditions, then use mark schemes, audio, transcripts, and examiner reports to turn mistakes into the next practice task."
       />
 
       {dashboard.role === "guest" ? (
@@ -170,12 +191,27 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
       <SectionCard
         className="order-2 xl:order-4"
         title="Find resources"
-        description="Filter by paper, tier, exam series, and resource type."
+        description={
+          activePathway
+            ? `${activePathway.paperName}: ${activePathway.practiceCue}`
+            : "Filter by paper, tier, exam series, and resource type."
+        }
         tone="student"
+        actions={
+          hasActiveFilters ? (
+            <Badge tone="info" icon="filter">
+              Filters active
+            </Badge>
+          ) : null
+        }
       >
         <form className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:items-center">
           <div className="min-w-0">
-            <Select name="examSeries" defaultValue={params.examSeries ?? ""}>
+            <Select
+              name="examSeries"
+              defaultValue={params.examSeries ?? ""}
+              aria-label="Filter by exam series"
+            >
               <option value="">All series</option>
               {examSeriesOptions.map((examSeries) => (
                 <option key={examSeries} value={examSeries}>
@@ -189,6 +225,7 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             <Select
               name="paperNumber"
               defaultValue={String(filters.paperNumber ?? "all")}
+              aria-label="Filter by paper"
             >
               <option value="all">All papers</option>
               <option value="1">Paper 1</option>
@@ -199,7 +236,11 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
           </div>
 
           <div className="min-w-0">
-            <Select name="tier" defaultValue={filters.tier ?? "all"}>
+            <Select
+              name="tier"
+              defaultValue={filters.tier ?? "all"}
+              aria-label="Filter by tier"
+            >
               <option value="all">All tiers</option>
               {pastPaperTiers.map((tier) => (
                 <option key={tier} value={tier}>
@@ -210,7 +251,11 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
           </div>
 
           <div className="min-w-0">
-            <Select name="resourceType" defaultValue={filters.resourceType ?? "all"}>
+            <Select
+              name="resourceType"
+              defaultValue={filters.resourceType ?? "all"}
+              aria-label="Filter by resource type"
+            >
               <option value="all">All resource types</option>
               {pastPaperResourceTypes.map((resourceType) => (
                 <option key={resourceType} value={resourceType}>
@@ -233,16 +278,70 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
 
       <SectionCard
         className="order-5"
+        title="Choose a paper pathway"
+        description="Students usually make faster progress when the next task is specific: one paper, one timing target, one review habit."
+        tone="student"
+        density="compact"
+      >
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {examPaperPathways.map((pathway) => (
+            <div key={pathway.paperNumber} className="app-soft-panel p-4">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl [background:var(--accent-gradient-soft)] text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
+                  <AppIcon icon={pathway.icon} size={18} />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="app-heading-card">{pathway.paperName}</h3>
+                  <p className="mt-1 app-text-body-muted">{pathway.nextStep}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-col gap-2">
+                <Button
+                  href={pathway.pastPapersHref}
+                  variant="secondary"
+                  size="sm"
+                  icon="pastPapers"
+                >
+                  Filter papers
+                </Button>
+                <Button
+                  href={pathway.guideHref}
+                  variant="quiet"
+                  size="sm"
+                  icon="examTip"
+                >
+                  Skill guide
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard
+        className="order-6"
         title="Official resources"
         description={`${resources.length} resource${resources.length === 1 ? "" : "s"} available for your filters.`}
         tone="student"
+        actions={
+          activePathway ? (
+            <Button
+              href={activePathway.mockExamHref}
+              variant="soft"
+              size="sm"
+              icon="mockExam"
+            >
+              Practise {activePathway.skill.toLowerCase()} mocks
+            </Button>
+          ) : null
+        }
       >
         {groupedResources.length === 0 ? (
           <EmptyState
             icon="search"
             iconTone="brand"
             title="No past paper resources found"
-            description="Try clearing filters, or check back once more official links have been published."
+            description="Try clearing one filter, or start from a paper pathway above and then narrow by tier or resource type."
             visual={
               <VisualPlaceholder
                 category="pastPapers"
@@ -266,34 +365,46 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
                   {group.resources.map((resource) => (
                     <div
                       key={resource.id}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4"
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-xs)]"
                     >
                       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                        <div className="min-w-0 space-y-3">
-                          <div>
-                            <h3 className="font-semibold leading-6 text-[var(--text-primary)]">
-                              {resource.title}
-                            </h3>
-                            <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-                              {resource.paper_name} &middot; {resource.source_label}
-                            </p>
-                          </div>
+                        <div className="flex min-w-0 gap-3">
+                          <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--background-muted)] text-[var(--accent-ink)]">
+                            <AppIcon
+                              icon={getResourceTypeIcon(resource.resource_type)}
+                              size={18}
+                            />
+                          </span>
 
-                          <div className="flex flex-wrap gap-2">
-                            <Badge tone="info" icon="pastPapers">
-                              Paper {resource.paper_number}
-                            </Badge>
-                            <Badge tone="muted" icon="school">
-                              {getPastPaperTierLabel(resource.tier)}
-                            </Badge>
-                            <Badge tone="muted">
-                              {getPastPaperResourceTypeLabel(resource.resource_type)}
-                            </Badge>
-                            {resource.is_official ? (
-                              <Badge tone="success" icon="externalLink">
-                                Official
+                          <div className="min-w-0 space-y-3">
+                            <div>
+                              <h3 className="font-semibold leading-6 text-[var(--text-primary)]">
+                                {resource.title}
+                              </h3>
+                              <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+                                {resource.paper_name} &middot; {resource.source_label}
+                              </p>
+                              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                                {getResourcePracticeHint(resource.resource_type)}
+                              </p>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              <Badge tone="info" icon="pastPapers">
+                                Paper {resource.paper_number}
                               </Badge>
-                            ) : null}
+                              <Badge tone="muted" icon="school">
+                                {getPastPaperTierLabel(resource.tier)}
+                              </Badge>
+                              <Badge tone="muted">
+                                {getPastPaperResourceTypeLabel(resource.resource_type)}
+                              </Badge>
+                              {resource.is_official ? (
+                                <Badge tone="success" icon="externalLink">
+                                  Official
+                                </Badge>
+                              ) : null}
+                            </div>
                           </div>
                         </div>
 
@@ -304,8 +415,9 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
                           variant="primary"
                           icon="externalLink"
                           className="w-full sm:w-auto lg:shrink-0"
+                          aria-label={`${getResourceActionLabel(resource.resource_type)}: ${resource.title}`}
                         >
-                          Open Pearson resource
+                          {getResourceActionLabel(resource.resource_type)}
                         </Button>
                       </div>
                     </div>

@@ -5,7 +5,7 @@ export default function PastPapersLoading() {
     <ResourceLoadingState
       eyebrow="Past papers"
       title="Loading past papers"
-      description="Preparing official resource links, exam series, papers, and tiers."
+      description="Preparing official links, filters, and paper pathways so you can choose the next useful practice task."
       searchFields={4}
     />
   );
