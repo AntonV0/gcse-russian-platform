@@ -12,6 +12,7 @@ import {
   updateMockExamSetAction as updateMockExamSet,
 } from "@/app/actions/admin/mock-exams/mock-exam-actions";
 import { markMockExamAttemptAction as markMockExamAttempt } from "@/app/actions/admin/mock-exams/mock-exam-attempt-marking-action";
+import { generateAiMockExamMarkingAction as generateAiMockExamMarking } from "@/app/actions/admin/mock-exams/mock-exam-ai-marking-action";
 
 export async function createMockExamSetAction(formData: FormData) {
   return createMockExamSet(formData);
@@ -51,4 +52,8 @@ export async function deleteMockExamQuestionAction(formData: FormData) {
 
 export async function markMockExamAttemptAction(formData: FormData) {
   return markMockExamAttempt(formData);
+}
+
+export async function generateAiMockExamMarkingAction(formData: FormData) {
+  return generateAiMockExamMarking(formData);
 }
