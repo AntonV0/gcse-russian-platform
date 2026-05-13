@@ -15,28 +15,21 @@ import {
   getSafeAvatarFrameKey,
 } from "@/lib/profile/avatar-customization";
 import type { AppIconKey } from "@/lib/shared/icons";
+import { getAccountPath } from "@/lib/access/routes";
 import {
-  getAccountPath,
-  getAssignmentsPath,
-  getActiveCoursePath,
-  getBillingPath,
-  getDashboardPath,
-  getExamCalendarPath,
-  getGrammarPath,
-  getMockExamsPath,
-  getOnlineClassesPath,
-  getPastPapersPath,
-  getProgressPath,
-  getProfilePath,
-  getSettingsPath,
-  getTakingYourExamsPath,
-  getVocabularyPath,
-} from "@/lib/access/routes";
+  buildPlatformSidebarNav,
+  getSidebarHeaderState,
+  getSidebarNavigationLabels,
+  type NavItem,
+  type PlatformSidebarAccessMode,
+  type PlatformSidebarRole,
+  type PlatformSidebarVariant,
+} from "@/components/layout/platform-sidebar-config";
 
 type PlatformSidebarProps = {
-  role: "admin" | "teacher" | "student" | "guest";
-  accessMode: "trial" | "full" | "volna" | null;
-  variant?: "foundation" | "higher" | "volna" | null;
+  role: PlatformSidebarRole;
+  accessMode: PlatformSidebarAccessMode;
+  variant?: PlatformSidebarVariant;
   pathname?: string;
   userEmail?: string | null;
   userDisplayName?: string | null;
@@ -44,15 +37,6 @@ type PlatformSidebarProps = {
   userAvatarBackgroundKey?: string | null;
   userAvatarFrameKey?: string | null;
   nextUp?: PlatformSidebarNextUp | null;
-};
-
-type NavItem = {
-  label: string;
-  href: string;
-  icon: AppIconKey;
-  locked?: boolean;
-  lockedHref?: string;
-  lockedLabel?: string;
 };
 
 type ProfileUpdatedEventDetail = {
@@ -224,92 +208,6 @@ function SidebarNextUpCard({ nextUp }: { nextUp: PlatformSidebarNextUp }) {
       </span>
     </Link>
   );
-}
-
-function getAccessLabel(
-  role: PlatformSidebarProps["role"],
-  accessMode: PlatformSidebarProps["accessMode"]
-) {
-  if (role === "student") {
-    if (accessMode === "volna") return "Volna School";
-    if (accessMode === "full") return "Full access";
-    if (accessMode === "trial") return "Trial access";
-    return "No active access";
-  }
-
-  if (role === "admin") return "Admin area";
-  if (role === "teacher") return "Teacher area";
-
-  return "Preview mode";
-}
-
-function titleCaseSlug(slug: string) {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function getSidebarContextLabel(
-  pathname: string | undefined,
-  role: PlatformSidebarProps["role"],
-  accessMode: PlatformSidebarProps["accessMode"]
-) {
-  if (!pathname?.startsWith("/courses")) {
-    return getAccessLabel(role, accessMode);
-  }
-
-  const [, , variantSlug] = pathname.split("/").filter(Boolean);
-
-  if (variantSlug) {
-    if (variantSlug === "volna") return "Volna School course";
-
-    return `${titleCaseSlug(variantSlug)} course`;
-  }
-
-  return role === "admin" ? "Course view" : "GCSE Russian course";
-}
-
-function getSidebarEyebrow(
-  role: PlatformSidebarProps["role"],
-  isCourseView: boolean
-) {
-  if (isCourseView || role === "student" || role === "guest") {
-    return "GCSE Russian";
-  }
-
-  return "Platform";
-}
-
-function getSidebarTitle(role: PlatformSidebarProps["role"], isCourseView: boolean) {
-  if (isCourseView || role === "student" || role === "guest") {
-    return "Study Menu";
-  }
-
-  return "Main Menu";
-}
-
-function shouldShowHeaderStatusPill({
-  role,
-  accessMode,
-  isCourseView,
-}: {
-  role: PlatformSidebarProps["role"];
-  accessMode: PlatformSidebarProps["accessMode"];
-  isCourseView: boolean;
-}) {
-  if (isCourseView) return true;
-  if (role === "admin" || role === "teacher" || role === "guest") return true;
-
-  return role === "student" && accessMode !== "full";
-}
-
-function getCourseGroupLabel(variant: PlatformSidebarProps["variant"]) {
-  if (variant === "foundation") return "GCSE Russian - Foundation";
-  if (variant === "higher") return "GCSE Russian - Higher";
-  if (variant === "volna") return "GCSE Russian - Volna School";
-  return "Choose Your Course";
 }
 
 function getAccountInitials(
@@ -533,112 +431,31 @@ export default function PlatformSidebar({
   const activePathname = pathname ?? currentPathname;
   const previousPathnameRef = useRef(activePathname);
   const isGuest = role === "guest";
-  const isCourseView = activePathname?.startsWith("/courses");
-  const courseGroupItems: NavItem[] = [
-    {
-      label: "Dashboard",
-      href: getDashboardPath(),
-      icon: "dashboard",
-    },
-    { label: "Course", href: getActiveCoursePath(variant), icon: "courses" },
-    { label: "Progress", href: getProgressPath(), icon: "completed" },
-  ];
-
-  const studyItems: NavItem[] = [
-    { label: "Vocabulary", href: getVocabularyPath(), icon: "vocabulary" },
-    { label: "Grammar", href: getGrammarPath(), icon: "grammar" },
-  ];
-
-  const examPrepItems: NavItem[] = [
-    { label: "Past Papers", href: getPastPapersPath(), icon: "pastPapers" },
-    { label: "Mock Exams", href: getMockExamsPath(), icon: "mockExam" },
-    { label: "Taking Your Exams", href: getTakingYourExamsPath(), icon: "exam" },
-    { label: "Exam Calendar", href: getExamCalendarPath(), icon: "calendar" },
-  ];
-
-  const isStudent = role === "student";
-  const isTeacher = role === "teacher";
-  const isAdmin = role === "admin";
-  const accessLabel = getSidebarContextLabel(activePathname, role, accessMode);
-  const sidebarEyebrow = getSidebarEyebrow(role, isCourseView);
-  const sidebarTitle = getSidebarTitle(role, isCourseView);
-  const statusIcon = getStatusIcon(role);
-  const isVolnaStudent = isStudent && accessMode === "volna";
-  const showHeaderStatusPill = shouldShowHeaderStatusPill({
+  const sidebarHeader = getSidebarHeaderState({
+    pathname: activePathname ?? "",
     role,
     accessMode,
-    isCourseView,
   });
-  const showAssignments = isAdmin || isTeacher || isVolnaStudent;
-  const showOnlineClasses = isAdmin || isTeacher || !isVolnaStudent;
-
-  if (showAssignments) {
-    studyItems.push({
-      label: "Assignments",
-      href: getAssignmentsPath(),
-      icon: "assignments",
-    });
-  }
-
-  const volnaSchoolItems: NavItem[] = [];
-
-  if (showOnlineClasses) {
-    volnaSchoolItems.push({
-      label: "Join Volna School",
-      href: getOnlineClassesPath(),
-      icon: "school",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
-    });
-  }
-
-  const utilityItems: NavItem[] = [
-    {
-      label: "Overview",
-      href: getAccountPath(),
-      icon: "dashboard",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
-    },
-    {
-      label: "Billing",
-      href: getBillingPath(),
-      icon: "billing",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
-    },
-    {
-      label: "Profile",
-      href: getProfilePath(),
-      icon: "student",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
-    },
-    {
-      label: "Settings",
-      href: getSettingsPath(),
-      icon: "settings",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
-    },
-  ];
-
-  const mobileQuickItems = [
-    ...courseGroupItems,
-    ...studyItems.filter((item) => item.label === "Vocabulary"),
-  ];
-  const contentNavGroups = [
-    { label: getCourseGroupLabel(variant), items: courseGroupItems },
-    { label: "Study & Practice", items: studyItems },
-    { label: "Exam Prep", items: examPrepItems },
-    { label: "Live Classes & Tuition", items: volnaSchoolItems },
-  ].filter((group) => group.items.length > 0);
-  const navGroups = [...contentNavGroups, { label: "Account", items: utilityItems }];
+  const navigationLabels = getSidebarNavigationLabels(role);
+  const statusIcon = getStatusIcon(role);
+  const {
+    courseGroupItems,
+    studyItems,
+    examPrepItems,
+    volnaSchoolItems,
+    utilityItems,
+    contentNavGroups,
+    navGroups,
+    mobileQuickItems,
+  } = buildPlatformSidebarNav({
+    role,
+    accessMode,
+    variant,
+    isGuest,
+  });
+  const mobileContextLabel = sidebarHeader.showStatusPill
+    ? sidebarHeader.subtitle
+    : sidebarHeader.title;
   const isAccountNavActive = utilityItems.some((item) =>
     isActive(activePathname, item.href)
   );
@@ -828,7 +645,7 @@ export default function PlatformSidebar({
           <div className="mb-3 flex items-center justify-between gap-3 px-1">
             <div className="min-w-0">
               <div className="text-[10px] font-semibold uppercase tracking-[0.14em] app-text-soft">
-                {sidebarEyebrow}
+                {sidebarHeader.eyebrow}
               </div>
               <div className="mt-1 flex min-w-0 items-center gap-2">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--accent-border-ink)_28%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_7%,var(--background-muted))] text-[var(--accent-on-soft)]">
@@ -838,7 +655,7 @@ export default function PlatformSidebar({
                   <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
                     {activeNavItem.label}
                   </div>
-                  <div className="truncate text-xs app-text-muted">{accessLabel}</div>
+                  <div className="truncate text-xs app-text-muted">{mobileContextLabel}</div>
                 </div>
               </div>
             </div>
@@ -857,7 +674,7 @@ export default function PlatformSidebar({
 
           {nextUp ? <SidebarNextUpCard nextUp={nextUp} /> : null}
 
-          <nav aria-label="Platform quick navigation">
+          <nav aria-label={navigationLabels.quick}>
             <div className="grid grid-cols-5 gap-2">
               {mobileQuickItems.map((item) => {
                 const active = isActive(activePathname, item.href);
@@ -913,10 +730,10 @@ export default function PlatformSidebar({
             >
               <div className="mb-3 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
                 <AppIcon icon={statusIcon} size={13} />
-                {sidebarTitle}
+                {sidebarHeader.title}
               </div>
 
-              <nav className="space-y-4" aria-label="Full platform navigation">
+              <nav className="space-y-4" aria-label={navigationLabels.full}>
                 {navGroups.map((group) => (
                   <div key={group.label} className="space-y-0.5">
                     {sectionLabel(group.label)}
@@ -993,9 +810,9 @@ export default function PlatformSidebar({
         ) : null}
 
         <SidebarHeader
-          eyebrow={sidebarEyebrow}
-          title={sidebarTitle}
-          subtitle={showHeaderStatusPill ? accessLabel : null}
+          eyebrow={sidebarHeader.eyebrow}
+          title={sidebarHeader.title}
+          subtitle={sidebarHeader.showStatusPill ? sidebarHeader.subtitle : null}
           statusIcon={statusIcon}
         />
 
@@ -1003,7 +820,7 @@ export default function PlatformSidebar({
 
         <nav
           className="-mr-1 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pr-1"
-          aria-label="Platform navigation"
+          aria-label={navigationLabels.primary}
         >
           {contentNavGroups.map((group, groupIndex) => (
             <div

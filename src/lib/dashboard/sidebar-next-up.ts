@@ -20,7 +20,15 @@ export async function getPlatformSidebarNextUp(
   dashboard: DashboardInfo
 ): Promise<PlatformSidebarNextUp | null> {
   if (dashboard.role === "guest") {
-    return null;
+    return {
+      eyebrow: "Next up",
+      title: "Start your trial",
+      description: "Create an account to try lessons and save progress.",
+      href: "/signup",
+      label: "Start trial",
+      icon: "create",
+      progressPercent: 0,
+    };
   }
 
   if (dashboard.accessState === "trial_needs_tier") {
