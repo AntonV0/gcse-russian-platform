@@ -5,6 +5,7 @@ import type { AppIconKey } from "@/lib/shared/icons";
 type StudyBlockTone = "explain" | "coach" | "practice" | "exam" | "media";
 
 type StudyMissionPanelProps = {
+  headingId?: string;
   courseTitle: string;
   moduleTitle: string;
   sectionTitle: string;
@@ -80,6 +81,7 @@ function getSectionKindLabel(sectionKind: string) {
 }
 
 export function StudyMissionPanel({
+  headingId,
   courseTitle,
   moduleTitle,
   sectionTitle,
@@ -100,12 +102,17 @@ export function StudyMissionPanel({
     >
       <div className="relative p-4 md:p-5">
         <div className="min-w-0 space-y-2">
-          <div className="text-sm font-semibold leading-5 text-[var(--accent-ink)]">
-            Step {currentStepNumber} of {totalSteps}
-            <span className="sr-only">, {sectionKindLabel}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex max-w-full items-center rounded-full border border-[color-mix(in_srgb,var(--accent-border-ink)_26%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_6%,var(--background-elevated))] px-2.5 py-1 text-xs font-semibold text-[var(--accent-ink)]">
+              Step {currentStepNumber} of {totalSteps}
+            </span>
+            <span className="inline-flex max-w-full items-center rounded-full border border-[var(--border-subtle)] bg-[var(--background-elevated)] px-2.5 py-1 text-xs font-semibold capitalize text-[var(--text-secondary)]">
+              {sectionKindLabel}
+            </span>
           </div>
 
           <Heading
+            id={headingId}
             level={2}
             className="max-w-3xl text-2xl font-bold leading-tight text-[var(--text-primary)] md:text-3xl"
           >
@@ -131,6 +138,10 @@ export function StudyMissionPanel({
             style={{ width: progressLabel }}
           />
         </div>
+
+        <p className="mt-2 text-xs font-medium text-[var(--text-secondary)]">
+          {progressValue}% of lesson sections opened
+        </p>
       </div>
     </section>
   );

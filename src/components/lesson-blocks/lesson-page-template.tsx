@@ -145,9 +145,10 @@ export default async function LessonPageTemplate({
   const progressSummary = getLessonProgressSummary(visibleSections, visitedIds);
   const currentStepNumber = effectiveStepIndex + 1;
   const isFinalStep = effectiveStepIndex === visibleSections.length - 1;
+  const currentSectionHeadingId = `lesson-section-${currentSection.id}-heading`;
 
   return (
-    <main className="space-y-4">
+    <main className="space-y-4" aria-labelledby={currentSectionHeadingId}>
       <LessonHeader
         backHref={moduleHref}
         backLabel="Back to module"
@@ -160,6 +161,7 @@ export default async function LessonPageTemplate({
         <div className="pb-4">
           <section className="app-lesson-page-surface">
             <StudyMissionPanel
+              headingId={currentSectionHeadingId}
               courseTitle={course.title}
               moduleTitle={module.title}
               sectionTitle={currentSection.title}
@@ -170,7 +172,10 @@ export default async function LessonPageTemplate({
               visitedPercent={progressSummary.percent}
             />
 
-            <article className="app-lesson-page-article px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-5 md:px-6 md:pb-[calc(7.5rem+env(safe-area-inset-bottom))] md:pt-6 xl:pb-32">
+            <article
+              className="app-lesson-page-article px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-5 md:px-6 md:pb-[calc(7.5rem+env(safe-area-inset-bottom))] md:pt-6 xl:pb-32"
+              aria-labelledby={currentSectionHeadingId}
+            >
               <LessonRenderer
                 sections={[currentSection]}
                 lessonId={lesson.id}

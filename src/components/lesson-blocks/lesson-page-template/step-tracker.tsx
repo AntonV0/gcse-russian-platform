@@ -211,7 +211,8 @@ export function StepTracker({
           const isUnlocked = index <= allowedMaxIndex;
           const isNextStep = index === nextStepIndex;
           const status = getStepStatus({ isActive, isVisited, isUnlocked });
-          const showStatusBadge = !isUnlocked;
+          const showStatusBadge = isActive || isNextStep || !isUnlocked;
+          const lockedDescriptionId = `lesson-step-${section.id}-locked`;
 
           const content = (
             <div
@@ -254,14 +255,36 @@ export function StepTracker({
                 </div>
 
                 <span className="sr-only">
-                  {isActive ? "Current section" : isNextStep ? "Next section" : ""}
+                  {isActive
+                    ? "Current section"
+                    : isNextStep
+                      ? "Next available section"
+                      : isVisited
+                        ? "Visited section"
+                        : isUnlocked
+                          ? "Available section"
+                          : "Locked section"}
                 </span>
               </div>
             </div>
           );
 
           if (!isUnlocked) {
-            return <div key={section.id}>{content}</div>;
+            return (
+              <div
+                key={section.id}
+                tabIndex={0}
+                aria-disabled="true"
+                aria-describedby={lockedDescriptionId}
+                className="block rounded-lg app-focus-ring"
+                title="Open the earlier sections first"
+              >
+                {content}
+                <span id={lockedDescriptionId} className="sr-only">
+                  Open the previous available sections before this one unlocks.
+                </span>
+              </div>
+            );
           }
 
           return (

@@ -1,6 +1,7 @@
 import LessonCompletionForm from "@/components/lesson-blocks/lesson-completion-form";
 import Badge from "@/components/ui/badge";
 import DevComponentMarker from "@/components/ui/dev-component-marker";
+import AppIcon from "@/components/ui/app-icon";
 
 type LessonCompletionPanelProps = {
   courseSlug: string;
@@ -35,7 +36,10 @@ export function LessonCompletionPanel({
     .join(" ");
 
   return (
-    <div className="dev-marker-host relative rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-5">
+    <section
+      className="dev-marker-host relative overflow-hidden rounded-xl border border-[color-mix(in_srgb,var(--accent-border-ink)_24%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--lesson-paper-bg)_88%,var(--background-elevated))] p-5 shadow-[var(--shadow-sm)]"
+      aria-labelledby="lesson-completion-title"
+    >
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="LessonCompletionPanel"
@@ -54,13 +58,22 @@ export function LessonCompletionPanel({
       ) : null}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-[var(--text-primary)]">
-            Nice work - you have a first introduction.
-          </h2>
-          <p className="mt-1 text-sm app-text-muted">
-            Mark the lesson complete when you can say the short model without looking.
-          </p>
+        <div className="flex min-w-0 gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--success-border)] bg-[var(--success-surface)] text-[var(--success-text)]">
+            <AppIcon icon={completed ? "completed" : "success"} size={21} />
+          </span>
+          <div>
+            <h2
+              id="lesson-completion-title"
+              className="text-xl font-semibold text-[var(--text-primary)]"
+            >
+              {completed ? "Lesson complete." : "Ready for a final check."}
+            </h2>
+            <p className="mt-1 text-sm app-text-muted">
+              Save the lesson once you have opened every section and the main idea feels
+              clear enough to revisit later.
+            </p>
+          </div>
         </div>
 
         <Badge tone={completed ? "success" : allVisited ? "info" : "warning"}>
@@ -68,7 +81,7 @@ export function LessonCompletionPanel({
         </Badge>
       </div>
 
-      <div className="rounded-lg border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_38%,var(--background-elevated))] p-4 text-sm">
+      <div className="mt-4 rounded-lg border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_38%,var(--background-elevated))] p-4 text-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="font-medium text-[var(--text-primary)]">
@@ -98,14 +111,16 @@ export function LessonCompletionPanel({
         </div>
       </div>
 
-      <LessonCompletionForm
-        courseSlug={courseSlug}
-        variantSlug={variantSlug}
-        moduleSlug={moduleSlug}
-        lessonSlug={lessonSlug}
-        completed={completed}
-        canComplete={allVisited}
-      />
-    </div>
+      <div className="mt-4">
+        <LessonCompletionForm
+          courseSlug={courseSlug}
+          variantSlug={variantSlug}
+          moduleSlug={moduleSlug}
+          lessonSlug={lessonSlug}
+          completed={completed}
+          canComplete={allVisited}
+        />
+      </div>
+    </section>
   );
 }

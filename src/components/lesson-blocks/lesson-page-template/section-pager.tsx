@@ -166,6 +166,8 @@ export function SectionPager({
     <div
       ref={dockRef}
       className="app-section-pager-dock sticky bottom-0 z-30 -mb-8 overflow-visible pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-5 lg:pb-3 xl:static xl:mb-0 xl:pb-0 xl:pt-0"
+      role="navigation"
+      aria-label="Lesson section navigation"
     >
       <div className="app-section-pager-card dev-marker-host relative flex w-full flex-col gap-3 rounded-b-xl rounded-t-none border border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--border-subtle))] px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
         {SHOW_UI_DEBUG ? (
@@ -210,7 +212,10 @@ export function SectionPager({
               Back
             </Button>
           ) : (
-            <span className="flex min-h-10 flex-1 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft sm:flex-none">
+            <span
+              aria-disabled="true"
+              className="flex min-h-10 flex-1 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft sm:flex-none"
+            >
               Back
             </span>
           )}
@@ -228,8 +233,11 @@ export function SectionPager({
               Next
             </Button>
           ) : (
-            <span className="flex min-h-10 flex-1 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft sm:flex-none">
-              Recap reached
+            <span
+              aria-disabled="true"
+              className="flex min-h-10 flex-1 items-center justify-center rounded-xl border border-[var(--border)] px-4 py-2 text-sm app-text-soft sm:flex-none"
+            >
+              Ready to finish
             </span>
           )}
         </div>
