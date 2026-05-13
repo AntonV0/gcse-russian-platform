@@ -4,6 +4,7 @@ import { StudentDashboardPanel } from "@/components/dashboard/student-dashboard-
 import { TeacherDashboardPanel } from "@/components/dashboard/teacher-dashboard-panel";
 import { TrialTierChoicePanel } from "@/components/dashboard/trial-tier-choice-panel";
 import Button from "@/components/ui/button";
+import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -82,22 +83,53 @@ export default async function DashboardPage() {
 
 function ExpiredAccessPanel() {
   return (
-    <EmptyState
-      icon="lock"
-      iconTone="warning"
-      title="Your course access is not active"
-      description="This account has previous access history, so it is not treated as a fresh trial. Review billing to restore Foundation or Higher access."
-      headingLevel={1}
-      action={
-        <div className="flex flex-wrap justify-center gap-3">
-          <Button href="/account/billing" variant="primary" icon="billing">
-            Review billing
-          </Button>
-          <Button href="/past-papers" variant="secondary" icon="pastPapers">
-            Open past papers
-          </Button>
-        </div>
-      }
-    />
+    <>
+      <section className="app-surface-brand app-section-padding-lg">
+        <EmptyState
+          icon="lock"
+          iconTone="warning"
+          title="Your course access is not active"
+          description="Restore your course plan to bring back the focused dashboard, saved progress prompts, and next lesson recommendations."
+          headingLevel={1}
+          action={
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button href="/account/billing" variant="primary" icon="billing">
+                Review billing
+              </Button>
+              <Button href="/past-papers" variant="secondary" icon="pastPapers">
+                Open past papers
+              </Button>
+            </div>
+          }
+        />
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        <DashboardCard title="Keep revising">
+          <div className="space-y-3">
+            <p>Public resources remain available while access is restored.</p>
+            <Button href="/grammar" variant="secondary" size="sm" icon="grammar">
+              Open grammar
+            </Button>
+          </div>
+        </DashboardCard>
+        <DashboardCard title="Practise papers">
+          <div className="space-y-3">
+            <p>Use official paper links for exam-style practice and review.</p>
+            <Button href="/past-papers" variant="secondary" size="sm" icon="pastPapers">
+              Past papers
+            </Button>
+          </div>
+        </DashboardCard>
+        <DashboardCard title="Restore focus">
+          <div className="space-y-3">
+            <p>Billing options reopen the full next-step dashboard experience.</p>
+            <Button href="/account/billing" variant="secondary" size="sm" icon="billing">
+              Billing
+            </Button>
+          </div>
+        </DashboardCard>
+      </section>
+    </>
   );
 }
