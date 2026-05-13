@@ -101,7 +101,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
         tone="student"
         eyebrow="Vocabulary"
         title="Vocabulary"
-        description="Browse GCSE Russian vocabulary by topic, tier, and source so you can find the right words to revise quickly."
+        description="Find a set, open a study queue, and keep returning to the words that still need practice."
         badges={
           <>
             <Badge tone="info" icon="vocabulary">
@@ -109,6 +109,9 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             </Badge>
             <Badge tone="muted" icon="school">
               GCSE Russian
+            </Badge>
+            <Badge tone="success" icon="success">
+              Saved study states
             </Badge>
             {canSeeDrafts && draftCount > 0 ? (
               <Badge tone="warning" icon="draft">
@@ -158,6 +161,11 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
         title="Vocabulary sets"
         description={`${vocabularySets.length} set${vocabularySets.length === 1 ? "" : "s"} available${canSeeDrafts ? " to your staff view" : ""}.`}
         tone="student"
+        actions={
+          <Button href="/vocabulary?tier=foundation" variant="secondary" icon="school">
+            Foundation
+          </Button>
+        }
       >
         {vocabularySets.length === 0 ? (
           <EmptyState

@@ -8,7 +8,7 @@ import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
-import VocabularyItemSectionList from "@/components/vocabulary/vocabulary-item-section-list";
+import VocabularyStudyWorkspace from "@/components/vocabulary/vocabulary-study-workspace";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import { canDashboardAccessVocabularySet } from "@/lib/vocabulary/access";
 import {
@@ -139,6 +139,7 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
         Array.from(new Set(items.map((item) => item.id)))
       )
     : new Map();
+  const itemCoverage = Array.from(itemCoverageById.values());
 
   return (
     <main className="space-y-4">
@@ -181,7 +182,7 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <SectionCard
           title="Vocabulary items"
-          description="Study the Russian, English, examples, and notes without leaving this page."
+          description="Search, filter, and mark each item as new, needs practice, or mastered."
           tone="student"
         >
           {items.length === 0 ? (
@@ -192,9 +193,11 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
               description="This set exists, but no items have been added yet."
             />
           ) : (
-            <VocabularyItemSectionList
+            <VocabularyStudyWorkspace
+              vocabularySetId={vocabularySet.id}
+              vocabularySetTitle={vocabularySet.title}
               sections={itemSections}
-              itemCoverageById={itemCoverageById}
+              itemCoverage={itemCoverage}
               showStaffMetadata={canSeeDrafts}
             />
           )}
@@ -248,18 +251,17 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
 
           <PanelCard
             title="How to use this set"
-            description="A quick revision rhythm for this vocabulary."
+            description="A quick repeat-study rhythm for this vocabulary."
             tone="student"
           >
             <div className="space-y-3 text-sm leading-6 text-[var(--text-secondary)]">
               <p>
-                Start by covering the English and saying the Russian out loud, then
-                reverse it and check the examples for natural exam-style usage.
+                Start with new words, mark uncertain items as needs practice, then return
+                to that queue before moving anything into mastered.
               </p>
               <p>
-                Badges show whether a word is best for production, recognition, or all
-                skills, so you can prioritise speaking, writing, listening, and reading
-                practice deliberately.
+                Use the skill and source filters to switch between output practice,
+                recognition practice, exam-list words, and extension vocabulary.
               </p>
             </div>
           </PanelCard>

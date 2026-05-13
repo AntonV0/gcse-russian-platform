@@ -1,4 +1,5 @@
 import ActionPill from "@/components/ui/action-pill";
+import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -130,8 +131,13 @@ function groupVocabularySetsBySection(vocabularySets: VocabularySet[]) {
 
 function SectionToggleButton() {
   return (
-    <ActionPill className="pointer-events-none shrink-0 px-3 sm:px-3.5" aria-hidden="true">
-      <span className="hidden sm:inline">Open</span>
+    <ActionPill
+      icon="down"
+      className="pointer-events-none shrink-0 px-3 sm:px-3.5"
+      aria-hidden="true"
+    >
+      <span className="hidden group-open:hidden sm:inline">Open</span>
+      <span className="hidden group-open:inline">Close</span>
     </ActionPill>
   );
 }
@@ -190,8 +196,8 @@ export default function VocabularySetSectionList({
 
   return (
     <div className="space-y-6">
-      {vocabularySetGroups.map((group) => (
-        <details key={group.title} className="group app-card p-4">
+      {vocabularySetGroups.map((group, index) => (
+        <details key={group.title} className="group app-card p-4" open={index === 0}>
           <summary className="app-focus-ring flex cursor-pointer list-none items-start justify-between gap-4 rounded-lg">
             <span className="min-w-0">
               <span className="block text-base font-semibold text-[var(--text-primary)]">
@@ -212,6 +218,11 @@ export default function VocabularySetSectionList({
                 href={getVocabularySetHref(vocabularySet)}
                 title={vocabularySet.title}
                 subtitle={vocabularySet.description ?? "Vocabulary set ready for study."}
+                icon={
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--info-border)] bg-[var(--info-surface)] text-[var(--info-text)] shadow-[0_8px_18px_var(--info-shadow)]">
+                    <AppIcon icon="vocabularySet" size={20} />
+                  </span>
+                }
                 badges={
                   <VocabularySetBadges
                     vocabularySet={vocabularySet}
@@ -221,12 +232,12 @@ export default function VocabularySetSectionList({
                 actions={
                   <Button
                     href={getVocabularySetHref(vocabularySet)}
-                    variant="quiet"
+                    variant="secondary"
                     size="sm"
-                    icon="next"
-                    iconOnly
-                    ariaLabel={`Open ${vocabularySet.title}`}
-                  />
+                    icon="brain"
+                  >
+                    Study
+                  </Button>
                 }
               />
             ))}
