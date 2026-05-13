@@ -31,6 +31,7 @@ export default function GcseRussianWritingExamPage() {
       heroSupport="Teacher feedback can help repeated grammar errors"
       secondaryHref="/online-gcse-russian-lessons"
       secondaryLabel="Online lessons"
+      secondaryIcon="school"
       skillFocus={[
         {
           title: "Accurate core structures",

@@ -45,8 +45,10 @@ type ExamPaperGuidePageProps = {
   faqs: ExamPaperGuideFaq[];
   primaryHref?: string;
   primaryLabel?: string;
+  primaryIcon?: AppIconKey;
   secondaryHref?: string;
   secondaryLabel?: string;
+  secondaryIcon?: AppIconKey;
   ctaTitle: string;
   ctaDescription: string;
 };
@@ -412,7 +414,7 @@ function RelatedLinksSection({
           <Link
             key={link.href}
             href={link.href}
-            className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
+            className="app-focus-ring rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
             <AppIcon
               icon={link.icon}
@@ -475,8 +477,10 @@ export default function ExamPaperGuidePage({
   faqs,
   primaryHref = "/signup",
   primaryLabel = "Start trial",
+  primaryIcon = "create",
   secondaryHref = "/gcse-russian-course",
   secondaryLabel = "View course",
+  secondaryIcon = "courses",
   ctaTitle,
   ctaDescription,
 }: ExamPaperGuidePageProps) {
@@ -527,11 +531,14 @@ export default function ExamPaperGuidePage({
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Button href={primaryHref} variant="primary" icon="create">
+              <Button href={primaryHref} variant="primary" icon={primaryIcon}>
                 {primaryLabel}
               </Button>
-              <Button href={secondaryHref} variant="secondary" icon="courses">
+              <Button href={secondaryHref} variant="secondary" icon={secondaryIcon}>
                 {secondaryLabel}
+              </Button>
+              <Button href="/past-papers" variant="soft" icon="pastPapers">
+                Open past papers
               </Button>
             </div>
           </div>
@@ -566,11 +573,14 @@ export default function ExamPaperGuidePage({
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button href="/signup" variant="primary" icon="create">
-                Create trial account
+              <Button href={primaryHref} variant="primary" icon={primaryIcon}>
+                {primaryLabel}
               </Button>
-              <Button href="/gcse-russian-course" variant="secondary" icon="courses">
-                View course
+              <Button href={secondaryHref} variant="secondary" icon={secondaryIcon}>
+                {secondaryLabel}
+              </Button>
+              <Button href="/mock-exams" variant="inverse" icon="mockExam">
+                Try a mock exam
               </Button>
             </div>
           </div>

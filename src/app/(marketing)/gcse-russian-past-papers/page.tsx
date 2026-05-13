@@ -4,7 +4,7 @@ import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 
 export const metadata: Metadata = buildPublicMetadata({
-  title: "GCSE Russian Past Papers",
+  title: "How to Use GCSE Russian Past Papers",
   description:
     "Use GCSE Russian past papers effectively with guidance on official Pearson resources, paper-by-paper revision, mock practice, and structured course preparation.",
   path: "/gcse-russian-past-papers",
@@ -136,6 +136,12 @@ export default function GcseRussianPastPapersPage() {
       ]}
       relatedLinks={[
         {
+          title: "Official past-paper library",
+          description: "Open the internal browser for paper, tier, audio, and mark-scheme links.",
+          href: "/past-papers",
+          icon: "pastPapers",
+        },
+        {
           title: "GCSE Russian exam guide",
           description: "Understand the four papers before choosing resources.",
           href: "/gcse-russian-exam-guide",
@@ -180,8 +186,9 @@ export default function GcseRussianPastPapersPage() {
       ]}
       ctaTitle="Use papers to find the next useful practice."
       ctaDescription="Start with trial access and use the app to turn past-paper weaknesses into targeted GCSE Russian practice."
-      secondaryHref="/gcse-russian-revision"
-      secondaryLabel="Revision guide"
+      secondaryHref="/past-papers"
+      secondaryLabel="Open past-paper library"
+      secondaryIcon="pastPapers"
     />
   );
 }

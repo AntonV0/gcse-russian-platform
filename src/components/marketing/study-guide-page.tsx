@@ -58,6 +58,7 @@ type StudyGuidePageProps = {
   ctaDescription: string;
   secondaryHref?: string;
   secondaryLabel?: string;
+  secondaryIcon?: AppIconKey;
 };
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -420,6 +421,9 @@ function RelatedLinksSection({
 }: {
   relatedLinks: StudyGuideRelatedLink[];
 }) {
+  const linkClassName =
+    "app-focus-ring rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]";
+
   return (
     <section className="rounded-lg bg-[var(--background-muted)] p-5 sm:p-8">
       <div className="flex flex-col gap-5 border-b border-[var(--border-subtle)] pb-6 md:flex-row md:items-end md:justify-between">
@@ -435,23 +439,41 @@ function RelatedLinksSection({
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {relatedLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
-          >
-            <AppIcon
-              icon={link.icon}
-              size={18}
-              className="mb-3 text-[var(--accent-ink)]"
-            />
-            {link.title}
-            <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
-              {link.description}
-            </span>
-          </Link>
-        ))}
+        {relatedLinks.map((link) => {
+          const isExternal = /^https?:\/\//.test(link.href);
+          const content = (
+            <>
+              <AppIcon
+                icon={link.icon}
+                size={18}
+                className="mb-3 text-[var(--accent-ink)]"
+              />
+              {link.title}
+              {isExternal ? (
+                <span className="sr-only"> Opens an external site.</span>
+              ) : null}
+              <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
+                {link.description}
+              </span>
+            </>
+          );
+
+          return isExternal ? (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClassName}
+            >
+              {content}
+            </a>
+          ) : (
+            <Link key={link.href} href={link.href} className={linkClassName}>
+              {content}
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
@@ -511,6 +533,7 @@ export default function StudyGuidePage({
   ctaDescription,
   secondaryHref = "/gcse-russian-exam-guide",
   secondaryLabel = "Exam guide",
+  secondaryIcon = "exam",
 }: StudyGuidePageProps) {
   return (
     <>
@@ -558,7 +581,7 @@ export default function StudyGuidePage({
               <Button href="/signup" variant="primary" icon="create">
                 Start trial
               </Button>
-              <Button href={secondaryHref} variant="secondary" icon="exam">
+              <Button href={secondaryHref} variant="secondary" icon={secondaryIcon}>
                 {secondaryLabel}
               </Button>
             </div>
@@ -608,8 +631,8 @@ export default function StudyGuidePage({
               <Button href="/signup" variant="primary" icon="create">
                 Create trial account
               </Button>
-              <Button href="/gcse-russian-course" variant="secondary" icon="courses">
-                View course
+              <Button href={secondaryHref} variant="secondary" icon={secondaryIcon}>
+                {secondaryLabel}
               </Button>
             </div>
           </div>

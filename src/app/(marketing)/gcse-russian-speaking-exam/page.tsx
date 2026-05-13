@@ -31,6 +31,7 @@ export default function GcseRussianSpeakingExamPage() {
       heroSupport="Live feedback is often useful for pronunciation and confidence"
       secondaryHref="/online-gcse-russian-lessons"
       secondaryLabel="Online lessons"
+      secondaryIcon="school"
       skillFocus={[
         {
           title: "Role play responses",
