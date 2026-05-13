@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import JourneyProgressBar from "@/components/courses/journey-progress-bar";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
@@ -17,6 +18,7 @@ import {
   formatCoursePathMinutes,
   formatCoursePathRemainingMinutes,
 } from "@/lib/courses/path-progress";
+import { getLessonJourneyState } from "@/lib/courses/journey-state";
 import { getLessonIdsWithPublishedSectionsDb } from "@/lib/lessons/lesson-content-helpers-db";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 
@@ -205,12 +207,11 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     {completedCount} of {totalLessons}
                   </span>
                 </div>
-                <div className="app-progress-track">
-                  <div
-                    className="app-progress-bar"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
+                <JourneyProgressBar
+                  value={progressPercent}
+                  label={`${module.title} progress`}
+                  isComplete={isModuleComplete}
+                />
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
@@ -281,111 +282,122 @@ export default async function ModulePage({ params }: ModulePageProps) {
           }
         />
       ) : (
-        <section className="grid gap-4 md:grid-cols-2">
-          {visibleLessons.map((lesson, index) => {
-            const isCompleted = !!completedMap.get(lesson.slug);
-            const accessState = lessonAccessMap.get(lesson.slug);
-            const canAccessLesson = accessState === "accessible";
-            const canOpenLesson = canAccessLesson || isCompleted;
-            const isNextLesson =
-              firstAccessibleIncompleteLesson?.slug === lesson.slug && !isCompleted;
-            const lockedLabel =
-              dashboard.accessMode === "trial"
-                ? "Trial sample limit"
-                : dashboard.accessState === "full_foundation" && variantSlug === "higher"
-                  ? "Higher upgrade required"
-                  : "Access required";
+        <section aria-labelledby="lessons-heading">
+          <div className="mb-4">
+            <h2 id="lessons-heading" className="app-heading-section">
+              Lessons
+            </h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              Follow the lesson cards from current to complete. Locked cards explain the
+              access needed without reducing readability.
+            </p>
+          </div>
 
-            const cardContent = (
-              <DashboardCard className="app-card-interaction-subtle h-full">
-                <div className="space-y-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="w-full text-xs font-semibold uppercase tracking-[0.14em] app-text-soft sm:w-auto">
-                      Lesson {index + 1}
-                    </p>
-                    <Badge tone="muted" icon="pending">
-                      {formatCoursePathMinutes(lesson.estimated_minutes)}
-                    </Badge>
+          <div className="grid gap-4 md:grid-cols-2">
+            {visibleLessons.map((lesson, index) => {
+              const isCompleted = !!completedMap.get(lesson.slug);
+              const accessState = lessonAccessMap.get(lesson.slug);
+              const canAccessLesson = accessState === "accessible";
+              const isNextLesson =
+                firstAccessibleIncompleteLesson?.slug === lesson.slug && !isCompleted;
+              const lockedLabel =
+                dashboard.accessMode === "trial"
+                  ? "Trial sample limit"
+                  : dashboard.accessState === "full_foundation" &&
+                      variantSlug === "higher"
+                    ? "Higher upgrade required"
+                    : "Access required";
+              const lessonState = getLessonJourneyState({
+                isCompleted,
+                isNextLesson,
+                canAccessLesson,
+                lockedLabel,
+              });
 
-                    {isCompleted ? (
-                      <Badge tone="success" icon="completed">
-                        Completed
-                      </Badge>
-                    ) : isNextLesson ? (
-                      <Badge tone="info" icon="next">
-                        Continue here
-                      </Badge>
-                    ) : canAccessLesson ? (
+              const cardContent = (
+                <DashboardCard
+                  className={[
+                    "h-full",
+                    lessonState.canOpen
+                      ? "app-card-interaction-subtle"
+                      : "border-dashed border-[color-mix(in_srgb,var(--warning-display)_28%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--warning-display)_4%,var(--surface-elevated))]",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="w-full text-xs font-semibold uppercase tracking-[0.14em] app-text-soft sm:w-auto">
+                        Lesson {index + 1}
+                      </p>
                       <Badge tone="muted" icon="pending">
-                        Available
+                        {formatCoursePathMinutes(lesson.estimated_minutes)}
                       </Badge>
-                    ) : (
-                      <Badge tone="warning" icon="locked">
-                        Locked
+
+                      <Badge tone={lessonState.badgeTone} icon={lessonState.badgeIcon}>
+                        {lessonState.badgeLabel}
                       </Badge>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="app-heading-subsection">{lesson.title}</h3>
-
-                    <p className="app-text-body-muted">
-                      {lesson.summary ?? "Open this lesson to continue your learning."}
-                    </p>
-                  </div>
-
-                  <div>
-                    <div className="mb-2 flex items-center justify-between gap-3 text-xs">
-                      <span className="font-medium text-[var(--text-primary)]">
-                        {isCompleted
-                          ? "Ready for revision"
-                          : isNextLesson
-                            ? "Your next step"
-                            : canAccessLesson
-                              ? "Available when ready"
-                              : lockedLabel}
-                      </span>
-                      <span className="app-text-muted">
-                        Step {index + 1} of {totalLessons}
-                      </span>
                     </div>
-                    <div className="app-progress-track">
-                      <div
-                        className="app-progress-bar"
-                        style={{ width: isCompleted ? "100%" : "0%" }}
+
+                    <div className="space-y-2">
+                      <h3 className="app-heading-subsection">{lesson.title}</h3>
+
+                      <p className="app-text-body-muted">
+                        {lesson.summary ?? "Open this lesson to continue your learning."}
+                      </p>
+                    </div>
+
+                    <div>
+                      <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                        <span className="font-medium text-[var(--text-primary)]">
+                          {lessonState.statusLabel}
+                        </span>
+                        <span className="app-text-muted">
+                          Step {index + 1} of {totalLessons}
+                        </span>
+                      </div>
+                      <JourneyProgressBar
+                        value={lessonState.progressValue}
+                        label={`${lesson.title} progress`}
+                        isComplete={isCompleted}
                       />
                     </div>
-                  </div>
 
-                  <div className="pt-1">
-                    <ActionPill icon={canOpenLesson ? "next" : "locked"}>
-                      {isCompleted
-                        ? "Review / restart lesson"
-                        : canAccessLesson
-                          ? "Open lesson"
-                          : lockedLabel}
-                    </ActionPill>
+                    <div className="pt-1">
+                      <ActionPill
+                        icon={lessonState.actionIcon}
+                        tone={lessonState.actionTone}
+                      >
+                        {lessonState.actionLabel}
+                      </ActionPill>
+                    </div>
                   </div>
+                </DashboardCard>
+              );
+
+              return lessonState.canOpen ? (
+                <PendingLinkCard
+                  key={lesson.slug}
+                  href={getLessonPath(course.slug, variantSlug, module.slug, lesson.slug)}
+                  className="app-focus-ring group block rounded-2xl"
+                  ariaLabel={`${lessonState.actionLabel}: ${lesson.title}`}
+                  pendingLabel="Opening lesson..."
+                >
+                  {cardContent}
+                </PendingLinkCard>
+              ) : (
+                <div
+                  key={lesson.slug}
+                  role="group"
+                  aria-disabled="true"
+                  aria-label={`${lesson.title}: ${lockedLabel}`}
+                  className="rounded-2xl"
+                >
+                  {cardContent}
                 </div>
-              </DashboardCard>
-            );
-
-            return canOpenLesson ? (
-              <PendingLinkCard
-                key={lesson.slug}
-                href={getLessonPath(course.slug, variantSlug, module.slug, lesson.slug)}
-                className="app-focus-ring group block rounded-2xl"
-                ariaLabel={`Open ${lesson.title}`}
-                pendingLabel="Opening lesson..."
-              >
-                {cardContent}
-              </PendingLinkCard>
-            ) : (
-              <div key={lesson.slug} className="cursor-not-allowed opacity-75">
-                {cardContent}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </section>
       )}
     </main>

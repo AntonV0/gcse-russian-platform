@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import JourneyProgressBar from "@/components/courses/journey-progress-bar";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
@@ -15,6 +16,7 @@ import {
   formatCoursePathRemainingMinutes,
   getVariantPathProgressSummary,
 } from "@/lib/courses/path-progress";
+import { getVariantDisplayName, getVariantTone } from "@/lib/courses/journey-state";
 
 type VariantPageProps = {
   params: Promise<{
@@ -22,18 +24,6 @@ type VariantPageProps = {
     variantSlug: string;
   }>;
 };
-
-function getVariantTone(slug: string): "info" | "success" | "muted" {
-  if (slug === "higher") return "info";
-  if (slug === "foundation") return "success";
-  return "muted";
-}
-
-function getVariantLabel(slug: string) {
-  if (slug === "higher") return "Higher";
-  if (slug === "foundation") return "Foundation";
-  return "Volna";
-}
 
 export default async function VariantPage({ params }: VariantPageProps) {
   const { courseSlug, variantSlug } = await params;
@@ -91,7 +81,9 @@ export default async function VariantPage({ params }: VariantPageProps) {
     pathSummary.nextLesson?.href ??
     (primaryModule ? getModulePath(course.slug, variant.slug, primaryModule.slug) : null);
   const primaryActionLabel = pathSummary.nextLesson
-    ? `Continue: ${pathSummary.nextLesson.title}`
+    ? pathSummary.completedLessons > 0
+      ? "Continue lesson"
+      : "Start first lesson"
     : pathSummary.isComplete
       ? "Review this path"
       : primaryModule
@@ -108,7 +100,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
                 {course.title}
               </Badge>
               <Badge tone={getVariantTone(variant.slug)} icon="layers">
-                {getVariantLabel(variant.slug)}
+                {getVariantDisplayName(variant.slug, variant.title)}
               </Badge>
               <Badge tone="muted" icon="modules">
                 {moduleCountLabel}
@@ -135,6 +127,11 @@ export default async function VariantPage({ params }: VariantPageProps) {
                   variant="journey"
                   icon="next"
                   iconPosition="right"
+                  ariaLabel={
+                    pathSummary.nextLesson
+                      ? `Open ${pathSummary.nextLesson.title}`
+                      : primaryActionLabel
+                  }
                 >
                   {primaryActionLabel}
                 </Button>
@@ -183,19 +180,11 @@ export default async function VariantPage({ params }: VariantPageProps) {
                     {pathSummary.totalModules === 1 ? "" : "s"}
                   </span>
                 </div>
-                <div
-                  className="app-progress-track"
-                  role="progressbar"
-                  aria-label={`${variant.title} path progress`}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={pathSummary.progressPercent}
-                >
-                  <div
-                    className="app-progress-bar"
-                    style={{ width: `${pathSummary.progressPercent}%` }}
-                  />
-                </div>
+                <JourneyProgressBar
+                  value={pathSummary.progressPercent}
+                  label={`${variant.title} path progress`}
+                  isComplete={pathSummary.isComplete}
+                />
               </div>
 
               <p className="text-sm app-text-muted">
@@ -227,111 +216,119 @@ export default async function VariantPage({ params }: VariantPageProps) {
           }
         />
       ) : (
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {modules.map((module) => {
-            const summary = moduleSummaryMap.get(module.slug);
-            const href =
-              summary?.nextLesson?.href ??
-              getModulePath(course.slug, variant.slug, module.slug);
-            const moduleLabel =
-              module.position === 0 ? "Module 0" : `Module ${module.position}`;
+        <section aria-labelledby="modules-heading">
+          <div className="mb-4">
+            <h2 id="modules-heading" className="app-heading-section">
+              Modules
+            </h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              Work through modules in order. The current card points to the next available
+              lesson when one is ready.
+            </p>
+          </div>
 
-            return (
-              <PendingLinkCard
-                key={module.slug}
-                href={href}
-                className="app-focus-ring group block rounded-2xl"
-                ariaLabel={`Open ${module.title}`}
-                pendingLabel="Opening module..."
-              >
-                <DashboardCard className="app-card-interaction-subtle h-full">
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge tone="muted" icon="modules">
-                        {moduleLabel}
-                      </Badge>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {modules.map((module) => {
+              const summary = moduleSummaryMap.get(module.slug);
+              const href =
+                summary?.nextLesson?.href ??
+                getModulePath(course.slug, variant.slug, module.slug);
+              const moduleLabel =
+                module.position === 0 ? "Module 0" : `Module ${module.position}`;
+              const moduleActionLabel = summary?.nextLesson
+                ? summary.completedLessons > 0
+                  ? "Continue module"
+                  : "Start module"
+                : summary?.isComplete
+                  ? "Review module"
+                  : "Open module";
+              const moduleAriaLabel = summary?.nextLesson
+                ? `${moduleActionLabel}: ${summary.nextLesson.title}`
+                : `${moduleActionLabel}: ${module.title}`;
 
-                      {summary?.isComplete ? (
-                        <Badge tone="success" icon="completed">
-                          Complete
+              return (
+                <PendingLinkCard
+                  key={module.slug}
+                  href={href}
+                  className="app-focus-ring group block rounded-2xl"
+                  ariaLabel={moduleAriaLabel}
+                  pendingLabel="Opening module..."
+                >
+                  <DashboardCard className="app-card-interaction-subtle h-full">
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge tone="muted" icon="modules">
+                          {moduleLabel}
                         </Badge>
-                      ) : summary?.nextLesson ? (
-                        <Badge tone="info" icon="next">
-                          Up next
-                        </Badge>
-                      ) : module.position === 1 ? (
-                        <Badge tone="success">Start here</Badge>
-                      ) : null}
-                    </div>
 
-                    <div className="space-y-2">
-                      <h3 className="app-heading-subsection">{module.title}</h3>
-
-                      <p className="app-text-body-muted">
-                        {module.description ??
-                          "Open this module to view lessons and continue learning."}
-                      </p>
-                    </div>
-
-                    <div>
-                      <div className="mb-2 flex items-center justify-between gap-3 text-xs">
-                        <span className="font-medium text-[var(--text-primary)]">
-                          {summary?.progressPercent ?? 0}% complete
-                        </span>
-                        <span className="app-text-muted">
-                          {summary?.completedLessons ?? 0} of{" "}
-                          {summary?.totalLessons || "-"}
-                        </span>
+                        {summary?.isComplete ? (
+                          <Badge tone="success" icon="completed">
+                            Complete
+                          </Badge>
+                        ) : summary?.nextLesson ? (
+                          <Badge tone="info" icon="next">
+                            Up next
+                          </Badge>
+                        ) : module.position === 1 ? (
+                          <Badge tone="success">Start here</Badge>
+                        ) : null}
                       </div>
-                      <div
-                        className="app-progress-track"
-                        role="progressbar"
-                        aria-label={`${module.title} progress`}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={summary?.progressPercent ?? 0}
-                      >
-                        <div
-                          className="app-progress-bar"
-                          style={{ width: `${summary?.progressPercent ?? 0}%` }}
+
+                      <div className="space-y-2">
+                        <h3 className="app-heading-subsection">{module.title}</h3>
+
+                        <p className="app-text-body-muted">
+                          {module.description ??
+                            "Open this module to view lessons and continue learning."}
+                        </p>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                          <span className="font-medium text-[var(--text-primary)]">
+                            {summary?.progressPercent ?? 0}% complete
+                          </span>
+                          <span className="app-text-muted">
+                            {summary?.completedLessons ?? 0} of{" "}
+                            {summary?.totalLessons || "-"}
+                          </span>
+                        </div>
+                        <JourneyProgressBar
+                          value={summary?.progressPercent}
+                          label={`${module.title} progress`}
+                          isComplete={!!summary?.isComplete}
                         />
                       </div>
-                    </div>
 
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="app-stat-tile">
-                        <div className="app-stat-label">Next lesson</div>
-                        <div className="app-stat-value">
-                          {summary?.nextLesson?.title ??
-                            (summary?.isComplete ? "Review ready" : "Open module")}
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <div className="app-stat-tile">
+                          <div className="app-stat-label">Next lesson</div>
+                          <div className="app-stat-value">
+                            {summary?.nextLesson?.title ??
+                              (summary?.isComplete ? "Review ready" : "Open module")}
+                          </div>
+                        </div>
+
+                        <div className="app-stat-tile">
+                          <div className="app-stat-label">Time left</div>
+                          <div className="app-stat-value">
+                            {formatCoursePathRemainingMinutes(
+                              summary?.remainingMinutes,
+                              !!summary?.isComplete
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="app-stat-tile">
-                        <div className="app-stat-label">Time left</div>
-                        <div className="app-stat-value">
-                          {formatCoursePathRemainingMinutes(
-                            summary?.remainingMinutes,
-                            !!summary?.isComplete
-                          )}
-                        </div>
+                      <div className="pt-1">
+                        <ActionPill>{moduleActionLabel}</ActionPill>
                       </div>
                     </div>
-
-                    <div className="pt-1">
-                      <ActionPill>
-                        {summary?.nextLesson
-                          ? `Continue: ${summary.nextLesson.title}`
-                          : summary?.isComplete
-                            ? "Review module"
-                            : "Open module"}
-                      </ActionPill>
-                    </div>
-                  </div>
-                </DashboardCard>
-              </PendingLinkCard>
-            );
-          })}
+                  </DashboardCard>
+                </PendingLinkCard>
+              );
+            })}
+          </div>
         </section>
       )}
     </main>

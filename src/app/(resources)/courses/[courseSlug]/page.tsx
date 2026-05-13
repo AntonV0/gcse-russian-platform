@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import JourneyProgressBar from "@/components/courses/journey-progress-bar";
 import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
@@ -15,24 +16,20 @@ import {
   formatCoursePathRemainingMinutes,
   getVariantPathProgressSummaries,
 } from "@/lib/courses/path-progress";
+import {
+  getDashboardVariantSlug,
+  getPreferredCourseVariant,
+  getVariantActionState,
+  getVariantDisplayName,
+  getVariantTone,
+  getVisibleCourseVariants,
+} from "@/lib/courses/journey-state";
 
 type CoursePageProps = {
   params: Promise<{
     courseSlug: string;
   }>;
 };
-
-function getVariantTone(slug: string): "info" | "success" | "muted" {
-  if (slug === "higher") return "info";
-  if (slug === "foundation") return "success";
-  return "muted";
-}
-
-function getVariantLabel(slug: string) {
-  if (slug === "higher") return "Higher";
-  if (slug === "foundation") return "Foundation";
-  return "Volna";
-}
 
 export default async function CoursePage({ params }: CoursePageProps) {
   const { courseSlug } = await params;
@@ -67,12 +64,10 @@ export default async function CoursePage({ params }: CoursePageProps) {
     );
   }
 
-  const primaryVariant = variants[0] ?? null;
   const pathSummaries = await getVariantPathProgressSummaries(course.slug, variants);
-  const visibleVariants =
-    dashboard.accessState === "full_higher"
-      ? variants.filter((variant) => variant.slug === "higher")
-      : variants;
+  const visibleVariants = getVisibleCourseVariants(variants, dashboard.accessState);
+  const activeVariantSlug = getDashboardVariantSlug(dashboard.variant);
+  const primaryVariant = getPreferredCourseVariant(visibleVariants, activeVariantSlug);
   const primaryVariantSummary = primaryVariant
     ? pathSummaries.get(primaryVariant.slug)
     : null;
@@ -80,18 +75,27 @@ export default async function CoursePage({ params }: CoursePageProps) {
     primaryVariantSummary?.nextLesson?.href ??
     (primaryVariant ? getVariantPath(course.slug, primaryVariant.slug) : null);
   const primaryActionLabel = primaryVariantSummary?.nextLesson
-    ? `Continue: ${primaryVariantSummary.nextLesson.title}`
+    ? primaryVariantSummary.completedLessons > 0
+      ? "Continue path"
+      : "Start path"
     : primaryVariant
-      ? `Open ${primaryVariant.title}`
+      ? primaryVariantSummary?.isComplete
+        ? "Review path"
+        : `Open ${getVariantDisplayName(primaryVariant.slug, primaryVariant.title)}`
       : null;
-  const totalLessons = Array.from(pathSummaries.values()).reduce(
+  const visibleSummaries = visibleVariants
+    .map((variant) => pathSummaries.get(variant.slug))
+    .filter((summary) => !!summary);
+  const totalLessons = visibleSummaries.reduce(
     (total, summary) => total + summary.totalLessons,
     0
   );
-  const completedLessons = Array.from(pathSummaries.values()).reduce(
+  const completedLessons = visibleSummaries.reduce(
     (total, summary) => total + summary.completedLessons,
     0
   );
+  const overallProgressPercent =
+    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   return (
     <main className="space-y-8">
@@ -169,9 +173,16 @@ export default async function CoursePage({ params }: CoursePageProps) {
                 </div>
               </div>
 
+              <JourneyProgressBar
+                value={overallProgressPercent}
+                label={`${course.title} visible path progress`}
+                isComplete={totalLessons > 0 && completedLessons === totalLessons}
+              />
+
               <p className="text-sm app-text-muted">
-                Choose the path that matches your level, then follow the next available
-                lesson to keep momentum visible.
+                {primaryVariantSummary?.nextLesson
+                  ? `${primaryVariantSummary.nextLesson.title} is ready in ${primaryVariantSummary.nextLesson.moduleTitle}.`
+                  : "Choose the path that matches your level, then follow the next available lesson to keep momentum visible."}
               </p>
             </div>
           </DashboardCard>
@@ -195,110 +206,129 @@ export default async function CoursePage({ params }: CoursePageProps) {
           }
         />
       ) : (
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {visibleVariants.map((variant, index) => {
-            const summary = pathSummaries.get(variant.slug);
-            const isFoundationToHigherUpgrade =
-              dashboard.accessState === "full_foundation" && variant.slug === "higher";
-            const href = isFoundationToHigherUpgrade
-              ? "/account/billing"
-              : (summary?.nextLesson?.href ?? getVariantPath(course.slug, variant.slug));
+        <section aria-labelledby="course-paths-heading">
+          <div className="mb-4">
+            <h2 id="course-paths-heading" className="app-heading-section">
+              Course paths
+            </h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              Select the route you are studying now. Higher appears as an upgrade path
+              when your current access is Foundation-only.
+            </p>
+          </div>
 
-            return (
-              <PendingLinkCard
-                key={variant.slug}
-                href={href}
-                className="app-focus-ring group block rounded-2xl"
-                ariaLabel={`Open ${variant.title}`}
-                pendingLabel="Opening path..."
-              >
-                <DashboardCard className="app-card-interaction-subtle h-full">
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge tone={getVariantTone(variant.slug)} icon="layers">
-                        {getVariantLabel(variant.slug)}
-                      </Badge>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {visibleVariants.map((variant, index) => {
+              const summary = pathSummaries.get(variant.slug);
+              const isFoundationToHigherUpgrade =
+                dashboard.accessState === "full_foundation" && variant.slug === "higher";
+              const href = isFoundationToHigherUpgrade
+                ? "/account/billing"
+                : (summary?.nextLesson?.href ??
+                  getVariantPath(course.slug, variant.slug));
+              const actionState = getVariantActionState({
+                isUpgrade: isFoundationToHigherUpgrade,
+                hasNextLesson: !!summary?.nextLesson,
+                isComplete: !!summary?.isComplete,
+                completedLessons: summary?.completedLessons ?? 0,
+              });
+              const variantName = getVariantDisplayName(variant.slug, variant.title);
 
-                      {summary?.isComplete ? (
-                        <Badge tone="success" icon="completed">
-                          Complete
+              return (
+                <PendingLinkCard
+                  key={variant.slug}
+                  href={href}
+                  className="app-focus-ring group block rounded-2xl"
+                  ariaLabel={`${actionState.ariaPrefix} ${variantName} path`}
+                  pendingLabel="Opening path..."
+                >
+                  <DashboardCard className="app-card-interaction-subtle h-full">
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge tone={getVariantTone(variant.slug)} icon="layers">
+                          {variantName}
                         </Badge>
-                      ) : summary?.nextLesson ? (
-                        <Badge tone="info" icon="next">
-                          Up next
-                        </Badge>
-                      ) : dashboard.accessState === "full_foundation" &&
-                        variant.slug === "higher" ? (
-                        <Badge tone="warning" icon="billing">
-                          Upgrade path
-                        </Badge>
-                      ) : index === 0 ? (
-                        <Badge tone="muted">Suggested</Badge>
-                      ) : null}
-                    </div>
 
-                    <div className="space-y-2">
-                      <h3 className="app-heading-subsection">{variant.title}</h3>
-
-                      <p className="app-text-body-muted">
-                        {variant.description ??
-                          "Open this path to view modules and continue learning."}
-                      </p>
-                    </div>
-
-                    <div>
-                      <div className="mb-2 flex items-center justify-between gap-3 text-xs">
-                        <span className="font-medium text-[var(--text-primary)]">
-                          {summary?.progressPercent ?? 0}% complete
-                        </span>
-                        <span className="app-text-muted">
-                          {summary?.completedLessons ?? 0} of{" "}
-                          {summary?.totalLessons || "-"}
-                        </span>
+                        {summary?.isComplete ? (
+                          <Badge tone="success" icon="completed">
+                            Complete
+                          </Badge>
+                        ) : summary?.nextLesson ? (
+                          <Badge tone="info" icon="next">
+                            Up next
+                          </Badge>
+                        ) : dashboard.accessState === "full_foundation" &&
+                          variant.slug === "higher" ? (
+                          <Badge tone="warning" icon="billing">
+                            Upgrade path
+                          </Badge>
+                        ) : index === 0 ? (
+                          <Badge tone="muted">Suggested</Badge>
+                        ) : null}
                       </div>
-                      <div className="app-progress-track">
-                        <div
-                          className="app-progress-bar"
-                          style={{ width: `${summary?.progressPercent ?? 0}%` }}
+
+                      <div className="space-y-2">
+                        <h3 className="app-heading-subsection">{variant.title}</h3>
+
+                        <p className="app-text-body-muted">
+                          {variant.description ??
+                            "Open this path to view modules and continue learning."}
+                        </p>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                          <span className="font-medium text-[var(--text-primary)]">
+                            {summary?.progressPercent ?? 0}% complete
+                          </span>
+                          <span className="app-text-muted">
+                            {summary?.completedLessons ?? 0} of{" "}
+                            {summary?.totalLessons || "-"}
+                          </span>
+                        </div>
+                        <JourneyProgressBar
+                          value={summary?.progressPercent}
+                          label={`${variant.title} path progress`}
+                          isComplete={!!summary?.isComplete}
                         />
                       </div>
-                    </div>
 
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="app-stat-tile">
-                        <div className="app-stat-label">Lessons</div>
-                        <div className="app-stat-value">
-                          {summary?.totalLessons || "-"}
+                      {summary?.nextLesson ? (
+                        <p className="text-sm app-text-muted">
+                          Next: {summary.nextLesson.title}
+                        </p>
+                      ) : null}
+
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <div className="app-stat-tile">
+                          <div className="app-stat-label">Lessons</div>
+                          <div className="app-stat-value">
+                            {summary?.totalLessons || "-"}
+                          </div>
+                        </div>
+
+                        <div className="app-stat-tile">
+                          <div className="app-stat-label">Time left</div>
+                          <div className="app-stat-value">
+                            {formatCoursePathRemainingMinutes(
+                              summary?.remainingMinutes,
+                              !!summary?.isComplete
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="app-stat-tile">
-                        <div className="app-stat-label">Time left</div>
-                        <div className="app-stat-value">
-                          {formatCoursePathRemainingMinutes(
-                            summary?.remainingMinutes,
-                            !!summary?.isComplete
-                          )}
-                        </div>
+                      <div className="pt-1">
+                        <ActionPill icon={actionState.icon}>
+                          {actionState.label}
+                        </ActionPill>
                       </div>
                     </div>
-
-                    <div className="pt-1">
-                      <ActionPill icon={isFoundationToHigherUpgrade ? "billing" : "next"}>
-                        {summary?.nextLesson
-                          ? `Continue: ${summary.nextLesson.title}`
-                          : isFoundationToHigherUpgrade
-                            ? "Upgrade to Higher"
-                            : summary?.isComplete
-                              ? "Review path"
-                              : "Open path"}
-                      </ActionPill>
-                    </div>
-                  </div>
-                </DashboardCard>
-              </PendingLinkCard>
-            );
-          })}
+                  </DashboardCard>
+                </PendingLinkCard>
+              );
+            })}
+          </div>
         </section>
       )}
     </main>
