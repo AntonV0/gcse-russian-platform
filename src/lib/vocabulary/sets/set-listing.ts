@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 import { getVocabularyThemeLabel } from "@/lib/vocabulary/shared/labels";
@@ -21,7 +20,7 @@ async function getVocabularySetSummaryRowsBySetIdsDb(vocabularySetIds: string[])
     return new Map<string, DbVocabularySetSummaryRow>();
   }
 
-  const supabase = await createClient();
+  const supabase = createServiceRoleClient();
   const data = (
     await Promise.all(
       chunkValues(uniqueVocabularySetIds).map((setIdBatch) =>
