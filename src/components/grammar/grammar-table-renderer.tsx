@@ -29,7 +29,7 @@ export default function GrammarTableRenderer({ table }: GrammarTableRendererProp
       tone="student"
       contentClassName="p-0"
     >
-      <DataTable tableClassName="text-[0.95rem]">
+      <DataTable tableClassName="min-w-[640px] text-[0.95rem]">
         <DataTableHead>
           <DataTableHeaderRow>
             {table.columns.map((column, index) => (

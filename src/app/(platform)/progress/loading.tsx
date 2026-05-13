@@ -40,9 +40,9 @@ export default function ProgressLoading() {
             <LoadingLine className="w-full max-w-2xl" />
             <LoadingLine className="w-2/3 max-w-lg" />
           </div>
-          <div className="flex gap-3">
-            <LoadingLine className="h-10 w-36 rounded-xl" />
-            <LoadingLine className="h-10 w-32 rounded-xl" />
+          <div className="app-mobile-action-stack flex flex-wrap gap-3">
+            <LoadingLine className="h-11 w-full rounded-xl sm:w-36" />
+            <LoadingLine className="h-11 w-full rounded-xl sm:w-32" />
           </div>
         </div>
 

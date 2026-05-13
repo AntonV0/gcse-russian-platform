@@ -251,7 +251,7 @@ function CourseHubCard({ item }: { item: CourseHubItem }) {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="app-mobile-action-stack flex flex-wrap gap-3">
           <Button href={action.href} variant="journey" icon={action.icon}>
             {action.label}
           </Button>
@@ -440,7 +440,7 @@ function SpeakingIntensiveCard() {
           ))}
         </ul>
 
-        <div className="flex flex-wrap gap-3 pt-1">
+        <div className="app-mobile-action-stack flex flex-wrap gap-3 pt-1">
           <Button href={getOnlineClassesPath()} variant="accent" icon="speaking">
             Explore speaking support
           </Button>
@@ -481,7 +481,7 @@ export default async function CoursesPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="app-mobile-action-stack flex flex-wrap gap-3">
                 <Button href="/signup" variant="primary" icon="create">
                   Start trial
                 </Button>
@@ -576,7 +576,7 @@ export default async function CoursesPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="app-mobile-action-stack flex flex-wrap gap-3">
               {primaryAction ? (
                 <Button
                   href={primaryAction.href}
@@ -720,7 +720,7 @@ export default async function CoursesPage() {
                         <h3 className="app-heading-card">{area.title}</h3>
                         <p className="mt-2 app-text-body-muted">{area.description}</p>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="app-mobile-action-stack flex flex-wrap gap-2">
                         <Button
                           href={primaryHref}
                           variant="secondary"

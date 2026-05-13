@@ -10,9 +10,9 @@ export default function DashboardLoading() {
             </div>
             <div className="h-10 max-w-xl rounded-2xl bg-[var(--background-muted)]" />
             <div className="h-5 max-w-2xl rounded-xl bg-[var(--background-muted)]" />
-            <div className="flex gap-3">
-              <div className="h-10 w-36 rounded-xl bg-[var(--background-muted)]" />
-              <div className="h-10 w-36 rounded-xl bg-[var(--background-muted)]" />
+            <div className="app-mobile-action-stack flex flex-wrap gap-3">
+              <div className="h-11 w-full rounded-xl bg-[var(--background-muted)] sm:w-36" />
+              <div className="h-11 w-full rounded-xl bg-[var(--background-muted)] sm:w-36" />
             </div>
             <div className="grid gap-2 rounded-2xl border border-[var(--surface-accent-border)] bg-[var(--surface-accent-bg)] p-3 sm:grid-cols-3">
               <div className="h-16 rounded-xl bg-[var(--background-elevated)]/80" />

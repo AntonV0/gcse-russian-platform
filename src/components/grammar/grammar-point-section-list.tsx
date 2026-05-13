@@ -92,8 +92,9 @@ function GrammarPointHealthBadges({
 
 function SectionToggleButton() {
   return (
-    <ActionPill className="pointer-events-none" aria-hidden="true">
-      Open
+    <ActionPill className="pointer-events-none shrink-0 gap-1 px-3 sm:px-3.5" aria-hidden="true">
+      <span className="group-open:hidden">Open</span>
+      <span className="hidden group-open:inline">Close</span>
     </ActionPill>
   );
 }
@@ -116,7 +117,7 @@ function GrammarPointRow({
   return (
     <a
       href={`/grammar/${grammarSet.slug}/${point.slug}`}
-      className="group relative block overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border-strong))] hover:bg-[var(--background-elevated)]"
+      className="group relative block overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border-strong))] hover:bg-[var(--background-elevated)] focus-visible:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border-strong))] focus-visible:bg-[var(--background-elevated)] app-focus-ring"
     >
       <div className="absolute inset-y-0 left-0 w-1 bg-[var(--accent-fill)] opacity-70" />
 

@@ -120,7 +120,7 @@ export default async function VariantPage({ params }: VariantPageProps) {
               ) : null}
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="app-mobile-action-stack flex flex-wrap gap-3">
               {primaryActionHref && primaryActionLabel ? (
                 <Button
                   href={primaryActionHref}

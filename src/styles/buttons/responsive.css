@@ -9,5 +9,24 @@
   .app-mobile-action-stack .app-btn-surface-fix,
   .app-mobile-action-stack .app-btn-base {
     width: 100%;
+    white-space: normal;
+  }
+
+  .app-btn-surface-fix,
+  .app-btn-base {
+    min-height: 2.75rem;
+  }
+
+  .app-btn-icon-only {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  .app-btn-surface-fix > span:not(.shrink-0),
+  .app-btn-base > span:not(.shrink-0) {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }

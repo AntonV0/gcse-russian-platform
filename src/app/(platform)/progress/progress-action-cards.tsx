@@ -100,7 +100,14 @@ export function ModuleProgressList({
                         )}
                       </span>
                     </div>
-                    <div className="app-progress-track h-1.5">
+                    <div
+                      className="app-progress-track h-1.5"
+                      role="progressbar"
+                      aria-label={`${title} progress`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={summary.progressPercent}
+                    >
                       <div
                         className="app-progress-bar"
                         style={{ width: `${summary.progressPercent}%` }}

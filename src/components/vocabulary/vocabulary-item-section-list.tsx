@@ -90,8 +90,9 @@ function VocabularyItemCoverageBadges({
 
 function SectionToggleButton() {
   return (
-    <ActionPill className="pointer-events-none" aria-hidden="true">
-      Open
+    <ActionPill className="pointer-events-none shrink-0 gap-1 px-3 sm:px-3.5" aria-hidden="true">
+      <span className="group-open:hidden">Open</span>
+      <span className="hidden group-open:inline">Close</span>
     </ActionPill>
   );
 }

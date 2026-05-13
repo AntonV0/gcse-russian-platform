@@ -81,7 +81,8 @@ function groupGrammarSetsBySection(grammarSets: DbGrammarSetListItem[]) {
 function SectionToggleButton() {
   return (
     <ActionPill className="pointer-events-none shrink-0 px-3 sm:px-3.5" aria-hidden="true">
-      <span className="hidden sm:inline">Open</span>
+      <span className="hidden group-open:hidden sm:inline">Open</span>
+      <span className="hidden group-open:inline">Close</span>
     </ActionPill>
   );
 }
@@ -131,8 +132,8 @@ export default function GrammarSetSectionList({
 
   return (
     <div className="space-y-6">
-      {grammarSetGroups.map((group) => (
-        <details key={group.title} className="group app-card p-4">
+      {grammarSetGroups.map((group, index) => (
+        <details key={group.title} className="group app-card p-4" open={index === 0}>
           <summary className="app-focus-ring flex cursor-pointer list-none items-start justify-between gap-4 rounded-lg">
             <span className="min-w-0">
               <span className="block text-base font-semibold text-[var(--text-primary)]">

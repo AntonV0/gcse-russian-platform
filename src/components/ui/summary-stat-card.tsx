@@ -134,7 +134,7 @@ export default function SummaryStatCard({
 
                     <div
                       className={[
-                        "shrink-0 font-semibold",
+                        "shrink-0 break-words font-semibold leading-tight",
                         compact ? "text-[1.35rem]" : "text-[1.5rem]",
                         toneClasses.value,
                       ].join(" ")}
@@ -175,7 +175,7 @@ export default function SummaryStatCard({
 
               <div
                 className={[
-                  "mt-2 font-semibold",
+                  "mt-2 break-words font-semibold leading-tight",
                   compact ? "text-[1.75rem]" : "text-[2rem]",
                   toneClasses.value,
                 ].join(" ")}

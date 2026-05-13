@@ -95,7 +95,7 @@ export function VocabularyItemRow({
           </div>
 
           <div
-            className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap"
+            className="app-mobile-action-stack mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap"
             role="group"
             aria-label={`Study state for ${item.russian}`}
           >
