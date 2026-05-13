@@ -1,0 +1,13 @@
+.app-lesson-page-surface {
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 18%, var(--border-subtle));
+  border-radius: var(--radius-xl);
+  background: var(--lesson-paper-bg);
+  box-shadow:
+    var(--shadow-xs),
+    0 16px 34px color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+
+.app-lesson-page-article {
+  border-inline: 1px solid color-mix(in srgb, var(--accent-border-ink) 16%, var(--border-subtle));
+  background: color-mix(in srgb, var(--lesson-paper-bg) 96%, var(--background-elevated));
+}

@@ -1,0 +1,49 @@
+.app-section-pager-shell {
+  border-bottom-left-radius: calc(var(--radius-xl) - 1px);
+  border-bottom-right-radius: calc(var(--radius-xl) - 1px);
+  background: color-mix(in srgb, var(--lesson-paper-bg) 96%, var(--background-elevated));
+}
+
+.app-section-pager-dock {
+  --lesson-pager-bottom-offset: 0px;
+  --lesson-pager-shadow-opacity: 1;
+  --lesson-pager-top-border-color: transparent;
+  --lesson-pager-top-border-opacity: 0;
+  --lesson-pager-surface: color-mix(
+    in srgb,
+    var(--lesson-paper-bg) 96%,
+    var(--background-elevated)
+  );
+  position: relative;
+  background: transparent;
+}
+
+.app-section-pager-dock::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.app-section-pager-dock::before {
+  inset-inline: 1px;
+  top: -2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--lesson-pager-surface) 82%, transparent) 58%,
+    var(--lesson-pager-surface) 100%
+  );
+  opacity: var(--lesson-pager-shadow-opacity);
+  transition: opacity 120ms linear;
+}
+
+.app-section-pager-card {
+  position: relative;
+  z-index: 1;
+  background: color-mix(in srgb, var(--lesson-pager-surface) 94%, var(--accent-soft));
+  border-top-color: var(--lesson-pager-top-border-color);
+  transition: border-top-color 120ms linear;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--brand-white) 44%, transparent);
+}

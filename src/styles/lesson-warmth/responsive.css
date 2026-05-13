@@ -1,0 +1,39 @@
+@media (min-width: 768px) {
+  .app-lesson-mission-content {
+    padding: 1.65rem;
+  }
+
+  .app-study-block-header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.15rem 1.25rem;
+  }
+
+  .app-study-block-body {
+    padding: 1.25rem;
+  }
+
+  .app-lesson-prose-card {
+    padding: 1.35rem 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .app-section-pager-dock {
+    background: transparent;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-lesson-mission-content {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+
+  .app-lesson-mission-card {
+    width: min(20rem, 34%);
+    flex-shrink: 0;
+  }
+}

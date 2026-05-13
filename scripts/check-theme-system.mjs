@@ -15,6 +15,29 @@ function read(relativePath) {
   return readFileSync(path.join(root, relativePath), "utf8");
 }
 
+function readCssWithImports(relativePath, seen = new Set()) {
+  if (seen.has(relativePath)) {
+    return "";
+  }
+
+  seen.add(relativePath);
+
+  const css = read(relativePath);
+  const directory = path.dirname(relativePath);
+
+  return css.replace(
+    /@import\s+["']([^"']+)["'];/g,
+    (_match, importPath) => {
+      const importedPath = path
+        .normalize(path.join(directory, importPath))
+        .replaceAll(path.sep, "/");
+      return existsSync(path.join(root, importedPath))
+        ? readCssWithImports(importedPath, seen)
+        : "";
+    }
+  );
+}
+
 function walk(dir, extensions, files = []) {
   for (const entry of readdirSync(path.join(root, dir))) {
     const absolutePath = path.join(root, dir, entry);
@@ -301,7 +324,7 @@ const darkTokens = read("src/styles/tokens/dark.css");
 const accentTokens = read("src/styles/tokens/accents.css");
 const progressCss = read("src/styles/surfaces/cards-panels.css");
 const logoCss = read("src/styles/surfaces/brand-logo.css");
-const lessonWarmthCss = read("src/styles/lesson-warmth.css");
+const lessonWarmthCss = readCssWithImports("src/styles/lesson-warmth.css");
 const baseTokenDeclarations = parseTokenBlocks(baseTokens).find(
   (block) => block.selector === ":root"
 )?.declarations;
