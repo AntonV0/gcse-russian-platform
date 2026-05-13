@@ -187,6 +187,7 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
         persistedAttachmentSaved: hasPersistedAttachment(
           responsesByQuestionId[question.id]
         ),
+        anchorId: getQuestionAnchorId(question.id),
       }))
   );
   const reviewCue = getAttemptReviewCue({
