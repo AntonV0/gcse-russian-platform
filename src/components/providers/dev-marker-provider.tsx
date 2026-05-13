@@ -87,18 +87,30 @@ function readStoredTierFilter(): DevMarkerTierFilter {
 
 export function DevMarkerProvider({ isAdmin, children }: DevMarkerProviderProps) {
   const canUseMarkers = SHOW_UI_DEBUG && isAdmin;
-  const [markersEnabled, setMarkersEnabled] = useState(() =>
-    canUseMarkers ? readStoredMarkerPreference() : false
-  );
-  const [activeTierFilter, setActiveTierFilterState] = useState<DevMarkerTierFilter>(
-    () => (canUseMarkers ? readStoredTierFilter() : "all")
-  );
+  const [markersEnabled, setMarkersEnabled] = useState(false);
+  const [activeTierFilter, setActiveTierFilterState] =
+    useState<DevMarkerTierFilter>("all");
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [registeredMarkers, setRegisteredMarkers] = useState<
     Record<string, DevMarkerRegistryItem>
   >({});
   const resolvedMarkersEnabled = canUseMarkers && markersEnabled;
   const resolvedPanelOpen = resolvedMarkersEnabled && isPanelOpen;
+
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      if (!canUseMarkers) {
+        setMarkersEnabled(false);
+        setActiveTierFilterState("all");
+        return;
+      }
+
+      setMarkersEnabled(readStoredMarkerPreference());
+      setActiveTierFilterState(readStoredTierFilter());
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [canUseMarkers]);
 
   const toggleMarkers = useCallback(() => {
     setMarkersEnabled((current) => {
