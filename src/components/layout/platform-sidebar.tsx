@@ -78,26 +78,20 @@ function isActive(pathname: string | undefined, href: string) {
 
 function itemClass(active: boolean, locked = false) {
   return [
-    "group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-transparent px-2.5 py-2 text-sm font-medium transition app-focus-ring",
+    "group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-transparent px-2.5 py-[0.3125rem] text-sm font-medium transition app-focus-ring",
     active
       ? [
-          "border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))]",
-          "bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-elevated))]",
-          "text-[color-mix(in_srgb,var(--accent)_20%,var(--text-primary))]",
-          "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_2%,transparent)]",
-          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_34%,var(--dark-surface-border))]",
-          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_13%,var(--dark-surface-muted))]",
-          "[html[data-theme=dark]_&]:text-[var(--text-primary)]",
-          "[html[data-theme=dark]_&]:shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent)_10%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_8%,transparent)]",
+          "border-[var(--sidebar-item-border-active)]",
+          "bg-[var(--sidebar-item-bg-active)]",
+          "text-[var(--sidebar-item-text-active)]",
+          "shadow-[var(--sidebar-item-shadow-active)]",
           "before:absolute before:inset-y-2.5 before:left-0 before:w-0.5 before:rounded-r-full before:[background:var(--accent-gradient-fill)]",
         ].join(" ")
       : [
           "text-[color-mix(in_srgb,var(--text-secondary)_90%,var(--text-primary))]",
-          "hover:bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-muted))]",
-          "hover:text-[var(--text-primary)]",
-          "[html[data-theme=dark]_&]:hover:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
-          "[html[data-theme=dark]_&]:hover:bg-[color-mix(in_srgb,var(--accent)_7%,var(--dark-surface-muted))]",
-          "[html[data-theme=dark]_&]:hover:text-[var(--text-primary)]",
+          "hover:border-[var(--sidebar-item-border-hover)]",
+          "hover:bg-[var(--sidebar-item-bg-hover)]",
+          "hover:text-[var(--sidebar-item-text-hover)]",
         ].join(" "),
     locked ? "opacity-85" : "",
   ].join(" ");
@@ -108,12 +102,12 @@ function mobileQuickItemClass(active: boolean, locked = false) {
     "group flex min-h-[4.15rem] min-w-0 flex-col items-center justify-center gap-1 rounded-2xl border px-1.5 py-2 text-center text-[0.72rem] font-semibold leading-tight transition app-focus-ring",
     active
       ? [
-          "border-[color-mix(in_srgb,var(--accent)_24%,var(--border-subtle))]",
-          "bg-[color-mix(in_srgb,var(--accent)_9%,var(--background-elevated))]",
-          "text-[var(--text-primary)]",
-          "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_9%,transparent)]",
+          "border-[var(--sidebar-item-border-active)]",
+          "bg-[var(--sidebar-item-bg-active)]",
+          "text-[var(--sidebar-item-text-active)]",
+          "shadow-[var(--sidebar-item-shadow-active)]",
         ].join(" ")
-      : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_82%,transparent)] text-[color-mix(in_srgb,var(--text-secondary)_88%,var(--text-primary))] hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] hover:bg-[var(--background-muted)] hover:text-[var(--text-primary)]",
+      : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_82%,transparent)] text-[color-mix(in_srgb,var(--text-secondary)_88%,var(--text-primary))] hover:border-[var(--sidebar-item-border-hover)] hover:bg-[var(--sidebar-item-bg-hover)] hover:text-[var(--sidebar-item-text-hover)]",
     locked ? "opacity-85" : "",
   ].join(" ");
 }
@@ -122,29 +116,13 @@ function navIconClass(active: boolean) {
   return [
     "shrink-0 transition-colors",
     active
-      ? "text-[var(--accent-on-soft)]"
-      : "text-[color-mix(in_srgb,var(--text-muted)_42%,var(--text-secondary))] group-hover:text-[var(--text-primary)]",
+      ? "text-[var(--sidebar-item-icon-active)]"
+      : "text-[var(--sidebar-item-icon)] group-hover:text-[var(--sidebar-item-icon-hover)]",
   ].join(" ");
 }
 
-function navIconFrameClass(active: boolean) {
-  return [
-    "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors",
-    active
-      ? [
-          "border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
-          "bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]",
-          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_38%,transparent)]",
-          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
-        ].join(" ")
-      : [
-          "border-transparent bg-transparent",
-          "group-hover:border-[var(--border-subtle)]",
-          "group-hover:bg-[var(--background-elevated)]",
-          "[html[data-theme=dark]_&]:group-hover:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
-          "[html[data-theme=dark]_&]:group-hover:bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
-        ].join(" "),
-  ].join(" ");
+function navIconFrameClass() {
+  return "flex h-6 w-6 shrink-0 items-center justify-center bg-transparent transition-colors";
 }
 
 function accountItemClass(active: boolean, locked = false) {
@@ -152,51 +130,29 @@ function accountItemClass(active: boolean, locked = false) {
     "group relative flex items-center gap-2 overflow-hidden rounded-xl border border-transparent px-2 py-1.5 text-[13px] font-medium transition app-focus-ring",
     active
       ? [
-          "border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))]",
-          "bg-[color-mix(in_srgb,var(--accent)_6%,var(--background-elevated))]",
-          "text-[color-mix(in_srgb,var(--accent)_20%,var(--text-primary))]",
-          "shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_3%,transparent)]",
-          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_34%,var(--dark-surface-border))]",
-          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_13%,var(--dark-surface-muted))]",
-          "[html[data-theme=dark]_&]:text-[var(--text-primary)]",
-          "[html[data-theme=dark]_&]:shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent)_10%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_8%,transparent)]",
+          "border-[var(--sidebar-item-border-active)]",
+          "bg-[var(--sidebar-item-bg-active)]",
+          "text-[var(--sidebar-item-text-active)]",
+          "shadow-[var(--sidebar-item-shadow-active)]",
           "before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-r-full before:[background:var(--accent-gradient-fill)]",
         ].join(" ")
       : [
           "text-[color-mix(in_srgb,var(--text-secondary)_84%,var(--text-primary))]",
-          "hover:bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-muted))]",
-          "hover:text-[var(--text-primary)]",
-          "[html[data-theme=dark]_&]:hover:border-[color-mix(in_srgb,var(--accent)_16%,transparent)]",
-          "[html[data-theme=dark]_&]:hover:bg-[color-mix(in_srgb,var(--accent)_6%,var(--dark-surface-muted))]",
-          "[html[data-theme=dark]_&]:hover:text-[var(--text-primary)]",
+          "hover:border-[var(--sidebar-item-border-hover)]",
+          "hover:bg-[var(--sidebar-item-bg-hover)]",
+          "hover:text-[var(--sidebar-item-text-hover)]",
         ].join(" "),
     locked ? "opacity-85" : "",
   ].join(" ");
 }
 
-function accountItemIconFrameClass(active: boolean) {
-  return [
-    "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition-colors",
-    active
-      ? [
-          "border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
-          "bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]",
-          "[html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_38%,transparent)]",
-          "[html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
-        ].join(" ")
-      : [
-          "border-transparent bg-transparent",
-          "group-hover:border-[var(--border-subtle)]",
-          "group-hover:bg-[var(--background-elevated)]",
-          "[html[data-theme=dark]_&]:group-hover:border-[color-mix(in_srgb,var(--accent)_18%,transparent)]",
-          "[html[data-theme=dark]_&]:group-hover:bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
-        ].join(" "),
-  ].join(" ");
+function accountItemIconFrameClass() {
+  return "flex h-6 w-6 shrink-0 items-center justify-center bg-transparent transition-colors";
 }
 
 function sectionLabel(label: string) {
   return (
-    <div className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[color-mix(in_srgb,var(--text-muted)_82%,var(--text-secondary))]">
+    <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[color-mix(in_srgb,var(--text-muted)_82%,var(--text-secondary))]">
       {label}
     </div>
   );
@@ -229,7 +185,7 @@ function SidebarHeader({
         {title}
       </h2>
       {subtitle ? (
-        <div className="mt-2 inline-flex max-w-full items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-muted))] px-2.5 py-1 text-xs font-semibold text-[color-mix(in_srgb,var(--accent)_18%,var(--text-secondary))]">
+        <div className="mt-2 inline-flex max-w-full items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--accent-border-ink)_24%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-muted))] px-2.5 py-1 text-xs font-semibold text-[color-mix(in_srgb,var(--accent-border-ink)_40%,var(--text-secondary))] [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent-border-ink)_42%,var(--dark-surface-border))] [html[data-theme=dark]_&]:text-[color-mix(in_srgb,var(--accent-border-ink)_72%,var(--text-secondary))]">
           <AppIcon
             icon={statusIcon}
             size={13}
@@ -238,7 +194,7 @@ function SidebarHeader({
           <span className="min-w-0 truncate">{subtitle}</span>
         </div>
       ) : null}
-      <div className="mt-3 border-t border-[var(--border)]" />
+      <div className="mt-3 border-t border-[color-mix(in_srgb,var(--accent-border-ink)_16%,var(--border))] [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--dark-surface-border))]" />
     </div>
   );
 }
@@ -247,26 +203,24 @@ function SidebarNextUpCard({ nextUp }: { nextUp: PlatformSidebarNextUp }) {
   return (
     <Link
       href={nextUp.href}
-      className="group mb-3 block overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--accent)_34%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_12%,var(--background-elevated))] px-3 py-2.5 text-left shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent),0_10px_22px_color-mix(in_srgb,var(--accent)_9%,transparent)] transition hover:border-[color-mix(in_srgb,var(--accent)_45%,var(--border))] hover:bg-[color-mix(in_srgb,var(--accent)_15%,var(--background-muted))] app-focus-ring [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_42%,var(--dark-surface-border))] [html[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--accent)_18%,var(--dark-surface-muted))]"
+      className="app-btn-variant-journey app-btn-journey app-focus-ring group relative mb-4 flex overflow-hidden rounded-2xl px-3.5 py-3 text-left transition hover:-translate-y-0.5"
       aria-label={`${nextUp.label}: ${nextUp.title}`}
     >
       <span className="min-w-0 flex-1">
-        <span className="block text-[10px] font-bold uppercase tracking-[0.12em] text-[color-mix(in_srgb,var(--accent)_30%,var(--text-muted))]">
+        <span className="block text-[10px] font-bold uppercase tracking-[0.12em] text-[color-mix(in_srgb,var(--accent-on-fill)_78%,transparent)]">
           {nextUp.eyebrow}
         </span>
-        <span className="mt-0.5 flex min-w-0 items-center gap-1.5">
-          <span className="min-w-0 truncate text-sm font-bold leading-tight text-[var(--text-primary)]">
+        <span className="mt-1 flex min-w-0 items-center gap-2">
+          <span className="min-w-0 truncate text-[0.95rem] font-bold leading-tight text-[var(--accent-on-fill)]">
             {nextUp.title}
           </span>
-          <AppIcon
-            icon="chevronRight"
-            size={14}
-            className="shrink-0 text-[color-mix(in_srgb,var(--accent)_36%,var(--text-primary))] transition-transform group-hover:translate-x-0.5"
-          />
         </span>
-        <span className="mt-0.5 block truncate text-[11px] font-medium leading-tight text-[color-mix(in_srgb,var(--text-secondary)_92%,var(--text-primary))]">
+        <span className="mt-1 block truncate text-[11px] font-medium leading-tight text-[color-mix(in_srgb,var(--accent-on-fill)_76%,transparent)]">
           {nextUp.description}
         </span>
+      </span>
+      <span className="ml-2 mr-0.5 flex shrink-0 scale-x-110 items-center justify-center self-center text-[var(--accent-on-fill)] opacity-95 transition group-hover:translate-x-1 group-hover:opacity-100">
+        <AppIcon icon="chevronRight" size={19} strokeWidth={2.8} />
       </span>
     </Link>
   );
@@ -451,7 +405,7 @@ function AccountFooter({
       {isAccountSectionOpen ? (
         <div
           id="platform-account-card-nav"
-          className="mt-3 space-y-1 border-t border-[color-mix(in_srgb,var(--accent)_7%,var(--border-subtle))] pt-3 [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent)_14%,var(--dark-surface-border))]"
+          className="mt-3 space-y-1 border-t border-[color-mix(in_srgb,var(--accent-border-ink)_14%,var(--border-subtle))] pt-3 [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--dark-surface-border))]"
         >
           {accountItems.map((item) => {
             const active = isActive(activePathname, item.href);
@@ -469,7 +423,7 @@ function AccountFooter({
                     : undefined
                 }
               >
-                <span className={accountItemIconFrameClass(active)}>
+                <span className={accountItemIconFrameClass()}>
                   <AppIcon icon={item.icon} size={15} className={navIconClass(active)} />
                 </span>
                 <span className="min-w-0 flex-1 truncate">{item.label}</span>
@@ -837,7 +791,7 @@ export default function PlatformSidebar({
                 {sidebarEyebrow}
               </div>
               <div className="mt-1 flex min-w-0 items-center gap-2">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_7%,var(--background-muted))] text-[var(--accent-on-soft)]">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--accent-border-ink)_28%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_7%,var(--background-muted))] text-[var(--accent-on-soft)]">
                   <AppIcon icon={activeNavItem.icon} size={15} />
                 </span>
                 <div className="min-w-0">
@@ -851,7 +805,7 @@ export default function PlatformSidebar({
 
             <button
               type="button"
-              className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent)] transition hover:border-[color-mix(in_srgb,var(--accent)_20%,var(--border))] hover:bg-[var(--background-muted)] app-focus-ring"
+              className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent)] transition hover:border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--border))] hover:bg-[var(--background-muted)] app-focus-ring"
               aria-expanded={isMobileNavOpen}
               aria-controls="platform-mobile-nav-panel"
               onClick={() => setIsMobileNavOpen((current) => !current)}
@@ -915,7 +869,7 @@ export default function PlatformSidebar({
           {isMobileNavOpen ? (
             <div
               id="platform-mobile-nav-panel"
-              className="mt-3 rounded-2xl border border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))] p-3 shadow-[0_10px_24px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]"
+              className="mt-3 rounded-2xl border border-[color-mix(in_srgb,var(--accent-border-ink)_20%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))] p-3 shadow-[0_10px_24px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]"
             >
               <div className="mb-3 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
                 <AppIcon icon={statusIcon} size={13} />
@@ -924,7 +878,7 @@ export default function PlatformSidebar({
 
               <nav className="space-y-4" aria-label="Full platform navigation">
                 {navGroups.map((group) => (
-                  <div key={group.label} className="space-y-1">
+                  <div key={group.label} className="space-y-0.5">
                     {sectionLabel(group.label)}
                     {group.items.map((item) => {
                       const active = isActive(activePathname, item.href);
@@ -942,10 +896,10 @@ export default function PlatformSidebar({
                               : undefined
                           }
                         >
-                          <span className={navIconFrameClass(active)}>
+                          <span className={navIconFrameClass()}>
                             <AppIcon
                               icon={item.icon}
-                              size={17}
+                              size={16}
                               className={navIconClass(active)}
                             />
                           </span>
@@ -957,7 +911,7 @@ export default function PlatformSidebar({
                   </div>
                 ))}
 
-                <div className="border-t border-[var(--border)] pt-3">
+                <div className="border-t border-[color-mix(in_srgb,var(--accent-border-ink)_16%,var(--border))] pt-3 [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--dark-surface-border))]">
                   {isGuest ? (
                     <div className="grid gap-2 sm:grid-cols-2">
                       <Button href="/login" variant="secondary" size="sm" icon="user">
@@ -1014,7 +968,7 @@ export default function PlatformSidebar({
           {contentNavGroups.map((group, groupIndex) => (
             <div
               key={group.label}
-              className={groupIndex === 0 ? "space-y-1" : "mt-5 space-y-1"}
+              className={groupIndex === 0 ? "space-y-0.5" : "mt-4 space-y-0.5"}
             >
               {sectionLabel(group.label)}
 
@@ -1034,10 +988,10 @@ export default function PlatformSidebar({
                         : undefined
                     }
                   >
-                    <span className={navIconFrameClass(active)}>
+                    <span className={navIconFrameClass()}>
                       <AppIcon
                         icon={item.icon}
-                        size={17}
+                        size={16}
                         className={navIconClass(active)}
                       />
                     </span>
@@ -1050,7 +1004,7 @@ export default function PlatformSidebar({
           ))}
         </nav>
 
-        <div className="mt-3 shrink-0 border-t border-[var(--border)] pt-3">
+        <div className="mt-3 shrink-0 border-t border-[color-mix(in_srgb,var(--accent-border-ink)_16%,var(--border))] pt-3 [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--dark-surface-border))]">
           <AccountFooter
             isGuest={isGuest}
             userEmail={userEmail}

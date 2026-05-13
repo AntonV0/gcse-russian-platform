@@ -21,15 +21,8 @@ import {
 } from "@/lib/profile/avatar-customization";
 
 export type ProfileLearningSnapshot = {
-  roleLabel: string;
-  courseLabel: string;
-  accessLabel: string;
   completedLessons: number;
   totalLessons: number;
-  progressPercent: number;
-  nextLessonTitle: string | null;
-  nextLessonMeta: string | null;
-  nextLessonHref: string | null;
 };
 
 type ProfileEditorProps = {
@@ -59,6 +52,8 @@ type SavedProfileResponse = {
 const PROFILE_SAVE_TIMEOUT_MS = 10000;
 const PROFILE_RECONCILE_TIMEOUT_MS = 6000;
 const PROFILE_UPDATED_EVENT = "profile:updated";
+const PROFILE_UNSAVED_CHANGES_MESSAGE =
+  "You have unsaved profile changes. Leave without saving?";
 const AVATARS_PER_PAGE = 12;
 
 const defaultAvatar = {
@@ -67,24 +62,6 @@ const defaultAvatar = {
   label: "Initials",
   russian: "Инициалы",
 } satisfies ProfileAvatarOption;
-
-function AvatarEmoji({ children, className }: { children: string; className?: string }) {
-  return (
-    <span
-      className={[
-        "inline-flex h-[1em] w-[1em] items-center justify-center leading-none",
-        "[font-family:'Segoe_UI_Emoji','Apple_Color_Emoji','Noto_Color_Emoji',sans-serif]",
-        "[font-variant-emoji:emoji]",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-      aria-hidden="true"
-    >
-      {children}
-    </span>
-  );
-}
 
 function getAvatar(avatars: ProfileAvatarOption[], avatarKey: string | null | undefined) {
   return avatars.find((avatar) => avatar.key === avatarKey) ?? defaultAvatar;
@@ -99,28 +76,6 @@ function getProfileInitials(name: string, email: string | null | undefined) {
   }
 
   return (parts[0] ?? "ST").slice(0, 2).toUpperCase();
-}
-
-function isInitialsAvatar(avatar: ProfileAvatarOption) {
-  return avatar.key === "" || avatar.key === "default";
-}
-
-function AvatarMark({
-  avatar,
-  initials,
-}: {
-  avatar: ProfileAvatarOption;
-  initials: string;
-}) {
-  if (isInitialsAvatar(avatar)) {
-    return (
-      <span className="text-[0.62em] font-bold leading-none tracking-normal text-[var(--accent-ink)]">
-        {initials}
-      </span>
-    );
-  }
-
-  return <AvatarEmoji>{avatar.emoji}</AvatarEmoji>;
 }
 
 function getAvatarPageForKey(avatars: ProfileAvatarOption[], avatarKey: string) {
@@ -334,7 +289,7 @@ function ProfilePreviewCard({
 
       {hasChanges ? (
         <div className="mt-5 border-t border-[var(--border-subtle)] pt-4">
-          <div className="flex flex-col gap-3 rounded-xl border border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-xl border border-[var(--accent-selected-border)] bg-[var(--surface-muted-bg)] p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-semibold text-[var(--text-primary)]">
               Ready to save this profile?
             </p>
@@ -367,6 +322,8 @@ function ProfileUpdatedInline() {
 }
 
 function ProfileActionErrorInline({ message }: { message: string }) {
+  const shouldOfferLogin = message.toLowerCase().includes("log in");
+
   return (
     <div className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-surface)] px-3.5 py-2.5 text-[var(--danger-text)] shadow-[0_8px_18px_var(--danger-shadow)]">
       <div className="flex items-center gap-2 text-sm font-semibold">
@@ -374,108 +331,14 @@ function ProfileActionErrorInline({ message }: { message: string }) {
         Profile update failed
       </div>
       <p className="mt-0.5 text-sm">{message}</p>
+      {shouldOfferLogin ? (
+        <div className="mt-3">
+          <Button href="/login" variant="secondary" size="sm" icon="user">
+            Log in
+          </Button>
+        </div>
+      ) : null}
     </div>
-  );
-}
-
-function LearningSnapshotCard({ snapshot }: { snapshot: ProfileLearningSnapshot }) {
-  const progressLabel =
-    snapshot.totalLessons > 0
-      ? `${snapshot.completedLessons} of ${snapshot.totalLessons}`
-      : `${snapshot.completedLessons} completed`;
-
-  return (
-    <section className="app-surface-muted p-4">
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-            <AppIcon icon="dashboard" size={15} />
-            Learning context
-          </div>
-          <p className="mt-1 text-sm app-text-muted">
-            Your profile stays connected to your course and lesson progress.
-          </p>
-        </div>
-
-        {snapshot.nextLessonHref ? (
-          <Button
-            href={snapshot.nextLessonHref}
-            variant="journey"
-            icon="next"
-            iconPosition="right"
-          >
-            Continue learning
-          </Button>
-        ) : (
-          <Button href="/dashboard" variant="secondary" icon="dashboard">
-            Open dashboard
-          </Button>
-        )}
-      </div>
-
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-            <AppIcon icon="userCheck" size={15} />
-            Account role
-          </div>
-          <div className="mt-1.5 text-base font-semibold text-[var(--text-primary)]">
-            {snapshot.roleLabel}
-          </div>
-          <p className="mt-1 text-sm app-text-muted">{snapshot.accessLabel}</p>
-        </div>
-
-        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-            <AppIcon icon="courses" size={15} />
-            Course path
-          </div>
-          <div className="mt-1.5 text-base font-semibold text-[var(--text-primary)]">
-            {snapshot.courseLabel}
-          </div>
-          <p className="mt-1 text-sm app-text-muted">Current learning route</p>
-        </div>
-
-        <div className="rounded-xl border border-[var(--surface-accent-border)] bg-[var(--surface-muted-bg)] p-3 shadow-[var(--shadow-xs)]">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--accent-ink)]">
-            <AppIcon icon="completed" size={15} />
-            Lesson progress
-          </div>
-          <div className="mt-1.5 text-base font-semibold text-[var(--text-primary)]">
-            {progressLabel}
-          </div>
-          <div
-            className="app-progress-track mt-3"
-            role="progressbar"
-            aria-label="Course lesson progress"
-            aria-valuenow={snapshot.progressPercent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          >
-            <div
-              className="app-progress-bar"
-              style={{ width: `${snapshot.progressPercent}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-            <AppIcon icon={snapshot.nextLessonHref ? "next" : "dashboard"} size={15} />
-            Next step
-          </div>
-          <div className="min-w-0">
-            <div className="mt-1.5 truncate text-base font-semibold text-[var(--text-primary)]">
-              {snapshot.nextLessonTitle ?? "Open your dashboard"}
-            </div>
-            <p className="mt-1 text-sm app-text-muted">
-              {snapshot.nextLessonMeta ??
-                "Your dashboard will show the best next place to continue."}
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -636,6 +499,70 @@ export default function ProfileEditor({
   };
 
   useEffect(() => {
+    if (!hasAnyChanges) {
+      return;
+    }
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    const handleDocumentClick = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const target = event.target;
+
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const anchor = target.closest<HTMLAnchorElement>("a[href]");
+
+      if (!anchor || anchor.target || anchor.hasAttribute("download")) {
+        return;
+      }
+
+      const href = anchor.getAttribute("href");
+
+      if (!href || href.startsWith("#")) {
+        return;
+      }
+
+      const nextUrl = new URL(href, window.location.href);
+      const isSamePageHash =
+        nextUrl.origin === window.location.origin &&
+        nextUrl.pathname === window.location.pathname &&
+        nextUrl.search === window.location.search &&
+        nextUrl.hash.length > 0;
+
+      if (isSamePageHash) {
+        return;
+      }
+
+      if (!window.confirm(PROFILE_UNSAVED_CHANGES_MESSAGE)) {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("click", handleDocumentClick, true);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleDocumentClick, true);
+    };
+  }, [hasAnyChanges]);
+
+  useEffect(() => {
     if (!shouldShowProfileUpdated) {
       return;
     }
@@ -652,7 +579,7 @@ export default function ProfileEditor({
   }, [shouldShowProfileUpdated]);
 
   return (
-    <form onSubmit={handleProfileSubmit} className="space-y-6 xl:-mb-6">
+    <form onSubmit={handleProfileSubmit} className="space-y-6">
       <section className="app-surface-brand app-section-padding-lg">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-center">
           <div className="flex min-w-0 flex-col justify-center gap-4">
@@ -721,6 +648,7 @@ export default function ProfileEditor({
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
               placeholder="Enter full name"
+              disabled={isSaving}
             />
           </FormField>
 
@@ -734,6 +662,7 @@ export default function ProfileEditor({
               value={displayName}
               onChange={(event) => setDisplayName(event.target.value)}
               placeholder="Enter display name"
+              disabled={isSaving}
             />
           </FormField>
 
@@ -761,7 +690,7 @@ export default function ProfileEditor({
           className={[
             "mt-auto flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between",
             hasDetailsChanges
-              ? "border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_8%,transparent)]"
+              ? "border-[var(--accent-selected-border)] bg-[var(--surface-muted-bg)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent-border-ink)_12%,transparent)]"
               : "border-[var(--border-subtle)] bg-[var(--background-muted)]",
           ].join(" ")}
         >
@@ -791,6 +720,7 @@ export default function ProfileEditor({
                 icon="cancel"
                 iconOnly
                 ariaLabel="Cancel profile detail changes"
+                disabled={isSaving}
                 onClick={resetDetailsChanges}
               />
             ) : null}
@@ -808,7 +738,7 @@ export default function ProfileEditor({
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
-            <div className="flex items-center gap-2 rounded-2xl border border-[var(--accent-decorative-border)] bg-[var(--surface-raised-bg)] p-1.5 shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_7%,transparent)]">
+            <div className="flex items-center gap-2 rounded-2xl border border-[var(--accent-selected-border)] bg-[var(--surface-raised-bg)] p-1.5 shadow-[0_6px_14px_color-mix(in_srgb,var(--accent-border-ink)_10%,transparent)]">
               <Button
                 type="button"
                 variant="secondary"
@@ -816,7 +746,7 @@ export default function ProfileEditor({
                 icon="back"
                 iconOnly
                 ariaLabel="Show previous avatar set"
-                disabled={activeAvatarPage === 0}
+                disabled={isSaving || activeAvatarPage === 0}
                 onClick={() => setAvatarPage((page) => Math.max(0, page - 1))}
               />
 
@@ -831,13 +761,14 @@ export default function ProfileEditor({
                       type="button"
                       aria-label={`Show avatar set ${index + 1}`}
                       aria-current={index === activeAvatarPage ? "true" : undefined}
+                      disabled={isSaving}
                       onClick={() => setAvatarPage(index)}
                       className={[
                         "h-1.5 rounded-full transition-all",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background-elevated)]",
                         index === activeAvatarPage
                           ? "w-5 bg-[var(--accent-fill)]"
-                          : "w-1.5 bg-[var(--accent-decorative-border)] hover:bg-[var(--accent-fill)]",
+                          : "w-1.5 bg-[color-mix(in_srgb,var(--accent-border-ink)_44%,transparent)] hover:bg-[var(--accent-fill)]",
                       ].join(" ")}
                     />
                   ))}
@@ -851,7 +782,7 @@ export default function ProfileEditor({
                 icon="next"
                 iconOnly
                 ariaLabel="Show next avatar set"
-                disabled={activeAvatarPage >= avatarPageCount - 1}
+                disabled={isSaving || activeAvatarPage >= avatarPageCount - 1}
                 onClick={() =>
                   setAvatarPage((page) => Math.min(avatarPageCount - 1, page + 1))
                 }
@@ -868,7 +799,8 @@ export default function ProfileEditor({
               <label
                 key={avatar.key}
                 className={[
-                  "app-focus-ring app-card app-card-interaction-subtle flex cursor-pointer items-center gap-2 rounded-xl p-2 sm:gap-3 sm:p-3",
+                  "app-focus-ring app-focus-within-ring app-card app-card-interaction-subtle flex items-center gap-2 rounded-xl p-2 sm:gap-3 sm:p-3",
+                  isSaving ? "cursor-not-allowed opacity-70" : "cursor-pointer",
                   isSelected ? "app-selected-surface" : "",
                 ].join(" ")}
               >
@@ -877,13 +809,19 @@ export default function ProfileEditor({
                   name="avatarKey"
                   value={avatar.key}
                   checked={isSelected}
+                  disabled={isSaving}
                   onChange={() => setAvatarKey(avatar.key)}
                   className="sr-only"
                 />
 
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--accent-decorative-border)] bg-[var(--background-muted)] text-2xl shadow-[var(--shadow-xs)] sm:h-14 sm:w-14 sm:text-3xl">
-                  <AvatarMark avatar={avatar} initials={initials} />
-                </span>
+                <StudentAvatar
+                  avatar={avatar}
+                  initials={initials}
+                  backgroundKey={avatarBackgroundKey}
+                  frameKey={avatarFrameKey}
+                  size="md"
+                  aria-label={`${avatar.label} avatar option`}
+                />
 
                 <span className="min-w-0 flex-1">
                   <span
@@ -921,7 +859,7 @@ export default function ProfileEditor({
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+          <div className="rounded-xl border border-[color-mix(in_srgb,var(--accent-border-ink)_10%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_88%,var(--background-muted))] p-4 shadow-[inset_0_1px_0_color-mix(in_srgb,var(--text-primary)_4%,transparent)]">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">
@@ -953,10 +891,11 @@ export default function ProfileEditor({
                   <label
                     key={background.key}
                     className={[
-                      "app-focus-ring flex cursor-pointer items-center gap-2 rounded-lg border p-2 text-sm font-semibold transition",
+                      "app-focus-ring app-focus-within-ring flex items-center gap-2 rounded-lg border p-2 text-sm font-semibold transition",
+                      isSaving ? "cursor-not-allowed opacity-70" : "cursor-pointer",
                       isSelected
                         ? "border-[var(--accent-selected-border)] bg-[var(--accent-selected-bg)] text-[var(--accent-on-soft)]"
-                        : "border-[var(--border-subtle)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:border-[var(--accent-decorative-border)] hover:text-[var(--text-primary)]",
+                        : "border-[var(--border-subtle)] bg-[var(--background-elevated)] text-[var(--text-secondary)] hover:border-[var(--accent-selected-border)] hover:text-[var(--text-primary)]",
                     ].join(" ")}
                   >
                     <input
@@ -964,6 +903,7 @@ export default function ProfileEditor({
                       name="avatarBackgroundKey"
                       value={background.key}
                       checked={isSelected}
+                      disabled={isSaving}
                       onChange={() => setAvatarBackgroundKey(background.key)}
                       className="sr-only"
                     />
@@ -987,7 +927,7 @@ export default function ProfileEditor({
             </div>
           </div>
 
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+          <div className="rounded-xl border border-[color-mix(in_srgb,var(--accent-border-ink)_10%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_88%,var(--background-muted))] p-4 shadow-[inset_0_1px_0_color-mix(in_srgb,var(--text-primary)_4%,transparent)]">
             <div>
               <h3 className="text-base font-bold text-[var(--text-primary)]">
                 Achievement frame
@@ -1011,12 +951,12 @@ export default function ProfileEditor({
                   <label
                     key={frame.key}
                     className={[
-                      "app-focus-ring flex min-h-24 gap-3 rounded-xl border p-3 transition",
-                      isUnlocked
-                        ? "cursor-pointer bg-[var(--background-elevated)] hover:border-[var(--accent-decorative-border)]"
+                      "app-focus-ring app-focus-within-ring flex min-h-24 gap-3 rounded-xl border p-3 transition",
+                      isUnlocked && !isSaving
+                        ? "cursor-pointer bg-[var(--background-elevated)] hover:border-[var(--accent-selected-border)]"
                         : "cursor-not-allowed bg-[color-mix(in_srgb,var(--background-muted)_78%,var(--background-elevated))] opacity-72",
                       isSelected
-                        ? "border-[var(--accent-selected-border)] shadow-[0_10px_22px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
+                        ? "border-[var(--accent-selected-border)] shadow-[0_10px_22px_color-mix(in_srgb,var(--accent-border-ink)_14%,transparent)]"
                         : "border-[var(--border-subtle)]",
                     ].join(" ")}
                   >
@@ -1025,9 +965,9 @@ export default function ProfileEditor({
                       name="avatarFrameKey"
                       value={frame.key}
                       checked={isSelected}
-                      disabled={!isUnlocked}
+                      disabled={!isUnlocked || isSaving}
                       onChange={() => {
-                        if (isUnlocked) {
+                        if (isUnlocked && !isSaving) {
                           setAvatarFrameKey(frame.key);
                         }
                       }}
@@ -1080,7 +1020,7 @@ export default function ProfileEditor({
           className={[
             "flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between",
             hasAvatarChanges
-              ? "border-[var(--accent-decorative-border)] bg-[var(--surface-muted-bg)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_8%,transparent)]"
+              ? "border-[var(--accent-selected-border)] bg-[var(--surface-muted-bg)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent-border-ink)_12%,transparent)]"
               : "border-[var(--border-subtle)] bg-[var(--background-muted)]",
           ].join(" ")}
         >
@@ -1119,6 +1059,7 @@ export default function ProfileEditor({
                 type="button"
                 variant="secondary"
                 icon="cancel"
+                disabled={isSaving}
                 onClick={resetAvatarChanges}
               >
                 Cancel
@@ -1128,11 +1069,9 @@ export default function ProfileEditor({
         </div>
       </section>
 
-      <LearningSnapshotCard snapshot={learningSnapshot} />
-
       {hasAnyChanges ? (
         <div className="sticky bottom-3 z-20 flex justify-end xl:hidden">
-          <div className="rounded-xl border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)]/92 p-2 shadow-[var(--shadow-md)] backdrop-blur">
+          <div className="rounded-xl border border-[var(--accent-selected-border)] bg-[var(--background-elevated)]/92 p-2 shadow-[var(--shadow-md)] backdrop-blur">
             <ProfileSubmitButton
               intent="all"
               hasChanges={hasAnyChanges}

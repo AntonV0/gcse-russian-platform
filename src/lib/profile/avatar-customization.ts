@@ -282,6 +282,7 @@ export const avatarFrameOptions: AvatarFrameOption[] = [
 
 const avatarBackgroundKeys = new Set(avatarBackgroundOptions.map((option) => option.key));
 const avatarFrameKeys = new Set(avatarFrameOptions.map((option) => option.key));
+const profileAvatarKeys = new Set(profileAvatarOptions.map((option) => option.key));
 
 export function getAvatarOption(avatarKey: string | null | undefined) {
   return (
@@ -312,6 +313,14 @@ export function isAvatarBackgroundKey(value: string): value is AvatarBackgroundK
 
 export function isAvatarFrameKey(value: string): value is AvatarFrameKey {
   return avatarFrameKeys.has(value as AvatarFrameKey);
+}
+
+export function isProfileAvatarKey(value: string) {
+  return profileAvatarKeys.has(value);
+}
+
+export function getSafeProfileAvatarKey(value: string | null | undefined) {
+  return value && isProfileAvatarKey(value) ? value : "";
 }
 
 export function getSafeAvatarBackgroundKey(value: string | null | undefined) {

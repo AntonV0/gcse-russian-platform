@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getLessonPath, getModulePath } from "@/lib/access/routes";
+import { persistCurrentAvatarFrameUnlocksForCurrentUser } from "@/lib/profile/avatar-unlocks";
 
 export async function markLessonComplete(formData: FormData): Promise<void> {
   const courseSlug = String(formData.get("courseSlug") || "");
@@ -38,6 +39,8 @@ export async function markLessonComplete(formData: FormData): Promise<void> {
   if (error) {
     throw new Error(error.message);
   }
+
+  await persistCurrentAvatarFrameUnlocksForCurrentUser();
 
   revalidatePath("/dashboard");
   revalidatePath(getModulePath(courseSlug, variantSlug, moduleSlug));

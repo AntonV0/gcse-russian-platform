@@ -59,6 +59,7 @@ export default function StudentAvatar({
   const frame = getAvatarFrameOption(frameKey);
   const sizePx = sizeMap[size];
   const isInitials = isInitialsAvatar(avatar);
+  const hasAchievementFrame = frame.key !== "none";
   const fontSize = isInitials ? Math.max(11, Math.round(sizePx * 0.27)) : Math.round(sizePx * 0.54);
   const style = {
     width: sizePx,
@@ -80,8 +81,10 @@ export default function StudentAvatar({
     >
       <span
         className={[
-          "flex h-full w-full items-center justify-center rounded-full border border-white/65",
-          "shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]",
+          "flex h-full w-full items-center justify-center rounded-full border",
+          hasAchievementFrame
+            ? "border-transparent"
+            : "border-white/65 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]",
           background.textClassName,
         ].join(" ")}
         style={{ background: "var(--student-avatar-bg)", fontSize }}

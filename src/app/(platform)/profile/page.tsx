@@ -6,12 +6,8 @@ import ProfileEditor, {
   type ProfileLearningSnapshot,
 } from "@/components/profile/profile-editor";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
-import {
-  getDashboardAccessLabel,
-  getDashboardVariantLabel,
-  getStudentLearningPlan,
-} from "@/lib/dashboard/learning-plan";
-import { getDashboardInfo, type DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { getStudentLearningPlan } from "@/lib/dashboard/learning-plan";
+import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getSafeAvatarBackgroundKey,
   getSafeAvatarFrameKey,
@@ -19,13 +15,6 @@ import {
   profileAvatarOptions,
 } from "@/lib/profile/avatar-customization";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
-
-function getDashboardRoleLabel(role: DashboardInfo["role"]) {
-  if (role === "admin") return "Admin";
-  if (role === "teacher") return "Teacher";
-  if (role === "student") return "Student";
-  return "Guest";
-}
 
 async function getProfileLearningSnapshot(): Promise<ProfileLearningSnapshot> {
   const dashboard = await getDashboardInfo();
@@ -38,15 +27,8 @@ async function getProfileLearningSnapshot(): Promise<ProfileLearningSnapshot> {
 
   if (!hasActiveStudentPath || !activeVariant) {
     return {
-      roleLabel: getDashboardRoleLabel(dashboard.role),
-      courseLabel: getDashboardVariantLabel(dashboard.variant),
-      accessLabel: getDashboardAccessLabel(dashboard.accessMode),
       completedLessons: 0,
       totalLessons: 0,
-      progressPercent: 0,
-      nextLessonTitle: null,
-      nextLessonMeta: null,
-      nextLessonHref: null,
     };
   }
 
@@ -57,15 +39,8 @@ async function getProfileLearningSnapshot(): Promise<ProfileLearningSnapshot> {
   );
 
   return {
-    roleLabel: getDashboardRoleLabel(dashboard.role),
-    courseLabel: getDashboardVariantLabel(dashboard.variant),
-    accessLabel: getDashboardAccessLabel(dashboard.accessMode),
     completedLessons: learningPlan.completedLessons,
     totalLessons: learningPlan.totalLessons,
-    progressPercent: learningPlan.progressPercent,
-    nextLessonTitle: learningPlan.nextLesson?.title ?? null,
-    nextLessonMeta: learningPlan.nextLesson?.moduleTitle ?? null,
-    nextLessonHref: learningPlan.nextLesson?.href ?? null,
   };
 }
 
