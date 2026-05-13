@@ -31,6 +31,15 @@ import {
   type StudentDashboardAction,
 } from "@/lib/dashboard/student-next-actions";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
+import {
+  getProgressDomainSummaries,
+  getProgressRecentWins,
+  getProgressWeakAreas,
+  isNewStudentProgressEmpty,
+  type ProgressDomainSummary,
+  type ProgressRecentWin,
+  type ProgressWeakArea,
+} from "@/lib/progress/progress-insights";
 
 function ProgressUnavailableState({
   title,
@@ -84,7 +93,14 @@ function SkillReadinessList({ signals }: { signals: MasterySignal[] }) {
                   </div>
                 </div>
 
-                <div className="app-progress-track mt-2 h-1.5">
+                <div
+                  className="app-progress-track mt-2 h-1.5"
+                  role="progressbar"
+                  aria-label={`${signal.title} readiness`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={signal.value}
+                >
                   <div
                     className="app-progress-bar"
                     style={{ width: `${signal.value}%` }}
@@ -115,6 +131,31 @@ function ModuleProgressList({
   const moduleTitlesBySlug = new Map(
     modules.map((courseModule) => [courseModule.slug, courseModule.title])
   );
+
+  if (
+    summaries.length === 0 ||
+    summaries.every((summary) => summary.totalLessons === 0)
+  ) {
+    return (
+      <DashboardCard title="Module progress" headingLevel={2}>
+        <ProgressEmptyBlock
+          icon="modules"
+          title="Modules are ready to explore"
+          description="Published lesson progress will appear here as soon as you open and complete course content."
+          action={
+            <Button
+              href={`/courses/${courseSlug}/${variantSlug}`}
+              variant="secondary"
+              size="sm"
+              icon="courses"
+            >
+              Open course path
+            </Button>
+          }
+        />
+      </DashboardCard>
+    );
+  }
 
   return (
     <DashboardCard title="Module progress" headingLevel={2}>
@@ -222,6 +263,7 @@ function NextActionList({ actions }: { actions: StudentDashboardAction[] }) {
                 variant={index === 0 ? "journey" : "secondary"}
                 size="sm"
                 icon={action.icon}
+                ariaLabel={`${action.label}: ${action.title}`}
               >
                 {action.label}
               </Button>
@@ -229,6 +271,256 @@ function NextActionList({ actions }: { actions: StudentDashboardAction[] }) {
           </div>
         ))}
       </div>
+    </DashboardCard>
+  );
+}
+
+function RecommendedActionCard({ action }: { action: StudentDashboardAction }) {
+  return (
+    <DashboardCard title="Recommended next action" headingLevel={2} className="h-full">
+      <div className="app-soft-panel p-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-elevated)] text-[var(--accent-ink)]">
+            <AppIcon icon={action.icon} size={19} />
+          </span>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap gap-2">
+              <Badge tone={action.badgeTone} icon={action.icon}>
+                {action.badgeLabel}
+              </Badge>
+              {action.metaLabel ? <Badge tone="muted">{action.metaLabel}</Badge> : null}
+            </div>
+
+            <div className="mt-3 app-heading-card">{action.title}</div>
+            <p className="mt-1 app-text-body-muted">{action.description}</p>
+
+            <Button
+              href={action.href}
+              variant="journey"
+              size="sm"
+              icon={action.icon}
+              className="mt-4 w-full sm:w-auto"
+              ariaLabel={`${action.label}: ${action.title}`}
+            >
+              {action.label}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </DashboardCard>
+  );
+}
+
+function DomainProgressGrid({ domains }: { domains: ProgressDomainSummary[] }) {
+  return (
+    <section className="grid gap-4 lg:grid-cols-3" aria-label="Progress by study area">
+      {domains.map((domain) => (
+        <DashboardCard key={domain.id} title={domain.title} headingLevel={2}>
+          <div className="space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--text-secondary)]">
+                <AppIcon icon={domain.icon} size={18} />
+              </span>
+              <Badge tone={domain.tone} icon={domain.icon}>
+                {domain.value}%
+              </Badge>
+            </div>
+
+            <div>
+              <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+                <span className="font-medium text-[var(--text-primary)]">
+                  {domain.label}
+                </span>
+                <span className="app-text-muted">{domain.value}% ready</span>
+              </div>
+              <div
+                className="app-progress-track h-1.5"
+                role="progressbar"
+                aria-label={`${domain.title} readiness`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={domain.value}
+              >
+                <div className="app-progress-bar" style={{ width: `${domain.value}%` }} />
+              </div>
+            </div>
+
+            <p className="app-text-body-muted">{domain.evidence}</p>
+            <Button
+              href={domain.href}
+              variant="secondary"
+              size="sm"
+              icon={domain.icon}
+              className="w-full sm:w-auto"
+            >
+              {domain.actionLabel}
+            </Button>
+          </div>
+        </DashboardCard>
+      ))}
+    </section>
+  );
+}
+
+function ProgressEmptyBlock({
+  icon,
+  title,
+  description,
+  action,
+}: {
+  icon: StudentDashboardAction["icon"];
+  title: string;
+  description: string;
+  action: React.ReactNode;
+}) {
+  return (
+    <div className="app-empty-dashed-warm rounded-2xl border px-4 py-6 text-center">
+      <div className="mb-4 flex justify-center">
+        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--surface-elevated)] text-[var(--text-secondary)]">
+          <AppIcon icon={icon} size={18} />
+        </span>
+      </div>
+      <div className="app-heading-card">{title}</div>
+      <p className="mx-auto mt-2 max-w-[24rem] app-text-body-muted">{description}</p>
+      <div className="mt-5 flex justify-center">{action}</div>
+    </div>
+  );
+}
+
+function WeakAreasCard({ weakAreas }: { weakAreas: ProgressWeakArea[] }) {
+  return (
+    <DashboardCard title="Weak areas" headingLevel={2} className="h-full">
+      {weakAreas.length === 0 ? (
+        <ProgressEmptyBlock
+          icon="success"
+          title="No urgent weak areas"
+          description="Nothing is currently asking for emergency attention. Keep the next lesson moving and use feedback when it appears."
+          action={
+            <Button href="/courses" variant="secondary" size="sm" icon="courses">
+              Open course path
+            </Button>
+          }
+        />
+      ) : (
+        <div className="space-y-3">
+          {weakAreas.map((area) => (
+            <div key={area.id} className="app-tactile-row rounded-xl border p-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap gap-2">
+                    <Badge tone={area.tone} icon={area.icon}>
+                      Focus
+                    </Badge>
+                  </div>
+                  <div className="mt-2 app-heading-card">{area.title}</div>
+                  <p className="mt-1 app-text-body-muted">{area.description}</p>
+                </div>
+
+                <Button
+                  href={area.href}
+                  variant="secondary"
+                  size="sm"
+                  icon={area.icon}
+                  ariaLabel={`${area.actionLabel}: ${area.title}`}
+                >
+                  {area.actionLabel}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </DashboardCard>
+  );
+}
+
+function RecentWinsCard({ wins }: { wins: ProgressRecentWin[] }) {
+  return (
+    <DashboardCard title="Recent wins" headingLevel={2} className="h-full">
+      {wins.length === 0 ? (
+        <ProgressEmptyBlock
+          icon="star"
+          title="First win is ready"
+          description="Complete a lesson, submit work, or finish a mock and this space will start recording progress evidence."
+          action={
+            <Button href="/courses" variant="secondary" size="sm" icon="next">
+              Start a lesson
+            </Button>
+          }
+        />
+      ) : (
+        <div className="space-y-3">
+          {wins.map((win) => (
+            <div key={win.id} className="app-tactile-row rounded-xl border p-3">
+              <div className="flex items-start gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--text-secondary)]">
+                  <AppIcon icon={win.icon} size={16} />
+                </span>
+
+                <div className="min-w-0">
+                  <Badge tone={win.tone} icon={win.icon}>
+                    Win
+                  </Badge>
+                  <div className="mt-2 app-heading-card">{win.title}</div>
+                  <p className="mt-1 app-text-body-muted">{win.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </DashboardCard>
+  );
+}
+
+function NewStudentKickstartCard({ action }: { action: StudentDashboardAction }) {
+  const steps = [
+    {
+      title: "Start one lesson",
+      description: "Open the first available lesson and complete the core task.",
+      icon: "lessons" as const,
+    },
+    {
+      title: "Add one recall rep",
+      description: "Use vocabulary or grammar practice to make the lesson stick.",
+      icon: "brain" as const,
+    },
+    {
+      title: "Check the next action",
+      description: "Return here after each session to see the highest-value follow-up.",
+      icon: "next" as const,
+    },
+  ];
+
+  return (
+    <DashboardCard title="First progress steps" headingLevel={2}>
+      <div className="grid gap-3 md:grid-cols-3">
+        {steps.map((step, index) => (
+          <div key={step.title} className="app-soft-panel p-4">
+            <div className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-elevated)] text-[var(--accent-ink)]">
+                <AppIcon icon={step.icon} size={16} />
+              </span>
+              <div>
+                <Badge tone={index === 0 ? "info" : "muted"}>Step {index + 1}</Badge>
+                <div className="mt-2 app-heading-card">{step.title}</div>
+                <p className="mt-1 app-text-body-muted">{step.description}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Button
+        href={action.href}
+        variant="journey"
+        icon={action.icon}
+        className="mt-4 w-full sm:w-auto"
+        ariaLabel={`${action.label}: ${action.title}`}
+      >
+        {action.label}
+      </Button>
     </DashboardCard>
   );
 }
@@ -308,18 +600,50 @@ export default async function ProgressPage() {
     progressSummary.completedLessons,
     learningPlan
   );
-  const nextActions = getStudentDashboardActionQueue(activity, nextStep, {
+  const nextActionQueue = getStudentDashboardActionQueue(activity, nextStep, {
     preferLearningPlan: dashboard.accessMode === "volna",
   });
+  const nextActions: StudentDashboardAction[] = [];
+
+  for (const action of nextActionQueue) {
+    if (action) {
+      nextActions.push(action);
+    }
+  }
   const masterySignals = getMasterySignals({ learningPlan, activity });
   const milestone = getLearningMilestone({ learningPlan, activity });
+  const primaryAction =
+    nextActions[0] ??
+    ({
+      id: "open-courses",
+      title: "Open your course path",
+      description: "Review available modules and choose the next GCSE Russian lesson.",
+      href: "/courses",
+      label: "Open courses",
+      icon: "courses",
+      badgeLabel: "Course path",
+      badgeTone: "info",
+    } satisfies StudentDashboardAction);
+  const domainSummaries = getProgressDomainSummaries(masterySignals, activity);
+  const isNewStudent = isNewStudentProgressEmpty(pathSummary, activity);
+  const weakAreas = isNewStudent ? [] : getProgressWeakAreas(masterySignals, activity);
+  const recentWins = getProgressRecentWins(pathSummary, activity);
+  const completedModuleCount = pathSummary.moduleSummaries.filter(
+    (summary) => summary.isComplete
+  ).length;
+  const studyTimeLeft = formatCoursePathRemainingMinutes(
+    pathSummary.remainingMinutes,
+    pathSummary.isComplete
+  );
+  const studyTimeLeftDisplay =
+    studyTimeLeft === "Self-paced" ? "Self paced" : studyTimeLeft;
 
   return (
     <main className="space-y-8">
       <PageIntroPanel
         eyebrow="Progress"
         title="Your GCSE Russian progress"
-        description="Track your course path, module movement, skill readiness, and the next actions that matter most."
+        description={`Track course completion, vocabulary, grammar, exam prep, weak areas, recent wins, and the next move: ${primaryAction.title}.`}
         tone="student"
         badges={
           <>
@@ -336,8 +660,13 @@ export default async function ProgressPage() {
         }
         actions={
           <>
-            <Button href={nextStep.href} variant="journey" icon={nextStep.icon}>
-              {nextStep.label}
+            <Button
+              href={primaryAction.href}
+              variant="journey"
+              icon={primaryAction.icon}
+              ariaLabel={`${primaryAction.label}: ${primaryAction.title}`}
+            >
+              {primaryAction.label}
             </Button>
             <Button href="/exam-calendar" variant="secondary" icon="calendar">
               Exam calendar
@@ -381,17 +710,17 @@ export default async function ProgressPage() {
         />
         <SummaryStatCard
           title="Modules"
-          value={pathSummary.totalModules}
-          description="in current path"
+          value={`${completedModuleCount}/${pathSummary.totalModules}`}
+          description="modules complete"
           icon="modules"
+          tone={completedModuleCount > 0 ? "success" : "default"}
           compact
         />
         <SummaryStatCard
           title="Study time left"
-          value={formatCoursePathRemainingMinutes(
-            pathSummary.remainingMinutes,
-            pathSummary.isComplete
-          )}
+          value={
+            <span className="text-[1.35rem] leading-tight">{studyTimeLeftDisplay}</span>
+          }
           description="estimated from lesson data"
           icon="pending"
           tone="info"
@@ -407,19 +736,22 @@ export default async function ProgressPage() {
         />
       </section>
 
+      {isNewStudent ? <NewStudentKickstartCard action={primaryAction} /> : null}
+
+      <DomainProgressGrid domains={domainSummaries} />
+
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-        <SkillReadinessList signals={masterySignals} />
+        <RecommendedActionCard action={primaryAction} />
         <NextActionList actions={nextActions} />
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-        <ModuleProgressList
-          courseSlug={variantData.course.slug}
-          variantSlug={variantData.variant.slug}
-          modules={variantData.modules}
-          summaries={pathSummary.moduleSummaries}
-        />
+        <WeakAreasCard weakAreas={weakAreas} />
+        <RecentWinsCard wins={recentWins} />
+      </section>
 
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+        <SkillReadinessList signals={masterySignals} />
         <DashboardCard title="Next milestone" headingLevel={2} className="h-full">
           <div className="app-soft-panel p-4">
             <div className="flex items-start gap-3">
@@ -439,6 +771,15 @@ export default async function ProgressPage() {
             </div>
           </div>
         </DashboardCard>
+      </section>
+
+      <section>
+        <ModuleProgressList
+          courseSlug={variantData.course.slug}
+          variantSlug={variantData.variant.slug}
+          modules={variantData.modules}
+          summaries={pathSummary.moduleSummaries}
+        />
       </section>
     </main>
   );
