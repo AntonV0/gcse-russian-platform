@@ -1,4 +1,5 @@
 import type { ExtractedResponse } from "@/app/actions/mock-exams/mock-exam-response-extraction";
+import { isMockExamQuestionAutoMarkable } from "@/lib/mock-exams/response-workflow";
 import type { DbMockExamQuestion } from "@/lib/mock-exams/types";
 
 type MarkResult = {
@@ -58,6 +59,13 @@ export function markQuestion(
   question: DbMockExamQuestion,
   response: ExtractedResponse
 ): MarkResult {
+  if (!isMockExamQuestionAutoMarkable(question)) {
+    return {
+      awardedMarks: null,
+      feedback: null,
+    };
+  }
+
   switch (question.question_type) {
     case "multiple_choice": {
       const selectedOption = Number(response.responsePayload.selectedOption);

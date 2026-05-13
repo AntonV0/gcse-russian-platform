@@ -3,6 +3,7 @@ import Input from "@/components/ui/input";
 import MockExamAudioRecorder from "@/components/mock-exams/mock-exam-audio-recorder";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
+import { getMockExamResponseWorkflow } from "@/lib/mock-exams/response-workflow";
 import type { DbMockExamQuestion, DbMockExamResponse } from "@/lib/mock-exams/types";
 
 type MockExamResponseFieldProps = {
@@ -62,26 +63,13 @@ function hasStoredAudio(response?: DbMockExamResponse) {
   return Boolean(audio && typeof audio === "object" && !Array.isArray(audio));
 }
 
-const writingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
-  "writing_task",
-  "simple_sentences",
-  "short_paragraph",
-  "extended_writing",
-  "translation_into_russian",
-]);
-
-const speakingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
-  "role_play",
-  "photo_card",
-  "conversation",
-]);
-
 export default function MockExamResponseField({
   question,
   response,
   disabled = false,
 }: MockExamResponseFieldProps) {
   const payload = response?.response_payload ?? {};
+  const workflow = getMockExamResponseWorkflow(question);
 
   if (question.question_type === "multiple_choice") {
     const options = getStringArray(question.data.options);
@@ -290,7 +278,7 @@ export default function MockExamResponseField({
     );
   }
 
-  if (writingResponseTypes.has(question.question_type)) {
+  if (workflow.kind === "writing") {
     const typedDraft = getPayloadString(payload.typedDraft);
     const planningNotes = getPayloadString(payload.planningNotes);
 
@@ -306,38 +294,47 @@ export default function MockExamResponseField({
           />
         </FormField>
 
-        <FormField label="Typed draft">
-          <Textarea
-            name={`response_draft_${question.id}`}
-            rows={6}
-            defaultValue={typedDraft || getStoredText(response)}
-            disabled={disabled}
-            placeholder="Optional draft. Handwritten Russian can be uploaded below."
-          />
-        </FormField>
+        {workflow.supportsTypedDraft ? (
+          <FormField label="Typed draft">
+            <Textarea
+              name={`response_draft_${question.id}`}
+              rows={6}
+              defaultValue={typedDraft || getStoredText(response)}
+              disabled={disabled}
+              placeholder={
+                workflow.supportsUpload
+                  ? "Optional draft. Handwritten Russian can be uploaded below."
+                  : "Type your response here."
+              }
+            />
+          </FormField>
+        ) : null}
 
-        <FormField
-          label="Upload handwritten work"
-          hint="Accepted formats: JPG, PNG, WEBP, PDF."
-        >
-          <Input
-            name={`response_file_${question.id}`}
-            type="file"
-            accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf"
-            disabled={disabled}
-          />
-          {hasStoredFile(response) ? (
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              Existing upload saved.
-            </p>
-          ) : null}
-        </FormField>
+        {workflow.supportsUpload ? (
+          <FormField
+            label="Upload handwritten work"
+            hint="Accepted formats: JPG, PNG, WEBP, PDF."
+          >
+            <Input
+              name={`response_file_${question.id}`}
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf"
+              disabled={disabled}
+            />
+            {hasStoredFile(response) ? (
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                Existing upload saved.
+              </p>
+            ) : null}
+          </FormField>
+        ) : null}
       </div>
     );
   }
 
-  if (speakingResponseTypes.has(question.question_type)) {
+  if (workflow.kind === "speaking") {
     const prepNotes = getPayloadString(payload.prepNotes);
+    const typedDraft = getPayloadString(payload.typedDraft);
 
     return (
       <div className="grid gap-4">
@@ -351,26 +348,42 @@ export default function MockExamResponseField({
           />
         </FormField>
 
-        <FormField label="Recorded response">
-          <MockExamAudioRecorder questionId={question.id} disabled={disabled} />
-          {hasStoredAudio(response) ? (
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              Existing recording saved.
-            </p>
-          ) : null}
-        </FormField>
+        {workflow.supportsTypedDraft ? (
+          <FormField label="Typed draft">
+            <Textarea
+              name={`response_draft_${question.id}`}
+              rows={5}
+              defaultValue={typedDraft}
+              disabled={disabled}
+              placeholder="Optional typed draft if your teacher has asked for written preparation."
+            />
+          </FormField>
+        ) : null}
 
-        <FormField
-          label="Upload audio file"
-          hint="Use this if recording in the browser is not available."
-        >
-          <Input
-            name={`response_audio_file_${question.id}`}
-            type="file"
-            accept="audio/*"
-            disabled={disabled}
-          />
-        </FormField>
+        {workflow.supportsAudioRecording ? (
+          <>
+            <FormField label="Recorded response">
+              <MockExamAudioRecorder questionId={question.id} disabled={disabled} />
+              {hasStoredAudio(response) ? (
+                <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                  Existing recording saved.
+                </p>
+              ) : null}
+            </FormField>
+
+            <FormField
+              label="Upload audio file"
+              hint="Use this if recording in the browser is not available."
+            >
+              <Input
+                name={`response_audio_file_${question.id}`}
+                type="file"
+                accept="audio/*"
+                disabled={disabled}
+              />
+            </FormField>
+          </>
+        ) : null}
       </div>
     );
   }

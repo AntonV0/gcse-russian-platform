@@ -7,6 +7,7 @@ import {
   uploadMockExamAudioDataUrl,
   uploadMockExamResponseFile,
 } from "@/app/actions/mock-exams/mock-exam-response-storage";
+import { getMockExamResponseWorkflow } from "@/lib/mock-exams/response-workflow";
 
 export type ExtractedResponse = {
   responseText: string | null;
@@ -44,20 +45,6 @@ function parseSequencingSelects(question: DbMockExamQuestion, formData: FormData
     .filter((item) => Number.isInteger(item) && item >= 0);
 }
 
-const writingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
-  "writing_task",
-  "simple_sentences",
-  "short_paragraph",
-  "extended_writing",
-  "translation_into_russian",
-]);
-
-const speakingResponseTypes = new Set<DbMockExamQuestion["question_type"]>([
-  "role_play",
-  "photo_card",
-  "conversation",
-]);
-
 export async function extractQuestionResponse(
   question: DbMockExamQuestion,
   formData: FormData,
@@ -68,6 +55,8 @@ export async function extractQuestionResponse(
     existingResponse?: DbMockExamResponse;
   }
 ): Promise<ExtractedResponse> {
+  const workflow = getMockExamResponseWorkflow(question);
+
   switch (question.question_type) {
     case "multiple_choice": {
       const selectedOption = getTrimmedString(formData, `response_choice_${question.id}`);
@@ -179,75 +168,87 @@ export async function extractQuestionResponse(
     }
 
     default: {
-      if (writingResponseTypes.has(question.question_type)) {
+      if (workflow.kind === "writing") {
         const planningNotes = getTrimmedString(
           formData,
           `response_planning_notes_${question.id}`
         );
-        const typedDraft = getTrimmedString(formData, `response_draft_${question.id}`);
+        const typedDraft = workflow.supportsTypedDraft
+          ? getTrimmedString(formData, `response_draft_${question.id}`)
+          : "";
         const file = formData.get(`response_file_${question.id}`);
-        const uploadedFile = isUsableFile(file)
-          ? await uploadMockExamResponseFile({
-              supabase: params.supabase,
-              attemptId: params.attemptId,
-              questionId: question.id,
-              userId: params.userId,
-              file,
-              prefix: "writing",
-            })
-          : getExistingStoredFile(params.existingResponse, "file");
+        const uploadedFile = workflow.supportsUpload
+          ? isUsableFile(file)
+            ? await uploadMockExamResponseFile({
+                supabase: params.supabase,
+                attemptId: params.attemptId,
+                questionId: question.id,
+                userId: params.userId,
+                file,
+                prefix: "writing",
+              })
+            : getExistingStoredFile(params.existingResponse, "file")
+          : null;
 
         return {
           responseText:
             typedDraft ||
             (uploadedFile ? `Uploaded file: ${uploadedFile.fileName}` : null),
           responsePayload: {
-            responseMode: "writing_upload",
+            responseMode: workflow.responseMode,
             planningNotes,
-            typedDraft,
+            ...(workflow.supportsTypedDraft ? { typedDraft } : {}),
             ...(uploadedFile ? { file: uploadedFile } : {}),
           },
         };
       }
 
-      if (speakingResponseTypes.has(question.question_type)) {
+      if (workflow.kind === "speaking") {
         const prepNotes = getTrimmedString(
           formData,
           `response_prep_notes_${question.id}`
         );
-        const audioData = getTrimmedString(
-          formData,
-          `response_audio_data_${question.id}`
-        );
-        const audioFile = formData.get(`response_audio_file_${question.id}`);
-        const uploadedAudioFromFile = isUsableFile(audioFile)
-          ? await uploadMockExamResponseFile({
-              supabase: params.supabase,
-              attemptId: params.attemptId,
-              questionId: question.id,
-              userId: params.userId,
-              file: audioFile,
-              prefix: "speaking",
-            })
+        const typedDraft = workflow.supportsTypedDraft
+          ? getTrimmedString(formData, `response_draft_${question.id}`)
+          : "";
+        const audioData = workflow.supportsAudioRecording
+          ? getTrimmedString(formData, `response_audio_data_${question.id}`)
+          : "";
+        const audioFile = workflow.supportsAudioRecording
+          ? formData.get(`response_audio_file_${question.id}`)
           : null;
-        const uploadedAudio =
-          uploadedAudioFromFile ??
-          (audioData
-            ? await uploadMockExamAudioDataUrl({
+        const uploadedAudioFromFile =
+          workflow.supportsAudioRecording && isUsableFile(audioFile)
+            ? await uploadMockExamResponseFile({
                 supabase: params.supabase,
                 attemptId: params.attemptId,
                 questionId: question.id,
                 userId: params.userId,
-                dataUrl: audioData,
+                file: audioFile,
+                prefix: "speaking",
               })
-            : getExistingStoredFile(params.existingResponse, "audio"));
+            : null;
+        const uploadedAudio = workflow.supportsAudioRecording
+          ? uploadedAudioFromFile ??
+            (audioData
+              ? await uploadMockExamAudioDataUrl({
+                  supabase: params.supabase,
+                  attemptId: params.attemptId,
+                  questionId: question.id,
+                  userId: params.userId,
+                  dataUrl: audioData,
+                })
+              : getExistingStoredFile(params.existingResponse, "audio"))
+          : null;
 
         return {
           responseText:
-            uploadedAudio ? `Audio response: ${uploadedAudio.fileName}` : null,
+            typedDraft ||
+            (uploadedAudio ? `Audio response: ${uploadedAudio.fileName}` : null),
           responsePayload: {
-            responseMode: "speaking_recording",
+            responseMode: workflow.responseMode,
             prepNotes,
+            ...(workflow.supportsTypedDraft ? { typedDraft } : {}),
             ...(uploadedAudio ? { audio: uploadedAudio } : {}),
           },
         };

@@ -1,9 +1,6 @@
 import type { AppIconKey } from "@/lib/shared/icons";
-import type {
-  DbMockExamResponse,
-  MockExamAttemptStatus,
-  MockExamPaperName,
-} from "@/lib/mock-exams/types";
+import { hasMockExamResponseAnswerEvidence } from "@/lib/mock-exams/response-workflow";
+import type { MockExamAttemptStatus, MockExamPaperName } from "@/lib/mock-exams/types";
 import type { PastPaperResourceType } from "@/lib/past-papers/past-paper-helpers-db";
 
 export type ExamPaperPathway = {
@@ -229,36 +226,4 @@ export function getAttemptReviewCue({
   return "Submitted for review. Longer answers may need teacher marking before the final result is complete.";
 }
 
-function hasPayloadAnswerEvidence(payload: Record<string, unknown>) {
-  return Object.entries(payload).some(([key, value]) => {
-    if (key === "planningNotes" || key === "prepNotes" || key === "responseMode") {
-      return false;
-    }
-
-    if (typeof value === "string") return value.trim().length > 0;
-    if (Array.isArray(value)) return value.length > 0;
-    if (value && typeof value === "object") return Object.keys(value).length > 0;
-
-    return value !== null && value !== undefined;
-  });
-}
-
-export function hasMockExamAnswerEvidence(response?: DbMockExamResponse) {
-  if (!response) return false;
-
-  if (hasPayloadAnswerEvidence(response.response_payload)) return true;
-
-  const responseText = response.response_text?.trim();
-  if (!responseText) return false;
-
-  const planningNotes =
-    typeof response.response_payload.planningNotes === "string"
-      ? response.response_payload.planningNotes.trim()
-      : "";
-  const prepNotes =
-    typeof response.response_payload.prepNotes === "string"
-      ? response.response_payload.prepNotes.trim()
-      : "";
-
-  return responseText !== planningNotes && responseText !== prepNotes;
-}
+export const hasMockExamAnswerEvidence = hasMockExamResponseAnswerEvidence;

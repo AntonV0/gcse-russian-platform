@@ -26,7 +26,8 @@ import {
 import { loadMockExamAttemptDb } from "@/lib/mock-exams/loaders";
 import { getStudentSafeMockExamQuestion } from "@/lib/mock-exams/normalizers";
 import { getMockExamScoreByAttemptIdDb } from "@/lib/mock-exams/queries";
-import type { DbMockExamQuestion, DbMockExamResponse } from "@/lib/mock-exams/types";
+import { getMockExamAnswerFieldNames } from "@/lib/mock-exams/response-workflow";
+import type { DbMockExamResponse } from "@/lib/mock-exams/types";
 
 type MockExamAttemptPageProps = {
   params: Promise<{
@@ -37,19 +38,6 @@ type MockExamAttemptPageProps = {
 
 function hasSavedResponse(response?: DbMockExamResponse) {
   return hasMockExamAnswerEvidence(response);
-}
-
-function getRecordArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-  return value.filter(
-    (item): item is Record<string, unknown> =>
-      Boolean(item) && typeof item === "object" && !Array.isArray(item)
-  );
-}
-
-function getStringArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-  return value.filter((item): item is string => typeof item === "string");
 }
 
 function hasPersistedAttachment(response?: DbMockExamResponse) {
@@ -64,65 +52,6 @@ function hasPersistedAttachment(response?: DbMockExamResponse) {
 
 function getQuestionAnchorId(questionId: string) {
   return `mock-exam-question-${questionId}`;
-}
-
-function getQuestionAnswerFieldNames(question: DbMockExamQuestion) {
-  switch (question.question_type) {
-    case "multiple_choice":
-      return [`response_choice_${question.id}`];
-
-    case "multiple_response":
-      return [`response_choices_${question.id}`];
-
-    case "matching":
-      return getStringArray(question.data.prompts).map(
-        (_, index) => `response_match_${question.id}_${index}`
-      );
-
-    case "sequencing": {
-      const items = getStringArray(question.data.items);
-      if (items.length === 0) return [`response_order_${question.id}`];
-
-      return items.map((_, index) => `response_order_${question.id}_${index}`);
-    }
-
-    case "opinion_recognition":
-    case "true_false_not_mentioned":
-      return getStringArray(question.data.statements).map(
-        (_, index) => `response_statement_${question.id}_${index}`
-      );
-
-    case "gap_fill":
-    case "note_completion": {
-      const fields =
-        question.question_type === "gap_fill"
-          ? getRecordArray(question.data.gaps)
-          : getRecordArray(question.data.fields);
-
-      return fields.map((_, index) => `response_field_${question.id}_${index}`);
-    }
-
-    case "writing_task":
-    case "simple_sentences":
-    case "short_paragraph":
-    case "extended_writing":
-    case "translation_into_russian":
-      return [
-        `response_draft_${question.id}`,
-        `response_file_${question.id}`,
-      ];
-
-    case "role_play":
-    case "photo_card":
-    case "conversation":
-      return [
-        `response_audio_data_${question.id}`,
-        `response_audio_file_${question.id}`,
-      ];
-
-    default:
-      return [`response_text_${question.id}`];
-  }
 }
 
 function formatDateTime(value: string | null) {
@@ -254,7 +183,7 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
       (questionsBySectionId[section.id] ?? []).map((question, questionIndex) => ({
         label: `Question ${questionIndex + 1}`,
         sectionTitle: section.title,
-        answerFieldNames: getQuestionAnswerFieldNames(question),
+        answerFieldNames: getMockExamAnswerFieldNames(question),
         persistedAttachmentSaved: hasPersistedAttachment(
           responsesByQuestionId[question.id]
         ),
