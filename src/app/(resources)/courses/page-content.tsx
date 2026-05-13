@@ -22,6 +22,10 @@ import {
   type VariantPathProgressSummary,
 } from "@/lib/courses/path-progress";
 import {
+  formatLessonProgressLabel,
+  formatLessonProgressRatio,
+} from "@/lib/courses/progress-labels";
+import {
   getDashboardVariantSlug,
   getVariantActionState,
   getVariantDisplayName,
@@ -218,7 +222,10 @@ function CourseHubCard({ item }: { item: CourseHubItem }) {
               {summary?.progressPercent ?? 0}% complete
             </span>
             <span className="app-text-muted">
-              {summary?.completedLessons ?? 0} of {summary?.totalLessons || "-"} lessons
+              {formatLessonProgressLabel(
+                summary?.completedLessons,
+                summary?.totalLessons
+              )}
             </span>
           </div>
           <JourneyProgressBar
@@ -247,7 +254,9 @@ function CourseHubCard({ item }: { item: CourseHubItem }) {
           </div>
           <div className="app-stat-tile">
             <div className="app-stat-label">Modules</div>
-            <div className="app-stat-value">{summary?.totalModules || "-"}</div>
+            <div className="app-stat-value">
+              {summary?.totalModules ? String(summary.totalModules) : "No modules yet"}
+            </div>
           </div>
         </div>
 
@@ -359,7 +368,10 @@ function VariantPathCards({
                       {summary?.progressPercent ?? 0}% complete
                     </span>
                     <span className="app-text-muted">
-                      {summary?.completedLessons ?? 0} / {summary?.totalLessons || "-"}
+                      {formatLessonProgressRatio(
+                        summary?.completedLessons,
+                        summary?.totalLessons
+                      )}
                     </span>
                   </div>
                   <JourneyProgressBar

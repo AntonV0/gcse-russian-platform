@@ -2,6 +2,7 @@ import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
+import { formatLessonProgressLabel } from "@/lib/courses/progress-labels";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getDashboardProgressMessage,
@@ -173,11 +174,7 @@ export function WeakAreasCard({ weakAreas }: { weakAreas: MasterySignal[] }) {
   );
 }
 
-export function StudyPromptCard({
-  prompts,
-}: {
-  prompts: StudentDashboardStudyPrompt[];
-}) {
+export function StudyPromptCard({ prompts }: { prompts: StudentDashboardStudyPrompt[] }) {
   return (
     <DashboardCard
       title="Recommended practice prompts"
@@ -316,7 +313,7 @@ export function LearningSnapshotCard({
               {learningPlan.progressPercent}% complete
             </span>
             <span className="app-text-muted">
-              {completedLessonCount} of {learningPlan.totalLessons || "-"}
+              {formatLessonProgressLabel(completedLessonCount, learningPlan.totalLessons)}
             </span>
           </div>
           <div

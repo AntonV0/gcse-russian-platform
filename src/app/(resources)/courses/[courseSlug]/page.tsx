@@ -17,6 +17,11 @@ import {
   getVariantPathProgressSummaries,
 } from "@/lib/courses/path-progress";
 import {
+  formatLessonProgressLabel,
+  formatLessonProgressRatio,
+  formatLessonTotalLabel,
+} from "@/lib/courses/progress-labels";
+import {
   getDashboardVariantSlug,
   getPreferredCourseVariant,
   getVariantActionState,
@@ -158,7 +163,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                 <div className="app-stat-tile">
                   <div className="app-stat-label">Progress</div>
                   <div className="app-stat-value">
-                    {completedLessons} / {totalLessons || "-"}
+                    {formatLessonProgressRatio(completedLessons, totalLessons)}
                   </div>
                 </div>
 
@@ -282,8 +287,10 @@ export default async function CoursePage({ params }: CoursePageProps) {
                             {summary?.progressPercent ?? 0}% complete
                           </span>
                           <span className="app-text-muted">
-                            {summary?.completedLessons ?? 0} of{" "}
-                            {summary?.totalLessons || "-"}
+                            {formatLessonProgressLabel(
+                              summary?.completedLessons,
+                              summary?.totalLessons
+                            )}
                           </span>
                         </div>
                         <JourneyProgressBar
@@ -303,7 +310,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                         <div className="app-stat-tile">
                           <div className="app-stat-label">Lessons</div>
                           <div className="app-stat-value">
-                            {summary?.totalLessons || "-"}
+                            {formatLessonTotalLabel(summary?.totalLessons)}
                           </div>
                         </div>
 

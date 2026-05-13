@@ -7,6 +7,7 @@ import {
   formatCoursePathRemainingMinutes,
   type ModulePathProgressSummary,
 } from "@/lib/courses/path-progress";
+import { formatLessonProgressRatio } from "@/lib/courses/progress-labels";
 import type { StudentDashboardAction } from "@/lib/dashboard/student-next-actions";
 
 import { ProgressEmptyBlock } from "./progress-empty-states";
@@ -75,7 +76,10 @@ export function ModuleProgressList({
                       {summary.isComplete ? "Complete" : "In progress"}
                     </Badge>
                     <Badge tone="muted">
-                      {summary.completedLessons} / {summary.totalLessons || "-"} lessons
+                      {formatLessonProgressRatio(
+                        summary.completedLessons,
+                        summary.totalLessons
+                      )}
                     </Badge>
                   </div>
 

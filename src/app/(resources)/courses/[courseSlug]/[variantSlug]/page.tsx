@@ -16,6 +16,10 @@ import {
   formatCoursePathRemainingMinutes,
   getVariantPathProgressSummary,
 } from "@/lib/courses/path-progress";
+import {
+  formatLessonProgressLabel,
+  formatLessonProgressRatio,
+} from "@/lib/courses/progress-labels";
 import { getVariantDisplayName, getVariantTone } from "@/lib/courses/journey-state";
 
 type VariantPageProps = {
@@ -155,7 +159,10 @@ export default async function VariantPage({ params }: VariantPageProps) {
                 <div className="app-stat-tile">
                   <div className="app-stat-label">Progress</div>
                   <div className="app-stat-value">
-                    {pathSummary.completedLessons} / {pathSummary.totalLessons || "-"}
+                    {formatLessonProgressRatio(
+                      pathSummary.completedLessons,
+                      pathSummary.totalLessons
+                    )}
                   </div>
                 </div>
 
@@ -289,8 +296,10 @@ export default async function VariantPage({ params }: VariantPageProps) {
                             {summary?.progressPercent ?? 0}% complete
                           </span>
                           <span className="app-text-muted">
-                            {summary?.completedLessons ?? 0} of{" "}
-                            {summary?.totalLessons || "-"}
+                            {formatLessonProgressLabel(
+                              summary?.completedLessons,
+                              summary?.totalLessons
+                            )}
                           </span>
                         </div>
                         <JourneyProgressBar

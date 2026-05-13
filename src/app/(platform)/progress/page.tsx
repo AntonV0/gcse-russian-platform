@@ -8,6 +8,7 @@ import {
   formatCoursePathRemainingMinutes,
   getVariantPathProgressSummary,
 } from "@/lib/courses/path-progress";
+import { formatLessonProgressLabel } from "@/lib/courses/progress-labels";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getDashboardAccessLabel,
@@ -15,10 +16,7 @@ import {
   getDashboardVariantLabel,
   getStudentLearningPlan,
 } from "@/lib/dashboard/learning-plan";
-import {
-  getLearningMilestone,
-  getMasterySignals,
-} from "@/lib/dashboard/mastery-signals";
+import { getLearningMilestone, getMasterySignals } from "@/lib/dashboard/mastery-signals";
 import {
   getStudentDashboardActionQueue,
   getStudentDashboardActivity,
@@ -202,7 +200,10 @@ export default async function ProgressPage() {
               {pathSummary.progressPercent}% complete
             </span>
             <span className="app-text-muted">
-              {pathSummary.completedLessons} of {pathSummary.totalLessons || "-"} lessons
+              {formatLessonProgressLabel(
+                pathSummary.completedLessons,
+                pathSummary.totalLessons
+              )}
             </span>
           </div>
           <div
