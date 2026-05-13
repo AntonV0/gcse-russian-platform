@@ -2,6 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  getPasswordUpdateErrorMessage,
+  validatePasswordUpdate,
+} from "@/lib/account/settings-validation";
 import { getPublicSiteUrl } from "@/lib/seo/site";
 import { createClient } from "@/lib/supabase/server";
 
@@ -155,13 +159,12 @@ export async function updatePassword(formData: FormData) {
 
   const password = getString(formData, "password");
   const confirmPassword = getString(formData, "confirmPassword");
+  const validation = validatePasswordUpdate({ password, confirmPassword });
 
-  if (!password || password.length < 8) {
-    redirect("/settings?error=Password%20must%20be%20at%20least%208%20characters");
-  }
-
-  if (password !== confirmPassword) {
-    redirect("/settings?error=Passwords%20do%20not%20match");
+  if (!validation.isValid) {
+    redirect(
+      `/settings?error=${encodeURIComponent(getPasswordUpdateErrorMessage(validation))}`
+    );
   }
 
   const { error } = await supabase.auth.updateUser({

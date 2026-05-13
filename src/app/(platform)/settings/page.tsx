@@ -1,5 +1,6 @@
 import ThemeAccentSelector from "@/components/settings/theme-accent-selector";
 import ThemeModeSelector from "@/components/settings/theme-mode-selector";
+import PasswordSecurityForm from "@/components/settings/password-security-form";
 import PageHeader from "@/components/layout/page-header";
 import AppIcon from "@/components/ui/app-icon";
 import AppLogo from "@/components/ui/app-logo";
@@ -8,10 +9,6 @@ import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import FormField from "@/components/ui/form-field";
-import Input from "@/components/ui/input";
-import LoadingButton from "@/components/ui/loading-button";
-import { updatePassword } from "@/app/actions/auth/auth";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 
 function AppearancePreview() {
@@ -110,13 +107,15 @@ export default async function SettingsPage({
     );
   }
 
+  const profileComplete = Boolean(profile?.full_name && profile?.display_name);
+
   return (
-    <main className="space-y-8">
+    <main className="space-y-7">
       {resolvedSearchParams.success ? (
         <FeedbackBanner
           tone="success"
           title="Password updated"
-          description="Your password was updated successfully."
+          description="Your new password is ready to use the next time you sign in."
         />
       ) : null}
 
@@ -128,7 +127,7 @@ export default async function SettingsPage({
         />
       ) : null}
 
-      <section className="app-settings-surface app-section-padding-lg">
+      <section id="appearance" className="app-settings-surface app-section-padding-lg">
         <div className="space-y-6">
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
             <div className="space-y-4">
@@ -136,8 +135,8 @@ export default async function SettingsPage({
                 <Badge tone="info" icon="palette">
                   Appearance
                 </Badge>
-                <Badge tone="muted" icon="sparkles">
-                  Personal display
+                <Badge tone={profileComplete ? "success" : "warning"} icon="userCheck">
+                  {profileComplete ? "Profile ready" : "Profile needs details"}
                 </Badge>
               </div>
 
@@ -166,48 +165,13 @@ export default async function SettingsPage({
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <DashboardCard title="Account security">
-          <form action={updatePassword} className="space-y-4">
-            <FormField label="New password">
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Enter new password"
-                minLength={8}
-                required
-              />
-            </FormField>
-
-            <FormField label="Confirm new password">
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Repeat new password"
-                minLength={8}
-                required
-              />
-            </FormField>
-
-            <p className="text-sm app-text-muted">
-              Use at least 8 characters. You will keep using the same email to sign in.
-            </p>
-
-            <LoadingButton
-              idleLabel="Update password"
-              pendingLabel="Updating password..."
-              idleIcon="save"
-              variant="primary"
-            />
-          </form>
+      <section id="security" className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_360px]">
+        <DashboardCard title="Password and security">
+          <PasswordSecurityForm />
         </DashboardCard>
 
         <DashboardCard title="Account details">
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3">
             <div className="app-stat-tile">
               <div className="app-stat-label">Email</div>
               <div className="app-stat-value">{user.email ?? "No email"}</div>
@@ -220,7 +184,7 @@ export default async function SettingsPage({
               </div>
             </div>
 
-            <div className="app-stat-tile sm:col-span-2">
+            <div className="app-stat-tile">
               <div className="app-stat-label">Full name</div>
               <div className="app-stat-value">
                 {profile?.full_name ?? "Not added yet"}
@@ -233,12 +197,12 @@ export default async function SettingsPage({
               Edit profile
             </Button>
 
-            <Button href="/account" variant="secondary" icon="dashboard">
-              Account overview
+            <Button href="/account/billing" variant="secondary" icon="billing">
+              Billing
             </Button>
 
-            <Button href="/dashboard" variant="secondary" icon="dashboard">
-              Back to dashboard
+            <Button href="/account" variant="secondary" icon="dashboard">
+              Account overview
             </Button>
           </div>
         </DashboardCard>

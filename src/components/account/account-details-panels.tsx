@@ -1,4 +1,5 @@
 import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import type { AppIconKey } from "@/lib/shared/icons";
@@ -13,26 +14,36 @@ const recommendedSteps: {
   title: string;
   description: string;
   icon: AppIconKey;
+  href: string;
+  label: string;
 }[] = [
   {
     title: "Make your profile feel right",
     description: "Set the name and avatar you want to use while studying.",
     icon: "userCheck",
+    href: "/profile",
+    label: "Edit profile",
   },
   {
     title: "Check course plans",
     description: "Compare Foundation, Higher, and Volna options when you are ready.",
     icon: "billing",
+    href: "/account/billing",
+    label: "Open billing",
   },
   {
     title: "Choose your display style",
     description: "Pick a theme and colour that make the course easy to read.",
     icon: "palette",
+    href: "/settings",
+    label: "Open settings",
   },
   {
     title: "Continue learning",
     description: "Head back to your dashboard for lessons and next steps.",
     icon: "dashboard",
+    href: "/dashboard",
+    label: "Go to dashboard",
   },
 ];
 
@@ -79,17 +90,30 @@ export function AccountDetailsPanels({
           <div className="space-y-2">
             {recommendedSteps.map((step) => (
               <div key={step.title} className="app-tactile-row rounded-xl border p-3">
-                <div className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 text-[var(--accent-ink)]">
-                    <AppIcon icon={step.icon} size={17} />
-                  </span>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 shrink-0 text-[var(--accent-ink)]">
+                      <AppIcon icon={step.icon} size={17} />
+                    </span>
 
-                  <div>
-                    <div className="font-semibold text-[var(--text-primary)]">
-                      {step.title}
+                    <div>
+                      <div className="font-semibold text-[var(--text-primary)]">
+                        {step.title}
+                      </div>
+                      <p className="mt-1 app-text-caption">{step.description}</p>
                     </div>
-                    <p className="mt-1 app-text-caption">{step.description}</p>
                   </div>
+
+                  <Button
+                    href={step.href}
+                    variant="secondary"
+                    size="sm"
+                    icon="chevronRight"
+                    iconPosition="right"
+                    className="w-full sm:w-auto sm:shrink-0"
+                  >
+                    {step.label}
+                  </Button>
                 </div>
               </div>
             ))}

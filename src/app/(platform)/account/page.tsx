@@ -1,3 +1,4 @@
+import { AccountDetailsPanels } from "@/components/account/account-details-panels";
 import { AccountOverviewPanel } from "@/components/account/account-overview-panel";
 import { AccountPlanPanels } from "@/components/account/account-plan-panels";
 import { AccountQuickLinks } from "@/components/account/account-quick-links";
@@ -42,6 +43,13 @@ export default async function AccountPage() {
       />
 
       <AccountQuickLinks />
+
+      <AccountDetailsPanels
+        dashboard={dashboard}
+        profile={profileSummary}
+        email={user.email}
+        courseAccessMode={dashboard.accessMode}
+      />
 
       <AccountPlanPanels currentPlan={currentPlan} dashboard={dashboard} />
     </main>
