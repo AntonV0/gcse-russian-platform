@@ -129,3 +129,5 @@ public/brand/logo-final/r-icons/r-icon-source.svg
 
 # local QA captures
 .playwright-qa-*.png
+.dev-server-*.err
+.dev-server-*.out
