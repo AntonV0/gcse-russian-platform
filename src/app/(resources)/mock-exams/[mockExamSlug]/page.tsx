@@ -13,6 +13,7 @@ import SectionCard from "@/components/ui/section-card";
 import { startMockExamAttemptAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { getMockExamAttemptState } from "@/lib/exam-prep/exam-prep-helpers";
 import { canDashboardAccessMockExam } from "@/lib/mock-exams/access";
 import {
   getMockExamSectionTypeLabel,
@@ -88,6 +89,7 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
     0
   );
   const attempts = user ? await getCurrentUserMockExamAttemptsDb(exam.id, user.id) : [];
+  const latestDraftAttempt = attempts.find((attempt) => attempt.status === "draft");
 
   return (
     <main className="space-y-4">
@@ -115,12 +117,21 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
         }
         actions={
           <>
+            {latestDraftAttempt ? (
+              <Button
+                href={`/mock-exams/${exam.slug}/attempts/${latestDraftAttempt.id}`}
+                variant="primary"
+                icon="draft"
+              >
+                Resume draft
+              </Button>
+            ) : null}
             <form action={startMockExamAttemptAction}>
               <input type="hidden" name="mockExamSlug" value={exam.slug} />
               <LoadingButton
-                idleLabel="Start attempt"
+                idleLabel={latestDraftAttempt ? "Start new attempt" : "Start attempt"}
                 pendingLabel="Starting attempt..."
-                variant="primary"
+                variant={latestDraftAttempt ? "secondary" : "primary"}
                 idleIcon="create"
               />
             </form>
@@ -135,9 +146,13 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
       />
 
       <FeedbackBanner
-        tone="info"
-        title="Exam conditions"
-        description="When you start an attempt, answer independently and submit before the time limit if one is set. Objective questions may be auto-marked; longer writing, speaking, and translation tasks need teacher review."
+        tone={latestDraftAttempt ? "warning" : "info"}
+        title={latestDraftAttempt ? "Draft attempt waiting" : "Exam conditions"}
+        description={
+          latestDraftAttempt
+            ? "You already have a draft for this mock. Resume it when possible so your practice record stays clean; start a new attempt only when you intentionally want a fresh run."
+            : "When you start an attempt, answer independently and submit before the time limit if one is set. Objective questions may be auto-marked; longer writing, speaking, and translation tasks need teacher review."
+        }
       />
 
       {attempts.length > 0 ? (
@@ -148,36 +163,45 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
           density="compact"
         >
           <div className="grid gap-3">
-            {attempts.slice(0, 5).map((attempt) => (
-              <CardListItem
-                key={attempt.id}
-                href={`/mock-exams/${exam.slug}/attempts/${attempt.id}`}
-                title={`Attempt from ${new Date(attempt.started_at).toLocaleString("en-GB")}`}
-                subtitle={
-                  attempt.submitted_at
-                    ? `Submitted ${new Date(attempt.submitted_at).toLocaleString("en-GB")}`
-                    : "Draft attempt"
-                }
-                badges={
-                  <>
-                    <AttemptStatusBadge status={attempt.status} />
-                    <Badge tone="muted">
-                      {attempt.awarded_marks ?? "-"} / {attempt.total_marks_snapshot}
-                    </Badge>
-                  </>
-                }
-                actions={
-                  <Button
-                    href={`/mock-exams/${exam.slug}/attempts/${attempt.id}`}
-                    variant="quiet"
-                    size="sm"
-                    icon="next"
-                    iconOnly
-                    ariaLabel="Open attempt"
-                  />
-                }
-              />
-            ))}
+            {attempts.slice(0, 5).map((attempt) => {
+              const attemptState = getMockExamAttemptState({
+                status: attempt.status,
+                awardedMarks: attempt.awarded_marks,
+                totalMarks: attempt.total_marks_snapshot,
+              });
+
+              return (
+                <CardListItem
+                  key={attempt.id}
+                  href={`/mock-exams/${exam.slug}/attempts/${attempt.id}`}
+                  title={`Attempt from ${new Date(attempt.started_at).toLocaleString("en-GB")}`}
+                  subtitle={
+                    attempt.submitted_at
+                      ? `Submitted ${new Date(attempt.submitted_at).toLocaleString("en-GB")}. ${attemptState.description}`
+                      : attemptState.description
+                  }
+                  badges={
+                    <>
+                      <AttemptStatusBadge status={attempt.status} />
+                      <Badge tone="muted">
+                        {attempt.awarded_marks ?? "-"} / {attempt.total_marks_snapshot}
+                      </Badge>
+                    </>
+                  }
+                  actions={
+                    <Button
+                      href={`/mock-exams/${exam.slug}/attempts/${attempt.id}`}
+                      variant={attempt.status === "draft" ? "primary" : "quiet"}
+                      size="sm"
+                      icon="next"
+                      ariaLabel={`${attemptState.actionLabel}: ${exam.title}`}
+                    >
+                      {attemptState.actionLabel}
+                    </Button>
+                  }
+                />
+              );
+            })}
           </div>
         </SectionCard>
       ) : null}

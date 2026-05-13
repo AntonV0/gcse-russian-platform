@@ -200,7 +200,6 @@ export async function extractQuestionResponse(
         return {
           responseText:
             typedDraft ||
-            planningNotes ||
             (uploadedFile ? `Uploaded file: ${uploadedFile.fileName}` : null),
           responsePayload: {
             responseMode: "writing_upload",
@@ -245,8 +244,7 @@ export async function extractQuestionResponse(
 
         return {
           responseText:
-            prepNotes ||
-            (uploadedAudio ? `Audio response: ${uploadedAudio.fileName}` : null),
+            uploadedAudio ? `Audio response: ${uploadedAudio.fileName}` : null,
           responsePayload: {
             responseMode: "speaking_recording",
             prepNotes,

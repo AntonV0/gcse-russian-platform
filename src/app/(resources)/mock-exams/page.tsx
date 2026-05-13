@@ -7,13 +7,22 @@ import FeedbackBanner from "@/components/ui/feedback-banner";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
+import { getCurrentUser } from "@/lib/auth/auth";
 import Select from "@/components/ui/select";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import {
+  examPaperPathways,
+  getExamPaperPathway,
+  getMockExamAttemptState,
+} from "@/lib/exam-prep/exam-prep-helpers";
 import { filterMockExamsForDashboardAccess } from "@/lib/mock-exams/access";
 import { mockExamTiers } from "@/lib/mock-exams/constants";
 import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
-import { getPublishedMockExamSetsDb } from "@/lib/mock-exams/queries";
+import {
+  getCurrentUserMockExamAttemptsByExamIdsDb,
+  getPublishedMockExamSetsDb,
+} from "@/lib/mock-exams/queries";
 import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
 import type { MockExamFilters, MockExamTier } from "@/lib/mock-exams/types";
@@ -112,6 +121,23 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
     await getPublishedMockExamSetsDb(filters),
     dashboard
   );
+  const user = await getCurrentUser();
+  const attempts = user
+    ? await getCurrentUserMockExamAttemptsByExamIdsDb(
+        exams.map((exam) => exam.id),
+        user.id
+      )
+    : [];
+  const latestAttemptByExamId = new Map(
+    exams.map((exam) => [
+      exam.id,
+      attempts.find((attempt) => attempt.mock_exam_id === exam.id) ?? null,
+    ])
+  );
+  const activePathway =
+    typeof filters.paperNumber === "number"
+      ? getExamPaperPathway(filters.paperNumber)
+      : null;
 
   return (
     <main className="flex flex-col gap-4">
@@ -120,7 +146,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
         tone="student"
         eyebrow="Mock exams"
         title="Mock Exams"
-        description="Attempt original GCSE-style mock exams built for this course, separate from official Pearson past papers."
+        description="Attempt original GCSE-style mock exams, continue drafts, and review submitted or marked work without losing sight of the next skill to practise."
         badges={
           <>
             <Badge tone="info" icon="mockExam">
@@ -136,6 +162,9 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
         }
         actions={
           <>
+            <Button href="/taking-your-exams" variant="primary" icon="exam">
+              Exam guidance
+            </Button>
             <Button href="/past-papers" variant="secondary" icon="pastPapers">
               Past papers
             </Button>
@@ -206,7 +235,11 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
       <SectionCard
         className="order-2 xl:order-4"
         title="Find mock exams"
-        description="Filter by paper and tier."
+        description={
+          activePathway
+            ? `${activePathway.paperName}: ${activePathway.nextStep}`
+            : "Filter by paper and tier."
+        }
         tone="student"
       >
         <form className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(160px,180px)_minmax(180px,220px)] xl:items-center">
@@ -214,6 +247,7 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             <Select
               name="paperNumber"
               defaultValue={String(filters.paperNumber ?? "all")}
+              aria-label="Filter by paper"
             >
               <option value="all">All papers</option>
               <option value="1">Paper 1</option>
@@ -224,7 +258,11 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
           </div>
 
           <div className="min-w-0">
-            <Select name="tier" defaultValue={filters.tier ?? "all"}>
+            <Select
+              name="tier"
+              defaultValue={filters.tier ?? "all"}
+              aria-label="Filter by tier"
+            >
               <option value="all">All tiers</option>
               {mockExamTiers.map((tier) => (
                 <option key={tier} value={tier}>
@@ -247,6 +285,43 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
 
       <SectionCard
         className="order-5"
+        title="Practice pathways"
+        description="Pick the paper that feels most urgent, then use a mock attempt to expose exactly what to practise next."
+        tone="student"
+        density="compact"
+      >
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {examPaperPathways.map((pathway) => (
+            <div key={pathway.paperNumber} className="app-soft-panel p-4">
+              <Badge tone="info" icon={pathway.icon}>
+                {pathway.paperName}
+              </Badge>
+              <p className="mt-3 app-text-body-muted">{pathway.practiceCue}</p>
+              <div className="mt-4 flex flex-col gap-2">
+                <Button
+                  href={pathway.mockExamHref}
+                  variant="secondary"
+                  size="sm"
+                  icon="mockExam"
+                >
+                  Filter mocks
+                </Button>
+                <Button
+                  href={pathway.guideHref}
+                  variant="quiet"
+                  size="sm"
+                  icon="examTip"
+                >
+                  Skill guide
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard
+        className="order-6"
         title="Available mock exams"
         description={`${exams.length} exam${exams.length === 1 ? "" : "s"} available for your access level.`}
         tone="student"
@@ -266,40 +341,64 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
           />
         ) : (
           <div className="grid gap-3">
-            {exams.map((exam) => (
-              <CardListItem
-                key={exam.id}
-                href={`/mock-exams/${exam.slug}`}
-                title={exam.title}
-                subtitle={exam.description ?? "Original GCSE-style mock exam."}
-                badges={
-                  <>
-                    <Badge tone="info" icon="mockExam">
-                      Paper {exam.paper_number}
-                    </Badge>
-                    <Badge tone="muted" icon="school">
-                      {getMockExamTierLabel(exam.tier)}
-                    </Badge>
-                    <Badge tone="muted">
-                      {exam.time_limit_minutes
-                        ? `${exam.time_limit_minutes} minutes`
-                        : "Untimed preview"}
-                    </Badge>
-                    <Badge tone="muted">{exam.total_marks} marks</Badge>
-                  </>
-                }
-                actions={
-                  <Button
-                    href={`/mock-exams/${exam.slug}`}
-                    variant="quiet"
-                    size="sm"
-                    icon="next"
-                    iconOnly
-                    ariaLabel={`Open ${exam.title}`}
-                  />
-                }
-              />
-            ))}
+            {exams.map((exam) => {
+              const latestAttempt = latestAttemptByExamId.get(exam.id);
+              const attemptState = getMockExamAttemptState(
+                latestAttempt
+                  ? {
+                      status: latestAttempt.status,
+                      awardedMarks: latestAttempt.awarded_marks,
+                      totalMarks: latestAttempt.total_marks_snapshot,
+                    }
+                  : null
+              );
+              const actionHref = latestAttempt
+                ? `/mock-exams/${exam.slug}/attempts/${latestAttempt.id}`
+                : `/mock-exams/${exam.slug}`;
+
+              return (
+                <CardListItem
+                  key={exam.id}
+                  href={actionHref}
+                  title={exam.title}
+                  subtitle={
+                    exam.description
+                      ? `${exam.description} ${attemptState.description}`
+                      : attemptState.description
+                  }
+                  badges={
+                    <>
+                      <Badge tone="info" icon="mockExam">
+                        Paper {exam.paper_number}
+                      </Badge>
+                      <Badge tone="muted" icon="school">
+                        {getMockExamTierLabel(exam.tier)}
+                      </Badge>
+                      <Badge tone="muted">
+                        {exam.time_limit_minutes
+                          ? `${exam.time_limit_minutes} minutes`
+                          : "Untimed preview"}
+                      </Badge>
+                      <Badge tone="muted">{exam.total_marks} marks</Badge>
+                      <Badge tone={attemptState.tone} icon={attemptState.icon}>
+                        {attemptState.label}
+                      </Badge>
+                    </>
+                  }
+                  actions={
+                    <Button
+                      href={actionHref}
+                      variant={latestAttempt?.status === "draft" ? "primary" : "quiet"}
+                      size="sm"
+                      icon="next"
+                      ariaLabel={`${attemptState.actionLabel}: ${exam.title}`}
+                    >
+                      {attemptState.actionLabel}
+                    </Button>
+                  }
+                />
+              );
+            })}
           </div>
         )}
       </SectionCard>

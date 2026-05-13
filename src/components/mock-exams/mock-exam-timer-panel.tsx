@@ -77,7 +77,10 @@ export default function MockExamTimerPanel({
           <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
             Time remaining
           </div>
-          <div className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+          <div
+            className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]"
+            aria-live={isExpired ? "assertive" : "polite"}
+          >
             {formatRemaining(remaining)}
           </div>
         </div>
@@ -87,7 +90,8 @@ export default function MockExamTimerPanel({
       </div>
       {isExpired && isDraft ? (
         <p className="mt-3 text-sm leading-6 text-[var(--danger)]">
-          The time limit has elapsed. Submit the attempt now so it can be reviewed.
+          The time limit has elapsed. Draft saving is closed; submit the attempt now so
+          it can be reviewed.
         </p>
       ) : null}
     </div>

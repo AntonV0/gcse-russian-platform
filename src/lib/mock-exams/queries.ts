@@ -220,3 +220,30 @@ export async function getCurrentUserMockExamAttemptsDb(
 
   return (data ?? []).map(normalizeMockExamAttempt);
 }
+
+export async function getCurrentUserMockExamAttemptsByExamIdsDb(
+  mockExamIds: string[],
+  userId: string
+) {
+  if (mockExamIds.length === 0) return [];
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("mock_exam_attempts")
+    .select(MOCK_EXAM_ATTEMPT_SELECT)
+    .in("mock_exam_id", mockExamIds)
+    .eq("user_id", userId)
+    .order("started_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching user mock exam attempts by exam ids:", {
+      mockExamIds,
+      userId,
+      error,
+    });
+    return [];
+  }
+
+  return (data ?? []).map(normalizeMockExamAttempt);
+}

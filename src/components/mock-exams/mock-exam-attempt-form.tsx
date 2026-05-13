@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Button from "@/components/ui/button";
+import Badge from "@/components/ui/badge";
 
 export type MockExamAttemptFormQuestion = {
   label: string;
@@ -15,6 +17,8 @@ type MockExamAttemptFormProps = {
   attemptId: string;
   questions: MockExamAttemptFormQuestion[];
   showControls: boolean;
+  startedAt?: string;
+  timeLimitMinutes?: number | null;
   children: React.ReactNode;
 };
 
@@ -25,6 +29,7 @@ function MockExamSubmitButton({
   variant,
   icon,
   ariaLabel,
+  disabled,
 }: {
   intent: "save" | "submit";
   idleLabel: string;
@@ -32,6 +37,7 @@ function MockExamSubmitButton({
   variant: "primary" | "secondary";
   icon: "save" | "confirm";
   ariaLabel: string;
+  disabled?: boolean;
 }) {
   const { pending, data } = useFormStatus();
   const isCurrentPending = pending && data?.get("submitIntent") === intent;
@@ -44,7 +50,7 @@ function MockExamSubmitButton({
       variant={variant}
       icon={icon}
       ariaLabel={ariaLabel}
-      disabled={pending}
+      disabled={pending || disabled}
       loading={isCurrentPending}
       loadingLabel={pendingLabel}
     >
@@ -74,8 +80,24 @@ export default function MockExamAttemptForm({
   attemptId,
   questions,
   showControls,
+  startedAt,
+  timeLimitMinutes,
   children,
 }: MockExamAttemptFormProps) {
+  const endsAt = useMemo(() => {
+    if (!startedAt || !timeLimitMinutes) return null;
+    return new Date(startedAt).getTime() + timeLimitMinutes * 60 * 1000;
+  }, [startedAt, timeLimitMinutes]);
+  const [now, setNow] = useState(() => Date.now());
+  const isExpired = Boolean(endsAt && now > endsAt);
+
+  useEffect(() => {
+    if (!endsAt || !showControls) return;
+
+    const interval = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [endsAt, showControls]);
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     const nativeEvent = event.nativeEvent as SubmitEvent;
     const submitter = nativeEvent.submitter as
@@ -133,23 +155,40 @@ export default function MockExamAttemptForm({
       {children}
 
       {showControls ? (
-        <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <MockExamSubmitButton
-            intent="save"
-            idleLabel="Save draft"
-            pendingLabel="Saving draft..."
-            variant="secondary"
-            icon="save"
-            ariaLabel="Save mock exam draft"
-          />
-          <MockExamSubmitButton
-            intent="submit"
-            idleLabel="Submit attempt"
-            pendingLabel="Submitting attempt..."
-            variant="primary"
-            icon="confirm"
-            ariaLabel="Submit mock exam attempt for marking"
-          />
+        <div className="space-y-3">
+          {isExpired ? (
+            <div className="rounded-xl border border-[var(--warning-border)] bg-[var(--warning-surface)] px-4 py-3 text-sm leading-6 text-[var(--warning-text)]">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge tone="warning" icon="pending">
+                  Time elapsed
+                </Badge>
+                <span>
+                  Draft saving is closed for this timed attempt. Submit now so the work
+                  can be reviewed.
+                </span>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <MockExamSubmitButton
+              intent="save"
+              idleLabel="Save draft"
+              pendingLabel="Saving draft..."
+              variant="secondary"
+              icon="save"
+              ariaLabel="Save mock exam draft"
+              disabled={isExpired}
+            />
+            <MockExamSubmitButton
+              intent="submit"
+              idleLabel={isExpired ? "Submit timed attempt" : "Submit attempt"}
+              pendingLabel="Submitting attempt..."
+              variant="primary"
+              icon="confirm"
+              ariaLabel="Submit mock exam attempt for marking"
+            />
+          </div>
         </div>
       ) : null}
     </form>

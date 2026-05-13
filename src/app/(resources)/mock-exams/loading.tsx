@@ -5,7 +5,7 @@ export default function MockExamsLoading() {
     <ResourceLoadingState
       eyebrow="Mock exams"
       title="Loading mock exams"
-      description="Preparing available papers, tiers, and exam practice."
+      description="Preparing papers, tiers, attempt states, and practice pathways."
       searchFields={2}
       resultRows={2}
     />
