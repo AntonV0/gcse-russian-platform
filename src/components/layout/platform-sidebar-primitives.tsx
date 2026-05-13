@@ -17,7 +17,7 @@ export function isActive(pathname: string | undefined, href: string) {
 
 export function itemClass(active: boolean, locked = false) {
   return [
-    "group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-transparent px-2.5 py-[0.3125rem] text-sm font-medium transition app-focus-ring",
+    "group relative flex min-h-11 items-center gap-2.5 overflow-hidden rounded-xl border border-transparent px-2.5 py-2 text-sm font-medium transition app-focus-ring lg:min-h-0 lg:py-[0.3125rem]",
     active
       ? [
           "border-[var(--sidebar-item-border-active)]",
@@ -38,7 +38,7 @@ export function itemClass(active: boolean, locked = false) {
 
 export function mobileQuickItemClass(active: boolean, locked = false) {
   return [
-    "group flex min-h-[4.15rem] min-w-0 flex-col items-center justify-center gap-1 rounded-2xl border px-1.5 py-2 text-center text-[0.72rem] font-semibold leading-tight transition app-focus-ring",
+    "group flex min-h-[4.15rem] min-w-0 flex-col items-center justify-center gap-1 rounded-2xl border px-1.5 py-2 text-center text-[0.72rem] font-semibold leading-tight transition app-focus-ring [overflow-wrap:anywhere]",
     active
       ? [
           "border-[var(--sidebar-item-border-active)]",
@@ -49,6 +49,14 @@ export function mobileQuickItemClass(active: boolean, locked = false) {
       : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_82%,transparent)] text-[color-mix(in_srgb,var(--text-secondary)_88%,var(--text-primary))] hover:border-[var(--sidebar-item-border-hover)] hover:bg-[var(--sidebar-item-bg-hover)] hover:text-[var(--sidebar-item-text-hover)]",
     locked ? "opacity-85" : "",
   ].join(" ");
+}
+
+export function getMobileQuickLabel(label: string) {
+  if (label === "Dashboard") return "Start";
+  if (label === "Progress") return "Track";
+  if (label === "Vocabulary") return "Vocab";
+
+  return label;
 }
 
 export function navIconClass(active: boolean) {

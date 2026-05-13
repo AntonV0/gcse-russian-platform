@@ -215,7 +215,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
 
             {user ? (
               <div className="space-y-3">
-                <div className="rounded-xl bg-[var(--background-muted)] px-3 py-2 text-sm app-text-muted">
+                <div className="min-w-0 break-all rounded-xl bg-[var(--background-muted)] px-3 py-2 text-sm app-text-muted">
                   {user.email}
                 </div>
 

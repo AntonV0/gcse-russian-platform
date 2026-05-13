@@ -114,6 +114,22 @@ export default function PlatformSidebar({
   }
 
   useEffect(() => {
+    if (!isMobileNavOpen) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsMobileNavOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMobileNavOpen]);
+
+  useEffect(() => {
     if (previousPathnameRef.current === activePathname) return;
 
     previousPathnameRef.current = activePathname;

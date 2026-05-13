@@ -7,6 +7,7 @@ import type { SidebarCommonProps, SidebarNavGroup } from "./platform-sidebar-typ
 import {
   NavLockMeta,
   getNavHref,
+  getMobileQuickLabel,
   isActive,
   itemClass,
   mobileQuickItemClass,
@@ -62,9 +63,10 @@ export default function PlatformMobileSidebar({
 
           <button
             type="button"
-            className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent)] transition hover:border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--border))] hover:bg-[var(--background-muted)] app-focus-ring"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent)] transition hover:border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--border))] hover:bg-[var(--background-muted)] app-focus-ring"
             aria-expanded={isMobileNavOpen}
             aria-controls="platform-mobile-nav-panel"
+            aria-label={isMobileNavOpen ? "Close study navigation" : "Open study navigation"}
             onClick={onToggleMobileNav}
           >
             <AppIcon icon={isMobileNavOpen ? "cancel" : "menu"} size={16} />
@@ -79,12 +81,7 @@ export default function PlatformMobileSidebar({
             {mobileQuickItems.map((item) => {
               const active = isActive(activePathname, item.href);
               const href = getNavHref(item);
-              const label =
-                item.label === "Dashboard"
-                  ? "Start"
-                  : item.label === "Vocabulary"
-                    ? "Vocab"
-                    : item.label;
+              const label = getMobileQuickLabel(item.label);
 
               return (
                 <Link
@@ -112,6 +109,9 @@ export default function PlatformMobileSidebar({
               className={mobileQuickItemClass(isMobileMenuActive)}
               aria-expanded={isMobileNavOpen}
               aria-controls="platform-mobile-nav-panel"
+              aria-label={
+                isMobileNavOpen ? "Close full study navigation" : "Open full study navigation"
+              }
               onClick={onToggleMobileNav}
             >
               <AppIcon icon={isMobileNavOpen ? "chevronDown" : "navigation"} size={17} />
@@ -123,7 +123,7 @@ export default function PlatformMobileSidebar({
         {isMobileNavOpen ? (
           <div
             id="platform-mobile-nav-panel"
-            className="mt-3 rounded-2xl border border-[color-mix(in_srgb,var(--accent-border-ink)_20%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))] p-3 shadow-[0_10px_24px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]"
+            className="mt-3 max-h-[min(72dvh,34rem)] overflow-y-auto overscroll-contain rounded-2xl border border-[color-mix(in_srgb,var(--accent-border-ink)_20%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))] p-3 shadow-[0_10px_24px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]"
           >
             <div className="mb-3 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
               <AppIcon icon={statusIcon} size={13} />

@@ -27,7 +27,7 @@ export default function AppShell({ user, children }: AppShellProps) {
   }
 
   return (
-    <div className="dev-marker-host relative flex min-h-screen flex-col">
+    <div className="dev-marker-host relative flex min-h-screen min-h-dvh flex-col">
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
           componentName="AppShell"

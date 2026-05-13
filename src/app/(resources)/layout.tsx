@@ -22,7 +22,7 @@ function ResourceAccessBanner({ dashboard }: { dashboard: DashboardInfo }) {
         title="Explore the platform before creating an account"
         description="Public resources are open to browse. Create an account when you want trial lessons, saved progress, mock attempts, and account tools."
       >
-        <div className="flex flex-wrap gap-2">
+        <div className="app-mobile-action-stack flex flex-wrap gap-2">
           <Button href="/signup" variant="primary" size="sm" icon="create">
             Start trial
           </Button>
@@ -90,7 +90,7 @@ export default async function ResourcesLayout({
       <AppShell user={userShell}>
         <PageContainer>
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
-            <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh-var(--sticky-site-offset)-1rem)] lg:self-start">
+            <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh_-_var(--sticky-site-offset)_-_1rem)] lg:self-start">
               <PlatformSidebar
                 role={dashboard.role}
                 accessMode={dashboard.accessMode}

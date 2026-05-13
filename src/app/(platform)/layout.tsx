@@ -45,7 +45,7 @@ export default async function PlatformLayout({
       <AppShell user={{ email: user.email, variant: dashboard.variant }}>
         <PageContainer>
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
-            <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh-var(--sticky-site-offset)-1rem)] lg:self-start">
+            <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh_-_var(--sticky-site-offset)_-_1rem)] lg:self-start">
               <PlatformSidebar
                 role={dashboard.role}
                 accessMode={dashboard.accessMode}

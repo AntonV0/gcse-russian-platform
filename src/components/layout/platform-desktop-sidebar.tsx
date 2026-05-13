@@ -50,7 +50,7 @@ export default function PlatformDesktopSidebar({
   return (
     <aside
       ref={sidebarRef}
-      className="platform-sidebar-shell dev-marker-host relative z-[60] hidden h-[var(--platform-sidebar-height,calc(100dvh-var(--sticky-site-offset)-1rem))] min-h-0 flex-col overflow-hidden rounded-3xl border p-4 lg:flex"
+      className="platform-sidebar-shell dev-marker-host relative z-[60] hidden h-[var(--platform-sidebar-height,calc(100dvh_-_var(--sticky-site-offset)_-_1rem))] min-h-0 flex-col overflow-hidden rounded-3xl border p-4 lg:flex"
     >
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
