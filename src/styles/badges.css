@@ -92,6 +92,54 @@
     inset 0 0 0 1px color-mix(in srgb, var(--brand-white) 10%, transparent);
 }
 
+.app-choice-chip-correct {
+  border-color: var(--success-border-strong);
+  background: var(--success-surface);
+  color: var(--success-text);
+  box-shadow:
+    0 0 0 3px var(--success-ring),
+    0 10px 22px var(--success-shadow);
+}
+
+.app-choice-chip-incorrect {
+  border-color: var(--danger-border-strong);
+  background: var(--danger-surface);
+  color: var(--danger-text);
+  box-shadow:
+    0 0 0 3px var(--danger-ring),
+    0 10px 22px var(--danger-shadow);
+}
+
+.app-choice-chip-missed {
+  border-color: var(--warning-border-strong);
+  background: var(--warning-surface);
+  color: var(--warning-text);
+}
+
+.app-answer-option-correct {
+  border-color: var(--success-border-strong);
+  background: var(--success-surface);
+  color: var(--success-text);
+  box-shadow:
+    0 0 0 3px var(--success-ring),
+    0 10px 24px var(--success-shadow);
+}
+
+.app-answer-option-incorrect {
+  border-color: var(--danger-border-strong);
+  background: var(--danger-surface);
+  color: var(--danger-text);
+  box-shadow:
+    0 0 0 3px var(--danger-ring),
+    0 10px 24px var(--danger-shadow);
+}
+
+.app-answer-option-missed {
+  border-color: var(--warning-border-strong);
+  background: var(--warning-surface);
+  color: var(--warning-text);
+}
+
 .app-selected-surface {
   border-color: var(--accent-selected-border);
   background: color-mix(in srgb, var(--accent) 9%, var(--background-elevated));

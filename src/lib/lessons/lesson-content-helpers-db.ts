@@ -30,6 +30,9 @@ export type DbLessonBlock = {
 };
 
 export type LessonContentVariant = "foundation" | "higher" | "volna";
+type LessonContentQueryOptions = {
+  throwOnError?: boolean;
+};
 
 const LESSON_SECTION_SELECT =
   "id, lesson_id, title, description, section_kind, position, is_published, variant_visibility, canonical_section_key, settings, created_at, updated_at";
@@ -37,7 +40,8 @@ const LESSON_BLOCK_SELECT =
   "id, lesson_section_id, block_type, position, data, is_published, settings, created_at, updated_at";
 
 export async function getLessonSectionsByLessonIdDb(
-  lessonId: string
+  lessonId: string,
+  options: LessonContentQueryOptions = {}
 ): Promise<DbLessonSection[]> {
   const supabase = await createClient();
 
@@ -50,6 +54,9 @@ export async function getLessonSectionsByLessonIdDb(
 
   if (error) {
     console.error("Error fetching lesson sections:", { lessonId, error });
+    if (options.throwOnError) {
+      throw new Error("lesson_sections_fetch_failed");
+    }
     return [];
   }
 
@@ -101,7 +108,8 @@ export async function getLessonIdsWithPublishedSectionsDb(
 }
 
 export async function getLessonBlocksBySectionIdsDb(
-  sectionIds: string[]
+  sectionIds: string[],
+  options: LessonContentQueryOptions = {}
 ): Promise<DbLessonBlock[]> {
   if (sectionIds.length === 0) return [];
 
@@ -116,6 +124,9 @@ export async function getLessonBlocksBySectionIdsDb(
 
   if (error) {
     console.error("Error fetching lesson blocks:", { sectionIds, error });
+    if (options.throwOnError) {
+      throw new Error("lesson_blocks_fetch_failed");
+    }
     return [];
   }
 
@@ -125,9 +136,13 @@ export async function getLessonBlocksBySectionIdsDb(
 export async function loadLessonContentByLessonIdDb(
   lessonId: string
 ): Promise<{ lessonId: string; sections: LessonSection[] }> {
-  const sections = await getLessonSectionsByLessonIdDb(lessonId);
+  const sections = await getLessonSectionsByLessonIdDb(lessonId, {
+    throwOnError: true,
+  });
   const sectionIds = sections.map((section) => section.id);
-  const blocks = await getLessonBlocksBySectionIdsDb(sectionIds);
+  const blocks = await getLessonBlocksBySectionIdsDb(sectionIds, {
+    throwOnError: true,
+  });
 
   const blocksBySectionId = new Map<string, DbLessonBlock[]>();
 

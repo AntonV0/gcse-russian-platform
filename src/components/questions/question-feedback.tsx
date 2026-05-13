@@ -36,7 +36,11 @@ export default function QuestionFeedback({
         />
       ) : null}
 
-      <div className={["app-question-feedback p-4", wrapperClass].join(" ")}>
+      <div
+        className={["app-question-feedback p-4", wrapperClass].join(" ")}
+        role="status"
+        aria-live="polite"
+      >
         <div className="relative">
           <div className="flex items-center gap-2 text-base font-semibold leading-6">
             <AppIcon icon={isCorrect ? "success" : "error"} size={17} />

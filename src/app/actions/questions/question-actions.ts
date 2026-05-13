@@ -3,6 +3,7 @@
 import {
   buildRuntimeQuestion,
   type QuestionFeedbackResult,
+  type MultipleChoiceValidationResult,
   type RuntimeQuestion,
   type RuntimeTextQuestion,
   validateMultipleChoiceAnswer,
@@ -24,10 +25,15 @@ type SubmitQuestionAttemptInput = {
   submittedPayload?: Record<string, unknown> | null;
 };
 
+type PublicQuestionAttemptFeedback = QuestionFeedbackResult & {
+  correctOptionId?: string | null;
+  selectedOptionId?: string | null;
+};
+
 export type SubmitQuestionAttemptActionResult =
   | {
       success: true;
-      feedback: QuestionFeedbackResult;
+      feedback: PublicQuestionAttemptFeedback;
     }
   | {
       success: false;
@@ -64,6 +70,14 @@ function toPublicFeedback(result: QuestionFeedbackResult): QuestionFeedbackResul
   };
 }
 
+function toPublicMultipleChoiceFeedback(result: MultipleChoiceValidationResult) {
+  return {
+    ...toPublicFeedback(result),
+    correctOptionId: result.correctOptionId,
+    selectedOptionId: result.selectedOptionId,
+  };
+}
+
 function isRuntimeTextQuestion(
   question: RuntimeQuestion
 ): question is RuntimeTextQuestion {
@@ -93,7 +107,7 @@ export async function submitQuestionAttemptAction(
     return { success: false, error: "unsupported_question_type" };
   }
 
-  let feedback: QuestionFeedbackResult;
+  let feedback: PublicQuestionAttemptFeedback;
   let submittedText = input.submittedText ?? null;
   let submittedPayload: Record<string, unknown> | null = null;
 
@@ -107,7 +121,7 @@ export async function submitQuestionAttemptAction(
       selectedOptionId: input.selectedOptionId,
     });
 
-    feedback = toPublicFeedback(result);
+    feedback = toPublicMultipleChoiceFeedback(result);
     submittedText = null;
     submittedPayload = {
       selectedOptionId: result.selectedOptionId,

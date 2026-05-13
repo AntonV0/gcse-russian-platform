@@ -76,6 +76,7 @@ export default function TrackedMultipleChoiceBlock({
       hasSubmitted={submitted}
       isSubmitting={isPending}
       isCorrect={feedback?.isCorrect}
+      correctOptionId={feedback?.correctOptionId ?? undefined}
       onSelectOption={setSelectedOptionId}
       onSubmit={handleSubmit}
       feedbackStatusLabel={feedback?.statusLabel}

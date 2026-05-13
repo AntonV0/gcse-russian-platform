@@ -5,6 +5,7 @@ import QuestionCard from "@/components/questions/question-card";
 import QuestionChoiceButton from "@/components/questions/question-choice-button";
 import QuestionFeedback from "@/components/questions/question-feedback";
 import Button from "@/components/ui/button";
+import { getQuestionOptionState } from "@/components/questions/question-option-state";
 
 type MultipleChoiceOption = {
   id: string;
@@ -114,6 +115,13 @@ export default function MultipleChoiceBlock({
       <div className="space-y-3">
         {options.map((option, index) => {
           const isSelected = resolvedSelectedOptionId === option.id;
+          const optionState = getQuestionOptionState({
+            optionId: option.id,
+            selectedOptionId: resolvedSelectedOptionId,
+            correctOptionId,
+            hasSubmitted: resolvedHasSubmitted,
+            isCorrect: resolvedIsCorrect,
+          });
 
           return (
             <QuestionChoiceButton
@@ -121,7 +129,9 @@ export default function MultipleChoiceBlock({
               onClick={() => handleSelect(option.id)}
               disabled={resolvedHasSubmitted || isSubmitting}
               selected={isSelected}
+              state={optionState}
               display="option"
+              aria-pressed={isSelected}
             >
               <div className="flex items-start gap-3">
                 <span className="app-question-number-pill mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-semibold">
