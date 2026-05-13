@@ -7,10 +7,7 @@ import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
-import {
-  buildFaqJsonLd,
-  buildLearningResourceJsonLd,
-} from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -52,7 +49,8 @@ const examPapers = [
     title: "Listening",
     description:
       "Students listen for gist, detail, opinions, time markers, negatives, and familiar vocabulary in spoken Russian.",
-    studentFocus: "Hear the language often enough that topic words and question types stop feeling new.",
+    studentFocus:
+      "Hear the language often enough that topic words and question types stop feeling new.",
     parentCheck: "Is listening practice happening regularly, not just near the exam?",
     href: "/gcse-russian-listening-exam",
     icon: "listening",
@@ -62,7 +60,8 @@ const examPapers = [
     title: "Speaking",
     description:
       "Students prepare for role play, picture-based discussion, and conversation across GCSE themes.",
-    studentFocus: "Build answer patterns, pronunciation confidence, and the habit of extending ideas.",
+    studentFocus:
+      "Build answer patterns, pronunciation confidence, and the habit of extending ideas.",
     parentCheck: "Has speaking been planned early enough for live practice or feedback?",
     href: "/gcse-russian-speaking-exam",
     icon: "speaking",
@@ -72,8 +71,10 @@ const examPapers = [
     title: "Reading",
     description:
       "Students read short and longer texts, infer meaning, recognise grammar in context, and translate into English.",
-    studentFocus: "Practise reading for meaning instead of translating every word in order.",
-    parentCheck: "Can the student explain why an answer is right, not only guess from keywords?",
+    studentFocus:
+      "Practise reading for meaning instead of translating every word in order.",
+    parentCheck:
+      "Can the student explain why an answer is right, not only guess from keywords?",
     href: "/gcse-russian-reading-exam",
     icon: "lessonContent",
   },
@@ -82,7 +83,8 @@ const examPapers = [
     title: "Writing",
     description:
       "Students write in Russian, translate into Russian, and use opinions, reasons, tenses, and topic vocabulary accurately.",
-    studentFocus: "Turn grammar and vocabulary into controlled answers under exam-style pressure.",
+    studentFocus:
+      "Turn grammar and vocabulary into controlled answers under exam-style pressure.",
     parentCheck: "Is writing being corrected, reviewed, and rewritten over time?",
     href: "/gcse-russian-writing-exam",
     icon: "write",
@@ -161,7 +163,8 @@ const appFit = [
 const relatedLinks = [
   {
     title: "Pearson Edexcel GCSE Russian",
-    description: "Understand qualification code 1RU0, papers, tiers, and official context.",
+    description:
+      "Understand qualification code 1RU0, papers, tiers, and official context.",
     href: "/edexcel-gcse-russian",
     icon: "school" as const,
   },
@@ -220,9 +223,7 @@ const faqs: FaqItem[] = [
 ];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function ExamRouteVisual() {
@@ -259,11 +260,7 @@ function ExamRouteVisual() {
                   {paper.title}
                 </h3>
               </div>
-              <AppIcon
-                icon={paper.icon}
-                size={20}
-                className="text-[var(--accent-ink)]"
-              />
+              <AppIcon icon={paper.icon} size={20} className="text-[var(--accent-ink)]" />
             </div>
             <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
               {paper.studentFocus}
@@ -425,10 +422,7 @@ function AppFitSection() {
 
       <div className="grid gap-3 md:grid-cols-3">
         {appFit.map((item) => (
-          <div
-            key={item.title}
-            className="border-t-2 border-[var(--accent-fill)] pt-5"
-          >
+          <div key={item.title} className="border-t-2 border-[var(--accent-fill)] pt-5">
             <AppIcon icon={item.icon} size={22} className="text-[var(--accent-ink)]" />
             <h3 className="mt-4 text-xl font-semibold text-[var(--text-primary)]">
               {item.title}
@@ -465,7 +459,11 @@ function RelatedLinksSection() {
             href={link.href}
             className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
-            <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+            <AppIcon
+              icon={link.icon}
+              size={18}
+              className="mb-3 text-[var(--accent-ink)]"
+            />
             {link.title}
             <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
               {link.description}

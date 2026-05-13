@@ -7,10 +7,7 @@ import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
-import {
-  buildFaqJsonLd,
-  buildLearningResourceJsonLd,
-} from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -189,9 +186,7 @@ const faqs: FaqItem[] = [
 ];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function TutorVisual() {
@@ -423,7 +418,11 @@ function RelatedLinksSection() {
             href={link.href}
             className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
-            <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+            <AppIcon
+              icon={link.icon}
+              size={18}
+              className="mb-3 text-[var(--accent-ink)]"
+            />
             {link.title}
             <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
               {link.description}

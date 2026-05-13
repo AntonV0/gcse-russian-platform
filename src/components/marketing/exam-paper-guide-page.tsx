@@ -4,10 +4,7 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
-import {
-  buildFaqJsonLd,
-  buildLearningResourceJsonLd,
-} from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 export type ExamPaperGuideItem = {
@@ -55,9 +52,7 @@ type ExamPaperGuidePageProps = {
 };
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function PaperHeroVisual({
@@ -419,7 +414,11 @@ function RelatedLinksSection({
             href={link.href}
             className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
-            <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+            <AppIcon
+              icon={link.icon}
+              size={18}
+              className="mb-3 text-[var(--accent-ink)]"
+            />
             {link.title}
             <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
               {link.description}
@@ -561,9 +560,7 @@ export default function ExamPaperGuidePage({
         <section className="rounded-lg marketing-dark-panel p-6 shadow-[var(--shadow-lg)] sm:p-8 lg:p-10">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <h2 className="text-2xl font-bold leading-tight md:text-3xl">
-                {ctaTitle}
-              </h2>
+              <h2 className="text-2xl font-bold leading-tight md:text-3xl">{ctaTitle}</h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 opacity-80">
                 {ctaDescription}
               </p>

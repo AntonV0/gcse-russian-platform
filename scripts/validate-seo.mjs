@@ -99,7 +99,10 @@ for (const page of priorityPages) {
   const structuredDataPassed =
     includesAll(source, page.required) ||
     (source.includes("buildFaqJsonLd(faqs)") &&
-      includesAll(source, page.required.filter((item) => item !== "faqs={[")));
+      includesAll(
+        source,
+        page.required.filter((item) => item !== "faqs={[")
+      ));
 
   check(`${page.label}: structured data`, structuredDataPassed, page.path);
 }

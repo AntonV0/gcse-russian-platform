@@ -48,16 +48,19 @@ const proofItems = [
 const problemSolutions = [
   {
     problem: "Revision becomes a pile of tabs, worksheets, and forgotten vocab lists.",
-    solution: "The course gives students one route through lessons, practice, and review.",
+    solution:
+      "The course gives students one route through lessons, practice, and review.",
     icon: "navigation",
   },
   {
-    problem: "Grammar feels separate from the answers students need to write or translate.",
+    problem:
+      "Grammar feels separate from the answers students need to write or translate.",
     solution: "Grammar is taught through examples, sentences, and exam-style tasks.",
     icon: "grammar",
   },
   {
-    problem: "Parents want to help, but do not know what a sensible Russian plan looks like.",
+    problem:
+      "Parents want to help, but do not know what a sensible Russian plan looks like.",
     solution: "Progress and next steps make support at home calmer and more practical.",
     icon: "completed",
   },
@@ -210,9 +213,7 @@ const guideLinks = [
 ];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function ScreenshotShell({
@@ -392,7 +393,9 @@ function LessonVisual() {
       <div className="grid gap-0 md:grid-cols-[1fr_220px]">
         <div className="space-y-4 p-4">
           <div className="rounded-lg bg-[var(--background-muted)] p-4">
-            <p className="text-xs font-semibold text-[var(--accent-ink)]">Current section</p>
+            <p className="text-xs font-semibold text-[var(--accent-ink)]">
+              Current section
+            </p>
             <h3 className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
               Opinions and reasons
             </h3>
@@ -467,11 +470,7 @@ function PracticeVisual() {
           className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 shadow-[var(--shadow-sm)]"
         >
           <div className="mb-6 flex items-center justify-between">
-            <AppIcon
-              icon={surface.icon}
-              size={20}
-              className="text-[var(--accent-ink)]"
-            />
+            <AppIcon icon={surface.icon} size={20} className="text-[var(--accent-ink)]" />
             <span className="h-2 w-16 rounded-full bg-[var(--background-muted)]" />
           </div>
           <h3 className="text-base font-semibold text-[var(--text-primary)]">
@@ -550,7 +549,10 @@ export default function MarketingHomePage() {
             </div>
             <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
               {problemSolutions.map((item) => (
-                <div key={item.problem} className="grid gap-4 py-5 sm:grid-cols-[2.5rem_1fr]">
+                <div
+                  key={item.problem}
+                  className="grid gap-4 py-5 sm:grid-cols-[2.5rem_1fr]"
+                >
                   <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--background-muted)] text-[var(--accent-ink)]">
                     <AppIcon icon={item.icon} size={20} />
                   </div>
@@ -579,7 +581,10 @@ export default function MarketingHomePage() {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {trialIncludes.map((item) => (
-              <div key={item} className="flex items-center gap-2 rounded-md bg-white/10 px-3 py-2">
+              <div
+                key={item}
+                className="flex items-center gap-2 rounded-md bg-white/10 px-3 py-2"
+              >
                 <AppIcon icon="confirm" size={15} className="text-[var(--accent-ink)]" />
                 <span className="text-sm font-semibold">{item}</span>
               </div>

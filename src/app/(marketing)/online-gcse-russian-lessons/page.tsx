@@ -7,10 +7,7 @@ import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
-import {
-  buildFaqJsonLd,
-  buildLearningResourceJsonLd,
-} from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -213,9 +210,7 @@ function LessonVisual() {
               <p className="text-xs font-bold uppercase text-[var(--text-muted)]">
                 {label}
               </p>
-              <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
-                {value}
-              </p>
+              <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">{value}</p>
             </div>
           </div>
         ))}
@@ -231,7 +226,8 @@ function SupportNeedsSection() {
         <div>
           <Eyebrow>When live support helps</Eyebrow>
           <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
-            Online lessons are most useful when the student needs feedback, not just more resources.
+            Online lessons are most useful when the student needs feedback, not just more
+            resources.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
             A structured course can carry a lot of the weekly study. Live teaching is best
@@ -297,7 +293,8 @@ function BlendedRouteSection() {
       <div>
         <Eyebrow>Blended learning</Eyebrow>
         <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl">
-          The strongest support is usually course plus teacher, not teacher instead of course.
+          The strongest support is usually course plus teacher, not teacher instead of
+          course.
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
           Live sessions are easier to use well when the student has a course route,
@@ -355,7 +352,8 @@ function BoundarySection() {
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
           Clear boundaries make live support feel professional: what happens in the
-          lesson, what the student practises alone, and what families still need to arrange.
+          lesson, what the student practises alone, and what families still need to
+          arrange.
         </p>
       </div>
 
@@ -398,7 +396,11 @@ function RelatedLinksSection() {
             href={link.href}
             className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
-            <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+            <AppIcon
+              icon={link.icon}
+              size={18}
+              className="mb-3 text-[var(--accent-ink)]"
+            />
             {link.title}
             <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
               {link.description}
@@ -493,7 +495,11 @@ export default function OnlineGcseRussianLessonsPage() {
               <Button href="/signup" variant="primary" icon="create">
                 Start trial
               </Button>
-              <Button href="https://volnaschool.com" variant="secondary" icon="externalLink">
+              <Button
+                href="https://volnaschool.com"
+                variant="secondary"
+                icon="externalLink"
+              >
                 Visit Volna School
               </Button>
             </div>

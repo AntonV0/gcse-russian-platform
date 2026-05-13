@@ -45,7 +45,8 @@ const resourceGroups: ResourceGroup[] = [
     links: [
       {
         title: "GCSE Russian exam guide",
-        description: "The main overview of the four papers, tiers, and revision priorities.",
+        description:
+          "The main overview of the four papers, tiers, and revision priorities.",
         href: "/gcse-russian-exam-guide",
         icon: "exam",
       },
@@ -65,8 +66,7 @@ const resourceGroups: ResourceGroup[] = [
   },
   {
     title: "Paper guides",
-    description:
-      "Go deeper into the specific habits needed for each GCSE Russian paper.",
+    description: "Go deeper into the specific habits needed for each GCSE Russian paper.",
     icon: "questionSet",
     links: [
       {
@@ -103,7 +103,8 @@ const resourceGroups: ResourceGroup[] = [
     links: [
       {
         title: "Revision guide",
-        description: "Build a weekly rhythm across vocabulary, grammar, papers, and review.",
+        description:
+          "Build a weekly rhythm across vocabulary, grammar, papers, and review.",
         href: "/gcse-russian-revision",
         icon: "calendar",
       },
@@ -208,7 +209,10 @@ function ResourceGroupSection() {
   return (
     <section className="space-y-6">
       {resourceGroups.map((group) => (
-        <div key={group.title} className="rounded-lg bg-[var(--background-muted)] p-5 sm:p-8">
+        <div
+          key={group.title}
+          className="rounded-lg bg-[var(--background-muted)] p-5 sm:p-8"
+        >
           <div className="grid gap-6 border-b border-[var(--border-subtle)] pb-6 lg:grid-cols-[0.42fr_1fr] lg:items-end">
             <div>
               <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--surface-elevated)] text-[var(--accent-ink)] shadow-[var(--shadow-sm)]">
@@ -230,7 +234,11 @@ function ResourceGroupSection() {
                 href={link.href}
                 className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
               >
-                <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+                <AppIcon
+                  icon={link.icon}
+                  size={18}
+                  className="mb-3 text-[var(--accent-ink)]"
+                />
                 {link.title}
                 <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
                   {link.description}

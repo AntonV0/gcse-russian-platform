@@ -158,8 +158,7 @@ export const OG_IMAGE_DEFINITIONS: Record<OgImageKey, OgImageDefinition> = {
   resources: {
     title: "GCSE Russian Resources",
     kicker: "Guide library",
-    description:
-      "Exam guides, revision, grammar, vocabulary, tiers, and family support.",
+    description: "Exam guides, revision, grammar, vocabulary, tiers, and family support.",
     accent: "#2563eb",
     softAccent: "#e6efff",
   },

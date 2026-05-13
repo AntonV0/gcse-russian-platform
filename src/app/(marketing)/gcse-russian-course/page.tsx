@@ -64,8 +64,7 @@ const courseLayers = [
     description: "Mixed practice, paper practice, mock exams, and weakness targeting.",
     icon: "mockExam",
   },
-] satisfies FeatureItem[] &
-  Array<{ time: string }>;
+] satisfies FeatureItem[] & Array<{ time: string }>;
 
 const lessonFlow = [
   {
@@ -88,32 +87,38 @@ const lessonFlow = [
 const courseIncludes = [
   {
     title: "Variant-aware lessons",
-    description: "Shared teaching can sit alongside Foundation-only and Higher-only sections.",
+    description:
+      "Shared teaching can sit alongside Foundation-only and Higher-only sections.",
     icon: "layers",
   },
   {
     title: "Vocabulary that returns",
-    description: "Words introduced in lessons can reappear in revision and practice tools.",
+    description:
+      "Words introduced in lessons can reappear in revision and practice tools.",
     icon: "vocabulary",
   },
   {
     title: "Grammar with output",
-    description: "Patterns are practised through examples, translations, and written answers.",
+    description:
+      "Patterns are practised through examples, translations, and written answers.",
     icon: "grammar",
   },
   {
     title: "Question-set practice",
-    description: "Controlled practice prepares students before they meet harder exam tasks.",
+    description:
+      "Controlled practice prepares students before they meet harder exam tasks.",
     icon: "questionSet",
   },
   {
     title: "Mock preparation",
-    description: "Platform-created GCSE-style mocks sit separately from official Pearson links.",
+    description:
+      "Platform-created GCSE-style mocks sit separately from official Pearson links.",
     icon: "mockExam",
   },
   {
     title: "Progress visibility",
-    description: "Students can return to the next useful step and revisit earlier sections.",
+    description:
+      "Students can return to the next useful step and revisit earlier sections.",
     icon: "completed",
   },
 ] satisfies FeatureItem[];
@@ -121,20 +126,25 @@ const courseIncludes = [
 const tierComparison = [
   {
     label: "Shared course core",
-    foundation: "Secure the high-frequency language and GCSE routines that every student needs.",
-    higher: "Use the same core as a launchpad before moving into harder sentence patterns.",
+    foundation:
+      "Secure the high-frequency language and GCSE routines that every student needs.",
+    higher:
+      "Use the same core as a launchpad before moving into harder sentence patterns.",
     icon: "layers",
   },
   {
     label: "Difficulty control",
-    foundation: "Focus on accessible output, reliable comprehension, and confidence with common tasks.",
-    higher: "Unlock extra challenge, fuller answers, richer grammar, and more demanding practice.",
+    foundation:
+      "Focus on accessible output, reliable comprehension, and confidence with common tasks.",
+    higher:
+      "Unlock extra challenge, fuller answers, richer grammar, and more demanding practice.",
     icon: "settings",
   },
   {
     label: "Revision route",
     foundation: "Revisit essentials without being buried under extension work.",
-    higher: "Target weaknesses while keeping higher-tier vocabulary and paper demands visible.",
+    higher:
+      "Target weaknesses while keeping higher-tier vocabulary and paper demands visible.",
     icon: "completed",
   },
 ] satisfies Array<{
@@ -148,29 +158,32 @@ const examPapers = [
   {
     paper: "Paper 1",
     title: "Listening",
-    description: "Audio-led comprehension practice, topic vocabulary, and question handling.",
+    description:
+      "Audio-led comprehension practice, topic vocabulary, and question handling.",
     icon: "listening",
   },
   {
     paper: "Paper 2",
     title: "Speaking",
-    description: "Role play, picture-based discussion, conversation themes, and answer building.",
+    description:
+      "Role play, picture-based discussion, conversation themes, and answer building.",
     icon: "speaking",
   },
   {
     paper: "Paper 3",
     title: "Reading",
-    description: "Short texts, inference, translation into English, and paper-style questions.",
+    description:
+      "Short texts, inference, translation into English, and paper-style questions.",
     icon: "lessonContent",
   },
   {
     paper: "Paper 4",
     title: "Writing",
-    description: "Sentence control, translation into Russian, opinions, reasons, and longer answers.",
+    description:
+      "Sentence control, translation into Russian, opinions, reasons, and longer answers.",
     icon: "write",
   },
-] satisfies FeatureItem[] &
-  Array<{ paper: string }>;
+] satisfies FeatureItem[] & Array<{ paper: string }>;
 
 const publicAppSplit = [
   {
@@ -196,12 +209,14 @@ const publicAppSplit = [
 const audiences = [
   {
     title: "Self-study students",
-    description: "A clear route through the course when school support is limited or uneven.",
+    description:
+      "A clear route through the course when school support is limited or uneven.",
     icon: "student",
   },
   {
     title: "Parents",
-    description: "Enough structure to understand the plan without becoming the Russian teacher.",
+    description:
+      "Enough structure to understand the plan without becoming the Russian teacher.",
     icon: "users",
   },
   {
@@ -211,7 +226,8 @@ const audiences = [
   },
   {
     title: "Volna learners",
-    description: "The same platform can support teacher-led assignments and feedback workflows.",
+    description:
+      "The same platform can support teacher-led assignments and feedback workflows.",
     icon: "teacher",
   },
 ] satisfies FeatureItem[];
@@ -244,13 +260,15 @@ const relatedLinks = [
   { href: "/gcse-russian-exam-guide", label: "Exam guide", icon: "exam" },
   { href: "/gcse-russian-foundation-tier", label: "Foundation tier", icon: "layers" },
   { href: "/gcse-russian-higher-tier", label: "Higher tier", icon: "star" },
-  { href: "/russian-gcse-private-candidate", label: "Private candidates", icon: "userCheck" },
+  {
+    href: "/russian-gcse-private-candidate",
+    label: "Private candidates",
+    icon: "userCheck",
+  },
 ] satisfies Array<{ href: string; label: string; icon: AppIconKey }>;
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function ScreenshotShell({
@@ -311,11 +329,17 @@ function CourseArchitectureVisual() {
                 <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--background-muted)] text-xs font-semibold text-[var(--accent-ink)]">
                   {index + 1}
                 </span>
-                <span className="text-sm font-semibold text-[var(--text-primary)]">{item}</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                  {item}
+                </span>
                 {index < 5 ? (
                   <AppIcon icon="down" size={14} className="text-[var(--text-muted)]" />
                 ) : (
-                  <AppIcon icon="completed" size={14} className="text-[var(--accent-ink)]" />
+                  <AppIcon
+                    icon="completed"
+                    size={14}
+                    className="text-[var(--accent-ink)]"
+                  />
                 )}
               </div>
             )
@@ -365,7 +389,9 @@ function LessonFlowVisual() {
       <div className="grid gap-0 lg:grid-cols-[1fr_210px]">
         <div className="p-4">
           <div className="rounded-lg bg-[var(--background-muted)] p-4">
-            <p className="text-xs font-semibold text-[var(--accent-ink)]">Current lesson</p>
+            <p className="text-xs font-semibold text-[var(--accent-ink)]">
+              Current lesson
+            </p>
             <h3 className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
               Opinions and justifications
             </h3>
@@ -384,7 +410,11 @@ function LessonFlowVisual() {
                 className="rounded-lg border border-[var(--border-subtle)] p-4"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <AppIcon icon={step.icon} size={19} className="text-[var(--accent-ink)]" />
+                  <AppIcon
+                    icon={step.icon}
+                    size={19}
+                    className="text-[var(--accent-ink)]"
+                  />
                   <span className="text-xs font-semibold text-[var(--text-muted)]">
                     {index + 1}
                   </span>
@@ -542,8 +572,8 @@ function PublicAppSection() {
             Public pages help decisions. The course builds the routine.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
-            The public site answers family questions quickly. Trial access then shows
-            the student what the weekly learning route actually feels like.
+            The public site answers family questions quickly. Trial access then shows the
+            student what the weekly learning route actually feels like.
           </p>
         </div>
 
@@ -776,7 +806,11 @@ export default function GcseRussianCoursePage() {
                 href={link.href}
                 className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
               >
-                <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+                <AppIcon
+                  icon={link.icon}
+                  size={18}
+                  className="mb-3 text-[var(--accent-ink)]"
+                />
                 {link.label}
               </Link>
             ))}

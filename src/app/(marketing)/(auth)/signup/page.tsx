@@ -64,9 +64,7 @@ const familyTrustNotes = [
 ] satisfies Array<{ title: string; description: string; icon: AppIconKey }>;
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function TrialPreview() {
@@ -74,7 +72,9 @@ function TrialPreview() {
     <div className="mt-8 rounded-lg border border-white/10 bg-white/[0.07] p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] opacity-60">Trial route</p>
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] opacity-60">
+            Trial route
+          </p>
           <p className="mt-1 text-lg font-bold">Explore before checkout</p>
         </div>
         <div className="flex h-12 w-12 items-center justify-center rounded-md bg-[var(--accent-fill)] text-[var(--accent-on-fill)]">
@@ -120,15 +120,13 @@ export default async function SignUpPage({
               </Badge>
             </div>
 
-            <p className="app-text-meta text-[var(--accent-ink)]">
-              Start calmly
-            </p>
+            <p className="app-text-meta text-[var(--accent-ink)]">Start calmly</p>
             <h1 className="mt-3 max-w-3xl text-4xl font-extrabold leading-[1.04] md:text-6xl">
               Create a trial account before choosing paid access.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 opacity-80 md:text-lg">
-              Students can look around the GCSE Russian course platform first, see how
-              the learning route works, and upgrade only if the structure feels right.
+              Students can look around the GCSE Russian course platform first, see how the
+              learning route works, and upgrade only if the structure feels right.
             </p>
 
             <TrialPreview />
@@ -162,7 +160,10 @@ export default async function SignUpPage({
 
       <section className="mt-8 grid gap-4 md:grid-cols-3">
         {fitSignals.map((signal) => (
-          <div key={signal} className="flex items-start gap-3 rounded-lg bg-[var(--background-muted)] p-4">
+          <div
+            key={signal}
+            className="flex items-start gap-3 rounded-lg bg-[var(--background-muted)] p-4"
+          >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--surface-elevated)] text-[var(--accent-ink)]">
               <AppIcon icon="completed" size={18} />
             </div>
@@ -176,9 +177,7 @@ export default async function SignUpPage({
       <section className="mt-8 rounded-lg bg-[var(--background-muted)] p-5 sm:p-8">
         <div className="grid gap-6 lg:grid-cols-[0.42fr_1fr] lg:items-start">
           <div>
-            <p className="app-text-meta text-[var(--accent-ink)]">
-              Family setup
-            </p>
+            <p className="app-text-meta text-[var(--accent-ink)]">Family setup</p>
             <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)]">
               Keep the account decision calm and supervised.
             </h2>

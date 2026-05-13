@@ -234,7 +234,10 @@ function PricingCard({ plan, pricing }: { plan: PricingPlan; pricing: Pricing })
 
       <div className="mt-6 divide-y divide-[var(--border-subtle)] overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--background-muted)]">
         {priceRows.map((row) => (
-          <div key={row.label} className="flex items-center justify-between gap-4 px-4 py-3">
+          <div
+            key={row.label}
+            className="flex items-center justify-between gap-4 px-4 py-3"
+          >
             <span className="text-sm font-semibold text-[var(--text-secondary)]">
               {row.label}
             </span>
@@ -332,7 +335,11 @@ export default async function MarketingPricingPage() {
               <Button href="/signup" variant="primary" icon="create">
                 Start trial
               </Button>
-              <Button href="/login?next=/account/billing" variant="secondary" icon="billing">
+              <Button
+                href="/login?next=/account/billing"
+                variant="secondary"
+                icon="billing"
+              >
                 Log in to upgrade
               </Button>
             </div>

@@ -37,9 +37,7 @@ const loginBenefits = [
 ] satisfies Array<{ title: string; description: string; icon: AppIconKey }>;
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function LoginPreview() {
@@ -47,7 +45,9 @@ function LoginPreview() {
     <div className="mt-8 rounded-lg border border-white/10 bg-white/[0.07] p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] opacity-60">Next step</p>
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] opacity-60">
+            Next step
+          </p>
           <p className="mt-1 text-lg font-bold">Continue GCSE Russian revision</p>
         </div>
         <span className="rounded-md bg-[var(--accent-fill)] px-3 py-1 text-xs font-semibold text-[var(--accent-on-fill)]">
@@ -96,15 +96,13 @@ export default async function LoginPage({
               </Badge>
             </div>
 
-            <p className="app-text-meta text-[var(--accent-ink)]">
-              Welcome back
-            </p>
+            <p className="app-text-meta text-[var(--accent-ink)]">Welcome back</p>
             <h1 className="mt-3 max-w-3xl text-4xl font-extrabold leading-[1.04] md:text-6xl">
               Pick up the GCSE Russian route where you left off.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 opacity-80 md:text-lg">
-              Log in to continue lessons, vocabulary, grammar, exam-style questions,
-              mock practice, and revision inside the same structured workspace.
+              Log in to continue lessons, vocabulary, grammar, exam-style questions, mock
+              practice, and revision inside the same structured workspace.
             </p>
 
             <LoginPreview />
@@ -128,7 +126,10 @@ export default async function LoginPage({
 
       <section className="mt-8 grid gap-4 md:grid-cols-3">
         {loginBenefits.map((benefit) => (
-          <div key={benefit.title} className="border-t-2 border-[var(--accent-fill)] pt-5">
+          <div
+            key={benefit.title}
+            className="border-t-2 border-[var(--accent-fill)] pt-5"
+          >
             <AppIcon icon={benefit.icon} size={22} className="text-[var(--accent-ink)]" />
             <h2 className="mt-4 text-lg font-semibold text-[var(--text-primary)]">
               {benefit.title}

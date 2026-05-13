@@ -66,19 +66,22 @@ const publishingPrinciples = [
 const liveGuides = [
   {
     title: "Resources library",
-    description: "Browse the live guide hub for exam, revision, grammar, and vocabulary pages.",
+    description:
+      "Browse the live guide hub for exam, revision, grammar, and vocabulary pages.",
     href: "/resources",
     icon: "lessonContent" as const,
   },
   {
     title: "Exam guide",
-    description: "Understand the four papers and how students should prepare for each one.",
+    description:
+      "Understand the four papers and how students should prepare for each one.",
     href: "/gcse-russian-exam-guide",
     icon: "exam" as const,
   },
   {
     title: "Revision guide",
-    description: "Build a repeatable routine across vocabulary, grammar, papers, and mocks.",
+    description:
+      "Build a repeatable routine across vocabulary, grammar, papers, and mocks.",
     href: "/gcse-russian-revision",
     icon: "calendar" as const,
   },
@@ -165,9 +168,9 @@ function PlannedTracksSection() {
             Articles should deepen the guides, not repeat them.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
-            The blog will be strongest when each article answers one narrow problem:
-            what to revise next, how to approach a paper, or how a family can make a
-            better support decision.
+            The blog will be strongest when each article answers one narrow problem: what
+            to revise next, how to approach a paper, or how a family can make a better
+            support decision.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -214,9 +217,9 @@ function PublishingPrinciplesSection() {
           Useful before searchable.
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
-          The article library is intentionally not indexed yet. It should launch only
-          when it can feel like a serious GCSE Russian reference, with clear internal
-          routes into the course and existing guides.
+          The article library is intentionally not indexed yet. It should launch only when
+          it can feel like a serious GCSE Russian reference, with clear internal routes
+          into the course and existing guides.
         </p>
       </div>
     </section>
@@ -244,7 +247,11 @@ function LiveGuidesSection() {
             href={guide.href}
             className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
-            <AppIcon icon={guide.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+            <AppIcon
+              icon={guide.icon}
+              size={18}
+              className="mb-3 text-[var(--accent-ink)]"
+            />
             {guide.title}
             <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
               {guide.description}

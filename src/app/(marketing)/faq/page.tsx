@@ -159,9 +159,7 @@ const relatedLinks = [
 ] satisfies Array<{ title: string; description: string; href: string; icon: AppIconKey }>;
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function FaqHeroVisual() {
@@ -187,7 +185,9 @@ function FaqHeroVisual() {
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--surface-elevated)] text-[var(--accent-ink)]">
               <AppIcon icon={group.icon} size={19} />
             </div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">{group.title}</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
+              {group.title}
+            </p>
             <span className="rounded-md bg-[var(--surface-elevated)] px-2 py-1 text-xs font-semibold text-[var(--text-secondary)]">
               {group.items.length}
             </span>
@@ -202,7 +202,10 @@ function FaqGroupsSection() {
   return (
     <section className="space-y-6">
       {faqGroups.map((group) => (
-        <div key={group.title} className="rounded-lg bg-[var(--background-muted)] p-5 sm:p-8">
+        <div
+          key={group.title}
+          className="rounded-lg bg-[var(--background-muted)] p-5 sm:p-8"
+        >
           <div className="grid gap-6 border-b border-[var(--border-subtle)] pb-6 lg:grid-cols-[0.42fr_1fr] lg:items-end">
             <div>
               <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--surface-elevated)] text-[var(--accent-ink)] shadow-[var(--shadow-sm)]">
@@ -255,7 +258,11 @@ function RelatedLinksSection() {
             href={link.href}
             className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
-            <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+            <AppIcon
+              icon={link.icon}
+              size={18}
+              className="mb-3 text-[var(--accent-ink)]"
+            />
             {link.title}
             <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
               {link.description}

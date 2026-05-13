@@ -124,9 +124,7 @@ const relatedLinks = [
 }>;
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>
-  );
+  return <p className="app-text-meta text-[var(--accent-ink)]">{children}</p>;
 }
 
 function AboutVisual() {
@@ -300,7 +298,11 @@ function RelatedLinksSection() {
             href={link.href}
             className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
-            <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+            <AppIcon
+              icon={link.icon}
+              size={18}
+              className="mb-3 text-[var(--accent-ink)]"
+            />
             {link.title}
             <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
               {link.description}
@@ -353,9 +355,9 @@ export default function MarketingAboutPage() {
               A focused course platform for GCSE Russian.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-secondary)] md:text-lg">
-              GCSERussian.com helps students prepare for Pearson Edexcel GCSE Russian
-              with a clearer route through lessons, vocabulary, grammar, exam-style
-              practice, revision, and progress tracking.
+              GCSERussian.com helps students prepare for Pearson Edexcel GCSE Russian with
+              a clearer route through lessons, vocabulary, grammar, exam-style practice,
+              revision, and progress tracking.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">

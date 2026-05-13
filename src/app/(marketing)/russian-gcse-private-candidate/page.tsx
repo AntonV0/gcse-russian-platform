@@ -7,10 +7,7 @@ import MarketingBreadcrumbs from "@/components/marketing/marketing-breadcrumbs";
 import JsonLd from "@/components/seo/json-ld";
 import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
-import {
-  buildFaqJsonLd,
-  buildLearningResourceJsonLd,
-} from "@/lib/seo/structured-data";
+import { buildFaqJsonLd, buildLearningResourceJsonLd } from "@/lib/seo/structured-data";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 export const metadata: Metadata = buildPublicMetadata({
@@ -108,14 +105,16 @@ const centreChecklist = [
   },
   {
     title: "Tier and deadlines",
-    question: "When must Foundation or Higher be confirmed, and what are the entry deadlines?",
+    question:
+      "When must Foundation or Higher be confirmed, and what are the entry deadlines?",
     whyItMatters:
       "Tier choice affects all papers, and late entries can create avoidable cost or availability problems.",
     icon: "calendar",
   },
   {
     title: "Fees and requirements",
-    question: "What fees, ID requirements, access arrangements, and centre policies apply?",
+    question:
+      "What fees, ID requirements, access arrangements, and centre policies apply?",
     whyItMatters:
       "Families need the full administrative picture before relying on a revision timeline.",
     icon: "pricing",
@@ -257,9 +256,7 @@ function CandidatePlanVisual() {
               <p className="text-xs font-bold uppercase text-[var(--text-muted)]">
                 {label}
               </p>
-              <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
-                {value}
-              </p>
+              <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">{value}</p>
             </div>
           </div>
         ))}
@@ -372,8 +369,8 @@ function CentreChecklistSection() {
             Ask centre questions before the revision plan depends on them.
           </h2>
           <p className="mt-4 text-base leading-7 opacity-80">
-            Centre policies can vary. Families should confirm details directly rather
-            than assuming private-candidate entry works the same everywhere.
+            Centre policies can vary. Families should confirm details directly rather than
+            assuming private-candidate entry works the same everywhere.
           </p>
         </div>
 
@@ -411,9 +408,9 @@ function CandidateTypesSection() {
           Private candidate does not mean one type of learner.
         </h2>
         <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
-          The same qualification can attract heritage speakers, independent learners,
-          and families returning to Russian after gaps. The preparation route should
-          respond to the actual student.
+          The same qualification can attract heritage speakers, independent learners, and
+          families returning to Russian after gaps. The preparation route should respond
+          to the actual student.
         </p>
       </div>
 
@@ -496,7 +493,11 @@ function RelatedLinksSection() {
             href={link.href}
             className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-4 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent-ink)]"
           >
-            <AppIcon icon={link.icon} size={18} className="mb-3 text-[var(--accent-ink)]" />
+            <AppIcon
+              icon={link.icon}
+              size={18}
+              className="mb-3 text-[var(--accent-ink)]"
+            />
             {link.title}
             <span className="mt-2 block text-xs font-normal leading-5 text-[var(--text-secondary)]">
               {link.description}

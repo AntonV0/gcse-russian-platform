@@ -124,7 +124,8 @@ export default function GcseRussianReadingExamPage() {
         },
         {
           title: "GCSE Russian past papers",
-          description: "Use official resources to practise reading under exam conditions.",
+          description:
+            "Use official resources to practise reading under exam conditions.",
           href: "/gcse-russian-past-papers",
           icon: "pastPapers",
         },
