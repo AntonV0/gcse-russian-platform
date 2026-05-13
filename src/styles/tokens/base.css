@@ -48,11 +48,7 @@
   --accent-soft: #eaf2ff;
   --accent-selected-bg: var(--accent-soft);
   --accent-selected-border: var(--accent-border-ink);
-  --accent-decorative-fill: color-mix(
-    in srgb,
-    var(--accent-fill) 86%,
-    var(--accent-ink)
-  );
+  --accent-decorative-fill: color-mix(in srgb, var(--accent-fill) 86%, var(--accent-ink));
   --accent-decorative-fill-bright: color-mix(
     in srgb,
     var(--accent-fill-hover) 82%,
@@ -174,6 +170,9 @@
   --radius-control: var(--radius-md);
   --radius-card: var(--radius-lg);
   --radius-panel: var(--radius-xl);
+  --radius-empty-state: var(--radius-panel);
+  --radius-empty-icon: var(--radius-lg);
+  --radius-status-pill: 999px;
 
   /* ========= Shadows ========= */
   --shadow-xs: 0 1px 2px rgba(16, 32, 51, 0.04);
@@ -192,21 +191,9 @@
     var(--background-elevated) 97%,
     var(--background)
   );
-  --surface-accent-bg: color-mix(
-    in srgb,
-    var(--accent) 3.5%,
-    var(--background-elevated)
-  );
-  --surface-brand-bg: color-mix(
-    in srgb,
-    var(--accent) 4.5%,
-    var(--background-elevated)
-  );
-  --workspace-course-bg: color-mix(
-    in srgb,
-    var(--accent) 2.5%,
-    var(--background)
-  );
+  --surface-accent-bg: color-mix(in srgb, var(--accent) 3.5%, var(--background-elevated));
+  --surface-brand-bg: color-mix(in srgb, var(--accent) 4.5%, var(--background-elevated));
+  --workspace-course-bg: color-mix(in srgb, var(--accent) 2.5%, var(--background));
   --workspace-lesson-bg: color-mix(
     in srgb,
     var(--background) 82%,
@@ -223,7 +210,11 @@
     var(--background)
   );
   --surface-panel-border: var(--border-subtle);
-  --surface-accent-border: color-mix(in srgb, var(--accent-border-ink) 18%, var(--border-subtle));
+  --surface-accent-border: color-mix(
+    in srgb,
+    var(--accent-border-ink) 18%,
+    var(--border-subtle)
+  );
   --surface-panel-shadow: var(--shadow-sm);
   --surface-raised-shadow: var(--shadow-md);
   --surface-accent-shadow:
@@ -234,7 +225,29 @@
     color-mix(in srgb, var(--background-elevated) 54%, transparent) 0%,
     transparent 100%
   );
-  --surface-header-border: color-mix(in srgb, var(--accent-border-ink) 12%, var(--border-subtle));
+  --surface-header-border: color-mix(
+    in srgb,
+    var(--accent-border-ink) 12%,
+    var(--border-subtle)
+  );
+  --surface-selected-bg: var(--accent-selected-bg);
+  --surface-selected-border: var(--accent-selected-border);
+  --surface-selected-text: var(--accent-on-soft);
+  --surface-selected-icon-bg: color-mix(
+    in srgb,
+    var(--accent) 9%,
+    var(--background-elevated)
+  );
+  --surface-selected-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 7%, transparent),
+    0 10px 22px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 16%, transparent);
+  --loading-skeleton-bg: color-mix(
+    in srgb,
+    var(--background-muted) 82%,
+    var(--background-elevated)
+  );
+  --loading-skeleton-shine: color-mix(in srgb, var(--brand-white) 38%, transparent);
 
   /* ========= Motion ========= */
   --transition-fast: 160ms ease;
@@ -342,8 +355,16 @@
     0 0 0 4px var(--accent-ring),
     0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
     0 10px 22px color-mix(in srgb, var(--text-primary) 6%, transparent);
-  --sidebar-item-bg-hover: color-mix(in srgb, var(--accent) 6%, var(--background-elevated));
-  --sidebar-item-bg-active: color-mix(in srgb, var(--accent) 8%, var(--background-elevated));
+  --sidebar-item-bg-hover: color-mix(
+    in srgb,
+    var(--accent) 6%,
+    var(--background-elevated)
+  );
+  --sidebar-item-bg-active: color-mix(
+    in srgb,
+    var(--accent) 8%,
+    var(--background-elevated)
+  );
   --sidebar-item-border-hover: color-mix(
     in srgb,
     var(--accent-border-ink) 18%,
@@ -447,21 +468,9 @@
     var(--background-elevated) 97%,
     var(--background)
   );
-  --surface-accent-bg: color-mix(
-    in srgb,
-    var(--accent) 3.5%,
-    var(--background-elevated)
-  );
-  --surface-brand-bg: color-mix(
-    in srgb,
-    var(--accent) 4.5%,
-    var(--background-elevated)
-  );
-  --workspace-course-bg: color-mix(
-    in srgb,
-    var(--accent) 2.5%,
-    var(--background)
-  );
+  --surface-accent-bg: color-mix(in srgb, var(--accent) 3.5%, var(--background-elevated));
+  --surface-brand-bg: color-mix(in srgb, var(--accent) 4.5%, var(--background-elevated));
+  --workspace-course-bg: color-mix(in srgb, var(--accent) 2.5%, var(--background));
   --workspace-lesson-bg: color-mix(
     in srgb,
     var(--background) 82%,
@@ -478,7 +487,11 @@
     var(--background)
   );
   --surface-panel-border: var(--border-subtle);
-  --surface-accent-border: color-mix(in srgb, var(--accent-border-ink) 18%, var(--border-subtle));
+  --surface-accent-border: color-mix(
+    in srgb,
+    var(--accent-border-ink) 18%,
+    var(--border-subtle)
+  );
   --surface-panel-shadow: var(--shadow-sm);
   --surface-raised-shadow: var(--shadow-md);
   --surface-accent-shadow:
@@ -489,7 +502,29 @@
     color-mix(in srgb, var(--background-elevated) 54%, transparent) 0%,
     transparent 100%
   );
-  --surface-header-border: color-mix(in srgb, var(--accent-border-ink) 12%, var(--border-subtle));
+  --surface-header-border: color-mix(
+    in srgb,
+    var(--accent-border-ink) 12%,
+    var(--border-subtle)
+  );
+  --surface-selected-bg: var(--accent-selected-bg);
+  --surface-selected-border: var(--accent-selected-border);
+  --surface-selected-text: var(--accent-on-soft);
+  --surface-selected-icon-bg: color-mix(
+    in srgb,
+    var(--accent) 9%,
+    var(--background-elevated)
+  );
+  --surface-selected-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 7%, transparent),
+    0 10px 22px color-mix(in srgb, var(--text-primary) 5%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 16%, transparent);
+  --loading-skeleton-bg: color-mix(
+    in srgb,
+    var(--background-muted) 82%,
+    var(--background-elevated)
+  );
+  --loading-skeleton-shine: color-mix(in srgb, var(--brand-white) 38%, transparent);
 
   --accent-gradient-fill: linear-gradient(
     135deg,

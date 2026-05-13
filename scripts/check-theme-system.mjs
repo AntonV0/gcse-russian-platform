@@ -25,17 +25,14 @@ function readCssWithImports(relativePath, seen = new Set()) {
   const css = read(relativePath);
   const directory = path.dirname(relativePath);
 
-  return css.replace(
-    /@import\s+["']([^"']+)["'];/g,
-    (_match, importPath) => {
-      const importedPath = path
-        .normalize(path.join(directory, importPath))
-        .replaceAll(path.sep, "/");
-      return existsSync(path.join(root, importedPath))
-        ? readCssWithImports(importedPath, seen)
-        : "";
-    }
-  );
+  return css.replace(/@import\s+["']([^"']+)["'];/g, (_match, importPath) => {
+    const importedPath = path
+      .normalize(path.join(directory, importPath))
+      .replaceAll(path.sep, "/");
+    return existsSync(path.join(root, importedPath))
+      ? readCssWithImports(importedPath, seen)
+      : "";
+  });
 }
 
 function walk(dir, extensions, files = []) {
@@ -264,7 +261,8 @@ function resolveColor(value, tokens, seen = new Set()) {
     const resolvedFirstWeight = resolvePercentage(first.weight, tokens);
     const resolvedSecondWeight = resolvePercentage(second.weight, tokens);
     const firstWeight =
-      resolvedFirstWeight ?? (resolvedSecondWeight === null ? 50 : 100 - resolvedSecondWeight);
+      resolvedFirstWeight ??
+      (resolvedSecondWeight === null ? 50 : 100 - resolvedSecondWeight);
     const secondWeight = resolvedSecondWeight ?? 100 - firstWeight;
     const firstColor = resolveColor(first.value, tokens, seen);
     const secondColor = resolveColor(second.value, tokens, seen);
@@ -324,6 +322,8 @@ const darkTokens = read("src/styles/tokens/dark.css");
 const accentTokens = read("src/styles/tokens/accents.css");
 const progressCss = read("src/styles/surfaces/cards-panels.css");
 const logoCss = read("src/styles/surfaces/brand-logo.css");
+const badgesCss = read("src/styles/badges.css");
+const feedbackCss = read("src/styles/feedback.css");
 const lessonWarmthCss = readCssWithImports("src/styles/lesson-warmth.css");
 const baseTokenDeclarations = parseTokenBlocks(baseTokens).find(
   (block) => block.selector === ":root"
@@ -357,8 +357,30 @@ assert(
     baseTokens.includes("--accent-decorative-border") &&
     baseTokens.includes("--accent-border-ink") &&
     baseTokens.includes("--accent-brand-ink") &&
-    baseTokens.includes("--success-progress-gradient"),
-  "Theme role tokens for decorative accent, brand accent, and success progress are missing."
+    baseTokens.includes("--success-progress-gradient") &&
+    baseTokens.includes("--surface-selected-bg") &&
+    baseTokens.includes("--surface-selected-text") &&
+    baseTokens.includes("--loading-skeleton-bg") &&
+    baseTokens.includes("--radius-empty-state"),
+  "Theme role tokens for decorative accent, brand accent, selected surfaces, loading skeletons, empty states, and success progress are missing."
+);
+assert(
+  darkTokens.includes("--surface-selected-bg") &&
+    darkTokens.includes("--surface-selected-shadow") &&
+    darkTokens.includes("--loading-skeleton-bg"),
+  "Dark theme should define selected-surface and loading-skeleton recipe tokens."
+);
+assert(
+  badgesCss.includes("background: var(--surface-selected-bg)") &&
+    badgesCss.includes("color: var(--surface-selected-text)") &&
+    badgesCss.includes("border-radius: var(--radius-status-pill)"),
+  "Badge/selected state recipes should consume shared state and radius tokens."
+);
+assert(
+  feedbackCss.includes(".app-loading-skeleton") &&
+    feedbackCss.includes("var(--loading-skeleton-bg)") &&
+    feedbackCss.includes("border-radius: var(--radius-empty-icon)"),
+  "Empty and loading state recipes should consume shared feedback tokens."
 );
 assert(
   logoCss.includes("--app-logo-blue: var(--accent-brand-ink);") &&
@@ -532,6 +554,13 @@ if (baseTokenDeclarations && darkTokenDeclarations && accentNames.length > 0) {
         `${label} info semantic text`,
         "--info-text",
         "--info-surface",
+        SEMANTIC_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} selected surface text`,
+        "--surface-selected-text",
+        "--surface-selected-bg",
         SEMANTIC_TEXT_CONTRAST
       );
       assertContrast(
