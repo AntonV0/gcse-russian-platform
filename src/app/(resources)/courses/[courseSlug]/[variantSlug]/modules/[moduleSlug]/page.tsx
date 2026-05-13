@@ -77,7 +77,8 @@ export default async function ModulePage({ params }: ModulePageProps) {
   const isAdminTestingModule = module.position === 0 && !!profile?.is_admin;
   const contentReadyLessonIds = await getLessonIdsWithPublishedSectionsDb(
     lessons.map((lesson) => lesson.id),
-    variantSlug as "foundation" | "higher" | "volna"
+    variantSlug as "foundation" | "higher" | "volna",
+    { useServiceRole: true }
   );
   const visibleLessons = lessons.filter(
     (lesson) =>

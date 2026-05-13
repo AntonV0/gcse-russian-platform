@@ -166,7 +166,8 @@ export async function getVariantPathProgressSummary(
   ]);
   const contentReadyLessonIds = await getLessonIdsWithPublishedSectionsDb(
     lessons.map((lesson) => lesson.id),
-    variant.slug as "foundation" | "higher" | "volna"
+    variant.slug as "foundation" | "higher" | "volna",
+    { useServiceRole: true }
   );
   const canSeeDraftLessons = !!profile?.is_admin || !!profile?.is_teacher;
   const contentReadyLessons = lessons.filter(

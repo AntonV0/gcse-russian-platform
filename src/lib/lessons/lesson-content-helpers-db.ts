@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { mapDbBlockToLessonBlock, resolveSectionKind } from "@/lib/lessons/lesson-blocks";
 import type { LessonSection } from "@/types/lesson";
 
@@ -32,6 +33,9 @@ export type DbLessonBlock = {
 export type LessonContentVariant = "foundation" | "higher" | "volna";
 type LessonContentQueryOptions = {
   throwOnError?: boolean;
+};
+type LessonContentAvailabilityOptions = {
+  useServiceRole?: boolean;
 };
 
 const LESSON_SECTION_SELECT =
@@ -78,11 +82,14 @@ function isSectionVisibleForVariant(
 
 export async function getLessonIdsWithPublishedSectionsDb(
   lessonIds: string[],
-  variant?: LessonContentVariant
+  variant?: LessonContentVariant,
+  options: LessonContentAvailabilityOptions = {}
 ): Promise<Set<string>> {
   if (lessonIds.length === 0) return new Set();
 
-  const supabase = await createClient();
+  const supabase = options.useServiceRole
+    ? createServiceRoleClient()
+    : await createClient();
 
   const { data, error } = await supabase
     .from("lesson_sections")

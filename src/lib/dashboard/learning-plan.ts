@@ -230,7 +230,8 @@ export async function getStudentLearningPlan(
 
   const contentReadyLessonIds = await getLessonIdsWithPublishedSectionsDb(
     lessons.map((lesson) => lesson.id),
-    variant
+    variant,
+    { useServiceRole: true }
   );
   const canSeeDraftLessons = !!profile?.is_admin || !!profile?.is_teacher;
   const contentReadyLessons = lessons.filter(
