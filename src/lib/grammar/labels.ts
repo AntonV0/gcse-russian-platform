@@ -1,7 +1,4 @@
-import type {
-  DbGrammarKnowledgeRequirement,
-  DbGrammarTier,
-} from "@/lib/grammar/types";
+import type { DbGrammarKnowledgeRequirement, DbGrammarTier } from "@/lib/grammar/types";
 
 const GRAMMAR_LABEL_OVERRIDES: Record<string, string> = {
   impersonal_constructions: "Impersonal constructions",

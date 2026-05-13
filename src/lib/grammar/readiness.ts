@@ -39,9 +39,7 @@ export function getGrammarPointReadiness({
   };
 }
 
-export function getGrammarPointPublishGateMessage(
-  readiness: GrammarPointReadiness
-) {
+export function getGrammarPointPublishGateMessage(readiness: GrammarPointReadiness) {
   if (readiness.canPublish) return null;
 
   return `Cannot publish this grammar point yet: ${readiness.requiredIssues

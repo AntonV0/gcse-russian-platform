@@ -16,7 +16,10 @@ import {
   GRAMMAR_SET_SUMMARY_SELECT,
   GRAMMAR_TABLE_SELECT,
 } from "@/lib/grammar/selects";
-import { buildGrammarUsageStats, filterGrammarPointsForStudyVariant } from "@/lib/grammar/study-variants";
+import {
+  buildGrammarUsageStats,
+  filterGrammarPointsForStudyVariant,
+} from "@/lib/grammar/study-variants";
 import type {
   DbGrammarPointContentHealth,
   DbGrammarPointCoverage,
@@ -99,10 +102,8 @@ async function attachGrammarCountsAndUsage(
       totalPoints: summariesBySetId.get(grammarSet.id)?.point_count ?? 0,
       foundationTotalPoints:
         summariesBySetId.get(grammarSet.id)?.foundation_total_points ?? 0,
-      higherTotalPoints:
-        summariesBySetId.get(grammarSet.id)?.higher_total_points ?? 0,
-      volnaTotalPoints:
-        summariesBySetId.get(grammarSet.id)?.volna_total_points ?? 0,
+      higherTotalPoints: summariesBySetId.get(grammarSet.id)?.higher_total_points ?? 0,
+      volnaTotalPoints: summariesBySetId.get(grammarSet.id)?.volna_total_points ?? 0,
       foundationUsedPoints:
         summariesBySetId.get(grammarSet.id)?.foundation_used_points ?? 0,
       higherUsedPoints: summariesBySetId.get(grammarSet.id)?.higher_used_points ?? 0,

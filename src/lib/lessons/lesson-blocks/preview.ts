@@ -156,8 +156,7 @@ export function getLessonBlockPreview(block: LessonBlock | DbLessonBlockLike): s
     case "grammar-set":
       return typeof data.title === "string" && data.title.trim().length > 0
         ? joinPreview("Grammar set", data.title)
-        : typeof data.grammarSetSlug === "string" &&
-            data.grammarSetSlug.trim().length > 0
+        : typeof data.grammarSetSlug === "string" && data.grammarSetSlug.trim().length > 0
           ? joinPreview("Grammar set", data.grammarSetSlug)
           : "Grammar set block";
 

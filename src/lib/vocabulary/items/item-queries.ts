@@ -2,9 +2,15 @@ import { createClient } from "@/lib/supabase/server";
 
 import { buildVocabularySetCoverageSummary } from "@/lib/vocabulary/shared/coverage-summary";
 import { getVocabularyListsBySetIdDb } from "@/lib/vocabulary/sets/list-queries";
-import { normalizeVocabularyItem, normalizeVocabularyItemCoverage } from "@/lib/vocabulary/shared/normalizers";
+import {
+  normalizeVocabularyItem,
+  normalizeVocabularyItemCoverage,
+} from "@/lib/vocabulary/shared/normalizers";
 import { chunkValues, fetchSupabasePages } from "@/lib/vocabulary/shared/pagination";
-import { VOCABULARY_ITEM_COVERAGE_SELECT, VOCABULARY_ITEM_SELECT } from "@/lib/vocabulary/shared/selects";
+import {
+  VOCABULARY_ITEM_COVERAGE_SELECT,
+  VOCABULARY_ITEM_SELECT,
+} from "@/lib/vocabulary/shared/selects";
 import {
   filterVocabularyListsForStudyVariant,
   getVocabularyItemAppliesToStudyVariant,

@@ -27,7 +27,9 @@ export async function deleteVocabularyItemAction(formData: FormData) {
     coverage?.used_in_higher ||
     coverage?.used_in_volna
   ) {
-    throw new Error("Remove this item from lesson-used vocabulary coverage before deleting it");
+    throw new Error(
+      "Remove this item from lesson-used vocabulary coverage before deleting it"
+    );
   }
 
   await deleteVocabularyItemDb({ vocabularyItemId, vocabularySetId });

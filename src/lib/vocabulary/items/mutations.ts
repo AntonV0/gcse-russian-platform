@@ -192,11 +192,10 @@ export async function deleteVocabularySetDb(vocabularySetId: string) {
   lessonLinkCount += directLessonLinkCount ?? 0;
 
   if (vocabularyListIds.length > 0) {
-    const { count: listLessonLinkCount, error: listLessonLinkCountError } =
-      await supabase
-        .from("lesson_vocabulary_links")
-        .select("id", { count: "exact", head: true })
-        .in("vocabulary_list_id", vocabularyListIds);
+    const { count: listLessonLinkCount, error: listLessonLinkCountError } = await supabase
+      .from("lesson_vocabulary_links")
+      .select("id", { count: "exact", head: true })
+      .in("vocabulary_list_id", vocabularyListIds);
 
     if (listLessonLinkCountError) {
       console.error("Error checking list lesson vocabulary links before delete:", {
@@ -433,11 +432,14 @@ export async function bulkCreateVocabularyItemsDb(params: {
         .eq("vocabulary_set_id", params.vocabularySetId);
 
       if (cleanupError) {
-        console.error("Error cleaning up bulk vocabulary items after list link failure:", {
-          vocabularySetId: params.vocabularySetId,
-          vocabularyItemIds: insertedItemIds,
-          error: cleanupError,
-        });
+        console.error(
+          "Error cleaning up bulk vocabulary items after list link failure:",
+          {
+            vocabularySetId: params.vocabularySetId,
+            vocabularyItemIds: insertedItemIds,
+            error: cleanupError,
+          }
+        );
       }
 
       console.error("Error linking bulk vocabulary items to list:", {
@@ -525,7 +527,9 @@ export async function deleteVocabularyItemDb(params: {
   }
 
   if ((lessonLinkCount ?? 0) > 0) {
-    throw new Error("Remove this item from lesson-used vocabulary coverage before deleting it");
+    throw new Error(
+      "Remove this item from lesson-used vocabulary coverage before deleting it"
+    );
   }
 
   const { error } = await supabase

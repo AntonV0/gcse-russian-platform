@@ -56,14 +56,8 @@ function getDuplicateCanonicalKeyGroups(items: VocabularyMetadataItemRow[]) {
   return Array.from(groups.entries())
     .filter(([, groupItems]) => groupItems.length > 1)
     .map(([canonicalKey, groupItems]) => {
-      const russianValues = getUniqueNormalizedValues(
-        groupItems,
-        (item) => item.russian
-      );
-      const englishValues = getUniqueNormalizedValues(
-        groupItems,
-        (item) => item.english
-      );
+      const russianValues = getUniqueNormalizedValues(groupItems, (item) => item.russian);
+      const englishValues = getUniqueNormalizedValues(groupItems, (item) => item.english);
       const partOfSpeechValues = getUniqueNormalizedValues(
         groupItems,
         (item) => item.part_of_speech

@@ -15,9 +15,7 @@ export function applyGrammarSetFilters(
   const topicKey = filters?.topicKey?.trim();
   const sourceKey = filters?.sourceKey?.trim();
   const usageVariant =
-    filters?.usageVariant && filters.usageVariant !== "all"
-      ? filters.usageVariant
-      : null;
+    filters?.usageVariant && filters.usageVariant !== "all" ? filters.usageVariant : null;
   const published = filters?.published ?? "all";
 
   return grammarSets.filter((grammarSet) => {
