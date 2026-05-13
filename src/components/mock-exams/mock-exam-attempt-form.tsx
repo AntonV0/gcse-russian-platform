@@ -1,16 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
+import {
+  getUnansweredMockExamAttemptQuestions,
+  type MockExamAttemptReviewQuestion,
+} from "@/lib/mock-exams/attempt-submit-review";
 
-export type MockExamAttemptFormQuestion = {
-  label: string;
-  sectionTitle: string;
-  answerFieldNames: string[];
-  persistedAttachmentSaved: boolean;
-};
+export type MockExamAttemptFormQuestion = MockExamAttemptReviewQuestion;
 
 type MockExamAttemptFormProps = {
   action: (formData: FormData) => void | Promise<void>;
@@ -59,22 +58,6 @@ function MockExamSubmitButton({
   );
 }
 
-function hasUsableFormValue(value: FormDataEntryValue) {
-  if (typeof value === "string") {
-    return value.trim().length > 0;
-  }
-
-  return value.size > 0;
-}
-
-function isQuestionAnswered(question: MockExamAttemptFormQuestion, formData: FormData) {
-  const hasEnteredResponse = question.answerFieldNames.some((fieldName) =>
-    formData.getAll(fieldName).some(hasUsableFormValue)
-  );
-
-  return hasEnteredResponse || question.persistedAttachmentSaved;
-}
-
 export default function MockExamAttemptForm({
   action,
   attemptId,
@@ -89,6 +72,14 @@ export default function MockExamAttemptForm({
     return new Date(startedAt).getTime() + timeLimitMinutes * 60 * 1000;
   }, [startedAt, timeLimitMinutes]);
   const [now, setNow] = useState(() => Date.now());
+  const [unansweredQuestions, setUnansweredQuestions] = useState<
+    MockExamAttemptFormQuestion[]
+  >([]);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const submitAnywayRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const allowIncompleteSubmitRef = useRef(false);
+  const shouldRestoreFocusRef = useRef(true);
   const isExpired = Boolean(endsAt && now > endsAt);
 
   useEffect(() => {
@@ -97,6 +88,31 @@ export default function MockExamAttemptForm({
     const interval = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(interval);
   }, [endsAt, showControls]);
+
+  useEffect(() => {
+    if (!isReviewOpen) return;
+
+    const previousActiveElement =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    dialogRef.current?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsReviewOpen(false);
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      if (shouldRestoreFocusRef.current) {
+        previousActiveElement?.focus();
+      }
+      shouldRestoreFocusRef.current = true;
+    };
+  }, [isReviewOpen]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     const nativeEvent = event.nativeEvent as SubmitEvent;
@@ -109,38 +125,42 @@ export default function MockExamAttemptForm({
       return;
     }
 
-    const formData = new FormData(event.currentTarget);
-    const unansweredQuestions = questions.filter(
-      (question) => !isQuestionAnswered(question, formData)
-    );
-
-    if (unansweredQuestions.length === 0) {
+    if (allowIncompleteSubmitRef.current) {
+      allowIncompleteSubmitRef.current = false;
       return;
     }
 
-    const preview = unansweredQuestions
-      .slice(0, 6)
-      .map((question) => `${question.sectionTitle}: ${question.label}`)
-      .join("\n");
-    const remainingCount = unansweredQuestions.length - 6;
-    const remainingText = remainingCount > 0 ? `\n...and ${remainingCount} more.` : "";
-
-    const confirmed = window.confirm(
-      [
-        `${unansweredQuestions.length} question${
-          unansweredQuestions.length === 1 ? "" : "s"
-        } still look unanswered.`,
-        preview,
-        remainingText,
-        "Submit this attempt anyway?",
-      ]
-        .filter(Boolean)
-        .join("\n\n")
+    const formData = new FormData(event.currentTarget);
+    const nextUnansweredQuestions = getUnansweredMockExamAttemptQuestions(
+      questions,
+      formData
     );
 
-    if (!confirmed) {
-      event.preventDefault();
+    if (nextUnansweredQuestions.length === 0) {
+      return;
     }
+
+    event.preventDefault();
+    setUnansweredQuestions(nextUnansweredQuestions);
+    shouldRestoreFocusRef.current = true;
+    setIsReviewOpen(true);
+  }
+
+  function submitWithUnansweredQuestions() {
+    allowIncompleteSubmitRef.current = true;
+    shouldRestoreFocusRef.current = false;
+    setIsReviewOpen(false);
+    submitAnywayRef.current?.click();
+  }
+
+  function closeReviewDialog() {
+    shouldRestoreFocusRef.current = true;
+    setIsReviewOpen(false);
+  }
+
+  function closeAndJumpToQuestion() {
+    shouldRestoreFocusRef.current = false;
+    setIsReviewOpen(false);
   }
 
   return (
@@ -188,6 +208,112 @@ export default function MockExamAttemptForm({
               icon="confirm"
               ariaLabel="Submit mock exam attempt for marking"
             />
+          </div>
+        </div>
+      ) : null}
+
+      <button
+        ref={submitAnywayRef}
+        type="submit"
+        name="submitIntent"
+        value="submit"
+        className="hidden"
+        tabIndex={-1}
+        aria-hidden="true"
+      />
+
+      {isReviewOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-[color-mix(in_srgb,var(--text-primary)_38%,transparent)] px-4 py-5 sm:items-center"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeReviewDialog();
+            }
+          }}
+        >
+          <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mock-exam-unanswered-title"
+            aria-describedby="mock-exam-unanswered-description"
+            tabIndex={-1}
+            className="app-focus-ring max-h-[min(86vh,40rem)] w-full max-w-xl overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--background-elevated)] shadow-[var(--shadow-lg)]"
+          >
+            <div className="border-b border-[var(--border)] bg-[var(--surface-header-bg)] px-5 py-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <Badge tone="warning" icon="warning">
+                    Check before submitting
+                  </Badge>
+                  <h2
+                    id="mock-exam-unanswered-title"
+                    className="mt-3 app-card-title"
+                  >
+                    {unansweredQuestions.length} question
+                    {unansweredQuestions.length === 1 ? "" : "s"} still look
+                    unanswered
+                  </h2>
+                  <p
+                    id="mock-exam-unanswered-description"
+                    className="mt-2 app-card-desc"
+                  >
+                    You can jump back to any missing answer, or submit anyway if this is
+                    intentional.
+                  </p>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="quiet"
+                  size="sm"
+                  icon="cancel"
+                  iconOnly
+                  ariaLabel="Close unanswered questions dialog"
+                  onClick={closeReviewDialog}
+                />
+              </div>
+            </div>
+
+            <div className="max-h-[18rem] overflow-y-auto px-5 py-4">
+              <div className="grid gap-2">
+                {unansweredQuestions.map((question) => (
+                  <a
+                    key={question.anchorId}
+                    href={`#${question.anchorId}`}
+                    className="app-focus-ring rounded-lg border border-[var(--border)] bg-[var(--background-muted)] px-4 py-3 text-sm transition hover:border-[var(--border-strong)] hover:bg-[var(--background-elevated)]"
+                    onClick={closeAndJumpToQuestion}
+                  >
+                    <span className="block font-semibold text-[var(--text-primary)]">
+                      {question.label}
+                    </span>
+                    <span className="mt-1 block text-[var(--text-secondary)]">
+                      {question.sectionTitle}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="app-mobile-action-stack flex flex-col gap-2 border-t border-[var(--border)] bg-[var(--background-muted)] px-5 py-4 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                icon="back"
+                onClick={closeReviewDialog}
+              >
+                Go back and answer
+              </Button>
+              <Button
+                type="button"
+                variant="warning"
+                icon="confirm"
+                onClick={submitWithUnansweredQuestions}
+              >
+                Submit anyway
+              </Button>
+            </div>
           </div>
         </div>
       ) : null}
