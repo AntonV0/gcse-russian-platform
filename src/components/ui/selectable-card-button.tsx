@@ -26,12 +26,16 @@ export default function SelectableCardButton({
   children,
   ...buttonProps
 }: SelectableCardButtonProps) {
+  const ariaPressed = buttonProps["aria-pressed"] ?? active;
+
   return (
     <button
       {...buttonProps}
       type="button"
+      aria-pressed={ariaPressed}
+      data-state={active ? "selected" : "idle"}
       className={[
-        "app-focus-ring app-card-interaction-subtle rounded-xl border p-4 text-left",
+        "app-focus-ring app-card-interaction-subtle rounded-[var(--radius-card)] border p-4 text-left",
         active
           ? "app-selected-surface"
           : "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-primary)] hover:border-[var(--border-strong)]",
@@ -44,9 +48,9 @@ export default function SelectableCardButton({
         {leadingVisual ?? (
           <span
             className={[
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border",
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-control)] border",
               active
-                ? "border-[var(--accent-selected-border)] bg-[color-mix(in_srgb,var(--accent)_9%,var(--background-elevated))] text-[var(--accent-on-soft)]"
+                ? "border-[var(--surface-selected-border)] bg-[var(--surface-selected-icon-bg)] text-[var(--surface-selected-text)]"
                 : "border-[var(--border)] bg-[var(--background-muted)]",
             ].join(" ")}
           >
@@ -73,9 +77,8 @@ export default function SelectableCardButton({
 
       {statusLabel ? (
         <span
-          aria-hidden="true"
           className={[
-            "mt-4 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
+            "mt-4 inline-flex rounded-[var(--radius-status-pill)] px-2.5 py-1 text-xs font-semibold",
             active
               ? "bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent-border-ink)_14%,transparent)]"
               : "bg-[var(--background-muted)] text-[var(--text-secondary)]",

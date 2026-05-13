@@ -294,6 +294,7 @@ export default function Button(props: ButtonProps) {
           aria-busy={isBusy || props["aria-busy"] || undefined}
           aria-disabled={isBusy || undefined}
           data-pending={isBusy ? "" : undefined}
+          tabIndex={isBusy ? -1 : linkProps.tabIndex}
           title={resolvedTitle}
           onClick={(event) => {
             if (isBusy) {

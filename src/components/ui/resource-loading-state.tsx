@@ -9,12 +9,8 @@ type ResourceLoadingStateProps = {
 function LoadingBlock({ className = "" }: { className?: string }) {
   return (
     <div
-      className={[
-        "animate-pulse rounded-xl bg-[color-mix(in_srgb,var(--background-muted)_82%,var(--background-elevated))]",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      aria-hidden="true"
+      className={["app-loading-skeleton", className].filter(Boolean).join(" ")}
     />
   );
 }
@@ -57,7 +53,7 @@ export default function ResourceLoadingState({
         </div>
       </section>
 
-      <section className="app-section-card rounded-2xl p-5">
+      <section className="app-section-card p-5">
         <div className="mb-4 space-y-2">
           <p className="text-sm font-semibold text-[var(--text-primary)]">
             Loading finder
@@ -74,7 +70,7 @@ export default function ResourceLoadingState({
         </div>
       </section>
 
-      <section className="app-section-card rounded-2xl p-5">
+      <section className="app-section-card p-5">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <LoadingBlock className="h-5 w-36" />
           <LoadingBlock className="h-7 w-24 rounded-full" />

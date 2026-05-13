@@ -226,14 +226,21 @@
 }
 
 [data-theme="dark"] .platform-sidebar-account-card {
-  border-color: color-mix(in srgb, var(--accent-border-ink) 50%, var(--dark-surface-border));
+  border-color: color-mix(
+    in srgb,
+    var(--accent-border-ink) 50%,
+    var(--dark-surface-border)
+  );
   background: color-mix(in srgb, var(--accent) 5%, var(--dark-control-bg));
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
 }
 
 [data-theme="dark"] .platform-sidebar-account-avatar {
-  border-color: color-mix(in srgb, var(--accent-border-ink) 54%, var(--dark-surface-border));
+  border-color: color-mix(
+    in srgb,
+    var(--accent-border-ink) 54%,
+    var(--dark-surface-border)
+  );
   background: color-mix(in srgb, var(--accent) 16%, var(--dark-surface-elevated));
 }
 
@@ -255,7 +262,11 @@
 
 [data-theme="dark"] .app-feature-panel-preview,
 [data-theme="dark"] .app-feature-panel-actions {
-  border-color: color-mix(in srgb, var(--accent-border-ink) 48%, var(--dark-surface-border));
+  border-color: color-mix(
+    in srgb,
+    var(--accent-border-ink) 48%,
+    var(--dark-surface-border)
+  );
   background: color-mix(in srgb, var(--accent) 3%, var(--dark-control-bg));
 }
 
@@ -386,6 +397,7 @@
 .app-empty-dashed-warm {
   border-style: solid;
   border-color: var(--border-subtle);
+  border-radius: var(--radius-empty-state);
   background: var(--surface-raised-bg);
   box-shadow:
     0 10px 24px color-mix(in srgb, var(--text-primary) 4%, transparent),

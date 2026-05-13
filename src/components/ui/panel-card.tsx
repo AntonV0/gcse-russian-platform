@@ -111,7 +111,7 @@ export default function PanelCard({
       />
 
       <Card
-        className={["app-panel-card rounded-2xl", toneClasses.card]
+        className={["app-panel-card rounded-[var(--radius-card)]", toneClasses.card]
           .filter(Boolean)
           .join(" ")}
       >

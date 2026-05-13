@@ -118,7 +118,10 @@ export default function SectionCard({
       ) : null}
 
       <Card
-        className={["app-section-card overflow-hidden rounded-2xl", toneClasses.card]
+        className={[
+          "app-section-card overflow-hidden rounded-[var(--radius-card)]",
+          toneClasses.card,
+        ]
           .filter(Boolean)
           .join(" ")}
       >

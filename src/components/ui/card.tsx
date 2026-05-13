@@ -31,7 +31,7 @@ export function Card({ children, className, interactive = false }: CardProps) {
 
       <div
         className={[
-          "app-card app-card-shell overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform]",
+          "app-card app-card-shell overflow-hidden rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform]",
           interactive
             ? "app-card-hover app-card-interaction-subtle hover:border-[var(--border-strong)]"
             : "",

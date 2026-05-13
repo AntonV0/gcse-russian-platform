@@ -197,12 +197,14 @@ function getVariantClass(variant: ButtonVariant, disabled: boolean) {
 
 function getSizeClass(size: ButtonSize, iconOnly: boolean) {
   if (iconOnly) {
-    return size === "sm" ? "h-10 w-10 rounded-xl p-0" : "h-11 w-11 rounded-2xl p-0";
+    return size === "sm"
+      ? "h-10 w-10 rounded-[var(--radius-control)] p-0"
+      : "h-11 w-11 rounded-[var(--radius-lg)] p-0";
   }
 
   return size === "sm"
-    ? "min-h-10 rounded-xl px-3.5 py-2 text-sm"
-    : "min-h-11 rounded-2xl px-4.5 py-2.5 text-sm";
+    ? "min-h-10 rounded-[var(--radius-control)] px-3.5 py-2 text-sm"
+    : "min-h-11 rounded-[var(--radius-control)] px-4.5 py-2.5 text-sm";
 }
 
 export function getButtonIconSize(size: ButtonSize) {

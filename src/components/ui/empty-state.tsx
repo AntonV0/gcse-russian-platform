@@ -72,7 +72,7 @@ export default function EmptyState({
 
       <div
         className={[
-          "app-empty-dashed-warm relative overflow-hidden rounded-[1.5rem] border",
+          "app-empty-dashed-warm relative overflow-hidden border",
           "px-5 py-7 text-center sm:px-6 sm:py-8",
         ].join(" ")}
       >

@@ -1,6 +1,7 @@
 .app-card-shell {
   overflow: hidden;
   background: var(--surface-raised-bg);
+  border-radius: var(--radius-card);
   box-shadow: var(--surface-panel-shadow);
 }
 

@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 999px;
+  border-radius: var(--radius-status-pill);
   border: 1px solid var(--border);
   padding: 0.35rem 0.65rem;
   font-size: 0.72rem;
@@ -46,7 +46,7 @@
   justify-content: center;
   min-height: 2.5rem;
   max-width: 100%;
-  border-radius: 999px;
+  border-radius: var(--radius-status-pill);
   border: 1px solid var(--border);
   background: var(--background-elevated);
   color: var(--text-primary);
@@ -141,13 +141,10 @@
 }
 
 .app-selected-surface {
-  border-color: var(--accent-selected-border);
-  background: color-mix(in srgb, var(--accent) 9%, var(--background-elevated));
-  color: var(--accent-on-soft);
-  box-shadow:
-    0 1px 2px color-mix(in srgb, var(--text-primary) 7%, transparent),
-    0 10px 22px color-mix(in srgb, var(--text-primary) 5%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--brand-white) 16%, transparent);
+  border-color: var(--surface-selected-border);
+  background: var(--surface-selected-bg);
+  color: var(--surface-selected-text);
+  box-shadow: var(--surface-selected-shadow);
 }
 
 .app-selected-surface-strong {
@@ -171,11 +168,8 @@
 }
 
 [data-theme="dark"] .app-selected-surface {
-  background: color-mix(in srgb, var(--accent) 10%, var(--dark-control-bg));
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.24),
-    0 14px 30px color-mix(in srgb, var(--accent) 9%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: var(--surface-selected-bg);
+  box-shadow: var(--surface-selected-shadow);
 }
 
 /* ========= Badge theme fixes ========= */
@@ -186,7 +180,7 @@
 .app-badge-warning,
 .app-badge-danger,
 .app-badge-muted {
-  border-radius: 999px;
+  border-radius: var(--radius-status-pill);
 }
 
 .app-badge-default *,

@@ -22,7 +22,7 @@ export default function ActionPill({
     <span
       {...spanProps}
       className={[
-        "inline-flex min-h-10 max-w-full items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold shadow-[0_4px_10px_color-mix(in_srgb,var(--text-primary)_4%,transparent)] transition-[background-color,border-color,color,box-shadow,filter] duration-200 ease-out",
+        "inline-flex min-h-10 max-w-full items-center justify-center gap-2 rounded-[var(--radius-control)] border px-3.5 py-2 text-sm font-semibold shadow-[0_4px_10px_color-mix(in_srgb,var(--text-primary)_4%,transparent)] transition-[background-color,border-color,color,box-shadow,filter] duration-200 ease-out",
         toneClass,
         className,
       ]
