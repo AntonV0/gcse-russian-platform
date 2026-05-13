@@ -67,7 +67,7 @@ export default function ProfileDetailsSection({
           label="Email"
           description={
             <>
-              Sign-in email changes are found in{" "}
+              Password and reset options are in{" "}
               <a
                 href="/settings"
                 className="font-bold text-[var(--accent-ink)] underline-offset-4 hover:underline"

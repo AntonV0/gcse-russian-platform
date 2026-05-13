@@ -53,7 +53,7 @@ export function SidebarNextUpCard({ nextUp }: { nextUp: PlatformSidebarNextUp })
             {nextUp.title}
           </span>
         </span>
-        <span className="mt-1 block truncate text-[11px] font-medium leading-tight text-[color-mix(in_srgb,var(--accent-on-fill)_76%,transparent)]">
+        <span className="mt-1 block line-clamp-2 text-[11px] font-medium leading-snug text-[color-mix(in_srgb,var(--accent-on-fill)_76%,transparent)]">
           {nextUp.description}
         </span>
       </span>
