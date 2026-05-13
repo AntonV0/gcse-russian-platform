@@ -18,10 +18,14 @@ import {
 } from "@/lib/dashboard/mastery-signals";
 import {
   getStudentDashboardActionQueue,
+  getStudentDashboardStudyPrompts,
+  getStudentDashboardWins,
   type StudentDashboardAction,
   type StudentDashboardActivity,
   type StudentDashboardFeedbackItem,
   type StudentDashboardMockAttemptItem,
+  type StudentDashboardStudyPrompt,
+  type StudentDashboardWin,
 } from "@/lib/dashboard/student-next-actions";
 
 type DashboardNextStep = ReturnType<typeof getDashboardNextStep>;
@@ -45,6 +49,9 @@ export function StudentDashboardPanel({
   const primaryAction = nextActions[0];
   const masterySignals = getMasterySignals({ learningPlan, activity });
   const milestone = getLearningMilestone({ learningPlan, activity });
+  const weakAreas = getWeakestMasterySignals(masterySignals);
+  const studyPrompts = getStudentDashboardStudyPrompts(activity, learningPlan);
+  const recentWins = getStudentDashboardWins(activity, learningPlan);
 
   return (
     <>
@@ -76,7 +83,9 @@ export function StudentDashboardPanel({
                   ) : null}
                 </div>
 
-                <h1 className="app-heading-hero max-w-3xl">{primaryAction.title}</h1>
+                <h1 className="app-heading-hero max-w-3xl">
+                  Today&apos;s focus: {primaryAction.title}
+                </h1>
                 <p className="app-subtitle max-w-2xl">{primaryAction.description}</p>
               </div>
             </div>
@@ -119,13 +128,18 @@ export function StudentDashboardPanel({
                 Mock exams
               </Button>
             </div>
+
+            <TodayFocusSteps action={primaryAction} prompts={studyPrompts} />
           </div>
 
-          <LearningSnapshotCard
-            dashboard={dashboard}
-            completedLessons={completedLessons}
-            learningPlan={learningPlan}
-          />
+          <div className="space-y-4">
+            <LearningSnapshotCard
+              dashboard={dashboard}
+              completedLessons={completedLessons}
+              learningPlan={learningPlan}
+            />
+            <AccessFocusCard dashboard={dashboard} />
+          </div>
         </div>
       </section>
 
@@ -168,13 +182,19 @@ export function StudentDashboardPanel({
         />
       </section>
 
+      <section className="grid gap-4 xl:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]">
+        <WeakAreasCard weakAreas={weakAreas} />
+        <StudyPromptCard prompts={studyPrompts} />
+      </section>
+
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
         <SkillReadinessCard masterySignals={masterySignals} />
         <LearningMilestoneCard milestone={milestone} />
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.7fr)_minmax(300px,0.8fr)]">
         <NextActionQueueCard actions={nextActions} />
+        <RecentWinsCard wins={recentWins} />
         <RecentFeedbackCard feedbackItems={activity.recentFeedback} />
       </section>
 
@@ -183,12 +203,18 @@ export function StudentDashboardPanel({
         <MockAttemptFocusCard activity={activity} />
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <DashboardLinkCard
           title="Course path"
           href="/courses"
           linkLabel="Open courses"
           description="Continue lessons in order and keep your GCSE Russian progress moving."
+        />
+        <DashboardLinkCard
+          title="Vocabulary"
+          href="/vocabulary"
+          linkLabel="Practise words"
+          description="Build recall with short vocabulary sessions before lessons or homework."
         />
         <DashboardLinkCard
           title="Grammar reference"
@@ -206,6 +232,200 @@ export function StudentDashboardPanel({
 
       <StudentSupportCard accessMode={dashboard.accessMode} />
     </>
+  );
+}
+
+function TodayFocusSteps({
+  action,
+  prompts,
+}: {
+  action: StudentDashboardAction;
+  prompts: StudentDashboardStudyPrompt[];
+}) {
+  return (
+    <div className="grid gap-2 rounded-2xl border border-[var(--surface-accent-border)] bg-[var(--surface-accent-bg)] p-3 text-sm shadow-[var(--surface-accent-shadow)] sm:grid-cols-3">
+      <FocusStep index={1} title="Start" description={action.label} icon={action.icon} />
+      <FocusStep
+        index={2}
+        title="Recall"
+        description={prompts[0]?.label ?? "Practice vocabulary"}
+        icon="vocabulary"
+      />
+      <FocusStep
+        index={3}
+        title="Review"
+        description={prompts[1]?.label ?? "Open grammar"}
+        icon="grammar"
+      />
+    </div>
+  );
+}
+
+function FocusStep({
+  index,
+  title,
+  description,
+  icon,
+}: {
+  index: number;
+  title: string;
+  description: string;
+  icon: StudentDashboardAction["icon"];
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-3 rounded-xl bg-[var(--background-elevated)]/80 p-3">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--accent-ink)]">
+        <AppIcon icon={icon} size={16} />
+      </span>
+      <div className="min-w-0">
+        <div className="text-xs font-semibold uppercase text-[var(--text-secondary)]">
+          {index}. {title}
+        </div>
+        <div className="truncate font-semibold text-[var(--text-primary)]">
+          {description}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AccessFocusCard({ dashboard }: { dashboard: DashboardInfo }) {
+  const accessCopy = getAccessFocusCopy(dashboard);
+
+  return (
+    <DashboardCard title={accessCopy.title} headingLevel={3}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between xl:flex-col">
+        <p>{accessCopy.description}</p>
+        <Button
+          href={accessCopy.href}
+          variant="secondary"
+          size="sm"
+          icon={accessCopy.icon}
+          className="w-full sm:w-auto"
+        >
+          {accessCopy.label}
+        </Button>
+      </div>
+    </DashboardCard>
+  );
+}
+
+function getAccessFocusCopy(dashboard: DashboardInfo) {
+  if (dashboard.accessMode === "trial") {
+    return {
+      title: "Trial focus",
+      description:
+        "Use this trial to test lessons, vocabulary, grammar, and exam practice before choosing the right long-term route.",
+      href: "/account/billing",
+      label: "Review options",
+      icon: "billing" as const,
+    };
+  }
+
+  if (dashboard.accessMode === "volna") {
+    return {
+      title: "Volna focus",
+      description:
+        "Balance your teacher-led assignments with the next lesson so classwork and independent practice stay connected.",
+      href: "/assignments",
+      label: "View assignments",
+      icon: "assignments" as const,
+    };
+  }
+
+  if (dashboard.accessState === "full_foundation") {
+    return {
+      title: "Foundation focus",
+      description:
+        "Keep building accuracy first. Higher sampling is available when you want a stretch task.",
+      href: "/account/billing",
+      label: "Upgrade options",
+      icon: "billing" as const,
+    };
+  }
+
+  return {
+    title: "Full access",
+    description:
+      "Your course path, revision resources, and exam practice are open. Follow the next action first.",
+    href: "/courses",
+    label: "Open course path",
+    icon: "courses" as const,
+  };
+}
+
+function getWeakestMasterySignals(masterySignals: MasterySignal[]) {
+  return [...masterySignals]
+    .sort((a, b) => {
+      if (a.tone === "warning" && b.tone !== "warning") return -1;
+      if (b.tone === "warning" && a.tone !== "warning") return 1;
+      return a.value - b.value;
+    })
+    .slice(0, 2);
+}
+
+function WeakAreasCard({ weakAreas }: { weakAreas: MasterySignal[] }) {
+  return (
+    <DashboardCard title="Weak areas to nudge" headingLevel={3} className="h-full">
+      <div className="space-y-3">
+        {weakAreas.map((signal) => (
+          <div key={signal.title} className="app-tactile-row rounded-xl border p-3">
+            <div className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--text-secondary)]">
+                <AppIcon icon={signal.icon} size={16} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="app-heading-card">{signal.title}</div>
+                  <Badge tone={signal.tone === "warning" ? "warning" : "muted"}>
+                    {signal.value}%
+                  </Badge>
+                </div>
+                <p className="mt-1 app-text-body-muted">{signal.label}</p>
+                <p className="mt-1 app-text-caption">{signal.evidence}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </DashboardCard>
+  );
+}
+
+function StudyPromptCard({ prompts }: { prompts: StudentDashboardStudyPrompt[] }) {
+  return (
+    <DashboardCard
+      title="Recommended practice prompts"
+      headingLevel={3}
+      className="h-full"
+    >
+      <div className="grid gap-3 md:grid-cols-3">
+        {prompts.map((prompt) => (
+          <div
+            key={prompt.id}
+            className="app-tactile-row flex h-full flex-col rounded-xl border p-3"
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone={prompt.badgeTone} icon={prompt.icon}>
+                {prompt.badgeLabel}
+              </Badge>
+              {prompt.metaLabel ? <Badge tone="muted">{prompt.metaLabel}</Badge> : null}
+            </div>
+            <div className="mt-3 app-heading-card">{prompt.title}</div>
+            <p className="mt-1 flex-1 app-text-body-muted">{prompt.description}</p>
+            <Button
+              href={prompt.href}
+              variant="secondary"
+              size="sm"
+              icon={prompt.icon}
+              className="mt-4 w-full"
+            >
+              {prompt.label}
+            </Button>
+          </div>
+        ))}
+      </div>
+    </DashboardCard>
   );
 }
 
@@ -393,11 +613,37 @@ function ActionRow({ action, index }: { action: StudentDashboardAction; index: n
           size="sm"
           icon={action.icon}
           ariaLabel={`${action.label}: ${action.title}`}
+          className="w-full sm:w-auto"
         >
           {action.label}
         </Button>
       </div>
     </div>
+  );
+}
+
+function RecentWinsCard({ wins }: { wins: StudentDashboardWin[] }) {
+  return (
+    <DashboardCard title="Recent wins" headingLevel={3} className="h-full">
+      <div className="space-y-3">
+        {wins.map((win) => (
+          <div key={win.id} className="app-tactile-row rounded-xl border p-3">
+            <div className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--success-surface)] text-[var(--success-text)]">
+                <AppIcon icon={win.icon} size={16} />
+              </span>
+              <div className="min-w-0">
+                <Badge tone={win.badgeTone} icon={win.icon}>
+                  {win.badgeLabel}
+                </Badge>
+                <div className="mt-2 app-heading-card">{win.title}</div>
+                <p className="mt-1 app-text-body-muted">{win.description}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </DashboardCard>
   );
 }
 
@@ -638,12 +884,7 @@ function StudentSupportCard({ accessMode }: { accessMode: DashboardInfo["accessM
               Your Volna student area includes teacher-led assignments and guided support.
             </p>
 
-            <Button
-              href="/assignments"
-              variant="secondary"
-              size="sm"
-              icon="assignments"
-            >
+            <Button href="/assignments" variant="secondary" size="sm" icon="assignments">
               View assignments
             </Button>
           </>
@@ -654,12 +895,7 @@ function StudentSupportCard({ accessMode }: { accessMode: DashboardInfo["accessM
               online GCSE Russian classes.
             </p>
 
-            <Button
-              href="/online-classes"
-              variant="secondary"
-              size="sm"
-              icon="school"
-            >
+            <Button href="/online-classes" variant="secondary" size="sm" icon="school">
               Explore online classes
             </Button>
           </>

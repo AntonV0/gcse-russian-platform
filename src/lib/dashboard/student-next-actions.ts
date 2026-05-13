@@ -10,6 +10,7 @@ import { MOCK_EXAM_ATTEMPT_SELECT } from "@/lib/mock-exams/selects";
 import type { DbMockExamAttempt, DbMockExamSet } from "@/lib/mock-exams/types";
 import type { AppIconKey } from "@/lib/shared/icons";
 import { createClient } from "@/lib/supabase/server";
+import type { StudentLearningPlan } from "./learning-plan";
 
 type ActionTone = "info" | "success" | "warning" | "danger" | "muted";
 
@@ -69,6 +70,19 @@ export type StudentDashboardFallbackAction = {
   href: string;
   label: string;
   icon: AppIconKey;
+};
+
+export type StudentDashboardStudyPrompt = StudentDashboardAction & {
+  kind: "vocabulary" | "grammar" | "exam";
+};
+
+export type StudentDashboardWin = {
+  id: string;
+  title: string;
+  description: string;
+  icon: AppIconKey;
+  badgeLabel: string;
+  badgeTone: ActionTone;
 };
 
 function getSubmissionStatus(
@@ -191,6 +205,12 @@ function getFallbackAction(
     badgeLabel: "Course path",
     badgeTone: "info",
   };
+}
+
+function isUrgentAction(
+  action: StudentDashboardAction | null
+): action is StudentDashboardAction {
+  return action?.badgeLabel === "Overdue" || action?.badgeLabel === "Due soon";
 }
 
 async function getStudentMockAttemptItems(
@@ -338,7 +358,7 @@ export function getStudentDashboardActionQueue(
   activity: StudentDashboardActivity,
   fallback: StudentDashboardFallbackAction,
   options: { preferLearningPlan?: boolean } = {}
-) {
+): StudentDashboardAction[] {
   const learningPlanAction = getFallbackAction(fallback);
   const assignmentAction = activity.pendingAssignments[0]
     ? getAssignmentAction(activity.pendingAssignments[0])
@@ -351,7 +371,168 @@ export function getStudentDashboardActionQueue(
     activity.recentFeedback[0] ? getFeedbackAction(activity.recentFeedback[0]) : null,
   ].filter((action): action is StudentDashboardAction => action !== null);
 
-  return options.preferLearningPlan
-    ? [learningPlanAction, ...activityActions]
-    : [...activityActions, learningPlanAction];
+  if (!options.preferLearningPlan) {
+    return [...activityActions, learningPlanAction];
+  }
+
+  if (isUrgentAction(assignmentAction)) {
+    return [
+      assignmentAction,
+      learningPlanAction,
+      ...activityActions.filter((action) => action.id !== assignmentAction.id),
+    ];
+  }
+
+  return [learningPlanAction, ...activityActions];
+}
+
+export function getStudentDashboardStudyPrompts(
+  activity: StudentDashboardActivity,
+  learningPlan: StudentLearningPlan
+): StudentDashboardStudyPrompt[] {
+  const nextLessonMeta = learningPlan.nextLesson
+    ? `Lesson ${learningPlan.nextLesson.lessonNumber}`
+    : learningPlan.totalLessons > 0
+      ? `${learningPlan.completedLessons} of ${learningPlan.totalLessons} lessons`
+      : "Quick recall";
+
+  return [
+    {
+      kind: "vocabulary",
+      id: "prompt-vocabulary",
+      title: learningPlan.nextLesson
+        ? "Warm up the next lesson vocabulary"
+        : "Build a five-word recall set",
+      description: learningPlan.nextLesson
+        ? `Preview key words before ${learningPlan.nextLesson.title} so the lesson feels lighter.`
+        : "Pick a small word set and test recall before opening a longer study session.",
+      href: "/vocabulary",
+      label: "Practice vocabulary",
+      icon: "vocabulary",
+      badgeLabel: "Vocabulary",
+      badgeTone: "info",
+      metaLabel: nextLessonMeta,
+    },
+    {
+      kind: "grammar",
+      id: "prompt-grammar",
+      title:
+        activity.stats.recentFeedback > 0
+          ? "Fix one grammar point from feedback"
+          : activity.stats.pendingAssignments > 0
+            ? "Check grammar before homework"
+            : "Refresh one useful grammar pattern",
+      description:
+        activity.stats.recentFeedback > 0
+          ? "Open the grammar reference, choose one correction, and reuse it in a fresh sentence."
+          : "Use the grammar hub as a short reference stop before writing or translation work.",
+      href: "/grammar",
+      label: "Open grammar",
+      icon: "grammar",
+      badgeLabel: "Grammar",
+      badgeTone: activity.stats.pendingAssignments > 0 ? "warning" : "info",
+      metaLabel:
+        activity.stats.reviewedAssignments > 0
+          ? `${activity.stats.reviewedAssignments} reviewed`
+          : "Reference",
+    },
+    {
+      kind: "exam",
+      id: "prompt-exam",
+      title:
+        activity.stats.draftMockAttempts > 0
+          ? "Finish the saved mock while it is fresh"
+          : "Do one exam-style practice block",
+      description:
+        activity.stats.markedMockAttempts > 0
+          ? "Use marked mock evidence to choose the next paper skill to sharpen."
+          : "Start small: one timed section is enough to build exam rhythm.",
+      href: activity.draftMockAttempts[0]?.href ?? "/mock-exams",
+      label: activity.stats.draftMockAttempts > 0 ? "Resume mock" : "Open mock exams",
+      icon: "mockExam",
+      badgeLabel: "Exam prep",
+      badgeTone: activity.stats.draftMockAttempts > 0 ? "warning" : "info",
+      metaLabel:
+        activity.stats.markedMockAttempts > 0
+          ? `${activity.stats.markedMockAttempts} marked`
+          : "GCSE practice",
+    },
+  ];
+}
+
+export function getStudentDashboardWins(
+  activity: StudentDashboardActivity,
+  learningPlan: StudentLearningPlan
+): StudentDashboardWin[] {
+  const wins: StudentDashboardWin[] = [];
+
+  if (learningPlan.completedLessons > 0) {
+    wins.push({
+      id: "lessons-complete",
+      title: "Lesson progress secured",
+      description: `${learningPlan.completedLessons} lesson${
+        learningPlan.completedLessons === 1 ? "" : "s"
+      } completed on this path.`,
+      icon: "completed",
+      badgeLabel: "Course progress",
+      badgeTone: "success",
+    });
+  }
+
+  if (activity.stats.reviewedAssignments > 0) {
+    wins.push({
+      id: "assignments-reviewed",
+      title: "Teacher feedback bank",
+      description: `${activity.stats.reviewedAssignments} assignment${
+        activity.stats.reviewedAssignments === 1 ? "" : "s"
+      } reviewed and ready to learn from.`,
+      icon: "feedback",
+      badgeLabel: "Reviewed work",
+      badgeTone: "success",
+    });
+  }
+
+  if (activity.stats.markedMockAttempts > 0) {
+    wins.push({
+      id: "mocks-marked",
+      title: "Exam evidence recorded",
+      description: `${activity.stats.markedMockAttempts} marked mock attempt${
+        activity.stats.markedMockAttempts === 1 ? "" : "s"
+      } available for revision decisions.`,
+      icon: "mockExam",
+      badgeLabel: "Mock progress",
+      badgeTone: "success",
+    });
+  }
+
+  if (
+    activity.stats.totalAssignments > 0 &&
+    activity.stats.pendingAssignments === 0 &&
+    activity.stats.submittedAssignments === 0
+  ) {
+    wins.push({
+      id: "assignments-clear",
+      title: "Homework queue clear",
+      description: "No teacher-set assignments are currently waiting to be started.",
+      icon: "assignments",
+      badgeLabel: "Clear queue",
+      badgeTone: "success",
+    });
+  }
+
+  if (wins.length > 0) {
+    return wins.slice(0, 3);
+  }
+
+  return [
+    {
+      id: "first-win-ready",
+      title: "First win is close",
+      description:
+        "Start with one lesson, one vocabulary recall, or one short grammar check.",
+      icon: "star",
+      badgeLabel: "Start today",
+      badgeTone: "info",
+    },
+  ];
 }
