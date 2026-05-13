@@ -66,7 +66,7 @@ export default function ThemeAccentSelector() {
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-decorative-border)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-selected-border)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
           <AppIcon icon="palette" size={18} />
         </span>
 
@@ -136,13 +136,13 @@ export default function ThemeAccentSelector() {
               statusLabel={isActive ? "Selected" : "Choose"}
             >
               <span
-                className="mt-3 block rounded-lg border border-[color-mix(in_srgb,var(--accent)_22%,var(--border-subtle))] bg-[var(--background-elevated)] p-2"
+                className="mt-3 block rounded-lg border border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border-subtle))] bg-[var(--background-elevated)] p-2"
                 aria-hidden="true"
               >
                 <span className="mb-2 block h-1.5 rounded-full bg-[var(--accent-fill)] shadow-[0_6px_16px_color-mix(in_srgb,var(--accent)_12%,transparent)]" />
                 <span className="flex items-center justify-between gap-2">
                   <span className="h-2 w-10 rounded-full bg-[var(--background-muted)]" />
-                  <span className="h-5 w-5 rounded-md bg-[color-mix(in_srgb,var(--accent)_12%,var(--background-elevated))] shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent)_20%,transparent)]" />
+                  <span className="h-5 w-5 rounded-md bg-[color-mix(in_srgb,var(--accent)_12%,var(--background-elevated))] shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent-border-ink)_34%,transparent)]" />
                 </span>
               </span>
             </SelectableCardButton>

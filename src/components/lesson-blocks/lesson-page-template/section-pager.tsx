@@ -80,7 +80,7 @@ export function SectionPager({
       );
       dock.style.setProperty(
         "--lesson-pager-top-border-color",
-        `color-mix(in srgb, color-mix(in srgb, var(--accent) 18%, var(--border-subtle)) ${(borderOpacity * 100).toFixed(1)}%, transparent)`
+        `color-mix(in srgb, color-mix(in srgb, var(--accent-border-ink) 30%, var(--border-subtle)) ${(borderOpacity * 100).toFixed(1)}%, transparent)`
       );
     }
 
@@ -167,7 +167,7 @@ export function SectionPager({
       ref={dockRef}
       className="app-section-pager-dock sticky bottom-0 z-30 -mb-8 overflow-visible pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-5 lg:pb-3 xl:static xl:mb-0 xl:pb-0 xl:pt-0"
     >
-      <div className="app-section-pager-card dev-marker-host relative flex w-full flex-col gap-3 rounded-b-xl rounded-t-none border border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="app-section-pager-card dev-marker-host relative flex w-full flex-col gap-3 rounded-b-xl rounded-t-none border border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--border-subtle))] px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
         {SHOW_UI_DEBUG ? (
           <DevComponentMarker
             componentName="SectionPager"

@@ -46,7 +46,7 @@ export default function SelectableCardButton({
             className={[
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border",
               active
-                ? "border-[var(--accent-decorative-border)] bg-[color-mix(in_srgb,var(--accent)_9%,var(--background-elevated))] text-[var(--accent-on-soft)]"
+                ? "border-[var(--accent-selected-border)] bg-[color-mix(in_srgb,var(--accent)_9%,var(--background-elevated))] text-[var(--accent-on-soft)]"
                 : "border-[var(--border)] bg-[var(--background-muted)]",
             ].join(" ")}
           >
@@ -77,7 +77,7 @@ export default function SelectableCardButton({
           className={[
             "mt-4 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
             active
-              ? "bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_12%,transparent)]"
+              ? "bg-[var(--accent-fill)] text-[var(--accent-on-fill)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent-border-ink)_14%,transparent)]"
               : "bg-[var(--background-muted)] text-[var(--text-secondary)]",
           ].join(" ")}
         >

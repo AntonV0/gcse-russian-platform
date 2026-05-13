@@ -181,7 +181,7 @@
 .app-accent-link {
   color: var(--accent-ink);
   text-decoration-line: underline;
-  text-decoration-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--accent-border-ink) 44%, transparent);
   text-decoration-thickness: 2px;
   text-underline-offset: 0.18em;
   transition:

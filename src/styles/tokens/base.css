@@ -1,8 +1,8 @@
 :root {
   /* ========= Core palette ========= */
-  --background: #f6f7f8;
+  --background: #f7f8fb;
   --background-elevated: #ffffff;
-  --background-muted: #eef1f4;
+  --background-muted: #eef2f6;
   --background-soft-accent: var(--accent-soft);
   --background-soft-blue: #edf4ff;
   --background-soft-danger: #fff2f2;
@@ -13,13 +13,13 @@
   --text-muted: #64748b;
   --text-inverse: #ffffff;
 
-  --border: #d8dde3;
-  --border-subtle: #e3e7ec;
-  --border-strong: #c3cad3;
+  --border: #d7dee7;
+  --border-subtle: #e4e9f0;
+  --border-strong: #c0c9d4;
 
   --surface-primary: #ffffff;
   --surface-elevated: #ffffff;
-  --surface-secondary: #eef1f3;
+  --surface-secondary: #eef2f6;
   --dark-page-bg: #0f1115;
   --dark-surface-base: #13161b;
   --dark-surface-elevated: #171b21;
@@ -42,9 +42,12 @@
   --accent-ink: #1d4ed8;
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent-ink);
+  --accent-border-ink: var(--accent-fill);
+  --accent-brand-ink: var(--accent-decorative-fill);
+  --accent-brand-line: var(--accent-decorative-fill-bright);
   --accent-soft: #eaf2ff;
   --accent-selected-bg: var(--accent-soft);
-  --accent-selected-border: var(--accent-fill);
+  --accent-selected-border: var(--accent-border-ink);
   --accent-decorative-fill: color-mix(
     in srgb,
     var(--accent-fill) 86%,
@@ -57,7 +60,7 @@
   );
   --accent-decorative-border: color-mix(
     in srgb,
-    var(--accent-decorative-fill) 34%,
+    var(--accent-border-ink) 34%,
     var(--border-subtle)
   );
   --accent-decorative-glow: color-mix(in srgb, var(--accent) 18%, transparent);
@@ -149,9 +152,9 @@
     var(--accent) 13%,
     var(--background-elevated)
   );
-  --info-border: color-mix(in srgb, var(--accent) 22%, transparent);
-  --info-border-strong: color-mix(in srgb, var(--accent) 36%, transparent);
-  --info-shadow: color-mix(in srgb, var(--accent) 10%, transparent);
+  --info-border: color-mix(in srgb, var(--accent-border-ink) 24%, transparent);
+  --info-border-strong: color-mix(in srgb, var(--accent-border-ink) 38%, transparent);
+  --info-shadow: color-mix(in srgb, var(--accent-border-ink) 10%, transparent);
   --info-ring: var(--accent-ring);
 
   /* ========= Layout ========= */
@@ -168,12 +171,18 @@
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
   --radius-2xl: 1.5rem;
+  --radius-control: var(--radius-md);
+  --radius-card: var(--radius-lg);
+  --radius-panel: var(--radius-xl);
 
   /* ========= Shadows ========= */
   --shadow-xs: 0 1px 2px rgba(16, 32, 51, 0.04);
   --shadow-sm: 0 1px 2px rgba(16, 32, 51, 0.035), 0 4px 10px rgba(16, 32, 51, 0.035);
   --shadow-md: 0 2px 6px rgba(16, 32, 51, 0.045), 0 10px 24px rgba(16, 32, 51, 0.06);
   --shadow-lg: 0 4px 12px rgba(16, 32, 51, 0.055), 0 18px 40px rgba(16, 32, 51, 0.085);
+  --shadow-card: var(--shadow-sm);
+  --shadow-card-hover: var(--shadow-md);
+  --shadow-panel: var(--shadow-md);
 
   /* ========= Surface recipes ========= */
   --surface-plain-bg: var(--background-elevated);
@@ -214,7 +223,7 @@
     var(--background)
   );
   --surface-panel-border: var(--border-subtle);
-  --surface-accent-border: color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
+  --surface-accent-border: color-mix(in srgb, var(--accent-border-ink) 18%, var(--border-subtle));
   --surface-panel-shadow: var(--shadow-sm);
   --surface-raised-shadow: var(--shadow-md);
   --surface-accent-shadow:
@@ -225,7 +234,7 @@
     color-mix(in srgb, var(--background-elevated) 54%, transparent) 0%,
     transparent 100%
   );
-  --surface-header-border: color-mix(in srgb, var(--accent) 12%, var(--border-subtle));
+  --surface-header-border: color-mix(in srgb, var(--accent-border-ink) 12%, var(--border-subtle));
 
   /* ========= Motion ========= */
   --transition-fast: 160ms ease;
@@ -301,9 +310,9 @@
 }
 
 [data-theme="light"] {
-  --background: #f6f7f8;
+  --background: #f7f8fb;
   --background-elevated: #ffffff;
-  --background-muted: #eef1f4;
+  --background-muted: #eef2f6;
   --background-soft-accent: var(--accent-soft);
   --background-soft-blue: #edf4ff;
   --background-soft-danger: #fff2f2;
@@ -314,13 +323,13 @@
   --text-muted: #64748b;
   --text-inverse: #ffffff;
 
-  --border: #d8dde3;
-  --border-subtle: #e3e7ec;
-  --border-strong: #c3cad3;
+  --border: #d7dee7;
+  --border-subtle: #e4e9f0;
+  --border-strong: #c0c9d4;
 
   --surface-primary: #ffffff;
   --surface-elevated: #ffffff;
-  --surface-secondary: #eef1f3;
+  --surface-secondary: #eef2f6;
   --control-border: var(--border);
   --control-border-strong: var(--border-strong);
   --control-shadow:
@@ -333,6 +342,38 @@
     0 0 0 4px var(--accent-ring),
     0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
     0 10px 22px color-mix(in srgb, var(--text-primary) 6%, transparent);
+  --sidebar-item-bg-hover: color-mix(in srgb, var(--accent) 6%, var(--background-elevated));
+  --sidebar-item-bg-active: color-mix(in srgb, var(--accent) 8%, var(--background-elevated));
+  --sidebar-item-border-hover: color-mix(
+    in srgb,
+    var(--accent-border-ink) 18%,
+    var(--border-subtle)
+  );
+  --sidebar-item-border-active: color-mix(
+    in srgb,
+    var(--accent-border-ink) 26%,
+    var(--border-subtle)
+  );
+  --sidebar-item-text-hover: color-mix(
+    in srgb,
+    var(--accent-ink) 34%,
+    var(--text-primary)
+  );
+  --sidebar-item-text-active: color-mix(
+    in srgb,
+    var(--accent-ink) 46%,
+    var(--text-primary)
+  );
+  --sidebar-item-icon: color-mix(in srgb, var(--text-muted) 42%, var(--text-secondary));
+  --sidebar-item-icon-hover: color-mix(
+    in srgb,
+    var(--accent-ink) 72%,
+    var(--text-primary)
+  );
+  --sidebar-item-icon-active: var(--accent-fill);
+  --sidebar-item-shadow-active:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 2%, transparent),
+    0 10px 22px color-mix(in srgb, var(--accent) 7%, transparent);
 
   --success: #1f8a4c;
   --success-soft: #eefbf3;
@@ -394,9 +435,9 @@
     var(--accent) 13%,
     var(--background-elevated)
   );
-  --info-border: color-mix(in srgb, var(--accent) 22%, transparent);
-  --info-border-strong: color-mix(in srgb, var(--accent) 36%, transparent);
-  --info-shadow: color-mix(in srgb, var(--accent) 10%, transparent);
+  --info-border: color-mix(in srgb, var(--accent-border-ink) 24%, transparent);
+  --info-border-strong: color-mix(in srgb, var(--accent-border-ink) 38%, transparent);
+  --info-shadow: color-mix(in srgb, var(--accent-border-ink) 10%, transparent);
   --info-ring: var(--accent-ring);
 
   --surface-plain-bg: var(--background-elevated);
@@ -437,7 +478,7 @@
     var(--background)
   );
   --surface-panel-border: var(--border-subtle);
-  --surface-accent-border: color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
+  --surface-accent-border: color-mix(in srgb, var(--accent-border-ink) 18%, var(--border-subtle));
   --surface-panel-shadow: var(--shadow-sm);
   --surface-raised-shadow: var(--shadow-md);
   --surface-accent-shadow:
@@ -448,7 +489,7 @@
     color-mix(in srgb, var(--background-elevated) 54%, transparent) 0%,
     transparent 100%
   );
-  --surface-header-border: color-mix(in srgb, var(--accent) 12%, var(--border-subtle));
+  --surface-header-border: color-mix(in srgb, var(--accent-border-ink) 12%, var(--border-subtle));
 
   --accent-gradient-fill: linear-gradient(
     135deg,

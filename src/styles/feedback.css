@@ -122,7 +122,7 @@
 }
 
 [data-theme="dark"] .app-empty-icon-default {
-  border-color: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--accent-border-ink) 28%, transparent);
   background: color-mix(in srgb, var(--accent) 1.5%, var(--dark-control-bg));
   color: var(--text-secondary);
   box-shadow: var(--control-shadow);

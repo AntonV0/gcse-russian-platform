@@ -82,7 +82,9 @@ export function BlockRow({
         selected
           ? "app-selected-surface"
           : "border-[var(--border)] bg-[var(--background-elevated)]",
-        dropTarget ? "ring-2 ring-[var(--accent-ring)]" : "",
+        dropTarget
+          ? "ring-2 ring-[color-mix(in_srgb,var(--accent-border-ink)_48%,transparent)]"
+          : "",
       ]
         .filter(Boolean)
         .join(" ")}

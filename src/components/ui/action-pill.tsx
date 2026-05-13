@@ -42,7 +42,7 @@ export default function ActionPill({
 
 const actionPillToneClasses: Record<NonNullable<ActionPillProps["tone"]>, string> = {
   accent:
-    "border-[color-mix(in_srgb,var(--accent)_18%,transparent)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)] group-hover:border-[color-mix(in_srgb,var(--accent)_30%,transparent)] group-hover:bg-[color-mix(in_srgb,var(--accent)_11%,var(--background-elevated))] group-hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_9%,transparent)]",
+    "border-[color-mix(in_srgb,var(--accent-border-ink)_30%,transparent)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)] group-hover:border-[color-mix(in_srgb,var(--accent-border-ink)_44%,transparent)] group-hover:bg-[color-mix(in_srgb,var(--accent)_11%,var(--background-elevated))] group-hover:shadow-[0_8px_18px_color-mix(in_srgb,var(--accent-border-ink)_12%,transparent)]",
   muted:
     "border-[var(--border)] bg-[var(--background-elevated)] text-[var(--text-secondary)] group-hover:border-[var(--border-strong)] group-hover:bg-[var(--background-muted)] group-hover:text-[var(--text-primary)] group-hover:shadow-[0_7px_16px_color-mix(in_srgb,var(--text-primary)_6%,transparent)]",
   success:

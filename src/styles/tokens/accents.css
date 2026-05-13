@@ -125,13 +125,12 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #3b82f6;
+  --accent-brand-ink: #3b82f6;
+  --accent-brand-line: #3b82f6;
   --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-selected-bg: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
-  --accent-selected-border: color-mix(
-    in srgb,
-    var(--accent) 78%,
-    var(--dark-surface-border)
-  );
+  --accent-selected-border: var(--accent-border-ink);
   --accent-ring: rgba(141, 184, 255, 0.18);
   --accent-rgb: 141, 184, 255;
   --accent-surface-strength: 0%;
@@ -147,6 +146,9 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #8b5cf6;
+  --accent-brand-ink: #8b5cf6;
+  --accent-brand-line: #8b5cf6;
   --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-ring: rgba(196, 181, 253, 0.18);
   --accent-rgb: 196, 181, 253;
@@ -163,6 +165,9 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #db2777;
+  --accent-brand-ink: #db2777;
+  --accent-brand-line: #db2777;
   --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-ring: rgba(249, 168, 212, 0.18);
   --accent-rgb: 249, 168, 212;
@@ -179,6 +184,9 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #ef4444;
+  --accent-brand-ink: #ef4444;
+  --accent-brand-line: #ef4444;
   --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-ring: rgba(252, 165, 165, 0.18);
   --accent-rgb: 252, 165, 165;
@@ -195,6 +203,9 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #ea580c;
+  --accent-brand-ink: #ea580c;
+  --accent-brand-line: #ea580c;
   --accent-soft: color-mix(in srgb, var(--accent) 11%, var(--dark-control-bg));
   --accent-ring: rgba(253, 186, 116, 0.18);
   --accent-rgb: 253, 186, 116;
@@ -211,13 +222,12 @@
   --accent-ink: var(--accent-fill);
   --accent-on-fill: #071633;
   --accent-on-soft: var(--accent-fill-hover);
+  --accent-border-ink: #ca8a04;
+  --accent-brand-ink: #ca8a04;
+  --accent-brand-line: #ca8a04;
   --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
   --accent-selected-bg: color-mix(in srgb, var(--accent) 8%, var(--dark-control-bg));
-  --accent-selected-border: color-mix(
-    in srgb,
-    var(--accent) 82%,
-    var(--dark-surface-border)
-  );
+  --accent-selected-border: var(--accent-border-ink);
   --accent-glow: color-mix(in srgb, var(--accent) 22%, transparent);
   --accent-ring: rgba(234, 179, 8, 0.16);
   --accent-rgb: 234, 179, 8;
@@ -243,6 +253,9 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #16a34a;
+  --accent-brand-ink: #16a34a;
+  --accent-brand-line: #16a34a;
   --accent-soft: color-mix(in srgb, var(--accent) 11%, var(--dark-control-bg));
   --accent-ring: rgba(134, 239, 172, 0.18);
   --accent-rgb: 134, 239, 172;
@@ -259,6 +272,9 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #0d9488;
+  --accent-brand-ink: #0d9488;
+  --accent-brand-line: #0d9488;
   --accent-soft: color-mix(in srgb, var(--accent) 11%, var(--dark-control-bg));
   --accent-ring: rgba(103, 232, 249, 0.18);
   --accent-rgb: 103, 232, 249;
@@ -275,6 +291,9 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #b45309;
+  --accent-brand-ink: #b45309;
+  --accent-brand-line: #b45309;
   --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--dark-control-bg));
   --accent-ring: rgba(240, 185, 121, 0.18);
   --accent-rgb: 240, 185, 121;
@@ -293,13 +312,12 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #94a3b8;
+  --accent-brand-ink: #94a3b8;
+  --accent-brand-line: #94a3b8;
   --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
   --accent-selected-bg: color-mix(in srgb, var(--accent) 8%, var(--dark-control-bg));
-  --accent-selected-border: color-mix(
-    in srgb,
-    var(--accent) 64%,
-    var(--dark-surface-border)
-  );
+  --accent-selected-border: var(--accent-border-ink);
   --accent-ring: rgba(213, 222, 234, 0.18);
   --accent-rgb: 213, 222, 234;
   --accent-surface-strength: 0%;

@@ -1,5 +1,5 @@
 .app-lesson-page-surface {
-  border: 1px solid color-mix(in srgb, var(--accent) 10%, var(--border-subtle));
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 18%, var(--border-subtle));
   border-radius: var(--radius-xl);
   background: var(--lesson-paper-bg);
   box-shadow:
@@ -8,7 +8,7 @@
 }
 
 .app-lesson-page-article {
-  border-inline: 1px solid color-mix(in srgb, var(--accent) 9%, var(--border-subtle));
+  border-inline: 1px solid color-mix(in srgb, var(--accent-border-ink) 16%, var(--border-subtle));
   background: color-mix(in srgb, var(--lesson-paper-bg) 96%, var(--background-elevated));
 }
 
@@ -66,7 +66,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border: 1px solid var(--accent-decorative-border);
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 38%, var(--border-subtle));
   border-radius: var(--radius-xl);
   background: color-mix(in srgb, var(--accent) 5%, var(--lesson-paper-bg));
   box-shadow:
@@ -116,7 +116,7 @@
 .app-lesson-mission-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--accent-decorative-border);
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 34%, var(--border-subtle));
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--lesson-paper-bg) 88%, var(--background-elevated));
   padding: 1rem;
@@ -164,7 +164,7 @@
   position: relative;
   height: 0.65rem;
   overflow: hidden;
-  border: 1px solid var(--accent-decorative-border);
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 40%, var(--border-subtle));
   background: color-mix(in srgb, var(--background-muted) 72%, transparent);
   box-shadow: inset 0 1px 2px color-mix(in srgb, var(--text-primary) 7%, transparent);
 }
@@ -175,7 +175,7 @@
   align-items: flex-start;
   gap: 0.55rem;
   margin-top: 0.9rem;
-  border-top: 1px solid var(--accent-decorative-border);
+  border-top: 1px solid color-mix(in srgb, var(--accent-border-ink) 34%, var(--border-subtle));
   padding-top: 0.85rem;
   color: var(--text-muted);
   font-size: 0.88rem;
@@ -236,7 +236,7 @@
 
 .app-lesson-prose-card {
   border-radius: var(--radius-lg);
-  border: 1px solid var(--accent-decorative-border);
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 30%, var(--border-subtle));
   background: var(--lesson-paper-bg);
   padding: 1.2rem;
   box-shadow:
@@ -248,7 +248,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--accent) 9%, var(--border-subtle));
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 16%, var(--border-subtle));
   border-radius: var(--radius-xl);
   background: var(--lesson-paper-bg);
   box-shadow:
@@ -385,7 +385,7 @@
 .app-practice-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 30%, var(--border-subtle));
   border-radius: var(--radius-xl);
   background: color-mix(in srgb, var(--accent) 3.5%, var(--lesson-paper-bg));
   box-shadow: var(--shadow-sm);
@@ -437,7 +437,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border-subtle));
+  border: 1px solid color-mix(in srgb, var(--accent-border-ink) 40%, var(--border-subtle));
   background: var(--lesson-paper-bg);
   color: var(--accent-ink);
   padding: 0.45rem 0.7rem;
@@ -504,7 +504,7 @@
 
 a:hover .app-lesson-map-item {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent) 10%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 20%, var(--border-subtle));
   background: color-mix(in srgb, var(--accent) 3%, var(--background-muted));
   box-shadow: var(--shadow-sm);
 }
@@ -546,7 +546,7 @@ a:focus-visible .app-lesson-map-item {
 }
 
 .app-lesson-map-item-current {
-  border-color: color-mix(in srgb, var(--accent) 24%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 38%, var(--border-subtle));
   background: color-mix(in srgb, var(--accent) 8%, var(--lesson-paper-bg));
   box-shadow:
     0 10px 22px color-mix(in srgb, var(--accent) 10%, transparent),
@@ -554,31 +554,31 @@ a:focus-visible .app-lesson-map-item {
 }
 
 .app-lesson-map-item-current .app-lesson-map-node {
-  border-color: color-mix(in srgb, var(--accent-decorative-fill) 86%, transparent);
+  border-color: var(--accent-border-ink);
   background: var(--accent-gradient-fill);
   color: var(--accent-on-fill);
 }
 
 .app-lesson-map-item-current .app-lesson-map-status {
-  border-color: color-mix(in srgb, var(--accent) 22%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 34%, var(--border-subtle));
   background: color-mix(in srgb, var(--accent) 8%, var(--background-elevated));
   color: var(--accent-ink);
 }
 
 .app-lesson-map-item-done .app-lesson-map-node {
-  border-color: color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 30%, var(--border-subtle));
   background: color-mix(in srgb, var(--accent) 8%, var(--background-muted));
   color: var(--accent-ink);
 }
 
 .app-lesson-map-item-done .app-lesson-map-status {
-  border-color: color-mix(in srgb, var(--accent) 14%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 24%, var(--border-subtle));
   background: color-mix(in srgb, var(--accent) 5%, var(--background-elevated));
   color: var(--accent-ink);
 }
 
 .app-lesson-map-item-ready .app-lesson-map-status {
-  border-color: color-mix(in srgb, var(--accent) 16%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 26%, var(--border-subtle));
   background: color-mix(in srgb, var(--accent) 5%, var(--background-elevated));
   color: var(--accent-ink);
 }
@@ -590,7 +590,7 @@ a:focus-visible .app-lesson-map-item {
 
 .app-question-shell {
   position: relative;
-  border-color: color-mix(in srgb, var(--accent) 15%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 26%, var(--border-subtle));
   box-shadow:
     var(--shadow-sm),
     inset 0 1px 0 color-mix(in srgb, white 54%, transparent);
@@ -630,7 +630,7 @@ a:focus-visible .app-lesson-map-item {
 
 .app-answer-option:hover:not(:disabled) {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent) 24%, var(--border-strong));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 38%, var(--border-strong));
   background: color-mix(in srgb, var(--accent) 5%, var(--surface-muted-bg));
   box-shadow:
     var(--shadow-sm),
@@ -661,7 +661,7 @@ a:focus-visible .app-lesson-map-item {
 }
 
 .app-answer-bank {
-  border-color: color-mix(in srgb, var(--accent) 14%, var(--border));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 24%, var(--border));
   background: color-mix(in srgb, var(--accent) 3%, var(--lesson-paper-bg));
   box-shadow:
     var(--shadow-xs),
@@ -669,7 +669,7 @@ a:focus-visible .app-lesson-map-item {
 }
 
 .app-answer-bank-target {
-  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 34%, var(--border));
   background: color-mix(in srgb, var(--accent) 5%, var(--background-muted));
   box-shadow:
     inset 0 1px 2px color-mix(in srgb, var(--text-primary) 5%, transparent),
@@ -678,7 +678,7 @@ a:focus-visible .app-lesson-map-item {
 
 .app-answer-bank-empty {
   border-style: dashed;
-  border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
+  border-color: color-mix(in srgb, var(--accent-border-ink) 32%, var(--border));
 }
 
 .app-question-number-pill {

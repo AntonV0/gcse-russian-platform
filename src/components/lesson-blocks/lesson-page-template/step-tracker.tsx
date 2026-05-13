@@ -31,11 +31,11 @@ function getStepStatus({
       label: "Current",
       icon: "sparkles" as const,
       rowClassName:
-        "border-[color-mix(in_srgb,var(--accent)_20%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-elevated))] before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-r-full before:bg-[var(--accent-fill)]",
+        "border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-elevated))] before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-r-full before:bg-[var(--accent-fill)]",
       nodeClassName:
         "h-9 w-9 rounded-full border-[color-mix(in_srgb,var(--accent-fill)_72%,var(--border))] bg-[var(--accent-fill)] text-sm text-[var(--text-inverse)] shadow-[0_8px_18px_color-mix(in_srgb,var(--accent)_18%,transparent)]",
       badgeClassName:
-        "border-[color-mix(in_srgb,var(--accent)_22%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-ink)]",
+        "border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-ink)]",
       segmentClassName: "bg-[var(--accent-fill)]",
     };
   }
@@ -59,11 +59,11 @@ function getStepStatus({
       label: "Next",
       icon: "unlocked" as const,
       rowClassName:
-        "border-transparent text-[var(--text-primary)] hover:border-[color-mix(in_srgb,var(--accent)_14%,var(--border-subtle))] hover:bg-[var(--background-muted)]",
+        "border-transparent text-[var(--text-primary)] hover:border-[color-mix(in_srgb,var(--accent-border-ink)_24%,var(--border-subtle))] hover:bg-[var(--background-muted)]",
       nodeClassName:
-        "border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_6%,var(--background-muted))] text-[var(--accent-ink)]",
+        "border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_6%,var(--background-muted))] text-[var(--accent-ink)]",
       badgeClassName:
-        "border-[color-mix(in_srgb,var(--accent)_16%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_5%,var(--background-elevated))] text-[var(--accent-ink)]",
+        "border-[color-mix(in_srgb,var(--accent-border-ink)_28%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_5%,var(--background-elevated))] text-[var(--accent-ink)]",
       segmentClassName:
         "bg-[color-mix(in_srgb,var(--accent)_24%,var(--background-muted))]",
     };

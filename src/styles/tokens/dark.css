@@ -1,11 +1,11 @@
 /* ========= Dark mode ========= */
 [data-theme="dark"] {
-  --dark-page-bg: #0f1115;
-  --dark-surface-base: #13161b;
-  --dark-surface-elevated: #171b21;
-  --dark-surface-muted: #20252d;
-  --dark-surface-strong: #2b313b;
-  --dark-surface-border: #3a414d;
+  --dark-page-bg: #101318;
+  --dark-surface-base: #141820;
+  --dark-surface-elevated: #191e26;
+  --dark-surface-muted: #232a34;
+  --dark-surface-strong: #303846;
+  --dark-surface-border: #424b59;
   --dark-control-bg: color-mix(in srgb, var(--accent) 1.5%, var(--dark-surface-elevated));
   --dark-control-bg-hover: color-mix(
     in srgb,
@@ -78,13 +78,12 @@
   --accent-ink: var(--accent);
   --accent-on-fill: #ffffff;
   --accent-on-soft: var(--accent);
+  --accent-border-ink: #3b82f6;
+  --accent-brand-ink: #3b82f6;
+  --accent-brand-line: #3b82f6;
   --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--dark-control-bg));
   --accent-selected-bg: color-mix(in srgb, var(--accent) 9%, var(--dark-control-bg));
-  --accent-selected-border: color-mix(
-    in srgb,
-    var(--accent) 78%,
-    var(--dark-surface-border)
-  );
+  --accent-selected-border: var(--accent-border-ink);
   --accent-decorative-fill: color-mix(
     in srgb,
     var(--accent-fill) 92%,
@@ -97,17 +96,21 @@
   );
   --accent-decorative-border: color-mix(
     in srgb,
-    var(--accent-decorative-fill) 34%,
+    var(--accent-border-ink) 68%,
     var(--dark-surface-border)
   );
   --accent-decorative-glow: color-mix(in srgb, var(--accent) 22%, transparent);
   --accent-glow: color-mix(in srgb, var(--accent) 24%, transparent);
   --accent-ring: rgba(141, 184, 255, 0.18);
   --accent-rgb: 141, 184, 255;
-  --control-border: color-mix(in srgb, var(--accent) 10%, var(--dark-surface-border));
+  --control-border: color-mix(
+    in srgb,
+    var(--accent-border-ink) 18%,
+    var(--dark-surface-border)
+  );
   --control-border-strong: color-mix(
     in srgb,
-    var(--accent) 30%,
+    var(--accent-border-ink) 42%,
     var(--dark-surface-border)
   );
   --control-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), 0 10px 22px rgba(0, 0, 0, 0.2);
@@ -115,6 +118,34 @@
   --control-shadow-focus:
     0 0 0 4px var(--accent-ring), 0 1px 2px rgba(0, 0, 0, 0.24),
     0 12px 26px rgba(0, 0, 0, 0.24);
+  --sidebar-item-bg-hover: color-mix(in srgb, var(--accent) 7%, var(--dark-surface-muted));
+  --sidebar-item-bg-active: color-mix(in srgb, var(--accent) 13%, var(--dark-surface-muted));
+  --sidebar-item-border-hover: color-mix(
+    in srgb,
+    var(--accent-border-ink) 30%,
+    transparent
+  );
+  --sidebar-item-border-active: color-mix(
+    in srgb,
+    var(--accent-border-ink) 48%,
+    var(--dark-surface-border)
+  );
+  --sidebar-item-text-hover: color-mix(
+    in srgb,
+    var(--accent-border-ink) 38%,
+    var(--text-primary)
+  );
+  --sidebar-item-text-active: var(--text-primary);
+  --sidebar-item-icon: color-mix(in srgb, var(--text-muted) 42%, var(--text-secondary));
+  --sidebar-item-icon-hover: color-mix(
+    in srgb,
+    var(--accent-border-ink) 84%,
+    var(--text-primary)
+  );
+  --sidebar-item-icon-active: var(--accent-border-ink);
+  --sidebar-item-shadow-active:
+    0 0 0 1px color-mix(in srgb, var(--accent-border-ink) 22%, transparent),
+    0 10px 22px color-mix(in srgb, var(--accent) 8%, transparent);
 
   --brand-blue: #60a5fa;
   --brand-blue-hover: #93c5fd;
@@ -178,12 +209,12 @@
   --info: var(--accent-ink);
   --info-soft: var(--accent-soft);
   --info-text: var(--accent-on-soft);
-  --info-text-strong: var(--accent-fill-hover);
+  --info-text-strong: var(--accent-on-soft);
   --info-surface: color-mix(in srgb, var(--accent) 10%, var(--dark-control-bg));
   --info-surface-strong: color-mix(in srgb, var(--accent) 16%, var(--dark-control-bg));
-  --info-border: color-mix(in srgb, var(--accent) 24%, transparent);
-  --info-border-strong: color-mix(in srgb, var(--accent) 42%, transparent);
-  --info-shadow: color-mix(in srgb, var(--accent) 12%, transparent);
+  --info-border: color-mix(in srgb, var(--accent-border-ink) 24%, transparent);
+  --info-border-strong: color-mix(in srgb, var(--accent-border-ink) 42%, transparent);
+  --info-shadow: color-mix(in srgb, var(--accent-border-ink) 12%, transparent);
   --info-ring: var(--accent-ring);
 
   --surface-plain-bg: var(--background-elevated);
@@ -210,18 +241,21 @@
   --surface-panel-border: var(--border-subtle);
   --surface-accent-border: color-mix(
     in srgb,
-    var(--accent) 24%,
+    var(--accent-border-ink) 42%,
     var(--dark-surface-border)
   );
   --surface-panel-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 12px 28px rgba(0, 0, 0, 0.22);
   --surface-raised-shadow: 0 1px 2px rgba(0, 0, 0, 0.24), 0 18px 42px rgba(0, 0, 0, 0.28);
+  --shadow-card: var(--surface-panel-shadow);
+  --shadow-card-hover: var(--surface-raised-shadow);
+  --shadow-panel: var(--surface-raised-shadow);
   --surface-accent-shadow:
     0 1px 2px rgba(0, 0, 0, 0.24), 0 18px 42px rgba(0, 0, 0, 0.28),
     0 0 0 1px color-mix(in srgb, var(--accent-glow) 40%, transparent);
   --surface-header-bg: color-mix(in srgb, var(--accent) 2.5%, transparent);
   --surface-header-border: color-mix(
     in srgb,
-    var(--accent) 14%,
+    var(--accent-border-ink) 30%,
     var(--dark-surface-border)
   );
   --accent-gradient-fill: linear-gradient(

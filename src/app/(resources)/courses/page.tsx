@@ -335,7 +335,7 @@ function VariantPathCards({
               className={[
                 "app-card-interaction-subtle h-full",
                 isActive
-                  ? "border-[var(--accent-border)] shadow-[0_16px_34px_color-mix(in_srgb,var(--accent-fill)_14%,transparent)]"
+                  ? "border-[var(--accent-selected-border)] shadow-[0_16px_34px_color-mix(in_srgb,var(--accent-border-ink)_14%,transparent)]"
                   : "",
               ]
                 .filter(Boolean)

@@ -26,13 +26,13 @@ function AppearancePreview() {
           className="min-w-0"
         />
 
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-decorative-border)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-selected-border)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
           <AppIcon icon="palette" size={18} />
         </span>
       </div>
 
       <div className="space-y-3 rounded-xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_70%,var(--background-elevated))] p-3">
-        <div className="rounded-lg border border-[var(--accent-decorative-border)] bg-[var(--background-elevated)] p-3">
+        <div className="rounded-lg border border-[var(--accent-selected-border)] bg-[var(--background-elevated)] p-3">
           <div className="mb-2 flex items-center justify-between gap-3">
             <div>
               <div className="text-xs font-bold uppercase tracking-wide text-[var(--accent-ink)]">

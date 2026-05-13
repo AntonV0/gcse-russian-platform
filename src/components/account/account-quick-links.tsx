@@ -56,7 +56,7 @@ export function AccountQuickLinks() {
               <AppIcon icon={item.icon} size={26} />
             </span>
 
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised-bg)] text-[var(--text-secondary)] transition group-hover:border-[var(--accent-decorative-border)] group-hover:text-[var(--accent-ink)]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised-bg)] text-[var(--text-secondary)] transition group-hover:border-[var(--accent-selected-border)] group-hover:text-[var(--accent-ink)]">
               <AppIcon icon="chevronRight" size={16} />
             </span>
           </span>

@@ -46,7 +46,7 @@ const toneStyles: Record<
 > = {
   explain: {
     shell: "border-[var(--border)] bg-[var(--background-elevated)]",
-    icon: "border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_7%,var(--background-muted))] text-[var(--accent-ink)]",
+    icon: "border-[color-mix(in_srgb,var(--accent-border-ink)_28%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_7%,var(--background-muted))] text-[var(--accent-ink)]",
     rule: "bg-[var(--accent-fill)]",
   },
   coach: {
@@ -69,8 +69,8 @@ const toneStyles: Record<
   },
   media: {
     shell:
-      "border-[color-mix(in_srgb,var(--accent)_14%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-elevated))]",
-    icon: "border-[color-mix(in_srgb,var(--accent)_18%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-muted))] text-[var(--accent-ink)]",
+      "border-[color-mix(in_srgb,var(--accent-border-ink)_24%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_4%,var(--background-elevated))]",
+    icon: "border-[color-mix(in_srgb,var(--accent-border-ink)_28%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-muted))] text-[var(--accent-ink)]",
     rule: "bg-[var(--accent-fill)]",
   },
 };
@@ -95,7 +95,7 @@ export function StudyMissionPanel({
 
   return (
     <section
-      className="relative z-20 overflow-hidden rounded-t-[calc(var(--radius-xl)-1px)] border-b border-[color-mix(in_srgb,var(--accent)_12%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))]"
+      className="relative z-20 overflow-hidden rounded-t-[calc(var(--radius-xl)-1px)] border-b border-[color-mix(in_srgb,var(--accent-border-ink)_22%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_90%,var(--background-muted))]"
       aria-label={`${courseTitle}: ${moduleTitle}`}
     >
       <div className="relative p-4 md:p-5">

@@ -76,7 +76,7 @@ function ThemeQaCard({
         </div>
 
         <div className="space-y-3">
-          <div className="rounded-xl border border-[var(--accent-decorative-border)] [background:var(--accent-gradient-soft)] p-3">
+          <div className="rounded-xl border border-[var(--accent-selected-border)] [background:var(--accent-gradient-soft)] p-3">
             <div className="text-sm font-bold text-[var(--text-primary)]">
               Practice card
             </div>

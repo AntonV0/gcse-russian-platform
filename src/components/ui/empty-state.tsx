@@ -76,7 +76,7 @@ export default function EmptyState({
           "px-5 py-7 text-center sm:px-6 sm:py-8",
         ].join(" ")}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[var(--accent-decorative-border)] opacity-50" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[color-mix(in_srgb,var(--accent-border-ink)_44%,transparent)] opacity-50" />
 
         {visual ? (
           <div className="relative mb-5 flex justify-center">{visual}</div>

@@ -75,7 +75,7 @@ export default function ThemeModeSelector() {
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-decorative-border)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-selected-border)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] text-[var(--accent-on-soft)]">
           <AppIcon icon="sun" size={18} />
         </span>
 

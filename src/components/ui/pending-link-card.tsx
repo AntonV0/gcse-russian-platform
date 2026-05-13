@@ -22,8 +22,8 @@ function PendingCardOverlay({ label, forcePending = false }: { label: string; fo
   if (!isPending) return null;
 
   return (
-    <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-[inherit] border border-[color-mix(in_srgb,var(--accent)_18%,transparent)] bg-[color-mix(in_srgb,var(--background-elevated)_78%,transparent)] backdrop-blur-[2px]">
-      <span className="inline-flex items-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--accent)_18%,transparent)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-semibold text-[var(--accent-on-soft)] shadow-[0_12px_26px_color-mix(in_srgb,var(--accent)_12%,transparent)]">
+    <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-[inherit] border border-[color-mix(in_srgb,var(--accent-border-ink)_30%,transparent)] bg-[color-mix(in_srgb,var(--background-elevated)_78%,transparent)] backdrop-blur-[2px]">
+      <span className="inline-flex items-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--accent-border-ink)_30%,transparent)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-semibold text-[var(--accent-on-soft)] shadow-[0_12px_26px_color-mix(in_srgb,var(--accent-border-ink)_14%,transparent)]">
         <AppIcon icon="sync" size={16} className="animate-spin motion-reduce:animate-none" />
         <span>{label}</span>
       </span>

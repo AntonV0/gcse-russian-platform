@@ -116,7 +116,7 @@ function GrammarPointRow({
   return (
     <a
       href={`/grammar/${grammarSet.slug}/${point.slug}`}
-      className="group relative block overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent)_24%,var(--border-strong))] hover:bg-[var(--background-elevated)]"
+      className="group relative block overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted-bg)] shadow-[var(--shadow-xs)] transition hover:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border-strong))] hover:bg-[var(--background-elevated)]"
     >
       <div className="absolute inset-y-0 left-0 w-1 bg-[var(--accent-fill)] opacity-70" />
 

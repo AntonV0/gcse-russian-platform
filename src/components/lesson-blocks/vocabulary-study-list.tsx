@@ -195,7 +195,7 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
                     </span>
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--accent)_18%,transparent)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_8%,transparent)]">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--accent-border-ink)_30%,transparent)] bg-[color-mix(in_srgb,var(--accent)_8%,var(--background-elevated))] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)] shadow-[0_6px_14px_color-mix(in_srgb,var(--accent)_8%,transparent)]">
                     <AppIcon icon="preview" size={16} />
                     Check answer
                   </span>

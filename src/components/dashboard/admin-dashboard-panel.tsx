@@ -165,7 +165,7 @@ export function AdminDashboardPanel({ dashboard }: { dashboard: DashboardInfo })
                   href={item.href}
                   className="app-focus-ring group flex min-w-0 items-start gap-3 rounded-xl px-2.5 py-2 transition hover:bg-[var(--background-muted)]"
                 >
-                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] text-[var(--text-secondary)] shadow-[var(--shadow-xs)] transition group-hover:border-[color-mix(in_srgb,var(--accent)_24%,var(--border-strong))] group-hover:text-[var(--accent-ink)]">
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] text-[var(--text-secondary)] shadow-[var(--shadow-xs)] transition group-hover:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border-strong))] group-hover:text-[var(--accent-ink)]">
                     <AppIcon icon={item.icon} size={16} />
                   </span>
                   <span className="min-w-0">

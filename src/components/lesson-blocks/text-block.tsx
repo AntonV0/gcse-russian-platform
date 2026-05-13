@@ -129,7 +129,7 @@ function renderInlineLessonText(content: string) {
       return (
         <mark
           key={index}
-          className="bg-transparent font-semibold text-[var(--accent-ink)] underline decoration-[color-mix(in_srgb,var(--accent)_34%,transparent)] decoration-2 underline-offset-4"
+          className="bg-transparent font-semibold text-[var(--accent-ink)] underline decoration-[color-mix(in_srgb,var(--accent-border-ink)_44%,transparent)] decoration-2 underline-offset-4"
         >
           {part.slice(2, -2)}
         </mark>
