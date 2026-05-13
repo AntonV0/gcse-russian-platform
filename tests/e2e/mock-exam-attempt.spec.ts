@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 const mockExamSlug = process.env.PLAYWRIGHT_MOCK_EXAM_SLUG ?? "ai-marking-demo";
 const mockExamStudentEmail =
@@ -37,11 +38,38 @@ function getMockExamPassword() {
   );
 }
 
+async function loginToMockExam(page: Page) {
+  const loginUrl = new URL("/login", "http://localhost");
+  loginUrl.searchParams.set("next", `/mock-exams/${mockExamSlug}`);
+
+  await page.goto(`${loginUrl.pathname}${loginUrl.search}`);
+  await page.getByLabel("Email address").fill(mockExamStudentEmail);
+  await page.getByLabel("Password").fill(getMockExamPassword());
+  await page.getByRole("button", { name: "Log in" }).click();
+
+  await expect(page).toHaveURL(
+    new RegExp(`/mock-exams/${escapeRegExp(mockExamSlug)}$`),
+    { timeout: 30_000 }
+  );
+}
+
+async function startMockExamAttempt(page: Page) {
+  await expect(page.getByRole("heading", { name: /Mock Exam/i })).toBeVisible();
+
+  await page
+    .getByRole("button", { name: /Start (new )?attempt/ })
+    .click();
+
+  await expect(page).toHaveURL(
+    new RegExp(`/mock-exams/${escapeRegExp(mockExamSlug)}/attempts/[0-9a-f-]+$`),
+    { timeout: 30_000 }
+  );
+}
+
 test.describe("mock exam attempt smoke", () => {
   test("starts a mock exam attempt and lands on the draft page", async ({ page }) => {
     const password = getMockExamPassword();
     test.skip(!password, "Set PLAYWRIGHT_MOCK_EXAM_PASSWORD or QA_DASHBOARD_PASSWORD.");
-    const mockExamSlugPattern = escapeRegExp(mockExamSlug);
 
     const consoleErrors: string[] = [];
     page.on("console", (message) => {
@@ -50,27 +78,9 @@ test.describe("mock exam attempt smoke", () => {
       }
     });
 
-    const loginUrl = new URL("/login", "http://localhost");
-    loginUrl.searchParams.set("next", `/mock-exams/${mockExamSlug}`);
+    await loginToMockExam(page);
+    await startMockExamAttempt(page);
 
-    await page.goto(`${loginUrl.pathname}${loginUrl.search}`);
-    await page.getByLabel("Email address").fill(mockExamStudentEmail);
-    await page.getByLabel("Password").fill(password);
-    await page.getByRole("button", { name: "Log in" }).click();
-
-    await expect(page).toHaveURL(new RegExp(`/mock-exams/${mockExamSlugPattern}$`), {
-      timeout: 30_000,
-    });
-    await expect(page.getByRole("heading", { name: /Mock Exam/i })).toBeVisible();
-
-    await page
-      .getByRole("button", { name: /Start (new )?attempt/ })
-      .click();
-
-    await expect(page).toHaveURL(
-      new RegExp(`/mock-exams/${mockExamSlugPattern}/attempts/[0-9a-f-]+$`),
-      { timeout: 30_000 }
-    );
     await expect(page.getByRole("heading", { name: /Mock Exam/i })).toBeVisible();
     await expect(page.getByText("Draft", { exact: true })).toBeVisible();
     await expect(
@@ -78,5 +88,36 @@ test.describe("mock exam attempt smoke", () => {
     ).toBeVisible();
 
     expect(consoleErrors).not.toContainEqual(expect.stringContaining(formOverrideWarning));
+  });
+
+  test("lets mobile students jump from unanswered review to a missing answer", async ({
+    page,
+  }) => {
+    const password = getMockExamPassword();
+    test.skip(!password, "Set PLAYWRIGHT_MOCK_EXAM_PASSWORD or QA_DASHBOARD_PASSWORD.");
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await loginToMockExam(page);
+    await startMockExamAttempt(page);
+
+    await page
+      .getByRole("button", { name: "Submit mock exam attempt for marking" })
+      .click();
+
+    const dialog = page.getByRole("dialog", {
+      name: /questions? still look unanswered/i,
+    });
+    await expect(dialog).toBeVisible();
+
+    const jumpLink = dialog.getByRole("link").last();
+    const href = await jumpLink.getAttribute("href");
+    expect(href).toMatch(/^#mock-exam-question-/);
+
+    const targetAnchor = href?.slice(1) ?? "";
+    await jumpLink.click();
+
+    await expect(dialog).toBeHidden();
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe(href);
+    await expect(page.locator(`#${targetAnchor}`)).toBeInViewport();
   });
 });
