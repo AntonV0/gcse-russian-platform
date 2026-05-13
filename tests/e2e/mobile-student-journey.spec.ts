@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 const studentEmail =
-  process.env.PLAYWRIGHT_MOBILE_STUDENT_EMAIL ??
+  process.env.PLAYWRIGHT_MOBILE_STUDENT_EMAIL ||
   "qa-dashboard-full-foundation@example.com";
 const courseSlug = "gcse-russian";
 const variantSlug = "foundation";
@@ -245,7 +245,7 @@ test.describe("mobile authenticated student journey", () => {
     hasTouch: true,
   });
 
-  test("completes dashboard to progress on a resettable Foundation account", async ({
+  test("completes dashboard to progress on a resettable Foundation account @protected", async ({
     page,
   }, testInfo) => {
     test.setTimeout(90_000);
