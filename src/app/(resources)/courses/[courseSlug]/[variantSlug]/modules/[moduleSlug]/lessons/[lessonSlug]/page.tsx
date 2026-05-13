@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -7,8 +8,9 @@ import LockedContentCard from "@/components/ui/locked-content-card";
 import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import { canUserAccessLesson } from "@/lib/access/access";
 import { loadLessonContentByLessonIdDb } from "@/lib/lessons/lesson-content-helpers-db";
-import { getModulePath, getVariantPath } from "@/lib/access/routes";
+import { getModulePath } from "@/lib/access/routes";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
+import { getVariantDisplayName } from "@/lib/courses/journey-state";
 import { getLessonProgress } from "@/lib/progress/progress";
 
 type LessonPageProps = {
@@ -23,11 +25,9 @@ type LessonPageProps = {
   }>;
 };
 
-function getVariantLabel(variantSlug: string) {
-  if (variantSlug === "foundation") return "Foundation";
-  if (variantSlug === "higher") return "Higher";
-  return "Volna";
-}
+export const metadata: Metadata = {
+  title: "GCSE Russian lesson",
+};
 
 export default async function LessonPage({ params, searchParams }: LessonPageProps) {
   const { courseSlug, variantSlug, moduleSlug, lessonSlug } = await params;
@@ -75,7 +75,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
                   {course.title}
                 </Badge>
                 <Badge tone="muted" icon="layers">
-                  {getVariantLabel(variantSlug)}
+                  {getVariantDisplayName(variantSlug, variantSlug)}
                 </Badge>
                 <Badge tone="warning" icon="locked">
                   Locked lesson
@@ -93,11 +93,15 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
 
               <div className="flex flex-wrap gap-3">
                 <Button
-                  href={isGuest ? "/signup" : getVariantPath(courseSlug, variantSlug)}
+                  href={
+                    isGuest
+                      ? "/signup"
+                      : getModulePath(courseSlug, variantSlug, moduleSlug)
+                  }
                   variant="primary"
                   icon={isGuest ? "create" : "back"}
                 >
-                  {isGuest ? "Start trial" : "Back to module path"}
+                  {isGuest ? "Start trial" : "Back to module"}
                 </Button>
 
                 <Button href="/courses" variant="secondary" icon="courses">
@@ -113,7 +117,11 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
                   ? "Lesson content is part of the trial account experience. Sign up to try sample lessons and see the full path in context."
                   : "Lessons may unlock as you complete earlier work, and some lessons require the right course access. Start with the module path so the next available step is clear."
               }
-              accessLabel={isGuest ? "Trial account" : getVariantLabel(variantSlug)}
+              accessLabel={
+                isGuest
+                  ? "Trial account"
+                  : getVariantDisplayName(variantSlug, variantSlug)
+              }
               statusLabel={isGuest ? "Signup required" : "Locked"}
               primaryActionHref={
                 isGuest ? "/signup" : getModulePath(courseSlug, variantSlug, moduleSlug)
