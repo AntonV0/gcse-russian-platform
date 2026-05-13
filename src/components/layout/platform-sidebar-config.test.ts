@@ -4,6 +4,7 @@ import {
   getSidebarHeaderState,
   getSidebarNavigationLabels,
 } from "@/components/layout/platform-sidebar-config";
+import { getMobileQuickLabel } from "@/components/layout/platform-sidebar-primitives";
 
 describe("platform sidebar config", () => {
   it("labels admin platform pages as platform navigation", () => {
@@ -133,6 +134,13 @@ describe("platform sidebar config", () => {
     expect(admin.volnaSchoolItems.map((item) => item.label)).toContain(
       "Join Volna School"
     );
+  });
+
+  it("shortens mobile quick labels without changing accessible nav labels", () => {
+    expect(getMobileQuickLabel("Dashboard")).toBe("Start");
+    expect(getMobileQuickLabel("Progress")).toBe("Track");
+    expect(getMobileQuickLabel("Vocabulary")).toBe("Vocab");
+    expect(getMobileQuickLabel("Grammar")).toBe("Grammar");
   });
 
   it("locks guest account and Volna navigation targets", () => {
