@@ -1,5 +1,14 @@
 # GCSE Russian Course Platform
 
+[![CI](https://github.com/AntonV0/gcse-russian-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/AntonV0/gcse-russian-platform/actions/workflows/ci.yml)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
+![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Postgres-3ecf8e?logo=supabase&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-Billing-635bff?logo=stripe&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-Unit%20Tests-6e9f18?logo=vitest&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-E2E%20Tests-2ead33?logo=playwright&logoColor=white)
+
 Last reviewed: 2026-05-04
 
 A full-stack online learning platform for GCSE Russian students,

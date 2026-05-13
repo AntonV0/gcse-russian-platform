@@ -20,15 +20,16 @@
     "seo:check": "node scripts/validate-seo.mjs",
     "theme:check": "node scripts/check-theme-system.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --check . --no-error-on-unmatched-pattern"
+    "format:check": "prettier --check . --no-error-on-unmatched-pattern",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.2",
     "lucide-react": "^0.542.0",
-    "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "next": "16.2.5",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
     "stripe": "^22.0.2"
   },
   "devDependencies": {
@@ -38,12 +39,17 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.2.5",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.1",
     "supabase": "^2.84.10",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.5"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.10"
+    }
   }
 }
