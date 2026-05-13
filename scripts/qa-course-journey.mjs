@@ -171,8 +171,8 @@ async function verifyAccount(browser, account) {
         failures
       );
       assert(
-        normalizedBodyText.includes("Unlocked"),
-        "Full-access journey should show unlocked lesson states.",
+        /Continue lesson|Start lesson|Review lesson/.test(normalizedBodyText),
+        "Full-access journey should show an actionable lesson CTA.",
         failures
       );
       assert(
