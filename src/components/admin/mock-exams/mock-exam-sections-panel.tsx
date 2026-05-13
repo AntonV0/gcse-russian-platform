@@ -8,7 +8,6 @@ import {
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import MockExamQuestionForm from "@/components/admin/mock-exam-question-form";
 import MockExamQuestionPreview from "@/components/mock-exams/mock-exam-question-preview";
-import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
