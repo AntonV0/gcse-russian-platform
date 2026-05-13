@@ -47,8 +47,14 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
+
       - name: Check SEO
         run: npm run seo:check
+
+      - name: Check theme system
+        run: npm run theme:check
 
       - name: Test
         shell: bash
@@ -61,3 +67,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Test e2e
+        run: npm run test:e2e

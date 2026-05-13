@@ -3,6 +3,13 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
+const contrastFailures = [];
+const NORMAL_TEXT_CONTRAST = 4.5;
+const MUTED_TEXT_CONTRAST = 4.4;
+const BUTTON_FILL_TEXT_CONTRAST = 4.5;
+const DARK_ACCENT_ON_SURFACE_CONTRAST = 4.5;
+const DECORATIVE_BRAND_CONTRAST = 3;
+const SEMANTIC_TEXT_CONTRAST = 4.5;
 
 function read(relativePath) {
   return readFileSync(path.join(root, relativePath), "utf8");
@@ -33,6 +40,246 @@ function assert(condition, message) {
   }
 }
 
+function parseTokenBlocks(css) {
+  const blocks = [];
+  const cssWithoutComments = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  const blockPattern = /([^{}]+)\{([^{}]+)\}/g;
+  let match;
+
+  while ((match = blockPattern.exec(cssWithoutComments)) !== null) {
+    const selector = match[1].trim();
+    const declarations = {};
+    const declarationPattern = /(--[\w-]+)\s*:\s*([^;]+);/g;
+    let declarationMatch;
+
+    while ((declarationMatch = declarationPattern.exec(match[2])) !== null) {
+      declarations[declarationMatch[1]] = declarationMatch[2].trim();
+    }
+
+    blocks.push({ selector, declarations });
+  }
+
+  return blocks;
+}
+
+function splitTopLevel(value, separator = ",") {
+  const parts = [];
+  let depth = 0;
+  let current = "";
+
+  for (const character of value) {
+    if (character === "(") {
+      depth += 1;
+    } else if (character === ")") {
+      depth -= 1;
+    }
+
+    if (character === separator && depth === 0) {
+      parts.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += character;
+  }
+
+  if (current.trim()) {
+    parts.push(current.trim());
+  }
+
+  return parts;
+}
+
+function hexToRgb(value) {
+  const hex = value.trim().toLowerCase();
+  const match = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex);
+
+  if (!match) {
+    return null;
+  }
+
+  const normalized =
+    match[1].length === 3
+      ? match[1]
+          .split("")
+          .map((character) => `${character}${character}`)
+          .join("")
+      : match[1];
+
+  return {
+    r: Number.parseInt(normalized.slice(0, 2), 16),
+    g: Number.parseInt(normalized.slice(2, 4), 16),
+    b: Number.parseInt(normalized.slice(4, 6), 16),
+  };
+}
+
+function parseRgb(value) {
+  const match = /^rgba?\(([^)]+)\)$/i.exec(value.trim());
+
+  if (!match) {
+    return null;
+  }
+
+  const channels = splitTopLevel(match[1]).map((part) => Number.parseFloat(part));
+
+  if (channels.length < 3 || channels.some((channel) => Number.isNaN(channel))) {
+    return null;
+  }
+
+  return { r: channels[0], g: channels[1], b: channels[2] };
+}
+
+function mixColors(firstColor, firstWeight, secondColor, secondWeight) {
+  const totalWeight = firstWeight + secondWeight;
+  const normalizedFirstWeight = totalWeight === 0 ? 0.5 : firstWeight / totalWeight;
+  const normalizedSecondWeight = totalWeight === 0 ? 0.5 : secondWeight / totalWeight;
+
+  return {
+    r: firstColor.r * normalizedFirstWeight + secondColor.r * normalizedSecondWeight,
+    g: firstColor.g * normalizedFirstWeight + secondColor.g * normalizedSecondWeight,
+    b: firstColor.b * normalizedFirstWeight + secondColor.b * normalizedSecondWeight,
+  };
+}
+
+function parseWeightedColor(part) {
+  const weightMatch = /^(.*)\s+((?:[0-9.]+%|var\(--[\w-]+\)))$/.exec(part.trim());
+
+  if (!weightMatch) {
+    return { value: part.trim(), weight: null };
+  }
+
+  return {
+    value: weightMatch[1].trim(),
+    weight: weightMatch[2].trim(),
+  };
+}
+
+function resolvePercentage(value, tokens) {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (value === null) {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  const numericMatch = /^([0-9.]+)%$/.exec(trimmed);
+
+  if (numericMatch) {
+    return Number.parseFloat(numericMatch[1]);
+  }
+
+  const varMatch = /^var\((--[\w-]+)\)$/.exec(trimmed);
+
+  if (varMatch) {
+    const resolvedValue = tokens[varMatch[1]];
+
+    if (!resolvedValue) {
+      return null;
+    }
+
+    return resolvePercentage(resolvedValue, tokens);
+  }
+
+  return null;
+}
+
+function resolveColor(value, tokens, seen = new Set()) {
+  const trimmed = value.trim();
+
+  if (trimmed === "black") {
+    return { r: 0, g: 0, b: 0 };
+  }
+
+  if (trimmed === "white") {
+    return { r: 255, g: 255, b: 255 };
+  }
+
+  if (trimmed === "transparent") {
+    return { r: 255, g: 255, b: 255 };
+  }
+
+  const hex = hexToRgb(trimmed);
+
+  if (hex) {
+    return hex;
+  }
+
+  const rgb = parseRgb(trimmed);
+
+  if (rgb) {
+    return rgb;
+  }
+
+  const varMatch = /^var\((--[\w-]+)\)$/.exec(trimmed);
+
+  if (varMatch) {
+    const tokenName = varMatch[1];
+
+    if (seen.has(tokenName) || !tokens[tokenName]) {
+      return null;
+    }
+
+    seen.add(tokenName);
+    const color = resolveColor(tokens[tokenName], tokens, seen);
+    seen.delete(tokenName);
+    return color;
+  }
+
+  const colorMixMatch = /^color-mix\(\s*in\s+srgb\s*,\s*(.+)\)$/is.exec(trimmed);
+
+  if (colorMixMatch) {
+    const parts = splitTopLevel(colorMixMatch[1]);
+
+    if (parts.length !== 2) {
+      return null;
+    }
+
+    const first = parseWeightedColor(parts[0]);
+    const second = parseWeightedColor(parts[1]);
+    const resolvedFirstWeight = resolvePercentage(first.weight, tokens);
+    const resolvedSecondWeight = resolvePercentage(second.weight, tokens);
+    const firstWeight =
+      resolvedFirstWeight ?? (resolvedSecondWeight === null ? 50 : 100 - resolvedSecondWeight);
+    const secondWeight = resolvedSecondWeight ?? 100 - firstWeight;
+    const firstColor = resolveColor(first.value, tokens, seen);
+    const secondColor = resolveColor(second.value, tokens, seen);
+
+    if (!firstColor || !secondColor) {
+      return null;
+    }
+
+    return mixColors(firstColor, firstWeight, secondWeight);
+  }
+
+  return null;
+}
+
+function relativeLuminance(color) {
+  const channels = [color.r, color.g, color.b].map((channel) => {
+    const normalized = channel / 255;
+    return normalized <= 0.03928
+      ? normalized / 12.92
+      : ((normalized + 0.055) / 1.055) ** 2.4;
+  });
+
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+function contrastRatio(firstColor, secondColor) {
+  const firstLuminance = relativeLuminance(firstColor);
+  const secondLuminance = relativeLuminance(secondColor);
+  const lighter = Math.max(firstLuminance, secondLuminance);
+  const darker = Math.min(firstLuminance, secondLuminance);
+
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function formatRatio(ratio) {
+  return ratio.toFixed(2);
+}
+
 const sourceFiles = walk("src", new Set([".css", ".tsx", ".ts"]));
 const gradientBgMisuse = [];
 
@@ -55,6 +302,16 @@ const accentTokens = read("src/styles/tokens/accents.css");
 const progressCss = read("src/styles/surfaces/cards-panels.css");
 const logoCss = read("src/styles/surfaces/brand-logo.css");
 const lessonWarmthCss = read("src/styles/lesson-warmth.css");
+const baseTokenDeclarations = parseTokenBlocks(baseTokens).find(
+  (block) => block.selector === ":root"
+)?.declarations;
+const darkTokenDeclarations = parseTokenBlocks(darkTokens).find(
+  (block) => block.selector === '[data-theme="dark"]'
+)?.declarations;
+const accentTokenBlocks = parseTokenBlocks(accentTokens);
+
+assert(Boolean(baseTokenDeclarations), "Base theme token block is missing.");
+assert(Boolean(darkTokenDeclarations), "Dark theme token block is missing.");
 
 assert(
   /--brand-blue:\s*#[0-9a-f]{6};/i.test(baseTokens),
@@ -69,15 +326,21 @@ assert(
   "Brand blue must not be defined as an accent alias."
 );
 assert(
-  baseTokens.includes("--accent-decorative-fill") &&
-    baseTokens.includes("--accent-decorative-border") &&
-    baseTokens.includes("--success-progress-gradient"),
-  "Theme role tokens for decorative accent and success progress are missing."
+  !/--danger:\s*var\(--accent/.test(`${baseTokens}\n${darkTokens}\n${accentTokens}`),
+  "Danger must remain a semantic role and not alias to the active accent."
 );
 assert(
-  logoCss.includes("--app-logo-blue: var(--accent-decorative-fill);") &&
-    logoCss.includes("--app-logo-blue-strong: var(--accent-decorative-fill-bright);"),
-  "Theme-tinted logo should use decorative accent tokens."
+  baseTokens.includes("--accent-decorative-fill") &&
+    baseTokens.includes("--accent-decorative-border") &&
+    baseTokens.includes("--accent-border-ink") &&
+    baseTokens.includes("--accent-brand-ink") &&
+    baseTokens.includes("--success-progress-gradient"),
+  "Theme role tokens for decorative accent, brand accent, and success progress are missing."
+);
+assert(
+  logoCss.includes("--app-logo-blue: var(--accent-brand-ink);") &&
+    logoCss.includes("--app-logo-blue-strong: var(--accent-brand-line);"),
+  "Theme-tinted logo should use brand accent tokens."
 );
 assert(
   progressCss.includes(".app-progress-bar-success") &&
@@ -115,8 +378,177 @@ assert(
   "Slate accent should use the updated cooler light fill."
 );
 assert(
-  existsSync(path.join(root, "src/components/admin/ui-lab/theme/ui-lab-theme-qa-grid.tsx")),
+  existsSync(
+    path.join(root, "src/components/admin/ui-lab/theme/ui-lab-theme-qa-grid.tsx")
+  ),
   "Theme QA grid component is missing."
+);
+
+const accentNames = [
+  ...new Set(
+    accentTokenBlocks
+      .map((block) => /^\[data-accent="([^"]+)"\]$/.exec(block.selector)?.[1])
+      .filter(Boolean)
+  ),
+];
+
+assert(accentNames.length > 0, "Accent token blocks are missing.");
+
+function getAccentDeclarations(accentName, theme) {
+  const selector =
+    theme === "dark"
+      ? `[data-theme="dark"][data-accent="${accentName}"]`
+      : `[data-accent="${accentName}"]`;
+
+  return (
+    accentTokenBlocks.find((block) => block.selector === selector)?.declarations ?? {}
+  );
+}
+
+function buildThemeTokens(accentName, theme) {
+  return {
+    ...baseTokenDeclarations,
+    ...(theme === "dark" ? darkTokenDeclarations : {}),
+    ...getAccentDeclarations(accentName, theme),
+  };
+}
+
+function assertContrast(tokens, label, foregroundToken, backgroundToken, minimumRatio) {
+  const foreground = resolveColor(`var(${foregroundToken})`, tokens);
+  const background = resolveColor(`var(${backgroundToken})`, tokens);
+
+  if (!foreground || !background) {
+    contrastFailures.push(
+      `${label}: could not resolve ${foregroundToken} on ${backgroundToken}`
+    );
+    return;
+  }
+
+  const ratio = contrastRatio(foreground, background);
+
+  if (ratio < minimumRatio) {
+    contrastFailures.push(
+      `${label}: ${foregroundToken} on ${backgroundToken} is ${formatRatio(
+        ratio
+      )}:1, expected at least ${minimumRatio}:1`
+    );
+  }
+}
+
+if (baseTokenDeclarations && darkTokenDeclarations && accentNames.length > 0) {
+  for (const accentName of accentNames) {
+    for (const theme of ["light", "dark"]) {
+      const tokens = buildThemeTokens(accentName, theme);
+      const label = `${theme}/${accentName}`;
+
+      assertContrast(
+        tokens,
+        `${label} normal text`,
+        "--text-primary",
+        "--background",
+        NORMAL_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} normal text on elevated surface`,
+        "--text-primary",
+        "--background-elevated",
+        NORMAL_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} muted text`,
+        "--text-muted",
+        "--background",
+        MUTED_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} muted text on elevated surface`,
+        "--text-muted",
+        "--background-elevated",
+        MUTED_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} primary/accent button fill`,
+        "--accent-on-fill",
+        "--accent-fill",
+        BUTTON_FILL_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} brand primary button fill`,
+        "--text-inverse",
+        "--brand-blue",
+        BUTTON_FILL_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} success semantic text`,
+        "--success-text",
+        "--success-surface",
+        SEMANTIC_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} warning semantic text`,
+        "--warning-text",
+        "--warning-surface",
+        SEMANTIC_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} danger semantic text`,
+        "--danger-text",
+        "--danger-surface",
+        SEMANTIC_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} info semantic text`,
+        "--info-text",
+        "--info-surface",
+        SEMANTIC_TEXT_CONTRAST
+      );
+      assertContrast(
+        tokens,
+        `${label} decorative logo accent`,
+        "--accent-brand-ink",
+        "--background-elevated",
+        DECORATIVE_BRAND_CONTRAST
+      );
+    }
+
+    const darkTokensForAccent = buildThemeTokens(accentName, "dark");
+
+    assertContrast(
+      darkTokensForAccent,
+      `dark/${accentName} accent-on-surface`,
+      "--accent-on-soft",
+      "--accent-soft",
+      DARK_ACCENT_ON_SURFACE_CONTRAST
+    );
+    assertContrast(
+      darkTokensForAccent,
+      `dark/${accentName} accent-on-muted surface`,
+      "--accent-on-soft",
+      "--background-muted",
+      DARK_ACCENT_ON_SURFACE_CONTRAST
+    );
+    assertContrast(
+      darkTokensForAccent,
+      `dark/${accentName} stronger decorative border`,
+      "--accent-border-ink",
+      "--background-elevated",
+      DECORATIVE_BRAND_CONTRAST
+    );
+  }
+}
+
+assert(
+  contrastFailures.length === 0,
+  `Theme token contrast checks failed:\n- ${contrastFailures.join("\n- ")}`
 );
 
 if (failures.length > 0) {
@@ -129,4 +561,6 @@ if (failures.length > 0) {
 
 console.log("Theme system check passed.");
 console.log("Screenshot target: /admin/ui/theme");
-console.log("Recommended manual captures: desktop and mobile widths after toggling Light/Dark.");
+console.log(
+  "Recommended manual captures: desktop and mobile widths after toggling Light/Dark and cycling every accent."
+);
