@@ -105,6 +105,7 @@ docs/dev-workflow-private/
 
 # private course/data IP
 supabase/migrations/*.sql
+!supabase/migrations/20260508120000_add_avatar_display_preferences.sql
 supabase/migrations/*.sql.sql
 supabase/migrations/*remote_schema*.sql
 supabase/migrations/*seed_spec_vocabulary*.sql

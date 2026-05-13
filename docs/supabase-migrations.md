@@ -19,8 +19,8 @@ historical migration files for cosmetic cleanup.
 - Only edit a migration directly when it is the latest local migration, has not
   been pushed, and has not been applied to any shared database.
 - Prefer idempotent SQL for operational seed migrations: `insert ... where not
-  exists`, `on conflict`, `create ... if not exists`, and `alter table ... add
-  column if not exists`.
+exists`, `on conflict`, `create ... if not exists`, and `alter table ... add
+column if not exists`.
 - Do not commit proprietary course content, vocabulary banks, grammar banks,
   lesson maps, or production schema dumps to the public repository. Keep those
   as private data exports, private migrations, or environment-owned seed jobs.
