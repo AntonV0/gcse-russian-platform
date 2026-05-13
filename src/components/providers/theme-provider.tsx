@@ -151,18 +151,6 @@ function applyAccent(accent: AccentPreference, animate = true) {
   }
 }
 
-function readInitialThemeState() {
-  const storedPreference = readStoredThemePreference();
-  const storedAccent = readStoredAccentPreference();
-  const initialPreference: ThemePreference = storedPreference ?? "system";
-
-  return {
-    theme: resolveTheme(initialPreference),
-    themePreference: initialPreference,
-    accentPreference: storedAccent ?? DEFAULT_ACCENT,
-  };
-}
-
 type ThemeProviderProps = {
   children: React.ReactNode;
   initialThemePreference?: ThemePreference | null;
@@ -174,12 +162,12 @@ export function ThemeProvider({
   initialThemePreference,
   initialAccentPreference,
 }: ThemeProviderProps) {
-  const initialState = readInitialThemeState();
-  const resolvedInitialPreference =
-    initialThemePreference ?? initialState.themePreference;
-  const resolvedInitialAccent = initialAccentPreference ?? initialState.accentPreference;
+  const resolvedInitialPreference = initialThemePreference ?? "system";
+  const resolvedInitialAccent = initialAccentPreference ?? DEFAULT_ACCENT;
   const [theme, setThemeState] = useState<ThemeMode | null>(() =>
-    resolveTheme(resolvedInitialPreference)
+    resolvedInitialPreference === "light" || resolvedInitialPreference === "dark"
+      ? resolvedInitialPreference
+      : readResolvedTheme()
   );
   const [themePreference, setThemePreferenceState] = useState<ThemePreference | null>(
     () => resolvedInitialPreference
@@ -248,11 +236,20 @@ export function ThemeProvider({
   );
 
   useEffect(() => {
-    applyTheme(theme ?? readResolvedTheme(), false);
+    const resolvedTheme =
+      themePreference === "system"
+        ? resolveTheme("system")
+        : theme ?? readResolvedTheme();
+
+    applyTheme(resolvedTheme, false);
     applyAccent(
       accentPreference ?? readStoredAccentPreference() ?? DEFAULT_ACCENT,
       false
     );
+    const themeFrameId =
+      theme !== resolvedTheme
+        ? window.requestAnimationFrame(() => setThemeState(resolvedTheme))
+        : null;
     localStorage.setItem(THEME_STORAGE_KEY, themePreference ?? "system");
     localStorage.setItem(ACCENT_STORAGE_KEY, accentPreference ?? DEFAULT_ACCENT);
     writeAppearanceCookie(THEME_STORAGE_KEY, themePreference ?? "system");
@@ -305,6 +302,9 @@ export function ThemeProvider({
     window.addEventListener("storage", handleStorage);
 
     return () => {
+      if (themeFrameId !== null) {
+        window.cancelAnimationFrame(themeFrameId);
+      }
       mediaQuery.removeEventListener("change", handleSystemThemeChange);
       window.removeEventListener("storage", handleStorage);
     };

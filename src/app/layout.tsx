@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import { cookies } from "next/headers";
 import {
   DEFAULT_OG_IMAGE_PATH,
   DEFAULT_SEO_DESCRIPTION,
@@ -8,7 +9,12 @@ import {
   PUBLIC_SITE_NAME,
   getPublicSiteUrl,
 } from "@/lib/seo/site";
-import { ThemeProvider } from "@/components/providers/theme-provider";
+import {
+  ThemeProvider,
+  type AccentPreference,
+  type ThemeMode,
+  type ThemePreference,
+} from "@/components/providers/theme-provider";
 
 const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -47,16 +53,52 @@ export const metadata: Metadata = {
   },
 };
 
+const ACCENT_OPTIONS = new Set<AccentPreference>([
+  "blue",
+  "purple",
+  "pink",
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "teal",
+  "brown",
+  "slate",
+]);
+
+function readThemePreference(value: string | undefined): ThemePreference {
+  return value === "light" || value === "dark" || value === "system"
+    ? value
+    : "system";
+}
+
+function readAccentPreference(value: string | undefined): AccentPreference {
+  return ACCENT_OPTIONS.has(value as AccentPreference)
+    ? (value as AccentPreference)
+    : "blue";
+}
+
+function resolveInitialTheme(preference: ThemePreference): ThemeMode {
+  return preference === "dark" ? "dark" : "light";
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const initialThemePreference = readThemePreference(cookieStore.get("theme")?.value);
+  const initialAccentPreference = readAccentPreference(cookieStore.get("accent")?.value);
+  const initialTheme = resolveInitialTheme(initialThemePreference);
+
   return (
     <html
       lang="en"
       className={manrope.variable}
       data-scroll-behavior="smooth"
+      data-theme={initialTheme}
+      data-accent={initialAccentPreference}
       suppressHydrationWarning
     >
       <head>
@@ -78,61 +120,14 @@ export default async function RootLayout({
           sizes="180x180"
           href="/brand/logo-final/favicon-r-light-180.png"
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-(function () {
-  try {
-    const profileTheme = null;
-    const stored = localStorage.getItem("theme");
-    const system = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const preference =
-      profileTheme === "light" || profileTheme === "dark" || profileTheme === "system"
-        ? profileTheme
-        : stored;
-    const theme =
-      preference === "light" || preference === "dark"
-        ? preference
-        : system
-          ? "dark"
-          : "light";
-    document.documentElement.setAttribute("data-theme", theme);
-    if (profileTheme === "light" || profileTheme === "dark" || profileTheme === "system") {
-      localStorage.setItem("theme", profileTheme);
-    }
-    const accentOptions = new Set([
-      "blue",
-      "purple",
-      "pink",
-      "red",
-      "orange",
-      "yellow",
-      "green",
-      "teal",
-      "brown",
-      "slate",
-    ]);
-    const profileAccent = null;
-    const storedAccent = localStorage.getItem("accent");
-    const accent =
-      accentOptions.has(profileAccent)
-        ? profileAccent
-        : accentOptions.has(storedAccent)
-          ? storedAccent
-          : "blue";
-    document.documentElement.setAttribute(
-      "data-accent",
-      accent
-    );
-    localStorage.setItem("accent", accent);
-  } catch (e) {}
-})();
-`,
-          }}
-        />
       </head>
       <body className="min-h-screen">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider
+          initialThemePreference={initialThemePreference}
+          initialAccentPreference={initialAccentPreference}
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
