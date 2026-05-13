@@ -1,37 +1,34 @@
 "use client";
 
-import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
-import ActionPill from "@/components/ui/action-pill";
+import { useMemo, useState } from "react";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
-import { RussianText } from "@/components/typography/russian-text";
 import type { VocabularyItemSectionGroup } from "@/lib/vocabulary/items/item-sections";
-import { getVocabularyTierLabel } from "@/lib/vocabulary/shared/labels";
-import {
-  getRequiredVocabularyCoverageVariants,
-  getVocabularyCoverageVariantCount,
-  getVocabularyCoverageVariantLabel,
-  getVocabularyCoverageVariantUsed,
-} from "@/lib/vocabulary/shared/study-variants";
 import {
   getVocabularyStudyItemMatchesFilters,
   getVocabularyStudyState,
   getVocabularyStudyStateCounts,
-  normalizeVocabularyStudyState,
   type VocabularyStudySkillFilter,
   type VocabularyStudySourceFilter,
   type VocabularyStudyState,
   type VocabularyStudyStateFilter,
-  type VocabularyStudyStateMap,
 } from "@/lib/vocabulary/study-state";
-import type {
-  DbVocabularyItem,
-  DbVocabularyItemCoverage,
-} from "@/lib/vocabulary/shared/types";
+import type { DbVocabularyItemCoverage } from "@/lib/vocabulary/shared/types";
+
+import {
+  getVocabularyStudyStorageKey,
+  saveVocabularyStudyState,
+  useVocabularyStudyStateMap,
+} from "./vocabulary-study-workspace/study-state-storage";
+import {
+  SectionToggleButton,
+  StudySummaryButton,
+} from "./vocabulary-study-workspace/study-state-ui";
+import { VocabularyItemRow } from "./vocabulary-study-workspace/vocabulary-item-row";
 
 type VocabularyStudyWorkspaceProps = {
   vocabularySetId: string;
@@ -40,431 +37,6 @@ type VocabularyStudyWorkspaceProps = {
   itemCoverage: DbVocabularyItemCoverage[];
   showStaffMetadata: boolean;
 };
-
-const EMPTY_STUDY_STATES: VocabularyStudyStateMap = {};
-const STUDY_STATE_STORAGE_EVENT = "vocabulary-study-state-change";
-let cachedStudyStateStorageKey = "";
-let cachedStudyStateItemIdsKey = "";
-let cachedStudyStateRawValue = "";
-let cachedStudyStateSnapshot: VocabularyStudyStateMap = EMPTY_STUDY_STATES;
-
-function getItemBadgeTone(item: DbVocabularyItem) {
-  if (item.source_type === "spec_required") return "info";
-  if (item.priority === "extension") return "warning";
-  return "muted";
-}
-
-function getItemSourceLabel(item: DbVocabularyItem) {
-  switch (item.source_type) {
-    case "spec_required":
-      return "Exam specification";
-    case "extended":
-      return "Extended";
-    case "custom":
-      return "Custom";
-  }
-}
-
-function getItemStudyUseLabel(item: DbVocabularyItem) {
-  switch (item.productive_receptive) {
-    case "productive":
-      return "Speaking and writing";
-    case "receptive":
-      return "Listening and reading";
-    case "both":
-      return "All skills";
-    default:
-      return null;
-  }
-}
-
-function getStudyStateLabel(state: VocabularyStudyState) {
-  switch (state) {
-    case "mastered":
-      return "Mastered";
-    case "needs_practice":
-      return "Needs practice";
-    case "new":
-      return "New";
-  }
-}
-
-function getStudyStateBadgeTone(state: VocabularyStudyState) {
-  switch (state) {
-    case "mastered":
-      return "success";
-    case "needs_practice":
-      return "warning";
-    case "new":
-      return "muted";
-  }
-}
-
-function getStudyStateIcon(state: VocabularyStudyState) {
-  switch (state) {
-    case "mastered":
-      return "success";
-    case "needs_practice":
-      return "brain";
-    case "new":
-      return "sparkles";
-  }
-}
-
-function getStudyStateRowClassName(state: VocabularyStudyState) {
-  switch (state) {
-    case "mastered":
-      return [
-        "border-[var(--success-border)]",
-        "bg-[color-mix(in_srgb,var(--success-surface)_48%,var(--surface-muted-bg))]",
-        "hover:border-[var(--success-border-strong)]",
-      ].join(" ");
-    case "needs_practice":
-      return [
-        "border-[var(--warning-border)]",
-        "bg-[color-mix(in_srgb,var(--warning-surface)_52%,var(--surface-muted-bg))]",
-        "hover:border-[var(--warning-border-strong)]",
-      ].join(" ");
-    case "new":
-    default:
-      return [
-        "border-[var(--border-subtle)]",
-        "bg-[var(--surface-muted-bg)]",
-        "hover:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--border-strong))]",
-      ].join(" ");
-  }
-}
-
-function getStudyStateStripeClassName(state: VocabularyStudyState) {
-  switch (state) {
-    case "mastered":
-      return "bg-[var(--success)]";
-    case "needs_practice":
-      return "bg-[var(--warning-display)]";
-    case "new":
-    default:
-      return "bg-[var(--accent-fill)]";
-  }
-}
-
-function getStorageKey(vocabularySetId: string) {
-  return `gcse-russian:vocabulary-study:${vocabularySetId}`;
-}
-
-function loadStoredStudyStates(storageKey: string, itemIds: Set<string>) {
-  try {
-    const rawValue = window.localStorage.getItem(storageKey);
-    const parsedValue = rawValue ? JSON.parse(rawValue) : null;
-
-    if (!parsedValue || typeof parsedValue !== "object") {
-      return {};
-    }
-
-    return Object.entries(parsedValue).reduce<VocabularyStudyStateMap>(
-      (states, [itemId, value]) => {
-        const normalizedState = normalizeVocabularyStudyState(value);
-
-        if (itemIds.has(itemId) && normalizedState) {
-          states[itemId] = normalizedState;
-        }
-
-        return states;
-      },
-      {}
-    );
-  } catch {
-    return {};
-  }
-}
-
-function getCachedStoredStudyStates(storageKey: string, itemIds: Set<string>) {
-  if (typeof window === "undefined") {
-    return EMPTY_STUDY_STATES;
-  }
-
-  const itemIdsKey = Array.from(itemIds).join("\u001f");
-  const rawValue = window.localStorage.getItem(storageKey) ?? "";
-
-  if (
-    cachedStudyStateStorageKey === storageKey &&
-    cachedStudyStateItemIdsKey === itemIdsKey &&
-    cachedStudyStateRawValue === rawValue
-  ) {
-    return cachedStudyStateSnapshot;
-  }
-
-  cachedStudyStateStorageKey = storageKey;
-  cachedStudyStateItemIdsKey = itemIdsKey;
-  cachedStudyStateRawValue = rawValue;
-  cachedStudyStateSnapshot = loadStoredStudyStates(storageKey, itemIds);
-
-  return cachedStudyStateSnapshot;
-}
-
-function subscribeToStudyStateStorage(onStoreChange: () => void) {
-  window.addEventListener("storage", onStoreChange);
-  window.addEventListener(STUDY_STATE_STORAGE_EVENT, onStoreChange);
-
-  return () => {
-    window.removeEventListener("storage", onStoreChange);
-    window.removeEventListener(STUDY_STATE_STORAGE_EVENT, onStoreChange);
-  };
-}
-
-function CoverageBadge({
-  label,
-  isUsed,
-  count,
-}: {
-  label: string;
-  isUsed: boolean;
-  count?: number;
-}) {
-  return (
-    <Badge tone={isUsed ? "success" : "danger"} icon={isUsed ? "success" : "cancel"}>
-      {count && count > 0 ? `${label} ${count}` : label}
-    </Badge>
-  );
-}
-
-function VocabularyItemCoverageBadges({
-  item,
-  coverage,
-}: {
-  item: DbVocabularyItem;
-  coverage: DbVocabularyItemCoverage | null;
-}) {
-  const lessonCoverageVariants = getRequiredVocabularyCoverageVariants(item.tier);
-
-  return (
-    <div className="flex flex-wrap gap-2 md:justify-end">
-      {lessonCoverageVariants.map((variant) => (
-        <CoverageBadge
-          key={variant}
-          label={getVocabularyCoverageVariantLabel(variant)}
-          isUsed={getVocabularyCoverageVariantUsed(coverage, variant)}
-          count={getVocabularyCoverageVariantCount(coverage, variant)}
-        />
-      ))}
-
-      <CoverageBadge
-        label="Custom list"
-        isUsed={Boolean(coverage?.used_in_custom_list)}
-        count={coverage?.custom_list_occurrences ?? 0}
-      />
-    </div>
-  );
-}
-
-function SectionToggleButton() {
-  return (
-    <ActionPill
-      icon="down"
-      className="pointer-events-none shrink-0 gap-1 px-3 sm:px-3.5"
-      aria-hidden="true"
-    >
-      <span className="group-open:hidden">Open</span>
-      <span className="hidden group-open:inline">Close</span>
-    </ActionPill>
-  );
-}
-
-function StudyStateButton({
-  state,
-  currentState,
-  onClick,
-}: {
-  state: VocabularyStudyState;
-  currentState: VocabularyStudyState;
-  onClick: () => void;
-}) {
-  const isActive = state === currentState;
-
-  return (
-    <Button
-      type="button"
-      variant={
-        state === "mastered"
-          ? "success"
-          : state === "needs_practice"
-            ? "warning"
-            : isActive
-              ? "soft"
-              : "secondary"
-      }
-      size="sm"
-      icon={getStudyStateIcon(state)}
-      aria-pressed={isActive}
-      onClick={onClick}
-    >
-      {getStudyStateLabel(state)}
-    </Button>
-  );
-}
-
-function VocabularyItemRow({
-  item,
-  coverage,
-  showStaffMetadata,
-  position,
-  studyState,
-  onSetStudyState,
-}: {
-  item: DbVocabularyItem;
-  coverage: DbVocabularyItemCoverage | null;
-  showStaffMetadata: boolean;
-  position: number;
-  studyState: VocabularyStudyState;
-  onSetStudyState: (state: VocabularyStudyState) => void;
-}) {
-  const studyUseLabel = getItemStudyUseLabel(item);
-
-  return (
-    <div
-      className={[
-        "group relative overflow-hidden rounded-2xl border shadow-[var(--shadow-xs)] transition",
-        "hover:bg-[var(--background-elevated)]",
-        getStudyStateRowClassName(studyState),
-      ].join(" ")}
-    >
-      <div
-        className={[
-          "absolute inset-y-0 left-0 w-1 opacity-80",
-          getStudyStateStripeClassName(studyState),
-        ].join(" ")}
-      />
-
-      <div className="grid gap-4 px-4 py-4 sm:pl-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:items-start">
-        <div className="flex min-w-0 gap-3">
-          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--background-elevated)] text-xs font-semibold text-[var(--text-muted)]">
-            {position}
-          </span>
-
-          <div className="min-w-0">
-            <RussianText variant="term" className="block text-lg font-semibold leading-7">
-              {item.russian}
-            </RussianText>
-            {item.transliteration ? (
-              <div className="mt-1 text-sm leading-6 app-text-soft">
-                {item.transliteration}
-              </div>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="min-w-0 border-t border-[var(--border-subtle)] pt-3 xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">
-          <div className="text-sm leading-6 text-[var(--text-secondary)]">
-            {item.english}
-          </div>
-
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Badge
-              tone={getStudyStateBadgeTone(studyState)}
-              icon={getStudyStateIcon(studyState)}
-            >
-              {getStudyStateLabel(studyState)}
-            </Badge>
-            <Badge tone={getItemBadgeTone(item)} icon="vocabulary">
-              {getItemSourceLabel(item)}
-            </Badge>
-            <Badge tone="muted">{item.part_of_speech.replaceAll("_", " ")}</Badge>
-            <Badge tone="muted" icon="school">
-              {getVocabularyTierLabel(item.tier)}
-            </Badge>
-            {studyUseLabel ? <Badge tone="muted">{studyUseLabel}</Badge> : null}
-          </div>
-
-          <div
-            className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap"
-            aria-label={`Study state for ${item.russian}`}
-          >
-            <StudyStateButton
-              state="needs_practice"
-              currentState={studyState}
-              onClick={() => onSetStudyState("needs_practice")}
-            />
-            <StudyStateButton
-              state="mastered"
-              currentState={studyState}
-              onClick={() => onSetStudyState("mastered")}
-            />
-            <StudyStateButton
-              state="new"
-              currentState={studyState}
-              onClick={() => onSetStudyState("new")}
-            />
-          </div>
-
-          {showStaffMetadata ? (
-            <div className="mt-3">
-              <VocabularyItemCoverageBadges item={item} coverage={coverage} />
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      {item.example_ru || item.example_en || item.notes ? (
-        <div className="grid gap-3 border-t border-[var(--border-subtle)] bg-[var(--background-elevated)]/45 px-4 py-4 sm:pl-5 md:grid-cols-2">
-          {item.example_ru || item.example_en ? (
-            <div className="app-soft-panel px-3 py-3">
-              {item.example_ru ? (
-                <RussianText variant="prose" className="block font-medium">
-                  {item.example_ru}
-                </RussianText>
-              ) : null}
-              {item.example_en ? (
-                <div className="mt-1 text-sm text-[var(--text-secondary)]">
-                  {item.example_en}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-
-          {item.notes ? (
-            <div className="app-soft-panel px-3 py-3 text-sm leading-6 text-[var(--text-secondary)]">
-              {item.notes}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function StudySummaryButton({
-  label,
-  count,
-  stateFilter,
-  activeFilter,
-  onClick,
-}: {
-  label: string;
-  count: number;
-  stateFilter: VocabularyStudyStateFilter;
-  activeFilter: VocabularyStudyStateFilter;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={activeFilter === stateFilter}
-      className={[
-        "app-focus-ring rounded-2xl border px-4 py-3 text-left transition",
-        activeFilter === stateFilter
-          ? "border-[var(--accent-selected-border)] [background:var(--accent-gradient-selected)] shadow-[0_10px_24px_color-mix(in_srgb,var(--accent)_10%,transparent)]"
-          : "border-[var(--border-subtle)] bg-[var(--background-elevated)] hover:border-[var(--border-strong)] hover:bg-[var(--background-muted)]",
-      ].join(" ")}
-    >
-      <span className="block text-2xl font-bold leading-none text-[var(--text-primary)]">
-        {count}
-      </span>
-      <span className="mt-1 block text-sm font-semibold text-[var(--text-secondary)]">
-        {label}
-      </span>
-    </button>
-  );
-}
 
 export default function VocabularyStudyWorkspace({
   vocabularySetId,
@@ -486,20 +58,12 @@ export default function VocabularyStudyWorkspace({
       ),
     [itemCoverage]
   );
-  const storageKey = getStorageKey(vocabularySetId);
+  const storageKey = getVocabularyStudyStorageKey(vocabularySetId);
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState<VocabularyStudyStateFilter>("all");
   const [sourceFilter, setSourceFilter] = useState<VocabularyStudySourceFilter>("all");
   const [skillFilter, setSkillFilter] = useState<VocabularyStudySkillFilter>("all");
-  const getStudyStateSnapshot = useCallback(
-    () => getCachedStoredStudyStates(storageKey, itemIdSet),
-    [itemIdSet, storageKey]
-  );
-  const stateByItemId = useSyncExternalStore(
-    subscribeToStudyStateStorage,
-    getStudyStateSnapshot,
-    () => EMPTY_STUDY_STATES
-  );
+  const stateByItemId = useVocabularyStudyStateMap({ storageKey, itemIdSet });
 
   const counts = getVocabularyStudyStateCounts(itemIds, stateByItemId);
   const masteredPercent =
@@ -528,14 +92,12 @@ export default function VocabularyStudyWorkspace({
   );
 
   function setItemStudyState(itemId: string, state: VocabularyStudyState) {
-    window.localStorage.setItem(
+    saveVocabularyStudyState({
       storageKey,
-      JSON.stringify({
-        ...stateByItemId,
-        [itemId]: state,
-      })
-    );
-    window.dispatchEvent(new Event(STUDY_STATE_STORAGE_EVENT));
+      stateByItemId,
+      itemId,
+      state,
+    });
   }
 
   function resetFilters() {
@@ -563,7 +125,7 @@ export default function VocabularyStudyWorkspace({
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap lg:justify-end">
+          <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row sm:flex-wrap lg:justify-end">
             <Button
               type="button"
               variant="warning"
@@ -721,7 +283,7 @@ export default function VocabularyStudyWorkspace({
             </Select>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row xl:flex-col">
+          <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row xl:flex-col">
             <Button
               type="button"
               variant="secondary"
