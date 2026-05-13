@@ -12,6 +12,51 @@ vi.mock("@/lib/courses/course-helpers-db", () => ({
   getLessonAccessMetaDb: vi.fn(),
 }));
 
+function profile(overrides: Partial<Awaited<ReturnType<typeof getCurrentProfile>>>) {
+  return {
+    id: "profile-1",
+    email: "student@example.com",
+    full_name: null,
+    display_name: null,
+    avatar_key: null,
+    avatar_background_key: null,
+    equipped_avatar_frame_key: null,
+    is_admin: false,
+    is_teacher: false,
+    ...overrides,
+  } satisfies NonNullable<Awaited<ReturnType<typeof getCurrentProfile>>>;
+}
+
+function lessonMeta(
+  overrides: Partial<NonNullable<Awaited<ReturnType<typeof getLessonAccessMetaDb>>>>
+) {
+  return {
+    id: "lesson-1",
+    slug: "lesson-design-showcase",
+    is_trial_visible: false,
+    requires_paid_access: true,
+    available_in_volna: false,
+    ...overrides,
+  } satisfies NonNullable<Awaited<ReturnType<typeof getLessonAccessMetaDb>>>;
+}
+
+function accessGrant(
+  overrides: Partial<NonNullable<Awaited<ReturnType<typeof getCurrentCourseAccess>>>>
+) {
+  return {
+    user_id: "user-1",
+    course_slug: "gcse-russian",
+    course_variant: "foundation",
+    access_mode: "trial",
+    source: "stripe",
+    product_id: "product-1",
+    starts_at: null,
+    ends_at: null,
+    is_active: true,
+    ...overrides,
+  } satisfies NonNullable<Awaited<ReturnType<typeof getCurrentCourseAccess>>>;
+}
+
 describe("getLessonAccessStateFromMeta", () => {
   it("allows admins and teachers even when lesson metadata is missing", () => {
     expect(getLessonAccessStateFromMeta(null, { is_admin: true }, null)).toBe(
@@ -87,17 +132,17 @@ describe("getLessonAccessStateFromMeta", () => {
 
 describe("getLessonAccessState", () => {
   it("fetches course access for trial-visible lessons so trial users can open them", async () => {
-    vi.mocked(getCurrentProfile).mockResolvedValue({
-      is_admin: false,
-      is_teacher: false,
-    });
-    vi.mocked(getLessonAccessMetaDb).mockResolvedValue({
-      is_trial_visible: true,
-      available_in_volna: false,
-    });
-    vi.mocked(getCurrentCourseAccess).mockResolvedValue({
-      access_mode: "trial",
-    });
+    vi.mocked(getCurrentProfile).mockResolvedValue(profile({}));
+    vi.mocked(getLessonAccessMetaDb).mockResolvedValue(
+      lessonMeta({
+        is_trial_visible: true,
+      })
+    );
+    vi.mocked(getCurrentCourseAccess).mockResolvedValue(
+      accessGrant({
+        access_mode: "trial",
+      })
+    );
 
     await expect(
       getLessonAccessState(
@@ -113,10 +158,11 @@ describe("getLessonAccessState", () => {
 
   it("keeps trial-visible lessons locked for guests without a grant", async () => {
     vi.mocked(getCurrentProfile).mockResolvedValue(null);
-    vi.mocked(getLessonAccessMetaDb).mockResolvedValue({
-      is_trial_visible: true,
-      available_in_volna: false,
-    });
+    vi.mocked(getLessonAccessMetaDb).mockResolvedValue(
+      lessonMeta({
+        is_trial_visible: true,
+      })
+    );
     vi.mocked(getCurrentCourseAccess).mockResolvedValue(null);
 
     await expect(
