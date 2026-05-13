@@ -1,0 +1,198 @@
+import Link from "next/link";
+import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
+import LogoutButton from "@/components/layout/logout-button";
+import StudentAvatar from "@/components/profile/student-avatar";
+import {
+  getAvatarOption,
+  getSafeAvatarBackgroundKey,
+  getSafeAvatarFrameKey,
+} from "@/lib/profile/avatar-customization";
+import type { NavItem } from "@/components/layout/platform-sidebar-config";
+import {
+  NavLockMeta,
+  accountItemClass,
+  accountItemIconFrameClass,
+  getNavHref,
+  isActive,
+  navIconClass,
+} from "./platform-sidebar-primitives";
+
+function getAccountInitials(
+  userDisplayName: string | null | undefined,
+  userEmail: string | null | undefined
+) {
+  const displayName = userDisplayName?.trim();
+
+  if (displayName) {
+    const nameParts = displayName.split(/[\s._-]+/).filter(Boolean);
+
+    if (nameParts.length >= 2) {
+      return `${nameParts[0][0] ?? ""}${nameParts[1][0] ?? ""}`.toUpperCase();
+    }
+
+    return displayName.slice(0, 2).toUpperCase();
+  }
+
+  if (!userEmail) return "GR";
+
+  const localPart = userEmail.split("@")[0]?.trim();
+  if (!localPart) return "GR";
+
+  const words = localPart
+    .split(/[\s._-]+/)
+    .map((word) => word.trim())
+    .filter(Boolean);
+
+  if (words.length >= 2) {
+    return `${words[0][0] ?? ""}${words[1][0] ?? ""}`.toUpperCase();
+  }
+
+  return localPart.slice(0, 2).toUpperCase();
+}
+
+export default function AccountFooter({
+  isGuest,
+  userEmail,
+  userDisplayName,
+  userAvatarKey,
+  userAvatarBackgroundKey,
+  userAvatarFrameKey,
+  accountItems,
+  activePathname,
+  isAccountSectionOpen,
+  isAccountNavActive,
+  onToggleAccountSection,
+}: {
+  isGuest: boolean;
+  userEmail?: string | null;
+  userDisplayName?: string | null;
+  userAvatarKey?: string | null;
+  userAvatarBackgroundKey?: string | null;
+  userAvatarFrameKey?: string | null;
+  accountItems: NavItem[];
+  activePathname?: string;
+  isAccountSectionOpen: boolean;
+  isAccountNavActive: boolean;
+  onToggleAccountSection: () => void;
+}) {
+  if (isGuest) {
+    return (
+      <div className="platform-sidebar-account-card rounded-2xl p-2.5">
+        <div className="flex items-center gap-2.5">
+          <div className="platform-sidebar-account-avatar flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold">
+            GR
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
+              Guest preview
+            </div>
+            <div className="truncate text-[11px] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-secondary))]">
+              Save progress with an account
+            </div>
+          </div>
+        </div>
+        <div className="mt-2.5 grid gap-2">
+          <Button href="/login" variant="secondary" size="sm" icon="user">
+            Log in
+          </Button>
+          <Button href="/signup" variant="primary" size="sm" icon="create">
+            Sign up
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const displayName = userDisplayName?.trim() || "Your account";
+  const avatar = getAvatarOption(userAvatarKey);
+  const initials = getAccountInitials(userDisplayName, userEmail);
+  const avatarBackgroundKey = getSafeAvatarBackgroundKey(userAvatarBackgroundKey);
+  const avatarFrameKey = getSafeAvatarFrameKey(userAvatarFrameKey);
+
+  return (
+    <div className="platform-sidebar-account-card rounded-2xl p-2.5">
+      <button
+        type="button"
+        className="-m-1 flex w-[calc(100%+0.5rem)] items-center gap-2.5 rounded-xl p-1 text-left transition hover:bg-[color-mix(in_srgb,var(--accent)_5%,transparent)] app-focus-ring"
+        aria-expanded={isAccountSectionOpen}
+        aria-controls="platform-account-card-nav"
+        onClick={onToggleAccountSection}
+      >
+        <StudentAvatar
+          avatar={avatar}
+          initials={initials}
+          backgroundKey={avatarBackgroundKey}
+          frameKey={avatarFrameKey}
+          size="xs"
+          aria-label={`${displayName} avatar`}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
+            {isAccountSectionOpen ? displayName : "Your account"}
+          </div>
+          {isAccountSectionOpen ? (
+            <div className="truncate text-[11px] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-secondary))]">
+              {userEmail ?? "Signed in"}
+            </div>
+          ) : null}
+        </div>
+        <AppIcon
+          icon={isAccountSectionOpen ? "chevronDown" : "chevronRight"}
+          size={16}
+          className="shrink-0 text-[var(--text-muted)] transition group-hover:text-[var(--text-primary)]"
+        />
+      </button>
+
+      {isAccountSectionOpen ? (
+        <div
+          id="platform-account-card-nav"
+          className="mt-3 space-y-1 border-t border-[color-mix(in_srgb,var(--accent-border-ink)_14%,var(--border-subtle))] pt-3 [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--dark-surface-border))]"
+        >
+          {accountItems.map((item) => {
+            const active = isActive(activePathname, item.href);
+            const href = getNavHref(item);
+
+            return (
+              <Link
+                key={item.href}
+                href={href}
+                className={accountItemClass(active, item.locked)}
+                aria-current={active ? "page" : undefined}
+                aria-label={
+                  item.locked
+                    ? `${item.label} requires ${item.lockedLabel?.toLowerCase() ?? "login"}`
+                    : undefined
+                }
+              >
+                <span className={accountItemIconFrameClass()}>
+                  <AppIcon icon={item.icon} size={15} className={navIconClass(active)} />
+                </span>
+                <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                <NavLockMeta item={item} />
+              </Link>
+            );
+          })}
+        </div>
+      ) : null}
+
+      <div className="mt-2.5">
+        <LogoutButton
+          variant="secondary"
+          className={[
+            "w-full justify-start !shadow-none border-[color-mix(in_srgb,var(--danger)_12%,var(--border-subtle))]",
+            "text-[color-mix(in_srgb,var(--danger-text)_54%,var(--text-secondary))]",
+            "hover:border-[color-mix(in_srgb,var(--danger)_24%,var(--border))]",
+            "hover:bg-[color-mix(in_srgb,var(--danger)_5%,var(--background-elevated))]",
+            "hover:text-[var(--danger-text)]",
+            isAccountNavActive
+              ? "bg-[color-mix(in_srgb,var(--accent)_2%,transparent)]"
+              : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        />
+      </div>
+    </div>
+  );
+}
