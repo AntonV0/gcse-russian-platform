@@ -4,6 +4,7 @@ import DevComponentMarker from "@/components/ui/dev-component-marker";
 type LessonHeaderProps = {
   backHref: string;
   backLabel: string;
+  headingId?: string;
   moduleTitle: string;
   lessonTitle: string;
   lessonDescription?: string;
@@ -14,6 +15,7 @@ const SHOW_UI_DEBUG = process.env.NODE_ENV !== "production";
 export default function LessonHeader({
   backHref,
   backLabel,
+  headingId,
   moduleTitle,
   lessonTitle,
   lessonDescription,
@@ -45,7 +47,10 @@ export default function LessonHeader({
         {moduleTitle}
       </p>
 
-      <h1 className="max-w-4xl text-3xl font-bold leading-[1.08] text-[var(--text-primary)] md:text-4xl">
+      <h1
+        id={headingId}
+        className="max-w-4xl text-3xl font-bold leading-[1.08] text-[var(--text-primary)] md:text-4xl"
+      >
         {lessonTitle}
       </h1>
 

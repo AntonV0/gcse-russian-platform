@@ -145,13 +145,15 @@ export default async function LessonPageTemplate({
   const progressSummary = getLessonProgressSummary(visibleSections, visitedIds);
   const currentStepNumber = effectiveStepIndex + 1;
   const isFinalStep = effectiveStepIndex === visibleSections.length - 1;
+  const lessonHeadingId = `lesson-${lesson.id}-heading`;
   const currentSectionHeadingId = `lesson-section-${currentSection.id}-heading`;
 
   return (
-    <main className="space-y-4" aria-labelledby={currentSectionHeadingId}>
+    <main className="space-y-4" aria-labelledby={lessonHeadingId}>
       <LessonHeader
         backHref={moduleHref}
         backLabel="Back to module"
+        headingId={lessonHeadingId}
         moduleTitle={module.title}
         lessonTitle={lesson.title}
         lessonDescription={lesson.summary ?? ""}
@@ -213,17 +215,46 @@ export default async function LessonPageTemplate({
           ) : null}
         </div>
 
-        <aside className="order-first max-h-[20rem] overflow-y-auto xl:order-none xl:sticky xl:top-[var(--sticky-site-offset)] xl:z-[60] xl:max-h-none xl:self-start xl:overflow-visible">
-          <StepTracker
-            sections={visibleSections}
-            currentStepIndex={effectiveStepIndex}
-            allowedMaxIndex={allowedMaxIndex}
-            visitedSectionIds={visitedIds}
-            courseSlug={courseSlug}
-            variantSlug={variantSlug}
-            moduleSlug={moduleSlug}
-            lessonSlug={lessonSlug}
-          />
+        <aside className="order-first xl:order-none xl:sticky xl:top-[var(--sticky-site-offset)] xl:z-[60] xl:self-start">
+          <details className="group rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-3 shadow-[var(--shadow-xs)] xl:hidden">
+            <summary className="app-focus-ring flex cursor-pointer list-none items-center justify-between gap-3 rounded-lg">
+              <span className="min-w-0">
+                <span className="app-text-meta app-text-soft">Sections</span>
+                <span className="mt-0.5 block text-sm font-semibold text-[var(--text-primary)]">
+                  {currentStepNumber} of {visibleSections.length}
+                </span>
+              </span>
+              <span className="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 text-sm font-semibold text-[var(--text-secondary)]">
+                <span className="group-open:hidden">Open</span>
+                <span className="hidden group-open:inline">Close</span>
+              </span>
+            </summary>
+            <div className="mt-3 max-h-[min(42dvh,20rem)] overflow-y-auto overscroll-contain">
+              <StepTracker
+                sections={visibleSections}
+                currentStepIndex={effectiveStepIndex}
+                allowedMaxIndex={allowedMaxIndex}
+                visitedSectionIds={visitedIds}
+                courseSlug={courseSlug}
+                variantSlug={variantSlug}
+                moduleSlug={moduleSlug}
+                lessonSlug={lessonSlug}
+              />
+            </div>
+          </details>
+
+          <div className="hidden xl:block">
+            <StepTracker
+              sections={visibleSections}
+              currentStepIndex={effectiveStepIndex}
+              allowedMaxIndex={allowedMaxIndex}
+              visitedSectionIds={visitedIds}
+              courseSlug={courseSlug}
+              variantSlug={variantSlug}
+              moduleSlug={moduleSlug}
+              lessonSlug={lessonSlug}
+            />
+          </div>
         </aside>
       </div>
 

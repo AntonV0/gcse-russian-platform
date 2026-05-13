@@ -156,7 +156,7 @@ export function StepTracker({
               const status = getStepStatus({ isActive, isVisited, isUnlocked });
               const stepNumber = index + 1;
               const segmentWrapperClassName = [
-                "group/segment flex h-4 items-center rounded-full",
+                "group/segment flex min-h-7 items-center rounded-full py-1",
                 isUnlocked ? "app-focus-ring" : "cursor-not-allowed opacity-70",
               ].join(" ");
               const segmentBarClassName = [
@@ -273,10 +273,9 @@ export function StepTracker({
             return (
               <div
                 key={section.id}
-                tabIndex={0}
                 aria-disabled="true"
                 aria-describedby={lockedDescriptionId}
-                className="block rounded-lg app-focus-ring"
+                className="block rounded-lg"
                 title="Open the earlier sections first"
               >
                 {content}

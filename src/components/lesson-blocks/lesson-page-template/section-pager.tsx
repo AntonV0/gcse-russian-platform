@@ -44,6 +44,7 @@ export function SectionPager({
 
     const dock = dockElement;
     const column = dockColumn;
+    const mobileDockQuery = window.matchMedia("(max-width: 1279px)");
 
     let frameId = 0;
 
@@ -61,8 +62,19 @@ export function SectionPager({
       document.body.style.removeProperty("--lesson-bottom-backing-width");
     }
 
+    function getVisualViewportBottomInset() {
+      const visualViewport = window.visualViewport;
+
+      if (!visualViewport) return 0;
+
+      return Math.max(
+        0,
+        window.innerHeight - visualViewport.height - visualViewport.offsetTop
+      );
+    }
+
     function updateShadowOpacity(bottomOffset = 0) {
-      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      const viewportHeight = window.innerHeight;
       const dockHeight = dock.offsetHeight;
       const dockTop = viewportHeight - bottomOffset - dockHeight;
       const slotTop = column.getBoundingClientRect().top;
@@ -88,12 +100,18 @@ export function SectionPager({
       window.cancelAnimationFrame(frameId);
 
       frameId = window.requestAnimationFrame(() => {
+        if (!mobileDockQuery.matches) {
+          resetDock();
+          return;
+        }
+
         const columnRect = column.getBoundingClientRect();
         const footer = document.querySelector<HTMLElement>("[data-site-footer]");
-        const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+        const viewportHeight = window.innerHeight;
+        const visualViewportBottomInset = getVisualViewportBottomInset();
         const footerTop = footer?.getBoundingClientRect().top ?? viewportHeight;
         const bottomOffset = Math.max(
-          DOCK_BOTTOM_GAP,
+          DOCK_BOTTOM_GAP + visualViewportBottomInset,
           viewportHeight - footerTop + DOCK_BOTTOM_GAP
         );
 
@@ -131,14 +149,18 @@ export function SectionPager({
 
     window.addEventListener("scroll", updateDock, { passive: true });
     window.addEventListener("resize", updateDock);
+    mobileDockQuery.addEventListener("change", updateDock);
     window.visualViewport?.addEventListener("resize", updateDock);
+    window.visualViewport?.addEventListener("scroll", updateDock);
 
     return () => {
       window.cancelAnimationFrame(frameId);
       resetDock();
       window.removeEventListener("scroll", updateDock);
       window.removeEventListener("resize", updateDock);
+      mobileDockQuery.removeEventListener("change", updateDock);
       window.visualViewport?.removeEventListener("resize", updateDock);
+      window.visualViewport?.removeEventListener("scroll", updateDock);
     };
   }, []);
 
@@ -191,7 +213,7 @@ export function SectionPager({
           <p className="text-[11px] font-semibold uppercase tracking-[0.1em] app-text-soft">
             Lesson section
           </p>
-          <p className="mt-0.5 text-sm font-semibold text-[var(--text-primary)]">
+          <p className="mt-0.5 text-sm font-semibold text-[var(--text-primary)] [overflow-wrap:anywhere]">
             {sectionTitle}
             <span className="font-medium app-text-muted">
               {" "}

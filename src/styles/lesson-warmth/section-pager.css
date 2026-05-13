@@ -47,3 +47,13 @@
   transition: border-top-color 120ms linear;
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--brand-white) 44%, transparent);
 }
+
+@media (max-width: 639px) {
+  .app-section-pager-card {
+    border-inline-color: color-mix(
+      in srgb,
+      var(--accent-border-ink) 36%,
+      var(--border-subtle)
+    );
+  }
+}

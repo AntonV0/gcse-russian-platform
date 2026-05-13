@@ -168,6 +168,12 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
           <button
             type="button"
             onClick={() => setIsCardAnswerVisible((isVisible) => !isVisible)}
+            aria-expanded={isCardAnswerVisible}
+            aria-label={
+              isCardAnswerVisible
+                ? `Hide answer for card ${currentCardIndex + 1}`
+                : `Show answer for card ${currentCardIndex + 1}`
+            }
             className="app-focus-ring block w-full px-5 py-8 text-left transition hover:bg-[color-mix(in_srgb,var(--accent)_4%,transparent)] sm:px-7 sm:py-10"
           >
             <span className="flex min-h-[13rem] flex-col justify-center gap-6">
@@ -192,6 +198,10 @@ export default function VocabularyStudyList({ items }: VocabularyStudyListProps)
                     <span className="app-text-caption">English</span>
                     <span className="block text-lg font-medium text-[var(--text-primary)]">
                       {currentCard.english}
+                    </span>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--background-muted)] px-3 py-2 text-sm font-semibold text-[var(--text-secondary)]">
+                      <AppIcon icon="hidden" size={16} />
+                      Hide answer
                     </span>
                   </span>
                 ) : (
