@@ -231,16 +231,16 @@ function getAccessLabel(
   accessMode: PlatformSidebarProps["accessMode"]
 ) {
   if (role === "student") {
-    if (accessMode === "volna") return "Volna student";
+    if (accessMode === "volna") return "Volna School";
     if (accessMode === "full") return "Full access";
     if (accessMode === "trial") return "Trial access";
-    return "Student area";
+    return "No active access";
   }
 
   if (role === "admin") return "Admin area";
   if (role === "teacher") return "Teacher area";
 
-  return "Explore the platform";
+  return "Preview mode";
 }
 
 function titleCaseSlug(slug: string) {
@@ -263,10 +263,46 @@ function getSidebarContextLabel(
   const [, , variantSlug] = pathname.split("/").filter(Boolean);
 
   if (variantSlug) {
+    if (variantSlug === "volna") return "Volna School course";
+
     return `${titleCaseSlug(variantSlug)} course`;
   }
 
   return role === "admin" ? "Course view" : "GCSE Russian course";
+}
+
+function getSidebarEyebrow(
+  role: PlatformSidebarProps["role"],
+  isCourseView: boolean
+) {
+  if (isCourseView || role === "student" || role === "guest") {
+    return "GCSE Russian";
+  }
+
+  return "Platform";
+}
+
+function getSidebarTitle(role: PlatformSidebarProps["role"], isCourseView: boolean) {
+  if (isCourseView || role === "student" || role === "guest") {
+    return "Study Menu";
+  }
+
+  return "Main Menu";
+}
+
+function shouldShowHeaderStatusPill({
+  role,
+  accessMode,
+  isCourseView,
+}: {
+  role: PlatformSidebarProps["role"];
+  accessMode: PlatformSidebarProps["accessMode"];
+  isCourseView: boolean;
+}) {
+  if (isCourseView) return true;
+  if (role === "admin" || role === "teacher" || role === "guest") return true;
+
+  return role === "student" && accessMode !== "full";
 }
 
 function getCourseGroupLabel(variant: PlatformSidebarProps["variant"]) {
@@ -524,11 +560,15 @@ export default function PlatformSidebar({
   const isTeacher = role === "teacher";
   const isAdmin = role === "admin";
   const accessLabel = getSidebarContextLabel(activePathname, role, accessMode);
-  const sidebarEyebrow = isCourseView ? "GCSE Russian" : "Platform";
-  const sidebarTitle = isCourseView ? "Study Menu" : "Main Menu";
+  const sidebarEyebrow = getSidebarEyebrow(role, isCourseView);
+  const sidebarTitle = getSidebarTitle(role, isCourseView);
   const statusIcon = getStatusIcon(role);
   const isVolnaStudent = isStudent && accessMode === "volna";
-  const showHeaderStatusPill = !isVolnaStudent;
+  const showHeaderStatusPill = shouldShowHeaderStatusPill({
+    role,
+    accessMode,
+    isCourseView,
+  });
   const showAssignments = isAdmin || isTeacher || isVolnaStudent;
   const showOnlineClasses = isAdmin || isTeacher || !isVolnaStudent;
 
