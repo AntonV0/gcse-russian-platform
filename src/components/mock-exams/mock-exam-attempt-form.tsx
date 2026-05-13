@@ -167,7 +167,6 @@ export default function MockExamAttemptForm({
     <form
       action={action}
       className="space-y-4"
-      encType="multipart/form-data"
       onSubmit={handleSubmit}
     >
       <input type="hidden" name="attemptId" value={attemptId} />
