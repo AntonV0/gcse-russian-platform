@@ -19,6 +19,7 @@
     "vocab:canonical-fix": "node scripts/fix-vocabulary-canonical-keys.mjs",
     "seo:check": "node scripts/validate-seo.mjs",
     "theme:check": "node scripts/check-theme-system.mjs",
+    "qa:course-journey": "node scripts/qa-course-journey.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check . --no-error-on-unmatched-pattern",
     "test:e2e": "playwright test"
