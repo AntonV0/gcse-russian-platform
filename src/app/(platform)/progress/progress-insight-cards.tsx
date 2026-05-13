@@ -2,7 +2,10 @@ import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
-import { getLearningMilestone, type MasterySignal } from "@/lib/dashboard/mastery-signals";
+import {
+  getLearningMilestone,
+  type MasterySignal,
+} from "@/lib/dashboard/mastery-signals";
 import type { StudentDashboardAction } from "@/lib/dashboard/student-next-actions";
 import type {
   ProgressDomainSummary,
@@ -57,11 +60,7 @@ export function SkillReadinessList({ signals }: { signals: MasterySignal[] }) {
   );
 }
 
-export function DomainProgressGrid({
-  domains,
-}: {
-  domains: ProgressDomainSummary[];
-}) {
+export function DomainProgressGrid({ domains }: { domains: ProgressDomainSummary[] }) {
   return (
     <section className="grid gap-4 lg:grid-cols-3" aria-label="Progress by study area">
       {domains.map((domain) => (
@@ -146,6 +145,7 @@ export function WeakAreasCard({ weakAreas }: { weakAreas: ProgressWeakArea[] }) 
                   variant="secondary"
                   size="sm"
                   icon={area.icon}
+                  className="w-full sm:w-auto sm:shrink-0"
                   ariaLabel={`${area.actionLabel}: ${area.title}`}
                 >
                   {area.actionLabel}
@@ -198,11 +198,7 @@ export function RecentWinsCard({ wins }: { wins: ProgressRecentWin[] }) {
   );
 }
 
-export function NewStudentKickstartCard({
-  action,
-}: {
-  action: StudentDashboardAction;
-}) {
+export function NewStudentKickstartCard({ action }: { action: StudentDashboardAction }) {
   const steps = [
     {
       title: "Start one lesson",

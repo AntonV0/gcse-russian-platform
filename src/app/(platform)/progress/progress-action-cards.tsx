@@ -164,6 +164,7 @@ export function NextActionList({ actions }: { actions: StudentDashboardAction[] 
                 variant={index === 0 ? "journey" : "secondary"}
                 size="sm"
                 icon={action.icon}
+                className="w-full sm:w-auto sm:shrink-0"
                 ariaLabel={`${action.label}: ${action.title}`}
               >
                 {action.label}
@@ -176,11 +177,7 @@ export function NextActionList({ actions }: { actions: StudentDashboardAction[] 
   );
 }
 
-export function RecommendedActionCard({
-  action,
-}: {
-  action: StudentDashboardAction;
-}) {
+export function RecommendedActionCard({ action }: { action: StudentDashboardAction }) {
   return (
     <DashboardCard title="Recommended next action" headingLevel={2} className="h-full">
       <div className="app-soft-panel p-4">
