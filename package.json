@@ -28,7 +28,7 @@
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.2",
     "lucide-react": "^0.542.0",
-    "next": "16.2.5",
+    "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "stripe": "^22.0.2"

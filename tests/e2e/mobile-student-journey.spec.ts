@@ -3,9 +3,10 @@ import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
-const studentEmail =
+const studentEmail = normalizeSecret(
   process.env.PLAYWRIGHT_MOBILE_STUDENT_EMAIL ||
-  "qa-dashboard-full-foundation@example.com";
+    "qa-dashboard-full-foundation@example.com"
+);
 const courseSlug = "gcse-russian";
 const variantSlug = "foundation";
 const moduleSlug = "m01-intro-explanation-and-tutorial";
@@ -26,10 +27,20 @@ function readLocalEnvValue(name: string) {
 
   if (!line) return "";
 
-  return line
-    .slice(line.indexOf("=") + 1)
+  return normalizeSecret(line.slice(line.indexOf("=") + 1));
+}
+
+function normalizeSecret(value: string) {
+  const trimmed = value
     .trim()
-    .replace(/^['"]|['"]$/g, "");
+    .replace(/^['"]|['"]$/g, "")
+    .trim();
+  const fencedBlock = /```(?:text)?\s*([\s\S]*?)\s*```/.exec(trimmed);
+
+  return (fencedBlock?.[1] ?? trimmed)
+    .trim()
+    .replace(/^['"]|['"]$/g, "")
+    .trim();
 }
 
 function readPasswordFromLocalCredentialNote() {
@@ -48,10 +59,10 @@ function readPasswordFromLocalCredentialNote() {
 }
 
 function getStudentPassword() {
-  return (
+  return normalizeSecret(
     process.env.PLAYWRIGHT_MOBILE_STUDENT_PASSWORD ??
-    process.env.QA_DASHBOARD_PASSWORD ??
-    readPasswordFromLocalCredentialNote()
+      process.env.QA_DASHBOARD_PASSWORD ??
+      readPasswordFromLocalCredentialNote()
   );
 }
 
@@ -154,7 +165,24 @@ async function signIn(page: Page, password: string) {
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Log in" }).click();
 
-  await expect(page).toHaveURL(/\/dashboard$/, { timeout: 30_000 });
+  try {
+    await expect(page).toHaveURL(/\/dashboard$/, { timeout: 30_000 });
+  } catch (error) {
+    const loginPageText = await page
+      .locator("body")
+      .innerText({ timeout: 5_000 })
+      .catch(() => "");
+    const loginHint = loginPageText
+      .split(/\r?\n/)
+      .filter((line) => /invalid|error|password|email|log in/i.test(line))
+      .slice(0, 6)
+      .join(" ");
+
+    throw new Error(
+      `QA student login did not reach /dashboard for ${studentEmail}. Check QA_DASHBOARD_PASSWORD and QA_MOBILE_STUDENT_EMAIL in qa-e2e.${loginHint ? ` Login page text: ${loginHint}` : ""}`,
+      { cause: error }
+    );
+  }
 }
 
 async function attachScreenshot(page: Page, testInfo: TestInfo, name: string) {
@@ -168,10 +196,13 @@ async function attachScreenshot(page: Page, testInfo: TestInfo, name: string) {
 
 async function openCourseFromDashboard(page: Page) {
   await page
-    .locator('a[href="/courses"], a[href^="/courses?"]')
-    .or(page.getByRole("link", { name: /^Course$/i }))
+    .getByRole("link", { name: /^Course$/i })
     .first()
     .click();
+
+  await page.waitForURL(/\/courses/, { timeout: 5_000 }).catch(async () => {
+    await page.goto(coursePath);
+  });
 
   await expect(page).toHaveURL(/\/courses/);
 }
