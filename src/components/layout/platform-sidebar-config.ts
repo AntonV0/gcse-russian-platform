@@ -51,7 +51,10 @@ export function titleCaseSlug(value: string) {
     .join(" ");
 }
 
-export function getAccessLabel(role: PlatformSidebarRole, accessMode: PlatformSidebarAccessMode) {
+export function getAccessLabel(
+  role: PlatformSidebarRole,
+  accessMode: PlatformSidebarAccessMode
+) {
   if (role === "admin") {
     return "Admin area";
   }
@@ -82,7 +85,7 @@ export function getAccessLabel(role: PlatformSidebarRole, accessMode: PlatformSi
 export function getSidebarContextLabel(
   pathname: string,
   role: PlatformSidebarRole,
-  accessMode: PlatformSidebarAccessMode,
+  accessMode: PlatformSidebarAccessMode
 ) {
   if (!pathname.startsWith("/courses")) {
     return getAccessLabel(role, accessMode);
@@ -116,7 +119,7 @@ export function getSidebarTitle(role: PlatformSidebarRole) {
 export function shouldShowHeaderStatusPill(
   pathname: string,
   role: PlatformSidebarRole,
-  accessMode: PlatformSidebarAccessMode,
+  accessMode: PlatformSidebarAccessMode
 ) {
   if (pathname.startsWith("/courses")) {
     return true;
@@ -195,7 +198,11 @@ export function buildPlatformSidebarNav(params: {
   ];
 
   if (showAssignments) {
-    studyItems.push({ label: "Assignments", href: getAssignmentsPath(), icon: "assignments" });
+    studyItems.push({
+      label: "Assignments",
+      href: getAssignmentsPath(),
+      icon: "assignments",
+    });
   }
 
   const examPrepItems: NavItem[] = [
@@ -263,8 +270,18 @@ export function buildPlatformSidebarNav(params: {
     contentNavGroups.push({ label: "Live Classes & Tuition", items: volnaSchoolItems });
   }
 
-  const navGroups: NavGroup[] = [...contentNavGroups, { label: "Account", items: utilityItems }];
-  const mobileQuickItems = [...courseGroupItems, ...studyItems.filter((item) => item.label === "Vocabulary")];
+  const navGroups: NavGroup[] = [
+    ...contentNavGroups,
+    { label: "Account", items: utilityItems },
+  ];
+  const mobileQuickItems = [
+    ...courseGroupItems,
+    ...studyItems.filter((item) =>
+      isVolnaStudent
+        ? item.label === "Assignments" || item.label === "Vocabulary"
+        : item.label === "Vocabulary"
+    ),
+  ];
 
   return {
     courseGroupItems,

@@ -125,8 +125,14 @@ describe("platform sidebar config", () => {
     });
 
     expect(volnaStudent.studyItems.map((item) => item.label)).toContain("Assignments");
+    expect(volnaStudent.mobileQuickItems.map((item) => item.label)).toContain(
+      "Assignments"
+    );
     expect(volnaStudent.volnaSchoolItems).toHaveLength(0);
     expect(fullStudent.studyItems.map((item) => item.label)).not.toContain("Assignments");
+    expect(fullStudent.mobileQuickItems.map((item) => item.label)).not.toContain(
+      "Assignments"
+    );
     expect(fullStudent.volnaSchoolItems.map((item) => item.label)).toContain(
       "Join Volna School"
     );
@@ -140,6 +146,7 @@ describe("platform sidebar config", () => {
     expect(getMobileQuickLabel("Dashboard")).toBe("Start");
     expect(getMobileQuickLabel("Progress")).toBe("Track");
     expect(getMobileQuickLabel("Vocabulary")).toBe("Vocab");
+    expect(getMobileQuickLabel("Assignments")).toBe("Tasks");
     expect(getMobileQuickLabel("Grammar")).toBe("Grammar");
   });
 

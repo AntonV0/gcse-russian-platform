@@ -52,7 +52,7 @@ function getSubmissionStatus(submissionStatus?: AssignmentSubmissionStatus | nul
 
 function getSubmissionDescription(status: AssignmentSubmissionStatus) {
   if (status === "reviewed") {
-    return "Your teacher has reviewed this assignment. Your response is locked.";
+    return "Your teacher has reviewed this assignment. Your response can no longer be edited.";
   }
 
   if (status === "submitted") {
@@ -62,8 +62,24 @@ function getSubmissionDescription(status: AssignmentSubmissionStatus) {
   return "Open the items below, then submit your response when you are ready.";
 }
 
-function getDueDateDescription(value: string | null) {
+function getDueDateDescription(value: string | null, status: AssignmentSubmissionStatus) {
+  if (status === "reviewed") {
+    return "Kept for reference after teacher review.";
+  }
+
   return getDueDateUrgency(value).description;
+}
+
+function getHeaderDescription(status: AssignmentSubmissionStatus) {
+  if (status === "reviewed") {
+    return "Review your teacher feedback and submitted work.";
+  }
+
+  if (status === "submitted") {
+    return "Your work is submitted and waiting for teacher review.";
+  }
+
+  return "Complete the assigned work and submit your response when ready.";
 }
 
 function getItemBadge(itemType: string) {
@@ -191,8 +207,8 @@ function StudentAssignmentItemsPanel({ items }: { items: StudentAssignmentItem[]
       {items.length === 0 ? (
         <EmptyState
           icon="assignments"
-          title="No items attached"
-          description="Your teacher has not attached any lesson, question set, or custom task items to this assignment yet."
+          title="No work items yet"
+          description="There is nothing to complete here yet. Check the instructions and ask your teacher if you think something is missing."
         />
       ) : (
         <ol className="space-y-3">
@@ -257,9 +273,7 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <PageHeader
             title={assignment.title}
-            description={
-              assignment.instructions ?? "Review the tasks and submit your work."
-            }
+            description={getHeaderDescription(status)}
           />
 
           <div className="flex shrink-0 justify-start lg:justify-end">
@@ -297,14 +311,22 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
           <SummaryStatCard
             title="Due date"
             value={<span className="text-base">{formatDueDate(assignment.due_at)}</span>}
-            description={getDueDateDescription(assignment.due_at)}
-            icon={dueStatus === "overdue" ? "warning" : "calendar"}
-            tone={
-              dueStatus === "overdue"
-                ? "danger"
-                : dueStatus === "soon"
+            description={getDueDateDescription(assignment.due_at, status)}
+            icon={
+              status === "reviewed"
+                ? "completed"
+                : dueStatus === "overdue"
                   ? "warning"
-                  : "info"
+                  : "calendar"
+            }
+            tone={
+              status === "reviewed"
+                ? "success"
+                : dueStatus === "overdue"
+                  ? "danger"
+                  : dueStatus === "soon"
+                    ? "warning"
+                    : "info"
             }
             compact
           />
@@ -312,7 +334,11 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
             title="Work items"
             value={items.length}
             description={
-              items.length === 1 ? "One task to complete." : "Tasks to complete in order."
+              items.length === 0
+                ? "No tasks attached yet."
+                : items.length === 1
+                  ? "One task to complete."
+                  : "Tasks to complete in order."
             }
             icon="assignments"
             tone="brand"
@@ -364,7 +390,7 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
         <FeedbackBanner
           className="mb-6"
           tone="success"
-          title="Reviewed and locked"
+          title="Reviewed by your teacher"
           description={
             submission.feedback
               ? submission.feedback

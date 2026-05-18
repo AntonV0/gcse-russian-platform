@@ -55,6 +55,7 @@ export function getMobileQuickLabel(label: string) {
   if (label === "Dashboard") return "Start";
   if (label === "Progress") return "Track";
   if (label === "Vocabulary") return "Vocab";
+  if (label === "Assignments") return "Tasks";
 
   return label;
 }

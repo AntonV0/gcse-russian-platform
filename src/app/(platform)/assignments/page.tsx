@@ -25,7 +25,7 @@ function formatDueDate(value: string | null) {
 
 function getSubmissionSummary(status?: "not_started" | "submitted" | "reviewed") {
   if (status === "reviewed") {
-    return "Reviewed by teacher and locked";
+    return "Reviewed by your teacher";
   }
 
   if (status === "submitted") {
@@ -99,7 +99,7 @@ export default async function AssignmentsPage() {
         {assignmentCards.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryStatCard
-              title="Total"
+              title="Assignments"
               value={counts.all}
               icon="assignments"
               tone="brand"
@@ -226,7 +226,7 @@ export default async function AssignmentsPage() {
 
                         <div>
                           <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                            Assignment details
+                            Task details
                           </p>
                           <div className="space-y-1 text-sm app-text-muted">
                             <p>Items: {items.length}</p>
@@ -243,7 +243,6 @@ export default async function AssignmentsPage() {
                         <ActionPill tone={getNextActionTone({ status, dueStatus })}>
                           {getNextActionLabel(status)}
                         </ActionPill>
-                        <span className="text-sm text-[var(--text-muted)]">View</span>
                       </div>
                     </div>
                   </DashboardCard>
