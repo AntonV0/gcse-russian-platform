@@ -7,6 +7,17 @@ function read(path) {
   return readFileSync(join(root, path), "utf8");
 }
 
+function readPageSource(path) {
+  const source = read(path);
+  const contentPath = path.replace(/page\.tsx$/, "page-content.tsx");
+
+  try {
+    return `${source}\n${read(contentPath)}`;
+  } catch {
+    return source;
+  }
+}
+
 const checks = [];
 
 function check(label, passed, detail = "") {
@@ -81,7 +92,7 @@ const priorityPages = [
 ];
 
 for (const page of priorityPages) {
-  const source = read(page.path);
+  const source = readPageSource(page.path);
 
   check(
     `${page.label}: public metadata`,

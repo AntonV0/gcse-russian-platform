@@ -34,12 +34,14 @@ function normalizeSecret(value: string) {
   const trimmed = value
     .trim()
     .replace(/^['"]|['"]$/g, "")
+    .replace(/^`|`$/g, "")
     .trim();
   const fencedBlock = /```(?:text)?\s*([\s\S]*?)\s*```/.exec(trimmed);
 
   return (fencedBlock?.[1] ?? trimmed)
     .trim()
     .replace(/^['"]|['"]$/g, "")
+    .replace(/^`|`$/g, "")
     .trim();
 }
 
