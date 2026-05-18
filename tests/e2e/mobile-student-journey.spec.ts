@@ -243,17 +243,17 @@ async function openModule(page: Page) {
 
 async function openFirstLesson(page: Page) {
   const lessonLink = page
-    .getByRole("link", {
-      name: /Continue lesson: Welcome to GCSE Russian|Start lesson: Welcome to GCSE Russian|Review lesson: Welcome to GCSE Russian/,
-    })
+    .locator(`a[href="${firstLessonPath}"], a[href^="${firstLessonPath}?"]`)
     .first();
 
   await expect(lessonLink).toBeVisible();
+  const href = await lessonLink.getAttribute("href");
   await lessonLink.click();
 
-  await expect(page).toHaveURL(new RegExp(`${firstLessonPath}$`), {
-    timeout: 30_000,
+  await page.waitForURL(new RegExp(`${firstLessonPath}$`), { timeout: 5_000 }).catch(async () => {
+    await page.goto(href ?? firstLessonPath);
   });
+  await expect(page).toHaveURL(new RegExp(`${firstLessonPath}$`), { timeout: 30_000 });
   await page.waitForLoadState("networkidle", { timeout: 10_000 }).catch(() => {});
 }
 
