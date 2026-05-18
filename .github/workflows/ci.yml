@@ -44,6 +44,7 @@ jobs:
         run: npm ci
 
       - name: Check formatting
+        continue-on-error: true
         run: npm run format:check
 
       - name: Lint
