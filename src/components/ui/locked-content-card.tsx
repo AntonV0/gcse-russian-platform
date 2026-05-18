@@ -54,7 +54,7 @@ export default function LockedContentCard({
         <CardBody className="space-y-4 px-5 py-5 sm:px-6 sm:py-6">
           <div className="space-y-3">
             <div>
-              <div className="mb-1 app-text-meta">Access / funnel</div>
+              <div className="mb-1 app-text-meta">Course access</div>
               <h3 className="app-heading-card">{title}</h3>
             </div>
 
