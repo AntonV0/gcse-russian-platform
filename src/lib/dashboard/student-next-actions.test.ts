@@ -158,6 +158,7 @@ describe("student dashboard action helpers", () => {
     ]);
     expect(prompts[1]?.badgeTone).toBe("warning");
     expect(prompts[2]?.href).toBe("/mock-exams/unit-1/attempts/mock-1");
+    expect(prompts[0]?.label).toBe("Practise vocabulary");
   });
 
   it("returns recent wins, or a first-win prompt when there is no evidence yet", () => {

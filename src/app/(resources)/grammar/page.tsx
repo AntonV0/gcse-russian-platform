@@ -83,7 +83,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
   return (
     <main className="flex flex-col gap-4">
       <PageIntroPanel
-        className="order-2 xl:order-1"
+        className="order-1"
         tone="student"
         eyebrow="Grammar"
         title="Grammar"
@@ -118,7 +118,7 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
       />
 
       <SectionCard
-        className="order-1 xl:order-2"
+        className="order-2"
         title="Find grammar"
         description="Search by keyword, then narrow by tier or topic."
         tone="student"

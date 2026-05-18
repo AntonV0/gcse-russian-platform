@@ -80,8 +80,11 @@ function groupGrammarSetsBySection(grammarSets: DbGrammarSetListItem[]) {
 
 function SectionToggleButton() {
   return (
-    <ActionPill className="pointer-events-none shrink-0 px-3 sm:px-3.5" aria-hidden="true">
-      <span className="hidden group-open:hidden sm:inline">Open</span>
+    <ActionPill
+      className="pointer-events-none shrink-0 px-3 sm:px-3.5"
+      aria-hidden="true"
+    >
+      <span className="group-open:hidden">Open</span>
       <span className="hidden group-open:inline">Close</span>
     </ActionPill>
   );

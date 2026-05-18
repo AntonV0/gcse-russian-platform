@@ -407,7 +407,7 @@ export function getStudentDashboardStudyPrompts(
         ? `Preview key words before ${learningPlan.nextLesson.title} so the lesson feels lighter.`
         : "Pick a small word set and test recall before opening a longer study session.",
       href: "/vocabulary",
-      label: "Practice vocabulary",
+      label: "Practise vocabulary",
       icon: "vocabulary",
       badgeLabel: "Vocabulary",
       badgeTone: "info",

@@ -81,8 +81,8 @@ export default async function CoursePage({ params }: CoursePageProps) {
     (primaryVariant ? getVariantPath(course.slug, primaryVariant.slug) : null);
   const primaryActionLabel = primaryVariantSummary?.nextLesson
     ? primaryVariantSummary.completedLessons > 0
-      ? "Continue path"
-      : "Start path"
+      ? "Continue lesson"
+      : "Start first lesson"
     : primaryVariant
       ? primaryVariantSummary?.isComplete
         ? "Review path"
@@ -180,14 +180,14 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
               <JourneyProgressBar
                 value={overallProgressPercent}
-                label={`${course.title} visible path progress`}
+                label={`${course.title} course progress`}
                 isComplete={totalLessons > 0 && completedLessons === totalLessons}
               />
 
               <p className="text-sm app-text-muted">
                 {primaryVariantSummary?.nextLesson
                   ? `${primaryVariantSummary.nextLesson.title} is ready in ${primaryVariantSummary.nextLesson.moduleTitle}.`
-                  : "Choose the path that matches your level, then follow the next available lesson to keep momentum visible."}
+                  : "Choose the path that matches your level, then follow the next available lesson to keep your next step clear."}
               </p>
             </div>
           </DashboardCard>
@@ -197,7 +197,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
       {variants.length === 0 ? (
         <EmptyState
           title="No learning paths available yet"
-          description="This course has no visible paths at the moment."
+          description="This course has no paths available right now."
           visual={
             <VisualPlaceholder
               category="learningPath"

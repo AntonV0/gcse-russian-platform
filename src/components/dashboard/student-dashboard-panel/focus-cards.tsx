@@ -30,7 +30,7 @@ export function TodayFocusSteps({
       <FocusStep
         index={2}
         title="Recall"
-        description={prompts[0]?.label ?? "Practice vocabulary"}
+        description={prompts[0]?.label ?? "Practise vocabulary"}
         icon="vocabulary"
       />
       <FocusStep
@@ -148,7 +148,7 @@ export function getWeakestMasterySignals(masterySignals: MasterySignal[]) {
 
 export function WeakAreasCard({ weakAreas }: { weakAreas: MasterySignal[] }) {
   return (
-    <DashboardCard title="Weak areas to nudge" headingLevel={3} className="h-full">
+    <DashboardCard title="Practice focus" headingLevel={3} className="h-full">
       <div className="space-y-3">
         {weakAreas.map((signal) => (
           <div key={signal.title} className="app-tactile-row rounded-xl border p-3">

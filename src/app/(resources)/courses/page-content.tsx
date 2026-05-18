@@ -300,7 +300,7 @@ function VariantPathCards({
         </div>
 
         <Button href={getCoursePath(item.course.slug)} variant="secondary" icon="layers">
-          Variant page
+          All paths
         </Button>
       </div>
 
@@ -604,7 +604,7 @@ export default async function CoursesPage() {
                   variant="secondary"
                   icon="layers"
                 >
-                  View variants
+                  View paths
                 </Button>
               ) : null}
             </div>
@@ -629,7 +629,7 @@ export default async function CoursesPage() {
           icon="courses"
           iconTone="brand"
           title="No courses available yet"
-          description="There are no visible courses right now. Return to your dashboard and check again later."
+          description="There are no courses available right now. Return to your dashboard and check again later."
           visual={
             <VisualPlaceholder
               category="learningPath"
@@ -671,7 +671,7 @@ export default async function CoursesPage() {
             />
             <SummaryStatCard
               title="Next lesson"
-              value={primarySummary?.nextLesson ? "Ready" : "-"}
+              value={primarySummary?.nextLesson ? "Ready" : "Choose"}
               description={
                 primarySummary?.nextLesson?.title ??
                 (primarySummary?.isComplete ? "review available" : "open variants")
@@ -739,7 +739,11 @@ export default async function CoursesPage() {
                           size="sm"
                           icon={area.icon}
                         >
-                          Open
+                          {area.title === "Vocabulary and grammar"
+                            ? "Open vocabulary"
+                            : area.title === "Course lessons"
+                              ? "Open course"
+                              : `Open ${area.title.toLowerCase()}`}
                         </Button>
                         {area.secondaryHref ? (
                           <Button

@@ -36,7 +36,7 @@ export function ModuleProgressList({
         <ProgressEmptyBlock
           icon="modules"
           title="Modules are ready to explore"
-          description="Published lesson progress will appear here as soon as you open and complete course content."
+          description="Lesson progress will appear here as soon as you open and complete course content."
           action={
             <Button
               href={`/courses/${courseSlug}/${variantSlug}`}

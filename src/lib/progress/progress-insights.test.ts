@@ -127,6 +127,8 @@ describe("progress insights", () => {
       "draft-mocks",
       "signal-vocabulary",
     ]);
+    expect(weakAreas[0]?.description).not.toContain("stale");
+    expect(weakAreas[2]?.title).toBe("Vocabulary needs practice");
   });
 
   it("summarises recent wins from feedback, mocks, modules, lessons, and submissions", () => {

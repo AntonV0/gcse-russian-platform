@@ -57,7 +57,7 @@ export default async function ProgressPage() {
       <ProgressUnavailableState
         icon="courses"
         title="Choose a course path to start progress"
-        description="Progress appears after Foundation, Higher, or Volna access is attached to your account."
+        description="Progress appears after you choose Foundation, Higher, or Volna and start learning."
         actionHref="/courses"
         actionLabel="Choose path"
       />
@@ -163,7 +163,7 @@ export default async function ProgressPage() {
       <PageIntroPanel
         eyebrow="Progress"
         title="Your GCSE Russian progress"
-        description={`Track course completion, vocabulary, grammar, exam prep, weak areas, recent wins, and the next move: ${primaryAction.title}.`}
+        description={`See what is complete, what needs attention, and the next move to keep your GCSE Russian study on track: ${primaryAction.title}.`}
         tone="student"
         badges={
           <>
@@ -244,7 +244,7 @@ export default async function ProgressPage() {
           value={
             <span className="text-[1.35rem] leading-tight">{studyTimeLeftDisplay}</span>
           }
-          description="estimated from lesson data"
+          description="based on lesson estimates"
           icon="pending"
           tone="info"
           compact

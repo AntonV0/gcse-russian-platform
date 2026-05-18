@@ -97,7 +97,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
   return (
     <main className="flex flex-col gap-4">
       <PageIntroPanel
-        className="order-2 xl:order-1"
+        className="order-1"
         tone="student"
         eyebrow="Vocabulary"
         title="Vocabulary"
@@ -144,7 +144,7 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
       />
 
       <SectionCard
-        className="order-1 xl:order-2"
+        className="order-2"
         title="Find vocabulary"
         description="Search by keyword, then narrow by tier, list type, or topic."
         tone="student"
@@ -172,7 +172,11 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             icon="vocabulary"
             iconTone="brand"
             title="No vocabulary sets found"
-            description="Try clearing filters, or publish vocabulary sets in admin so students can see them."
+            description={
+              canSeeDrafts
+                ? "Try clearing filters, or publish vocabulary sets so students can see them."
+                : "Try clearing filters, or check back once more vocabulary sets have been added."
+            }
           />
         ) : (
           <VocabularySetSectionList

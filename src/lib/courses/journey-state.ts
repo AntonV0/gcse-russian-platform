@@ -75,7 +75,7 @@ export function getVariantActionState({
 
   if (hasNextLesson) {
     return {
-      label: completedLessons > 0 ? "Continue path" : "Start path",
+      label: completedLessons > 0 ? "Continue lesson" : "Start first lesson",
       icon: "next" as AppIconKey,
       ariaPrefix: completedLessons > 0 ? "Continue" : "Start",
     };

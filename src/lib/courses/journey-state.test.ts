@@ -66,7 +66,7 @@ describe("course journey state", () => {
         isComplete: false,
         completedLessons: 0,
       }).label
-    ).toBe("Start path");
+    ).toBe("Start first lesson");
 
     expect(
       getVariantActionState({
@@ -75,7 +75,7 @@ describe("course journey state", () => {
         isComplete: false,
         completedLessons: 2,
       }).label
-    ).toBe("Continue path");
+    ).toBe("Continue lesson");
 
     expect(
       getVariantActionState({

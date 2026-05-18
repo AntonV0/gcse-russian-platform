@@ -137,15 +137,15 @@ export function getProgressWeakAreas(
   if (activity.stats.pendingAssignments > 0) {
     const taskLabel =
       activity.stats.pendingAssignments === 1 ? "task needs" : "tasks need";
-    const staleCopy =
+    const dueCopy =
       activity.stats.pendingAssignments === 1
-        ? "it becomes overdue or stale"
-        : "they become overdue or stale";
+        ? "it becomes overdue"
+        : "they become overdue";
 
     weakAreas.push({
       id: "pending-assignments",
       title: "Assignment waiting",
-      description: `${activity.stats.pendingAssignments} teacher-set ${taskLabel} attention before ${staleCopy}.`,
+      description: `${activity.stats.pendingAssignments} teacher-set ${taskLabel} attention before ${dueCopy}.`,
       href: "/assignments",
       actionLabel: "Open assignments",
       icon: "assignments",
@@ -183,7 +183,7 @@ export function getProgressWeakAreas(
 
     weakAreas.push({
       id: `signal-${signal.title.toLowerCase().replace(/\s+/g, "-")}`,
-      title: `${signal.title} needs reps`,
+      title: `${signal.title} needs practice`,
       description: `${signal.value}% readiness. ${signal.evidence}`,
       href: target.href,
       actionLabel: target.actionLabel,

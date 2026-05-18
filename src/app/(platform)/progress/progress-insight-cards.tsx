@@ -113,12 +113,12 @@ export function DomainProgressGrid({ domains }: { domains: ProgressDomainSummary
 
 export function WeakAreasCard({ weakAreas }: { weakAreas: ProgressWeakArea[] }) {
   return (
-    <DashboardCard title="Weak areas" headingLevel={2} className="h-full">
+    <DashboardCard title="Practice focus" headingLevel={2} className="h-full">
       {weakAreas.length === 0 ? (
         <ProgressEmptyBlock
           icon="success"
-          title="No urgent weak areas"
-          description="Nothing is currently asking for emergency attention. Keep the next lesson moving and use feedback when it appears."
+          title="No priority focus yet"
+          description="Keep the next lesson moving. This space will point to vocabulary, grammar, or exam practice when your activity shows a clear pattern."
           action={
             <Button href="/courses" variant="secondary" size="sm" icon="courses">
               Open course path
@@ -206,13 +206,13 @@ export function NewStudentKickstartCard({ action }: { action: StudentDashboardAc
       icon: "lessons" as const,
     },
     {
-      title: "Add one recall rep",
+      title: "Do one recall check",
       description: "Use vocabulary or grammar practice to make the lesson stick.",
       icon: "brain" as const,
     },
     {
       title: "Check the next action",
-      description: "Return here after each session to see the highest-value follow-up.",
+      description: "Return here after each session to see the clearest follow-up.",
       icon: "next" as const,
     },
   ];
