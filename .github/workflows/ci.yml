@@ -135,32 +135,5 @@ jobs:
 
           exit "$missing"
 
-      - name: Report protected QA secret shapes
-        shell: bash
-        run: |
-          node - <<'NODE'
-          function normalize(value) {
-            const trimmed = String(value ?? "")
-              .trim()
-              .replace(/^['"]|['"]$/g, "")
-              .replace(/^`|`$/g, "")
-              .trim();
-            const fencedBlock = /```(?:text)?\s*([\s\S]*?)\s*```/.exec(trimmed);
-
-            return (fencedBlock?.[1] ?? trimmed)
-              .trim()
-              .replace(/^['"]|['"]$/g, "")
-              .replace(/^`|`$/g, "")
-              .trim();
-          }
-
-          const email = normalize(process.env.PLAYWRIGHT_MOBILE_STUDENT_EMAIL || "qa-dashboard-full-foundation@example.com");
-          const password = normalize(process.env.QA_DASHBOARD_PASSWORD);
-
-          console.log(`QA mobile student email length: ${email.length}`);
-          console.log(`QA dashboard password length: ${password.length}`);
-          console.log(`QA dashboard password has whitespace: ${/\s/.test(password)}`);
-          NODE
-
       - name: Test protected mobile student journey
         run: npx playwright test tests/e2e/mobile-student-journey.spec.ts --project=chromium
