@@ -81,7 +81,7 @@ function getSupabaseServiceRoleKey() {
   );
 }
 
-async function resetStudentProgress() {
+async function resetStudentProgress(password: string) {
   const supabaseUrl = getSupabaseUrl();
   const serviceRoleKey = getSupabaseServiceRoleKey();
 
@@ -108,6 +108,15 @@ async function resetStudentProgress() {
   ).not.toBeNull();
 
   const userId = profile!.id as string;
+
+  const { error: passwordResetError } = await supabase.auth.admin.updateUserById(userId, {
+    password,
+  });
+
+  expect(
+    passwordResetError,
+    "resettable QA auth password reset should succeed"
+  ).toBeNull();
 
   const { data: modules, error: modulesError } = await supabase
     .from("modules")
@@ -250,9 +259,11 @@ async function openFirstLesson(page: Page) {
   const href = await lessonLink.getAttribute("href");
   await lessonLink.click();
 
-  await page.waitForURL(new RegExp(`${firstLessonPath}$`), { timeout: 5_000 }).catch(async () => {
-    await page.goto(href ?? firstLessonPath);
-  });
+  await page
+    .waitForURL(new RegExp(`${firstLessonPath}$`), { timeout: 5_000 })
+    .catch(async () => {
+      await page.goto(href ?? firstLessonPath);
+    });
   await expect(page).toHaveURL(new RegExp(`${firstLessonPath}$`), { timeout: 30_000 });
   await page.waitForLoadState("networkidle", { timeout: 10_000 }).catch(() => {});
 }
@@ -307,7 +318,7 @@ test.describe("mobile authenticated student journey", () => {
       }
     });
 
-    await resetStudentProgress();
+    await resetStudentProgress(password);
 
     await signIn(page, password);
     await expect(page.getByRole("heading", { name: /Today's focus/i })).toBeVisible();
