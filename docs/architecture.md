@@ -1,9 +1,12 @@
 # Architecture Overview
 
-Last reviewed: 2026-05-04
+Last reviewed: 2026-05-21
 
 This document describes the current system architecture of the GCSE
 Russian Course Platform.
+
+For long-term product, brand, and expansion direction, see
+`docs/strategy.md`.
 
 It reflects the **latest system design**, including:
 
@@ -12,12 +15,16 @@ It reflects the **latest system design**, including:
 - shared section architecture
 - current lesson-builder and platform UX improvements
 - the marketing / resources / platform route split
+- course metadata, active course context, and central brand/site config
+- central GCSE Russian Foundation/Higher billing product resolver
+- parent/guardian profile contact fields
+- Markdown export pipelines for teacher review
 
 ---
 
 ## 1. Architectural model
 
-The platform is shaped by **two independent axes**:
+The platform is currently shaped by **two independent axes**:
 
 ### Role axis
 
@@ -32,6 +39,15 @@ The platform is shaped by **two independent axes**:
 - Volna student
 
 These axes are intentionally separated.
+
+The course model now stores explicit product dimensions on `courses`:
+
+- language
+- qualification level
+- exam board
+- curriculum code
+- variant
+- access mode
 
 The system uses:
 
@@ -220,6 +236,54 @@ The architecture is designed to support:
 - Module
 - Lesson
 
+Courses carry first-class metadata for the GCSE Russian and future A-Level
+Russian course families:
+
+- `language_code`
+- `language_name`
+- `qualification_level`
+- `exam_board`
+- `curriculum_code`
+
+The current GCSE Russian course is backfilled as Russian, GCSE, Pearson Edexcel,
+`1RU0`.
+
+The app has a small active course context in
+`src/lib/courses/active-course.ts`. It keeps GCSE Russian as the default active
+course while allowing generic platform routes and dashboard helpers to request
+the active course slug explicitly.
+
+Brand, domain, and default SEO metadata live in
+`src/lib/brand/site-config.ts`. `src/lib/seo/site.ts` remains the compatibility
+facade for existing metadata helpers, while sourcing the current GCSE Russian
+public/app domains, site names, and default OG metadata from that config.
+
+### Schema naming and content neutrality
+
+Existing Russian-specific vocabulary, grammar, lesson-content, and assessment
+schemas may remain stable. Do not rename applied tables, columns, files, routes,
+or schemas purely to make older Russian-focused content look more generic.
+
+For new reusable platform systems, prefer neutral schema and field names unless
+the data is genuinely Russian-specific. Good default names include:
+
+- `source_text`
+- `target_text`
+- `prompt_text`
+- `answer_text`
+- `translation_direction`
+- `language_code`
+- `qualification_level`
+- `curriculum_code`
+
+Russian-specific wording is appropriate in public marketing pages, GCSE Russian
+content, A-Level Russian content, vocabulary systems, grammar systems, and
+schemas that model specifically Russian linguistic concepts.
+
+Do not abstract prematurely. If a feature is genuinely GCSE Russian-only, name
+and design it clearly for GCSE Russian rather than adding generic layers that do
+not yet simplify the implementation.
+
 ### Lesson architecture
 
 - Lesson
@@ -363,6 +427,36 @@ The lesson builder is a **central CMS**.
 - control variant visibility
 - manage canonical keys
 
+### Markdown export for teacher QA
+
+Admins can export lesson-builder lessons, vocabulary sets, and grammar sets as
+Markdown for document-first teacher review. The exports are deliberately
+read-only and do not change student UI, progression, comments, approvals, or
+publishing state.
+
+The lesson export includes:
+
+- course, variant, module, and lesson metadata
+- estimated minutes and access/publishing flags
+- ordered sections with kind, variant visibility, and canonical key
+- ordered blocks with publication status
+- direct text for header, subheader, text, note, callout, exam-tip, vocabulary,
+  and simple embedded practice blocks
+- inline linked GCSE Russian vocabulary sets, grammar sets/points, and question
+  sets where the linked admin resource can be loaded
+- references for image media, audio media, unknown block types, and missing or
+  stale linked resources
+
+Vocabulary and grammar exports include set metadata, access/publishing flags,
+source/import fields where present, and ordered review content. Vocabulary
+exports include list/item rows with Russian, English, transliteration, examples,
+notes, and useful item metadata. Grammar exports include ordered points,
+explanations, examples, and Markdown tables where practical.
+
+This gives GCSE Russian teachers practical QA artifacts that can be pasted into
+documents while keeping the platform CMS as the source of truth. See
+`docs/content-review-workflows.md` for the current review workflow boundary.
+
 ---
 
 ## 11. Lesson Builder UX Architecture
@@ -439,6 +533,13 @@ LESSONS -> LESSON_SECTIONS -> LESSON_BLOCKS
 
 UI visibility is derived from role + access mode.
 
+Generic app navigation should use the active course context helper instead of
+embedding the GCSE Russian course slug directly. Public marketing URLs and
+Stripe product records remain deliberately specific to the current product
+surface. Checkout, trial access, purchase-state, and low-level plan checks should
+resolve supported course product codes through the central billing catalog
+resolver before touching grants, subscriptions, or Stripe checkout.
+
 ---
 
 ## 18. Dashboard Architecture
@@ -451,7 +552,20 @@ resume the next unlocked visible lesson section.
 
 ## 19. Account System Architecture
 
-Includes profile, avatar system, and settings page.
+Includes profile, avatar system, settings page, and a minimal safeguarding /
+parent contact layer.
+
+The profile record stores optional parent or guardian contact details:
+
+- `parent_guardian_name`
+- `parent_guardian_email`
+- `parent_guardian_consent_confirmed`
+- `parent_guardian_consent_confirmed_at`
+
+These fields are deliberately part of the existing user profile rather than a
+separate parent account model. The current slice supports GCSE Russian account
+setup, account support, and safeguarding context without adding parent login,
+parent dashboards, parent-student linking, or student-to-student communication.
 
 ---
 
@@ -459,6 +573,11 @@ Includes profile, avatar system, and settings page.
 
 Added:
 
+- first-class course metadata on `courses`
+- active course context helper
+- central brand/site config and SEO compatibility facade
+- central billing product resolver for the current GCSE Russian Foundation and
+  Higher products
 - variant visibility system
 - canonical section system
 - Foundation-to-Higher canonical section progress sync V1
@@ -469,6 +588,10 @@ Added:
 - theme system
 - marketing / resources / platform route separation
 - Stripe billing and webhook-backed access grants
+- optional parent/guardian contact and awareness fields on profiles
+- admin-only Markdown exports for lessons, vocabulary sets, and grammar sets
+- inline linked vocabulary, grammar, and question-set content in lesson exports
+- schema naming guidance for new reusable systems
 
 Removed:
 
@@ -490,3 +613,6 @@ Removed:
 - full canonical progress model beyond the current V1 section sync
 - dashboard recommendations and analytics
 - builder UX upgrades
+- mock exam / assessment export when teacher QA needs it
+- parent notification/reporting model before broader under-16 marketing
+- host-based routing only when deployment needs distinct public/app hosts

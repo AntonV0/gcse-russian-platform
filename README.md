@@ -9,7 +9,7 @@
 ![Vitest](https://img.shields.io/badge/Vitest-Unit%20Tests-6e9f18?logo=vitest&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-E2E%20Tests-2ead33?logo=playwright&logoColor=white)
 
-Last reviewed: 2026-05-04
+Last reviewed: 2026-05-21
 
 A full-stack online learning platform for GCSE Russian students,
 combining structured courses, interactive lessons, teacher-led
@@ -26,6 +26,7 @@ Project architecture notes are kept in `docs/`:
 
 - `docs/CURRENT_STATE.md`
 - `docs/architecture.md`
+- `docs/content-review-workflows.md`
 - `docs/decisions.md`
 - `docs/image-strategy.md`
 - `docs/local-setup.md`
@@ -33,6 +34,7 @@ Project architecture notes are kept in `docs/`:
 - `docs/question-design-system.md`
 - `docs/responsive-qa.md`
 - `docs/seo-launch-checklist.md`
+- `docs/strategy.md`
 - `docs/supabase-migrations.md`
 - `docs/ui-system-guidelines.md`
 - `docs/vocabulary-admin-production-notes.md`
@@ -50,6 +52,11 @@ This platform combines:
 - a fully database-driven lesson system
 - a growing CMS for managing all learning content
 - Stripe-backed course access and billing workflows
+- active course, brand/site, and billing product resolver helpers that keep
+  current GCSE Russian behaviour explicit and centralised
+- parent/guardian contact fields for practical under-16 account support
+- Markdown export workflows for teacher review of lessons, vocabulary, and
+  grammar
 - a structured internal **UI design system (UI Lab)** for consistent UX across the platform
 
 It is designed as a **single unified system** that supports multiple
@@ -84,6 +91,28 @@ NOT separate applications.
 ---
 
 ## Main Systems
+
+### Course, Brand, and Product Context
+
+The current default course context is GCSE Russian. Course records store
+metadata for:
+
+- language
+- qualification level
+- exam board
+- curriculum code
+
+Shared helpers centralise the current product assumptions:
+
+- `src/lib/courses/active-course.ts` -> default active course slug and course
+  paths
+- `src/lib/brand/site-config.ts` -> public/app domains, site name, SEO defaults,
+  and OG defaults
+- `src/lib/billing/catalog/product-context.ts` -> current Foundation/Higher
+  product-code mapping
+
+The public product remains GCSE Russian. Marketing copy and public SEO routes are
+intentionally GCSE Russian-specific.
 
 ### Lesson System (DB-Driven)
 
@@ -216,6 +245,7 @@ The lesson builder has evolved into a **true CMS-style authoring tool**.
 - Inspector editing
 - **Variant visibility control**
 - **Canonical section key editing**
+- Markdown export for teacher review
 
 ### Architectural shift
 
@@ -225,6 +255,20 @@ The lesson builder has evolved into a **true CMS-style authoring tool**.
 - Fully DB-driven content system
 - Templates resolved dynamically
 - Variant-aware content system
+
+### Teacher review exports
+
+Admins can export review-friendly Markdown for:
+
+- lesson-builder lessons
+- vocabulary sets
+- grammar sets
+
+Lesson exports include ordered sections/blocks, access metadata, draft/published
+status, and inline linked vocabulary, grammar, and question set content where it
+can be loaded. Image/audio blocks and missing linked resources are referenced
+clearly rather than embedded. These exports are QA artifacts only; the CMS
+remains the source of truth.
 
 ---
 
@@ -446,6 +490,8 @@ This ensures:
   - preset avatars (no uploads)
   - safer and simpler for younger users (12-16)
   - scalable for future expansion
+- Added optional parent/guardian contact and awareness fields for account
+  support and safeguarding context.
 
 ---
 
@@ -581,6 +627,18 @@ Core content:
 - lesson_sections
 - lesson_blocks
 
+Important profile/course metadata:
+
+- `courses.language_code`
+- `courses.language_name`
+- `courses.qualification_level`
+- `courses.exam_board`
+- `courses.curriculum_code`
+- `profiles.parent_guardian_name`
+- `profiles.parent_guardian_email`
+- `profiles.parent_guardian_consent_confirmed`
+- `profiles.parent_guardian_consent_confirmed_at`
+
 ---
 
 ## Technical Cleanup
@@ -592,6 +650,10 @@ Core content:
 - improved React patterns
 - improved image handling
 - replaced raw table markup with reusable table system
+- centralised active course routing assumptions
+- centralised brand/site SEO defaults
+- centralised current Foundation/Higher billing product-code mapping
+- added schema naming guidance for new reusable systems
 
 ---
 

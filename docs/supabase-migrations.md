@@ -1,6 +1,6 @@
 # Supabase Migration Policy
 
-Status: current as of 2026-05-04.
+Status: current as of 2026-05-21.
 
 Supabase migrations are append-only once they may have been applied to any shared,
 preview, staging, or production database. Do not rename, delete, squash, or edit
@@ -63,6 +63,19 @@ rewriting already-applied history.
 Do not commit production schema dumps to the public repository. If a private
 baseline or rebaseline is needed, keep it in private storage and mirror only the
 small, purpose-named migration files that are safe for public review.
+
+## Recent Private Operational Migrations
+
+This repository currently ignores most `supabase/migrations/*.sql` files to avoid
+publishing proprietary course data and operational schema history. The following
+local migrations have been applied to the linked remote database but are ignored
+by default:
+
+- `20260521150000_add_course_metadata.sql`
+- `20260521193000_add_parent_guardian_profile_fields.sql`
+
+Do not assume a fresh public clone has these files unless the private migration
+policy changes or the files are intentionally force-added.
 
 ## Validation
 

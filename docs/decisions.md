@@ -1,9 +1,12 @@
 # Architecture Decisions
 
-Last reviewed: 2026-05-04
+Last reviewed: 2026-05-21
 
 This document records the main technical decisions behind the GCSE
 Russian Course Platform.
+
+For product strategy, domain strategy, and expansion sequencing, see
+`docs/strategy.md`.
 
 It focuses on decisions that materially shaped the system, not every
 implementation detail.
@@ -15,6 +18,9 @@ This version includes:
 - variant-based content architecture
 - shared section system
 - UI Lab system and component architecture
+- active course, brand/site, and product-context decisions
+- parent/guardian profile support
+- Markdown export pipelines for teacher review
 
 ---
 
@@ -404,6 +410,8 @@ The product needs to support:
 - Move authenticated Stripe checkout and upgrade UI to `/account/billing`.
 - Keep platform pages inside the authenticated platform layout with `PlatformSidebar`.
 - Keep marketing pages inside a separate public layout with marketing-only header and footer.
+- Keep brand, domain, and default SEO values in `src/lib/brand/site-config.ts`,
+  with `src/lib/seo/site.ts` preserving the existing helper exports.
 - Do not implement middleware or subdomain routing yet.
 
 ### Result
@@ -440,3 +448,150 @@ page logic lived in one file.
 
 The codebase can become more modular without forcing risky all-at-once import
 changes across the app.
+
+---
+
+## 26. Why keep existing Russian-specific schemas stable while using neutral naming for new reusable systems?
+
+### Decision
+
+Keep existing Russian-specific vocabulary, grammar, lesson-content, assessment,
+table, column, route, file, and schema names stable. For new reusable platform
+systems, use neutral names such as `source_text`, `target_text`, `prompt_text`,
+`answer_text`, `translation_direction`, `language_code`, `qualification_level`,
+and `curriculum_code` unless the data is genuinely Russian-specific.
+
+### Why
+
+The current GCSE Russian and A-Level Russian platform needs reliable existing
+content systems. Renaming stable Russian-specific schemas would add migration
+risk, disrupt imports and admin workflows, and create churn without improving the
+current product.
+
+At the same time, new shared platform systems should avoid unnecessary
+Russian-specific assumptions when the same structure is really about course
+metadata, prompts, answers, translations, access, billing, progress, or CMS
+workflow.
+
+### Boundaries
+
+- Russian-specific wording is correct for public marketing, Russian lesson
+  content, Russian vocabulary, Russian grammar, and data that models Russian
+  linguistic concepts.
+- Neutral naming is preferred for new reusable platform systems.
+- Do not abstract prematurely when a system is genuinely GCSE Russian-only.
+- Do not create migrations or rename existing objects for naming consistency
+  alone.
+
+### Result
+
+Existing Russian content remains stable, while new platform work gets clearer
+names and fewer unnecessary course-specific assumptions.
+
+---
+
+## 27. Why add first-class course metadata?
+
+### Decision
+
+Store core course dimensions on `courses`:
+
+- `language_code`
+- `language_name`
+- `qualification_level`
+- `exam_board`
+- `curriculum_code`
+
+### Why
+
+The platform needs GCSE Russian content and future A-Level Russian content to be
+described by data rather than scattered strings.
+
+### Result
+
+Admin course screens and course helpers can preserve qualification, exam-board,
+curriculum, and language metadata without changing public routes or billing
+behaviour.
+
+---
+
+## 28. Why introduce active course and site config helpers?
+
+### Decision
+
+Use small central helpers for current GCSE Russian assumptions:
+
+- `src/lib/courses/active-course.ts`
+- `src/lib/brand/site-config.ts`
+
+### Why
+
+Generic app surfaces should not repeatedly embed the same default course slug,
+public domain, app domain, site name, SEO title, or OG defaults.
+
+### Result
+
+Current public output remains GCSE Russian, while route helpers, dashboard
+helpers, metadata builders, OG routes, and structured-data helpers have a single
+place to read the current product context.
+
+---
+
+## 29. Why centralise billing product-code resolution without changing Stripe?
+
+### Decision
+
+Keep the existing GCSE Russian Foundation and Higher Stripe products/prices, but
+resolve supported product codes through a central catalog mapping.
+
+### Why
+
+Checkout validation, trial tier grants, purchase state, pricing UI, and account
+helpers previously needed to know the same product-code mapping independently.
+
+### Result
+
+The current commercial behaviour is unchanged, but product-code knowledge is
+centralised. Foundation-to-Higher upgrade rules remain explicit because they are
+real current business rules.
+
+---
+
+## 30. Why store parent/guardian details on profiles instead of building parent accounts?
+
+### Decision
+
+Add optional parent/guardian contact and awareness fields to `profiles`.
+
+### Why
+
+GCSE learners are often under 16 and parents or guardians may help with setup,
+support, and payment decisions. The product needs a practical safeguarding layer
+now, but not a full parent portal.
+
+### Result
+
+Signup, profile, account/settings, and admin student pages can store and display
+parent/guardian context. The platform still has no parent login, parent
+dashboard, parent-student linking model, or student-to-student messaging.
+
+---
+
+## 31. Why start teacher review with Markdown exports?
+
+### Decision
+
+Use admin-only Markdown downloads for lesson, vocabulary, and grammar review.
+
+### Why
+
+Teachers can review AI-assisted drafts faster in documents than by clicking
+through every platform interaction. Markdown is simple, deterministic, portable,
+and easy to paste into shared review docs.
+
+### Result
+
+Admins can export lessons, vocabulary sets, and grammar sets. Lesson exports
+inline linked vocabulary, grammar, and question sets when available, while media
+and stale links remain clear references. This supports teacher QA without adding
+comments, approvals, locking, or version comparison yet.
