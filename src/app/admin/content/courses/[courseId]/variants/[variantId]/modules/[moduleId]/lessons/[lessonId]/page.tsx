@@ -271,6 +271,17 @@ export default async function AdminLessonDetailPage({
             </Button>
 
             <Button
+              href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/export`}
+              variant="secondary"
+              icon="download"
+              target="_blank"
+              rel="noreferrer"
+              prefetch={false}
+            >
+              Export lesson
+            </Button>
+
+            <Button
               href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
               variant="secondary"
               icon="preview"

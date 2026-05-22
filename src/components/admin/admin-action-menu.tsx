@@ -28,10 +28,14 @@ export function AdminActionMenu({
 export function AdminActionMenuItem({
   href,
   icon,
+  download,
+  prefetch,
   children,
 }: {
   href: string;
   icon: AppIconKey;
+  download?: boolean;
+  prefetch?: false;
   children: React.ReactNode;
 }) {
   return (
@@ -40,6 +44,8 @@ export function AdminActionMenuItem({
       variant="quiet"
       size="sm"
       icon={icon}
+      download={download}
+      prefetch={prefetch}
       className="w-full justify-start"
     >
       {children}

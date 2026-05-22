@@ -173,6 +173,14 @@ export default function VocabularySetRow({
             >
               View
             </AdminActionMenuItem>
+            <AdminActionMenuItem
+              href={`/admin/vocabulary/${vocabularySet.id}/export`}
+              icon="download"
+              download
+              prefetch={false}
+            >
+              Export Markdown
+            </AdminActionMenuItem>
             <AdminActionMenuConfirmItem
               action={deleteVocabularySetAction}
               hiddenFields={{ vocabularySetId: vocabularySet.id }}

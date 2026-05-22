@@ -55,6 +55,16 @@ export function VocabularySetItemsSummarySection({
             >
               Edit set
             </Button>
+
+            <Button
+              href={`/admin/vocabulary/${vocabularySet.id}/export`}
+              variant="soft"
+              icon="download"
+              download
+              prefetch={false}
+            >
+              Export Markdown
+            </Button>
           </div>
         </div>
       </section>

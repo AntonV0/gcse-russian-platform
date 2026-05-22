@@ -59,6 +59,16 @@ export function GrammarSetPointsSummarySection({
             >
               Edit set
             </Button>
+
+            <Button
+              href={`/admin/grammar/${grammarSet.id}/export`}
+              variant="soft"
+              icon="download"
+              download
+              prefetch={false}
+            >
+              Export Markdown
+            </Button>
           </div>
         </div>
       </section>

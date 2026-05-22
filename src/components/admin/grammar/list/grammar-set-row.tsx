@@ -150,6 +150,14 @@ export default function GrammarSetRow({
             <AdminActionMenuItem href={`/grammar/${grammarSet.slug}`} icon="preview">
               View
             </AdminActionMenuItem>
+            <AdminActionMenuItem
+              href={`/admin/grammar/${grammarSet.id}/export`}
+              icon="download"
+              download
+              prefetch={false}
+            >
+              Export Markdown
+            </AdminActionMenuItem>
             <AdminActionMenuConfirmItem
               action={deleteGrammarSetAction}
               hiddenFields={{ grammarSetId: grammarSet.id }}
