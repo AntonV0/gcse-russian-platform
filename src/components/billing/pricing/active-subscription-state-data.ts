@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { BILLING_TYPES, PRODUCT_CODES } from "@/lib/billing/catalog";
+import {
+  BILLING_TYPES,
+  isFoundationProductCode,
+  isHigherProductCode,
+} from "@/lib/billing/catalog";
 import { formatPriceLabel } from "@/lib/billing/pricing-ui";
 import type {
   ActiveSubscriptionState,
@@ -89,11 +93,11 @@ export async function getActiveSubscriptionStateForUser(
       amountLabel: formatPriceLabel(price),
     };
 
-    if (product.code === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION && foundation === null) {
+    if (isFoundationProductCode(product.code) && foundation === null) {
       foundation = renewalInfo;
     }
 
-    if (product.code === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER && higher === null) {
+    if (isHigherProductCode(product.code) && higher === null) {
       higher = renewalInfo;
     }
   }

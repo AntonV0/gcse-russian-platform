@@ -4,6 +4,7 @@ import {
   getStudentLearningPlan,
 } from "@/lib/dashboard/learning-plan";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { getDefaultActiveCourseSlug } from "@/lib/courses/active-course";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
 
 export type PlatformSidebarNextUp = {
@@ -59,13 +60,15 @@ export async function getPlatformSidebarNextUp(
     return null;
   }
 
+  const activeCourseSlug = getDefaultActiveCourseSlug();
   const progressSummary = await getCourseProgressSummary(
-    "gcse-russian",
+    activeCourseSlug,
     dashboard.variant
   );
   const learningPlan = await getStudentLearningPlan(
     dashboard.variant,
-    progressSummary.completedLessons
+    progressSummary.completedLessons,
+    activeCourseSlug
   );
   const completedLessonCount =
     learningPlan.totalLessons > 0

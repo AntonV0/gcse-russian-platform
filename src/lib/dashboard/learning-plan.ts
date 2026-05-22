@@ -5,6 +5,7 @@ import {
   getLessonsByModuleIdsDb,
   loadVariantPageData,
 } from "@/lib/courses/course-helpers-db";
+import { getDefaultActiveCourseSlug } from "@/lib/courses/active-course";
 import {
   getLessonIdsWithPublishedSectionsDb,
   getLessonSectionsByLessonIdDb,
@@ -199,7 +200,8 @@ export function getDashboardProgressMessage(
 
 export async function getStudentLearningPlan(
   variant: DashboardVariant,
-  fallbackCompletedLessons: number
+  fallbackCompletedLessons: number,
+  courseSlug = getDefaultActiveCourseSlug()
 ): Promise<StudentLearningPlan> {
   if (!variant) {
     return {
@@ -210,7 +212,7 @@ export async function getStudentLearningPlan(
     };
   }
 
-  const { course, modules } = await loadVariantPageData("gcse-russian", variant);
+  const { course, modules } = await loadVariantPageData(courseSlug, variant);
 
   if (!course || modules.length === 0) {
     return {

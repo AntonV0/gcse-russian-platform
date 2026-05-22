@@ -1,5 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { BILLING_TYPES, INTERVAL_UNITS, PRODUCT_CODES } from "@/lib/billing/catalog";
+import {
+  BILLING_TYPES,
+  INTERVAL_UNITS,
+  isFoundationProductCode,
+  isHigherProductCode,
+  isSupportedCheckoutProductCode,
+} from "@/lib/billing/catalog";
 import type {
   ActiveGrantProductCode,
   ActivePlanState,
@@ -88,10 +94,7 @@ export async function getActivePlanStateForUser(
 
     if (!product) continue;
 
-    if (
-      product.code === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION ||
-      product.code === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
-    ) {
+    if (isSupportedCheckoutProductCode(product.code)) {
       ownedProductCodes.add(product.code as ActiveGrantProductCode);
     }
 
@@ -109,13 +112,13 @@ export async function getActivePlanStateForUser(
 
     const isLifetime = price.billing_type === BILLING_TYPES.ONE_TIME;
 
-    if (product.code === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION) {
+    if (isFoundationProductCode(product.code)) {
       foundationMonthly = foundationMonthly || isMonthly;
       foundationThreeMonth = foundationThreeMonth || isThreeMonth;
       foundationLifetime = foundationLifetime || isLifetime;
     }
 
-    if (product.code === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER) {
+    if (isHigherProductCode(product.code)) {
       higherMonthly = higherMonthly || isMonthly;
       higherThreeMonth = higherThreeMonth || isThreeMonth;
       higherLifetime = higherLifetime || isLifetime;

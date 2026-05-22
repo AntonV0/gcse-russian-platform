@@ -3,6 +3,8 @@ import {
   BILLING_TYPES,
   INTERVAL_UNITS,
   PRODUCT_CODES,
+  getProductVariantDisplayName,
+  getProductVariantPriority,
   getUserGcseRussianPurchaseStateDb,
   resolveUpgradeQuoteDb,
   type UpgradeQuoteResolution,
@@ -247,13 +249,8 @@ export async function getCurrentPlanSummaryForUserDb(
     const aProduct = productMap.get(a.product_id);
     const bProduct = productMap.get(b.product_id);
 
-    const priorityByProductCode: Record<string, number> = {
-      "gcse-russian-higher": 3,
-      "gcse-russian-foundation": 2,
-    };
-
-    const aPriority = priorityByProductCode[aProduct?.code ?? ""] ?? 0;
-    const bPriority = priorityByProductCode[bProduct?.code ?? ""] ?? 0;
+    const aPriority = getProductVariantPriority(aProduct?.code ?? "");
+    const bPriority = getProductVariantPriority(bProduct?.code ?? "");
 
     if (aPriority !== bPriority) {
       return bPriority - aPriority;
@@ -272,10 +269,12 @@ export async function getCurrentPlanSummaryForUserDb(
 
   let planLabel = productName;
 
-  if (productCode === "gcse-russian-foundation" && billingShape) {
-    planLabel = `Foundation ${billingShape}`;
-  } else if (productCode === "gcse-russian-higher" && billingShape) {
-    planLabel = `Higher ${billingShape}`;
+  const variantDisplayName = productCode
+    ? getProductVariantDisplayName(productCode)
+    : null;
+
+  if (variantDisplayName && billingShape) {
+    planLabel = `${variantDisplayName} ${billingShape}`;
   } else if (productName && billingShape) {
     planLabel = `${productName} ${billingShape}`;
   }

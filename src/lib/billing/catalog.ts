@@ -18,8 +18,26 @@ export {
   INTERVAL_UNITS,
   PRODUCT_CODES,
 } from "@/lib/billing/catalog/types";
+export {
+  getCourseVariantForProductCode,
+  getProductCodeForCourseVariant,
+  getSupportedCourseProductCodes,
+} from "@/lib/billing/catalog/product-context";
+export {
+  getProductVariantDisplayName,
+  getProductVariantPriority,
+  getTrialProductCodeForVariant,
+  isFoundationProductCode,
+  isHigherProductCode,
+  isSupportedCheckoutProductCode,
+} from "@/lib/billing/catalog/product-eligibility";
 export { getUpgradeFlowForPath } from "@/lib/billing/catalog/upgrade-pricing";
 export { matchPriceByBillingShape } from "@/lib/billing/catalog/price-matching";
+export type {
+  CourseProductContext,
+  CourseProductVariantSlug,
+  SupportedCourseProductCode,
+} from "@/lib/billing/catalog/product-context";
 export type {
   CheckoutCatalogResolution,
   DbPrice,

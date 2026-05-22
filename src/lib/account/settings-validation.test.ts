@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  getParentGuardianContactErrorMessage,
   getPasswordUpdateErrorMessage,
+  validateParentGuardianContact,
   validatePasswordUpdate,
 } from "@/lib/account/settings-validation";
 
@@ -61,5 +63,53 @@ describe("validatePasswordUpdate", () => {
         confirmPassword: "long-enough",
       })
     ).toEqual({ isValid: true });
+  });
+});
+
+describe("validateParentGuardianContact", () => {
+  it("accepts empty optional parent or guardian details", () => {
+    expect(
+      validateParentGuardianContact({
+        parentGuardianName: "",
+        parentGuardianEmail: "",
+      })
+    ).toEqual({
+      isValid: true,
+      parentGuardianName: null,
+      parentGuardianEmail: null,
+      parentGuardianConsentConfirmed: false,
+    });
+  });
+
+  it("normalizes a provided parent or guardian email", () => {
+    expect(
+      validateParentGuardianContact({
+        parentGuardianName: "  Parent Name  ",
+        parentGuardianEmail: "  PARENT@EXAMPLE.COM  ",
+        parentGuardianConsentConfirmed: true,
+      })
+    ).toEqual({
+      isValid: true,
+      parentGuardianName: "Parent Name",
+      parentGuardianEmail: "parent@example.com",
+      parentGuardianConsentConfirmed: true,
+    });
+  });
+
+  it("rejects an invalid parent or guardian email", () => {
+    const result = validateParentGuardianContact({
+      parentGuardianEmail: "not-an-email",
+    });
+
+    expect(result).toEqual({
+      isValid: false,
+      parentGuardianName: null,
+      parentGuardianEmail: null,
+      parentGuardianConsentConfirmed: false,
+      parentGuardianEmailError: "Enter a valid parent or guardian email address.",
+    });
+    expect(getParentGuardianContactErrorMessage(result)).toBe(
+      "Enter a valid parent or guardian email address."
+    );
   });
 });

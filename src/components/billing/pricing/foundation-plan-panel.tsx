@@ -8,6 +8,7 @@ import {
   UpgradeOffer,
 } from "@/components/billing/pricing/plan-state-elements";
 import type { FoundationPlanPanelProps } from "@/components/billing/pricing/types";
+import { PRODUCT_CODES, isFoundationProductCode } from "@/lib/billing/catalog";
 import { formatPriceLabel, getUpgradeFeeLabel } from "@/lib/billing/pricing-ui";
 
 export default function FoundationPlanPanel({
@@ -28,15 +29,17 @@ export default function FoundationPlanPanel({
 
   const canShowFoundationMonthlyToThreeMonthUpgrade =
     foundationMonthlyToThreeMonthQuote?.eligible &&
-    foundationMonthlyToThreeMonthQuote.sourceProduct?.code ===
-      "gcse-russian-foundation" &&
+    isFoundationProductCode(
+      foundationMonthlyToThreeMonthQuote.sourceProduct?.code ?? ""
+    ) &&
     foundationMonthlyToThreeMonthQuote.sourcePrice?.billing_type === "subscription" &&
     (foundationMonthlyToThreeMonthQuote.sourcePrice?.interval_count ?? 1) === 1;
 
   const canShowFoundationMonthlyToFoundationLifetimeUpgrade =
     foundationMonthlyToFoundationLifetimeQuote?.eligible &&
-    foundationMonthlyToFoundationLifetimeQuote.sourceProduct?.code ===
-      "gcse-russian-foundation" &&
+    isFoundationProductCode(
+      foundationMonthlyToFoundationLifetimeQuote.sourceProduct?.code ?? ""
+    ) &&
     foundationMonthlyToFoundationLifetimeQuote.upgradeFlow === "lifetime" &&
     foundationMonthlyToFoundationLifetimeQuote.sourcePrice?.billing_type ===
       "subscription" &&
@@ -44,21 +47,23 @@ export default function FoundationPlanPanel({
 
   const canShowFoundationThreeMonthToFoundationLifetimeUpgrade =
     foundationThreeMonthToFoundationLifetimeQuote?.eligible &&
-    foundationThreeMonthToFoundationLifetimeQuote.sourceProduct?.code ===
-      "gcse-russian-foundation" &&
+    isFoundationProductCode(
+      foundationThreeMonthToFoundationLifetimeQuote.sourceProduct?.code ?? ""
+    ) &&
     foundationThreeMonthToFoundationLifetimeQuote.upgradeFlow === "lifetime" &&
     foundationThreeMonthToFoundationLifetimeQuote.sourcePrice?.billing_type ===
       "subscription" &&
     (foundationThreeMonthToFoundationLifetimeQuote.sourcePrice?.interval_count ?? 1) ===
       3;
 
-  const foundationOwned = planState.ownedProductCodes.has("gcse-russian-foundation");
+  const foundationProductCode = PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION;
+  const foundationOwned = planState.ownedProductCodes.has(foundationProductCode);
 
   if (!user) {
     return (
       <ActionGroup variant="compact">
         <CheckoutOptionRow
-          productCode="gcse-russian-foundation"
+          productCode={foundationProductCode}
           billingType="subscription"
           intervalUnit="month"
           intervalCount={1}
@@ -68,7 +73,7 @@ export default function FoundationPlanPanel({
         />
 
         <CheckoutOptionRow
-          productCode="gcse-russian-foundation"
+          productCode={foundationProductCode}
           billingType="subscription"
           intervalUnit="month"
           intervalCount={3}
@@ -78,7 +83,7 @@ export default function FoundationPlanPanel({
         />
 
         <CheckoutOptionRow
-          productCode="gcse-russian-foundation"
+          productCode={foundationProductCode}
           billingType="one_time"
           label="Choose lifetime"
           priceLabel={foundationLifetimeLabel}
@@ -160,7 +165,7 @@ export default function FoundationPlanPanel({
                 targetStandardLabel={foundationThreeMonthLabel}
               >
                 <CheckoutButton
-                  productCode="gcse-russian-foundation"
+                  productCode={foundationProductCode}
                   billingType="subscription"
                   intervalUnit="month"
                   intervalCount={3}
@@ -179,7 +184,7 @@ export default function FoundationPlanPanel({
                 targetStandardLabel={foundationLifetimeLabel}
               >
                 <CheckoutButton
-                  productCode="gcse-russian-foundation"
+                  productCode={foundationProductCode}
                   billingType="one_time"
                   isUpgrade
                 >
@@ -215,7 +220,7 @@ export default function FoundationPlanPanel({
               targetStandardLabel={foundationLifetimeLabel}
             >
               <CheckoutButton
-                productCode="gcse-russian-foundation"
+                productCode={foundationProductCode}
                 billingType="one_time"
                 isUpgrade
               >
@@ -266,7 +271,7 @@ export default function FoundationPlanPanel({
   return (
     <ActionGroup variant="compact">
       <CheckoutOptionRow
-        productCode="gcse-russian-foundation"
+        productCode={foundationProductCode}
         billingType="subscription"
         intervalUnit="month"
         intervalCount={1}
@@ -276,7 +281,7 @@ export default function FoundationPlanPanel({
       />
 
       <CheckoutOptionRow
-        productCode="gcse-russian-foundation"
+        productCode={foundationProductCode}
         billingType="subscription"
         intervalUnit="month"
         intervalCount={3}
@@ -286,7 +291,7 @@ export default function FoundationPlanPanel({
       />
 
       <CheckoutOptionRow
-        productCode="gcse-russian-foundation"
+        productCode={foundationProductCode}
         billingType="one_time"
         label="Choose lifetime"
         priceLabel={foundationLifetimeLabel}

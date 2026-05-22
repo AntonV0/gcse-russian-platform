@@ -1,5 +1,6 @@
 import CheckoutOptionRow from "@/components/billing/checkout-option-row";
 import { ActionGroup } from "@/components/billing/pricing/plan-state-elements";
+import { PRODUCT_CODES } from "@/lib/billing/catalog";
 
 type HigherPlanPurchaseOptionsProps = {
   monthlyLabel: string;
@@ -12,10 +13,12 @@ export default function HigherPlanPurchaseOptions({
   threeMonthLabel,
   lifetimeLabel,
 }: HigherPlanPurchaseOptionsProps) {
+  const higherProductCode = PRODUCT_CODES.GCSE_RUSSIAN_HIGHER;
+
   return (
     <ActionGroup variant="compact">
       <CheckoutOptionRow
-        productCode="gcse-russian-higher"
+        productCode={higherProductCode}
         billingType="subscription"
         intervalUnit="month"
         intervalCount={1}
@@ -25,7 +28,7 @@ export default function HigherPlanPurchaseOptions({
       />
 
       <CheckoutOptionRow
-        productCode="gcse-russian-higher"
+        productCode={higherProductCode}
         billingType="subscription"
         intervalUnit="month"
         intervalCount={3}
@@ -35,7 +38,7 @@ export default function HigherPlanPurchaseOptions({
       />
 
       <CheckoutOptionRow
-        productCode="gcse-russian-higher"
+        productCode={higherProductCode}
         billingType="one_time"
         label="Choose lifetime"
         priceLabel={lifetimeLabel}

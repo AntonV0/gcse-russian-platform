@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { cookies } from "next/headers";
 import {
+  APP_NAME,
+  DEFAULT_OG_IMAGE_ALT,
   DEFAULT_OG_IMAGE_PATH,
   DEFAULT_SEO_DESCRIPTION,
   DEFAULT_SEO_TITLE,
@@ -25,7 +27,7 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   metadataBase: getPublicSiteUrl(),
-  applicationName: PUBLIC_SITE_NAME,
+  applicationName: APP_NAME,
   title: {
     default: DEFAULT_SEO_TITLE,
     template: `%s | ${PUBLIC_SITE_NAME}`,
@@ -41,7 +43,7 @@ export const metadata: Metadata = {
         url: getPublicSiteUrl(DEFAULT_OG_IMAGE_PATH),
         width: 1200,
         height: 630,
-        alt: "GCSE Russian online course",
+        alt: DEFAULT_OG_IMAGE_ALT,
       },
     ],
   },
@@ -67,9 +69,7 @@ const ACCENT_OPTIONS = new Set<AccentPreference>([
 ]);
 
 function readThemePreference(value: string | undefined): ThemePreference {
-  return value === "light" || value === "dark" || value === "system"
-    ? value
-    : "system";
+  return value === "light" || value === "dark" || value === "system" ? value : "system";
 }
 
 function readAccentPreference(value: string | undefined): AccentPreference {

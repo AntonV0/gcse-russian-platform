@@ -1,10 +1,10 @@
 import {
   BILLING_TYPES,
   INTERVAL_UNITS,
-  PRODUCT_CODES,
   type CheckoutCatalogResolution,
   type SupportedIntervalUnit,
 } from "@/lib/billing/catalog/types";
+import { isSupportedCheckoutProductCode } from "@/lib/billing/catalog/product-eligibility";
 import {
   DEFAULT_CHECKOUT_CANCEL_PATH,
   DEFAULT_CHECKOUT_SUCCESS_PATH,
@@ -44,12 +44,6 @@ function isCheckoutRequestBodyObject(
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isSupportedProductCode(value: string): boolean {
-  return Object.values(PRODUCT_CODES).includes(
-    value as (typeof PRODUCT_CODES)[keyof typeof PRODUCT_CODES]
-  );
-}
-
 function isSupportedBillingType(value: string): boolean {
   return Object.values(BILLING_TYPES).includes(
     value as (typeof BILLING_TYPES)[keyof typeof BILLING_TYPES]
@@ -76,7 +70,7 @@ export function validateCheckoutRequestBody(
     return { ok: false, error: "Invalid or missing productCode" };
   }
 
-  if (!body.productCode || !isSupportedProductCode(body.productCode)) {
+  if (!body.productCode || !isSupportedCheckoutProductCode(body.productCode)) {
     return { ok: false, error: "Invalid or missing productCode" };
   }
 

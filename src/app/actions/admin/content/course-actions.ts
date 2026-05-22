@@ -11,10 +11,23 @@ export async function createCourseAction(formData: FormData) {
   const title = getTrimmedString(formData, "title");
   const slug = getTrimmedString(formData, "slug");
   const description = getOptionalString(formData, "description");
+  const qualificationLevel = getTrimmedString(formData, "qualificationLevel");
+  const examBoard = getTrimmedString(formData, "examBoard");
+  const curriculumCode = getTrimmedString(formData, "curriculumCode");
+  const languageCode = getTrimmedString(formData, "languageCode");
+  const languageName = getTrimmedString(formData, "languageName");
   const isActive = getBoolean(formData, "isActive");
   const isPublished = getBoolean(formData, "isPublished");
 
-  if (!title || !slug) {
+  if (
+    !title ||
+    !slug ||
+    !qualificationLevel ||
+    !examBoard ||
+    !curriculumCode ||
+    !languageCode ||
+    !languageName
+  ) {
     throw new Error("Missing required fields");
   }
 
@@ -26,6 +39,11 @@ export async function createCourseAction(formData: FormData) {
       title,
       slug,
       description,
+      qualification_level: qualificationLevel,
+      exam_board: examBoard,
+      curriculum_code: curriculumCode,
+      language_code: languageCode,
+      language_name: languageName,
       is_active: isActive,
       is_published: isPublished,
     })
@@ -47,10 +65,24 @@ export async function updateCourseAction(formData: FormData) {
   const title = getTrimmedString(formData, "title");
   const slug = getTrimmedString(formData, "slug");
   const description = getOptionalString(formData, "description");
+  const qualificationLevel = getTrimmedString(formData, "qualificationLevel");
+  const examBoard = getTrimmedString(formData, "examBoard");
+  const curriculumCode = getTrimmedString(formData, "curriculumCode");
+  const languageCode = getTrimmedString(formData, "languageCode");
+  const languageName = getTrimmedString(formData, "languageName");
   const isActive = getBoolean(formData, "isActive");
   const isPublished = getBoolean(formData, "isPublished");
 
-  if (!courseId || !title || !slug) {
+  if (
+    !courseId ||
+    !title ||
+    !slug ||
+    !qualificationLevel ||
+    !examBoard ||
+    !curriculumCode ||
+    !languageCode ||
+    !languageName
+  ) {
     throw new Error("Missing required fields");
   }
 
@@ -62,6 +94,11 @@ export async function updateCourseAction(formData: FormData) {
       title,
       slug,
       description,
+      qualification_level: qualificationLevel,
+      exam_board: examBoard,
+      curriculum_code: curriculumCode,
+      language_code: languageCode,
+      language_name: languageName,
       is_active: isActive,
       is_published: isPublished,
     })

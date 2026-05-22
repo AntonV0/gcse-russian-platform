@@ -7,19 +7,31 @@ export default function ProfileDetailsSection({
   email,
   fullName,
   displayName,
+  parentGuardianName,
+  parentGuardianEmail,
+  parentGuardianConsentConfirmed,
   hasDetailsChanges,
   isSaving,
   onFullNameChange,
   onDisplayNameChange,
+  onParentGuardianNameChange,
+  onParentGuardianEmailChange,
+  onParentGuardianConsentConfirmedChange,
   onReset,
 }: {
   email: string | null | undefined;
   fullName: string;
   displayName: string;
+  parentGuardianName: string;
+  parentGuardianEmail: string;
+  parentGuardianConsentConfirmed: boolean;
   hasDetailsChanges: boolean;
   isSaving: boolean;
   onFullNameChange: (value: string) => void;
   onDisplayNameChange: (value: string) => void;
+  onParentGuardianNameChange: (value: string) => void;
+  onParentGuardianEmailChange: (value: string) => void;
+  onParentGuardianConsentConfirmedChange: (value: boolean) => void;
   onReset: () => void;
 }) {
   return (
@@ -81,6 +93,66 @@ export default function ProfileDetailsSection({
         >
           <Input id="email" name="email" value={email ?? ""} disabled readOnly />
         </FormField>
+      </div>
+
+      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+        <div>
+          <h3 className="text-base font-bold text-[var(--text-primary)]">
+            Parent or guardian contact
+          </h3>
+          <p className="mt-1 text-sm app-text-muted">
+            Optional details for students whose account setup, support, or payment
+            decisions involve a parent or guardian.
+          </p>
+        </div>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <FormField
+            label="Parent/guardian name"
+            description="Used only for account support and safeguarding context."
+          >
+            <Input
+              id="parentGuardianName"
+              name="parentGuardianName"
+              value={parentGuardianName}
+              onChange={(event) => onParentGuardianNameChange(event.target.value)}
+              placeholder="Enter parent or guardian name"
+              disabled={isSaving}
+            />
+          </FormField>
+
+          <FormField
+            label="Parent/guardian email"
+            description="Useful where an adult helps manage the account."
+          >
+            <Input
+              id="parentGuardianEmail"
+              name="parentGuardianEmail"
+              type="email"
+              value={parentGuardianEmail}
+              onChange={(event) => onParentGuardianEmailChange(event.target.value)}
+              placeholder="parent@example.com"
+              disabled={isSaving}
+            />
+          </FormField>
+        </div>
+
+        <label className="mt-4 flex items-start gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-3 text-sm leading-6 text-[var(--text-secondary)]">
+          <input
+            name="parentGuardianConsentConfirmed"
+            type="checkbox"
+            checked={parentGuardianConsentConfirmed}
+            disabled={isSaving}
+            onChange={(event) =>
+              onParentGuardianConsentConfirmedChange(event.target.checked)
+            }
+            className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent-fill)]"
+          />
+          <span>
+            A parent or guardian is aware of this account setup where that is
+            appropriate for the student.
+          </span>
+        </label>
       </div>
 
       <div

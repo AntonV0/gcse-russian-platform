@@ -46,6 +46,9 @@ export default function ProfileEditor({
   email,
   initialFullName,
   initialDisplayName,
+  initialParentGuardianName,
+  initialParentGuardianEmail,
+  initialParentGuardianConsentConfirmed,
   initialAvatarKey,
   initialAvatarBackgroundKey,
   initialAvatarFrameKey,
@@ -57,6 +60,14 @@ export default function ProfileEditor({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedFullName, setSavedFullName] = useState(initialFullName ?? "");
   const [savedDisplayName, setSavedDisplayName] = useState(initialDisplayName ?? "");
+  const [savedParentGuardianName, setSavedParentGuardianName] = useState(
+    initialParentGuardianName ?? ""
+  );
+  const [savedParentGuardianEmail, setSavedParentGuardianEmail] = useState(
+    initialParentGuardianEmail ?? ""
+  );
+  const [savedParentGuardianConsentConfirmed, setSavedParentGuardianConsentConfirmed] =
+    useState(initialParentGuardianConsentConfirmed);
   const [savedAvatarKey, setSavedAvatarKey] = useState(initialAvatarKey ?? "");
   const [savedAvatarBackgroundKey, setSavedAvatarBackgroundKey] =
     useState<AvatarBackgroundKey>(
@@ -67,6 +78,15 @@ export default function ProfileEditor({
   );
   const [fullName, setFullName] = useState(initialFullName ?? "");
   const [displayName, setDisplayName] = useState(initialDisplayName ?? "");
+  const [parentGuardianName, setParentGuardianName] = useState(
+    initialParentGuardianName ?? ""
+  );
+  const [parentGuardianEmail, setParentGuardianEmail] = useState(
+    initialParentGuardianEmail ?? ""
+  );
+  const [parentGuardianConsentConfirmed, setParentGuardianConsentConfirmed] = useState(
+    initialParentGuardianConsentConfirmed
+  );
   const [avatarKey, setAvatarKey] = useState(initialAvatarKey ?? "");
   const [avatarBackgroundKey, setAvatarBackgroundKey] = useState<AvatarBackgroundKey>(
     initialAvatarBackgroundKey ?? DEFAULT_AVATAR_BACKGROUND_KEY
@@ -99,7 +119,11 @@ export default function ProfileEditor({
     (frame) => frame.key !== DEFAULT_AVATAR_FRAME_KEY && unlockedFrameKeys.has(frame.key)
   );
   const hasDetailsChanges =
-    fullName !== savedFullName || displayName !== savedDisplayName;
+    fullName !== savedFullName ||
+    displayName !== savedDisplayName ||
+    parentGuardianName !== savedParentGuardianName ||
+    parentGuardianEmail !== savedParentGuardianEmail ||
+    parentGuardianConsentConfirmed !== savedParentGuardianConsentConfirmed;
   const hasAvatarChanges =
     avatarKey !== savedAvatarKey ||
     avatarBackgroundKey !== savedAvatarBackgroundKey ||
@@ -110,6 +134,9 @@ export default function ProfileEditor({
   const resetDetailsChanges = () => {
     setFullName(savedFullName);
     setDisplayName(savedDisplayName);
+    setParentGuardianName(savedParentGuardianName);
+    setParentGuardianEmail(savedParentGuardianEmail);
+    setParentGuardianConsentConfirmed(savedParentGuardianConsentConfirmed);
   };
   const resetAvatarChanges = () => {
     setAvatarKey(savedAvatarKey);
@@ -175,11 +202,19 @@ export default function ProfileEditor({
 
       setFullName(savedProfile.fullName);
       setDisplayName(savedProfile.displayName);
+      setParentGuardianName(savedProfile.parentGuardianName);
+      setParentGuardianEmail(savedProfile.parentGuardianEmail);
+      setParentGuardianConsentConfirmed(savedProfile.parentGuardianConsentConfirmed);
       setAvatarKey(savedProfile.avatarKey);
       setAvatarBackgroundKey(nextAvatarBackgroundKey);
       setAvatarFrameKey(nextAvatarFrameKey);
       setSavedFullName(savedProfile.fullName);
       setSavedDisplayName(savedProfile.displayName);
+      setSavedParentGuardianName(savedProfile.parentGuardianName);
+      setSavedParentGuardianEmail(savedProfile.parentGuardianEmail);
+      setSavedParentGuardianConsentConfirmed(
+        savedProfile.parentGuardianConsentConfirmed
+      );
       setSavedAvatarKey(savedProfile.avatarKey);
       setSavedAvatarBackgroundKey(nextAvatarBackgroundKey);
       setSavedAvatarFrameKey(nextAvatarFrameKey);
@@ -335,10 +370,16 @@ export default function ProfileEditor({
         email={email}
         fullName={fullName}
         displayName={displayName}
+        parentGuardianName={parentGuardianName}
+        parentGuardianEmail={parentGuardianEmail}
+        parentGuardianConsentConfirmed={parentGuardianConsentConfirmed}
         hasDetailsChanges={hasDetailsChanges}
         isSaving={isSaving}
         onFullNameChange={setFullName}
         onDisplayNameChange={setDisplayName}
+        onParentGuardianNameChange={setParentGuardianName}
+        onParentGuardianEmailChange={setParentGuardianEmail}
+        onParentGuardianConsentConfirmedChange={setParentGuardianConsentConfirmed}
         onReset={resetDetailsChanges}
       />
 

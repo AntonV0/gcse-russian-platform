@@ -66,7 +66,30 @@ describe("validateCheckoutRequestBody", () => {
     });
   });
 
+  it("accepts both current course product codes", () => {
+    expect(
+      validateCheckoutRequestBody({
+        productCode: PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION,
+        billingType: BILLING_TYPES.ONE_TIME,
+      }).ok
+    ).toBe(true);
+
+    expect(
+      validateCheckoutRequestBody({
+        productCode: PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+        billingType: BILLING_TYPES.ONE_TIME,
+      }).ok
+    ).toBe(true);
+  });
+
   it("rejects invalid product, billing type, interval unit, and interval count", () => {
+    expect(
+      validateCheckoutRequestBody({
+        productCode: "unknown-product",
+        billingType: BILLING_TYPES.SUBSCRIPTION,
+      })
+    ).toEqual({ ok: false, error: "Invalid or missing productCode" });
+
     expect(
       validateCheckoutRequestBody({
         productCode: "",

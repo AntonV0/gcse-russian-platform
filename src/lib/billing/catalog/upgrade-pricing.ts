@@ -9,7 +9,6 @@ import {
 import {
   BILLING_TYPES,
   INTERVAL_UNITS,
-  PRODUCT_CODES,
   type DbPrice,
   type UpgradeCandidate,
   type UpgradeFlow,
@@ -153,10 +152,12 @@ function matchLifetimeUpgradeCheckoutPrice(params: {
   targetProductCode: string;
   sourcePrice: DbPrice;
 }): DbPrice | null {
-  if (
-    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
-    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
-  ) {
+  const sourceIsFoundation = isFoundationProductCode(params.sourceProductCode);
+  const sourceIsHigher = isHigherProductCode(params.sourceProductCode);
+  const targetIsFoundation = isFoundationProductCode(params.targetProductCode);
+  const targetIsHigher = isHigherProductCode(params.targetProductCode);
+
+  if (sourceIsFoundation && targetIsHigher) {
     if (isMonthlySubscriptionPrice(params.sourcePrice)) {
       return findOneTimePriceByAmount(params.upgradePrices, 349);
     }
@@ -170,10 +171,7 @@ function matchLifetimeUpgradeCheckoutPrice(params: {
     }
   }
 
-  if (
-    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
-    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
-  ) {
+  if (sourceIsFoundation && targetIsFoundation) {
     if (isMonthlySubscriptionPrice(params.sourcePrice)) {
       return findOneTimePriceByAmount(params.upgradePrices, 249);
     }
@@ -183,10 +181,7 @@ function matchLifetimeUpgradeCheckoutPrice(params: {
     }
   }
 
-  if (
-    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
-    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
-  ) {
+  if (sourceIsHigher && targetIsHigher) {
     if (isMonthlySubscriptionPrice(params.sourcePrice)) {
       return findOneTimePriceByAmount(params.upgradePrices, 339);
     }
@@ -209,24 +204,20 @@ function matchMonthlyToThreeMonthUpgradeCheckoutPrice(params: {
     return null;
   }
 
-  if (
-    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
-    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
-  ) {
+  const sourceIsFoundation = isFoundationProductCode(params.sourceProductCode);
+  const sourceIsHigher = isHigherProductCode(params.sourceProductCode);
+  const targetIsFoundation = isFoundationProductCode(params.targetProductCode);
+  const targetIsHigher = isHigherProductCode(params.targetProductCode);
+
+  if (sourceIsFoundation && targetIsFoundation) {
     return findThreeMonthSubscriptionPriceByAmount(params.upgradePrices, 79);
   }
 
-  if (
-    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
-    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
-  ) {
+  if (sourceIsHigher && targetIsHigher) {
     return findThreeMonthSubscriptionPriceByAmount(params.upgradePrices, 89);
   }
 
-  if (
-    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
-    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER
-  ) {
+  if (sourceIsFoundation && targetIsHigher) {
     return findThreeMonthSubscriptionPriceByAmount(params.upgradePrices, 99);
   }
 
@@ -240,9 +231,12 @@ function matchSameCadenceUpgradeCheckoutPrice(params: {
   sourcePrice: DbPrice;
   targetPrice: DbPrice;
 }): DbPrice | null {
+  const sourceIsFoundation = isFoundationProductCode(params.sourceProductCode);
+  const targetIsHigher = isHigherProductCode(params.targetProductCode);
+
   if (
-    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
-    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
+    sourceIsFoundation &&
+    targetIsHigher &&
     isMonthlySubscriptionPrice(params.sourcePrice) &&
     isMonthlySubscriptionPrice(params.targetPrice)
   ) {
@@ -258,8 +252,8 @@ function matchSameCadenceUpgradeCheckoutPrice(params: {
   }
 
   if (
-    params.sourceProductCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION &&
-    params.targetProductCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER &&
+    sourceIsFoundation &&
+    targetIsHigher &&
     isThreeMonthSubscriptionPrice(params.sourcePrice) &&
     isThreeMonthSubscriptionPrice(params.targetPrice)
   ) {

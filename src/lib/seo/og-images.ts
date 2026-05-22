@@ -1,3 +1,5 @@
+import { DEFAULT_SITE_CONFIG } from "@/lib/brand/site-config";
+
 export type OgImageKey =
   | "about"
   | "blog"
@@ -48,8 +50,8 @@ export const OG_IMAGE_DEFINITIONS: Record<OgImageKey, OgImageDefinition> = {
     softAccent: "#e7e7ff",
   },
   course: {
-    title: "Online GCSE Russian Course",
-    kicker: "GCSE Russian",
+    title: DEFAULT_SITE_CONFIG.defaultOgTitle,
+    kicker: DEFAULT_SITE_CONFIG.publicSiteName,
     description:
       "Structured Pearson Edexcel 1RU0 lessons, grammar, vocabulary, and exam practice.",
     accent: "#3563d8",

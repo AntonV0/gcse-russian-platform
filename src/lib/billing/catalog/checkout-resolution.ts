@@ -1,9 +1,9 @@
 import { hasActiveUserProductGrantDb } from "@/lib/billing/grants";
 import { getActivePricesForProductDb, getActiveProductByCodeDb } from "./db";
 import { matchPriceByBillingShape } from "./price-matching";
+import { getProductCodeForCourseVariant } from "./product-context";
 import { canUpgradeFoundationToHigherDb, resolveUpgradeQuoteDb } from "./upgrade-quotes";
 import {
-  PRODUCT_CODES,
   type CheckoutCatalogResolution,
   type ResolveCheckoutPriceInput,
 } from "./types";
@@ -77,10 +77,19 @@ export async function getUserGcseRussianPurchaseStateDb(userId: string): Promise
   canBuyHigher: boolean;
   canUpgradeToHigher: boolean;
 }> {
-  const foundationProduct = await getActiveProductByCodeDb(
-    PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION
-  );
-  const higherProduct = await getActiveProductByCodeDb(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER);
+  const foundationProductCode = getProductCodeForCourseVariant(null, "foundation");
+  const higherProductCode = getProductCodeForCourseVariant(null, "higher");
+
+  if (!foundationProductCode || !higherProductCode) {
+    return {
+      canBuyFoundation: false,
+      canBuyHigher: false,
+      canUpgradeToHigher: false,
+    };
+  }
+
+  const foundationProduct = await getActiveProductByCodeDb(foundationProductCode);
+  const higherProduct = await getActiveProductByCodeDb(higherProductCode);
 
   if (!foundationProduct || !higherProduct) {
     return {

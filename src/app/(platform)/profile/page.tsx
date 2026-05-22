@@ -6,6 +6,7 @@ import ProfileEditor, {
   type ProfileLearningSnapshot,
 } from "@/components/profile/profile-editor";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
+import { getDefaultActiveCourseSlug } from "@/lib/courses/active-course";
 import { getStudentLearningPlan } from "@/lib/dashboard/learning-plan";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
@@ -32,10 +33,15 @@ async function getProfileLearningSnapshot(): Promise<ProfileLearningSnapshot> {
     };
   }
 
-  const progressSummary = await getCourseProgressSummary("gcse-russian", activeVariant);
+  const activeCourseSlug = getDefaultActiveCourseSlug();
+  const progressSummary = await getCourseProgressSummary(
+    activeCourseSlug,
+    activeVariant
+  );
   const learningPlan = await getStudentLearningPlan(
     activeVariant,
-    progressSummary.completedLessons
+    progressSummary.completedLessons,
+    activeCourseSlug
   );
 
   return {
@@ -113,6 +119,11 @@ export default async function ProfilePage({
         email={user.email}
         initialFullName={profile?.full_name}
         initialDisplayName={profile?.display_name}
+        initialParentGuardianName={profile?.parent_guardian_name}
+        initialParentGuardianEmail={profile?.parent_guardian_email}
+        initialParentGuardianConsentConfirmed={Boolean(
+          profile?.parent_guardian_consent_confirmed
+        )}
         initialAvatarKey={currentAvatarKey}
         initialAvatarBackgroundKey={currentAvatarBackgroundKey}
         initialAvatarFrameKey={currentAvatarFrameKey}

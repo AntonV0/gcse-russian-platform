@@ -3,6 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import {
+  getParentGuardianContactErrorMessage,
+  validateParentGuardianContact,
+} from "@/lib/account/settings-validation";
 import { getTrimmedString } from "@/app/actions/shared/form-data";
 import {
   getRedirectTo,
@@ -74,6 +78,82 @@ export async function setTeacherRoleAction(formData: FormData) {
     redirectTo,
     mode === "enable" ? "Teacher role enabled" : "Teacher role removed"
   );
+}
+
+export async function updateParentGuardianContactAction(formData: FormData) {
+  const canAccess = await requireAdminAccess();
+  if (!canAccess) throw new Error("Unauthorized");
+
+  const userId = getTrimmedString(formData, "userId");
+  const redirectTo = getRedirectTo(formData, `/admin/students/${userId}`);
+
+  if (!userId) {
+    redirectWithError(redirectTo, "Missing required fields");
+  }
+
+  const parentGuardianValidation = validateParentGuardianContact({
+    parentGuardianName: getTrimmedString(formData, "parentGuardianName"),
+    parentGuardianEmail: getTrimmedString(formData, "parentGuardianEmail"),
+    parentGuardianConsentConfirmed:
+      formData.get("parentGuardianConsentConfirmed") === "on",
+  });
+
+  if (!parentGuardianValidation.isValid) {
+    redirectWithError(
+      redirectTo,
+      getParentGuardianContactErrorMessage(parentGuardianValidation)
+    );
+  }
+
+  const supabase = await createClient();
+  const { data: currentProfile, error: currentProfileError } = await supabase
+    .from("profiles")
+    .select(
+      "parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at"
+    )
+    .eq("id", userId)
+    .single();
+
+  if (currentProfileError) {
+    redirectWithError(
+      redirectTo,
+      `Failed to load parent or guardian details: ${
+        currentProfileError.message ?? "unknown error"
+      }`
+    );
+  }
+
+  const parentGuardianConsentConfirmedAt =
+    parentGuardianValidation.parentGuardianConsentConfirmed
+      ? currentProfile.parent_guardian_consent_confirmed &&
+        currentProfile.parent_guardian_consent_confirmed_at
+        ? currentProfile.parent_guardian_consent_confirmed_at
+        : new Date().toISOString()
+      : null;
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      parent_guardian_name: parentGuardianValidation.parentGuardianName,
+      parent_guardian_email: parentGuardianValidation.parentGuardianEmail,
+      parent_guardian_consent_confirmed:
+        parentGuardianValidation.parentGuardianConsentConfirmed,
+      parent_guardian_consent_confirmed_at: parentGuardianConsentConfirmedAt,
+    })
+    .eq("id", userId);
+
+  if (error) {
+    redirectWithError(
+      redirectTo,
+      `Failed to update parent or guardian details: ${
+        error.message ?? "unknown error"
+      }`
+    );
+  }
+
+  revalidatePath(`/admin/students/${userId}`);
+  revalidatePath("/admin/students");
+  redirectWithSuccess(redirectTo, "Parent or guardian details updated");
 }
 
 export async function deactivateAccessGrantAction(formData: FormData) {

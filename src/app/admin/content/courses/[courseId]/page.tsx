@@ -56,6 +56,9 @@ export default async function AdminCourseDetailPage({
             <Badge tone="muted" icon="file">
               {course.slug}
             </Badge>
+            <Badge tone="muted">{course.qualification_level}</Badge>
+            <Badge tone="muted">{course.exam_board}</Badge>
+            <Badge tone="muted">{course.curriculum_code}</Badge>
             <ActiveStatusBadge isActive={course.is_active} />
             <PublishStatusBadge isPublished={course.is_published} />
           </>
@@ -182,6 +185,40 @@ export default async function AdminCourseDetailPage({
         </div>
 
         <div className="space-y-3">
+          <SectionCard
+            title="Course metadata"
+            description="Internal curriculum details for this course."
+            tone="muted"
+            density="compact"
+          >
+            <dl className="grid gap-3 text-sm">
+              <div className="flex items-start justify-between gap-4">
+                <dt className="app-text-muted">Language</dt>
+                <dd className="font-medium text-[var(--text-primary)]">
+                  {course.language_name} ({course.language_code})
+                </dd>
+              </div>
+              <div className="flex items-start justify-between gap-4">
+                <dt className="app-text-muted">Qualification</dt>
+                <dd className="font-medium text-[var(--text-primary)]">
+                  {course.qualification_level}
+                </dd>
+              </div>
+              <div className="flex items-start justify-between gap-4">
+                <dt className="app-text-muted">Exam board</dt>
+                <dd className="font-medium text-[var(--text-primary)]">
+                  {course.exam_board}
+                </dd>
+              </div>
+              <div className="flex items-start justify-between gap-4">
+                <dt className="app-text-muted">Curriculum code</dt>
+                <dd className="font-medium text-[var(--text-primary)]">
+                  {course.curriculum_code}
+                </dd>
+              </div>
+            </dl>
+          </SectionCard>
+
           <ExpandableAdminFormPanel
             id="add-variant"
             title="Add variant"

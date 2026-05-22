@@ -21,12 +21,13 @@ const accountTerms = [
   "Use accurate account information and keep login details secure.",
   "Do not share a paid account with other students unless GCSE Russian has agreed this in writing.",
   "Tell support if you think someone else has access to your account.",
-  "Students should use the platform with parent or guardian awareness where appropriate.",
+  "Students should use the platform with parent or guardian awareness where appropriate, and parent or guardian contact details may be requested or stored for account support.",
 ];
 
 const acceptableUse = [
   "Do not copy, scrape, resell, publish, or redistribute course materials.",
   "Do not try to access admin, teacher, or student areas you are not allowed to use.",
+  "Do not try to use the platform to contact other students.",
   "Do not upload harmful, unlawful, misleading, or abusive content.",
   "Do not interfere with the security, availability, or normal use of the platform.",
 ];
@@ -113,6 +114,14 @@ export default function TermsPage() {
 
         <SectionCard title="Acceptable use">
           <LegalList items={acceptableUse} />
+        </SectionCard>
+
+        <SectionCard title="Communication boundaries">
+          <p className="text-sm leading-6 text-[var(--text-secondary)]">
+            GCSE Russian may support teacher-controlled assignment, feedback, and
+            support workflows. It does not provide student-to-student communication
+            features.
+          </p>
         </SectionCard>
 
         <SectionCard title="Intellectual property">

@@ -2,6 +2,7 @@ import {
   DEFAULT_SEO_DESCRIPTION,
   DEFAULT_SEO_TITLE,
   PUBLIC_SITE_NAME,
+  getDefaultSiteConfig,
   getPublicSiteUrl,
 } from "@/lib/seo/site";
 
@@ -19,6 +20,10 @@ type RelatedLink = {
   title: string;
   href: string;
 };
+
+const siteConfig = getDefaultSiteConfig();
+const subjectLabel = `${siteConfig.qualificationLabel} ${siteConfig.languageName}`;
+const curriculumLabel = `${siteConfig.examBoardLabel} ${subjectLabel}`;
 
 export function buildOrganizationJsonLd() {
   return {
@@ -74,12 +79,12 @@ export function buildCourseJsonLd({
       name: PUBLIC_SITE_NAME,
       url: getPublicSiteUrl().toString(),
     },
-    educationalLevel: "GCSE",
+    educationalLevel: siteConfig.qualificationLabel,
     teaches: [
-      "Pearson Edexcel GCSE Russian",
-      "GCSE Russian grammar",
-      "GCSE Russian vocabulary",
-      "GCSE Russian exam preparation",
+      curriculumLabel,
+      `${subjectLabel} grammar`,
+      `${subjectLabel} vocabulary`,
+      `${subjectLabel} exam preparation`,
     ],
     inLanguage: "en-GB",
   };
@@ -109,7 +114,7 @@ export function buildLearningResourceJsonLd({
       name: PUBLIC_SITE_NAME,
       url: getPublicSiteUrl().toString(),
     },
-    educationalLevel: "GCSE",
+    educationalLevel: siteConfig.qualificationLabel,
     learningResourceType: "Guide",
     inLanguage: "en-GB",
     about: keywords,
@@ -163,7 +168,7 @@ export function buildProductOfferJsonLd({
       name: PUBLIC_SITE_NAME,
       url: getPublicSiteUrl().toString(),
     },
-    category: "Online GCSE course",
+    category: `Online ${siteConfig.qualificationLabel} course`,
     offers: offers.map((offer) => ({
       "@type": "Offer",
       name: offer.name,

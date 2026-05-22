@@ -1,5 +1,5 @@
 export const COURSE_SELECT =
-  "id, slug, title, description, is_active, is_published, created_at, updated_at";
+  "id, slug, title, description, qualification_level, exam_board, curriculum_code, language_code, language_name, is_active, is_published, created_at, updated_at";
 
 export const VARIANT_SELECT =
   "id, course_id, slug, title, description, position, is_active, is_published, created_at, updated_at";

@@ -190,6 +190,15 @@ export default async function SettingsPage({
                 {profile?.full_name ?? "Not added yet"}
               </div>
             </div>
+
+            <div className="app-stat-tile">
+              <div className="app-stat-label">Parent/guardian contact</div>
+              <div className="app-stat-value">
+                {profile?.parent_guardian_email ??
+                  profile?.parent_guardian_name ??
+                  "Not added yet"}
+              </div>
+            </div>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-3">

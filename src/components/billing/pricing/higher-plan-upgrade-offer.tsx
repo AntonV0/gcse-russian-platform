@@ -3,6 +3,7 @@ import { UpgradeOffer } from "@/components/billing/pricing/plan-state-elements";
 import {
   BILLING_TYPES,
   INTERVAL_UNITS,
+  PRODUCT_CODES,
   type DbPrice,
   type UpgradeQuoteResolution,
 } from "@/lib/billing/catalog";
@@ -34,7 +35,7 @@ export default function HigherPlanUpgradeOffer({
       targetStandardLabel={targetStandardLabel}
     >
       <CheckoutButton
-        productCode="gcse-russian-higher"
+        productCode={PRODUCT_CODES.GCSE_RUSSIAN_HIGHER}
         billingType={billingType}
         intervalUnit={intervalUnit}
         intervalCount={intervalCount}

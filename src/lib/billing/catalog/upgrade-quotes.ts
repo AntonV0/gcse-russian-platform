@@ -10,10 +10,10 @@ import {
   matchUpgradeCheckoutPrice,
   sortUpgradeCandidates,
 } from "./upgrade-pricing";
+import { getProductCodeForCourseVariant } from "./product-context";
 import {
   BILLING_TYPES,
   INTERVAL_UNITS,
-  PRODUCT_CODES,
   type SupportedIntervalUnit,
   type UpgradeCandidate,
   type UpgradeQuoteResolution,
@@ -138,24 +138,30 @@ export async function resolveUpgradeQuoteDb(
 }
 
 export async function canUpgradeFoundationToHigherDb(userId: string): Promise<boolean> {
+  const higherProductCode = getProductCodeForCourseVariant(null, "higher");
+
+  if (!higherProductCode) {
+    return false;
+  }
+
   const [higherMonthly, higherThreeMonth, higherLifetime] = await Promise.all([
     resolveUpgradeQuoteDb(
       userId,
-      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      higherProductCode,
       BILLING_TYPES.SUBSCRIPTION,
       INTERVAL_UNITS.MONTH,
       1
     ),
     resolveUpgradeQuoteDb(
       userId,
-      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      higherProductCode,
       BILLING_TYPES.SUBSCRIPTION,
       INTERVAL_UNITS.MONTH,
       3
     ),
     resolveUpgradeQuoteDb(
       userId,
-      PRODUCT_CODES.GCSE_RUSSIAN_HIGHER,
+      higherProductCode,
       BILLING_TYPES.ONE_TIME,
       null,
       null

@@ -140,7 +140,8 @@ export default async function SignUpPage({
               </h2>
               <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
                 Use the student name and the email address the family wants connected to
-                course access.
+                course access. Parent or guardian contact details can be added for
+                account support where appropriate.
               </p>
               <div className="mt-4 rounded-lg bg-[var(--background-muted)] p-4">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">

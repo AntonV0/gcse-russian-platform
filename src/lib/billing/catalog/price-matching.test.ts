@@ -1,11 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
+  isFoundationProductCode,
+  isHigherProductCode,
   isLifetimePrice,
   isMonthlySubscriptionPrice,
   isThreeMonthSubscriptionPrice,
   matchPriceByBillingShape,
 } from "@/lib/billing/catalog/price-matching";
-import { BILLING_TYPES, INTERVAL_UNITS, type DbPrice } from "@/lib/billing/catalog/types";
+import {
+  BILLING_TYPES,
+  INTERVAL_UNITS,
+  PRODUCT_CODES,
+  type DbPrice,
+} from "@/lib/billing/catalog/types";
 
 function price(overrides: Partial<DbPrice>): DbPrice {
   return {
@@ -73,5 +80,12 @@ describe("price matching helpers", () => {
         })
       )
     ).toBe(true);
+  });
+
+  it("classifies supported product codes through the central product resolver", () => {
+    expect(isFoundationProductCode(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION)).toBe(true);
+    expect(isHigherProductCode(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER)).toBe(true);
+    expect(isFoundationProductCode("unknown-product")).toBe(false);
+    expect(isHigherProductCode("unknown-product")).toBe(false);
   });
 });

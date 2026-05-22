@@ -1,4 +1,8 @@
-import { BILLING_TYPES, INTERVAL_UNITS, PRODUCT_CODES, type DbPrice } from "./types";
+import {
+  isFoundationProductCode as isFoundationProductCodeForCatalog,
+  isHigherProductCode as isHigherProductCodeForCatalog,
+} from "./product-eligibility";
+import { BILLING_TYPES, INTERVAL_UNITS, type DbPrice } from "./types";
 
 export function matchPriceByBillingShape(
   prices: DbPrice[],
@@ -26,11 +30,11 @@ export function matchPriceByBillingShape(
 }
 
 export function isFoundationProductCode(productCode: string): boolean {
-  return productCode === PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION;
+  return isFoundationProductCodeForCatalog(productCode);
 }
 
 export function isHigherProductCode(productCode: string): boolean {
-  return productCode === PRODUCT_CODES.GCSE_RUSSIAN_HIGHER;
+  return isHigherProductCodeForCatalog(productCode);
 }
 
 export function isMonthlySubscriptionPrice(price: DbPrice): boolean {

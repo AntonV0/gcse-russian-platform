@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import {
+  getParentGuardianContactErrorMessage,
+  validateParentGuardianContact,
+} from "@/lib/account/settings-validation";
+import {
   DEFAULT_AVATAR_FRAME_KEY,
   getSafeAvatarBackgroundKey,
   getSafeAvatarFrameKey,
@@ -31,7 +35,9 @@ export async function GET() {
 
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("full_name, display_name, avatar_key, avatar_background_key, equipped_avatar_frame_key")
+    .select(
+      "full_name, display_name, avatar_key, avatar_background_key, equipped_avatar_frame_key, parent_guardian_name, parent_guardian_email, parent_guardian_consent_confirmed"
+    )
     .eq("id", user.id)
     .single();
 
@@ -47,6 +53,11 @@ export async function GET() {
     savedProfile: {
       fullName: profile.full_name ?? "",
       displayName: profile.display_name ?? "",
+      parentGuardianName: profile.parent_guardian_name ?? "",
+      parentGuardianEmail: profile.parent_guardian_email ?? "",
+      parentGuardianConsentConfirmed: Boolean(
+        profile.parent_guardian_consent_confirmed
+      ),
       avatarKey: profile.avatar_key ?? "",
       avatarBackgroundKey: getSafeAvatarBackgroundKey(profile.avatar_background_key),
       avatarFrameKey: getSafeAvatarFrameKey(profile.equipped_avatar_frame_key),
@@ -69,6 +80,10 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const fullName = getString(formData, "fullName");
   const displayName = getString(formData, "displayName");
+  const parentGuardianName = getString(formData, "parentGuardianName");
+  const parentGuardianEmail = getString(formData, "parentGuardianEmail");
+  const parentGuardianConsentConfirmed =
+    formData.get("parentGuardianConsentConfirmed") === "on";
   const avatarKey = getString(formData, "avatarKey");
 
   if (!isProfileAvatarKey(avatarKey)) {
@@ -99,6 +114,38 @@ export async function POST(request: Request) {
   const safeDisplayName =
     displayName.length > 50 ? displayName.slice(0, 50) : displayName;
   const safeAvatarKey = avatarKey.length > 50 ? avatarKey.slice(0, 50) : avatarKey;
+  const parentGuardianValidation = validateParentGuardianContact({
+    parentGuardianName,
+    parentGuardianEmail,
+    parentGuardianConsentConfirmed,
+  });
+
+  if (!parentGuardianValidation.isValid) {
+    return NextResponse.json(
+      { message: getParentGuardianContactErrorMessage(parentGuardianValidation) },
+      { status: 400 }
+    );
+  }
+
+  const { data: currentProfile, error: currentProfileError } = await supabase
+    .from("profiles")
+    .select(
+      "parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at"
+    )
+    .eq("id", user.id)
+    .single();
+
+  if (currentProfileError) {
+    return NextResponse.json({ message: currentProfileError.message }, { status: 400 });
+  }
+
+  const nextParentGuardianConsentConfirmedAt =
+    parentGuardianValidation.parentGuardianConsentConfirmed
+      ? currentProfile.parent_guardian_consent_confirmed &&
+        currentProfile.parent_guardian_consent_confirmed_at
+        ? currentProfile.parent_guardian_consent_confirmed_at
+        : new Date().toISOString()
+      : null;
 
   const { error } = await supabase
     .from("profiles")
@@ -109,6 +156,11 @@ export async function POST(request: Request) {
       avatar_background_key: avatarBackgroundKey,
       equipped_avatar_frame_key:
         avatarFrameKey === DEFAULT_AVATAR_FRAME_KEY ? null : avatarFrameKey,
+      parent_guardian_name: parentGuardianValidation.parentGuardianName,
+      parent_guardian_email: parentGuardianValidation.parentGuardianEmail,
+      parent_guardian_consent_confirmed:
+        parentGuardianValidation.parentGuardianConsentConfirmed,
+      parent_guardian_consent_confirmed_at: nextParentGuardianConsentConfirmedAt,
       email: user.email ?? null,
     })
     .eq("id", user.id);
@@ -121,6 +173,10 @@ export async function POST(request: Request) {
     savedProfile: {
       fullName: safeFullName,
       displayName: safeDisplayName,
+      parentGuardianName: parentGuardianValidation.parentGuardianName ?? "",
+      parentGuardianEmail: parentGuardianValidation.parentGuardianEmail ?? "",
+      parentGuardianConsentConfirmed:
+        parentGuardianValidation.parentGuardianConsentConfirmed,
       avatarKey: safeAvatarKey,
       avatarBackgroundKey,
       avatarFrameKey,

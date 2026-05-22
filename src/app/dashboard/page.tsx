@@ -7,6 +7,7 @@ import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { getDefaultActiveCourseSlug } from "@/lib/courses/active-course";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getDashboardNextStep,
@@ -18,6 +19,7 @@ import { getCourseProgressSummary } from "@/lib/progress/progress";
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const dashboard = await getDashboardInfo();
+  const activeCourseSlug = getDefaultActiveCourseSlug();
   const hasActiveStudentPath =
     dashboard.role === "student" &&
     dashboard.variant !== null &&
@@ -25,12 +27,16 @@ export default async function DashboardPage() {
     dashboard.accessState !== "expired";
 
   const progressSummary = hasActiveStudentPath
-    ? await getCourseProgressSummary("gcse-russian", dashboard.variant!)
+    ? await getCourseProgressSummary(activeCourseSlug, dashboard.variant!)
     : { completedLessons: 0 };
 
   const [learningPlan, dashboardActivity] = hasActiveStudentPath
     ? await Promise.all([
-        getStudentLearningPlan(dashboard.variant, progressSummary.completedLessons),
+        getStudentLearningPlan(
+          dashboard.variant,
+          progressSummary.completedLessons,
+          activeCourseSlug
+        ),
         getStudentDashboardActivity(user?.id),
       ])
     : [

@@ -3,6 +3,7 @@ import Button from "@/components/ui/button";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { getDefaultActiveCourseSlug } from "@/lib/courses/active-course";
 import { loadVariantPageData } from "@/lib/courses/course-helpers-db";
 import {
   formatCoursePathRemainingMinutes,
@@ -47,6 +48,7 @@ import {
 
 export default async function ProgressPage() {
   const [user, dashboard] = await Promise.all([getCurrentUser(), getDashboardInfo()]);
+  const activeCourseSlug = getDefaultActiveCourseSlug();
   const hasActiveLearningPath =
     dashboard.variant !== null &&
     dashboard.accessState !== "trial_needs_tier" &&
@@ -90,11 +92,15 @@ export default async function ProgressPage() {
     );
   }
 
-  const progressSummary = await getCourseProgressSummary("gcse-russian", activeVariant);
+  const progressSummary = await getCourseProgressSummary(activeCourseSlug, activeVariant);
   const [learningPlan, activity, variantData] = await Promise.all([
-    getStudentLearningPlan(activeVariant, progressSummary.completedLessons),
+    getStudentLearningPlan(
+      activeVariant,
+      progressSummary.completedLessons,
+      activeCourseSlug
+    ),
     getStudentDashboardActivity(user?.id),
-    loadVariantPageData("gcse-russian", activeVariant),
+    loadVariantPageData(activeCourseSlug, activeVariant),
   ]);
 
   if (!variantData.course || !variantData.variant) {

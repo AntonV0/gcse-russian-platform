@@ -1,3 +1,5 @@
+import { getActiveCoursePath as getActiveCourseContextPath } from "@/lib/courses/active-course";
+
 export function getCoursePath(courseSlug: string) {
   return `/courses/${courseSlug}`;
 }
@@ -35,8 +37,11 @@ export function getCoursesPath() {
   return "/courses";
 }
 
-export function getActiveCoursePath(variantSlug: string | null | undefined) {
-  return variantSlug ? getVariantPath("gcse-russian", variantSlug) : getCoursesPath();
+export function getActiveCoursePath(
+  variantSlug: string | null | undefined,
+  courseSlug?: string | null
+) {
+  return getActiveCourseContextPath(variantSlug, courseSlug);
 }
 
 export function getAssignmentsPath() {

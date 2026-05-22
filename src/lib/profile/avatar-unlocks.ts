@@ -5,6 +5,7 @@ import {
 } from "@/lib/dashboard/learning-plan";
 import { getCourseProgressSummary } from "@/lib/progress/progress";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { getDefaultActiveCourseSlug } from "@/lib/courses/active-course";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 import {
@@ -63,10 +64,15 @@ export async function getComputedAvatarFrameKeysForCurrentUser() {
     return new Set<AvatarFrameKey>([DEFAULT_AVATAR_FRAME_KEY]);
   }
 
-  const progressSummary = await getCourseProgressSummary("gcse-russian", activeVariant);
+  const activeCourseSlug = getDefaultActiveCourseSlug();
+  const progressSummary = await getCourseProgressSummary(
+    activeCourseSlug,
+    activeVariant
+  );
   const learningPlan = await getStudentLearningPlan(
     activeVariant,
-    progressSummary.completedLessons
+    progressSummary.completedLessons,
+    activeCourseSlug
   );
 
   return getUnlockedAvatarFrameKeys({
@@ -90,12 +96,13 @@ export async function persistCurrentAvatarFrameUnlocksForCurrentUser() {
   }
 
   const dashboard = await getDashboardInfo();
+  const activeCourseSlug = getDefaultActiveCourseSlug();
   const rows = frameKeysToPersist.map((frameKey) => ({
     user_id: user.id,
     achievement_key: frameKey,
     achievement_type: AVATAR_FRAME_ACHIEVEMENT_TYPE,
     source: "lesson_progress",
-    source_course_slug: "gcse-russian",
+    source_course_slug: activeCourseSlug,
     source_variant_slug: dashboard.variant,
     metadata: {},
   }));

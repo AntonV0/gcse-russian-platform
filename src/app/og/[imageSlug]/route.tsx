@@ -4,6 +4,7 @@ import {
   BRANDED_OG_BACKGROUND_PATH,
   BrandedOgImage,
 } from "@/lib/seo/branded-og-template";
+import { getDefaultSiteConfig } from "@/lib/brand/site-config";
 import { getOgImageDefinition } from "@/lib/seo/og-images";
 
 export const runtime = "edge";
@@ -26,6 +27,7 @@ export async function GET(
   }
 
   if (imageSlug === "course") {
+    const siteConfig = getDefaultSiteConfig();
     const backgroundImageUrl = new URL(
       BRANDED_OG_BACKGROUND_PATH,
       request.url
@@ -34,14 +36,17 @@ export async function GET(
     return new ImageResponse(
       <BrandedOgImage
         backgroundImageUrl={backgroundImageUrl}
-        eyebrow="Pearson Edexcel 1RU0"
+        eyebrow={`${siteConfig.examBoardLabel} ${siteConfig.curriculumCode}`}
         title={image.title}
-        description="Structured lessons, vocabulary, grammar, exam practice, and progress."
+        description={siteConfig.defaultOgDescription}
         badges={["Foundation + Higher", "Course dashboard", "Exam-focused"]}
       />,
       size
     );
   }
+
+  const siteConfig = getDefaultSiteConfig();
+  const publicSiteHostname = new URL(siteConfig.publicSiteUrl).hostname;
 
   return new ImageResponse(
     <div
@@ -136,8 +141,8 @@ export async function GET(
             paddingTop: "28px",
           }}
         >
-          <span>GCSE Russian</span>
-          <span>www.gcserussian.com</span>
+          <span>{siteConfig.publicSiteName}</span>
+          <span>{publicSiteHostname}</span>
         </div>
       </div>
     </div>,

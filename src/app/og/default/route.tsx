@@ -4,10 +4,13 @@ import {
   BRANDED_OG_BACKGROUND_PATH,
   BrandedOgImage,
 } from "@/lib/seo/branded-og-template";
+import { getDefaultSiteConfig } from "@/lib/brand/site-config";
 
 export const runtime = "edge";
 
-export const alt = "GCSE Russian online course";
+const siteConfig = getDefaultSiteConfig();
+
+export const alt = siteConfig.defaultOgImageAlt;
 export const size = {
   width: 1200,
   height: 630,
@@ -20,9 +23,9 @@ export function GET(request: NextRequest) {
   return new ImageResponse(
     <BrandedOgImage
       backgroundImageUrl={backgroundImageUrl}
-      eyebrow="Pearson Edexcel 1RU0"
-      title="Online GCSE Russian Course"
-      description="Structured lessons, vocabulary, grammar, exam practice, and progress."
+      eyebrow={`${siteConfig.examBoardLabel} ${siteConfig.curriculumCode}`}
+      title={siteConfig.defaultOgTitle}
+      description={siteConfig.defaultOgDescription}
       badges={["Foundation + Higher", "Course dashboard", "Exam-focused"]}
     />,
     size

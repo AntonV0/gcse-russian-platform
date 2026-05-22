@@ -24,7 +24,7 @@ export const getCurrentProfile = cache(async function getCurrentProfile() {
   const { data: profile, error } = await supabase
     .from("profiles")
     .select(
-      "id, email, full_name, display_name, avatar_key, avatar_background_key, equipped_avatar_frame_key, is_admin, is_teacher"
+      "id, email, full_name, display_name, avatar_key, avatar_background_key, equipped_avatar_frame_key, parent_guardian_name, parent_guardian_email, parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at, is_admin, is_teacher"
     )
     .eq("id", user.id)
     .single();

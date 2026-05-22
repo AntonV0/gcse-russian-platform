@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { getTrialProductCodeForVariant } from "@/lib/billing/catalog";
 import { grantProductAccessDb } from "@/lib/billing/grants";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 
@@ -14,10 +15,6 @@ function getTrialTier(value: FormDataEntryValue | null): TrialTier | null {
   }
 
   return null;
-}
-
-function getProductCodeForTier(tier: TrialTier) {
-  return tier === "higher" ? "gcse-russian-higher" : "gcse-russian-foundation";
 }
 
 export async function chooseTrialTierAction(formData: FormData) {
@@ -52,7 +49,12 @@ export async function chooseTrialTierAction(formData: FormData) {
     redirect("/dashboard");
   }
 
-  const productCode = getProductCodeForTier(tier);
+  const productCode = getTrialProductCodeForVariant(tier);
+
+  if (!productCode) {
+    redirect("/dashboard?error=trial-product-missing");
+  }
+
   const { data: product, error: productError } = await supabase
     .from("products")
     .select("id")

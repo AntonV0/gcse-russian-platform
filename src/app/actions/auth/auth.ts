@@ -3,7 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
+  getParentGuardianContactErrorMessage,
   getPasswordUpdateErrorMessage,
+  validateParentGuardianContact,
   validatePasswordUpdate,
 } from "@/lib/account/settings-validation";
 import { getPublicSiteUrl } from "@/lib/seo/site";
@@ -41,6 +43,10 @@ export async function signUp(
   const email = getString(formData, "email");
   const password = getString(formData, "password");
   const fullName = getString(formData, "fullName");
+  const parentGuardianName = getString(formData, "parentGuardianName");
+  const parentGuardianEmail = getString(formData, "parentGuardianEmail");
+  const parentGuardianConsentConfirmed =
+    formData.get("parentGuardianConsentConfirmed") === "on";
 
   if (!fullName) {
     return authError("Enter the student's full name.");
@@ -52,6 +58,16 @@ export async function signUp(
 
   if (!password || password.length < 8) {
     return authError("Password must be at least 8 characters.");
+  }
+
+  const parentGuardianValidation = validateParentGuardianContact({
+    parentGuardianName,
+    parentGuardianEmail,
+    parentGuardianConsentConfirmed,
+  });
+
+  if (!parentGuardianValidation.isValid) {
+    return authError(getParentGuardianContactErrorMessage(parentGuardianValidation));
   }
 
   const supabase = await createClient();
@@ -83,6 +99,14 @@ export async function signUp(
         email,
         full_name: safeFullName || null,
         display_name: safeDisplayName || null,
+        parent_guardian_name: parentGuardianValidation.parentGuardianName,
+        parent_guardian_email: parentGuardianValidation.parentGuardianEmail,
+        parent_guardian_consent_confirmed:
+          parentGuardianValidation.parentGuardianConsentConfirmed,
+        parent_guardian_consent_confirmed_at:
+          parentGuardianValidation.parentGuardianConsentConfirmed
+            ? new Date().toISOString()
+            : null,
       },
       {
         onConflict: "id",

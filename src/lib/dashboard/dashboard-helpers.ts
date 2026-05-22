@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { isFoundationProductCode, isHigherProductCode } from "@/lib/billing/catalog";
 import { cache } from "react";
 
 export type DashboardInfo = {
@@ -146,7 +147,7 @@ export const getDashboardInfo = cache(
     for (const grant of typedGrants) {
       const code = getProductCodeFromGrant(grant);
 
-      if (code === "gcse-russian-higher") {
+      if (code && isHigherProductCode(code)) {
         return {
           role: "student",
           variant: "higher",
@@ -159,7 +160,7 @@ export const getDashboardInfo = cache(
     for (const grant of typedGrants) {
       const code = getProductCodeFromGrant(grant);
 
-      if (code === "gcse-russian-foundation") {
+      if (code && isFoundationProductCode(code)) {
         return {
           role: "student",
           variant: "foundation",

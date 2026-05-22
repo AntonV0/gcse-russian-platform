@@ -3,6 +3,11 @@ export type DbCourse = {
   slug: string;
   title: string;
   description: string | null;
+  qualification_level: string;
+  exam_board: string;
+  curriculum_code: string;
+  language_code: string;
+  language_name: string;
   is_active: boolean;
   is_published: boolean;
   created_at: string;

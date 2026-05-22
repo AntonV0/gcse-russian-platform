@@ -82,6 +82,56 @@ export default function SignUpForm({ initialError }: SignUpFormProps) {
           </p>
         </div>
 
+        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+          <p className="text-sm font-bold text-[var(--text-primary)]">
+            Parent or guardian contact
+          </p>
+          <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
+            Optional for trial access, useful where a parent or guardian helps manage
+            the account or later payment decision.
+          </p>
+
+          <div className="mt-4 space-y-4">
+            <div className="app-form-field">
+              <label htmlFor="parentGuardianName" className="app-form-label">
+                Parent/guardian name
+              </label>
+              <input
+                id="parentGuardianName"
+                name="parentGuardianName"
+                type="text"
+                autoComplete="name"
+                className="app-form-control app-form-input"
+              />
+            </div>
+
+            <div className="app-form-field">
+              <label htmlFor="parentGuardianEmail" className="app-form-label">
+                Parent/guardian email
+              </label>
+              <input
+                id="parentGuardianEmail"
+                name="parentGuardianEmail"
+                type="email"
+                autoComplete="email"
+                className="app-form-control app-form-input"
+              />
+            </div>
+
+            <label className="flex items-start gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-3 text-sm leading-6 text-[var(--text-secondary)]">
+              <input
+                name="parentGuardianConsentConfirmed"
+                type="checkbox"
+                className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent-fill)]"
+              />
+              <span>
+                A parent or guardian is aware of this account setup where that is
+                appropriate for the student.
+              </span>
+            </label>
+          </div>
+        </div>
+
         <AuthSubmitButton
           idleIcon="create"
           idleLabel="Create trial account"

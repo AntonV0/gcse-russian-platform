@@ -1,4 +1,5 @@
 import type { DbPrice, UpgradeQuoteResolution } from "@/lib/billing/catalog";
+import type { SupportedCourseProductCode } from "@/lib/billing/catalog/product-context";
 
 export type PlanPricing = {
   monthly: DbPrice | null;
@@ -6,7 +7,7 @@ export type PlanPricing = {
   lifetime: DbPrice | null;
 };
 
-export type ActiveGrantProductCode = "gcse-russian-foundation" | "gcse-russian-higher";
+export type ActiveGrantProductCode = SupportedCourseProductCode;
 
 export type ActivePlanState = {
   ownedProductCodes: Set<ActiveGrantProductCode>;

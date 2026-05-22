@@ -31,6 +31,11 @@ export default async function AccountPage() {
   const profileSummary = {
     fullName: profile?.full_name ?? null,
     displayName: profile?.display_name ?? null,
+    parentGuardianName: profile?.parent_guardian_name ?? null,
+    parentGuardianEmail: profile?.parent_guardian_email ?? null,
+    parentGuardianConsentConfirmed: Boolean(
+      profile?.parent_guardian_consent_confirmed
+    ),
   };
   const currentPlan = await getCurrentPlanSummaryForUserDb(user.id);
 

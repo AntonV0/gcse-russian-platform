@@ -8,6 +8,7 @@ import Input from "@/components/ui/input";
 import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
+import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import CheckboxField from "@/components/ui/checkbox-field";
 import { getCourseByIdDb } from "@/lib/courses/course-helpers-db";
@@ -50,6 +51,8 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
             <Badge tone="muted" icon="file">
               {course.slug}
             </Badge>
+            <Badge tone="muted">{course.qualification_level}</Badge>
+            <Badge tone="muted">{course.curriculum_code}</Badge>
             <ActiveStatusBadge isActive={course.is_active} />
             <PublishStatusBadge isPublished={course.is_published} />
           </>
@@ -100,6 +103,64 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
                 defaultValue={course.description ?? ""}
               />
             </FormField>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField
+                label="Qualification level"
+                description="Internal course level used for curriculum grouping."
+              >
+                <Select
+                  name="qualificationLevel"
+                  required
+                  defaultValue={course.qualification_level}
+                >
+                  <option value="gcse">GCSE</option>
+                  <option value="a_level">A-Level</option>
+                </Select>
+              </FormField>
+
+              <FormField
+                label="Exam board"
+                description="Exam board or awarding body for this course."
+              >
+                <Select name="examBoard" required defaultValue={course.exam_board}>
+                  <option value="pearson_edexcel">Pearson Edexcel</option>
+                </Select>
+              </FormField>
+
+              <FormField
+                label="Curriculum code"
+                description="Specification or curriculum identifier."
+              >
+                <Input
+                  name="curriculumCode"
+                  required
+                  defaultValue={course.curriculum_code}
+                />
+              </FormField>
+
+              <FormField
+                label="Language code"
+                description="BCP 47 style language code for the course language."
+              >
+                <Input
+                  name="languageCode"
+                  required
+                  defaultValue={course.language_code}
+                />
+              </FormField>
+
+              <FormField
+                label="Language name"
+                description="Readable language name used by internal tools."
+              >
+                <Input
+                  name="languageName"
+                  required
+                  defaultValue={course.language_name}
+                />
+              </FormField>
+            </div>
 
             <div className="space-y-2">
               <CheckboxField

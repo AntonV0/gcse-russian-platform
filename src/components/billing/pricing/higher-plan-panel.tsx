@@ -8,7 +8,7 @@ import HigherPlanPurchaseOptions from "@/components/billing/pricing/higher-plan-
 import HigherPlanUpgradeOffer from "@/components/billing/pricing/higher-plan-upgrade-offer";
 import { getHigherPlanUpgradeVisibility } from "@/components/billing/pricing/higher-plan-upgrade-visibility";
 import type { HigherPlanPanelProps } from "@/components/billing/pricing/types";
-import { BILLING_TYPES, INTERVAL_UNITS } from "@/lib/billing/catalog";
+import { BILLING_TYPES, INTERVAL_UNITS, PRODUCT_CODES } from "@/lib/billing/catalog";
 import { formatPriceLabel } from "@/lib/billing/pricing-ui";
 
 export default function HigherPlanPanel({
@@ -55,7 +55,7 @@ export default function HigherPlanPanel({
     higherThreeMonthToHigherLifetimeQuote,
   });
 
-  const higherOwned = planState.ownedProductCodes.has("gcse-russian-higher");
+  const higherOwned = planState.ownedProductCodes.has(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER);
 
   if (!user) {
     return (

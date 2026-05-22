@@ -71,6 +71,22 @@ export function AccountDetailsPanels({
             value={profile.displayName ?? "No display name saved"}
           />
           <AccountDetailTile label="Email" value={email ?? "Not logged in"} />
+          <AccountDetailTile
+            label="Parent/guardian"
+            value={
+              profile.parentGuardianName ||
+              profile.parentGuardianEmail ||
+              "Not added yet"
+            }
+          />
+          <AccountDetailTile
+            label="Adult awareness"
+            value={
+              profile.parentGuardianConsentConfirmed
+                ? "Confirmed"
+                : "Not confirmed"
+            }
+          />
           <AccountDetailTile label="Role" value={formatRoleLabel(dashboard.role)} />
           <AccountDetailTile
             label="Learning variant"

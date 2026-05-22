@@ -19,6 +19,7 @@ const lastUpdated = "8 May 2026";
 
 const dataTypes = [
   "Account details, such as name, email address, login information, and profile settings.",
+  "Parent or guardian contact details where they are provided during account setup or later profile updates.",
   "Course access information, such as trial, Foundation, Higher, Volna, or billing status.",
   "Learning activity, such as lesson progress, mock exam attempts, answers, feedback, and assignment activity.",
   "Support messages and enquiries sent to GCSE Russian or Volna School.",
@@ -29,6 +30,7 @@ const dataTypes = [
 const purposes = [
   "Create and manage accounts.",
   "Provide course access, lessons, practice, progress tracking, mock exams, and account features.",
+  "Contact or involve a parent or guardian where appropriate for account setup, support, safeguarding, or payment-related communication.",
   "Respond to support enquiries and manage Volna School enquiries.",
   "Administer billing, subscriptions, refunds, and payment-related records.",
   "Protect the platform, prevent misuse, debug issues, and improve the learning experience.",
@@ -105,6 +107,14 @@ export default function PrivacyPage() {
 
         <SectionCard title="How we use information">
           <LegalList items={purposes} />
+        </SectionCard>
+
+        <SectionCard title="Student communication boundaries">
+          <p className="text-sm leading-6 text-[var(--text-secondary)]">
+            The platform is designed around structured GCSE Russian learning,
+            teacher-controlled assignment and feedback workflows, and account support.
+            It does not provide student-to-student messaging.
+          </p>
         </SectionCard>
 
         <SectionCard title="Who information may be shared with">

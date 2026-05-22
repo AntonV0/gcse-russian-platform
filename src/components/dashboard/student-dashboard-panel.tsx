@@ -1,6 +1,7 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
+import { getActiveCoursePath } from "@/lib/access/routes";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   getDashboardAccessLabel,
@@ -121,9 +122,9 @@ export function StudentDashboardPanel({
               {dashboard.accessState === "trial" &&
               (dashboard.variant === "foundation" || dashboard.variant === "higher") ? (
                 <Button
-                  href={`/courses/gcse-russian/${
+                  href={getActiveCoursePath(
                     dashboard.variant === "foundation" ? "higher" : "foundation"
-                  }`}
+                  )}
                   variant="secondary"
                   icon="preview"
                 >

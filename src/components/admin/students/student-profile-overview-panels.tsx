@@ -1,4 +1,7 @@
-import { setTeacherRoleAction } from "@/app/actions/admin/admin-user-actions";
+import {
+  setTeacherRoleAction,
+  updateParentGuardianContactAction,
+} from "@/app/actions/admin/admin-user-actions";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -23,11 +26,84 @@ export function StudentProfileOverviewPanels({ student }: { student: AdminProfil
             { label: "Full name", value: student.full_name || "-" },
             { label: "Display name", value: student.display_name || "-" },
             { label: "Email", value: student.email || "-" },
+            {
+              label: "Parent/guardian name",
+              value: student.parent_guardian_name || "-",
+            },
+            {
+              label: "Parent/guardian email",
+              value: student.parent_guardian_email || "-",
+            },
+            {
+              label: "Adult awareness",
+              value: student.parent_guardian_consent_confirmed
+                ? `Confirmed${
+                    student.parent_guardian_consent_confirmed_at
+                      ? ` (${formatDateTime(
+                          student.parent_guardian_consent_confirmed_at
+                        )})`
+                      : ""
+                  }`
+                : "Not confirmed",
+            },
             { label: "Admin", value: student.is_admin ? "Yes" : "No" },
             { label: "Teacher role", value: student.is_teacher ? "Yes" : "No" },
             { label: "Created", value: formatDateTime(student.created_at) },
           ]}
         />
+      </PanelCard>
+
+      <PanelCard
+        title="Parent or Guardian Contact"
+        description="Keep a practical adult contact for account support and safeguarding context."
+        tone="admin"
+      >
+        <form action={updateParentGuardianContactAction} className="space-y-4">
+          <input type="hidden" name="userId" value={student.id} />
+          <input
+            type="hidden"
+            name="redirectTo"
+            value={`/admin/students/${student.id}`}
+          />
+
+          <div className="grid gap-3">
+            <label className="app-form-field">
+              <span className="app-form-label">Parent/guardian name</span>
+              <input
+                name="parentGuardianName"
+                defaultValue={student.parent_guardian_name ?? ""}
+                className="app-form-control app-form-input"
+              />
+            </label>
+
+            <label className="app-form-field">
+              <span className="app-form-label">Parent/guardian email</span>
+              <input
+                name="parentGuardianEmail"
+                type="email"
+                defaultValue={student.parent_guardian_email ?? ""}
+                className="app-form-control app-form-input"
+              />
+            </label>
+
+            <label className="flex items-start gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--background-muted)] p-3 text-sm leading-6 text-[var(--text-secondary)]">
+              <input
+                name="parentGuardianConsentConfirmed"
+                type="checkbox"
+                defaultChecked={student.parent_guardian_consent_confirmed}
+                className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent-fill)]"
+              />
+              <span>
+                Parent or guardian awareness is confirmed where appropriate for
+                this learner.
+              </span>
+            </label>
+          </div>
+
+          <Button type="submit" variant="secondary" icon="save">
+            Save contact
+          </Button>
+        </form>
       </PanelCard>
 
       <PanelCard

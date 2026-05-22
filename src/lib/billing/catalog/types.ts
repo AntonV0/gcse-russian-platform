@@ -46,10 +46,7 @@ export type UpgradeQuoteResolution = {
   upgradeFeeAmountGbp: number | null;
 };
 
-export const PRODUCT_CODES = {
-  GCSE_RUSSIAN_FOUNDATION: "gcse-russian-foundation",
-  GCSE_RUSSIAN_HIGHER: "gcse-russian-higher",
-} as const;
+export { PRODUCT_CODES } from "./product-context";
 
 export const BILLING_TYPES = {
   ONE_TIME: "one_time",

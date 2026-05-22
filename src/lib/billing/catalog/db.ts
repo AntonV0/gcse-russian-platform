@@ -3,7 +3,8 @@ import {
   type DbUserAccessGrant,
 } from "@/lib/billing/grants";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
-import { PRODUCT_CODES, type DbPrice, type DbProduct } from "./types";
+import { getSupportedCourseProductCodes } from "./product-context";
+import type { DbPrice, DbProduct } from "./types";
 
 const PRODUCT_SELECT =
   "id, code, name, product_type, course_id, course_variant_id, is_active, created_at";
@@ -121,10 +122,10 @@ export async function getActivePriceByStripePriceIdDb(
 export async function getActiveUpgradeableGrantsDb(
   userId: string
 ): Promise<Array<{ grant: DbUserAccessGrant; product: DbProduct; price: DbPrice }>> {
-  const [foundationProduct, higherProduct] = await Promise.all([
-    getActiveProductByCodeDb(PRODUCT_CODES.GCSE_RUSSIAN_FOUNDATION),
-    getActiveProductByCodeDb(PRODUCT_CODES.GCSE_RUSSIAN_HIGHER),
-  ]);
+  const supportedProductCodes = getSupportedCourseProductCodes();
+  const upgradeableProducts = await Promise.all(
+    supportedProductCodes.map((productCode) => getActiveProductByCodeDb(productCode))
+  );
 
   const candidates: Array<{
     grant: DbUserAccessGrant;
@@ -132,7 +133,7 @@ export async function getActiveUpgradeableGrantsDb(
     price: DbPrice;
   }> = [];
 
-  for (const product of [foundationProduct, higherProduct]) {
+  for (const product of upgradeableProducts) {
     if (!product) continue;
 
     const grant = await getActiveUserProductGrantDb(userId, product.id);

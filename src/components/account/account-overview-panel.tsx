@@ -8,6 +8,9 @@ import { getAccountSummaryText, getStudyRouteLabel } from "./account-formatters"
 export type AccountProfileSummary = {
   fullName: string | null;
   displayName: string | null;
+  parentGuardianName?: string | null;
+  parentGuardianEmail?: string | null;
+  parentGuardianConsentConfirmed?: boolean;
 };
 
 export function AccountOverviewPanel({
