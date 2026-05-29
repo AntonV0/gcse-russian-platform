@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
@@ -19,6 +19,7 @@ import {
   loadGrammarPointBySlugsDb,
 } from "@/lib/grammar/grammar-helpers-db";
 import { getDashboardInfo, type DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { noIndexRobots } from "@/lib/seo/site";
 import type {
   DbGrammarExample,
   DbGrammarPoint,
@@ -27,6 +28,10 @@ import type {
 
 type GrammarPointPageProps = {
   params: Promise<{ grammarSetSlug: string; grammarPointSlug: string }>;
+};
+
+export const metadata = {
+  robots: noIndexRobots,
 };
 
 function renderExplanation(explanation: string | null) {
@@ -229,6 +234,11 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
   const { grammarSetSlug, grammarPointSlug } = await params;
   const dashboard = await getDashboardInfo();
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
+
+  if (dashboard.role === "guest") {
+    redirect("/grammar");
+  }
+
   const { grammarSet, grammarPoint, examples, tables } = await loadGrammarPointBySlugsDb(
     grammarSetSlug,
     grammarPointSlug,
@@ -237,44 +247,6 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
 
   if (!grammarSet || !grammarPoint) {
     notFound();
-  }
-
-  if (dashboard.role === "guest") {
-    return (
-      <main className="space-y-4">
-        <PageIntroPanel
-          tone="student"
-          eyebrow={grammarSet.title}
-          title={grammarPoint.title}
-          description={
-            grammarPoint.short_description ??
-            "Create a trial account to open grammar explanations and examples."
-          }
-          badges={
-            <GrammarPointRequirementBadges
-              point={grammarPoint}
-              showSpecReference={false}
-            />
-          }
-          actions={
-            <Button href="/grammar" variant="secondary" icon="back">
-              All grammar
-            </Button>
-          }
-        />
-
-        <LockedContentCard
-          title="Create a trial account to study this grammar point"
-          description="Detailed explanations, examples, tables, and practice tasks are part of the signed-in trial experience."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Start trial"
-          secondaryActionHref="/grammar"
-          secondaryActionLabel="Browse grammar"
-        />
-      </main>
-    );
   }
 
   if (!canDashboardAccessGrammarSet(grammarSet, dashboard)) {

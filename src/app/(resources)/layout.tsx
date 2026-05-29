@@ -2,6 +2,7 @@ import AppShell from "@/components/layout/app-shell";
 import PageContainer from "@/components/layout/page-container";
 import PlatformSidebar from "@/components/layout/platform-sidebar";
 import AppearancePreferenceSync from "@/components/providers/appearance-preference-sync";
+import PublicAccentOverride from "@/components/providers/public-accent-override";
 import { DevMarkerProvider } from "@/components/providers/dev-marker-provider";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
@@ -80,6 +81,29 @@ export default async function ResourcesLayout({
   ]);
   const userShell = user ? { email: user.email, variant: dashboard.variant } : null;
   const sidebarNextUp = await getPlatformSidebarNextUp(dashboard);
+  const appShell = (
+    <AppShell user={userShell}>
+      <PageContainer>
+        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
+          <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh_-_var(--sticky-site-offset)_-_1rem)] lg:self-start">
+            <PlatformSidebar
+              role={dashboard.role}
+              accessMode={dashboard.accessMode}
+              variant={dashboard.variant}
+              userEmail={user?.email}
+              userDisplayName={profile?.display_name || profile?.full_name}
+              nextUp={sidebarNextUp}
+            />
+          </div>
+
+          <section className="min-w-0 space-y-4">
+            <ResourceAccessBanner dashboard={dashboard} />
+            {children}
+          </section>
+        </div>
+      </PageContainer>
+    </AppShell>
+  );
 
   return (
     <DevMarkerProvider isAdmin={dashboard.role === "admin"}>
@@ -87,27 +111,14 @@ export default async function ResourcesLayout({
         themePreference={appearancePreferences?.theme_preference}
         accentPreference={appearancePreferences?.accent_preference}
       />
-      <AppShell user={userShell}>
-        <PageContainer>
-          <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
-            <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh_-_var(--sticky-site-offset)_-_1rem)] lg:self-start">
-              <PlatformSidebar
-                role={dashboard.role}
-                accessMode={dashboard.accessMode}
-                variant={dashboard.variant}
-                userEmail={user?.email}
-                userDisplayName={profile?.display_name || profile?.full_name}
-                nextUp={sidebarNextUp}
-              />
-            </div>
-
-            <section className="min-w-0 space-y-4">
-              <ResourceAccessBanner dashboard={dashboard} />
-              {children}
-            </section>
-          </div>
-        </PageContainer>
-      </AppShell>
+      {user ? (
+        appShell
+      ) : (
+        <div data-accent="blue">
+          <PublicAccentOverride />
+          {appShell}
+        </div>
+      )}
     </DevMarkerProvider>
   );
 }

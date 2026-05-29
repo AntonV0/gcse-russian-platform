@@ -21,11 +21,11 @@ import type { VocabularySetFilters } from "@/lib/vocabulary/shared/types";
 export const metadata: Metadata = buildPublicMetadata({
   title: "GCSE Russian Vocabulary",
   description:
-    "Browse GCSE Russian vocabulary sets by topic, tier, and source for Pearson Edexcel 1RU0 revision and exam preparation.",
+    "Preview structured GCSE Russian vocabulary practice for Pearson Edexcel 1RU0, with lesson-linked word sets and saved study progress after signup.",
   path: "/vocabulary",
   ogTitle: "GCSE Russian Vocabulary",
   ogDescription:
-    "Find topic vocabulary, tier-specific word lists, and useful GCSE Russian revision sets.",
+    "See how GCSE Russian vocabulary practice unlocks through the course journey.",
   ogImagePath: getOgImagePath("vocabulary"),
 });
 
@@ -74,6 +74,11 @@ function getTopicOptions(themeKeys: string[]) {
 export default async function VocabularyPage({ searchParams }: VocabularyPageProps) {
   const params = (await searchParams) ?? {};
   const dashboard = await getDashboardInfo();
+
+  if (dashboard.role === "guest") {
+    return <GuestVocabularyPreview />;
+  }
+
   const filters: VocabularySetFilters = {
     search: params.search ?? null,
     tier: normalizeTierFilter(params.tier),
@@ -184,6 +189,112 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             canSeeCoverage={canSeeCoverage}
           />
         )}
+      </SectionCard>
+    </main>
+  );
+}
+
+function GuestVocabularyPreview() {
+  const previewFeatures = [
+    {
+      title: "Lesson-linked vocabulary",
+      description:
+        "Word sets open in context as students work through the course, so revision follows the route they are actually studying.",
+    },
+    {
+      title: "Tier-aware study",
+      description:
+        "Foundation and Higher students see the vocabulary path that matches their course choice, trial access, and paid plan.",
+    },
+    {
+      title: "Saved study states",
+      description:
+        "Signed-in students can return to words marked new, needs practice, or mastered instead of starting from scratch each time.",
+    },
+  ];
+
+  const studyFlow = [
+    "Create a trial account and choose a course path.",
+    "Open lessons to unlock the vocabulary needed for that part of the course.",
+    "Use the study view to practise, mark progress, and return to weaker words.",
+  ];
+
+  return (
+    <main className="flex flex-col gap-4">
+      <PageIntroPanel
+        className="order-1"
+        tone="student"
+        eyebrow="Vocabulary"
+        title="GCSE Russian vocabulary that unlocks with the course"
+        description="The platform includes structured GCSE Russian vocabulary practice without exposing the full study lists to anonymous visitors."
+        badges={
+          <>
+            <Badge tone="info" icon="vocabulary">
+              Vocabulary preview
+            </Badge>
+            <Badge tone="muted" icon="school">
+              Pearson Edexcel 1RU0
+            </Badge>
+            <Badge tone="success" icon="success">
+              Progress saved after signup
+            </Badge>
+          </>
+        }
+        actions={
+          <>
+            <Button href="/signup" variant="primary" icon="create">
+              Start trial
+            </Button>
+            <Button href="/gcse-russian-vocabulary" variant="secondary" icon="text">
+              Vocabulary guide
+            </Button>
+          </>
+        }
+        visual={
+          <Image
+            src="/illustrations/vocabulary-hub-v1.png"
+            alt="Vocabulary cards and study tools illustration"
+            width={1720}
+            height={914}
+            priority
+            sizes="(min-width: 1280px) 320px, 80vw"
+            className="h-auto w-full max-w-[360px] drop-shadow-[0_18px_34px_color-mix(in_srgb,var(--text-primary)_10%,transparent)]"
+          />
+        }
+      />
+
+      <section className="order-2 grid gap-4 md:grid-cols-3">
+        {previewFeatures.map((feature) => (
+          <SectionCard key={feature.title} title={feature.title} tone="student">
+            <p className="app-text-body-muted">{feature.description}</p>
+          </SectionCard>
+        ))}
+      </section>
+
+      <SectionCard
+        className="order-3"
+        title="How vocabulary access works"
+        description="Guests can see the learning model. Trial and paid accounts open the actual study lists as part of the course journey."
+        tone="student"
+        actions={
+          <Button href="/courses" variant="secondary" icon="courses">
+            Preview course
+          </Button>
+        }
+      >
+        <div className="grid gap-3 md:grid-cols-3">
+          {studyFlow.map((step, index) => (
+            <div
+              key={step}
+              className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4"
+            >
+              <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-full [background:var(--accent-gradient-selected)] text-sm font-semibold text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
+                {index + 1}
+              </div>
+              <p className="app-text-body-muted">{step}</p>
+            </div>
+          ))}
+        </div>
       </SectionCard>
     </main>
   );

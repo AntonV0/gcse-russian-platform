@@ -22,8 +22,6 @@ export default function robots(): MetadataRoute.Robots {
           "/dashboard/",
           "/forgot-password",
           "/login",
-          "/online-classes",
-          "/online-classes/",
           "/profile",
           "/profile/",
           "/question-sets",

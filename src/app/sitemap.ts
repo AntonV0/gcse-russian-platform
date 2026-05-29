@@ -38,6 +38,11 @@ const publicRoutes = [
     priority: 0.8,
   },
   {
+    path: "/online-classes",
+    changeFrequency: "monthly",
+    priority: 0.75,
+  },
+  {
     path: "/resources",
     changeFrequency: "weekly",
     priority: 0.85,
@@ -61,6 +66,16 @@ const publicRoutes = [
     path: "/past-papers",
     changeFrequency: "weekly",
     priority: 0.8,
+  },
+  {
+    path: "/exam-calendar",
+    changeFrequency: "weekly",
+    priority: 0.75,
+  },
+  {
+    path: "/taking-your-exams",
+    changeFrequency: "monthly",
+    priority: 0.75,
   },
   {
     path: "/mock-exams",

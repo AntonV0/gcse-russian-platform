@@ -95,6 +95,47 @@ const studyAreas = [
   icon: AppIconKey;
 }>;
 
+const guestPreviewAreas = [
+  {
+    title: "Course map",
+    description:
+      "See how Foundation and Higher fit into one GCSE Russian route before choosing a trial path.",
+    href: "/courses",
+    action: "You are here",
+    icon: "courses",
+  },
+  {
+    title: "Vocabulary preview",
+    description:
+      "Browse public vocabulary sets and see the study surface before saving progress.",
+    href: "/vocabulary",
+    action: "Open vocabulary",
+    icon: "vocabulary",
+  },
+  {
+    title: "Grammar preview",
+    description:
+      "Check the grammar hub, topics, and reference style without creating an account.",
+    href: "/grammar",
+    action: "Open grammar",
+    icon: "grammar",
+  },
+  {
+    title: "Past papers",
+    description:
+      "Use open official-resource links while deciding whether the structured course is useful.",
+    href: "/past-papers",
+    action: "Open papers",
+    icon: "pastPapers",
+  },
+] satisfies Array<{
+  title: string;
+  description: string;
+  href: string;
+  action: string;
+  icon: AppIconKey;
+}>;
+
 type CourseAction = {
   href: string;
   label: string;
@@ -485,20 +526,21 @@ export default async function CoursesPage() {
 
               <div className="space-y-2">
                 <h1 className="app-heading-hero max-w-3xl">
-                  Choose Foundation or Higher inside your trial
+                  Preview the GCSE Russian app before signup
                 </h1>
                 <p className="app-subtitle max-w-2xl">
-                  Course paths, modules, and lessons unlock after signup so your tier
-                  choice and progress are saved from the start.
+                  Look around the course map, public vocabulary, grammar, papers, and
+                  mock-exam area first. Create a trial when you want to choose Foundation
+                  or Higher, open lessons, and save progress.
                 </p>
               </div>
 
               <div className="app-mobile-action-stack flex flex-wrap gap-3">
                 <Button href="/signup" variant="primary" icon="create">
-                  Start trial
+                  Create trial account
                 </Button>
-                <Button href="/past-papers" variant="secondary" icon="pastPapers">
-                  Open past papers
+                <Button href="/vocabulary" variant="secondary" icon="vocabulary">
+                  Browse vocabulary
                 </Button>
               </div>
             </div>
@@ -517,13 +559,37 @@ export default async function CoursesPage() {
           </div>
         </section>
 
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {guestPreviewAreas.map((area) => (
+            <DashboardCard key={area.title} className="h-full">
+              <div className="space-y-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--accent-ink)]">
+                  <AppIcon icon={area.icon} size={20} />
+                </div>
+                <div>
+                  <h2 className="app-heading-card">{area.title}</h2>
+                  <p className="mt-2 app-text-body-muted">{area.description}</p>
+                </div>
+                <Button
+                  href={area.href}
+                  variant={area.href === "/courses" ? "quiet" : "secondary"}
+                  size="sm"
+                  icon={area.icon}
+                >
+                  {area.action}
+                </Button>
+              </div>
+            </DashboardCard>
+          ))}
+        </section>
+
         <section className="grid gap-4 md:grid-cols-2">
           {courses.map((course) => (
             <DashboardCard key={course.id} title={course.title} className="h-full">
               <div className="space-y-3">
                 <p>{course.description ?? "Structured GCSE Russian course content."}</p>
                 <Badge tone="warning" icon="locked">
-                  Sign up to choose a path
+                  Trial unlocks path choice
                 </Badge>
               </div>
             </DashboardCard>
@@ -531,14 +597,14 @@ export default async function CoursesPage() {
         </section>
 
         <LockedContentCard
-          title="Start a trial to open course paths"
-          description="Foundation and Higher lessons are part of the trial account experience. Create an account to pick a tier, try sample lessons, and see locked full-course content in context."
+          title="Create a trial to choose Foundation or Higher"
+          description="The public app preview stays open. Trial accounts add the student layer: tier choice, sample lesson access, saved progress, mock attempts, and account tools."
           accessLabel="Trial account"
           statusLabel="Signup required"
           primaryActionHref="/signup"
           primaryActionLabel="Create trial account"
-          secondaryActionHref="/grammar"
-          secondaryActionLabel="Preview grammar"
+          secondaryActionHref="/gcse-russian-course"
+          secondaryActionLabel="Read course details"
         />
       </main>
     );

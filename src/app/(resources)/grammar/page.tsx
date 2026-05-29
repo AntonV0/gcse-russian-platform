@@ -23,11 +23,11 @@ import { buildPublicMetadata } from "@/lib/seo/site";
 export const metadata: Metadata = buildPublicMetadata({
   title: "GCSE Russian Grammar",
   description:
-    "Browse GCSE Russian grammar sets by topic and tier, with explanations, examples, and reference tables for Pearson Edexcel 1RU0.",
+    "Preview structured GCSE Russian grammar study for Pearson Edexcel 1RU0, with course-linked explanations, examples, and practice after signup.",
   path: "/grammar",
   ogTitle: "GCSE Russian Grammar",
   ogDescription:
-    "Find grammar explanations, sentence patterns, examples, and reference material for GCSE Russian.",
+    "See how GCSE Russian grammar explanations unlock through the course journey.",
   ogImagePath: getOgImagePath("grammar"),
 });
 
@@ -64,6 +64,11 @@ function getTopicOptions(grammarSets: DbGrammarSetListItem[]) {
 export default async function GrammarPage({ searchParams }: GrammarPageProps) {
   const params = (await searchParams) ?? {};
   const dashboard = await getDashboardInfo();
+
+  if (dashboard.role === "guest") {
+    return <GuestGrammarPreview />;
+  }
+
   const filters: GrammarSetFilters = {
     search: params.search ?? null,
     tier: normalizeTierFilter(params.tier),
@@ -187,6 +192,106 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             canSeeCoverage={canSeeCoverage}
           />
         )}
+      </SectionCard>
+    </main>
+  );
+}
+
+function GuestGrammarPreview() {
+  const previewFeatures = [
+    {
+      title: "Explanations in context",
+      description:
+        "Grammar is introduced through the course route, then reinforced with examples, tables, and short practice prompts.",
+    },
+    {
+      title: "Tier-aware structure",
+      description:
+        "The platform separates what students need to recognise from what they need to produce for Foundation or Higher.",
+    },
+    {
+      title: "Unlocked as students progress",
+      description:
+        "Signed-in students gradually open the grammar they need, instead of receiving an overwhelming list all at once.",
+    },
+  ];
+
+  return (
+    <main className="flex flex-col gap-4">
+      <PageIntroPanel
+        className="order-1"
+        tone="student"
+        eyebrow="Grammar"
+        title="GCSE Russian grammar with guided access"
+        description="The platform includes structured grammar explanations and practice, but the full grammar index and point names are kept inside the signed-in course experience."
+        badges={
+          <>
+            <Badge tone="info" icon="grammar">
+              Grammar preview
+            </Badge>
+            <Badge tone="muted" icon="school">
+              Pearson Edexcel 1RU0
+            </Badge>
+            <Badge tone="success" icon="success">
+              Trial available
+            </Badge>
+          </>
+        }
+        actions={
+          <>
+            <Button href="/signup" variant="primary" icon="create">
+              Start trial
+            </Button>
+            <Button href="/gcse-russian-grammar" variant="secondary" icon="text">
+              Grammar guide
+            </Button>
+          </>
+        }
+        visual={
+          <VisualPlaceholder
+            category="grammar"
+            size="wide"
+            ariaLabel="Abstract grammar diagram illustration"
+          />
+        }
+      />
+
+      <section className="order-2 grid gap-4 md:grid-cols-3">
+        {previewFeatures.map((feature) => (
+          <SectionCard key={feature.title} title={feature.title} tone="student">
+            <p className="app-text-body-muted">{feature.description}</p>
+          </SectionCard>
+        ))}
+      </section>
+
+      <SectionCard
+        className="order-3"
+        title="What opens after signup"
+        description="Trial and paid accounts can use the grammar study flow inside the course, including explanations, examples, tables, and links back to lessons."
+        tone="student"
+        actions={
+          <Button href="/courses" variant="secondary" icon="courses">
+            Preview course
+          </Button>
+        }
+      >
+        <div className="grid gap-3 md:grid-cols-3">
+          {[
+            "Choose Foundation or Higher.",
+            "Work through lessons that introduce new grammar.",
+            "Open matching explanations and practice when they become relevant.",
+          ].map((step, index) => (
+            <div
+              key={step}
+              className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4"
+            >
+              <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-full [background:var(--accent-gradient-selected)] text-sm font-semibold text-[var(--accent-on-soft)] ring-1 ring-[var(--accent-selected-border)]">
+                {index + 1}
+              </div>
+              <p className="app-text-body-muted">{step}</p>
+            </div>
+          ))}
+        </div>
       </SectionCard>
     </main>
   );

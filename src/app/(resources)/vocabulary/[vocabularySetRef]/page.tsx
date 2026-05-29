@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
@@ -10,6 +10,7 @@ import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import VocabularyStudyWorkspace from "@/components/vocabulary/vocabulary-study-workspace";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { noIndexRobots } from "@/lib/seo/site";
 import { canDashboardAccessVocabularySet } from "@/lib/vocabulary/access";
 import {
   getVocabularyStudyVariant,
@@ -31,10 +32,19 @@ type VocabularySetPageProps = {
   params: Promise<{ vocabularySetRef: string }>;
 };
 
+export const metadata = {
+  robots: noIndexRobots,
+};
+
 export default async function VocabularySetPage({ params }: VocabularySetPageProps) {
   const { vocabularySetRef } = await params;
   const dashboard = await getDashboardInfo();
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
+
+  if (dashboard.role === "guest") {
+    redirect("/vocabulary");
+  }
+
   const studyVariant = getVocabularyStudyVariant(dashboard.variant, canSeeDrafts);
   const { vocabularySet, lists, items } = await loadVocabularySetByRefDb(
     vocabularySetRef,
@@ -47,48 +57,6 @@ export default async function VocabularySetPage({ params }: VocabularySetPagePro
     (vocabularySet.set_type === "specification" && !canSeeDrafts)
   ) {
     notFound();
-  }
-
-  if (dashboard.role === "guest") {
-    return (
-      <main className="space-y-4">
-        <PageIntroPanel
-          tone="student"
-          eyebrow="Vocabulary set"
-          title={vocabularySet.title}
-          description={
-            vocabularySet.description ??
-            "Create a trial account to open the vocabulary study view."
-          }
-          badges={
-            <>
-              <Badge tone="info" icon="school">
-                {getVocabularyTierLabel(vocabularySet.tier)}
-              </Badge>
-              <Badge tone="muted" icon="vocabularySet">
-                {getVocabularyListModeLabel(vocabularySet.list_mode)}
-              </Badge>
-            </>
-          }
-          actions={
-            <Button href="/vocabulary" variant="secondary" icon="back">
-              All vocabulary
-            </Button>
-          }
-        />
-
-        <LockedContentCard
-          title="Create a trial account to study this vocabulary"
-          description="The vocabulary hub remains open for browsing. Detailed word lists and study context are part of the signed-in trial experience."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Start trial"
-          secondaryActionHref="/vocabulary"
-          secondaryActionLabel="Browse vocabulary"
-        />
-      </main>
-    );
   }
 
   if (!canDashboardAccessVocabularySet(vocabularySet, dashboard)) {

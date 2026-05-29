@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
 import EmptyState from "@/components/ui/empty-state";
@@ -20,9 +20,14 @@ import {
   loadGrammarSetBySlugDb,
 } from "@/lib/grammar/grammar-helpers-db";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { noIndexRobots } from "@/lib/seo/site";
 
 type GrammarSetPageProps = {
   params: Promise<{ grammarSetSlug: string }>;
+};
+
+export const metadata = {
+  robots: noIndexRobots,
 };
 
 const GRAMMAR_SET_STUDY_STEPS = [
@@ -35,6 +40,11 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
   const { grammarSetSlug } = await params;
   const dashboard = await getDashboardInfo();
   const canSeeDrafts = dashboard.role === "admin" || dashboard.role === "teacher";
+
+  if (dashboard.role === "guest") {
+    redirect("/grammar");
+  }
+
   const scopeVariant: DbGrammarStudyVariant | "all" =
     canSeeDrafts ||
     (dashboard.variant !== "foundation" &&
@@ -50,39 +60,6 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
 
   if (!grammarSet) {
     notFound();
-  }
-
-  if (dashboard.role === "guest") {
-    return (
-      <main className="space-y-4">
-        <PageIntroPanel
-          tone="student"
-          eyebrow="Grammar set"
-          title={grammarSet.title}
-          description={
-            grammarSet.description ??
-            "Create a trial account to open grammar explanations and examples."
-          }
-          badges={<GrammarSetRequirementBadges grammarSet={grammarSet} />}
-          actions={
-            <Button href="/grammar" variant="secondary" icon="back">
-              All grammar
-            </Button>
-          }
-        />
-
-        <LockedContentCard
-          title="Create a trial account to study this set"
-          description="The grammar hub is open for browsing, but detailed explanations and study flow are part of the signed-in trial experience."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Start trial"
-          secondaryActionHref="/grammar"
-          secondaryActionLabel="Browse grammar"
-        />
-      </main>
-    );
   }
 
   if (!canDashboardAccessGrammarSet(grammarSet, dashboard)) {

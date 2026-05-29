@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
@@ -8,9 +9,22 @@ import SectionCard from "@/components/ui/section-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
+import { getOgImagePath } from "@/lib/seo/og-images";
+import { buildPublicMetadata } from "@/lib/seo/site";
 import type { AppIconKey } from "@/lib/shared/icons";
 
 const VOLNA_GCSE_URL = "https://www.volnaschool.com/gcse-courses";
+
+export const metadata: Metadata = buildPublicMetadata({
+  title: "Online GCSE Russian Lessons",
+  description:
+    "Explore Volna School live GCSE Russian lessons, homework, speaking practice, and how teacher-led support connects with the GCSE Russian platform.",
+  path: "/online-classes",
+  ogTitle: "Online GCSE Russian Lessons",
+  ogDescription:
+    "See how Volna School live teaching can support GCSE Russian study alongside the platform.",
+  ogImagePath: getOgImagePath("lessons"),
+});
 
 const decisionPoints: Array<{
   icon: AppIconKey;
@@ -147,7 +161,7 @@ export default async function OnlineClassesPage() {
             >
               Visit Volna
             </Button>
-            <Button href="/account/billing" variant="secondary" icon="billing">
+            <Button href="/pricing" variant="secondary" icon="pricing">
               Compare self-study
             </Button>
             <Button href="/dashboard" variant="secondary" icon="dashboard">
@@ -291,7 +305,7 @@ export default async function OnlineClassesPage() {
               >
                 Visit Volna
               </Button>
-              <Button href="/account/billing" variant="secondary" icon="billing">
+              <Button href="/pricing" variant="secondary" icon="pricing">
                 Compare self-study
               </Button>
               <Button href="/courses" variant="secondary" icon="courses">
