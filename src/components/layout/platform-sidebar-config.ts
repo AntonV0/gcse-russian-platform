@@ -64,7 +64,7 @@ export function getAccessLabel(
   }
 
   if (role === "guest") {
-    return "Preview mode";
+    return "Guest";
   }
 
   if (accessMode === "volna") {
@@ -109,7 +109,9 @@ export function getSidebarContextLabel(
 }
 
 export function getSidebarEyebrow(role: PlatformSidebarRole) {
-  return role === "admin" || role === "teacher" ? "Platform" : "GCSE Russian";
+  return role === "admin" || role === "teacher"
+    ? "Platform"
+    : "GCSE Russian (Pearson 1RU0)";
 }
 
 export function getSidebarTitle(role: PlatformSidebarRole) {
@@ -121,11 +123,15 @@ export function shouldShowHeaderStatusPill(
   role: PlatformSidebarRole,
   accessMode: PlatformSidebarAccessMode
 ) {
+  if (role === "guest") {
+    return false;
+  }
+
   if (pathname.startsWith("/courses")) {
     return true;
   }
 
-  if (role === "admin" || role === "teacher" || role === "guest") {
+  if (role === "admin" || role === "teacher") {
     return true;
   }
 
@@ -185,11 +191,18 @@ export function buildPlatformSidebarNav(params: {
   const showVolnaSchool = isAdmin || isTeacher || !isVolnaStudent;
   const courseHref = getActiveCoursePath(variant);
   const dashboardHref = getDashboardPath();
+  const guestTrialLock: Pick<NavItem, "locked" | "lockedHref" | "lockedLabel"> = {
+    locked: true,
+    lockedHref: "/signup",
+    lockedLabel: "Trial",
+  };
+  const lockForGuest = (item: NavItem): NavItem =>
+    isGuest ? { ...item, ...guestTrialLock } : item;
 
   const courseGroupItems: NavItem[] = [
     { label: "Dashboard", href: dashboardHref, icon: "dashboard" },
-    { label: "Course", href: courseHref, icon: "courses" },
-    { label: "Progress", href: getProgressPath(), icon: "completed" },
+    { label: "My Course", href: courseHref, icon: "courses" },
+    lockForGuest({ label: "Progress", href: getProgressPath(), icon: "completed" }),
   ];
 
   const studyItems: NavItem[] = [
@@ -218,9 +231,6 @@ export function buildPlatformSidebarNav(params: {
           label: "Join Volna School",
           href: getOnlineClassesPath(),
           icon: "school",
-          locked: isGuest,
-          lockedHref: "/login",
-          lockedLabel: "Login",
         },
       ]
     : [];
@@ -230,33 +240,25 @@ export function buildPlatformSidebarNav(params: {
       label: "Overview",
       href: getAccountPath(),
       icon: "dashboard",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
+      ...(isGuest ? guestTrialLock : {}),
     },
     {
       label: "Billing",
       href: getBillingPath(),
       icon: "billing",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
+      ...(isGuest ? guestTrialLock : {}),
     },
     {
       label: "Profile",
       href: getProfilePath(),
       icon: "student",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
+      ...(isGuest ? guestTrialLock : {}),
     },
     {
       label: "Settings",
       href: getSettingsPath(),
       icon: "settings",
-      locked: isGuest,
-      lockedHref: "/login",
-      lockedLabel: "Login",
+      ...(isGuest ? guestTrialLock : {}),
     },
   ];
 

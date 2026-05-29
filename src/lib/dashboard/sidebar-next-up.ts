@@ -23,10 +23,10 @@ export async function getPlatformSidebarNextUp(
   if (dashboard.role === "guest") {
     return {
       eyebrow: "Next up",
-      title: "Start your trial",
-      description: "Create an account to try lessons and save progress.",
+      title: "Start your free trial",
+      description: "Try lessons, practice questions, save your progress, and much more!",
       href: "/signup",
-      label: "Start trial",
+      label: "Start free trial",
       icon: "create",
       progressPercent: 0,
     };

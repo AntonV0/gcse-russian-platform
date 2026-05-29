@@ -1,7 +1,7 @@
 import Link from "next/link";
-import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import LogoutButton from "@/components/layout/logout-button";
+import AppIcon from "@/components/ui/app-icon";
 import StudentAvatar from "@/components/profile/student-avatar";
 import {
   getAvatarOption,
@@ -80,23 +80,38 @@ export default function AccountFooter({
     return (
       <div className="platform-sidebar-account-card rounded-2xl p-2.5">
         <div className="flex items-center gap-2.5">
-          <div className="platform-sidebar-account-avatar flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold">
-            GR
-          </div>
+          <AppIcon
+            icon="userCheck"
+            size={18}
+            aria-hidden="true"
+            className="shrink-0 text-[var(--accent-ink)]"
+          />
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
-              Guest preview
+              Begin studying for free
             </div>
-            <div className="truncate text-[11px] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-secondary))]">
-              Save progress with an account
+            <div className="truncate text-[11px] leading-snug text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-secondary))]">
+              Create your trial student account
             </div>
           </div>
         </div>
-        <div className="mt-2.5 grid gap-2">
-          <Button href="/login" variant="secondary" size="sm" icon="user">
-            Log in
+        <div className="mt-2.5 grid grid-cols-2 gap-2">
+          <Button
+            href="/login"
+            variant="secondary"
+            size="sm"
+            icon="user"
+            className="w-full"
+          >
+            Login
           </Button>
-          <Button href="/signup" variant="primary" size="sm" icon="create">
+          <Button
+            href="/signup"
+            variant="primary"
+            size="sm"
+            icon="create"
+            className="w-full"
+          >
             Sign up
           </Button>
         </div>

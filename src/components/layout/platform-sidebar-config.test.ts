@@ -36,7 +36,7 @@ describe("platform sidebar config", () => {
         accessMode: "full",
       })
     ).toEqual({
-      eyebrow: "GCSE Russian",
+      eyebrow: "GCSE Russian (Pearson 1RU0)",
       title: "Study Menu",
       subtitle: "Full access",
       showStatusPill: false,
@@ -89,7 +89,7 @@ describe("platform sidebar config", () => {
         accessMode: "full",
       })
     ).toEqual({
-      eyebrow: "GCSE Russian",
+      eyebrow: "GCSE Russian (Pearson 1RU0)",
       title: "Study Menu",
       subtitle: "Foundation course",
       showStatusPill: true,
@@ -150,7 +150,22 @@ describe("platform sidebar config", () => {
     expect(getMobileQuickLabel("Grammar")).toBe("Grammar");
   });
 
-  it("locks guest account and Volna navigation targets", () => {
+  it("uses compact guest header labels without a status pill", () => {
+    expect(
+      getSidebarHeaderState({
+        pathname: "/vocabulary",
+        role: "guest",
+        accessMode: null,
+      })
+    ).toEqual({
+      eyebrow: "GCSE Russian (Pearson 1RU0)",
+      title: "Study Menu",
+      subtitle: "Guest",
+      showStatusPill: false,
+    });
+  });
+
+  it("keeps public resources open while locking private guest trial targets", () => {
     const guest = buildPlatformSidebarNav({
       role: "guest",
       accessMode: null,
@@ -159,14 +174,51 @@ describe("platform sidebar config", () => {
     });
 
     expect(guest.utilityItems.every((item) => item.locked)).toBe(true);
+    expect(guest.utilityItems.every((item) => item.lockedHref === "/signup")).toBe(true);
+    expect(guest.utilityItems.every((item) => item.lockedLabel === "Trial")).toBe(true);
+    expect(guest.courseGroupItems.find((item) => item.href === "/courses")?.label).toBe(
+      "My Course"
+    );
+    expect(
+      guest.courseGroupItems.find((item) => item.label === "Progress")
+    ).toMatchObject({
+      locked: true,
+      lockedHref: "/signup",
+      lockedLabel: "Trial",
+    });
+    expect(guest.contentNavGroups.map((group) => group.label)).toEqual([
+      "Choose Your Course",
+      "Study & Practice",
+      "Exam Prep",
+      "Live Classes & Tuition",
+    ]);
+    expect(guest.studyItems).toEqual([
+      {
+        label: "Vocabulary",
+        href: "/vocabulary",
+        icon: "vocabulary",
+      },
+      {
+        label: "Grammar",
+        href: "/grammar",
+        icon: "grammar",
+      },
+    ]);
+    for (const label of [
+      "Past Papers",
+      "Mock Exams",
+      "Taking Your Exams",
+      "Exam Calendar",
+    ]) {
+      expect(guest.examPrepItems.find((item) => item.label === label)).not.toHaveProperty(
+        "locked"
+      );
+    }
     expect(guest.volnaSchoolItems).toEqual([
       {
         label: "Join Volna School",
         href: "/online-classes",
         icon: "school",
-        locked: true,
-        lockedHref: "/login",
-        lockedLabel: "Login",
       },
     ]);
   });

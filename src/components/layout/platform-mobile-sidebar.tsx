@@ -56,7 +56,9 @@ export default function PlatformMobileSidebar({
                 <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
                   {activeNavItem.label}
                 </div>
-                <div className="truncate text-xs app-text-muted">{mobileContextLabel}</div>
+                <div className="truncate text-xs app-text-muted">
+                  {mobileContextLabel}
+                </div>
               </div>
             </div>
           </div>
@@ -66,7 +68,9 @@ export default function PlatformMobileSidebar({
             className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] shadow-[0_1px_2px_color-mix(in_srgb,var(--text-primary)_4%,transparent)] transition hover:border-[color-mix(in_srgb,var(--accent-border-ink)_30%,var(--border))] hover:bg-[var(--background-muted)] app-focus-ring"
             aria-expanded={isMobileNavOpen}
             aria-controls="platform-mobile-nav-panel"
-            aria-label={isMobileNavOpen ? "Close study navigation" : "Open study navigation"}
+            aria-label={
+              isMobileNavOpen ? "Close study navigation" : "Open study navigation"
+            }
             onClick={onToggleMobileNav}
           >
             <AppIcon icon={isMobileNavOpen ? "cancel" : "menu"} size={16} />
@@ -110,7 +114,9 @@ export default function PlatformMobileSidebar({
               aria-expanded={isMobileNavOpen}
               aria-controls="platform-mobile-nav-panel"
               aria-label={
-                isMobileNavOpen ? "Close full study navigation" : "Open full study navigation"
+                isMobileNavOpen
+                  ? "Close full study navigation"
+                  : "Open full study navigation"
               }
               onClick={onToggleMobileNav}
             >
@@ -169,7 +175,7 @@ export default function PlatformMobileSidebar({
                 {isGuest ? (
                   <div className="grid gap-2 sm:grid-cols-2">
                     <Button href="/login" variant="secondary" size="sm" icon="user">
-                      Log in
+                      Login
                     </Button>
                     <Button href="/signup" variant="primary" size="sm" icon="create">
                       Sign up

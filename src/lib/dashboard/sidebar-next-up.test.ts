@@ -12,9 +12,7 @@ vi.mock("@/lib/dashboard/learning-plan", () => ({
 
 describe("getPlatformSidebarNextUp", () => {
   it("gives guests a primary trial CTA without loading progress", async () => {
-    const { getPlatformSidebarNextUp } = await import(
-      "@/lib/dashboard/sidebar-next-up"
-    );
+    const { getPlatformSidebarNextUp } = await import("@/lib/dashboard/sidebar-next-up");
     const guestDashboard: DashboardInfo = {
       role: "guest",
       variant: null,
@@ -24,10 +22,10 @@ describe("getPlatformSidebarNextUp", () => {
 
     await expect(getPlatformSidebarNextUp(guestDashboard)).resolves.toEqual({
       eyebrow: "Next up",
-      title: "Start your trial",
-      description: "Create an account to try lessons and save progress.",
+      title: "Start your free trial",
+      description: "Try lessons, practice questions, save your progress, and much more!",
       href: "/signup",
-      label: "Start trial",
+      label: "Start free trial",
       icon: "create",
       progressPercent: 0,
     });
