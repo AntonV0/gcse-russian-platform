@@ -91,6 +91,15 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
               </Button>
             ) : (
               <>
+                <Button
+                  href="/courses"
+                  variant="secondary"
+                  size="sm"
+                  icon="preview"
+                  className="hidden xl:inline-flex"
+                >
+                  Preview app
+                </Button>
                 <Link href="/login" className="app-nav-link">
                   Log in
                 </Link>
@@ -152,6 +161,14 @@ export default function MarketingSiteHeader({ user }: MarketingSiteHeaderProps) 
               </Button>
             ) : (
               <div className="flex flex-col gap-2">
+                <Button
+                  href="/courses"
+                  variant="secondary"
+                  className="w-full"
+                  icon="preview"
+                >
+                  Preview app
+                </Button>
                 <Button href="/login" variant="secondary" className="w-full" icon="user">
                   Log in
                 </Button>

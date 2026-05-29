@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SignUpForm from "@/components/auth/signup-form";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
+import Button from "@/components/ui/button";
 import { buildPublicMetadata, noIndexRobots } from "@/lib/seo/site";
 import type { AppIconKey } from "@/lib/shared/icons";
 
@@ -128,6 +129,11 @@ export default async function SignUpPage({
               Students can look around the GCSE Russian course platform first, see how the
               learning route works, and upgrade only if the structure feels right.
             </p>
+            <div className="mt-6">
+              <Button href="/courses" variant="inverse" icon="preview">
+                Preview app before signup
+              </Button>
+            </div>
 
             <TrialPreview />
           </div>
@@ -140,8 +146,8 @@ export default async function SignUpPage({
               </h2>
               <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
                 Use the student name and the email address the family wants connected to
-                course access. Parent or guardian contact details can be added for
-                account support where appropriate.
+                course access. Parent or guardian contact details can be added for account
+                support where appropriate.
               </p>
               <div className="mt-4 rounded-lg bg-[var(--background-muted)] p-4">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">

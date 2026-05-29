@@ -62,6 +62,9 @@ export default function MarketingHomePage() {
               <Button href="/signup" variant="primary" icon="create">
                 Start trial
               </Button>
+              <Button href="/courses" variant="secondary" icon="preview">
+                Preview app first
+              </Button>
               <Button href="/gcse-russian-course" variant="secondary" icon="courses">
                 See course details
               </Button>
@@ -123,8 +126,16 @@ export default function MarketingHomePage() {
               Trial access
             </p>
             <h2 className="mt-3 text-3xl font-bold leading-tight">
-              Try the learning environment before choosing a plan.
+              Preview the app first, then create a trial when you want progress saved.
             </h2>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+              <Button href="/courses" variant="inverse" icon="preview">
+                Open app preview
+              </Button>
+              <Button href="/signup" variant="primary" icon="create">
+                Create trial account
+              </Button>
+            </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {trialIncludes.map((item) => (
@@ -297,16 +308,16 @@ export default function MarketingHomePage() {
                 Try the course before deciding.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 opacity-80">
-                Create a trial account, explore the course structure, and upgrade inside
-                the app if it feels right for the student.
+                Look around the app preview, then create a trial account when the student
+                is ready to choose a path and save progress.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
+              <Button href="/courses" variant="inverse" icon="preview">
+                Preview app
+              </Button>
               <Button href="/signup" variant="primary" icon="create">
                 Create trial account
-              </Button>
-              <Button href="/pricing" variant="secondary" icon="pricing">
-                Compare pricing
               </Button>
             </div>
           </div>

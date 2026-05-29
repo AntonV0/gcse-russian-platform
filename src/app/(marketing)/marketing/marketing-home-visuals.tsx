@@ -55,7 +55,7 @@ function StudyDeskIllustration() {
           lang="ru"
           className="mt-3 text-2xl font-bold leading-tight text-[var(--text-primary)]"
         >
-          Ð¯ Ð´ÑƒÐ¼Ð°ÑŽ...
+          Я думаю...
         </p>
         <div className="mt-4 grid gap-2">
           <span className="h-2 w-3/4 rounded-full bg-[var(--background-muted)]" />
@@ -217,7 +217,7 @@ export function LessonVisual() {
 
           <div className="rounded-lg border border-[var(--border-subtle)] p-4">
             <p lang="ru" className="text-sm font-semibold text-[var(--text-primary)]">
-              Ð¯ Ð´ÑƒÐ¼Ð°ÑŽ, Ñ‡Ñ‚Ð¾ Ñ€ÑƒÑÑÐºÐ¸Ð¹ Ð¿Ð¾Ð»ÐµÐ·Ð½Ñ‹Ð¹, Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾...
+              Я думаю, что русский полезный, потому что...
             </p>
             <div className="mt-3 h-2 w-2/3 rounded-full bg-[var(--accent-fill)]" />
           </div>

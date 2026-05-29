@@ -84,8 +84,8 @@ export default function GcseRussianCoursePage() {
               <Button href="/signup" variant="primary" icon="create">
                 Start trial
               </Button>
-              <Button href="/pricing" variant="secondary" icon="pricing">
-                View pricing
+              <Button href="/courses" variant="secondary" icon="preview">
+                Preview app first
               </Button>
             </div>
           </div>
@@ -195,8 +195,8 @@ export default function GcseRussianCoursePage() {
                 Useful next decisions
               </h2>
             </div>
-            <Button href="/signup" variant="primary" icon="create">
-              Start trial
+            <Button href="/courses" variant="secondary" icon="preview">
+              Preview app
             </Button>
           </div>
 
@@ -225,16 +225,16 @@ export default function GcseRussianCoursePage() {
                 Try the course structure before choosing a plan.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 opacity-80">
-                Create a trial account first, look around the learning environment, then
-                upgrade from inside the app when the course is the right fit.
+                Browse the public app preview first, then create a trial account when the
+                student is ready to choose Foundation or Higher and save progress.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
+              <Button href="/courses" variant="inverse" icon="preview">
+                Preview app
+              </Button>
               <Button href="/signup" variant="primary" icon="create">
                 Create trial account
-              </Button>
-              <Button href="/pricing" variant="secondary" icon="pricing">
-                Compare pricing
               </Button>
             </div>
           </div>

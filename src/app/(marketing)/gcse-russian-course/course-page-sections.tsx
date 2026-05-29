@@ -1,4 +1,5 @@
 import AppIcon from "@/components/ui/app-icon";
+import Button from "@/components/ui/button";
 
 import {
   courseIncludes,
@@ -173,7 +174,7 @@ export function LessonFlowVisual() {
 
           <div className="mt-4 rounded-lg border border-[var(--border-subtle)] p-4">
             <p lang="ru" className="text-sm font-semibold text-[var(--text-primary)]">
-              Ð¯ ÑÑ‡Ð¸Ñ‚Ð°ÑŽ, Ñ‡Ñ‚Ð¾ Ñ€ÑƒÑÑÐºÐ¸Ð¹ Ð¿Ð¾Ð»ÐµÐ·Ð½Ñ‹Ð¹, Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾...
+              Я считаю, что русский полезный, потому что...
             </p>
             <div className="mt-3 grid gap-2 sm:grid-cols-3">
               {["opinion", "reason", "exam answer"].map((item) => (
@@ -309,14 +310,23 @@ export function PublicAppSection() {
     <section className="rounded-lg bg-[var(--background-muted)] p-5 sm:p-8">
       <div className="grid gap-8 lg:grid-cols-[0.62fr_1fr] lg:items-start">
         <div>
-          <Eyebrow>Guide pages vs course access</Eyebrow>
+          <Eyebrow>Before signup</Eyebrow>
           <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--text-primary)] md:text-4xl">
-            Public pages help decisions. The course builds the routine.
+            Let families look around the app before creating an account.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
-            The public site answers family questions quickly. Trial access then shows the
-            student what the weekly learning route actually feels like.
+            The public app preview shows how course routes, vocabulary, grammar, past
+            papers, and mock practice fit together. Trial access is the next step when the
+            student wants saved progress and lesson access.
           </p>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <Button href="/courses" variant="primary" icon="preview">
+              Open app preview
+            </Button>
+            <Button href="/signup" variant="secondary" icon="create">
+              Create trial account
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-3">
