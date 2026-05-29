@@ -206,10 +206,13 @@ async function attachScreenshot(page: Page, testInfo: TestInfo, name: string) {
 }
 
 async function openCourseFromDashboard(page: Page) {
-  await page
-    .getByRole("link", { name: /^Course$/i })
-    .first()
-    .click();
+  const courseLink = page.getByRole("link", { name: /^(My Course|Course)$/i }).first();
+
+  if ((await courseLink.count()) > 0) {
+    await courseLink.click();
+  } else {
+    await page.goto(coursePath);
+  }
 
   await page.waitForURL(/\/courses/, { timeout: 5_000 }).catch(async () => {
     await page.goto(coursePath);

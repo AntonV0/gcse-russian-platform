@@ -6,10 +6,12 @@ test.describe("public smoke checks", () => {
 
     await expect(
       page.getByRole("heading", {
-        name: /Start from the right GCSE Russian workspace|Welcome back to GCSE Russian/,
+        name: /Explore GCSE Russian|Welcome back to GCSE Russian/,
       })
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: /browse courses/i })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /Explore My Course/i }).first()
+    ).toBeVisible();
   });
 
   test("loads the public course marketing page", async ({ page }) => {
