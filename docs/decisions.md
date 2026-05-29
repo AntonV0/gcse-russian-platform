@@ -595,3 +595,36 @@ Admins can export lessons, vocabulary sets, and grammar sets. Lesson exports
 inline linked vocabulary, grammar, and question sets when available, while media
 and stale links remain clear references. This supports teacher QA without adding
 comments, approvals, locking, or version comparison yet.
+
+---
+
+## 32. Why keep public resource previews separate from signed-in study details?
+
+### Decision
+
+Keep high-intent public resource hubs indexable, but keep detailed study assets
+inside signed-in access:
+
+- `/past-papers` remains fully public because it links to public Pearson
+  resources and should not add registration friction.
+- `/exam-calendar`, `/taking-your-exams`, and `/online-classes` remain public
+  resource pages.
+- `/vocabulary` and `/grammar` are public, indexable previews that explain the
+  value and unlock model without exposing full set names, categories, lists, or
+  grammar-point indexes to guests.
+- Vocabulary and grammar detail routes redirect guests back to the relevant
+  public preview hub and stay out of the sitemap.
+- Personal workflows such as progress, assignments, billing, account settings,
+  mock attempts, teacher pages, and admin pages remain private/noindexed.
+
+### Why
+
+The product needs useful crawlable pages for SEO and parent/student discovery,
+but the actual study assets are part of the course experience and may unlock
+progressively through lessons, trial access, or paid access.
+
+### Result
+
+Search engines can understand the product and recommend public resource pages,
+while guests are encouraged toward trial signup without receiving the full
+course vocabulary or grammar library anonymously.
