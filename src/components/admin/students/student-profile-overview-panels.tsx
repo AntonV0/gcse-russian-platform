@@ -35,6 +35,10 @@ export function StudentProfileOverviewPanels({ student }: { student: AdminProfil
               value: student.parent_guardian_email || "-",
             },
             {
+              label: "Parent/guardian phone",
+              value: student.parent_guardian_phone || "-",
+            },
+            {
               label: "Adult awareness",
               value: student.parent_guardian_consent_confirmed
                 ? `Confirmed${
@@ -86,6 +90,19 @@ export function StudentProfileOverviewPanels({ student }: { student: AdminProfil
               />
             </label>
 
+            <label className="app-form-field">
+              <span className="app-form-label">Parent/guardian phone</span>
+              <input
+                name="parentGuardianPhone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                maxLength={32}
+                defaultValue={student.parent_guardian_phone ?? ""}
+                className="app-form-control app-form-input"
+              />
+            </label>
+
             <label className="flex items-start gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--background-muted)] p-3 text-sm leading-6 text-[var(--text-secondary)]">
               <input
                 name="parentGuardianConsentConfirmed"
@@ -94,8 +111,8 @@ export function StudentProfileOverviewPanels({ student }: { student: AdminProfil
                 className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent-fill)]"
               />
               <span>
-                Parent or guardian awareness is confirmed where appropriate for
-                this learner.
+                The parent or guardian knows about this account and agrees that these
+                contact details can be used for account support.
               </span>
             </label>
           </div>

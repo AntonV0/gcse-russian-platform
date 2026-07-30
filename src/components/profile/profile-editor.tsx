@@ -48,6 +48,7 @@ export default function ProfileEditor({
   initialDisplayName,
   initialParentGuardianName,
   initialParentGuardianEmail,
+  initialParentGuardianPhone,
   initialParentGuardianConsentConfirmed,
   initialAvatarKey,
   initialAvatarBackgroundKey,
@@ -66,6 +67,9 @@ export default function ProfileEditor({
   const [savedParentGuardianEmail, setSavedParentGuardianEmail] = useState(
     initialParentGuardianEmail ?? ""
   );
+  const [savedParentGuardianPhone, setSavedParentGuardianPhone] = useState(
+    initialParentGuardianPhone ?? ""
+  );
   const [savedParentGuardianConsentConfirmed, setSavedParentGuardianConsentConfirmed] =
     useState(initialParentGuardianConsentConfirmed);
   const [savedAvatarKey, setSavedAvatarKey] = useState(initialAvatarKey ?? "");
@@ -83,6 +87,9 @@ export default function ProfileEditor({
   );
   const [parentGuardianEmail, setParentGuardianEmail] = useState(
     initialParentGuardianEmail ?? ""
+  );
+  const [parentGuardianPhone, setParentGuardianPhone] = useState(
+    initialParentGuardianPhone ?? ""
   );
   const [parentGuardianConsentConfirmed, setParentGuardianConsentConfirmed] = useState(
     initialParentGuardianConsentConfirmed
@@ -123,6 +130,7 @@ export default function ProfileEditor({
     displayName !== savedDisplayName ||
     parentGuardianName !== savedParentGuardianName ||
     parentGuardianEmail !== savedParentGuardianEmail ||
+    parentGuardianPhone !== savedParentGuardianPhone ||
     parentGuardianConsentConfirmed !== savedParentGuardianConsentConfirmed;
   const hasAvatarChanges =
     avatarKey !== savedAvatarKey ||
@@ -136,6 +144,7 @@ export default function ProfileEditor({
     setDisplayName(savedDisplayName);
     setParentGuardianName(savedParentGuardianName);
     setParentGuardianEmail(savedParentGuardianEmail);
+    setParentGuardianPhone(savedParentGuardianPhone);
     setParentGuardianConsentConfirmed(savedParentGuardianConsentConfirmed);
   };
   const resetAvatarChanges = () => {
@@ -204,6 +213,7 @@ export default function ProfileEditor({
       setDisplayName(savedProfile.displayName);
       setParentGuardianName(savedProfile.parentGuardianName);
       setParentGuardianEmail(savedProfile.parentGuardianEmail);
+      setParentGuardianPhone(savedProfile.parentGuardianPhone);
       setParentGuardianConsentConfirmed(savedProfile.parentGuardianConsentConfirmed);
       setAvatarKey(savedProfile.avatarKey);
       setAvatarBackgroundKey(nextAvatarBackgroundKey);
@@ -212,9 +222,8 @@ export default function ProfileEditor({
       setSavedDisplayName(savedProfile.displayName);
       setSavedParentGuardianName(savedProfile.parentGuardianName);
       setSavedParentGuardianEmail(savedProfile.parentGuardianEmail);
-      setSavedParentGuardianConsentConfirmed(
-        savedProfile.parentGuardianConsentConfirmed
-      );
+      setSavedParentGuardianPhone(savedProfile.parentGuardianPhone);
+      setSavedParentGuardianConsentConfirmed(savedProfile.parentGuardianConsentConfirmed);
       setSavedAvatarKey(savedProfile.avatarKey);
       setSavedAvatarBackgroundKey(nextAvatarBackgroundKey);
       setSavedAvatarFrameKey(nextAvatarFrameKey);
@@ -372,6 +381,7 @@ export default function ProfileEditor({
         displayName={displayName}
         parentGuardianName={parentGuardianName}
         parentGuardianEmail={parentGuardianEmail}
+        parentGuardianPhone={parentGuardianPhone}
         parentGuardianConsentConfirmed={parentGuardianConsentConfirmed}
         hasDetailsChanges={hasDetailsChanges}
         isSaving={isSaving}
@@ -379,6 +389,7 @@ export default function ProfileEditor({
         onDisplayNameChange={setDisplayName}
         onParentGuardianNameChange={setParentGuardianName}
         onParentGuardianEmailChange={setParentGuardianEmail}
+        onParentGuardianPhoneChange={setParentGuardianPhone}
         onParentGuardianConsentConfirmedChange={setParentGuardianConsentConfirmed}
         onReset={resetDetailsChanges}
       />

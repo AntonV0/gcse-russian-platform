@@ -16,6 +16,7 @@ export type ProfileEditorProps = {
   initialDisplayName: string | null | undefined;
   initialParentGuardianName: string | null | undefined;
   initialParentGuardianEmail: string | null | undefined;
+  initialParentGuardianPhone: string | null | undefined;
   initialParentGuardianConsentConfirmed: boolean;
   initialAvatarKey: string | null | undefined;
   initialAvatarBackgroundKey: AvatarBackgroundKey;
@@ -31,6 +32,7 @@ export type SavedProfileResponse = {
     displayName: string;
     parentGuardianName: string;
     parentGuardianEmail: string;
+    parentGuardianPhone: string;
     parentGuardianConsentConfirmed: boolean;
     avatarKey: string;
     avatarBackgroundKey: string;

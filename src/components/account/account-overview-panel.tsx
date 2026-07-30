@@ -10,6 +10,7 @@ export type AccountProfileSummary = {
   displayName: string | null;
   parentGuardianName?: string | null;
   parentGuardianEmail?: string | null;
+  parentGuardianPhone?: string | null;
   parentGuardianConsentConfirmed?: boolean;
 };
 

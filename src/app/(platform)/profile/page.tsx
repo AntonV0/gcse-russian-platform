@@ -37,10 +37,7 @@ async function getProfileLearningSnapshot(): Promise<ProfileLearningSnapshot> {
   }
 
   const activeCourseSlug = getDefaultActiveCourseSlug();
-  const progressSummary = await getCourseProgressSummary(
-    activeCourseSlug,
-    activeVariant
-  );
+  const progressSummary = await getCourseProgressSummary(activeCourseSlug, activeVariant);
   const learningPlan = await getStudentLearningPlan(
     activeVariant,
     progressSummary.completedLessons,
@@ -66,23 +63,23 @@ export default async function ProfilePage({
     return (
       <main>
         <LearningSheet>
-        <LearningSheetHeader
-          eyebrow="Profile"
-          title="Profile"
-          description="Choose the name and avatar you want to see while you study."
-        />
-
-        <LearningSheetSection>
-          <EmptyState
-            title="You are not signed in"
-            description="Log in to access your student profile."
-            action={
-              <Button href="/login" variant="primary" icon="user">
-                Log in
-              </Button>
-            }
+          <LearningSheetHeader
+            eyebrow="Profile"
+            title="Profile"
+            description="Choose the name and avatar you want to see while you study."
           />
-        </LearningSheetSection>
+
+          <LearningSheetSection>
+            <EmptyState
+              title="You are not signed in"
+              description="Log in to access your student profile."
+              action={
+                <Button href="/login" variant="primary" icon="user">
+                  Log in
+                </Button>
+              }
+            />
+          </LearningSheetSection>
         </LearningSheet>
       </main>
     );
@@ -115,35 +112,36 @@ export default async function ProfilePage({
   return (
     <main>
       <LearningSheet>
-      {resolvedSearchParams.error ? (
-        <LearningSheetSection muted divided={false}>
-        <FeedbackBanner
-          tone="danger"
-          title="Profile update failed"
-          description={resolvedSearchParams.error}
-        />
-        </LearningSheetSection>
-      ) : null}
+        {resolvedSearchParams.error ? (
+          <LearningSheetSection muted divided={false}>
+            <FeedbackBanner
+              tone="danger"
+              title="Profile update failed"
+              description={resolvedSearchParams.error}
+            />
+          </LearningSheetSection>
+        ) : null}
 
-      <LearningSheetSection divided={!resolvedSearchParams.error}>
-      <ProfileEditor
-        avatars={profileAvatarOptions}
-        email={user.email}
-        initialFullName={profile?.full_name}
-        initialDisplayName={profile?.display_name}
-        initialParentGuardianName={profile?.parent_guardian_name}
-        initialParentGuardianEmail={profile?.parent_guardian_email}
-        initialParentGuardianConsentConfirmed={Boolean(
-          profile?.parent_guardian_consent_confirmed
-        )}
-        initialAvatarKey={currentAvatarKey}
-        initialAvatarBackgroundKey={currentAvatarBackgroundKey}
-        initialAvatarFrameKey={currentAvatarFrameKey}
-        unlockedAvatarFrameKeys={unlockedAvatarFrameKeys}
-        learningSnapshot={learningSnapshot}
-        profileUpdated={Boolean(resolvedSearchParams.success)}
-      />
-      </LearningSheetSection>
+        <LearningSheetSection divided={!resolvedSearchParams.error}>
+          <ProfileEditor
+            avatars={profileAvatarOptions}
+            email={user.email}
+            initialFullName={profile?.full_name}
+            initialDisplayName={profile?.display_name}
+            initialParentGuardianName={profile?.parent_guardian_name}
+            initialParentGuardianEmail={profile?.parent_guardian_email}
+            initialParentGuardianPhone={profile?.parent_guardian_phone}
+            initialParentGuardianConsentConfirmed={Boolean(
+              profile?.parent_guardian_consent_confirmed
+            )}
+            initialAvatarKey={currentAvatarKey}
+            initialAvatarBackgroundKey={currentAvatarBackgroundKey}
+            initialAvatarFrameKey={currentAvatarFrameKey}
+            unlockedAvatarFrameKeys={unlockedAvatarFrameKeys}
+            learningSnapshot={learningSnapshot}
+            profileUpdated={Boolean(resolvedSearchParams.success)}
+          />
+        </LearningSheetSection>
       </LearningSheet>
     </main>
   );

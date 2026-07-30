@@ -22,15 +22,15 @@ export default async function AccountPage() {
     return (
       <main>
         <LearningSheet>
-        <LearningSheetHeader
-          eyebrow="Account"
-          title="Account overview"
-          description="A quick place to check your profile, course plan, billing, and settings."
-        />
+          <LearningSheetHeader
+            eyebrow="Account"
+            title="Account overview"
+            description="A quick place to check your profile, course plan, billing, and settings."
+          />
 
-        <LearningSheetSection>
-          <SignedOutAccountPanel />
-        </LearningSheetSection>
+          <LearningSheetSection>
+            <SignedOutAccountPanel />
+          </LearningSheetSection>
         </LearningSheet>
       </main>
     );
@@ -41,39 +41,38 @@ export default async function AccountPage() {
     displayName: profile?.display_name ?? null,
     parentGuardianName: profile?.parent_guardian_name ?? null,
     parentGuardianEmail: profile?.parent_guardian_email ?? null,
-    parentGuardianConsentConfirmed: Boolean(
-      profile?.parent_guardian_consent_confirmed
-    ),
+    parentGuardianPhone: profile?.parent_guardian_phone ?? null,
+    parentGuardianConsentConfirmed: Boolean(profile?.parent_guardian_consent_confirmed),
   };
   const currentPlan = await getCurrentPlanSummaryForUserDb(user.id);
 
   return (
     <main>
       <LearningSheet>
-      <LearningSheetSection divided={false}>
-      <AccountOverviewPanel
-        dashboard={dashboard}
-        profile={profileSummary}
-        currentPlan={currentPlan}
-      />
-      </LearningSheetSection>
+        <LearningSheetSection divided={false}>
+          <AccountOverviewPanel
+            dashboard={dashboard}
+            profile={profileSummary}
+            currentPlan={currentPlan}
+          />
+        </LearningSheetSection>
 
-      <LearningSheetSection>
-      <AccountQuickLinks />
-      </LearningSheetSection>
+        <LearningSheetSection>
+          <AccountQuickLinks />
+        </LearningSheetSection>
 
-      <LearningSheetSection>
-      <AccountDetailsPanels
-        dashboard={dashboard}
-        profile={profileSummary}
-        email={user.email}
-        courseAccessMode={dashboard.accessMode}
-      />
-      </LearningSheetSection>
+        <LearningSheetSection>
+          <AccountDetailsPanels
+            dashboard={dashboard}
+            profile={profileSummary}
+            email={user.email}
+            courseAccessMode={dashboard.accessMode}
+          />
+        </LearningSheetSection>
 
-      <LearningSheetSection>
-      <AccountPlanPanels currentPlan={currentPlan} dashboard={dashboard} />
-      </LearningSheetSection>
+        <LearningSheetSection>
+          <AccountPlanPanels currentPlan={currentPlan} dashboard={dashboard} />
+        </LearningSheetSection>
       </LearningSheet>
     </main>
   );

@@ -93,23 +93,23 @@ export default async function SettingsPage({
     return (
       <main>
         <LearningSheet>
-        <LearningSheetHeader
-          eyebrow="Settings"
-          title="Settings"
-          description="Choose how the course looks, then manage your account security."
-        />
-
-        <LearningSheetSection>
-          <EmptyState
-            title="You are not signed in"
-            description="Log in to access your account settings."
-            action={
-              <Button href="/login" variant="primary" icon="user">
-                Log in
-              </Button>
-            }
+          <LearningSheetHeader
+            eyebrow="Settings"
+            title="Settings"
+            description="Choose how the course looks, then manage your account security."
           />
-        </LearningSheetSection>
+
+          <LearningSheetSection>
+            <EmptyState
+              title="You are not signed in"
+              description="Log in to access your account settings."
+              action={
+                <Button href="/login" variant="primary" icon="user">
+                  Log in
+                </Button>
+              }
+            />
+          </LearningSheetSection>
         </LearningSheet>
       </main>
     );
@@ -120,121 +120,134 @@ export default async function SettingsPage({
   return (
     <main>
       <LearningSheet>
-      {resolvedSearchParams.success ? (
-        <LearningSheetSection muted divided={false}>
-        <FeedbackBanner
-          tone="success"
-          title="Password updated"
-          description="Your new password is ready to use the next time you sign in."
-        />
+        {resolvedSearchParams.success ? (
+          <LearningSheetSection muted divided={false}>
+            <FeedbackBanner
+              tone="success"
+              title="Password updated"
+              description="Your new password is ready to use the next time you sign in."
+            />
+          </LearningSheetSection>
+        ) : null}
+
+        {resolvedSearchParams.error ? (
+          <LearningSheetSection muted divided={!resolvedSearchParams.success}>
+            <FeedbackBanner
+              tone="danger"
+              title="Password update failed"
+              description={resolvedSearchParams.error}
+            />
+          </LearningSheetSection>
+        ) : null}
+
+        <LearningSheetSection
+          divided={!resolvedSearchParams.success && !resolvedSearchParams.error}
+        >
+          <section id="appearance">
+            <div className="space-y-6">
+              <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <Badge tone="info" icon="palette">
+                      Appearance
+                    </Badge>
+                    <Badge
+                      tone={profileComplete ? "success" : "warning"}
+                      icon="userCheck"
+                    >
+                      {profileComplete ? "Profile ready" : "Profile needs details"}
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h1 className="app-heading-hero">
+                      Make GCSE Russian feel like yours
+                    </h1>
+                    <p className="app-subtitle max-w-2xl">
+                      Pick a comfortable display mode and a colour that makes the learning
+                      space feel clear, bright, and easy to come back to.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <span className="app-pill app-pill-info">
+                      Changes save as you choose
+                    </span>
+                    <span className="app-pill app-pill-muted">
+                      Password settings below
+                    </span>
+                  </div>
+                </div>
+
+                <AppearancePreview />
+              </div>
+
+              <div className="grid gap-5 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)]/76 p-4 shadow-[var(--shadow-sm)]">
+                <ThemeModeSelector />
+                <div className="h-px bg-[var(--border-subtle)]" />
+                <ThemeAccentSelector />
+              </div>
+            </div>
+          </section>
         </LearningSheetSection>
-      ) : null}
 
-      {resolvedSearchParams.error ? (
-        <LearningSheetSection muted divided={!resolvedSearchParams.success}>
-        <FeedbackBanner
-          tone="danger"
-          title="Password update failed"
-          description={resolvedSearchParams.error}
-        />
+        <LearningSheetSection>
+          <section
+            id="security"
+            className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_360px]"
+          >
+            <DashboardCard title="Password and security">
+              <PasswordSecurityForm />
+            </DashboardCard>
+
+            <DashboardCard title="Account details">
+              <div className="grid gap-3">
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">Email</div>
+                  <div className="app-stat-value">{user.email ?? "No email"}</div>
+                </div>
+
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">Display name</div>
+                  <div className="app-stat-value">
+                    {profile?.display_name ?? "Not added yet"}
+                  </div>
+                </div>
+
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">Full name</div>
+                  <div className="app-stat-value">
+                    {profile?.full_name ?? "Not added yet"}
+                  </div>
+                </div>
+
+                <div className="app-stat-tile">
+                  <div className="app-stat-label">Parent/guardian contact</div>
+                  <div className="app-stat-value">
+                    {profile?.parent_guardian_email ??
+                      profile?.parent_guardian_phone ??
+                      profile?.parent_guardian_name ??
+                      "Not added yet"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button href="/profile" variant="secondary" icon="user">
+                  Edit profile
+                </Button>
+
+                <Button href="/account/billing" variant="secondary" icon="billing">
+                  Billing
+                </Button>
+
+                <Button href="/account" variant="secondary" icon="dashboard">
+                  Account overview
+                </Button>
+              </div>
+            </DashboardCard>
+          </section>
         </LearningSheetSection>
-      ) : null}
-
-      <LearningSheetSection
-        divided={!resolvedSearchParams.success && !resolvedSearchParams.error}
-      >
-      <section id="appearance">
-        <div className="space-y-6">
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon="palette">
-                  Appearance
-                </Badge>
-                <Badge tone={profileComplete ? "success" : "warning"} icon="userCheck">
-                  {profileComplete ? "Profile ready" : "Profile needs details"}
-                </Badge>
-              </div>
-
-              <div className="space-y-2">
-                <h1 className="app-heading-hero">Make GCSE Russian feel like yours</h1>
-                <p className="app-subtitle max-w-2xl">
-                  Pick a comfortable display mode and a colour that makes the learning
-                  space feel clear, bright, and easy to come back to.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <span className="app-pill app-pill-info">Changes save as you choose</span>
-                <span className="app-pill app-pill-muted">Password settings below</span>
-              </div>
-            </div>
-
-            <AppearancePreview />
-          </div>
-
-          <div className="grid gap-5 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)]/76 p-4 shadow-[var(--shadow-sm)]">
-            <ThemeModeSelector />
-            <div className="h-px bg-[var(--border-subtle)]" />
-            <ThemeAccentSelector />
-          </div>
-        </div>
-      </section>
-      </LearningSheetSection>
-
-      <LearningSheetSection>
-      <section id="security" className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_360px]">
-        <DashboardCard title="Password and security">
-          <PasswordSecurityForm />
-        </DashboardCard>
-
-        <DashboardCard title="Account details">
-          <div className="grid gap-3">
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Email</div>
-              <div className="app-stat-value">{user.email ?? "No email"}</div>
-            </div>
-
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Display name</div>
-              <div className="app-stat-value">
-                {profile?.display_name ?? "Not added yet"}
-              </div>
-            </div>
-
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Full name</div>
-              <div className="app-stat-value">
-                {profile?.full_name ?? "Not added yet"}
-              </div>
-            </div>
-
-            <div className="app-stat-tile">
-              <div className="app-stat-label">Parent/guardian contact</div>
-              <div className="app-stat-value">
-                {profile?.parent_guardian_email ??
-                  profile?.parent_guardian_name ??
-                  "Not added yet"}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Button href="/profile" variant="secondary" icon="user">
-              Edit profile
-            </Button>
-
-            <Button href="/account/billing" variant="secondary" icon="billing">
-              Billing
-            </Button>
-
-            <Button href="/account" variant="secondary" icon="dashboard">
-              Account overview
-            </Button>
-          </div>
-        </DashboardCard>
-      </section>
-      </LearningSheetSection>
       </LearningSheet>
     </main>
   );

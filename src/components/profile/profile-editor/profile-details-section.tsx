@@ -9,6 +9,7 @@ export default function ProfileDetailsSection({
   displayName,
   parentGuardianName,
   parentGuardianEmail,
+  parentGuardianPhone,
   parentGuardianConsentConfirmed,
   hasDetailsChanges,
   isSaving,
@@ -16,6 +17,7 @@ export default function ProfileDetailsSection({
   onDisplayNameChange,
   onParentGuardianNameChange,
   onParentGuardianEmailChange,
+  onParentGuardianPhoneChange,
   onParentGuardianConsentConfirmedChange,
   onReset,
 }: {
@@ -24,6 +26,7 @@ export default function ProfileDetailsSection({
   displayName: string;
   parentGuardianName: string;
   parentGuardianEmail: string;
+  parentGuardianPhone: string;
   parentGuardianConsentConfirmed: boolean;
   hasDetailsChanges: boolean;
   isSaving: boolean;
@@ -31,6 +34,7 @@ export default function ProfileDetailsSection({
   onDisplayNameChange: (value: string) => void;
   onParentGuardianNameChange: (value: string) => void;
   onParentGuardianEmailChange: (value: string) => void;
+  onParentGuardianPhoneChange: (value: string) => void;
   onParentGuardianConsentConfirmedChange: (value: boolean) => void;
   onReset: () => void;
 }) {
@@ -101,12 +105,12 @@ export default function ProfileDetailsSection({
             Parent or guardian contact
           </h3>
           <p className="mt-1 text-sm app-text-muted">
-            Optional details for students whose account setup, support, or payment
-            decisions involve a parent or guardian.
+            Optional as a group. If you add a parent or guardian, save their name, email,
+            phone number, and awareness confirmation together.
           </p>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <div className="mt-4 grid gap-4 lg:grid-cols-3">
           <FormField
             label="Parent/guardian name"
             description="Used only for account support and safeguarding context."
@@ -123,7 +127,7 @@ export default function ProfileDetailsSection({
 
           <FormField
             label="Parent/guardian email"
-            description="Useful where an adult helps manage the account."
+            description="Used for account support where an adult helps."
           >
             <Input
               id="parentGuardianEmail"
@@ -132,6 +136,24 @@ export default function ProfileDetailsSection({
               value={parentGuardianEmail}
               onChange={(event) => onParentGuardianEmailChange(event.target.value)}
               placeholder="parent@example.com"
+              disabled={isSaving}
+            />
+          </FormField>
+
+          <FormField
+            label="Parent/guardian phone"
+            description="Use a number the parent or guardian can answer."
+          >
+            <Input
+              id="parentGuardianPhone"
+              name="parentGuardianPhone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              maxLength={32}
+              value={parentGuardianPhone}
+              onChange={(event) => onParentGuardianPhoneChange(event.target.value)}
+              placeholder="+44 7700 900123"
               disabled={isSaving}
             />
           </FormField>
@@ -149,8 +171,8 @@ export default function ProfileDetailsSection({
             className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent-fill)]"
           />
           <span>
-            A parent or guardian is aware of this account setup where that is
-            appropriate for the student.
+            The parent or guardian knows about this account and agrees that these contact
+            details can be used for account support.
           </span>
         </label>
       </div>

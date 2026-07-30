@@ -7,6 +7,7 @@ export type AdminProfileRow = {
   display_name: string | null;
   parent_guardian_name: string | null;
   parent_guardian_email: string | null;
+  parent_guardian_phone: string | null;
   parent_guardian_consent_confirmed: boolean;
   parent_guardian_consent_confirmed_at: string | null;
   is_admin: boolean;
@@ -60,7 +61,7 @@ export async function getAdminProfileByIdDb(userId: string) {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, email, full_name, display_name, parent_guardian_name, parent_guardian_email, parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at, is_admin, is_teacher, created_at"
+      "id, email, full_name, display_name, parent_guardian_name, parent_guardian_email, parent_guardian_phone, parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at, is_admin, is_teacher, created_at"
     )
     .eq("id", userId)
     .maybeSingle();

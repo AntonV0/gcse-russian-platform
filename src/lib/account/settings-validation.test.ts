@@ -72,44 +72,86 @@ describe("validateParentGuardianContact", () => {
       validateParentGuardianContact({
         parentGuardianName: "",
         parentGuardianEmail: "",
+        parentGuardianPhone: "",
       })
     ).toEqual({
       isValid: true,
       parentGuardianName: null,
       parentGuardianEmail: null,
+      parentGuardianPhone: null,
       parentGuardianConsentConfirmed: false,
     });
   });
 
-  it("normalizes a provided parent or guardian email", () => {
+  it("normalizes a complete parent or guardian contact", () => {
     expect(
       validateParentGuardianContact({
         parentGuardianName: "  Parent Name  ",
         parentGuardianEmail: "  PARENT@EXAMPLE.COM  ",
+        parentGuardianPhone: "  +44 7700 900123  ",
         parentGuardianConsentConfirmed: true,
       })
     ).toEqual({
       isValid: true,
       parentGuardianName: "Parent Name",
       parentGuardianEmail: "parent@example.com",
+      parentGuardianPhone: "+44 7700 900123",
       parentGuardianConsentConfirmed: true,
     });
   });
 
   it("rejects an invalid parent or guardian email", () => {
     const result = validateParentGuardianContact({
+      parentGuardianName: "Parent Name",
       parentGuardianEmail: "not-an-email",
+      parentGuardianPhone: "+44 7700 900123",
+      parentGuardianConsentConfirmed: true,
     });
 
     expect(result).toEqual({
       isValid: false,
-      parentGuardianName: null,
+      parentGuardianName: "Parent Name",
       parentGuardianEmail: null,
-      parentGuardianConsentConfirmed: false,
+      parentGuardianPhone: "+44 7700 900123",
+      parentGuardianConsentConfirmed: true,
       parentGuardianEmailError: "Enter a valid parent or guardian email address.",
     });
     expect(getParentGuardianContactErrorMessage(result)).toBe(
       "Enter a valid parent or guardian email address."
     );
+  });
+
+  it("requires email, phone, and adult confirmation when details are started", () => {
+    expect(
+      validateParentGuardianContact({
+        parentGuardianName: "Parent Name",
+      }).parentGuardianEmailError
+    ).toBe("Enter the parent or guardian's email address.");
+
+    expect(
+      validateParentGuardianContact({
+        parentGuardianName: "Parent Name",
+        parentGuardianEmail: "parent@example.com",
+      }).parentGuardianPhoneError
+    ).toBe("Enter the parent or guardian's phone number.");
+
+    expect(
+      validateParentGuardianContact({
+        parentGuardianName: "Parent Name",
+        parentGuardianEmail: "parent@example.com",
+        parentGuardianPhone: "+44 7700 900123",
+      }).parentGuardianConsentError
+    ).toBe("Confirm that the parent or guardian knows about this account.");
+  });
+
+  it("rejects a malformed phone number", () => {
+    expect(
+      validateParentGuardianContact({
+        parentGuardianName: "Parent Name",
+        parentGuardianEmail: "parent@example.com",
+        parentGuardianPhone: "call me maybe",
+        parentGuardianConsentConfirmed: true,
+      }).parentGuardianPhoneError
+    ).toBe("Enter a valid parent or guardian phone number.");
   });
 });

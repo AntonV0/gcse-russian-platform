@@ -94,6 +94,7 @@ export async function updateParentGuardianContactAction(formData: FormData) {
   const parentGuardianValidation = validateParentGuardianContact({
     parentGuardianName: getTrimmedString(formData, "parentGuardianName"),
     parentGuardianEmail: getTrimmedString(formData, "parentGuardianEmail"),
+    parentGuardianPhone: getTrimmedString(formData, "parentGuardianPhone"),
     parentGuardianConsentConfirmed:
       formData.get("parentGuardianConsentConfirmed") === "on",
   });
@@ -108,9 +109,7 @@ export async function updateParentGuardianContactAction(formData: FormData) {
   const supabase = await createClient();
   const { data: currentProfile, error: currentProfileError } = await supabase
     .from("profiles")
-    .select(
-      "parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at"
-    )
+    .select("parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at")
     .eq("id", userId)
     .single();
 
@@ -136,6 +135,7 @@ export async function updateParentGuardianContactAction(formData: FormData) {
     .update({
       parent_guardian_name: parentGuardianValidation.parentGuardianName,
       parent_guardian_email: parentGuardianValidation.parentGuardianEmail,
+      parent_guardian_phone: parentGuardianValidation.parentGuardianPhone,
       parent_guardian_consent_confirmed:
         parentGuardianValidation.parentGuardianConsentConfirmed,
       parent_guardian_consent_confirmed_at: parentGuardianConsentConfirmedAt,
@@ -145,9 +145,7 @@ export async function updateParentGuardianContactAction(formData: FormData) {
   if (error) {
     redirectWithError(
       redirectTo,
-      `Failed to update parent or guardian details: ${
-        error.message ?? "unknown error"
-      }`
+      `Failed to update parent or guardian details: ${error.message ?? "unknown error"}`
     );
   }
 

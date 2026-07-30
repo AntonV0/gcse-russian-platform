@@ -23,6 +23,7 @@ function profile(overrides: Partial<Awaited<ReturnType<typeof getCurrentProfile>
     equipped_avatar_frame_key: null,
     parent_guardian_name: null,
     parent_guardian_email: null,
+    parent_guardian_phone: null,
     parent_guardian_consent_confirmed: false,
     parent_guardian_consent_confirmed_at: null,
     is_admin: false,

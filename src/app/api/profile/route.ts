@@ -30,13 +30,16 @@ export async function GET() {
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    return NextResponse.json({ message: "Log in to view your profile." }, { status: 401 });
+    return NextResponse.json(
+      { message: "Log in to view your profile." },
+      { status: 401 }
+    );
   }
 
   const { data: profile, error } = await supabase
     .from("profiles")
     .select(
-      "full_name, display_name, avatar_key, avatar_background_key, equipped_avatar_frame_key, parent_guardian_name, parent_guardian_email, parent_guardian_consent_confirmed"
+      "full_name, display_name, avatar_key, avatar_background_key, equipped_avatar_frame_key, parent_guardian_name, parent_guardian_email, parent_guardian_phone, parent_guardian_consent_confirmed"
     )
     .eq("id", user.id)
     .single();
@@ -55,9 +58,8 @@ export async function GET() {
       displayName: profile.display_name ?? "",
       parentGuardianName: profile.parent_guardian_name ?? "",
       parentGuardianEmail: profile.parent_guardian_email ?? "",
-      parentGuardianConsentConfirmed: Boolean(
-        profile.parent_guardian_consent_confirmed
-      ),
+      parentGuardianPhone: profile.parent_guardian_phone ?? "",
+      parentGuardianConsentConfirmed: Boolean(profile.parent_guardian_consent_confirmed),
       avatarKey: profile.avatar_key ?? "",
       avatarBackgroundKey: getSafeAvatarBackgroundKey(profile.avatar_background_key),
       avatarFrameKey: getSafeAvatarFrameKey(profile.equipped_avatar_frame_key),
@@ -74,7 +76,10 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    return NextResponse.json({ message: "Log in to update your profile." }, { status: 401 });
+    return NextResponse.json(
+      { message: "Log in to update your profile." },
+      { status: 401 }
+    );
   }
 
   const formData = await request.formData();
@@ -82,6 +87,7 @@ export async function POST(request: Request) {
   const displayName = getString(formData, "displayName");
   const parentGuardianName = getString(formData, "parentGuardianName");
   const parentGuardianEmail = getString(formData, "parentGuardianEmail");
+  const parentGuardianPhone = getString(formData, "parentGuardianPhone");
   const parentGuardianConsentConfirmed =
     formData.get("parentGuardianConsentConfirmed") === "on";
   const avatarKey = getString(formData, "avatarKey");
@@ -117,6 +123,7 @@ export async function POST(request: Request) {
   const parentGuardianValidation = validateParentGuardianContact({
     parentGuardianName,
     parentGuardianEmail,
+    parentGuardianPhone,
     parentGuardianConsentConfirmed,
   });
 
@@ -129,9 +136,7 @@ export async function POST(request: Request) {
 
   const { data: currentProfile, error: currentProfileError } = await supabase
     .from("profiles")
-    .select(
-      "parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at"
-    )
+    .select("parent_guardian_consent_confirmed, parent_guardian_consent_confirmed_at")
     .eq("id", user.id)
     .single();
 
@@ -158,6 +163,7 @@ export async function POST(request: Request) {
         avatarFrameKey === DEFAULT_AVATAR_FRAME_KEY ? null : avatarFrameKey,
       parent_guardian_name: parentGuardianValidation.parentGuardianName,
       parent_guardian_email: parentGuardianValidation.parentGuardianEmail,
+      parent_guardian_phone: parentGuardianValidation.parentGuardianPhone,
       parent_guardian_consent_confirmed:
         parentGuardianValidation.parentGuardianConsentConfirmed,
       parent_guardian_consent_confirmed_at: nextParentGuardianConsentConfirmedAt,
@@ -175,6 +181,7 @@ export async function POST(request: Request) {
       displayName: safeDisplayName,
       parentGuardianName: parentGuardianValidation.parentGuardianName ?? "",
       parentGuardianEmail: parentGuardianValidation.parentGuardianEmail ?? "",
+      parentGuardianPhone: parentGuardianValidation.parentGuardianPhone ?? "",
       parentGuardianConsentConfirmed:
         parentGuardianValidation.parentGuardianConsentConfirmed,
       avatarKey: safeAvatarKey,
