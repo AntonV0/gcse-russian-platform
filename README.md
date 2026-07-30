@@ -42,6 +42,27 @@ Project architecture notes are kept in `docs/`:
 
 ---
 
+## Local Development
+
+Use the pinned dev script so this project can run alongside the Volna and
+Pushkin sites without port collisions:
+
+```bash
+npm install
+npm run dev
+```
+
+The dev server runs on:
+
+```text
+http://localhost:3030
+```
+
+For Codex, use a Local Environment `Run` action with `npm.cmd run dev` on
+Windows and reuse the running server if `3030` is already occupied.
+
+---
+
 ## Overview
 
 This platform combines:

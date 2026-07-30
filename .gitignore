@@ -128,6 +128,7 @@ scripts/create-admin-testing-module.mjs
 public/brand/logo-final/r-icons/r-icon-source.svg
 
 # local QA captures
+.codex-temp/
 .playwright-qa-*.png
 .dev-server-*.err
 .dev-server-*.out

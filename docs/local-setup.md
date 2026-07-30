@@ -55,7 +55,7 @@ local testing, run the Stripe CLI listener and forward events to the local
 Next.js route:
 
 ```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
+stripe listen --forward-to localhost:3030/api/stripe/webhook
 ```
 
 Use the webhook signing secret printed by the Stripe CLI as
@@ -80,6 +80,12 @@ and deactivates Stripe grants when subscription status no longer provides access
 
 ```bash
 npm run dev
+```
+
+The dev server is pinned to:
+
+```text
+http://localhost:3030
 ```
 
 Open the local app, exercise checkout with Stripe test-mode data, and keep the
