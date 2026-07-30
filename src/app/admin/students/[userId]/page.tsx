@@ -1,4 +1,3 @@
-import PageHeader from "@/components/layout/page-header";
 import StudentFeedbackBanners from "@/components/admin/students/student-feedback-banners";
 import {
   AccessHistoryPanel,
@@ -15,7 +14,10 @@ import {
 } from "@/components/admin/students/student-profile-teaching-group-panels";
 import { getPersonLabel } from "@/components/admin/students/student-profile-utils";
 import Button from "@/components/ui/button";
-import InlineActions from "@/components/ui/inline-actions";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
   getAdminAccessGrantsByUserIdDb,
@@ -35,7 +37,17 @@ export default async function AdminStudentProfilePage({
 }) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin students"
+            title="Access denied"
+            description="You need an admin account to view student profiles."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const { userId } = await params;
@@ -58,7 +70,17 @@ export default async function AdminStudentProfilePage({
   ]);
 
   if (!student) {
-    return <main>Student not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin students"
+            title="Student not found"
+            description="This student profile may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const activeGrant = accessGrants.find((grant) => grant.is_active) ?? null;
@@ -93,41 +115,49 @@ export default async function AdminStudentProfilePage({
 
   return (
     <main>
-      <InlineActions className="mb-4">
-        <Button href="/admin/students" variant="quiet" size="sm" icon="back">
-          Back to students
-        </Button>
-      </InlineActions>
-
-      <PageHeader
-        title={getPersonLabel(student)}
-        description="Student profile, access grants, teaching groups, and progress by variant."
-      />
-
-      <StudentFeedbackBanners
-        success={resolvedSearchParams.success}
-        error={resolvedSearchParams.error}
-      />
-
-      <StudentProfileOverviewPanels student={student} />
-
-      <div className="space-y-6">
-        <CurrentAccessPanel studentId={student.id} activeGrant={activeGrant} />
-        <SwitchAccessPanel
-          studentId={student.id}
-          selectableProducts={selectableProducts}
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin students"
+          title={getPersonLabel(student)}
+          description="Student profile, access grants, teaching groups, and progress by variant."
+          actions={
+            <Button href="/admin/students" variant="secondary" icon="back">
+              Back to students
+            </Button>
+          }
         />
-        <AccessHistoryPanel inactiveGrants={inactiveGrants} />
-        <StudentProgressSummaryPanel progressSummary={progressSummary} />
-        <AddStudentToTeachingGroupPanel
-          studentId={student.id}
-          availableGroups={availableGroups}
-        />
-        <TeachingGroupMembershipsPanel
-          studentId={student.id}
-          membershipsWithGroup={membershipsWithGroup}
-        />
-      </div>
+
+        <OperationsSection muted>
+          <StudentFeedbackBanners
+            success={resolvedSearchParams.success}
+            error={resolvedSearchParams.error}
+          />
+        </OperationsSection>
+
+        <OperationsSection>
+          <StudentProfileOverviewPanels student={student} />
+        </OperationsSection>
+
+        <OperationsSection>
+          <div className="space-y-6">
+            <CurrentAccessPanel studentId={student.id} activeGrant={activeGrant} />
+            <SwitchAccessPanel
+              studentId={student.id}
+              selectableProducts={selectableProducts}
+            />
+            <AccessHistoryPanel inactiveGrants={inactiveGrants} />
+            <StudentProgressSummaryPanel progressSummary={progressSummary} />
+            <AddStudentToTeachingGroupPanel
+              studentId={student.id}
+              availableGroups={availableGroups}
+            />
+            <TeachingGroupMembershipsPanel
+              studentId={student.id}
+              membershipsWithGroup={membershipsWithGroup}
+            />
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

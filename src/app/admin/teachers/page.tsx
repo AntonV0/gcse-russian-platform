@@ -1,4 +1,3 @@
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -8,6 +7,10 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import { setTeacherRoleAction } from "@/app/actions/admin/admin-user-actions";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
@@ -83,7 +86,17 @@ export default async function AdminTeachersPage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin users"
+            title="Access denied"
+            description="You do not have permission to manage teachers."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const params = (await searchParams) ?? {};
@@ -151,26 +164,34 @@ export default async function AdminTeachersPage({
 
   return (
     <main>
-      <PageHeader title="Teachers" description="Admin and teaching accounts." />
+      <OperationsWorkspace>
+      <OperationsHeader
+        eyebrow="Admin users"
+        title="Teachers"
+        description="Admin and teaching accounts."
+      />
 
       {params.success ? (
+        <OperationsSection muted>
         <FeedbackBanner
           tone="success"
           title="Teacher account updated"
           description={params.success}
-          className="mb-4"
         />
+        </OperationsSection>
       ) : null}
 
       {params.error ? (
+        <OperationsSection muted>
         <FeedbackBanner
           tone="danger"
           title="Teacher update failed"
           description={params.error}
-          className="mb-4"
         />
+        </OperationsSection>
       ) : null}
 
+      <OperationsSection>
       <PanelCard
         title="Filter teachers"
         description="Search by name, email, or teaching group."
@@ -200,7 +221,9 @@ export default async function AdminTeachersPage({
           </div>
         </form>
       </PanelCard>
+      </OperationsSection>
 
+      <OperationsSection>
       <PanelCard
         title={`Teachers (${filteredTeachers.length})`}
         description="Accounts with admin or teacher permissions, including their group links."
@@ -274,6 +297,8 @@ export default async function AdminTeachersPage({
           ))
         )}
       </PanelCard>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

@@ -1,5 +1,8 @@
-import PageHeader from "@/components/layout/page-header";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import StudentFeedbackBanners from "@/components/admin/students/student-feedback-banners";
 import StudentFilterPanel from "@/components/admin/students/student-filter-panel";
 import StudentListPanels from "@/components/admin/students/student-list-panels";
@@ -20,7 +23,17 @@ export default async function AdminStudentsPage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin users"
+            title="Access denied"
+            description="You do not have permission to manage students."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const params = (await searchParams) ?? {};
@@ -40,28 +53,36 @@ export default async function AdminStudentsPage({
 
   return (
     <main>
-      <PageHeader
+      <OperationsWorkspace>
+      <OperationsHeader
+        eyebrow="Admin users"
         title="Students"
         description="Student accounts grouped by current access type."
       />
 
+      <OperationsSection>
       <StudentFeedbackBanners success={params.success} error={params.error} />
 
       <StudentFilterPanel q={q} statusFilter={statusFilter} accessFilter={accessFilter} />
+      </OperationsSection>
 
+      <OperationsSection muted>
       <FeedbackBanner
-        className="mb-6"
         tone="info"
         title={`${totalStudents} student account${totalStudents === 1 ? "" : "s"} shown`}
         description="Students are grouped by their current active access grant so support tasks stay easy to scan."
       />
+      </OperationsSection>
 
+      <OperationsSection>
       <StudentListPanels
         orderedGroups={orderedGroups}
         filteredInactiveStudents={filteredInactiveStudents}
         accessOptions={accessOptions}
         currentPathWithFilters={currentPathWithFilters}
       />
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

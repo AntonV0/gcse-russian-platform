@@ -1,6 +1,5 @@
 import AdminConfirmButton from "@/components/admin/admin-confirm-button";
 import AdminFeedbackBanner from "@/components/admin/admin-feedback-banner";
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -9,6 +8,10 @@ import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import {
@@ -52,7 +55,17 @@ export default async function AdminTeacherProfilePage({
 }) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin teachers"
+            title="Access denied"
+            description="You need an admin account to view teacher profiles."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const { userId } = await params;
@@ -65,7 +78,17 @@ export default async function AdminTeacherProfilePage({
   ]);
 
   if (!teacher) {
-    return <main>Teacher not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin teachers"
+            title="Teacher not found"
+            description="This teacher profile may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const groupMap = new Map(teachingGroups.map((group) => [group.id, group]));
@@ -88,23 +111,27 @@ export default async function AdminTeacherProfilePage({
 
   return (
     <main>
-      <div className="mb-4">
-        <Button href="/admin/teachers" variant="quiet" size="sm" icon="back">
-          Back to teachers
-        </Button>
-      </div>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin teachers"
+          title={getPersonLabel(teacher)}
+          description="Teacher/admin account overview."
+          actions={
+            <Button href="/admin/teachers" variant="secondary" icon="back">
+              Back to teachers
+            </Button>
+          }
+        />
 
-      <PageHeader
-        title={getPersonLabel(teacher)}
-        description="Teacher/admin account overview."
-      />
+      <OperationsSection muted>
+        <AdminFeedbackBanner
+          success={resolvedSearchParams.success}
+          error={resolvedSearchParams.error}
+        />
+      </OperationsSection>
 
-      <AdminFeedbackBanner
-        success={resolvedSearchParams.success}
-        error={resolvedSearchParams.error}
-      />
-
-      <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
+      <OperationsSection>
+      <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
         <PanelCard
           title="Profile details"
           description="Identity and role information for this account."
@@ -143,9 +170,10 @@ export default async function AdminTeacherProfilePage({
             />
           </form>
         </PanelCard>
-      </section>
+      </div>
+      </OperationsSection>
 
-      <section className="mb-6">
+      <OperationsSection>
         <PanelCard
           title="Add to teaching group"
           description="Attach this teacher to a Volna group so they can manage guided work."
@@ -181,8 +209,9 @@ export default async function AdminTeacherProfilePage({
             </form>
           )}
         </PanelCard>
-      </section>
+      </OperationsSection>
 
+      <OperationsSection>
       <PanelCard
         title={`Teaching group memberships (${membershipsWithGroup.length})`}
         description="Groups this account is currently attached to."
@@ -237,6 +266,8 @@ export default async function AdminTeacherProfilePage({
           ))
         )}
       </PanelCard>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

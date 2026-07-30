@@ -1,10 +1,13 @@
-import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import { updateTeachingGroupAction } from "@/app/actions/admin/admin-teaching-group-actions";
@@ -39,7 +42,17 @@ export default async function AdminTeachingGroupEditPage({
 }) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin groups"
+            title="Access denied"
+            description="You need an admin account to edit teaching groups."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const { groupId } = await params;
@@ -66,31 +79,43 @@ export default async function AdminTeachingGroupEditPage({
   const variantRows = (variants ?? []) as VariantRow[];
 
   if (!teachingGroup) {
-    return <main>Teaching group not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin groups"
+            title="Teaching group not found"
+            description="This teaching group may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   return (
     <main>
-      <div className="mb-4 flex flex-wrap gap-3">
-        <Button href="/admin/teaching-groups" variant="quiet" size="sm" icon="back">
-          Back to teaching groups
-        </Button>
+      <OperationsWorkspace className="max-w-4xl">
+        <OperationsHeader
+          eyebrow="Admin groups"
+          title={`Edit ${teachingGroup.name}`}
+          description="Update teaching group details and links."
+          actions={
+            <>
+              <Button href="/admin/teaching-groups" variant="secondary" icon="back">
+                Back to teaching groups
+              </Button>
+              <Button
+                href={`/admin/teaching-groups/${teachingGroup.id}`}
+                variant="secondary"
+                icon="preview"
+              >
+                Back to {teachingGroup.name}
+              </Button>
+            </>
+          }
+        />
 
-        <Button
-          href={`/admin/teaching-groups/${teachingGroup.id}`}
-          variant="quiet"
-          size="sm"
-          icon="preview"
-        >
-          Back to {teachingGroup.name}
-        </Button>
-      </div>
-
-      <PageHeader
-        title={`Edit ${teachingGroup.name}`}
-        description="Update teaching group details and links."
-      />
-
+      <OperationsSection>
       <PanelCard
         title="Teaching group settings"
         description="Keep the group name, active state, and linked learning path up to date."
@@ -154,6 +179,8 @@ export default async function AdminTeachingGroupEditPage({
           </InlineActions>
         </form>
       </PanelCard>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

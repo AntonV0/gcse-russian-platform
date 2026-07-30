@@ -1,9 +1,12 @@
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import InlineActions from "@/components/ui/inline-actions";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { createClient } from "@/lib/supabase/server";
@@ -51,7 +54,17 @@ function getPersonLabel(
 export default async function AdminTeachingGroupsPage() {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin teaching"
+            title="Access denied"
+            description="You do not have permission to manage teaching groups."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const supabase = await createClient();
@@ -122,17 +135,19 @@ export default async function AdminTeachingGroupsPage() {
 
   return (
     <main>
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <PageHeader
-          title="Teaching Groups"
-          description="View groups, teacher assignment, and membership structure."
-        />
+      <OperationsWorkspace>
+      <OperationsHeader
+        eyebrow="Admin teaching"
+        title="Teaching Groups"
+        description="View groups, teacher assignment, and membership structure."
+        actions={
+          <Button href="/admin/teaching-groups/new" variant="primary" icon="create">
+            New teaching group
+          </Button>
+        }
+      />
 
-        <Button href="/admin/teaching-groups/new" variant="primary" icon="create">
-          New teaching group
-        </Button>
-      </div>
-
+      <OperationsSection>
       <PanelCard
         title={`Teaching groups (${groupRows.length})`}
         description="Groups connect Volna teachers, students, and the course variant they are following."
@@ -230,6 +245,8 @@ export default async function AdminTeachingGroupsPage() {
           })
         )}
       </PanelCard>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

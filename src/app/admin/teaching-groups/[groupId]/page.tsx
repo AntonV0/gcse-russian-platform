@@ -5,9 +5,12 @@ import {
   type TeachingGroupMemberRow,
   type TeachingGroupProfileRow,
 } from "@/components/admin/teaching-groups/teaching-group-member-panels";
-import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import {
   addStudentToTeachingGroupAction,
@@ -48,7 +51,17 @@ export default async function AdminTeachingGroupDetailPage({
 }) {
   const canAccess = await requireAdminAccess();
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin groups"
+            title="Access denied"
+            description="You need an admin account to manage teaching groups."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const { groupId } = await params;
@@ -97,7 +110,17 @@ export default async function AdminTeachingGroupDetailPage({
   }>;
 
   if (!teachingGroup) {
-    return <main>Teaching group not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin groups"
+            title="Teaching group not found"
+            description="This teaching group may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const profileMap = new Map(profileRows.map((profile) => [profile.id, profile]));
@@ -142,111 +165,121 @@ export default async function AdminTeachingGroupDetailPage({
 
   return (
     <main>
-      <div className="mb-4">
-        <Button href="/admin/teaching-groups" variant="quiet" size="sm" icon="back">
-          Back to teaching groups
-        </Button>
-      </div>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin groups"
+          title={teachingGroup.name}
+          description="Teaching group overview and membership."
+          actions={
+            <Button href="/admin/teaching-groups" variant="secondary" icon="back">
+              Back to teaching groups
+            </Button>
+          }
+        />
 
-      <PageHeader
-        title={teachingGroup.name}
-        description="Teaching group overview and membership."
-      />
-
-      <AdminFeedbackBanner
-        success={resolvedSearchParams.success}
-        error={resolvedSearchParams.error}
-      />
-
-      <section className="mb-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <PanelCard
-          title="Group details"
-          description="Course and membership context for this guided learning group."
-          tone="admin"
-        >
-          <DetailList
-            items={[
-              { label: "Name", value: teachingGroup.name },
-              {
-                label: "Status",
-                value: teachingGroup.is_active ? "Active" : "Inactive",
-              },
-              {
-                label: "Linked course",
-                value: linkedCourse ? linkedCourse.title : "-",
-              },
-              {
-                label: "Linked variant",
-                value: linkedVariant ? linkedVariant.title : "-",
-              },
-            ]}
+        <OperationsSection muted>
+          <AdminFeedbackBanner
+            success={resolvedSearchParams.success}
+            error={resolvedSearchParams.error}
           />
-        </PanelCard>
+        </OperationsSection>
 
-        <PanelCard title="Actions" description="Manage the group setup." tone="muted">
-          <Button
-            href={`/admin/teaching-groups/${teachingGroup.id}/edit`}
-            variant="secondary"
-            icon="edit"
-          >
-            Edit teaching group
-          </Button>
-        </PanelCard>
-      </section>
+        <OperationsSection>
+          <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+            <PanelCard
+              title="Group details"
+              description="Course and membership context for this guided learning group."
+              tone="admin"
+            >
+              <DetailList
+                items={[
+                  { label: "Name", value: teachingGroup.name },
+                  {
+                    label: "Status",
+                    value: teachingGroup.is_active ? "Active" : "Inactive",
+                  },
+                  {
+                    label: "Linked course",
+                    value: linkedCourse ? linkedCourse.title : "-",
+                  },
+                  {
+                    label: "Linked variant",
+                    value: linkedVariant ? linkedVariant.title : "-",
+                  },
+                ]}
+              />
+            </PanelCard>
 
-      <section className="mb-6 grid gap-4 lg:grid-cols-2">
-        <AddTeachingGroupMemberPanel
-          title="Add teacher"
-          description="Attach a teacher or admin user to this group."
-          emptyText="No available teachers to add."
-          action={addTeacherToTeachingGroupAction}
-          groupId={teachingGroup.id}
-          redirectTo={groupHref}
-          profiles={availableTeachers}
-          selectLabel="Teacher"
-          buttonLabel="Add teacher"
-        />
+            <PanelCard title="Actions" description="Manage the group setup." tone="muted">
+              <Button
+                href={`/admin/teaching-groups/${teachingGroup.id}/edit`}
+                variant="secondary"
+                icon="edit"
+              >
+                Edit teaching group
+              </Button>
+            </PanelCard>
+          </div>
+        </OperationsSection>
 
-        <AddTeachingGroupMemberPanel
-          title="Add student"
-          description="Attach an eligible active student to this group."
-          emptyText="No available students to add."
-          action={addStudentToTeachingGroupAction}
-          groupId={teachingGroup.id}
-          redirectTo={groupHref}
-          profiles={availableStudents}
-          selectLabel="Student"
-          buttonLabel="Add student"
-        />
-      </section>
+        <OperationsSection>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <AddTeachingGroupMemberPanel
+              title="Add teacher"
+              description="Attach a teacher or admin user to this group."
+              emptyText="No available teachers to add."
+              action={addTeacherToTeachingGroupAction}
+              groupId={teachingGroup.id}
+              redirectTo={groupHref}
+              profiles={availableTeachers}
+              selectLabel="Teacher"
+              buttonLabel="Add teacher"
+            />
 
-      <section className="mb-6">
-        <TeachingGroupMemberSection
-          title="Teachers"
-          emptyTitle="No teacher members yet"
-          emptyDescription="Add a teacher to make this group useful for guided Volna work."
-          members={teachers}
-          profileMap={profileMap}
-          viewHrefPrefix="/admin/teachers"
-          viewLabel="View teacher"
-          removeAction={removeTeacherFromTeachingGroupAction}
-          confirmMessage="Remove this teacher from the teaching group?"
-          groupId={teachingGroup.id}
-        />
-      </section>
+            <AddTeachingGroupMemberPanel
+              title="Add student"
+              description="Attach an eligible active student to this group."
+              emptyText="No available students to add."
+              action={addStudentToTeachingGroupAction}
+              groupId={teachingGroup.id}
+              redirectTo={groupHref}
+              profiles={availableStudents}
+              selectLabel="Student"
+              buttonLabel="Add student"
+            />
+          </div>
+        </OperationsSection>
 
-      <TeachingGroupMemberSection
-        title="Students"
-        emptyTitle="No student members yet"
-        emptyDescription="Add students once they have active access and are ready for teacher-led work."
-        members={students}
-        profileMap={profileMap}
-        viewHrefPrefix="/admin/students"
-        viewLabel="View student"
-        removeAction={removeStudentFromTeachingGroupAction}
-        confirmMessage="Remove this student from the teaching group?"
-        groupId={teachingGroup.id}
-      />
+        <OperationsSection>
+          <TeachingGroupMemberSection
+            title="Teachers"
+            emptyTitle="No teacher members yet"
+            emptyDescription="Add a teacher to make this group useful for guided Volna work."
+            members={teachers}
+            profileMap={profileMap}
+            viewHrefPrefix="/admin/teachers"
+            viewLabel="View teacher"
+            removeAction={removeTeacherFromTeachingGroupAction}
+            confirmMessage="Remove this teacher from the teaching group?"
+            groupId={teachingGroup.id}
+          />
+        </OperationsSection>
+
+        <OperationsSection>
+          <TeachingGroupMemberSection
+            title="Students"
+            emptyTitle="No student members yet"
+            emptyDescription="Add students once they have active access and are ready for teacher-led work."
+            members={students}
+            profileMap={profileMap}
+            viewHrefPrefix="/admin/students"
+            viewLabel="View student"
+            removeAction={removeStudentFromTeachingGroupAction}
+            confirmMessage="Remove this student from the teaching group?"
+            groupId={teachingGroup.id}
+          />
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }
