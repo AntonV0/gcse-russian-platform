@@ -11,7 +11,12 @@ import {
   getSafeAvatarBackgroundKey,
   isProfileAvatarKey,
 } from "@/lib/profile/avatar-customization";
+import { getPostOnboardingRedirectPath } from "@/lib/auth/redirect-paths";
 import { createClient } from "@/lib/supabase/server";
+import {
+  getOrCreateOnboardingJourneyId,
+  trackOnboardingFunnelEvent,
+} from "@/lib/onboarding/funnel-events";
 
 const themePreferences = new Set<ThemePreference>(["light", "dark", "system"]);
 const accentPreferences = new Set<AccentPreference>([
@@ -37,8 +42,15 @@ function getString(formData: FormData, key: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export async function skipOnboardingProfileAction() {
-  redirect("/dashboard");
+export async function skipOnboardingProfileAction(formData: FormData) {
+  const next = getPostOnboardingRedirectPath(getString(formData, "next"));
+  const journeyId = await getOrCreateOnboardingJourneyId();
+  await trackOnboardingFunnelEvent({
+    journeyId,
+    eventName: "profile_skipped",
+    destinationPath: next,
+  });
+  redirect(next);
 }
 
 export async function saveOnboardingProfileAction(formData: FormData) {
@@ -59,9 +71,10 @@ export async function saveOnboardingProfileAction(formData: FormData) {
   );
   const themePreference = getString(formData, "themePreference") as ThemePreference;
   const accentPreference = getString(formData, "accentPreference") as AccentPreference;
+  const next = getPostOnboardingRedirectPath(getString(formData, "next"));
 
   if (!isProfileAvatarKey(avatarKey)) {
-    redirect("/onboarding?step=profile&error=avatar");
+    redirect(`/onboarding?step=profile&error=avatar&next=${encodeURIComponent(next)}`);
   }
 
   const safeDisplayName =
@@ -89,7 +102,11 @@ export async function saveOnboardingProfileAction(formData: FormData) {
   const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
 
   if (error) {
-    redirect(`/onboarding?step=profile&error=${encodeURIComponent(error.message)}`);
+    redirect(
+      `/onboarding?step=profile&error=${encodeURIComponent(
+        "save-failed"
+      )}&next=${encodeURIComponent(next)}`
+    );
   }
 
   const cookieStore = await cookies();
@@ -102,8 +119,16 @@ export async function saveOnboardingProfileAction(formData: FormData) {
     cookieStore.set("accent", payload.accent_preference, appearanceCookieOptions);
   }
 
+  const journeyId = await getOrCreateOnboardingJourneyId();
+  await trackOnboardingFunnelEvent({
+    journeyId,
+    eventName: "profile_saved",
+    userId: user.id,
+    destinationPath: next,
+  });
+
   revalidatePath("/dashboard");
   revalidatePath("/profile");
   revalidatePath("/settings");
-  redirect("/dashboard");
+  redirect(next);
 }

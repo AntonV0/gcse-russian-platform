@@ -2,17 +2,43 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/button";
 
-function AuthShellHeader({ source }: { source?: string }) {
+function AuthShellHeader({
+  source,
+  activePage,
+  nextPath,
+  backPath,
+}: {
+  source?: string;
+  activePage?: "login" | "signup";
+  nextPath?: string;
+  backPath?: string;
+}) {
   const isAppSource = source === "app";
-  const sourceSuffix = isAppSource ? "?from=app" : "";
+  const authParams = new URLSearchParams();
+
+  if (isAppSource) {
+    authParams.set("from", "app");
+  }
+
+  if (nextPath && nextPath !== "/dashboard") {
+    authParams.set("next", nextPath);
+  }
+
+  const sourceSuffix = authParams.size ? `?${authParams.toString()}` : "";
   const backLink = isAppSource
-    ? { href: "/", label: "Back to app preview" }
+    ? {
+        href: backPath ?? nextPath ?? "/",
+        label: "Back to app preview",
+      }
     : { href: "/marketing", label: "Back to GCSE Russian" };
 
   return (
     <header className="border-b border-[var(--border-subtle)] bg-[var(--background-elevated)]/92 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-        <Link href="/" className="app-focus-ring flex min-w-0 items-center gap-3 rounded-lg">
+        <Link
+          href="/"
+          className="app-focus-ring flex min-w-0 items-center gap-3 rounded-lg"
+        >
           <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[color-mix(in_srgb,var(--accent-border-ink)_24%,var(--border-subtle))] bg-[var(--background-elevated)] shadow-[0_10px_24px_color-mix(in_srgb,var(--accent)_16%,transparent)]">
             <Image
               src="/brand/logo-final/favicon-r-light-64.png"
@@ -33,26 +59,34 @@ function AuthShellHeader({ source }: { source?: string }) {
           </span>
         </Link>
 
-        <nav className="flex flex-wrap items-center justify-end gap-2" aria-label="Account">
+        <nav
+          className="flex flex-wrap items-center justify-end gap-2 max-sm:w-full"
+          aria-label="Account"
+        >
           <Button href={backLink.href} variant="quiet" size="sm" icon="back">
-            {backLink.label}
+            <span className="sm:hidden">Back</span>
+            <span className="hidden sm:inline">{backLink.label}</span>
           </Button>
-          <Button
-            href={`/login${sourceSuffix}`}
-            variant="secondary"
-            size="sm"
-            icon="user"
-          >
-            Log in
-          </Button>
-          <Button
-            href={`/signup${sourceSuffix}`}
-            variant="primary"
-            size="sm"
-            icon="create"
-          >
-            Sign up
-          </Button>
+          {activePage !== "login" ? (
+            <Button
+              href={`/login${sourceSuffix}`}
+              variant="secondary"
+              size="sm"
+              icon="user"
+            >
+              Log in
+            </Button>
+          ) : null}
+          {activePage !== "signup" ? (
+            <Button
+              href={`/signup${sourceSuffix}`}
+              variant="primary"
+              size="sm"
+              icon="create"
+            >
+              Sign up
+            </Button>
+          ) : null}
         </nav>
       </div>
     </header>
@@ -98,13 +132,24 @@ function AuthShellFooter() {
 export default function AuthShell({
   children,
   source,
+  activePage,
+  nextPath,
+  backPath,
 }: {
   children: React.ReactNode;
   source?: string;
+  activePage?: "login" | "signup";
+  nextPath?: string;
+  backPath?: string;
 }) {
   return (
     <div data-accent="blue" className="min-h-screen bg-[var(--background)]">
-      <AuthShellHeader source={source} />
+      <AuthShellHeader
+        source={source}
+        activePage={activePage}
+        nextPath={nextPath}
+        backPath={backPath}
+      />
 
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
         {children}

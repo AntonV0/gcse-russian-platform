@@ -15,11 +15,12 @@ export const metadata: Metadata = buildPublicMetadata({
     "How GCSE Russian uses personal information for accounts, course access, support, payments, and learning progress.",
 });
 
-const lastUpdated = "8 May 2026";
+const lastUpdated = "30 July 2026";
 
 const dataTypes = [
   "Account details, such as name, email address, login information, and profile settings.",
-  "Parent or guardian contact details where they are provided during account setup or later profile updates.",
+  "Parent or guardian name, email address, and phone number where those details are provided during account setup or later profile updates.",
+  "Privacy-minimised signup and onboarding milestones used to understand where account setup succeeds or needs improvement.",
   "Course access information, such as trial, Foundation, Higher, Volna, or billing status.",
   "Learning activity, such as lesson progress, mock exam attempts, answers, feedback, and assignment activity.",
   "Support messages and enquiries sent to GCSE Russian or Volna School.",
@@ -78,9 +79,9 @@ export default function PrivacyPage() {
             Privacy notice
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--text-secondary)]">
-            This notice explains how GCSE Russian handles personal information when
-            people use the website, create an account, access course content, contact
-            support, or use Volna School related services.
+            This notice explains how GCSE Russian handles personal information when people
+            use the website, create an account, access course content, contact support, or
+            use Volna School related services.
           </p>
           <p className="mt-4 text-sm app-text-muted">Last updated: {lastUpdated}</p>
         </section>
@@ -92,8 +93,8 @@ export default function PrivacyPage() {
               learners, account holders, and visitors to GCSE Russian.
             </p>
             <p>
-              If a child uses the platform, a parent or guardian should review this
-              notice with them and contact support with any questions.
+              If a child uses the platform, a parent or guardian should review this notice
+              with them and contact support with any questions.
             </p>
           </div>
         </SectionCard>
@@ -112,18 +113,18 @@ export default function PrivacyPage() {
         <SectionCard title="Student communication boundaries">
           <p className="text-sm leading-6 text-[var(--text-secondary)]">
             The platform is designed around structured GCSE Russian learning,
-            teacher-controlled assignment and feedback workflows, and account support.
-            It does not provide student-to-student messaging.
+            teacher-controlled assignment and feedback workflows, and account support. It
+            does not provide student-to-student messaging.
           </p>
         </SectionCard>
 
         <SectionCard title="Who information may be shared with">
           <div className="space-y-4 text-sm leading-6 text-[var(--text-secondary)]">
             <p>
-              Information may be shared with service providers that help run the
-              platform, such as hosting, authentication, database, payment, email,
-              analytics, and support tools. These providers should only use information
-              as needed to provide their services.
+              Information may be shared with service providers that help run the platform,
+              such as hosting, authentication, database, payment, email, analytics, and
+              support tools. These providers should only use information as needed to
+              provide their services.
             </p>
             <p>
               GCSE Russian does not sell personal information. Information may also be

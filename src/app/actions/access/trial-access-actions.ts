@@ -7,9 +7,15 @@ import { getTrialProductCodeForVariant } from "@/lib/billing/catalog";
 import { grantProductAccessDb } from "@/lib/billing/grants";
 import {
   getExistingTrialTierRedirectPath,
+  getTrialTierErrorRedirectPath,
   getTrialTierSuccessRedirectPath,
 } from "@/lib/onboarding/trial-tier-redirects";
+import { getPostOnboardingRedirectPath } from "@/lib/auth/redirect-paths";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
+import {
+  getOrCreateOnboardingJourneyId,
+  trackOnboardingFunnelEvent,
+} from "@/lib/onboarding/funnel-events";
 
 type TrialTier = "foundation" | "higher";
 
@@ -25,6 +31,9 @@ export async function chooseTrialTierAction(formData: FormData) {
   const user = await getCurrentUser();
   const source = formData.get("source");
   const isOnboarding = source === "onboarding";
+  const next = getPostOnboardingRedirectPath(
+    typeof formData.get("next") === "string" ? String(formData.get("next")) : null
+  );
 
   if (!user) {
     redirect("/signup");
@@ -33,7 +42,7 @@ export async function chooseTrialTierAction(formData: FormData) {
   const tier = getTrialTier(formData.get("tier"));
 
   if (!tier) {
-    redirect("/dashboard?error=choose-tier");
+    redirect(getTrialTierErrorRedirectPath(isOnboarding, "choose-tier", next));
   }
 
   const supabase = createServiceRoleClient();
@@ -48,17 +57,19 @@ export async function chooseTrialTierAction(formData: FormData) {
       userId: user.id,
       error: existingGrantsError,
     });
-    redirect("/dashboard?error=trial-grant-check-failed");
+    redirect(
+      getTrialTierErrorRedirectPath(isOnboarding, "trial-grant-check-failed", next)
+    );
   }
 
   if ((existingGrants ?? []).length > 0) {
-    redirect(getExistingTrialTierRedirectPath(isOnboarding));
+    redirect(getExistingTrialTierRedirectPath(isOnboarding, next));
   }
 
   const productCode = getTrialProductCodeForVariant(tier);
 
   if (!productCode) {
-    redirect("/dashboard?error=trial-product-missing");
+    redirect(getTrialTierErrorRedirectPath(isOnboarding, "trial-product-missing", next));
   }
 
   const { data: product, error: productError } = await supabase
@@ -74,7 +85,7 @@ export async function chooseTrialTierAction(formData: FormData) {
       productCode,
       error: productError,
     });
-    redirect("/dashboard?error=trial-product-missing");
+    redirect(getTrialTierErrorRedirectPath(isOnboarding, "trial-product-missing", next));
   }
 
   const grant = await grantProductAccessDb({
@@ -88,10 +99,19 @@ export async function chooseTrialTierAction(formData: FormData) {
   });
 
   if (!grant) {
-    redirect("/dashboard?error=trial-grant-failed");
+    redirect(getTrialTierErrorRedirectPath(isOnboarding, "trial-grant-failed", next));
   }
+
+  const journeyId = await getOrCreateOnboardingJourneyId();
+  await trackOnboardingFunnelEvent({
+    journeyId,
+    eventName: "tier_selected",
+    userId: user.id,
+    destinationPath: next,
+    selectedTier: tier,
+  });
 
   revalidatePath("/dashboard");
   revalidatePath("/courses");
-  redirect(getTrialTierSuccessRedirectPath(isOnboarding));
+  redirect(getTrialTierSuccessRedirectPath(isOnboarding, next));
 }

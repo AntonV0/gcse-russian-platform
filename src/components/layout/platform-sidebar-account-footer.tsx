@@ -9,6 +9,7 @@ import {
   getSafeAvatarFrameKey,
 } from "@/lib/profile/avatar-customization";
 import type { NavItem } from "@/components/layout/platform-sidebar-config";
+import { appendAuthDestination } from "@/lib/auth/redirect-paths";
 import {
   NavLockMeta,
   accountItemClass,
@@ -97,7 +98,7 @@ export default function AccountFooter({
         </div>
         <div className="mt-2.5 grid grid-cols-2 gap-2">
           <Button
-            href="/login?from=app"
+            href={appendAuthDestination("/login?from=app", activePathname ?? null)}
             variant="secondary"
             size="sm"
             icon="user"
@@ -166,7 +167,10 @@ export default function AccountFooter({
         >
           {accountItems.map((item) => {
             const active = isActive(activePathname, item.href);
-            const href = getNavHref(item);
+            const href = appendAuthDestination(
+              getNavHref(item),
+              activePathname ?? null
+            );
 
             return (
               <Link

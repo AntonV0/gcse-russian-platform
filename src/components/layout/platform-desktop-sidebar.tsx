@@ -9,6 +9,7 @@ import type {
   SidebarNavGroup,
   SidebarProfileState,
 } from "./platform-sidebar-types";
+import { appendAuthDestination } from "@/lib/auth/redirect-paths";
 import {
   NavLockMeta,
   getNavHref,
@@ -76,7 +77,9 @@ export default function PlatformDesktopSidebar({
         statusIcon={statusIcon}
       />
 
-      {nextUp ? <SidebarNextUpCard nextUp={nextUp} /> : null}
+      {nextUp ? (
+        <SidebarNextUpCard nextUp={nextUp} activePathname={activePathname} />
+      ) : null}
 
       <nav
         className="-mr-1 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pr-1"
@@ -91,7 +94,10 @@ export default function PlatformDesktopSidebar({
 
             {group.items.map((item) => {
               const active = isActive(activePathname, item.href);
-              const href = getNavHref(item);
+              const href = appendAuthDestination(
+                getNavHref(item),
+                activePathname ?? null
+              );
 
               return (
                 <Link

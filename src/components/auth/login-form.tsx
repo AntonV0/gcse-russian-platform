@@ -22,7 +22,17 @@ export default function LoginForm({ initialError, nextPath, source }: LoginFormP
     message: initialError ?? initialState.message,
   });
   const error = state.message;
-  const sourceSuffix = source === "app" ? "?from=app" : "";
+  const authParams = new URLSearchParams();
+
+  if (source === "app") {
+    authParams.set("from", "app");
+  }
+
+  if (nextPath) {
+    authParams.set("next", nextPath);
+  }
+
+  const sourceSuffix = authParams.size ? `?${authParams.toString()}` : "";
 
   return (
     <>

@@ -4,6 +4,7 @@ import Button from "@/components/ui/button";
 import LogoutButton from "@/components/layout/logout-button";
 import type { NavItem } from "@/components/layout/platform-sidebar-config";
 import type { SidebarCommonProps, SidebarNavGroup } from "./platform-sidebar-types";
+import { appendAuthDestination } from "@/lib/auth/redirect-paths";
 import {
   NavLockMeta,
   getNavHref,
@@ -78,13 +79,18 @@ export default function PlatformMobileSidebar({
           </button>
         </div>
 
-        {nextUp ? <SidebarNextUpCard nextUp={nextUp} /> : null}
+        {nextUp ? (
+          <SidebarNextUpCard nextUp={nextUp} activePathname={activePathname} />
+        ) : null}
 
         <nav aria-label={navigationLabels.quick}>
           <div className="grid grid-cols-5 gap-2">
             {mobileQuickItems.map((item) => {
               const active = isActive(activePathname, item.href);
-              const href = getNavHref(item);
+              const href = appendAuthDestination(
+                getNavHref(item),
+                activePathname ?? null
+              );
               const label = getMobileQuickLabel(item.label);
 
               return (
@@ -142,7 +148,10 @@ export default function PlatformMobileSidebar({
                   {sectionLabel(group.label)}
                   {group.items.map((item) => {
                     const active = isActive(activePathname, item.href);
-                    const href = getNavHref(item);
+                    const href = appendAuthDestination(
+                      getNavHref(item),
+                      activePathname ?? null
+                    );
 
                     return (
                       <Link
@@ -175,7 +184,10 @@ export default function PlatformMobileSidebar({
                 {isGuest ? (
                   <div className="grid gap-2 sm:grid-cols-2">
                     <Button
-                      href="/login?from=app"
+                      href={appendAuthDestination(
+                        "/login?from=app",
+                        activePathname ?? null
+                      )}
                       variant="secondary"
                       size="sm"
                       icon="user"

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template";
+import OnboardingEventTracker from "@/components/onboarding/onboarding-event-tracker";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
@@ -69,73 +70,73 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
     return (
       <main>
         <LearningSheet>
-        <LearningSheetSection divided={false}>
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
-            <div className="space-y-5">
-              <div className="flex flex-wrap gap-2">
-                <Badge tone="info" icon="school">
-                  {course.title}
-                </Badge>
-                <Badge tone="muted" icon="layers">
-                  {getVariantDisplayName(variantSlug, variantSlug)}
-                </Badge>
-                <Badge tone="warning" icon="locked">
-                  Locked lesson
-                </Badge>
+          <LearningSheetSection divided={false}>
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
+              <div className="space-y-5">
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone="info" icon="school">
+                    {course.title}
+                  </Badge>
+                  <Badge tone="muted" icon="layers">
+                    {getVariantDisplayName(variantSlug, variantSlug)}
+                  </Badge>
+                  <Badge tone="warning" icon="locked">
+                    Locked lesson
+                  </Badge>
+                </div>
+
+                <div className="space-y-2">
+                  <h1 className="app-title max-w-3xl">{lesson.title}</h1>
+                  <p className="app-subtitle max-w-2xl">
+                    {isGuest
+                      ? "Create a trial account to open sample lessons, choose a tier, and save progress."
+                      : "This lesson is locked for now. Continue through the module first, or review your course access if you expected this lesson to be available."}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    href={
+                      isGuest
+                        ? "/signup?from=app"
+                        : getModulePath(courseSlug, variantSlug, moduleSlug)
+                    }
+                    variant="primary"
+                    icon={isGuest ? "create" : "back"}
+                  >
+                    {isGuest ? "Start trial" : "Back to module"}
+                  </Button>
+
+                  <Button href="/courses" variant="secondary" icon="courses">
+                    Browse courses
+                  </Button>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <h1 className="app-title max-w-3xl">{lesson.title}</h1>
-                <p className="app-subtitle max-w-2xl">
-                  {isGuest
-                    ? "Create a trial account to open sample lessons, choose a tier, and save progress."
-                    : "This lesson is locked for now. Continue through the module first, or review your course access if you expected this lesson to be available."}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  href={
-                    isGuest
-                      ? "/signup?from=app"
-                      : getModulePath(courseSlug, variantSlug, moduleSlug)
-                  }
-                  variant="primary"
-                  icon={isGuest ? "create" : "back"}
-                >
-                  {isGuest ? "Start trial" : "Back to module"}
-                </Button>
-
-                <Button href="/courses" variant="secondary" icon="courses">
-                  Browse courses
-                </Button>
-              </div>
+              <LockedContentCard
+                title="Unlock this lesson"
+                description={
+                  isGuest
+                    ? "Lesson content is part of the trial account experience. Sign up to try sample lessons and see the full path in context."
+                    : "Lessons may unlock as you complete earlier work, and some lessons require the right course access. Start with the module path so the next available step is clear."
+                }
+                accessLabel={
+                  isGuest
+                    ? "Trial account"
+                    : getVariantDisplayName(variantSlug, variantSlug)
+                }
+                statusLabel={isGuest ? "Signup required" : "Locked"}
+                primaryActionHref={
+                  isGuest
+                    ? "/signup?from=app"
+                    : getModulePath(courseSlug, variantSlug, moduleSlug)
+                }
+                primaryActionLabel={isGuest ? "Create trial account" : "Back to module"}
+                secondaryActionHref={isGuest ? "/courses" : "/account/billing"}
+                secondaryActionLabel={isGuest ? "Course preview" : "Review access"}
+              />
             </div>
-
-            <LockedContentCard
-              title="Unlock this lesson"
-              description={
-                isGuest
-                  ? "Lesson content is part of the trial account experience. Sign up to try sample lessons and see the full path in context."
-                  : "Lessons may unlock as you complete earlier work, and some lessons require the right course access. Start with the module path so the next available step is clear."
-              }
-              accessLabel={
-                isGuest
-                  ? "Trial account"
-                  : getVariantDisplayName(variantSlug, variantSlug)
-              }
-              statusLabel={isGuest ? "Signup required" : "Locked"}
-              primaryActionHref={
-          isGuest
-            ? "/signup?from=app"
-            : getModulePath(courseSlug, variantSlug, moduleSlug)
-              }
-              primaryActionLabel={isGuest ? "Create trial account" : "Back to module"}
-              secondaryActionHref={isGuest ? "/courses" : "/account/billing"}
-              secondaryActionLabel={isGuest ? "Course preview" : "Review access"}
-            />
-          </div>
-        </LearningSheetSection>
+          </LearningSheetSection>
         </LearningSheet>
       </main>
     );
@@ -171,30 +172,33 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   }
 
   return (
-    <LessonPageTemplate
-      courseSlug={courseSlug}
-      variantSlug={variantSlug}
-      moduleSlug={moduleSlug}
-      lessonSlug={lessonSlug}
-      sections={lessonContent.sections}
-      currentStep={currentStep}
-      lessonProgress={lessonProgress}
-      lessonPageData={{
-        ...lessonPageData,
-        previousLesson: getAdjacentPublishedLesson(
-          lessonPageData.lessons,
-          lesson.slug,
-          "previous",
-          canPreviewDraftLesson
-        ),
-        nextLesson: getAdjacentPublishedLesson(
-          lessonPageData.lessons,
-          lesson.slug,
-          "next",
-          canPreviewDraftLesson
-        ),
-      }}
-    />
+    <>
+      <OnboardingEventTracker eventName="first_lesson_opened" onlyExistingJourney />
+      <LessonPageTemplate
+        courseSlug={courseSlug}
+        variantSlug={variantSlug}
+        moduleSlug={moduleSlug}
+        lessonSlug={lessonSlug}
+        sections={lessonContent.sections}
+        currentStep={currentStep}
+        lessonProgress={lessonProgress}
+        lessonPageData={{
+          ...lessonPageData,
+          previousLesson: getAdjacentPublishedLesson(
+            lessonPageData.lessons,
+            lesson.slug,
+            "previous",
+            canPreviewDraftLesson
+          ),
+          nextLesson: getAdjacentPublishedLesson(
+            lessonPageData.lessons,
+            lesson.slug,
+            "next",
+            canPreviewDraftLesson
+          ),
+        }}
+      />
+    </>
   );
 }
 

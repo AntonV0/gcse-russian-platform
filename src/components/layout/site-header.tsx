@@ -16,6 +16,7 @@ import {
   getDashboardPath,
   getProgressPath,
 } from "@/lib/access/routes";
+import { appendAuthDestination } from "@/lib/auth/redirect-paths";
 
 type SiteHeaderProps = {
   user: {
@@ -163,15 +164,13 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
               </>
             ) : (
               <>
-                <Link href="/login?from=app" className="app-nav-link">
+                <Link
+                  href={appendAuthDestination("/login?from=app", pathname)}
+                  className="app-nav-link"
+                >
                   Log in
                 </Link>
-                <Button
-                  href="/signup?from=app"
-                  variant="primary"
-                  size="sm"
-                  icon="create"
-                >
+                <Button href="/signup?from=app" variant="primary" size="sm" icon="create">
                   Sign up
                 </Button>
               </>
@@ -229,7 +228,7 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
             ) : (
               <div className="flex flex-col gap-2">
                 <Button
-                  href="/login?from=app"
+                  href={appendAuthDestination("/login?from=app", pathname)}
                   variant="secondary"
                   className="w-full"
                   icon="user"

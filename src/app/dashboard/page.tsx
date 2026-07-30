@@ -1,4 +1,5 @@
 import { GuestDashboardPanel } from "@/components/dashboard/guest-dashboard-panel";
+import OnboardingEventTracker from "@/components/onboarding/onboarding-event-tracker";
 import { StudentDashboardPanel } from "@/components/dashboard/student-dashboard-panel";
 import { TeacherDashboardPanel } from "@/components/dashboard/teacher-dashboard-panel";
 import { TrialTierChoicePanel } from "@/components/dashboard/trial-tier-choice-panel";
@@ -66,6 +67,9 @@ export default async function DashboardPage() {
 
   return (
     <main>
+      {hasActiveStudentPath ? (
+        <OnboardingEventTracker eventName="dashboard_arrived" onlyExistingJourney />
+      ) : null}
       {dashboard.role === "guest" ? <GuestDashboardPanel /> : null}
 
       {dashboard.role === "student" && dashboard.accessState === "trial_needs_tier" ? (
@@ -89,7 +93,6 @@ export default async function DashboardPage() {
       {dashboard.role === "teacher" ? (
         <TeacherDashboardPanel dashboard={dashboard} userEmail={user?.email} />
       ) : null}
-
     </main>
   );
 }
@@ -115,30 +118,35 @@ function ExpiredAccessPanel() {
 
       <LearningSheetSection>
         <div className="grid gap-4 md:grid-cols-3">
-        <DashboardCard title="Keep revising">
-          <div className="space-y-3">
-            <p>Public resources remain available while access is restored.</p>
-            <Button href="/grammar" variant="secondary" size="sm" icon="grammar">
-              Open grammar
-            </Button>
-          </div>
-        </DashboardCard>
-        <DashboardCard title="Practise papers">
-          <div className="space-y-3">
-            <p>Use official paper links for exam-style practice and review.</p>
-            <Button href="/past-papers" variant="secondary" size="sm" icon="pastPapers">
-              Past papers
-            </Button>
-          </div>
-        </DashboardCard>
-        <DashboardCard title="Restore focus">
-          <div className="space-y-3">
-            <p>Billing options reopen the full next-step dashboard experience.</p>
-            <Button href="/account/billing" variant="secondary" size="sm" icon="billing">
-              Billing
-            </Button>
-          </div>
-        </DashboardCard>
+          <DashboardCard title="Keep revising">
+            <div className="space-y-3">
+              <p>Public resources remain available while access is restored.</p>
+              <Button href="/grammar" variant="secondary" size="sm" icon="grammar">
+                Open grammar
+              </Button>
+            </div>
+          </DashboardCard>
+          <DashboardCard title="Practise papers">
+            <div className="space-y-3">
+              <p>Use official paper links for exam-style practice and review.</p>
+              <Button href="/past-papers" variant="secondary" size="sm" icon="pastPapers">
+                Past papers
+              </Button>
+            </div>
+          </DashboardCard>
+          <DashboardCard title="Restore focus">
+            <div className="space-y-3">
+              <p>Billing options reopen the full next-step dashboard experience.</p>
+              <Button
+                href="/account/billing"
+                variant="secondary"
+                size="sm"
+                icon="billing"
+              >
+                Billing
+              </Button>
+            </div>
+          </DashboardCard>
         </div>
       </LearningSheetSection>
     </LearningSheet>

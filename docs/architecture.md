@@ -141,6 +141,10 @@ Supabase:
 - authentication
 - storage
 - row-level security
+- Signup profile provisioning runs server-side with service-role access and rolls
+  back a newly created auth user if the profile cannot be saved.
+- Email-confirmation links return through the app `/auth/callback` route, which
+  must be included in the Supabase Auth redirect URL allowlist.
 
 ---
 
@@ -559,6 +563,7 @@ The profile record stores optional parent or guardian contact details:
 
 - `parent_guardian_name`
 - `parent_guardian_email`
+- `parent_guardian_phone`
 - `parent_guardian_consent_confirmed`
 - `parent_guardian_consent_confirmed_at`
 

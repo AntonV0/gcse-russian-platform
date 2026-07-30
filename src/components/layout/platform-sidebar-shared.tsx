@@ -2,6 +2,7 @@ import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 import type { AppIconKey } from "@/lib/shared/icons";
 import type { PlatformSidebarNextUp } from "@/lib/dashboard/sidebar-next-up";
+import { appendAuthDestination } from "@/lib/auth/redirect-paths";
 
 export function SidebarHeader({
   eyebrow,
@@ -37,10 +38,16 @@ export function SidebarHeader({
   );
 }
 
-export function SidebarNextUpCard({ nextUp }: { nextUp: PlatformSidebarNextUp }) {
+export function SidebarNextUpCard({
+  nextUp,
+  activePathname,
+}: {
+  nextUp: PlatformSidebarNextUp;
+  activePathname?: string;
+}) {
   return (
     <Link
-      href={nextUp.href}
+      href={appendAuthDestination(nextUp.href, activePathname ?? null)}
       className="app-btn-variant-journey app-btn-journey app-focus-ring group relative mb-4 flex overflow-hidden rounded-2xl px-3.5 py-3 text-left transition hover:-translate-y-0.5"
       aria-label={`${nextUp.label}: ${nextUp.title}`}
     >

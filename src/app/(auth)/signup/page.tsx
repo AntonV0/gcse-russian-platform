@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import AuthShell from "@/components/auth/auth-shell";
 import SignUpForm from "@/components/auth/signup-form";
+import OnboardingEventTracker from "@/components/onboarding/onboarding-event-tracker";
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
+import { getPostOnboardingRedirectPath } from "@/lib/auth/redirect-paths";
 import { buildPublicMetadata, noIndexRobots } from "@/lib/seo/site";
 
 export const metadata: Metadata = {
@@ -25,13 +27,29 @@ const unlocks = [
 export default async function SignUpPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; from?: string }>;
+  searchParams: Promise<{ error?: string; from?: string; next?: string }>;
 }) {
-  const { error, from } = await searchParams;
+  const { error, from, next } = await searchParams;
   const signupSource = from === "app" ? "app" : "marketing";
-  const signupEntryPath = signupSource === "app" ? "/signup?from=app" : "/signup";
+  const signupPagePath = signupSource === "app" ? "/signup?from=app" : "/signup";
+  const destinationPath = getPostOnboardingRedirectPath(next);
+  const signupEntryPath = next
+    ? getPostOnboardingRedirectPath(next, signupPagePath)
+    : signupPagePath;
+
   return (
-    <AuthShell source={from}>
+    <AuthShell
+      source={from}
+      activePage="signup"
+      nextPath={destinationPath}
+      backPath={destinationPath}
+    >
+      <OnboardingEventTracker
+        eventName="signup_viewed"
+        source={signupSource}
+        entryPath={signupEntryPath}
+        destinationPath={destinationPath}
+      />
       <div className="mx-auto max-w-5xl">
         <section className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--surface-panel-border)] bg-[var(--background-elevated)] shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]">
           <div className="border-b border-[var(--border-subtle)] px-5 py-6 sm:px-7 md:py-7">
@@ -50,8 +68,8 @@ export default async function SignUpPage({
                   Create your trial student account
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
-                  Start learning GCSE Russian for free. After signup, choose Foundation
-                  or Higher, try lessons and practice questions, and save your progress.
+                  Start learning GCSE Russian for free. After signup, choose Foundation or
+                  Higher, try lessons and practice questions, and save your progress.
                 </p>
               </div>
 
@@ -86,6 +104,7 @@ export default async function SignUpPage({
                 initialError={error}
                 source={signupSource}
                 entryPath={signupEntryPath}
+                destinationPath={destinationPath}
               />
             </div>
 

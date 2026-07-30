@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLinkStatus } from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { LinkProps } from "next/link";
 import AppIcon from "@/components/ui/app-icon";
@@ -17,6 +18,7 @@ import {
   SHOW_UI_DEBUG,
 } from "@/components/ui/dev-component-marker";
 import type { AppIconKey } from "@/lib/shared/icons";
+import { appendAuthDestination } from "@/lib/auth/redirect-paths";
 
 type BaseProps = {
   children?: React.ReactNode;
@@ -197,6 +199,7 @@ function shouldShowNavigationPending(
 }
 
 export default function Button(props: ButtonProps) {
+  const pathname = usePathname();
   const {
     children,
     variant = "secondary",
@@ -260,6 +263,7 @@ export default function Button(props: ButtonProps) {
   }, [icon, iconOnly, resolvedAriaLabel, size, variant]);
 
   if ("href" in props && props.href) {
+    const resolvedHref = appendAuthDestination(props.href, pathname);
     const linkProps = {
       ...(props as ButtonAsLinkProps),
     } as React.AnchorHTMLAttributes<HTMLAnchorElement> &
@@ -289,6 +293,7 @@ export default function Button(props: ButtonProps) {
 
         <Link
           {...linkProps}
+          href={resolvedHref}
           className={mergedClassName}
           aria-label={resolvedAriaLabel}
           aria-busy={isBusy || props["aria-busy"] || undefined}
@@ -304,7 +309,7 @@ export default function Button(props: ButtonProps) {
 
             linkOnClick?.(event);
 
-            if (shouldShowNavigationPending(event, props.href, props.target)) {
+            if (shouldShowNavigationPending(event, resolvedHref, props.target)) {
               setLinkPending(true);
             }
           }}
