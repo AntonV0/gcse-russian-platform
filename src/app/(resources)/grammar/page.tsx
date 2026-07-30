@@ -3,7 +3,10 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
@@ -86,10 +89,9 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
   );
 
   return (
-    <main className="flex flex-col gap-4">
-      <PageIntroPanel
-        className="order-1"
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Grammar"
         title="Grammar"
         description="Find GCSE Russian grammar by topic and tier, then open clear explanations, examples, and reference tables."
@@ -113,21 +115,15 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             </Button>
           </>
         }
-        visual={
-          <VisualPlaceholder
-            category="grammar"
-            size="wide"
-            ariaLabel="Abstract grammar diagram illustration"
-          />
-        }
       />
 
-      <SectionCard
-        className="order-2"
-        title="Find grammar"
-        description="Search by keyword, then narrow by tier or topic."
-        tone="student"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Find grammar</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            Search by keyword, then narrow by tier or topic.
+          </p>
+        </div>
         <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(240px,1fr)_minmax(150px,190px)_minmax(220px,1fr)] xl:items-center">
           <div className="min-w-0">
             <Input
@@ -165,14 +161,17 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             </Button>
           </div>
         </form>
-      </SectionCard>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-3"
-        title="Grammar sets"
-        description={`${visibleGrammarSets.length} set${visibleGrammarSets.length === 1 ? "" : "s"} available for your access level.`}
-        tone="student"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Grammar sets</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            {visibleGrammarSets.length} set
+            {visibleGrammarSets.length === 1 ? "" : "s"} available for your access
+            level.
+          </p>
+        </div>
         {visibleGrammarSets.length === 0 ? (
           <EmptyState
             icon="search"
@@ -192,7 +191,8 @@ export default async function GrammarPage({ searchParams }: GrammarPageProps) {
             canSeeCoverage={canSeeCoverage}
           />
         )}
-      </SectionCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }
@@ -217,10 +217,9 @@ function GuestGrammarPreview() {
   ];
 
   return (
-    <main className="flex flex-col gap-4">
-      <PageIntroPanel
-        className="order-1"
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Grammar"
         title="GCSE Russian grammar with guided access"
         description="The platform includes structured grammar explanations and practice, but the full grammar index and point names are kept inside the signed-in course experience."
@@ -239,7 +238,7 @@ function GuestGrammarPreview() {
         }
         actions={
           <>
-            <Button href="/signup" variant="primary" icon="create">
+            <Button href="/signup?from=app" variant="primary" icon="create">
               Start trial
             </Button>
             <Button href="/gcse-russian-grammar" variant="secondary" icon="text">
@@ -247,34 +246,31 @@ function GuestGrammarPreview() {
             </Button>
           </>
         }
-        visual={
-          <VisualPlaceholder
-            category="grammar"
-            size="wide"
-            ariaLabel="Abstract grammar diagram illustration"
-          />
-        }
       />
 
-      <section className="order-2 grid gap-4 md:grid-cols-3">
+      <LearningSheetSection>
+        <div className="grid gap-4 md:grid-cols-3">
         {previewFeatures.map((feature) => (
           <SectionCard key={feature.title} title={feature.title} tone="student">
             <p className="app-text-body-muted">{feature.description}</p>
           </SectionCard>
         ))}
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-3"
-        title="What opens after signup"
-        description="Trial and paid accounts can use the grammar study flow inside the course, including explanations, examples, tables, and links back to lessons."
-        tone="student"
-        actions={
+      <LearningSheetSection muted>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="app-heading-section">What opens after signup</h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              Trial and paid accounts can use the grammar study flow inside the course,
+              including explanations, examples, tables, and links back to lessons.
+            </p>
+          </div>
           <Button href="/courses" variant="secondary" icon="courses">
             Preview course
           </Button>
-        }
-      >
+        </div>
         <div className="grid gap-3 md:grid-cols-3">
           {[
             "Choose Foundation or Higher.",
@@ -292,7 +288,8 @@ function GuestGrammarPreview() {
             </div>
           ))}
         </div>
-      </SectionCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

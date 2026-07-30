@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import SectionCard from "@/components/ui/section-card";
 import VocabularyFilterForm from "@/components/vocabulary/vocabulary-filter-form";
 import VocabularySetSectionList from "@/components/vocabulary/vocabulary-set-section-list";
@@ -100,10 +102,9 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
   const topicOptions = getTopicOptions(themeKeys);
 
   return (
-    <main className="flex flex-col gap-4">
-      <PageIntroPanel
-        className="order-1"
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Vocabulary"
         title="Vocabulary"
         description="Find a set, open a study queue, and keep returning to the words that still need practice."
@@ -135,43 +136,35 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             </Button>
           </>
         }
-        visual={
-          <Image
-            src="/illustrations/vocabulary-hub-v1.png"
-            alt="Vocabulary cards and study tools illustration"
-            width={1720}
-            height={914}
-            priority
-            sizes="(min-width: 1280px) 320px, 80vw"
-            className="h-auto w-full max-w-[360px] drop-shadow-[0_18px_34px_color-mix(in_srgb,var(--text-primary)_10%,transparent)]"
-          />
-        }
       />
 
-      <SectionCard
-        className="order-2"
-        title="Find vocabulary"
-        description="Search by keyword, then narrow by tier, list type, or topic."
-        tone="student"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Find vocabulary</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            Search by keyword, then narrow by tier, list type, or topic.
+          </p>
+        </div>
         <VocabularyFilterForm
           search={params.search}
           filters={filters}
           topicOptions={topicOptions}
         />
-      </SectionCard>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-3"
-        title="Vocabulary sets"
-        description={`${vocabularySets.length} set${vocabularySets.length === 1 ? "" : "s"} available${canSeeDrafts ? " to your staff view" : ""}.`}
-        tone="student"
-        actions={
+      <LearningSheetSection>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="app-heading-section">Vocabulary sets</h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              {vocabularySets.length} set{vocabularySets.length === 1 ? "" : "s"}{" "}
+              available{canSeeDrafts ? " to your staff view" : ""}.
+            </p>
+          </div>
           <Button href="/vocabulary?tier=foundation" variant="secondary" icon="school">
             Foundation
           </Button>
-        }
-      >
+        </div>
         {vocabularySets.length === 0 ? (
           <EmptyState
             icon="vocabulary"
@@ -189,7 +182,8 @@ export default async function VocabularyPage({ searchParams }: VocabularyPagePro
             canSeeCoverage={canSeeCoverage}
           />
         )}
-      </SectionCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }
@@ -220,10 +214,9 @@ function GuestVocabularyPreview() {
   ];
 
   return (
-    <main className="flex flex-col gap-4">
-      <PageIntroPanel
-        className="order-1"
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Vocabulary"
         title="GCSE Russian vocabulary that unlocks with the course"
         description="The platform includes structured GCSE Russian vocabulary practice without exposing the full study lists to anonymous visitors."
@@ -242,7 +235,7 @@ function GuestVocabularyPreview() {
         }
         actions={
           <>
-            <Button href="/signup" variant="primary" icon="create">
+            <Button href="/signup?from=app" variant="primary" icon="create">
               Start trial
             </Button>
             <Button href="/gcse-russian-vocabulary" variant="secondary" icon="text">
@@ -250,38 +243,31 @@ function GuestVocabularyPreview() {
             </Button>
           </>
         }
-        visual={
-          <Image
-            src="/illustrations/vocabulary-hub-v1.png"
-            alt="Vocabulary cards and study tools illustration"
-            width={1720}
-            height={914}
-            priority
-            sizes="(min-width: 1280px) 320px, 80vw"
-            className="h-auto w-full max-w-[360px] drop-shadow-[0_18px_34px_color-mix(in_srgb,var(--text-primary)_10%,transparent)]"
-          />
-        }
       />
 
-      <section className="order-2 grid gap-4 md:grid-cols-3">
+      <LearningSheetSection>
+        <div className="grid gap-4 md:grid-cols-3">
         {previewFeatures.map((feature) => (
           <SectionCard key={feature.title} title={feature.title} tone="student">
             <p className="app-text-body-muted">{feature.description}</p>
           </SectionCard>
         ))}
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-3"
-        title="How vocabulary access works"
-        description="Guests can see the learning model. Trial and paid accounts open the actual study lists as part of the course journey."
-        tone="student"
-        actions={
+      <LearningSheetSection muted>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="app-heading-section">How vocabulary access works</h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              Guests can see the learning model. Trial and paid accounts open the actual
+              study lists as part of the course journey.
+            </p>
+          </div>
           <Button href="/courses" variant="secondary" icon="courses">
             Preview course
           </Button>
-        }
-      >
+        </div>
         <div className="grid gap-3 md:grid-cols-3">
           {studyFlow.map((step, index) => (
             <div
@@ -295,7 +281,8 @@ function GuestVocabularyPreview() {
             </div>
           ))}
         </div>
-      </SectionCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

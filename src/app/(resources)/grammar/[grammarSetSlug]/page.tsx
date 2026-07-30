@@ -2,8 +2,11 @@ import { notFound, redirect } from "next/navigation";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
 import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 import { GrammarSetRequirementBadges } from "@/components/grammar/grammar-requirement-badges";
@@ -64,9 +67,9 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
 
   if (!canDashboardAccessGrammarSet(grammarSet, dashboard)) {
     return (
-      <main className="space-y-4">
-        <PageIntroPanel
-          tone="student"
+      <main>
+        <LearningSheet>
+        <LearningSheetHeader
           eyebrow="Grammar set"
           title={grammarSet.title}
           description={
@@ -81,16 +84,19 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
           }
         />
 
-        <LockedContentCard
-          title="Unlock this grammar set"
-          description="This set is published, but your current access does not include it yet. Review your access options to continue with the full grammar route."
-          accessLabel="Full course"
-          statusLabel="Locked"
-          primaryActionHref="/account/billing"
-          primaryActionLabel="Review access"
-          secondaryActionHref="/grammar"
-          secondaryActionLabel="Browse grammar"
-        />
+        <LearningSheetSection muted>
+          <LockedContentCard
+            title="Unlock this grammar set"
+            description="This set is published, but your current access does not include it yet. Review your access options to continue with the full grammar route."
+            accessLabel="Full course"
+            statusLabel="Locked"
+            primaryActionHref="/account/billing"
+            primaryActionLabel="Review access"
+            secondaryActionHref="/grammar"
+            secondaryActionLabel="Browse grammar"
+          />
+        </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -111,9 +117,9 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
     : new Map();
 
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Grammar set"
         title={grammarSet.title}
         description={grammarSet.description ?? "Review the grammar points in this set."}
@@ -141,6 +147,7 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
         }
       />
 
+      <LearningSheetSection>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <SectionCard
           title="Grammar points"
@@ -226,6 +233,8 @@ export default async function GrammarSetPage({ params }: GrammarSetPageProps) {
           <RelatedGrammarSetsPanel grammarSets={relatedGrammarSets} />
         </div>
       </div>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

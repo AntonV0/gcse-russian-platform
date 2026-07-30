@@ -3,8 +3,11 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
 import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
 import PanelCard from "@/components/ui/panel-card";
 import SectionCard from "@/components/ui/section-card";
 import GrammarTableRenderer from "@/components/grammar/grammar-table-renderer";
@@ -251,9 +254,9 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
 
   if (!canDashboardAccessGrammarSet(grammarSet, dashboard)) {
     return (
-      <main className="space-y-4">
-        <PageIntroPanel
-          tone="student"
+      <main>
+        <LearningSheet>
+        <LearningSheetHeader
           eyebrow={grammarSet.title}
           title={grammarPoint.title}
           description={
@@ -273,16 +276,19 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
           }
         />
 
-        <LockedContentCard
-          title="Unlock this grammar point"
-          description="This explanation, examples, and practice route are published, but your current access does not include them yet."
-          accessLabel="Full course"
-          statusLabel="Locked"
-          primaryActionHref="/account/billing"
-          primaryActionLabel="Review access"
-          secondaryActionHref="/grammar"
-          secondaryActionLabel="Browse grammar"
-        />
+        <LearningSheetSection muted>
+          <LockedContentCard
+            title="Unlock this grammar point"
+            description="This explanation, examples, and practice route are published, but your current access does not include them yet."
+            accessLabel="Full course"
+            statusLabel="Locked"
+            primaryActionHref="/account/billing"
+            primaryActionLabel="Review access"
+            secondaryActionHref="/grammar"
+            secondaryActionLabel="Browse grammar"
+          />
+        </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -304,9 +310,9 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
     .slice(0, 4);
 
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow={grammarSet.title}
         title={grammarPoint.title}
         description={
@@ -348,6 +354,7 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
         }
       />
 
+      <LearningSheetSection>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
           <SectionCard
@@ -497,6 +504,8 @@ export default async function GrammarPointPage({ params }: GrammarPointPageProps
           </PanelCard>
         </div>
       </div>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }
