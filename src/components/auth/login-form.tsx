@@ -10,17 +10,19 @@ import FeedbackBanner from "@/components/ui/feedback-banner";
 type LoginFormProps = {
   initialError?: string;
   nextPath?: string;
+  source?: string;
 };
 
 const initialState: AuthActionState = {
   message: null,
 };
 
-export default function LoginForm({ initialError, nextPath }: LoginFormProps) {
+export default function LoginForm({ initialError, nextPath, source }: LoginFormProps) {
   const [state, formAction] = useActionState(signIn, {
     message: initialError ?? initialState.message,
   });
   const error = state.message;
+  const sourceSuffix = source === "app" ? "?from=app" : "";
 
   return (
     <>
@@ -58,7 +60,7 @@ export default function LoginForm({ initialError, nextPath }: LoginFormProps) {
               Password
             </label>
             <Link
-              href="/forgot-password"
+              href={`/forgot-password${sourceSuffix}`}
               className="app-accent-link rounded-sm text-xs font-bold"
             >
               Forgot password?
@@ -90,7 +92,7 @@ export default function LoginForm({ initialError, nextPath }: LoginFormProps) {
           signed-in app.
         </p>
         <Link
-          href="/signup"
+          href={`/signup${sourceSuffix}`}
           className="app-accent-link mt-3 inline-flex items-center gap-2 rounded-sm text-sm font-bold"
         >
           Create trial account

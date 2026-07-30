@@ -8,6 +8,10 @@ import {
   validateParentGuardianContact,
   validatePasswordUpdate,
 } from "@/lib/account/settings-validation";
+import {
+  getAuthRedirectPath,
+  getSafeAuthRedirectPath,
+} from "@/lib/auth/redirect-paths";
 import { getPublicSiteUrl } from "@/lib/seo/site";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,24 +20,21 @@ function getString(formData: FormData, key: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function getSafeRedirectPath(value: string, fallback = "/dashboard") {
-  if (!value.startsWith("/") || value.startsWith("//")) {
-    return fallback;
-  }
-
-  if (value.includes("\\")) {
-    return fallback;
-  }
-
-  return value;
-}
-
 export type AuthActionState = {
   message: string | null;
 };
 
 function authError(message: string): AuthActionState {
   return { message };
+}
+
+function getSignupSource(value: string) {
+  return value === "app" || value === "marketing" ? value : "unknown";
+}
+
+function getSignupEntryPath(value: string) {
+  const safePath = getSafeAuthRedirectPath(value);
+  return safePath ? safePath.slice(0, 500) : null;
 }
 
 export async function signUp(
@@ -45,6 +46,8 @@ export async function signUp(
   const fullName = getString(formData, "fullName");
   const parentGuardianName = getString(formData, "parentGuardianName");
   const parentGuardianEmail = getString(formData, "parentGuardianEmail");
+  const signupSource = getSignupSource(getString(formData, "signupSource"));
+  const signupEntryPath = getSignupEntryPath(getString(formData, "signupEntryPath"));
   const parentGuardianConsentConfirmed =
     formData.get("parentGuardianConsentConfirmed") === "on";
 
@@ -78,6 +81,8 @@ export async function signUp(
     options: {
       data: {
         full_name: fullName,
+        signup_source: signupSource,
+        signup_entry_path: signupEntryPath,
       },
     },
   });
@@ -116,9 +121,21 @@ export async function signUp(
     if (profileError) {
       return authError(profileError.message);
     }
+
+    const { error: signupContextError } = await supabase
+      .from("profiles")
+      .update({
+        signup_source: signupSource,
+        signup_entry_path: signupEntryPath,
+      })
+      .eq("id", userId);
+
+    if (signupContextError) {
+      console.warn("Signup context could not be saved to profile.", signupContextError);
+    }
   }
 
-  redirect("/dashboard");
+  redirect("/onboarding");
 }
 
 export async function signIn(
@@ -127,7 +144,7 @@ export async function signIn(
 ): Promise<AuthActionState> {
   const email = getString(formData, "email");
   const password = getString(formData, "password");
-  const next = getSafeRedirectPath(getString(formData, "next"));
+  const next = getAuthRedirectPath(getString(formData, "next"));
 
   if (!email) {
     return authError("Enter the account email address.");

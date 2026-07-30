@@ -9,17 +9,24 @@ import FeedbackBanner from "@/components/ui/feedback-banner";
 
 type SignUpFormProps = {
   initialError?: string;
+  source?: string;
+  entryPath?: string;
 };
 
 const initialState: AuthActionState = {
   message: null,
 };
 
-export default function SignUpForm({ initialError }: SignUpFormProps) {
+export default function SignUpForm({
+  initialError,
+  source,
+  entryPath,
+}: SignUpFormProps) {
   const [state, formAction] = useActionState(signUp, {
     message: initialError ?? initialState.message,
   });
   const error = state.message;
+  const sourceSuffix = source === "app" ? "?from=app" : "";
 
   return (
     <>
@@ -27,23 +34,27 @@ export default function SignUpForm({ initialError }: SignUpFormProps) {
         <div aria-live="polite">
           <FeedbackBanner
             tone="danger"
-            title="Signup failed"
+            title="We could not create the account"
             description={error}
             className="mt-5"
           />
         </div>
       ) : null}
 
-      <form action={formAction} className="mt-6 space-y-4">
+      <form action={formAction} className="mt-5 space-y-5">
+        <input type="hidden" name="signupSource" value={source ?? "marketing"} />
+        <input type="hidden" name="signupEntryPath" value={entryPath ?? "/signup"} />
+
         <div className="app-form-field">
           <label htmlFor="fullName" className="app-form-label">
-            Full name
+            Student name
           </label>
           <input
             id="fullName"
             name="fullName"
             type="text"
             autoComplete="name"
+            placeholder="Student name"
             required
             className="app-form-control app-form-input"
           />
@@ -58,9 +69,14 @@ export default function SignUpForm({ initialError }: SignUpFormProps) {
             name="email"
             type="email"
             autoComplete="email"
+            placeholder="name@example.com"
+            aria-describedby="email-help"
             required
             className="app-form-control app-form-input"
           />
+          <p id="email-help" className="mt-2 text-xs text-[var(--text-muted)]">
+            Use an email the student or parent can check.
+          </p>
         </div>
 
         <div className="app-form-field">
@@ -72,6 +88,7 @@ export default function SignUpForm({ initialError }: SignUpFormProps) {
             name="password"
             type="password"
             autoComplete="new-password"
+            placeholder="Create a password"
             required
             minLength={8}
             aria-describedby="password-help"
@@ -82,14 +99,22 @@ export default function SignUpForm({ initialError }: SignUpFormProps) {
           </p>
         </div>
 
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
-          <p className="text-sm font-bold text-[var(--text-primary)]">
-            Parent or guardian contact
-          </p>
-          <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-            Optional for trial access, useful where a parent or guardian helps manage
-            the account or later payment decision.
-          </p>
+        <details className="group rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 app-focus-ring">
+            <span>
+              <span className="block text-sm font-bold text-[var(--text-primary)]">
+                Add parent or guardian details
+              </span>
+              <span className="mt-1 block text-sm leading-6 text-[var(--text-secondary)]">
+                Optional for the trial. Useful if a parent helps with the account.
+              </span>
+            </span>
+            <AppIcon
+              icon="chevronDown"
+              size={16}
+              className="shrink-0 text-[var(--text-muted)] transition group-open:rotate-180"
+            />
+          </summary>
 
           <div className="mt-4 space-y-4">
             <div className="app-form-field">
@@ -125,18 +150,39 @@ export default function SignUpForm({ initialError }: SignUpFormProps) {
                 className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent-fill)]"
               />
               <span>
-                A parent or guardian is aware of this account setup where that is
-                appropriate for the student.
+                A parent or guardian knows about this account setup, if that applies.
               </span>
             </label>
           </div>
-        </div>
+        </details>
 
         <AuthSubmitButton
           idleIcon="create"
-          idleLabel="Create trial account"
-          pendingLabel="Creating account..."
+          idleLabel="Create my trial account"
+          pendingLabel="Creating your account..."
         />
+
+        <p className="text-center text-xs leading-5 text-[var(--text-muted)]">
+          By creating an account, you agree to the{" "}
+          <Link
+            href="/terms"
+            target="_blank"
+            rel="noreferrer"
+            className="app-accent-link rounded-sm font-semibold"
+          >
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/privacy"
+            target="_blank"
+            rel="noreferrer"
+            className="app-accent-link rounded-sm font-semibold"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </form>
 
       <div className="mt-6 rounded-lg bg-[var(--background-muted)] p-4">
@@ -144,11 +190,10 @@ export default function SignUpForm({ initialError }: SignUpFormProps) {
           Already have an account?
         </p>
         <p className="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
-          Log in to continue the student route, review progress, or upgrade from inside
-          the app.
+          Log in to continue lessons, review progress, or return to your dashboard.
         </p>
         <Link
-          href="/login"
+          href={`/login${sourceSuffix}`}
           className="app-accent-link mt-3 inline-flex items-center gap-2 rounded-sm text-sm font-bold"
         >
           Log in
