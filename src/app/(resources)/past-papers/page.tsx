@@ -4,8 +4,10 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
-import SectionCard from "@/components/ui/section-card";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import Select from "@/components/ui/select";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -113,10 +115,9 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
   );
 
   return (
-    <main className="flex flex-col gap-4">
-      <PageIntroPanel
-        className="order-1"
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Past papers"
         title="Past Papers"
         description="Browse official Pearson Edexcel GCSE Russian 1RU0 resources and choose the next useful practice task with a paper, mark scheme, transcript, or audio file."
@@ -146,37 +147,32 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             </Button>
           </>
         }
-        visual={
-          <VisualPlaceholder
-            category="pastPapers"
-            size="wide"
-            ariaLabel="Abstract past paper resource illustration"
-          />
-        }
       />
 
+      <LearningSheetSection muted>
       <FeedbackBanner
-        className="order-3 xl:order-2"
         tone="info"
         title="External Pearson resources"
         description="Open the question paper first, answer under timed conditions, then use mark schemes, audio, transcripts, and examiner reports to turn mistakes into the next practice task."
       />
+      </LearningSheetSection>
 
       {dashboard.role === "guest" ? (
+        <LearningSheetSection muted>
         <FeedbackBanner
-          className="order-4 xl:order-3"
           tone="success"
           icon="unlocked"
           title="Past papers stay free"
           description="You can use every official link here without an account. Create a trial account when you want lessons, saved progress, and mock exam attempts."
         >
-          <Button href="/signup" variant="primary" size="sm" icon="create">
+          <Button href="/signup?from=app" variant="primary" size="sm" icon="create">
             Start trial
           </Button>
         </FeedbackBanner>
+        </LearningSheetSection>
       ) : dashboard.accessMode === "trial" ? (
+        <LearningSheetSection muted>
         <FeedbackBanner
-          className="order-4 xl:order-3"
           tone="info"
           icon="billing"
           title="Use papers alongside trial lessons"
@@ -186,25 +182,26 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             Review access
           </Button>
         </FeedbackBanner>
+        </LearningSheetSection>
       ) : null}
 
-      <SectionCard
-        className="order-2 xl:order-4"
-        title="Find resources"
-        description={
-          activePathway
-            ? `${activePathway.paperName}: ${activePathway.practiceCue}`
-            : "Filter by paper, tier, exam series, and resource type."
-        }
-        tone="student"
-        actions={
-          hasActiveFilters ? (
+      <LearningSheetSection>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="app-heading-section">Find resources</h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              {activePathway
+                ? `${activePathway.paperName}: ${activePathway.practiceCue}`
+                : "Filter by paper, tier, exam series, and resource type."}
+            </p>
+          </div>
+          {hasActiveFilters ? (
             <Badge tone="info" icon="filter">
               Filters active
             </Badge>
           ) : null
-        }
-      >
+          }
+        </div>
         <form className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:items-center">
           <div className="min-w-0">
             <Select
@@ -274,15 +271,16 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             </Button>
           </div>
         </form>
-      </SectionCard>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-5"
-        title="Choose a paper pathway"
-        description="Students usually make faster progress when the next task is specific: one paper, one timing target, one review habit."
-        tone="student"
-        density="compact"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Choose a paper pathway</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            Students usually make faster progress when the next task is specific: one
+            paper, one timing target, one review habit.
+          </p>
+        </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {examPaperPathways.map((pathway) => (
             <div key={pathway.paperNumber} className="app-soft-panel p-4">
@@ -316,15 +314,18 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             </div>
           ))}
         </div>
-      </SectionCard>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-6"
-        title="Official resources"
-        description={`${resources.length} resource${resources.length === 1 ? "" : "s"} available for your filters.`}
-        tone="student"
-        actions={
-          activePathway ? (
+      <LearningSheetSection>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="app-heading-section">Official resources</h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              {resources.length} resource{resources.length === 1 ? "" : "s"} available
+              for your filters.
+            </p>
+          </div>
+          {activePathway ? (
             <Button
               href={activePathway.mockExamHref}
               variant="soft"
@@ -333,9 +334,8 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             >
               Practise {activePathway.skill.toLowerCase()} mocks
             </Button>
-          ) : null
-        }
-      >
+          ) : null}
+        </div>
         {groupedResources.length === 0 ? (
           <EmptyState
             icon="search"
@@ -427,7 +427,8 @@ export default async function PastPapersPage({ searchParams }: PastPapersPagePro
             ))}
           </div>
         )}
-      </SectionCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

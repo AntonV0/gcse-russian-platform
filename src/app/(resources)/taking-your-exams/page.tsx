@@ -4,7 +4,10 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import SectionCard from "@/components/ui/section-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { buildPublicMetadata } from "@/lib/seo/site";
@@ -128,12 +131,12 @@ const preparationRoutes: Array<{
 
 export default function TakingYourExamsPage() {
   return (
-    <main className="space-y-8">
-      <PageIntroPanel
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Private candidate guide"
         title="Taking your GCSE Russian exams"
         description="Use this as a practical planning page before you rely on any exam route. The centre you enter with is always the final source for availability, fees, rooms, exact start times, speaking arrangements, and candidate instructions."
-        tone="student"
         badges={
           <>
             <Badge tone="info" icon="exam">
@@ -173,19 +176,24 @@ export default function TakingYourExamsPage() {
             />
           ))}
         </div>
-      </PageIntroPanel>
+      </LearningSheetHeader>
 
+      <LearningSheetSection muted>
       <FeedbackBanner
         tone="warning"
         title="Do not leave the speaking exam until last"
         description="Most private-candidate problems happen around speaking: examiner availability, appointment timing, recording, and centre paperwork. Ask about it before you commit to a centre."
       />
+      </LearningSheetSection>
 
-      <SectionCard
-        title="Private candidate decision flow"
-        description="Work through these checks in order before building your revision plan around a centre."
-        tone="student"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Private candidate decision flow</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            Work through these checks in order before building your revision plan around
+            a centre.
+          </p>
+        </div>
         <div className="grid gap-3">
           {examSetupChecklist.map((step, index) => (
             <div
@@ -216,9 +224,10 @@ export default function TakingYourExamsPage() {
             </div>
           ))}
         </div>
-      </SectionCard>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
         <SectionCard
           title="Speaking exam planning"
           description="Speaking is a live assessment, so your centre must be confident about the practical details."
@@ -275,13 +284,17 @@ export default function TakingYourExamsPage() {
             </Button>
           </div>
         </DashboardCard>
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <SectionCard
-        title="Build the revision plan around the entry"
-        description="Once the centre route is realistic, use the platform resources to prepare for each part of the exam."
-        tone="student"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Build the revision plan around the entry</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            Once the centre route is realistic, use the platform resources to prepare for
+            each part of the exam.
+          </p>
+        </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {preparationRoutes.map((route) => (
             <DashboardCard key={route.title} className="h-full">
@@ -300,8 +313,9 @@ export default function TakingYourExamsPage() {
             </DashboardCard>
           ))}
         </div>
-      </SectionCard>
+      </LearningSheetSection>
 
+      <LearningSheetSection muted>
       <DashboardCard title="Centre confirmation checklist" headingLevel={2}>
         <div className="grid gap-3 md:grid-cols-2">
           {[
@@ -323,6 +337,8 @@ export default function TakingYourExamsPage() {
           ))}
         </div>
       </DashboardCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

@@ -4,7 +4,10 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import SectionCard from "@/components/ui/section-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getCurrentUser } from "@/lib/auth/auth";
@@ -116,9 +119,9 @@ export default async function OnlineClassesPage() {
   const isVolnaStudent = dashboard.role === "student" && dashboard.accessMode === "volna";
 
   return (
-    <main className="space-y-8">
-      <PageIntroPanel
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Volna live teaching"
         title={
           isVolnaStudent
@@ -196,11 +199,16 @@ export default async function OnlineClassesPage() {
             compact
           />
         </div>
-      </PageIntroPanel>
+      </LearningSheetHeader>
 
-      {isVolnaStudent ? <VolnaStudentPanel /> : null}
+      {isVolnaStudent ? (
+        <LearningSheetSection muted>
+          <VolnaStudentPanel />
+        </LearningSheetSection>
+      ) : null}
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <LearningSheetSection>
+        <div className="grid gap-4 md:grid-cols-3">
         {decisionPoints.map((item) => (
           <DashboardCard key={item.title} className="h-full">
             <div className="space-y-4">
@@ -214,9 +222,11 @@ export default async function OnlineClassesPage() {
             </div>
           </DashboardCard>
         ))}
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
         <SectionCard
           title="Typical Volna lesson rhythm"
           description="The live route is for students who benefit from structure, teacher correction, and a weekly study routine."
@@ -263,13 +273,18 @@ export default async function OnlineClassesPage() {
             />
           </div>
         </SectionCard>
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <SectionCard
-        title="How live teaching connects to the platform"
-        description="Volna support should feel like an extension of the app, not a separate maze."
-        tone="student"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">
+            How live teaching connects to the platform
+          </h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            Volna support should feel like an extension of the app, not a separate maze.
+          </p>
+        </div>
         <div className="grid gap-3 md:grid-cols-3">
           {platformConnections.map((item) => (
             <DashboardCard key={item.title} className="h-full">
@@ -285,9 +300,10 @@ export default async function OnlineClassesPage() {
             </DashboardCard>
           ))}
         </div>
-      </SectionCard>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.7fr)]">
+      <LearningSheetSection muted>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.7fr)]">
         <DashboardCard title="Next steps">
           <div className="space-y-4">
             <p>
@@ -326,7 +342,9 @@ export default async function OnlineClassesPage() {
             </Button>
           </div>
         </DashboardCard>
-      </section>
+        </div>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

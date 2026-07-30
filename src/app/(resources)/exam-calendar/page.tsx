@@ -3,7 +3,10 @@ import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getOgImagePath } from "@/lib/seo/og-images";
 import { buildPublicMetadata } from "@/lib/seo/site";
@@ -311,12 +314,12 @@ export default function ExamCalendarPage() {
   );
 
   return (
-    <main className="space-y-8">
-      <PageIntroPanel
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Exam calendar"
         title="GCSE Russian dates and deadlines"
         description="Keep the official Pearson Edexcel 1RU0 written-paper dates, centre-arranged speaking exam, contingency day, and results day in one place."
-        tone="student"
         badges={
           <>
             <Badge tone="info" icon="exam">
@@ -346,9 +349,10 @@ export default function ExamCalendarPage() {
           private-candidate centre timetable is the final source for rooms, exact start
           time, speaking appointment, and access arrangements.
         </p>
-      </PageIntroPanel>
+      </LearningSheetHeader>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <LearningSheetSection>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <SummaryStatCard
           title="Next dated event"
           value={nextEvent ? getRelativeDateLabel(nextEvent.date) : "-"}
@@ -381,9 +385,10 @@ export default function ExamCalendarPage() {
           tone="success"
           compact
         />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section>
+      <LearningSheetSection>
         <div className="mb-4">
           <h2 className="app-heading-section">Russian written papers</h2>
           <p className="mt-2 max-w-2xl app-text-body-muted">
@@ -396,9 +401,9 @@ export default function ExamCalendarPage() {
             <CalendarEventCard key={event.id} event={event} />
           ))}
         </div>
-      </section>
+      </LearningSheetSection>
 
-      <section>
+      <LearningSheetSection>
         <div className="mb-4">
           <h2 className="app-heading-section">Other important dates</h2>
           <p className="mt-2 max-w-2xl app-text-body-muted">
@@ -414,9 +419,9 @@ export default function ExamCalendarPage() {
               <CalendarEventCard key={event.id} event={event} />
             ))}
         </div>
-      </section>
+      </LearningSheetSection>
 
-      <section>
+      <LearningSheetSection>
         <div className="mb-4">
           <h2 className="app-heading-section">Revision focus</h2>
           <p className="mt-2 max-w-2xl app-text-body-muted">
@@ -443,8 +448,9 @@ export default function ExamCalendarPage() {
             </DashboardCard>
           ))}
         </div>
-      </section>
+      </LearningSheetSection>
 
+      <LearningSheetSection muted>
       <DashboardCard title="Official sources" headingLevel={2}>
         <div className="grid gap-3 md:grid-cols-3">
           {[
@@ -485,6 +491,8 @@ export default function ExamCalendarPage() {
           ))}
         </div>
       </DashboardCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

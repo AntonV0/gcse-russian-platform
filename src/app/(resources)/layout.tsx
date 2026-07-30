@@ -24,10 +24,10 @@ function ResourceAccessBanner({ dashboard }: { dashboard: DashboardInfo }) {
         description="Public resources are open to browse. Create an account when you want trial lessons, saved progress, mock attempts, and account tools."
       >
         <div className="app-mobile-action-stack flex flex-wrap gap-2">
-          <Button href="/signup" variant="primary" size="sm" icon="create">
+          <Button href="/signup?from=app" variant="primary" size="sm" icon="create">
             Start trial
           </Button>
-          <Button href="/login" variant="secondary" size="sm" icon="user">
+          <Button href="/login?from=app" variant="secondary" size="sm" icon="user">
             Log in
           </Button>
         </div>

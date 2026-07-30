@@ -6,9 +6,12 @@ import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import LoadingButton from "@/components/ui/loading-button";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
 import SectionCard from "@/components/ui/section-card";
 import { startMockExamAttemptAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
 import { getCurrentUser } from "@/lib/auth/auth";
@@ -43,9 +46,9 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
 
   if (dashboard.role === "guest") {
     return (
-      <main className="space-y-4">
-        <PageIntroPanel
-          tone="student"
+      <main>
+        <LearningSheet>
+        <LearningSheetHeader
           eyebrow="Mock exam"
           title={exam.title}
           description={exam.description ?? "Original GCSE-style mock exam."}
@@ -66,16 +69,19 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
           }
         />
 
-        <LockedContentCard
-          title="Create a trial account to preview mocks"
-          description="Mock exam attempts require an account so drafts, submissions, and feedback can be saved."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Start trial"
-          secondaryActionHref="/past-papers"
-          secondaryActionLabel="Open past papers"
-        />
+        <LearningSheetSection muted>
+          <LockedContentCard
+            title="Create a trial account to preview mocks"
+            description="Mock exam attempts require an account so drafts, submissions, and feedback can be saved."
+            accessLabel="Trial account"
+            statusLabel="Signup required"
+            primaryActionHref="/signup?from=app"
+            primaryActionLabel="Start trial"
+            secondaryActionHref="/past-papers"
+            secondaryActionLabel="Open past papers"
+          />
+        </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -92,9 +98,9 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
   const latestDraftAttempt = attempts.find((attempt) => attempt.status === "draft");
 
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Mock exam"
         title={exam.title}
         description={exam.description ?? "Original GCSE-style mock exam."}
@@ -145,6 +151,7 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
         }
       />
 
+      <LearningSheetSection muted>
       <FeedbackBanner
         tone={latestDraftAttempt ? "warning" : "info"}
         title={latestDraftAttempt ? "Draft attempt waiting" : "Exam conditions"}
@@ -154,8 +161,10 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
             : "When you start an attempt, answer independently and submit before the time limit if one is set. Objective questions may be auto-marked; longer writing, speaking, and translation tasks need teacher review."
         }
       />
+      </LearningSheetSection>
 
       {attempts.length > 0 ? (
+        <LearningSheetSection>
         <SectionCard
           title="Your attempts"
           description="Continue a draft or review a submitted result."
@@ -204,8 +213,10 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
             })}
           </div>
         </SectionCard>
+        </LearningSheetSection>
       ) : null}
 
+      <LearningSheetSection>
       {sections.length === 0 ? (
         <SectionCard
           title="Exam structure"
@@ -265,6 +276,8 @@ export default async function MockExamDetailPage({ params }: MockExamDetailPageP
           })}
         </div>
       )}
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

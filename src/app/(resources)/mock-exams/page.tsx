@@ -4,9 +4,11 @@ import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
-import SectionCard from "@/components/ui/section-card";
 import { getCurrentUser } from "@/lib/auth/auth";
 import Select from "@/components/ui/select";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
@@ -73,9 +75,9 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
 
   if (dashboard.role === "guest") {
     return (
-      <main className="space-y-4">
-        <PageIntroPanel
-          tone="student"
+      <main>
+        <LearningSheet>
+        <LearningSheetHeader
           eyebrow="Mock exams"
           title="Mock Exams"
           description="Original GCSE-style mocks are saved, submitted, and reviewed inside a signed-in account."
@@ -94,25 +96,21 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
               Past papers
             </Button>
           }
-          visual={
-            <VisualPlaceholder
-              category="mockExam"
-              size="wide"
-              ariaLabel="Abstract mock exam practice illustration"
-            />
-          }
         />
 
-        <LockedContentCard
-          title="Create a trial account to open mock exams"
-          description="Past papers remain free and open. Platform mock exams require signup so attempts, marks, drafts, and feedback can be saved."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Start trial"
-          secondaryActionHref="/past-papers"
-          secondaryActionLabel="Open past papers"
-        />
+        <LearningSheetSection muted>
+          <LockedContentCard
+            title="Create a trial account to open mock exams"
+            description="Past papers remain free and open. Platform mock exams require signup so attempts, marks, drafts, and feedback can be saved."
+            accessLabel="Trial account"
+            statusLabel="Signup required"
+            primaryActionHref="/signup?from=app"
+            primaryActionLabel="Start trial"
+            secondaryActionHref="/past-papers"
+            secondaryActionLabel="Open past papers"
+          />
+        </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -140,10 +138,9 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
       : null;
 
   return (
-    <main className="flex flex-col gap-4">
-      <PageIntroPanel
-        className="order-1"
-        tone="student"
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Mock exams"
         title="Mock Exams"
         description="Attempt original GCSE-style mock exams, continue drafts, and review submitted or marked work without losing sight of the next skill to practise."
@@ -173,33 +170,29 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             </Button>
           </>
         }
-        visual={
-          <VisualPlaceholder
-            category="mockExam"
-            size="wide"
-            ariaLabel="Abstract mock exam practice illustration"
-          />
-        }
       />
 
+      <LearningSheetSection muted>
       <FeedbackBanner
-        className="order-3 xl:order-2"
         tone="info"
         title="Original mock exams"
         description="These mocks use GCSE-style structures, but the questions are platform-created content. Official Pearson past papers remain linked separately in the Past Papers library."
       />
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-4 xl:order-3"
-        title="Volna School official virtual mocks"
-        description="Volna School hosts two official virtual mock exam sessions each year for Volna School students."
-        tone="brand"
-        actions={
+      <LearningSheetSection muted>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="app-heading-section">Volna School official virtual mocks</h2>
+            <p className="mt-2 max-w-2xl app-text-body-muted">
+              Volna School hosts two official virtual mock exam sessions each year for
+              Volna School students.
+            </p>
+          </div>
           <Badge tone="info" icon="school">
             Volna School students
           </Badge>
-        }
-      >
+        </div>
         <div className="grid gap-3 md:grid-cols-3">
           <div className="rounded-xl border border-[var(--border)] bg-[var(--background-elevated)] px-4 py-3">
             <div className="text-xs font-semibold uppercase tracking-[0.12em] app-text-soft">
@@ -230,18 +223,17 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             </p>
           </div>
         </div>
-      </SectionCard>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-2 xl:order-4"
-        title="Find mock exams"
-        description={
-          activePathway
-            ? `${activePathway.paperName}: ${activePathway.nextStep}`
-            : "Filter by paper and tier."
-        }
-        tone="student"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Find mock exams</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            {activePathway
+              ? `${activePathway.paperName}: ${activePathway.nextStep}`
+              : "Filter by paper and tier."}
+          </p>
+        </div>
         <form className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(160px,180px)_minmax(180px,220px)] xl:items-center">
           <div className="min-w-0">
             <Select
@@ -281,15 +273,16 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             </Button>
           </div>
         </form>
-      </SectionCard>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-5"
-        title="Practice pathways"
-        description="Pick the paper that feels most urgent, then use a mock attempt to expose exactly what to practise next."
-        tone="student"
-        density="compact"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Practice pathways</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            Pick the paper that feels most urgent, then use a mock attempt to expose
+            exactly what to practise next.
+          </p>
+        </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {examPaperPathways.map((pathway) => (
             <div key={pathway.paperNumber} className="app-soft-panel p-4">
@@ -318,14 +311,16 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             </div>
           ))}
         </div>
-      </SectionCard>
+      </LearningSheetSection>
 
-      <SectionCard
-        className="order-6"
-        title="Available mock exams"
-        description={`${exams.length} exam${exams.length === 1 ? "" : "s"} available for your access level.`}
-        tone="student"
-      >
+      <LearningSheetSection>
+        <div className="mb-4">
+          <h2 className="app-heading-section">Available mock exams</h2>
+          <p className="mt-2 max-w-2xl app-text-body-muted">
+            {exams.length} exam{exams.length === 1 ? "" : "s"} available for your
+            access level.
+          </p>
+        </div>
         {exams.length === 0 ? (
           <EmptyState
             icon="mockExam"
@@ -401,7 +396,8 @@ export default async function MockExamsPage({ searchParams }: MockExamsPageProps
             })}
           </div>
         )}
-      </SectionCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }
