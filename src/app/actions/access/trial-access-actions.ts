@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getTrialProductCodeForVariant } from "@/lib/billing/catalog";
 import { grantProductAccessDb } from "@/lib/billing/grants";
+import {
+  getExistingTrialTierRedirectPath,
+  getTrialTierSuccessRedirectPath,
+} from "@/lib/onboarding/trial-tier-redirects";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 type TrialTier = "foundation" | "higher";
@@ -19,6 +23,8 @@ function getTrialTier(value: FormDataEntryValue | null): TrialTier | null {
 
 export async function chooseTrialTierAction(formData: FormData) {
   const user = await getCurrentUser();
+  const source = formData.get("source");
+  const isOnboarding = source === "onboarding";
 
   if (!user) {
     redirect("/signup");
@@ -46,7 +52,7 @@ export async function chooseTrialTierAction(formData: FormData) {
   }
 
   if ((existingGrants ?? []).length > 0) {
-    redirect("/dashboard");
+    redirect(getExistingTrialTierRedirectPath(isOnboarding));
   }
 
   const productCode = getTrialProductCodeForVariant(tier);
@@ -87,5 +93,5 @@ export async function chooseTrialTierAction(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath("/courses");
-  redirect("/dashboard?success=trial-started");
+  redirect(getTrialTierSuccessRedirectPath(isOnboarding));
 }

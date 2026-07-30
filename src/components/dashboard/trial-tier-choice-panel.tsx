@@ -1,6 +1,10 @@
 import { chooseTrialTierAction } from "@/app/actions/access/trial-access-actions";
 import Badge from "@/components/ui/badge";
 import DashboardCard from "@/components/ui/dashboard-card";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import LoadingButton from "@/components/ui/loading-button";
 
 const tierOptions = [
@@ -24,30 +28,25 @@ const tierOptions = [
 
 export function TrialTierChoicePanel() {
   return (
-    <>
-      <section className="app-surface-brand app-section-padding-lg">
-        <div className="space-y-5">
-          <div className="flex flex-wrap gap-2">
+    <LearningSheet>
+      <LearningSheetHeader
+        eyebrow="Trial setup"
+        title="Choose your trial path"
+        description="Start with the route that best matches your goal. You can still sample the other tier during trial, but your dashboard will stay focused on this choice."
+        badges={
+          <>
             <Badge tone="info" icon="unlocked">
               Trial account ready
             </Badge>
             <Badge tone="muted" icon="school">
               One GCSE tier decision
             </Badge>
-          </div>
+          </>
+        }
+      />
 
-          <div className="space-y-2">
-            <h1 className="app-heading-hero max-w-3xl">Choose your trial path</h1>
-            <p className="app-subtitle max-w-2xl">
-              Start with the route that best matches your goal. You can still sample the
-              other tier during trial, but your dashboard will stay focused on this
-              choice.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-2">
+      <LearningSheetSection>
+        <div className="grid gap-4 lg:grid-cols-2">
         {tierOptions.map((option, index) => (
           <DashboardCard key={option.tier} className="h-full">
             <form action={chooseTrialTierAction} className="flex h-full flex-col gap-4">
@@ -84,7 +83,8 @@ export function TrialTierChoicePanel() {
             </form>
           </DashboardCard>
         ))}
-      </section>
-    </>
+        </div>
+      </LearningSheetSection>
+    </LearningSheet>
   );
 }
