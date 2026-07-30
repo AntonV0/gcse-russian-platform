@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AppShell from "@/components/layout/app-shell";
 import PageContainer from "@/components/layout/page-container";
 import PlatformSidebar from "@/components/layout/platform-sidebar";
@@ -7,11 +8,7 @@ import PublicAccentOverride from "@/components/providers/public-accent-override"
 import AppIcon from "@/components/ui/app-icon";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import DashboardCard from "@/components/ui/dashboard-card";
-import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
-import SummaryStatCard from "@/components/ui/summary-stat-card";
-import VisualPlaceholder from "@/components/ui/visual-placeholder";
+import LearningSheet, { LearningSheetSection } from "@/components/ui/learning-sheet";
 import {
   getCurrentAppearancePreferences,
   getCurrentProfile,
@@ -25,7 +22,7 @@ import {
 import { getPlatformSidebarNextUp } from "@/lib/dashboard/sidebar-next-up";
 import type { AppIconKey } from "@/lib/shared/icons";
 
-type HubCard = {
+type HomeLinkItem = {
   title: string;
   description: string;
   href: string;
@@ -34,7 +31,7 @@ type HubCard = {
   tone?: "default" | "info" | "success" | "warning";
 };
 
-const signedInHubCards: HubCard[] = [
+const signedInHomeLinks: HomeLinkItem[] = [
   {
     title: "Dashboard",
     description: "Pick up the next lesson, assignment, mock, or feedback item.",
@@ -66,16 +63,7 @@ const signedInHubCards: HubCard[] = [
   },
 ];
 
-const guestHubCards: HubCard[] = [
-  {
-    title: "Start free",
-    description:
-      "Create your trial student account to try lessons, practice questions, and saved progress.",
-    href: "/signup",
-    label: "Start free trial",
-    icon: "create",
-    tone: "success",
-  },
+const guestHomeLinks: HomeLinkItem[] = [
   {
     title: "My Course",
     description:
@@ -92,14 +80,45 @@ const guestHubCards: HubCard[] = [
     icon: "pastPapers",
   },
   {
-    title: "Mock exams",
+    title: "Mock Exams",
     description:
       "Preview the exam practice area, then create an account when you are ready to save attempts.",
     href: "/mock-exams",
     label: "Preview mocks",
     icon: "mockExam",
   },
+  {
+    title: "Live Classes & Tuition",
+    description:
+      "See how Volna School support can sit alongside the self-study course.",
+    href: "/online-classes",
+    label: "View classes",
+    icon: "school",
+  },
 ];
+
+const guestTrialUnlocks = [
+  { title: "Lessons", description: "Try guided GCSE Russian lessons.", icon: "lessons" },
+  {
+    title: "Practice questions",
+    description: "Use quizzes and question practice.",
+    icon: "exercise",
+  },
+  {
+    title: "Saved progress",
+    description: "Keep lesson and revision progress.",
+    icon: "completed",
+  },
+  {
+    title: "Student dashboard",
+    description: "Return to your next best step.",
+    icon: "dashboard",
+  },
+] satisfies Array<{
+  title: string;
+  description: string;
+  icon: AppIconKey;
+}>;
 
 function getHeroContent(isSignedIn: boolean) {
   if (isSignedIn) {
@@ -122,7 +141,7 @@ function getHeroContent(isSignedIn: boolean) {
     title: "Explore GCSE Russian",
     description:
       "Look around the app before you create an account. Browse the course structure, past papers, mock exam previews, and tuition options, then start a free trial for lessons, practice questions, saved progress, and much more.",
-    primaryHref: "/signup",
+    primaryHref: "/signup?from=app",
     primaryLabel: "Start free trial",
     primaryIcon: "create" as const,
     secondaryHref: "/courses",
@@ -131,40 +150,116 @@ function getHeroContent(isSignedIn: boolean) {
   };
 }
 
-function HubCardGrid({ cards }: { cards: HubCard[] }) {
+function HomeLinkGrid({ items }: { items: HomeLinkItem[] }) {
   return (
-    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      {cards.map((item) => (
-        <DashboardCard key={item.title} className="h-full">
-          <div className="space-y-4">
-            <div className="flex items-start justify-between gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--accent-ink)]">
-                <AppIcon icon={item.icon} size={19} />
-              </span>
-              {item.tone ? (
-                <Badge tone={item.tone} icon={item.icon}>
-                  Recommended
-                </Badge>
-              ) : null}
-            </div>
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      {items.map((item) => (
+        <Link
+          key={item.title}
+          href={item.href}
+          className="group flex h-full min-h-[12rem] flex-col rounded-2xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-elevated)_88%,transparent)] p-4 transition app-focus-ring hover:border-[var(--sidebar-item-border-hover)] hover:bg-[var(--sidebar-item-bg-hover)] hover:shadow-[var(--shadow-md)]"
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--background-muted)] text-[var(--accent-ink)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_10%,var(--background-elevated))]">
+            <AppIcon icon={item.icon} size={18} />
+          </span>
 
-            <div>
-              <h2 className="app-heading-card">{item.title}</h2>
-              <p className="mt-2 app-text-body-muted">{item.description}</p>
-            </div>
+          <span className="mt-4 app-heading-card">{item.title}</span>
+          <span className="mt-2 flex-1 app-text-body-muted">{item.description}</span>
 
-            <Button
-              href={item.href}
-              variant={item.tone === "success" ? "journey" : "secondary"}
-              size="sm"
-              icon={item.icon}
-            >
-              {item.label}
-            </Button>
-          </div>
-        </DashboardCard>
+          <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent-ink)]">
+            {item.label}
+            <AppIcon
+              icon="arrowRight"
+              size={15}
+              className="transition group-hover:translate-x-0.5"
+            />
+          </span>
+        </Link>
       ))}
-    </section>
+    </div>
+  );
+}
+
+function HomeFactStrip({
+  isSignedIn,
+  variantLabel,
+  accessLabel,
+}: {
+  isSignedIn: boolean;
+  variantLabel: string;
+  accessLabel: string;
+}) {
+  const facts = [
+    {
+      title: "Course",
+      value: "Open preview",
+      description: "Foundation, Higher, and Volna routes",
+      icon: "courses" as const,
+    },
+    {
+      title: "Resources",
+      value: isSignedIn ? "Open" : "Guest view",
+      description: isSignedIn ? "revision and papers" : "papers and course view",
+      icon: "pastPapers" as const,
+    },
+    {
+      title: "Access",
+      value: accessLabel,
+      description: variantLabel,
+      icon: isSignedIn ? ("userCheck" as const) : ("preview" as const),
+    },
+  ];
+
+  return (
+    <div className="grid overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_62%,transparent)] md:grid-cols-3">
+      {facts.map((fact, index) => (
+        <div
+          key={fact.title}
+          className={[
+            "flex min-h-[6.5rem] gap-3 p-4",
+            index > 0
+              ? "border-t border-[var(--border-subtle)] md:border-l md:border-t-0"
+              : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--background-elevated)] text-[var(--accent-ink)]">
+            <AppIcon icon={fact.icon} size={17} />
+          </span>
+          <span className="min-w-0">
+            <span className="block app-text-caption">{fact.title}</span>
+            <span className="mt-1 block font-semibold leading-tight text-[var(--text-primary)]">
+              {fact.value}
+            </span>
+            <span className="mt-1 block app-text-caption">{fact.description}</span>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TrialUnlockGrid() {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {guestTrialUnlocks.map((item) => (
+        <div
+          key={item.title}
+          className="flex h-full gap-3 rounded-2xl border border-[color-mix(in_srgb,var(--accent-border-ink)_16%,var(--border-subtle))] bg-[color-mix(in_srgb,var(--background-elevated)_74%,transparent)] p-3"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--background-elevated)] text-[var(--accent-ink)]">
+            <AppIcon icon={item.icon} size={17} />
+          </span>
+          <span>
+            <span className="block text-sm font-semibold text-[var(--text-primary)]">
+              {item.title}
+            </span>
+            <span className="mt-1 block app-text-caption">{item.description}</span>
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -177,7 +272,11 @@ export default async function AppHomePage() {
   ]);
   const isSignedIn = Boolean(user);
   const hero = getHeroContent(isSignedIn);
-  const hubCards = isSignedIn ? signedInHubCards : guestHubCards;
+  const homeLinks = isSignedIn ? signedInHomeLinks : guestHomeLinks;
+  const variantLabel = getDashboardVariantLabel(dashboard.variant);
+  const accessLabel = isSignedIn
+    ? getDashboardAccessLabel(dashboard.accessMode)
+    : "Guest preview";
   const sidebarNextUp = await getPlatformSidebarNextUp(dashboard);
 
   const appHome = (
@@ -192,7 +291,7 @@ export default async function AppHomePage() {
       }
     >
       <PageContainer>
-        <div className="grid gap-6 py-8 md:py-10 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
+        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
           <div className="lg:sticky lg:top-[var(--sticky-site-offset)] lg:max-h-[calc(100dvh_-_var(--sticky-site-offset)_-_1rem)] lg:self-start">
             <PlatformSidebar
               role={dashboard.role}
@@ -208,32 +307,35 @@ export default async function AppHomePage() {
           </div>
 
           <section className="min-w-0">
-            <div className="space-y-8">
-              <PageIntroPanel
-                tone="brand"
-                eyebrow={hero.eyebrow}
-                title={hero.title}
-                description={hero.description}
-                badges={
-                  <>
-                    <Badge tone="info" icon="school">
-                      Edexcel GCSE 1RU0
-                    </Badge>
-                    <Badge tone="muted" icon="layers">
-                      {getDashboardVariantLabel(dashboard.variant)}
-                    </Badge>
-                    <Badge
-                      tone={isSignedIn ? "success" : "muted"}
-                      icon={isSignedIn ? "userCheck" : "preview"}
-                    >
-                      {isSignedIn
-                        ? getDashboardAccessLabel(dashboard.accessMode)
-                        : "Guest preview"}
-                    </Badge>
-                  </>
-                }
-                actions={
-                  <>
+            <LearningSheet>
+              <LearningSheetSection divided={false} className="md:py-7">
+                <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-start">
+                  <div className="min-w-0">
+                    <div className="app-text-caption uppercase tracking-[0.12em]">
+                      {hero.eyebrow}
+                    </div>
+                    <h1 className="mt-2 max-w-3xl text-[2.25rem] font-extrabold leading-[1.04] text-[var(--text-primary)] [letter-spacing:0] md:text-[3rem]">
+                      {hero.title}
+                    </h1>
+                    <p className="mt-4 max-w-3xl app-text-lede">{hero.description}</p>
+
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <Badge tone="info" icon="school">
+                        Edexcel GCSE 1RU0
+                      </Badge>
+                      <Badge tone="muted" icon="layers">
+                        {variantLabel}
+                      </Badge>
+                      <Badge
+                        tone={isSignedIn ? "success" : "muted"}
+                        icon={isSignedIn ? "userCheck" : "preview"}
+                      >
+                        {accessLabel}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="app-mobile-action-stack flex shrink-0 flex-col gap-2 sm:flex-row xl:justify-end">
                     <Button
                       href={hero.primaryHref}
                       variant="journey"
@@ -248,184 +350,131 @@ export default async function AppHomePage() {
                     >
                       {hero.secondaryLabel}
                     </Button>
-                  </>
-                }
-                visual={
-                  isSignedIn ? (
-                    <VisualPlaceholder
-                      category="learningPath"
-                      size="wide"
-                      ariaLabel="GCSE Russian platform hub illustration"
-                    />
-                  ) : undefined
-                }
-              >
-                <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-                  <SummaryStatCard
-                    title="Courses"
-                    value="Open"
-                    description="Foundation, Higher, and Volna routes"
-                    icon="courses"
-                    compact
-                  />
-                  <SummaryStatCard
-                    title="Resources"
-                    value={isSignedIn ? "Open" : "Preview"}
-                    description={
-                      isSignedIn ? "revision and papers" : "papers and course view"
-                    }
-                    icon="pastPapers"
-                    compact
-                  />
-                  <SummaryStatCard
-                    title="Practice"
-                    value="Mocks"
-                    description={
-                      isSignedIn ? "attempts and review" : "preview exam practice"
-                    }
-                    icon="mockExam"
-                    compact
-                  />
-                  <SummaryStatCard
-                    title="Progress"
-                    value={isSignedIn ? "Saved" : "Trial"}
-                    description={
-                      isSignedIn ? "continue from dashboard" : "start free to save"
-                    }
-                    icon="completed"
-                    tone={isSignedIn ? "success" : "brand"}
-                    compact
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <HomeFactStrip
+                    isSignedIn={isSignedIn}
+                    variantLabel={variantLabel}
+                    accessLabel={accessLabel}
                   />
                 </div>
-              </PageIntroPanel>
+              </LearningSheetSection>
 
-              {!isSignedIn ? (
-                <FeedbackBanner
-                  tone="info"
-                  title="Create a free trial when you are ready to learn"
-                  description="Guests can look around first. Your trial student account unlocks lessons, quizzes, practice questions, saved progress, and the personal dashboard."
-                >
-                  <div className="flex flex-wrap gap-2">
-                    <Button href="/signup" variant="primary" size="sm" icon="create">
-                      Start free trial
-                    </Button>
-                    <Button
-                      href="/past-papers"
-                      variant="secondary"
-                      size="sm"
-                      icon="pastPapers"
-                    >
-                      Past papers
-                    </Button>
-                    <Button href="/login" variant="secondary" size="sm" icon="user">
-                      Log in
+              <LearningSheetSection muted>
+                {isSignedIn ? (
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+                    <div>
+                      <h2 className="app-card-title">Continue from your dashboard</h2>
+                      <p className="mt-2 app-text-body-muted">
+                        Your dashboard is the fastest route back to lessons, mocks,
+                        assignments, and saved progress.
+                      </p>
+                    </div>
+                    <Button href="/dashboard" variant="primary" icon="dashboard">
+                      Open dashboard
                     </Button>
                   </div>
-                </FeedbackBanner>
-              ) : null}
+                ) : (
+                  <div className="space-y-5">
+                    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+                      <div>
+                        <h2 className="app-card-title">
+                          Begin studying with a free trial account
+                        </h2>
+                        <p className="mt-2 max-w-3xl app-text-body-muted">
+                          Guests can look around first. Your trial student account
+                          unlocks lessons, quizzes, practice questions, saved progress,
+                          and the personal dashboard.
+                        </p>
+                      </div>
+                      <div className="app-mobile-action-stack flex flex-wrap gap-2 lg:justify-end">
+                        <Button
+                          href="/signup?from=app"
+                          variant="primary"
+                          size="sm"
+                          icon="create"
+                        >
+                          Start free trial
+                        </Button>
+                        <Button
+                          href="/login?from=app"
+                          variant="secondary"
+                          size="sm"
+                          icon="user"
+                        >
+                          Log in
+                        </Button>
+                      </div>
+                    </div>
 
-              <HubCardGrid cards={hubCards} />
+                    <TrialUnlockGrid />
+                  </div>
+                )}
+              </LearningSheetSection>
 
-              <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-                <DashboardCard
-                  title={isSignedIn ? "Main learning route" : "What the trial unlocks"}
-                >
-                  <div className="space-y-4">
-                    <p>
+              <LearningSheetSection>
+                <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <h2 className="app-card-title">
+                      {isSignedIn ? "Open your main areas" : "Explore as a guest"}
+                    </h2>
+                    <p className="mt-2 max-w-2xl app-text-body-muted">
                       {isSignedIn
-                        ? "The dashboard is the main launch point once you are signed in. It can surface lessons, assignments, mocks, feedback, and account-specific next steps without making you hunt through the app."
-                        : "The free trial turns the preview into a real student workspace: lessons, quizzes, practice questions, mock exam attempts, and saved progress all start from your dashboard."}
+                        ? "Jump straight into the parts of the platform you are most likely to need next."
+                        : "These areas are open before signup, so students and parents can understand the platform first."}
                     </p>
-                    <div className="flex flex-wrap gap-3">
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <HomeLinkGrid items={homeLinks} />
+                </div>
+              </LearningSheetSection>
+
+              <LearningSheetSection>
+                <div className="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
+                  <div>
+                    <h2 className="app-card-title">
+                      {isSignedIn ? "Main learning route" : "What Home is for"}
+                    </h2>
+                    <p className="mt-2 app-text-body-muted">
+                      {isSignedIn
+                        ? "Home is a calm platform overview. Use the dashboard when you want personalised next steps and saved learning activity."
+                        : "Home is the place to understand the platform before committing. Use Dashboard when you want to preview the personalised student workspace."}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-3">
                       <Button
-                        href={isSignedIn ? "/dashboard" : "/signup"}
-                        variant="primary"
-                        icon={isSignedIn ? "dashboard" : "create"}
+                        href="/dashboard"
+                        variant="secondary"
+                        icon="dashboard"
                       >
-                        {isSignedIn ? "Open dashboard" : "Start free trial"}
+                        {isSignedIn ? "Open dashboard" : "Preview dashboard"}
                       </Button>
                       <Button
-                        href={isSignedIn ? "/progress" : "/courses"}
+                        href="/courses"
                         variant="secondary"
-                        icon={isSignedIn ? "completed" : "courses"}
+                        icon="courses"
                       >
-                        {isSignedIn ? "Progress" : "Explore My Course"}
-                      </Button>
-                      <Button
-                        href={isSignedIn ? "/account/billing" : "/online-classes"}
-                        variant="secondary"
-                        icon={isSignedIn ? "billing" : "school"}
-                      >
-                        {isSignedIn ? "Billing" : "Live classes and tuition"}
+                        Explore My Course
                       </Button>
                     </div>
                   </div>
-                </DashboardCard>
 
-                <DashboardCard
-                  title={isSignedIn ? "Revision shortcuts" : "Open to guests"}
-                >
-                  <div className="grid gap-2">
-                    {(isSignedIn
-                      ? [
-                          {
-                            href: "/vocabulary",
-                            label: "Vocabulary",
-                            icon: "vocabulary" as const,
-                          },
-                          {
-                            href: "/grammar",
-                            label: "Grammar",
-                            icon: "grammar" as const,
-                          },
-                          {
-                            href: "/exam-calendar",
-                            label: "Exam calendar",
-                            icon: "calendar" as const,
-                          },
-                          {
-                            href: "/taking-your-exams",
-                            label: "Taking your exams",
-                            icon: "exam" as const,
-                          },
-                        ]
-                      : [
-                          {
-                            href: "/courses",
-                            label: "My Course",
-                            icon: "courses" as const,
-                          },
-                          {
-                            href: "/past-papers",
-                            label: "Past papers",
-                            icon: "pastPapers" as const,
-                          },
-                          {
-                            href: "/mock-exams",
-                            label: "Mock exams",
-                            icon: "mockExam" as const,
-                          },
-                          {
-                            href: "/online-classes",
-                            label: "Live classes and tuition",
-                            icon: "school" as const,
-                          },
-                        ]
-                    ).map((item) => (
-                      <Button
-                        key={item.href}
-                        href={item.href}
-                        variant="secondary"
-                        size="sm"
-                        icon={item.icon}
-                      >
-                        {item.label}
-                      </Button>
-                    ))}
+                  <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-muted)] p-4">
+                    <h3 className="app-heading-card">
+                      {isSignedIn ? "Useful shortcuts" : "Guest access boundary"}
+                    </h3>
+                    <p className="mt-2 app-text-body-muted">
+                      {isSignedIn
+                        ? "Progress, account tools, and study practice are available from the sidebar once you are signed in."
+                        : "Vocabulary, grammar, progress, exam calendar, and exam admin guidance unlock through the trial path, while course preview, papers, mocks, and tuition information stay open."}
+                    </p>
                   </div>
-                </DashboardCard>
-              </section>
-            </div>
+                </div>
+              </LearningSheetSection>
+            </LearningSheet>
           </section>
         </div>
       </PageContainer>

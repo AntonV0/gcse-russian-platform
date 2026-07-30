@@ -163,10 +163,15 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
               </>
             ) : (
               <>
-                <Link href="/login" className="app-nav-link">
+                <Link href="/login?from=app" className="app-nav-link">
                   Log in
                 </Link>
-                <Button href="/signup" variant="primary" size="sm" icon="create">
+                <Button
+                  href="/signup?from=app"
+                  variant="primary"
+                  size="sm"
+                  icon="create"
+                >
                   Sign up
                 </Button>
               </>
@@ -223,10 +228,20 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                <Button href="/login" variant="secondary" className="w-full" icon="user">
+                <Button
+                  href="/login?from=app"
+                  variant="secondary"
+                  className="w-full"
+                  icon="user"
+                >
                   Log in
                 </Button>
-                <Button href="/signup" variant="primary" className="w-full" icon="create">
+                <Button
+                  href="/signup?from=app"
+                  variant="primary"
+                  className="w-full"
+                  icon="create"
+                >
                   Sign up
                 </Button>
               </div>
