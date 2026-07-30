@@ -1,9 +1,12 @@
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import Input from "@/components/ui/input";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import {
@@ -39,47 +42,36 @@ function ToggleField({
 
 export default function CreateVocabularySetPage() {
   return (
-    <main className="space-y-8">
-      <PageHeader
-        title="Create vocabulary set"
-        description="Add a new reusable vocabulary set for lessons, revision, and future vocabulary tools."
-      />
-
-      <section className="app-surface app-section-padding">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-2">
-            <div className="flex flex-wrap gap-2">
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Vocabulary admin"
+          title="Create vocabulary set"
+          description="Add a new reusable vocabulary set for lessons, revision, and future vocabulary tools."
+          badges={
+            <>
               <Badge tone="info" icon="create">
                 New set
               </Badge>
               <Badge tone="muted" icon="language">
                 Vocabulary admin
               </Badge>
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="app-heading-section">Create a reusable vocabulary set</h2>
-              <p className="max-w-3xl app-text-body-muted">
-                Start with the core metadata. Once the set exists, add or review its
-                vocabulary items from the dedicated items page.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
+            </>
+          }
+          actions={
             <Button href="/admin/vocabulary" variant="secondary" icon="back">
               Back to vocabulary
             </Button>
-          </div>
-        </div>
-      </section>
+          }
+        />
 
-      <form
-        action={createVocabularySetAction}
-        className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
-      >
+        <OperationsSection>
+          <form
+            action={createVocabularySetAction}
+            className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
+          >
         <div className="space-y-4">
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="mb-5">
               <h2 className="app-heading-subsection">Core details</h2>
               <p className="mt-2 app-text-body-muted">
@@ -160,7 +152,7 @@ export default function CreateVocabularySetPage() {
             </div>
           </section>
 
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="mb-5">
               <h2 className="app-heading-subsection">Vocabulary settings</h2>
               <p className="mt-2 app-text-body-muted">
@@ -221,7 +213,7 @@ export default function CreateVocabularySetPage() {
             </div>
           </section>
 
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="mb-5">
               <h2 className="app-heading-subsection">Import metadata</h2>
               <p className="mt-2 app-text-body-muted">
@@ -258,7 +250,7 @@ export default function CreateVocabularySetPage() {
             </div>
           </section>
 
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="mb-5">
               <h2 className="app-heading-subsection">Publication</h2>
               <p className="mt-2 app-text-body-muted">
@@ -278,7 +270,7 @@ export default function CreateVocabularySetPage() {
         </div>
 
         <div className="space-y-4">
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="space-y-4">
               <h2 className="app-heading-card">Before you save</h2>
 
@@ -305,7 +297,9 @@ export default function CreateVocabularySetPage() {
             </div>
           </section>
         </div>
-      </form>
+          </form>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

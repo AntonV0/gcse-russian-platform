@@ -4,49 +4,52 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import LoadingButton from "@/components/ui/loading-button";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
-import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
 import { createGrammarSetAction } from "@/app/actions/admin/admin-grammar-actions";
 
 export default function CreateGrammarSetPage() {
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="New grammar set"
-        title="Create Grammar Set"
-        description="Add a reusable grammar collection that can contain points, examples, and flexible tables."
-        badges={
-          <>
-            <Badge tone="info" icon="create">
-              Grammar CMS
-            </Badge>
-            <Badge tone="muted" icon="lessonContent">
-              Set metadata
-            </Badge>
-          </>
-        }
-        actions={
-          <Button href="/admin/grammar" variant="secondary" icon="back">
-            Back to grammar
-          </Button>
-        }
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="New grammar set"
+          title="Create Grammar Set"
+          description="Add a reusable grammar collection that can contain points, examples, and flexible tables."
+          badges={
+            <>
+              <Badge tone="info" icon="create">
+                Grammar CMS
+              </Badge>
+              <Badge tone="muted" icon="lessonContent">
+                Set metadata
+              </Badge>
+            </>
+          }
+          actions={
+            <Button href="/admin/grammar" variant="secondary" icon="back">
+              Back to grammar
+            </Button>
+          }
+        />
 
-      <form
-        action={createGrammarSetAction}
-        className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
-      >
-        <div className="space-y-4">
-          <SectionCard
-            title="Core details"
-            description="Name, describe, and organise this grammar set."
-            tone="admin"
+        <OperationsSection>
+          <form
+            action={createGrammarSetAction}
+            className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
           >
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-4">
+              <PanelCard
+                title="Core details"
+                description="Name, describe, and organise this grammar set."
+                tone="admin"
+              >
+                <div className="grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
                 <FormField label="Title" required>
                   <Input name="title" required placeholder="Present tense verbs" />
@@ -82,32 +85,32 @@ export default function CreateGrammarSetPage() {
               <FormField label="Sort order">
                 <Input name="sortOrder" type="number" min={0} step={1} defaultValue={0} />
               </FormField>
-            </div>
-          </SectionCard>
+                </div>
+              </PanelCard>
 
-          <SectionCard
-            title="Classification"
-            description="Connect the set to tier and future filtering."
-            tone="admin"
-          >
-            <div className="grid gap-4 md:grid-cols-2">
-              <FormField label="Tier">
-                <Select name="tier" defaultValue="both">
-                  <option value="both">Both tiers</option>
-                  <option value="foundation">Foundation</option>
-                  <option value="higher">Higher</option>
-                  <option value="unknown">Unknown</option>
-                </Select>
-              </FormField>
-            </div>
-          </SectionCard>
+              <PanelCard
+                title="Classification"
+                description="Connect the set to tier and future filtering."
+                tone="admin"
+              >
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField label="Tier">
+                    <Select name="tier" defaultValue="both">
+                      <option value="both">Both tiers</option>
+                      <option value="foundation">Foundation</option>
+                      <option value="higher">Higher</option>
+                      <option value="unknown">Unknown</option>
+                    </Select>
+                  </FormField>
+                </div>
+              </PanelCard>
 
-          <SectionCard
-            title="Import metadata"
-            description="Optional source fields for future spec imports."
-            tone="admin"
-          >
-            <div className="grid gap-4 md:grid-cols-2">
+              <PanelCard
+                title="Import metadata"
+                description="Optional source fields for future spec imports."
+                tone="admin"
+              >
+                <div className="grid gap-4 md:grid-cols-2">
               <FormField label="Source key">
                 <Input name="sourceKey" placeholder="pearson_edexcel_gcse_russian" />
               </FormField>
@@ -121,17 +124,17 @@ export default function CreateGrammarSetPage() {
                   <Input name="importKey" placeholder="grammar:foundation:verbs" />
                 </FormField>
               </div>
+                </div>
+              </PanelCard>
             </div>
-          </SectionCard>
-        </div>
 
-        <div className="space-y-4">
-          <PanelCard
-            title="Publication"
-            description="Control visibility and access before adding grammar points."
-            tone="admin"
-          >
-            <div className="space-y-3">
+            <div className="space-y-4">
+              <PanelCard
+                title="Publication"
+                description="Control visibility and access before adding grammar points."
+                tone="admin"
+              >
+                <div className="space-y-3">
               <CheckboxField
                 name="isPublished"
                 label="Published"
@@ -157,24 +160,26 @@ export default function CreateGrammarSetPage() {
                 description="Allow Volna students and teachers to use this set."
                 defaultChecked
               />
-            </div>
-          </PanelCard>
+                </div>
+              </PanelCard>
 
-          <PanelCard tone="admin">
-            <div className="flex flex-col gap-3">
-              <LoadingButton
-                idleLabel="Create grammar set"
-                pendingLabel="Creating grammar set..."
-                idleIcon="create"
-                variant="primary"
-              />
-              <Button href="/admin/grammar" variant="secondary" icon="cancel">
-                Cancel
-              </Button>
+              <PanelCard tone="admin">
+                <div className="flex flex-col gap-3">
+                  <LoadingButton
+                    idleLabel="Create grammar set"
+                    pendingLabel="Creating grammar set..."
+                    idleIcon="create"
+                    variant="primary"
+                  />
+                  <Button href="/admin/grammar" variant="secondary" icon="cancel">
+                    Cancel
+                  </Button>
+                </div>
+              </PanelCard>
             </div>
-          </PanelCard>
-        </div>
-      </form>
+          </form>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

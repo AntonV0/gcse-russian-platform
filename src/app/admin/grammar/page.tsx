@@ -3,6 +3,9 @@ import GrammarMetadataHealthPanel from "@/components/admin/grammar/list/grammar-
 import GrammarSetsTable from "@/components/admin/grammar/list/grammar-sets-table";
 import GrammarSummaryStats from "@/components/admin/grammar/list/grammar-summary-stats";
 import SavedGrammarViews from "@/components/admin/grammar/list/saved-grammar-views";
+import OperationsWorkspace, {
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import type {
   AdminGrammarListStats,
   AdminGrammarSearchParams,
@@ -118,16 +121,24 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
   };
 
   return (
-    <main className="space-y-4">
+    <main>
+      <OperationsWorkspace>
+      <OperationsSection divided={false}>
       <GrammarAdminIntro
         totalSets={stats.totalSets}
         publishedSets={stats.publishedSets}
       />
+      </OperationsSection>
 
+      <OperationsSection>
       <GrammarSummaryStats stats={stats} usageVariant={filters.usageVariant} />
+      </OperationsSection>
 
+      <OperationsSection>
       <SavedGrammarViews />
+      </OperationsSection>
 
+      <OperationsSection>
       <GrammarSetsTable
         grammarSets={paginatedGrammarSets}
         filters={filters}
@@ -137,8 +148,12 @@ export default async function AdminGrammarPage({ searchParams }: AdminGrammarPag
         contentHealthBySetId={contentHealthBySetId}
         pagination={pagination}
       />
+      </OperationsSection>
 
+      <OperationsSection muted>
       <GrammarMetadataHealthPanel metadataHealth={metadataHealth} />
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

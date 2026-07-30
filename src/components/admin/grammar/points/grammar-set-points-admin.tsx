@@ -2,6 +2,9 @@ import { CurrentGrammarPointsSection } from "@/components/admin/grammar/points/c
 import { GrammarPointEntryFormSection } from "@/components/admin/grammar/points/grammar-point-entry-form-section";
 import { GrammarSetPointsStatsSection } from "@/components/admin/grammar/points/grammar-set-points-stats-section";
 import { GrammarSetPointsSummarySection } from "@/components/admin/grammar/points/grammar-set-points-summary-section";
+import OperationsWorkspace, {
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import {
   filterGrammarPoints,
   getOrderedUniqueValues,
@@ -101,32 +104,38 @@ export default function GrammarSetPointsAdmin({
   });
 
   return (
-    <main className="space-y-8">
-      <GrammarSetPointsSummarySection grammarSet={grammarSet} />
+    <main>
+      <OperationsWorkspace>
+        <GrammarSetPointsSummarySection grammarSet={grammarSet} />
 
-      <GrammarSetPointsStatsSection stats={stats} />
+        <OperationsSection>
+          <div className="space-y-4">
+            <GrammarSetPointsStatsSection stats={stats} />
 
-      <CurrentGrammarPointsSection
-        grammarSetId={grammarSet.id}
-        points={points}
-        filteredPoints={filteredPoints}
-        pointCoverageById={pointCoverageById}
-        pointContentHealthById={pointContentHealthById}
-        pointFilters={pointFilters}
-        tierOptions={tierOptions}
-        knowledgeRequirementOptions={knowledgeRequirementOptions}
-        categoryOptions={categoryOptions}
-        hasActivePointFilters={hasActivePointFilters}
-        showTierFilter={showTierFilter}
-        showKnowledgeFilter={showKnowledgeFilter}
-        showCategoryFilter={showCategoryFilter}
-        showVolnaCoverageFilter={showVolnaCoverageFilter}
-      />
+            <CurrentGrammarPointsSection
+              grammarSetId={grammarSet.id}
+              points={points}
+              filteredPoints={filteredPoints}
+              pointCoverageById={pointCoverageById}
+              pointContentHealthById={pointContentHealthById}
+              pointFilters={pointFilters}
+              tierOptions={tierOptions}
+              knowledgeRequirementOptions={knowledgeRequirementOptions}
+              categoryOptions={categoryOptions}
+              hasActivePointFilters={hasActivePointFilters}
+              showTierFilter={showTierFilter}
+              showKnowledgeFilter={showKnowledgeFilter}
+              showCategoryFilter={showCategoryFilter}
+              showVolnaCoverageFilter={showVolnaCoverageFilter}
+            />
 
-      <GrammarPointEntryFormSection
-        grammarSet={grammarSet}
-        defaultOpen={points.length === 0}
-      />
+            <GrammarPointEntryFormSection
+              grammarSet={grammarSet}
+              defaultOpen={points.length === 0}
+            />
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

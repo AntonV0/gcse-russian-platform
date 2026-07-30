@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import Input from "@/components/ui/input";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -54,48 +57,37 @@ export default async function EditVocabularySetPage({
   }
 
   return (
-    <main className="space-y-8">
-      <PageHeader
-        title="Edit vocabulary set"
-        description="Update vocabulary-set metadata, publication state, and structure."
-      />
-
-      <section className="app-surface app-section-padding">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-2">
-            <div className="flex flex-wrap gap-2">
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Vocabulary admin"
+          title={vocabularySet.title}
+          description="Update vocabulary-set metadata, publication state, and structure."
+          badges={
+            <>
               <Badge tone="info" icon="edit">
                 Editing set
               </Badge>
 
               <PublishStatusBadge isPublished={vocabularySet.is_published} />
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="app-heading-section">{vocabularySet.title}</h2>
-              <p className="max-w-3xl app-text-body-muted">
-                Update set metadata here. Use the dedicated items page when you need to
-                review, add, edit, or delete vocabulary entries.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
+            </>
+          }
+          actions={
             <Button href="/admin/vocabulary" variant="secondary" icon="back">
               Back to vocabulary
             </Button>
-          </div>
-        </div>
-      </section>
+          }
+        />
 
-      <form
-        action={updateVocabularySetAction}
-        className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
-      >
-        <input type="hidden" name="vocabularySetId" value={vocabularySet.id} />
+        <OperationsSection>
+          <form
+            action={updateVocabularySetAction}
+            className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
+          >
+            <input type="hidden" name="vocabularySetId" value={vocabularySet.id} />
 
         <div className="space-y-4">
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="mb-5">
               <h2 className="app-heading-subsection">Core details</h2>
               <p className="mt-2 app-text-body-muted">
@@ -164,7 +156,7 @@ export default async function EditVocabularySetPage({
             </div>
           </section>
 
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="mb-5">
               <h2 className="app-heading-subsection">Vocabulary settings</h2>
               <p className="mt-2 app-text-body-muted">
@@ -234,7 +226,7 @@ export default async function EditVocabularySetPage({
             </div>
           </section>
 
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="mb-5">
               <h2 className="app-heading-subsection">Import metadata</h2>
               <p className="mt-2 app-text-body-muted">
@@ -271,7 +263,7 @@ export default async function EditVocabularySetPage({
             </div>
           </section>
 
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="mb-5">
               <h2 className="app-heading-subsection">Publication</h2>
             </div>
@@ -288,7 +280,7 @@ export default async function EditVocabularySetPage({
         </div>
 
         <div className="space-y-4">
-          <section className="app-surface app-section-padding">
+          <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
             <div className="space-y-4">
               <h2 className="app-heading-card">Current stats</h2>
 
@@ -330,7 +322,9 @@ export default async function EditVocabularySetPage({
             </div>
           </section>
         </div>
-      </form>
+          </form>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

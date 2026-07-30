@@ -6,7 +6,10 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import LoadingButton from "@/components/ui/loading-button";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
@@ -34,44 +37,45 @@ export default async function EditGrammarSetPage({ params }: EditGrammarSetPageP
   }
 
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Edit grammar set"
-        title={grammarSet.title}
-        description="Update grammar-set metadata, access rules, and publication state."
-        badges={
-          <>
-            <Badge tone="info" icon="school">
-              {getGrammarTierLabel(grammarSet.tier)}
-            </Badge>
-            <PublishStatusBadge isPublished={grammarSet.is_published} />
-            <Badge tone="muted" icon="list">
-              {points.length} point{points.length === 1 ? "" : "s"}
-            </Badge>
-          </>
-        }
-        actions={
-          <>
-            <Button href="/admin/grammar" variant="secondary" icon="back">
-              Back
-            </Button>
-            <Button
-              href={`/admin/grammar/${grammarSet.id}/points`}
-              variant="primary"
-              icon="list"
-            >
-              Manage points
-            </Button>
-          </>
-        }
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Edit grammar set"
+          title={grammarSet.title}
+          description="Update grammar-set metadata, access rules, and publication state."
+          badges={
+            <>
+              <Badge tone="info" icon="school">
+                {getGrammarTierLabel(grammarSet.tier)}
+              </Badge>
+              <PublishStatusBadge isPublished={grammarSet.is_published} />
+              <Badge tone="muted" icon="list">
+                {points.length} point{points.length === 1 ? "" : "s"}
+              </Badge>
+            </>
+          }
+          actions={
+            <>
+              <Button href="/admin/grammar" variant="secondary" icon="back">
+                Back
+              </Button>
+              <Button
+                href={`/admin/grammar/${grammarSet.id}/points`}
+                variant="primary"
+                icon="list"
+              >
+                Manage points
+              </Button>
+            </>
+          }
+        />
 
-      <form
-        action={updateGrammarSetAction}
-        className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
-      >
-        <input type="hidden" name="grammarSetId" value={grammarSet.id} />
+        <OperationsSection>
+          <form
+            action={updateGrammarSetAction}
+            className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
+          >
+            <input type="hidden" name="grammarSetId" value={grammarSet.id} />
 
         <div className="space-y-4">
           <SectionCard
@@ -200,8 +204,10 @@ export default async function EditGrammarSetPage({ params }: EditGrammarSetPageP
             </div>
           </PanelCard>
         </div>
-      </form>
+          </form>
+        </OperationsSection>
 
+      <OperationsSection>
       <PanelCard
         title="Danger zone"
         description="Deleting a set also removes its grammar points, examples, and tables."
@@ -218,6 +224,8 @@ export default async function EditGrammarSetPage({ params }: EditGrammarSetPageP
           </AdminConfirmButton>
         </form>
       </PanelCard>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

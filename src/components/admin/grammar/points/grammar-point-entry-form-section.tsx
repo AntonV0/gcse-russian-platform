@@ -16,7 +16,7 @@ export function GrammarPointEntryFormSection({
 }) {
   return (
     <details className="group" open={defaultOpen}>
-      <summary className="app-surface app-section-padding flex cursor-pointer list-none items-start justify-between gap-4">
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
         <span>
           <span className="block app-heading-subsection">Add grammar point</span>
           <span className="mt-2 block app-text-body-muted">
@@ -32,7 +32,7 @@ export function GrammarPointEntryFormSection({
 
       <form
         action={createGrammarPointAction}
-        className="mt-4 app-surface app-section-padding space-y-4"
+        className="mt-4 space-y-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5"
       >
         <input type="hidden" name="grammarSetId" value={grammarSet.id} />
 

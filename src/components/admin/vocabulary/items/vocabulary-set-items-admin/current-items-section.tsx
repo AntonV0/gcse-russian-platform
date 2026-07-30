@@ -86,7 +86,7 @@ export function CurrentVocabularyItemsSection({
   showExtendedSourceFilter: boolean;
 }) {
   return (
-    <section className="app-surface app-section-padding">
+    <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-muted)]/45 p-4 md:p-5">
       <div className="mb-5 flex flex-col gap-4">
         <div>
           <h2 className="app-heading-subsection">Current items</h2>

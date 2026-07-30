@@ -9,6 +9,9 @@ import { VocabularyItemEntryFormsSection } from "@/components/admin/vocabulary/i
 import { groupAdminItemsByList } from "@/components/admin/vocabulary/items/vocabulary-set-items-admin/item-sections";
 import { VocabularySetItemsStatsSection } from "@/components/admin/vocabulary/items/vocabulary-set-items-admin/set-stats-section";
 import { VocabularySetItemsSummarySection } from "@/components/admin/vocabulary/items/vocabulary-set-items-admin/set-summary-section";
+import OperationsWorkspace, {
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import type { VocabularySetItemsAdminProps } from "@/components/admin/vocabulary/items/vocabulary-set-items-admin/types";
 
 export default function VocabularySetItemsAdmin({
@@ -37,36 +40,42 @@ export default function VocabularySetItemsAdmin({
   const showExtendedSourceFilter = items.some((item) => item.source_type === "extended");
 
   return (
-    <main className="space-y-8">
-      <VocabularySetItemsSummarySection vocabularySet={vocabularySet} />
+    <main>
+      <OperationsWorkspace>
+        <VocabularySetItemsSummarySection vocabularySet={vocabularySet} />
 
-      <VocabularySetItemsStatsSection
-        items={items}
-        lists={lists}
-        usageStats={usageStats}
-      />
+        <OperationsSection>
+          <div className="space-y-4">
+            <VocabularySetItemsStatsSection
+              items={items}
+              lists={lists}
+              usageStats={usageStats}
+            />
 
-      <CurrentVocabularyItemsSection
-        vocabularySetId={vocabularySet.id}
-        vocabularyList={vocabularyList}
-        items={items}
-        filteredItems={filteredItems}
-        itemSections={itemSections}
-        itemCoverageById={itemCoverageById}
-        itemFilters={itemFilters}
-        categoryOptions={categoryOptions}
-        hasActiveItemFilters={hasActiveItemFilters}
-        defaultTier={defaultTier}
-        showVolnaCoverageFilter={showVolnaCoverageFilter}
-        showExtendedSourceFilter={showExtendedSourceFilter}
-      />
+            <CurrentVocabularyItemsSection
+              vocabularySetId={vocabularySet.id}
+              vocabularyList={vocabularyList}
+              items={items}
+              filteredItems={filteredItems}
+              itemSections={itemSections}
+              itemCoverageById={itemCoverageById}
+              itemFilters={itemFilters}
+              categoryOptions={categoryOptions}
+              hasActiveItemFilters={hasActiveItemFilters}
+              defaultTier={defaultTier}
+              showVolnaCoverageFilter={showVolnaCoverageFilter}
+              showExtendedSourceFilter={showExtendedSourceFilter}
+            />
 
-      <VocabularyItemEntryFormsSection
-        vocabularySetId={vocabularySet.id}
-        vocabularyListId={vocabularyList?.id ?? null}
-        defaultTier={defaultTier}
-        defaultOpen={items.length === 0}
-      />
+            <VocabularyItemEntryFormsSection
+              vocabularySetId={vocabularySet.id}
+              vocabularyListId={vocabularyList?.id ?? null}
+              defaultTier={defaultTier}
+              defaultOpen={items.length === 0}
+            />
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

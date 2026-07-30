@@ -7,6 +7,9 @@ import VocabularyAdminIntro from "@/components/admin/vocabulary/list/vocabulary-
 import VocabularyMetadataHealthPanel from "@/components/admin/vocabulary/list/vocabulary-metadata-health-panel";
 import VocabularySetsTable from "@/components/admin/vocabulary/list/vocabulary-sets-table";
 import VocabularySummaryStats from "@/components/admin/vocabulary/list/vocabulary-summary-stats";
+import OperationsWorkspace, {
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import { getVocabularyMetadataHealthDb } from "@/lib/vocabulary/shared/metadata-health";
 import { getVocabularySetsDb } from "@/lib/vocabulary/sets/set-list-queries";
 import {
@@ -161,12 +164,16 @@ export default async function AdminVocabularyPage({
     vocabularySets.some((vocabularySet) => vocabularySet.usage_stats.usedInVolna);
 
   return (
-    <main className="space-y-4">
+    <main>
+      <OperationsWorkspace>
+      <OperationsSection divided={false}>
       <VocabularyAdminIntro
         totalSets={stats.totalSets}
         publishedSets={stats.publishedSets}
       />
+      </OperationsSection>
 
+      <OperationsSection>
       <VocabularySummaryStats
         totalSets={stats.totalSets}
         publishedSets={stats.publishedSets}
@@ -174,9 +181,13 @@ export default async function AdminVocabularyPage({
         totalItems={stats.totalItems}
         totalUsages={stats.totalUsages}
       />
+      </OperationsSection>
 
+      <OperationsSection>
       <SavedVocabularyViews />
+      </OperationsSection>
 
+      <OperationsSection>
       <VocabularySetsTable
         vocabularySets={paginatedVocabularySets}
         filters={filters}
@@ -186,8 +197,12 @@ export default async function AdminVocabularyPage({
         showVolnaUsageFilter={showVolnaUsageFilter}
         pagination={pagination}
       />
+      </OperationsSection>
 
+      <OperationsSection muted>
       <VocabularyMetadataHealthPanel metadataHealth={metadataHealth} />
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

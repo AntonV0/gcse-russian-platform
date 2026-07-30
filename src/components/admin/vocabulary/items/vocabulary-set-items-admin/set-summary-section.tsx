@@ -1,6 +1,9 @@
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import {
   getVocabularyListModeLabel,
@@ -15,35 +18,28 @@ export function VocabularySetItemsSummarySection({
 }) {
   return (
     <>
-      <PageHeader
-        title="Vocabulary items"
-        description="Manage the words and phrases inside this reusable vocabulary set."
-      />
+      <OperationsHeader
+        eyebrow="Vocabulary items"
+        title={vocabularySet.title}
+        description={
+          vocabularySet.description ||
+          "Manage the words and phrases inside this reusable vocabulary set."
+        }
+        badges={
+          <>
+            <Badge tone="info" icon="vocabulary">
+              {getVocabularyTierLabel(vocabularySet.tier)}
+            </Badge>
 
-      <section className="app-surface app-section-padding">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-2">
-              <Badge tone="info" icon="vocabulary">
-                {getVocabularyTierLabel(vocabularySet.tier)}
-              </Badge>
+            <Badge tone="muted" icon="list">
+              {getVocabularyListModeLabel(vocabularySet.list_mode)}
+            </Badge>
 
-              <Badge tone="muted" icon="list">
-                {getVocabularyListModeLabel(vocabularySet.list_mode)}
-              </Badge>
-
-              <PublishStatusBadge isPublished={vocabularySet.is_published} />
-            </div>
-
-            <div>
-              <h2 className="app-heading-section">{vocabularySet.title}</h2>
-              <p className="mt-2 max-w-3xl app-text-body-muted">
-                {vocabularySet.description || "No description yet."}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
+            <PublishStatusBadge isPublished={vocabularySet.is_published} />
+          </>
+        }
+        actions={
+          <>
             <Button href="/admin/vocabulary" variant="secondary" icon="back">
               Back to vocabulary
             </Button>
@@ -65,9 +61,23 @@ export function VocabularySetItemsSummarySection({
             >
               Export Markdown
             </Button>
+          </>
+        }
+      />
+
+      <OperationsSection muted>
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+          <div className="space-y-3">
+            <div>
+              <h2 className="app-heading-subsection">Set contents</h2>
+              <p className="mt-2 max-w-3xl app-text-body-muted">
+                Review existing entries, filter long lists, and add new vocabulary without
+                leaving this management screen.
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+      </OperationsSection>
     </>
   );
 }
