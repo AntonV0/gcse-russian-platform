@@ -7,7 +7,10 @@ import EmptyState from "@/components/ui/empty-state";
 import ExpandableAdminFormPanel from "@/components/admin/expandable-admin-form-panel";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
@@ -39,47 +42,58 @@ export default async function AdminCourseDetailPage({
   ]);
 
   if (!course) {
-    return <main>Course not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Course structure"
+            title="Course not found"
+            description="This course may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   return (
-    <main className="space-y-3">
-      <BackNav items={[{ href: "/admin/content", label: "Back to content" }]} />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Course structure"
+          title={course.title}
+          description={course.description ?? "Manage course variants and structure."}
+          badges={
+            <>
+              <Badge tone="muted" icon="file">
+                {course.slug}
+              </Badge>
+              <Badge tone="muted">{course.qualification_level}</Badge>
+              <Badge tone="muted">{course.exam_board}</Badge>
+              <Badge tone="muted">{course.curriculum_code}</Badge>
+              <ActiveStatusBadge isActive={course.is_active} />
+              <PublishStatusBadge isPublished={course.is_published} />
+            </>
+          }
+          actions={
+            <>
+              <Button
+                href={`/admin/content/courses/${course.id}/edit`}
+                variant="secondary"
+                icon="edit"
+              >
+                Edit course
+              </Button>
+              <Button href={`/courses/${course.slug}`} variant="secondary" icon="preview">
+                Open public course
+              </Button>
+            </>
+          }
+        >
+          <BackNav items={[{ href: "/admin/content", label: "Back to content" }]} />
+        </OperationsHeader>
 
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Course structure"
-        title={course.title}
-        description={course.description ?? "Manage course variants and structure."}
-        badges={
-          <>
-            <Badge tone="muted" icon="file">
-              {course.slug}
-            </Badge>
-            <Badge tone="muted">{course.qualification_level}</Badge>
-            <Badge tone="muted">{course.exam_board}</Badge>
-            <Badge tone="muted">{course.curriculum_code}</Badge>
-            <ActiveStatusBadge isActive={course.is_active} />
-            <PublishStatusBadge isPublished={course.is_published} />
-          </>
-        }
-        actions={
-          <>
-            <Button
-              href={`/admin/content/courses/${course.id}/edit`}
-              variant="secondary"
-              icon="edit"
-            >
-              Edit course
-            </Button>
-            <Button href={`/courses/${course.slug}`} variant="secondary" icon="preview">
-              Open public course
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
+        <OperationsSection>
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
         <div className="space-y-3">
           <SectionCard
             title={`Variants (${variants.length})`}
@@ -272,7 +286,9 @@ export default async function AdminCourseDetailPage({
             </form>
           </ExpandableAdminFormPanel>
         </div>
-      </div>
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

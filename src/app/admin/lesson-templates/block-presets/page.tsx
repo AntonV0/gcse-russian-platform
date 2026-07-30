@@ -1,4 +1,3 @@
-import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import CardListItem from "@/components/ui/card-list-item";
@@ -7,6 +6,10 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import { createLessonBlockPresetAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import {
@@ -59,71 +62,77 @@ export default async function AdminLessonBlockPresetsPage() {
   }
 
   return (
-    <main className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <PageHeader
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin lesson templates"
           title="Block Presets"
           description="Reusable starter block groups for lesson authoring."
+          actions={
+            <Button href="/admin/lesson-templates" variant="secondary" icon="back">
+              Back
+            </Button>
+          }
         />
 
-        <Button href="/admin/lesson-templates" variant="secondary" icon="back">
-          Back
-        </Button>
-      </div>
+        <OperationsSection>
+          <CreatePresetCard />
+        </OperationsSection>
 
-      <CreatePresetCard />
-
-      {presets.length === 0 ? (
-        <EmptyState
-          icon="blocks"
-          title="No block presets found yet"
-          description="Create a reusable block preset to speed up GCSE Russian lesson authoring."
-        />
-      ) : (
-        <div className="space-y-3">
-          {presets.map((preset) => (
-            <CardListItem
-              key={preset.id}
-              href={`/admin/lesson-templates/block-presets/${preset.id}`}
-              title={preset.title}
-              subtitle={preset.description ?? undefined}
-              badges={
-                <>
-                  <Badge tone="muted" icon="file">
-                    {preset.slug}
-                  </Badge>
-
-                  {preset.is_active ? (
-                    <Badge tone="success" icon="completed">
-                      Active
-                    </Badge>
-                  ) : (
-                    <Badge tone="warning" icon="pending">
-                      Inactive
-                    </Badge>
-                  )}
-
-                  <Badge tone="muted" icon="help">
-                    {blockCountByPresetId.get(preset.id) ?? 0} block(s)
-                  </Badge>
-                </>
-              }
-              actions={
-                <InlineActions align="end">
-                  <Button
-                    href={`/admin/lesson-templates/block-presets/${preset.id}`}
-                    variant="secondary"
-                    size="sm"
-                    icon="preview"
-                  >
-                    Open
-                  </Button>
-                </InlineActions>
-              }
+        <OperationsSection>
+          {presets.length === 0 ? (
+            <EmptyState
+              icon="blocks"
+              title="No block presets found yet"
+              description="Create a reusable block preset to speed up GCSE Russian lesson authoring."
             />
-          ))}
-        </div>
-      )}
+          ) : (
+            <div className="space-y-3">
+              {presets.map((preset) => (
+                <CardListItem
+                  key={preset.id}
+                  href={`/admin/lesson-templates/block-presets/${preset.id}`}
+                  title={preset.title}
+                  subtitle={preset.description ?? undefined}
+                  badges={
+                    <>
+                      <Badge tone="muted" icon="file">
+                        {preset.slug}
+                      </Badge>
+
+                      {preset.is_active ? (
+                        <Badge tone="success" icon="completed">
+                          Active
+                        </Badge>
+                      ) : (
+                        <Badge tone="warning" icon="pending">
+                          Inactive
+                        </Badge>
+                      )}
+
+                      <Badge tone="muted" icon="help">
+                        {blockCountByPresetId.get(preset.id) ?? 0} block(s)
+                      </Badge>
+                    </>
+                  }
+                  actions={
+                    <InlineActions align="end">
+                      <Button
+                        href={`/admin/lesson-templates/block-presets/${preset.id}`}
+                        variant="secondary"
+                        size="sm"
+                        icon="preview"
+                      >
+                        Open
+                      </Button>
+                    </InlineActions>
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

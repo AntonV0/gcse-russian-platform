@@ -6,7 +6,10 @@ import DangerZone from "@/components/ui/danger-zone";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
@@ -162,17 +165,21 @@ export default async function AdminLessonDetailPage({
   ) {
     return (
       <main>
-        <EmptyState
-          icon="search"
-          iconTone="brand"
-          title="Lesson not found"
-          description="This lesson could not be found in the selected course structure."
-          action={
-            <Button href="/admin/content" variant="primary" icon="back">
-              Back to content
-            </Button>
-          }
-        />
+        <OperationsWorkspace>
+          <OperationsSection divided={false}>
+            <EmptyState
+              icon="search"
+              iconTone="brand"
+              title="Lesson not found"
+              description="This lesson could not be found in the selected course structure."
+              action={
+                <Button href="/admin/content" variant="primary" icon="back">
+                  Back to content
+                </Button>
+              }
+            />
+          </OperationsSection>
+        </OperationsWorkspace>
       </main>
     );
   }
@@ -221,98 +228,101 @@ export default async function AdminLessonDetailPage({
   });
 
   return (
-    <main className="space-y-3">
-      <BackNav
-        items={[
-          { href: "/admin/content", label: "Content" },
-          {
-            href: `/admin/content/courses/${course.id}`,
-            label: course.title,
-          },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
-            label: variant.title,
-          },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`,
-            label: module.title,
-          },
-        ]}
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Lesson"
+          title={lesson.title}
+          description={lesson.summary ?? "Manage lesson details and lesson content."}
+          badges={
+            <>
+              <Badge tone="muted" icon="file">
+                {lesson.slug}
+              </Badge>
+              <Badge tone="muted">{lesson.lesson_type}</Badge>
+              <PublishStatusBadge isPublished={lesson.is_published} />
+              <Badge tone={lesson.is_trial_visible ? "success" : "muted"} icon="help">
+                {lesson.is_trial_visible ? "Trial" : "No Trial"}
+              </Badge>
+              <Badge tone={lesson.available_in_volna ? "success" : "muted"} icon="users">
+                {lesson.available_in_volna ? "Volna" : "No Volna"}
+              </Badge>
+            </>
+          }
+          actions={
+            <>
+              <Button
+                href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
+                variant="secondary"
+                icon="edit"
+              >
+                Edit lesson metadata
+              </Button>
 
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Lesson"
-        title={lesson.title}
-        description={lesson.summary ?? "Manage lesson details and lesson content."}
-        badges={
-          <>
-            <Badge tone="muted" icon="file">
-              {lesson.slug}
-            </Badge>
-            <Badge tone="muted">{lesson.lesson_type}</Badge>
-            <PublishStatusBadge isPublished={lesson.is_published} />
-            <Badge tone={lesson.is_trial_visible ? "success" : "muted"} icon="help">
-              {lesson.is_trial_visible ? "Trial" : "No Trial"}
-            </Badge>
-            <Badge tone={lesson.available_in_volna ? "success" : "muted"} icon="users">
-              {lesson.available_in_volna ? "Volna" : "No Volna"}
-            </Badge>
-          </>
-        }
-        actions={
-          <>
-            <Button
-              href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/edit`}
-              variant="secondary"
-              icon="edit"
-            >
-              Edit lesson metadata
-            </Button>
+              <Button
+                href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/export`}
+                variant="secondary"
+                icon="download"
+                target="_blank"
+                rel="noreferrer"
+                prefetch={false}
+              >
+                Export lesson
+              </Button>
 
-            <Button
-              href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}/export`}
-              variant="secondary"
-              icon="download"
-              target="_blank"
-              rel="noreferrer"
-              prefetch={false}
-            >
-              Export lesson
-            </Button>
+              <Button
+                href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
+                variant="secondary"
+                icon="preview"
+              >
+                Open public lesson
+              </Button>
+            </>
+          }
+        >
+          <BackNav
+            items={[
+              { href: "/admin/content", label: "Content" },
+              {
+                href: `/admin/content/courses/${course.id}`,
+                label: course.title,
+              },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
+                label: variant.title,
+              },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`,
+                label: module.title,
+              },
+            ]}
+          />
+        </OperationsHeader>
 
-            <Button
-              href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
-              variant="secondary"
-              icon="preview"
-            >
-              Open public lesson
-            </Button>
-          </>
-        }
-      />
+        <OperationsSection>
+          <SectionCard
+            title="Lesson builder"
+            description="Build and organise lesson sections and blocks for long-form authoring."
+            tone="brand"
+          >
+            <AdminLessonBuilder
+              lessonId={lesson.id}
+              courseId={courseId}
+              variantId={variantId}
+              moduleId={moduleId}
+              lessonSlug={lesson.slug}
+              courseSlug={course.slug}
+              variantSlug={variant.slug}
+              moduleSlug={module.slug}
+              sections={sections}
+              templateOptions={templateOptions}
+              vocabularySetOptions={vocabularySetOptions}
+              grammarSetOptions={grammarSetOptions}
+            />
+          </SectionCard>
+        </OperationsSection>
 
-      <SectionCard
-        title="Lesson builder"
-        description="Build and organise lesson sections and blocks for long-form authoring."
-        tone="brand"
-      >
-        <AdminLessonBuilder
-          lessonId={lesson.id}
-          courseId={courseId}
-          variantId={variantId}
-          moduleId={moduleId}
-          lessonSlug={lesson.slug}
-          courseSlug={course.slug}
-          variantSlug={variant.slug}
-          moduleSlug={module.slug}
-          sections={sections}
-          templateOptions={templateOptions}
-          vocabularySetOptions={vocabularySetOptions}
-          grammarSetOptions={grammarSetOptions}
-        />
-      </SectionCard>
-
+      <OperationsSection>
       <CompactDisclosure
         title="Lesson admin details"
         description="Metadata, publishing information, content source, and internal lesson settings."
@@ -401,7 +411,9 @@ export default async function AdminLessonDetailPage({
           </div>
         </div>
       </CompactDisclosure>
+      </OperationsSection>
 
+      <OperationsSection>
       <DangerZone
         title="Lesson danger zone"
         description={
@@ -492,6 +504,8 @@ export default async function AdminLessonDetailPage({
           </form>
         )}
       </DangerZone>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

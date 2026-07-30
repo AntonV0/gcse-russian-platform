@@ -5,7 +5,10 @@ import LoadingButton from "@/components/ui/loading-button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
@@ -40,61 +43,72 @@ export default async function AdminModuleEditPage({ params }: AdminModuleEditPag
     variant.course_id !== course.id ||
     module.course_variant_id !== variant.id
   ) {
-    return <main>Module not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Module settings"
+            title="Module not found"
+            description="This module may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   return (
-    <main className="space-y-3">
-      <BackNav
-        items={[
-          { href: "/admin/content", label: "Content" },
-          { href: `/admin/content/courses/${course.id}`, label: course.title },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
-            label: variant.title,
-          },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`,
-            label: module.title,
-          },
-        ]}
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Module settings"
+          title={`Edit ${module.title}`}
+          description="Update module details and ordering."
+          badges={
+            <>
+              <Badge tone="muted" icon="file">
+                {module.slug}
+              </Badge>
+              <Badge tone="muted">Position {module.position}</Badge>
+              <PublishStatusBadge isPublished={module.is_published} />
+            </>
+          }
+          actions={
+            <>
+              <Button
+                href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
+                variant="secondary"
+                icon="back"
+              >
+                Back to module
+              </Button>
+              <Button
+                href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}`}
+                variant="secondary"
+                icon="preview"
+              >
+                Open public
+              </Button>
+            </>
+          }
+        >
+          <BackNav
+            items={[
+              { href: "/admin/content", label: "Content" },
+              { href: `/admin/content/courses/${course.id}`, label: course.title },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
+                label: variant.title,
+              },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`,
+                label: module.title,
+              },
+            ]}
+          />
+        </OperationsHeader>
 
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Module settings"
-        title={`Edit ${module.title}`}
-        description="Update module details and ordering."
-        badges={
-          <>
-            <Badge tone="muted" icon="file">
-              {module.slug}
-            </Badge>
-            <Badge tone="muted">Position {module.position}</Badge>
-            <PublishStatusBadge isPublished={module.is_published} />
-          </>
-        }
-        actions={
-          <>
-            <Button
-              href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`}
-              variant="secondary"
-              icon="back"
-            >
-              Back to module
-            </Button>
-            <Button
-              href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}`}
-              variant="secondary"
-              icon="preview"
-            >
-              Open public
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:items-start">
+        <OperationsSection>
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:items-start">
         <SectionCard
           title="Module settings"
           description="Make structural and visibility changes to this module."
@@ -203,7 +217,9 @@ export default async function AdminModuleEditPage({ params }: AdminModuleEditPag
             </div>
           </div>
         </SectionCard>
-      </div>
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

@@ -5,7 +5,10 @@ import Button from "@/components/ui/button";
 import LoadingButton from "@/components/ui/loading-button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import ExpandableAdminFormPanel from "@/components/admin/expandable-admin-form-panel";
@@ -56,57 +59,68 @@ export default async function AdminModuleDetailPage({
     variant.course_id !== course.id ||
     module.course_variant_id !== variant.id
   ) {
-    return <main>Module not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Module"
+            title="Module not found"
+            description="This module may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   return (
-    <main className="space-y-3">
-      <BackNav
-        items={[
-          { href: "/admin/content", label: "Content" },
-          { href: `/admin/content/courses/${course.id}`, label: course.title },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
-            label: variant.title,
-          },
-        ]}
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Module"
+          title={module.title}
+          description={module.description ?? "Manage lessons within this module."}
+          badges={
+            <>
+              <Badge tone="muted" icon="file">
+                {module.slug}
+              </Badge>
+              <Badge tone="muted">Position {module.position}</Badge>
+              <PublishStatusBadge isPublished={module.is_published} />
+            </>
+          }
+          actions={
+            <>
+              <Button
+                href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
+                variant="secondary"
+                icon="edit"
+              >
+                Edit module
+              </Button>
+              <Button
+                href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}`}
+                variant="secondary"
+                icon="preview"
+              >
+                Open public
+              </Button>
+            </>
+          }
+        >
+          <BackNav
+            items={[
+              { href: "/admin/content", label: "Content" },
+              { href: `/admin/content/courses/${course.id}`, label: course.title },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
+                label: variant.title,
+              },
+            ]}
+          />
+        </OperationsHeader>
 
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Module"
-        title={module.title}
-        description={module.description ?? "Manage lessons within this module."}
-        badges={
-          <>
-            <Badge tone="muted" icon="file">
-              {module.slug}
-            </Badge>
-            <Badge tone="muted">Position {module.position}</Badge>
-            <PublishStatusBadge isPublished={module.is_published} />
-          </>
-        }
-        actions={
-          <>
-            <Button
-              href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/edit`}
-              variant="secondary"
-              icon="edit"
-            >
-              Edit module
-            </Button>
-            <Button
-              href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}`}
-              variant="secondary"
-              icon="preview"
-            >
-              Open public
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
+        <OperationsSection>
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
         <div className="space-y-3">
           <SectionCard
             title={`Lessons (${lessons.length})`}
@@ -306,7 +320,9 @@ export default async function AdminModuleDetailPage({
             }
           />
         </div>
-      </div>
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

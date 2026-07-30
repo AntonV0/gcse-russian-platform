@@ -6,7 +6,10 @@ import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
@@ -20,9 +23,9 @@ export default async function AdminContentPage() {
   const courses = await getCoursesDb();
 
   return (
-    <main className="space-y-3">
-      <PageIntroPanel
-        tone="admin"
+    <main>
+      <OperationsWorkspace>
+      <OperationsHeader
         eyebrow="Admin content"
         title="Content Management"
         description="Manage courses, variants, modules, and lessons from one central admin workspace."
@@ -43,6 +46,7 @@ export default async function AdminContentPage() {
         }
       />
 
+      <OperationsSection>
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
         <div className="space-y-3">
           <SectionCard
@@ -202,6 +206,8 @@ export default async function AdminContentPage() {
           </ExpandableAdminFormPanel>
         </div>
       </div>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

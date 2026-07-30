@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -9,6 +8,10 @@ import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -53,22 +56,24 @@ export default async function AdminLessonSectionTemplateDetailPage({
   );
 
   return (
-    <main className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <PageHeader
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin lesson templates"
           title={detail.template.title}
           description="Edit section template metadata and manage its ordered block preset links."
+          actions={
+            <Button
+              href="/admin/lesson-templates/section-templates"
+              variant="secondary"
+              icon="back"
+            >
+              Back
+            </Button>
+          }
         />
 
-        <Button
-          href="/admin/lesson-templates/section-templates"
-          variant="secondary"
-          icon="back"
-        >
-          Back
-        </Button>
-      </div>
-
+      <OperationsSection>
       <PanelCard
         title="Section template details"
         tone="admin"
@@ -156,7 +161,9 @@ export default async function AdminLessonSectionTemplateDetailPage({
           />
         </form>
       </PanelCard>
+      </OperationsSection>
 
+      <OperationsSection>
       <PanelCard
         title="Add block preset"
         description="Attach an existing block preset to this section template."
@@ -199,7 +206,9 @@ export default async function AdminLessonSectionTemplateDetailPage({
           </form>
         )}
       </PanelCard>
+      </OperationsSection>
 
+      <OperationsSection>
       <PanelCard
         title="Ordered preset links"
         description="Presets are applied in this order when the section template is inserted."
@@ -294,6 +303,8 @@ export default async function AdminLessonSectionTemplateDetailPage({
           </>
         )}
       </PanelCard>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

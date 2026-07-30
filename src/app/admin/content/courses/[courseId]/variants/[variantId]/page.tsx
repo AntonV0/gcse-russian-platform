@@ -6,7 +6,10 @@ import Button from "@/components/ui/button";
 import LoadingButton from "@/components/ui/loading-button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import ExpandableAdminFormPanel from "@/components/admin/expandable-admin-form-panel";
@@ -47,56 +50,67 @@ export default async function AdminVariantDetailPage({
   ]);
 
   if (!course || !variant || variant.course_id !== course.id) {
-    return <main>Variant not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Variant"
+            title="Variant not found"
+            description="This variant may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   return (
-    <main className="space-y-3">
-      <BackNav
-        items={[
-          { href: "/admin/content", label: "Content" },
-          {
-            href: `/admin/content/courses/${course.id}`,
-            label: course.title,
-          },
-        ]}
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Variant"
+          title={variant.title}
+          description={variant.description ?? "Manage modules within this variant."}
+          badges={
+            <>
+              <Badge tone="muted" icon="file">
+                {variant.slug}
+              </Badge>
+              <ActiveStatusBadge isActive={variant.is_active} />
+              <PublishStatusBadge isPublished={variant.is_published} />
+            </>
+          }
+          actions={
+            <>
+              <Button
+                href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
+                variant="secondary"
+                icon="edit"
+              >
+                Edit variant
+              </Button>
+              <Button
+                href={`/courses/${course.slug}/${variant.slug}`}
+                variant="secondary"
+                icon="preview"
+              >
+                Open public
+              </Button>
+            </>
+          }
+        >
+          <BackNav
+            items={[
+              { href: "/admin/content", label: "Content" },
+              {
+                href: `/admin/content/courses/${course.id}`,
+                label: course.title,
+              },
+            ]}
+          />
+        </OperationsHeader>
 
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Variant"
-        title={variant.title}
-        description={variant.description ?? "Manage modules within this variant."}
-        badges={
-          <>
-            <Badge tone="muted" icon="file">
-              {variant.slug}
-            </Badge>
-            <ActiveStatusBadge isActive={variant.is_active} />
-            <PublishStatusBadge isPublished={variant.is_published} />
-          </>
-        }
-        actions={
-          <>
-            <Button
-              href={`/admin/content/courses/${course.id}/variants/${variant.id}/edit`}
-              variant="secondary"
-              icon="edit"
-            >
-              Edit variant
-            </Button>
-            <Button
-              href={`/courses/${course.slug}/${variant.slug}`}
-              variant="secondary"
-              icon="preview"
-            >
-              Open public
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
+        <OperationsSection>
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-start">
         <div className="space-y-3">
           <SectionCard
             title={`Modules (${modules.length})`}
@@ -249,7 +263,9 @@ export default async function AdminVariantDetailPage({
             }
           />
         </div>
-      </div>
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

@@ -6,7 +6,10 @@ import LoadingButton from "@/components/ui/loading-button";
 import CheckboxField from "@/components/ui/checkbox-field";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Textarea from "@/components/ui/textarea";
@@ -31,58 +34,69 @@ export default async function AdminVariantEditPage({
   ]);
 
   if (!course || !variant || variant.course_id !== course.id) {
-    return <main>Variant not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Variant settings"
+            title="Variant not found"
+            description="This variant may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   return (
-    <main className="space-y-3">
-      <BackNav
-        items={[
-          { href: "/admin/content", label: "Content" },
-          { href: `/admin/content/courses/${course.id}`, label: course.title },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
-            label: variant.title,
-          },
-        ]}
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Variant settings"
+          title={`Edit ${variant.title}`}
+          description="Update variant details, visibility, and ordering."
+          badges={
+            <>
+              <Badge tone="muted" icon="file">
+                {variant.slug}
+              </Badge>
+              <Badge tone="muted">Position {variant.position}</Badge>
+              <ActiveStatusBadge isActive={variant.is_active} />
+              <PublishStatusBadge isPublished={variant.is_published} />
+            </>
+          }
+          actions={
+            <>
+              <Button
+                href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
+                variant="secondary"
+                icon="back"
+              >
+                Back to variant
+              </Button>
+              <Button
+                href={`/courses/${course.slug}/${variant.slug}`}
+                variant="secondary"
+                icon="preview"
+              >
+                Open public
+              </Button>
+            </>
+          }
+        >
+          <BackNav
+            items={[
+              { href: "/admin/content", label: "Content" },
+              { href: `/admin/content/courses/${course.id}`, label: course.title },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
+                label: variant.title,
+              },
+            ]}
+          />
+        </OperationsHeader>
 
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Variant settings"
-        title={`Edit ${variant.title}`}
-        description="Update variant details, visibility, and ordering."
-        badges={
-          <>
-            <Badge tone="muted" icon="file">
-              {variant.slug}
-            </Badge>
-            <Badge tone="muted">Position {variant.position}</Badge>
-            <ActiveStatusBadge isActive={variant.is_active} />
-            <PublishStatusBadge isPublished={variant.is_published} />
-          </>
-        }
-        actions={
-          <>
-            <Button
-              href={`/admin/content/courses/${course.id}/variants/${variant.id}`}
-              variant="secondary"
-              icon="back"
-            >
-              Back to variant
-            </Button>
-            <Button
-              href={`/courses/${course.slug}/${variant.slug}`}
-              variant="secondary"
-              icon="preview"
-            >
-              Open public
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:items-start">
+        <OperationsSection>
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:items-start">
         <SectionCard
           title="Variant settings"
           description="Make structural and visibility changes to this variant."
@@ -195,7 +209,9 @@ export default async function AdminVariantEditPage({
             </div>
           </div>
         </SectionCard>
-      </div>
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

@@ -5,7 +5,10 @@ import Button from "@/components/ui/button";
 import LoadingButton from "@/components/ui/loading-button";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
@@ -26,54 +29,65 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
   const course = await getCourseByIdDb(courseId);
 
   if (!course) {
-    return <main>Course not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Course settings"
+            title="Course not found"
+            description="This course may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   return (
-    <main className="space-y-3">
-      <BackNav
-        items={[
-          { href: "/admin/content", label: "Back to content" },
-          {
-            href: `/admin/content/courses/${course.id}`,
-            label: `Back to ${course.title}`,
-          },
-        ]}
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Course settings"
+          title={`Edit ${course.title}`}
+          description="Update course title, slug, description, and visibility settings."
+          badges={
+            <>
+              <Badge tone="muted" icon="file">
+                {course.slug}
+              </Badge>
+              <Badge tone="muted">{course.qualification_level}</Badge>
+              <Badge tone="muted">{course.curriculum_code}</Badge>
+              <ActiveStatusBadge isActive={course.is_active} />
+              <PublishStatusBadge isPublished={course.is_published} />
+            </>
+          }
+          actions={
+            <>
+              <Button
+                href={`/admin/content/courses/${course.id}`}
+                variant="secondary"
+                icon="back"
+              >
+                Back to course
+              </Button>
+              <Button href={`/courses/${course.slug}`} variant="secondary" icon="preview">
+                Open public course
+              </Button>
+            </>
+          }
+        >
+          <BackNav
+            items={[
+              { href: "/admin/content", label: "Back to content" },
+              {
+                href: `/admin/content/courses/${course.id}`,
+                label: `Back to ${course.title}`,
+              },
+            ]}
+          />
+        </OperationsHeader>
 
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Course settings"
-        title={`Edit ${course.title}`}
-        description="Update course title, slug, description, and visibility settings."
-        badges={
-          <>
-            <Badge tone="muted" icon="file">
-              {course.slug}
-            </Badge>
-            <Badge tone="muted">{course.qualification_level}</Badge>
-            <Badge tone="muted">{course.curriculum_code}</Badge>
-            <ActiveStatusBadge isActive={course.is_active} />
-            <PublishStatusBadge isPublished={course.is_published} />
-          </>
-        }
-        actions={
-          <>
-            <Button
-              href={`/admin/content/courses/${course.id}`}
-              variant="secondary"
-              icon="back"
-            >
-              Back to course
-            </Button>
-            <Button href={`/courses/${course.slug}`} variant="secondary" icon="preview">
-              Open public course
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:items-start">
+        <OperationsSection>
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:items-start">
         <SectionCard
           title="Course settings"
           description="Make structural and visibility changes to this course."
@@ -231,7 +245,9 @@ export default async function AdminCourseEditPage({ params }: AdminCourseEditPag
             </div>
           </div>
         </SectionCard>
-      </div>
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

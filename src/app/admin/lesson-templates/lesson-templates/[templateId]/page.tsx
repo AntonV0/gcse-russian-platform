@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
@@ -9,6 +8,10 @@ import FormField from "@/components/ui/form-field";
 import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import Select from "@/components/ui/select";
 import Textarea from "@/components/ui/textarea";
@@ -55,22 +58,24 @@ export default async function AdminLessonTemplateDetailPage({
   );
 
   return (
-    <main className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <PageHeader
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin lesson templates"
           title={detail.template.title}
           description="Edit lesson template metadata and manage its ordered section template links."
+          actions={
+            <Button
+              href="/admin/lesson-templates/lesson-templates"
+              variant="secondary"
+              icon="back"
+            >
+              Back
+            </Button>
+          }
         />
 
-        <Button
-          href="/admin/lesson-templates/lesson-templates"
-          variant="secondary"
-          icon="back"
-        >
-          Back
-        </Button>
-      </div>
-
+      <OperationsSection>
       <PanelCard
         title="Lesson template details"
         tone="admin"
@@ -130,7 +135,9 @@ export default async function AdminLessonTemplateDetailPage({
           />
         </form>
       </PanelCard>
+      </OperationsSection>
 
+      <OperationsSection>
       <PanelCard
         title="Add section template"
         description="Attach an existing section template and optionally override its title or section kind."
@@ -188,7 +195,9 @@ export default async function AdminLessonTemplateDetailPage({
           </form>
         )}
       </PanelCard>
+      </OperationsSection>
 
+      <OperationsSection>
       <PanelCard
         title="Ordered template sections"
         description="Section templates are applied in this order when the lesson template is inserted."
@@ -329,6 +338,8 @@ export default async function AdminLessonTemplateDetailPage({
           </>
         )}
       </PanelCard>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

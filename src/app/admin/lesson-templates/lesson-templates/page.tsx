@@ -1,4 +1,3 @@
-import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import CardListItem from "@/components/ui/card-list-item";
@@ -7,6 +6,10 @@ import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
 import InlineActions from "@/components/ui/inline-actions";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import { createLessonTemplateAction } from "@/app/actions/admin/admin-lesson-builder-actions";
 import {
@@ -59,71 +62,77 @@ export default async function AdminLessonTemplatesListPage() {
   }
 
   return (
-    <main className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <PageHeader
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin lesson templates"
           title="Lesson Templates"
           description="Full lesson scaffolds built from ordered section templates."
+          actions={
+            <Button href="/admin/lesson-templates" variant="secondary" icon="back">
+              Back
+            </Button>
+          }
         />
 
-        <Button href="/admin/lesson-templates" variant="secondary" icon="back">
-          Back
-        </Button>
-      </div>
+        <OperationsSection>
+          <CreateLessonTemplateCard />
+        </OperationsSection>
 
-      <CreateLessonTemplateCard />
-
-      {templates.length === 0 ? (
-        <EmptyState
-          icon="lesson"
-          title="No lesson templates found yet"
-          description="Create a full lesson scaffold to build future lessons faster."
-        />
-      ) : (
-        <div className="space-y-3">
-          {templates.map((template) => (
-            <CardListItem
-              key={template.id}
-              href={`/admin/lesson-templates/lesson-templates/${template.id}`}
-              title={template.title}
-              subtitle={template.description ?? undefined}
-              badges={
-                <>
-                  <Badge tone="muted" icon="file">
-                    {template.slug}
-                  </Badge>
-
-                  <Badge tone="muted" icon="help">
-                    {sectionCountByTemplateId.get(template.id) ?? 0} section(s)
-                  </Badge>
-
-                  {template.is_active ? (
-                    <Badge tone="success" icon="completed">
-                      Active
-                    </Badge>
-                  ) : (
-                    <Badge tone="warning" icon="pending">
-                      Inactive
-                    </Badge>
-                  )}
-                </>
-              }
-              actions={
-                <InlineActions align="end">
-                  <Button
-                    href={`/admin/lesson-templates/lesson-templates/${template.id}`}
-                    variant="secondary"
-                    size="sm"
-                    icon="preview"
-                  >
-                    Open
-                  </Button>
-                </InlineActions>
-              }
+        <OperationsSection>
+          {templates.length === 0 ? (
+            <EmptyState
+              icon="lesson"
+              title="No lesson templates found yet"
+              description="Create a full lesson scaffold to build future lessons faster."
             />
-          ))}
-        </div>
-      )}
+          ) : (
+            <div className="space-y-3">
+              {templates.map((template) => (
+                <CardListItem
+                  key={template.id}
+                  href={`/admin/lesson-templates/lesson-templates/${template.id}`}
+                  title={template.title}
+                  subtitle={template.description ?? undefined}
+                  badges={
+                    <>
+                      <Badge tone="muted" icon="file">
+                        {template.slug}
+                      </Badge>
+
+                      <Badge tone="muted" icon="help">
+                        {sectionCountByTemplateId.get(template.id) ?? 0} section(s)
+                      </Badge>
+
+                      {template.is_active ? (
+                        <Badge tone="success" icon="completed">
+                          Active
+                        </Badge>
+                      ) : (
+                        <Badge tone="warning" icon="pending">
+                          Inactive
+                        </Badge>
+                      )}
+                    </>
+                  }
+                  actions={
+                    <InlineActions align="end">
+                      <Button
+                        href={`/admin/lesson-templates/lesson-templates/${template.id}`}
+                        variant="secondary"
+                        size="sm"
+                        icon="preview"
+                      >
+                        Open
+                      </Button>
+                    </InlineActions>
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

@@ -6,7 +6,10 @@ import CheckboxField from "@/components/ui/checkbox-field";
 import EmptyState from "@/components/ui/empty-state";
 import FormField from "@/components/ui/form-field";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import SectionCard from "@/components/ui/section-card";
 import Select from "@/components/ui/select";
@@ -49,78 +52,83 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
   ) {
     return (
       <main>
-        <EmptyState
-          icon="search"
-          iconTone="brand"
-          title="Lesson not found"
-          description="This lesson could not be found in the selected course structure."
-          action={
-            <Button href="/admin/content" variant="secondary" icon="back">
-              Back to content
-            </Button>
-          }
-        />
+        <OperationsWorkspace>
+          <OperationsSection divided={false}>
+            <EmptyState
+              icon="search"
+              iconTone="brand"
+              title="Lesson not found"
+              description="This lesson could not be found in the selected course structure."
+              action={
+                <Button href="/admin/content" variant="secondary" icon="back">
+                  Back to content
+                </Button>
+              }
+            />
+          </OperationsSection>
+        </OperationsWorkspace>
       </main>
     );
   }
 
   return (
-    <main className="space-y-3">
-      <BackNav
-        items={[
-          { href: "/admin/content", label: "Content" },
-          { href: `/admin/content/courses/${course.id}`, label: course.title },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
-            label: variant.title,
-          },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`,
-            label: module.title,
-          },
-          {
-            href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`,
-            label: lesson.title,
-          },
-        ]}
-      />
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Lesson settings"
+          title={`Edit ${lesson.title}`}
+          description="Update lesson metadata, access settings, and ordering."
+          badges={
+            <>
+              <Badge tone="muted" icon="file">
+                {lesson.slug}
+              </Badge>
+              <Badge tone="muted">{lesson.lesson_type}</Badge>
+              <Badge tone="muted">Position {lesson.position}</Badge>
+              <PublishStatusBadge isPublished={lesson.is_published} />
+            </>
+          }
+          actions={
+            <>
+              <Button
+                href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
+                variant="secondary"
+                icon="back"
+              >
+                Back to lesson
+              </Button>
+              <Button
+                href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
+                variant="secondary"
+                icon="preview"
+              >
+                Open public
+              </Button>
+            </>
+          }
+        >
+          <BackNav
+            items={[
+              { href: "/admin/content", label: "Content" },
+              { href: `/admin/content/courses/${course.id}`, label: course.title },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}`,
+                label: variant.title,
+              },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}`,
+                label: module.title,
+              },
+              {
+                href: `/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`,
+                label: lesson.title,
+              },
+            ]}
+          />
+        </OperationsHeader>
 
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Lesson settings"
-        title={`Edit ${lesson.title}`}
-        description="Update lesson metadata, access settings, and ordering."
-        badges={
-          <>
-            <Badge tone="muted" icon="file">
-              {lesson.slug}
-            </Badge>
-            <Badge tone="muted">{lesson.lesson_type}</Badge>
-            <Badge tone="muted">Position {lesson.position}</Badge>
-            <PublishStatusBadge isPublished={lesson.is_published} />
-          </>
-        }
-        actions={
-          <>
-            <Button
-              href={`/admin/content/courses/${course.id}/variants/${variant.id}/modules/${module.id}/lessons/${lesson.id}`}
-              variant="secondary"
-              icon="back"
-            >
-              Back to lesson
-            </Button>
-            <Button
-              href={`/courses/${course.slug}/${variant.slug}/modules/${module.slug}/lessons/${lesson.slug}`}
-              variant="secondary"
-              icon="preview"
-            >
-              Open public
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:items-start">
+        <OperationsSection>
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:items-start">
         <SectionCard
           title="Lesson settings"
           description="Make structural, metadata, and access changes to this lesson."
@@ -281,7 +289,9 @@ export default async function AdminLessonEditPage({ params }: AdminLessonEditPag
             </div>
           </div>
         </SectionCard>
-      </div>
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }
