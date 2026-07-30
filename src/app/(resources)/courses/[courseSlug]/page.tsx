@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
 import JourneyProgressBar from "@/components/courses/journey-progress-bar";
-import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import ActionPill from "@/components/ui/action-pill";
 import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import PendingLinkCard from "@/components/ui/pending-link-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
@@ -49,22 +52,27 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
   if (dashboard.role === "guest") {
     return (
-      <main className="space-y-8">
-        <PageHeader
-          title={course.title}
-          description={course.description ?? "Preview this GCSE Russian course."}
-        />
+      <main>
+        <LearningSheet>
+          <LearningSheetHeader
+            eyebrow="Course preview"
+            title={course.title}
+            description={course.description ?? "Preview this GCSE Russian course."}
+          />
 
-        <LockedContentCard
-          title="Create a trial account to choose a path"
-          description="Foundation and Higher path selection is saved to your account, so course modules and lesson progress start after signup."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Start trial"
-          secondaryActionHref="/courses"
-          secondaryActionLabel="Back to courses"
-        />
+          <LearningSheetSection muted>
+            <LockedContentCard
+              title="Create a trial account to choose a path"
+              description="Foundation and Higher path selection is saved to your account, so course modules and lesson progress start after signup."
+              accessLabel="Trial account"
+              statusLabel="Signup required"
+              primaryActionHref="/signup?from=app"
+              primaryActionLabel="Start trial"
+              secondaryActionHref="/courses"
+              secondaryActionLabel="Back to courses"
+            />
+          </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -103,8 +111,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
     totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   return (
-    <main className="space-y-8">
-      <section className="app-surface-brand app-section-padding-lg">
+    <main>
+      <LearningSheet>
+      <LearningSheetSection divided={false}>
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
           <div className="space-y-5">
             <div className="flex flex-wrap gap-2">
@@ -192,25 +201,28 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </div>
           </DashboardCard>
         </div>
-      </section>
+      </LearningSheetSection>
 
       {variants.length === 0 ? (
-        <EmptyState
-          title="No learning paths available yet"
-          description="This course has no paths available right now."
-          visual={
-            <VisualPlaceholder
-              category="learningPath"
-              ariaLabel="Learning path empty state placeholder"
-            />
-          }
-          action={
-            <Button href={getCoursesPath()} variant="secondary" icon="back">
-              Back to courses
-            </Button>
-          }
-        />
+        <LearningSheetSection>
+          <EmptyState
+            title="No learning paths available yet"
+            description="This course has no paths available right now."
+            visual={
+              <VisualPlaceholder
+                category="learningPath"
+                ariaLabel="Learning path empty state placeholder"
+              />
+            }
+            action={
+              <Button href={getCoursesPath()} variant="secondary" icon="back">
+                Back to courses
+              </Button>
+            }
+          />
+        </LearningSheetSection>
       ) : (
+        <LearningSheetSection>
         <section aria-labelledby="course-paths-heading">
           <div className="mb-4">
             <h2 id="course-paths-heading" className="app-heading-section">
@@ -337,7 +349,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
             })}
           </div>
         </section>
+        </LearningSheetSection>
       )}
+      </LearningSheet>
     </main>
   );
 }

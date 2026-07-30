@@ -4,6 +4,7 @@ import LessonPageTemplate from "@/components/lesson-blocks/lesson-page-template"
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, { LearningSheetSection } from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import { loadLessonPageData } from "@/lib/courses/course-helpers-db";
 import { canUserAccessLesson } from "@/lib/access/access";
@@ -66,8 +67,9 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
     const isGuest = !user;
 
     return (
-      <main className="space-y-8">
-        <section className="app-surface-brand app-section-padding-lg">
+      <main>
+        <LearningSheet>
+        <LearningSheetSection divided={false}>
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
             <div className="space-y-5">
               <div className="flex flex-wrap gap-2">
@@ -95,7 +97,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
                 <Button
                   href={
                     isGuest
-                      ? "/signup"
+                      ? "/signup?from=app"
                       : getModulePath(courseSlug, variantSlug, moduleSlug)
                   }
                   variant="primary"
@@ -124,14 +126,17 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
               }
               statusLabel={isGuest ? "Signup required" : "Locked"}
               primaryActionHref={
-                isGuest ? "/signup" : getModulePath(courseSlug, variantSlug, moduleSlug)
+          isGuest
+            ? "/signup?from=app"
+            : getModulePath(courseSlug, variantSlug, moduleSlug)
               }
               primaryActionLabel={isGuest ? "Create trial account" : "Back to module"}
               secondaryActionHref={isGuest ? "/courses" : "/account/billing"}
               secondaryActionLabel={isGuest ? "Course preview" : "Review access"}
             />
           </div>
-        </section>
+        </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -141,22 +146,26 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   if (lessonContent.sections.length === 0) {
     return (
       <main>
-        <EmptyState
-          icon="lessonContent"
-          iconTone="brand"
-          title={lesson.title}
-          description="Lesson content is not ready yet. Return to the module and choose another lesson for now."
-          headingLevel={1}
-          action={
-            <Button
-              href={getModulePath(courseSlug, variantSlug, moduleSlug)}
-              variant="primary"
-              icon="back"
-            >
-              Back to module
-            </Button>
-          }
-        />
+        <LearningSheet>
+          <LearningSheetSection divided={false}>
+            <EmptyState
+              icon="lessonContent"
+              iconTone="brand"
+              title={lesson.title}
+              description="Lesson content is not ready yet. Return to the module and choose another lesson for now."
+              headingLevel={1}
+              action={
+                <Button
+                  href={getModulePath(courseSlug, variantSlug, moduleSlug)}
+                  variant="primary"
+                  icon="back"
+                >
+                  Back to module
+                </Button>
+              }
+            />
+          </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }

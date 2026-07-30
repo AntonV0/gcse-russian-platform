@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
 import JourneyProgressBar from "@/components/courses/journey-progress-bar";
-import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import ActionPill from "@/components/ui/action-pill";
 import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import PendingLinkCard from "@/components/ui/pending-link-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
@@ -49,22 +52,27 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   if (dashboard.role === "guest") {
     return (
-      <main className="space-y-8">
-        <PageHeader
-          title={module.title}
-          description={module.description ?? "This module opens inside trial."}
-        />
+      <main>
+        <LearningSheet>
+          <LearningSheetHeader
+            eyebrow="Module preview"
+            title={module.title}
+            description={module.description ?? "This module opens inside trial."}
+          />
 
-        <LockedContentCard
-          title="Create a trial account to open modules"
-          description="Module lessons require a trial account so your tier choice and lesson progress are saved."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Start trial"
-          secondaryActionHref={getVariantPath(course.slug, variantSlug)}
-          secondaryActionLabel="Back to path"
-        />
+          <LearningSheetSection muted>
+            <LockedContentCard
+              title="Create a trial account to open modules"
+              description="Module lessons require a trial account so your tier choice and lesson progress are saved."
+              accessLabel="Trial account"
+              statusLabel="Signup required"
+              primaryActionHref="/signup?from=app"
+              primaryActionLabel="Start trial"
+              secondaryActionHref={getVariantPath(course.slug, variantSlug)}
+              secondaryActionLabel="Back to path"
+            />
+          </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -141,8 +149,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
         : "Open the first available lesson when it unlocks.";
 
   return (
-    <main className="space-y-8">
-      <section className="app-surface-strong app-section-padding-compact">
+    <main>
+      <LearningSheet>
+      <LearningSheetSection divided={false}>
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)] xl:items-start">
           <div className="space-y-5">
             <div className="flex flex-wrap gap-2">
@@ -252,37 +261,40 @@ export default async function ModulePage({ params }: ModulePageProps) {
             </div>
           </DashboardCard>
         </div>
-      </section>
+      </LearningSheetSection>
 
       {visibleLessons.length === 0 ? (
-        <EmptyState
-          title={
-            lessons.length > 0
-              ? "No published lesson content yet"
-              : "No lessons available yet"
-          }
-          description={
-            lessons.length > 0
-              ? `${hiddenDraftLessonCount} lesson${hiddenDraftLessonCount === 1 ? "" : "s"} exist in this module, but published content is not available for this path yet.`
-              : "This module does not contain any visible lessons right now."
-          }
-          visual={
-            <VisualPlaceholder
-              category="learningPath"
-              ariaLabel="Lessons empty state placeholder"
-            />
-          }
-          action={
-            <Button
-              href={getVariantPath(course.slug, variantSlug)}
-              variant="secondary"
-              icon="back"
-            >
-              Back to path
-            </Button>
-          }
-        />
+        <LearningSheetSection>
+          <EmptyState
+            title={
+              lessons.length > 0
+                ? "No published lesson content yet"
+                : "No lessons available yet"
+            }
+            description={
+              lessons.length > 0
+                ? `${hiddenDraftLessonCount} lesson${hiddenDraftLessonCount === 1 ? "" : "s"} exist in this module, but published content is not available for this path yet.`
+                : "This module does not contain any visible lessons right now."
+            }
+            visual={
+              <VisualPlaceholder
+                category="learningPath"
+                ariaLabel="Lessons empty state placeholder"
+              />
+            }
+            action={
+              <Button
+                href={getVariantPath(course.slug, variantSlug)}
+                variant="secondary"
+                icon="back"
+              >
+                Back to path
+              </Button>
+            }
+          />
+        </LearningSheetSection>
       ) : (
+        <LearningSheetSection>
         <section aria-labelledby="lessons-heading">
           <div className="mb-4">
             <h2 id="lessons-heading" className="app-heading-section">
@@ -400,7 +412,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
             })}
           </div>
         </section>
+        </LearningSheetSection>
       )}
+      </LearningSheet>
     </main>
   );
 }

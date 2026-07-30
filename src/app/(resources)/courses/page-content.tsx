@@ -6,6 +6,7 @@ import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, { LearningSheetSection } from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
@@ -511,8 +512,9 @@ export default async function CoursesPage() {
 
   if (dashboard.role === "guest") {
     return (
-      <main className="space-y-8">
-        <section className="app-surface-brand app-section-padding-lg overflow-hidden">
+      <main>
+        <LearningSheet>
+        <LearningSheetSection divided={false} className="overflow-hidden">
           <div className="grid gap-7 xl:grid-cols-[minmax(0,0.86fr)_minmax(430px,560px)] xl:items-stretch">
             <div className="space-y-5 xl:py-2">
               <div className="flex flex-wrap gap-2">
@@ -536,7 +538,7 @@ export default async function CoursesPage() {
               </div>
 
               <div className="app-mobile-action-stack flex flex-wrap gap-3">
-                <Button href="/signup" variant="primary" icon="create">
+                <Button href="/signup?from=app" variant="primary" icon="create">
                   Create trial account
                 </Button>
                 <Button href="/vocabulary" variant="secondary" icon="vocabulary">
@@ -557,9 +559,10 @@ export default async function CoursesPage() {
               />
             </div>
           </div>
-        </section>
+        </LearningSheetSection>
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <LearningSheetSection>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {guestPreviewAreas.map((area) => (
             <DashboardCard key={area.title} className="h-full">
               <div className="space-y-4">
@@ -581,9 +584,11 @@ export default async function CoursesPage() {
               </div>
             </DashboardCard>
           ))}
-        </section>
+          </div>
+        </LearningSheetSection>
 
-        <section className="grid gap-4 md:grid-cols-2">
+        <LearningSheetSection>
+          <div className="grid gap-4 md:grid-cols-2">
           {courses.map((course) => (
             <DashboardCard key={course.id} title={course.title} className="h-full">
               <div className="space-y-3">
@@ -594,18 +599,22 @@ export default async function CoursesPage() {
               </div>
             </DashboardCard>
           ))}
-        </section>
+          </div>
+        </LearningSheetSection>
 
-        <LockedContentCard
-          title="Create a trial to choose Foundation or Higher"
-          description="The public app preview stays open. Trial accounts add the student layer: tier choice, sample lesson access, saved progress, mock attempts, and account tools."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Create trial account"
-          secondaryActionHref="/gcse-russian-course"
-          secondaryActionLabel="Read course details"
-        />
+        <LearningSheetSection muted>
+          <LockedContentCard
+            title="Create a trial to choose Foundation or Higher"
+            description="The public app preview stays open. Trial accounts add the student layer: tier choice, sample lesson access, saved progress, mock attempts, and account tools."
+            accessLabel="Trial account"
+            statusLabel="Signup required"
+            primaryActionHref="/signup?from=app"
+            primaryActionLabel="Create trial account"
+            secondaryActionHref="/gcse-russian-course"
+            secondaryActionLabel="Read course details"
+          />
+        </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -623,8 +632,9 @@ export default async function CoursesPage() {
     : "Choose path";
 
   return (
-    <main className="space-y-8">
-      <section className="app-surface-brand app-section-padding-lg overflow-hidden">
+    <main>
+      <LearningSheet>
+      <LearningSheetSection divided={false} className="overflow-hidden">
         <div className="grid gap-7 xl:grid-cols-[minmax(0,0.86fr)_minmax(430px,560px)] xl:items-stretch">
           <div className="space-y-5 xl:py-2">
             <div className="flex flex-wrap gap-2">
@@ -688,29 +698,32 @@ export default async function CoursesPage() {
             />
           </div>
         </div>
-      </section>
+      </LearningSheetSection>
 
       {courses.length === 0 ? (
-        <EmptyState
-          icon="courses"
-          iconTone="brand"
-          title="No courses available yet"
-          description="There are no courses available right now. Return to your dashboard and check again later."
-          visual={
-            <VisualPlaceholder
-              category="learningPath"
-              ariaLabel="Course empty state placeholder"
-            />
-          }
-          action={
-            <Button href="/dashboard" variant="primary" icon="dashboard">
-              Dashboard
-            </Button>
-          }
-        />
+        <LearningSheetSection>
+          <EmptyState
+            icon="courses"
+            iconTone="brand"
+            title="No courses available yet"
+            description="There are no courses available right now. Return to your dashboard and check again later."
+            visual={
+              <VisualPlaceholder
+                category="learningPath"
+                ariaLabel="Course empty state placeholder"
+              />
+            }
+            action={
+              <Button href="/dashboard" variant="primary" icon="dashboard">
+                Dashboard
+              </Button>
+            }
+          />
+        </LearningSheetSection>
       ) : (
         <>
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <LearningSheetSection>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryStatCard
               title="Current path"
               value={primaryVariantName}
@@ -756,9 +769,11 @@ export default async function CoursesPage() {
               tone="info"
               compact
             />
-          </section>
+            </div>
+          </LearningSheetSection>
 
-          <section className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
+          <LearningSheetSection>
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
             <div className="grid gap-4">
               {courseHubItems.map((item) => (
                 <CourseHubCard key={item.course.id} item={item} />
@@ -766,13 +781,16 @@ export default async function CoursesPage() {
             </div>
 
             <SpeakingIntensiveCard />
-          </section>
+            </div>
+          </LearningSheetSection>
 
           {primaryCourse ? (
-            <VariantPathCards item={primaryCourse} dashboard={dashboard} />
+            <LearningSheetSection>
+              <VariantPathCards item={primaryCourse} dashboard={dashboard} />
+            </LearningSheetSection>
           ) : null}
 
-          <section>
+          <LearningSheetSection>
             <div className="mb-4">
               <h2 className="app-heading-section">Revision tools</h2>
               <p className="mt-2 max-w-2xl app-text-body-muted">
@@ -827,9 +845,10 @@ export default async function CoursesPage() {
                 );
               })}
             </div>
-          </section>
+          </LearningSheetSection>
         </>
       )}
+      </LearningSheet>
     </main>
   );
 }

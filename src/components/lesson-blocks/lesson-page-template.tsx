@@ -3,6 +3,7 @@ import LessonHeader from "@/components/layout/lesson-header";
 import LessonFooterNav from "@/components/layout/lesson-footer-nav";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, { LearningSheetSection } from "@/components/ui/learning-sheet";
 import LessonRenderer from "@/components/lesson-blocks/lesson-renderer";
 import { StudyMissionPanel } from "@/components/lesson-blocks/learning-warmth-kit";
 import { LessonCompletionPanel } from "@/components/lesson-blocks/lesson-page-template/lesson-completion-panel";
@@ -62,21 +63,25 @@ export default async function LessonPageTemplate({
   if (!course || !module || !lesson) {
     return (
       <main>
-        <EmptyState
-          icon="search"
-          iconTone="brand"
-          title="Lesson not found"
-          description="This lesson could not be found. Return to the module and choose an available lesson."
-          action={
-            <Button
-              href={getModulePath(courseSlug, variantSlug, moduleSlug)}
-              variant="secondary"
-              icon="back"
-            >
-              Back to module
-            </Button>
-          }
-        />
+        <LearningSheet>
+          <LearningSheetSection divided={false}>
+            <EmptyState
+              icon="search"
+              iconTone="brand"
+              title="Lesson not found"
+              description="This lesson could not be found. Return to the module and choose an available lesson."
+              action={
+                <Button
+                  href={getModulePath(courseSlug, variantSlug, moduleSlug)}
+                  variant="secondary"
+                  icon="back"
+                >
+                  Back to module
+                </Button>
+              }
+            />
+          </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -88,18 +93,22 @@ export default async function LessonPageTemplate({
   if (visibleSections.length === 0) {
     return (
       <main>
-        <EmptyState
-          icon="lessonContent"
-          iconTone="brand"
-          title={lesson.title}
-          description="No sections are available for this course path yet. Return to the module and choose another lesson for now."
-          headingLevel={1}
-          action={
-            <Button href={moduleHref} variant="secondary" icon="back">
-              Back to module
-            </Button>
-          }
-        />
+        <LearningSheet>
+          <LearningSheetSection divided={false}>
+            <EmptyState
+              icon="lessonContent"
+              iconTone="brand"
+              title={lesson.title}
+              description="No sections are available for this course path yet. Return to the module and choose another lesson for now."
+              headingLevel={1}
+              action={
+                <Button href={moduleHref} variant="secondary" icon="back">
+                  Back to module
+                </Button>
+              }
+            />
+          </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -149,7 +158,11 @@ export default async function LessonPageTemplate({
   const currentSectionHeadingId = `lesson-section-${currentSection.id}-heading`;
 
   return (
-    <main className="space-y-4" aria-labelledby={lessonHeadingId}>
+    <main
+      className="space-y-4"
+      aria-labelledby={lessonHeadingId}
+      data-workspace-kind="lesson"
+    >
       <LessonHeader
         backHref={moduleHref}
         backLabel="Back to module"

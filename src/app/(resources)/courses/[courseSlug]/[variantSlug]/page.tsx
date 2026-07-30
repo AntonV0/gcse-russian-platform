@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
 import JourneyProgressBar from "@/components/courses/journey-progress-bar";
-import PageHeader from "@/components/layout/page-header";
 import DashboardCard from "@/components/ui/dashboard-card";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import ActionPill from "@/components/ui/action-pill";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import LockedContentCard from "@/components/ui/locked-content-card";
 import PendingLinkCard from "@/components/ui/pending-link-card";
 import VisualPlaceholder from "@/components/ui/visual-placeholder";
@@ -46,22 +49,27 @@ export default async function VariantPage({ params }: VariantPageProps) {
 
   if (dashboard.role === "guest") {
     return (
-      <main className="space-y-8">
-        <PageHeader
-          title={variant.title}
-          description={variant.description ?? "This course path opens inside trial."}
-        />
+      <main>
+        <LearningSheet>
+          <LearningSheetHeader
+            eyebrow="Course path preview"
+            title={variant.title}
+            description={variant.description ?? "This course path opens inside trial."}
+          />
 
-        <LockedContentCard
-          title="Start a trial to open this path"
-          description="Course modules and lessons are available after signup so your Foundation or Higher choice is saved to your dashboard."
-          accessLabel="Trial account"
-          statusLabel="Signup required"
-          primaryActionHref="/signup"
-          primaryActionLabel="Start trial"
-          secondaryActionHref={getCoursePath(course.slug)}
-          secondaryActionLabel={`Back to ${course.title}`}
-        />
+          <LearningSheetSection muted>
+            <LockedContentCard
+              title="Start a trial to open this path"
+              description="Course modules and lessons are available after signup so your Foundation or Higher choice is saved to your dashboard."
+              accessLabel="Trial account"
+              statusLabel="Signup required"
+              primaryActionHref="/signup?from=app"
+              primaryActionLabel="Start trial"
+              secondaryActionHref={getCoursePath(course.slug)}
+              secondaryActionLabel={`Back to ${course.title}`}
+            />
+          </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -95,8 +103,9 @@ export default async function VariantPage({ params }: VariantPageProps) {
         : null;
 
   return (
-    <main className="space-y-8">
-      <section className="app-surface-brand app-section-padding-lg">
+    <main>
+      <LearningSheet>
+      <LearningSheetSection divided={false}>
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.9fr)] xl:items-start">
           <div className="space-y-5">
             <div className="flex flex-wrap gap-2">
@@ -204,25 +213,28 @@ export default async function VariantPage({ params }: VariantPageProps) {
             </div>
           </DashboardCard>
         </div>
-      </section>
+      </LearningSheetSection>
 
       {modules.length === 0 ? (
-        <EmptyState
-          title="No modules available yet"
-          description="This learning path does not have any visible modules right now."
-          visual={
-            <VisualPlaceholder
-              category="learningPath"
-              ariaLabel="Modules empty state placeholder"
-            />
-          }
-          action={
-            <Button href={getCoursePath(course.slug)} variant="secondary" icon="back">
-              Back to {course.title}
-            </Button>
-          }
-        />
+        <LearningSheetSection>
+          <EmptyState
+            title="No modules available yet"
+            description="This learning path does not have any visible modules right now."
+            visual={
+              <VisualPlaceholder
+                category="learningPath"
+                ariaLabel="Modules empty state placeholder"
+              />
+            }
+            action={
+              <Button href={getCoursePath(course.slug)} variant="secondary" icon="back">
+                Back to {course.title}
+              </Button>
+            }
+          />
+        </LearningSheetSection>
       ) : (
+        <LearningSheetSection>
         <section aria-labelledby="modules-heading">
           <div className="mb-4">
             <h2 id="modules-heading" className="app-heading-section">
@@ -339,7 +351,9 @@ export default async function VariantPage({ params }: VariantPageProps) {
             })}
           </div>
         </section>
+        </LearningSheetSection>
       )}
+      </LearningSheet>
     </main>
   );
 }
