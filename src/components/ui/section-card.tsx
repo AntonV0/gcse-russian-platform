@@ -98,7 +98,9 @@ export default function SectionCard({
   return (
     <div
       {...divProps}
-      className={["dev-marker-host relative", className].filter(Boolean).join(" ")}
+      className={["dev-marker-host relative h-full min-h-0", className]
+        .filter(Boolean)
+        .join(" ")}
     >
       {SHOW_UI_DEBUG ? (
         <DevComponentMarker
@@ -120,6 +122,7 @@ export default function SectionCard({
       <Card
         className={[
           "app-section-card overflow-hidden rounded-[var(--radius-card)]",
+          "flex h-full min-h-0 flex-col",
           toneClasses.card,
         ]
           .filter(Boolean)

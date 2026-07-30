@@ -16,7 +16,7 @@ export default function DashboardCard({
   className,
 }: DashboardCardProps) {
   return (
-    <div className="dev-marker-host relative">
+    <div className="dev-marker-host relative h-full min-h-0">
       <DevOnlyComponentMarker
         componentName="DashboardCard"
         filePath="src/components/ui/dashboard-card.tsx"
@@ -40,13 +40,18 @@ export default function DashboardCard({
           .filter(Boolean)
           .join(" ")}
       >
-        <CardBody className="px-4 py-4 sm:px-5">
+        <CardBody className="flex flex-col px-4 py-4 sm:px-5">
           {title ? (
             <Heading level={headingLevel} className="app-card-title">
               {title}
             </Heading>
           ) : null}
-          <div className={[title ? "mt-2.5" : "", "text-sm app-text-muted"].join(" ")}>
+          <div
+            className={[
+              title ? "mt-2.5" : "",
+              "flex flex-1 flex-col text-sm app-text-muted",
+            ].join(" ")}
+          >
             {children}
           </div>
         </CardBody>

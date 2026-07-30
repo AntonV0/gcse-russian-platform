@@ -13,7 +13,7 @@ type CardSectionProps = {
 
 export function Card({ children, className, interactive = false }: CardProps) {
   return (
-    <div className="dev-marker-host relative">
+    <div className="dev-marker-host relative h-full min-h-0">
       <DevOnlyComponentMarker
         componentName="Card"
         filePath="src/components/ui/card.tsx"
@@ -32,6 +32,7 @@ export function Card({ children, className, interactive = false }: CardProps) {
       <div
         className={[
           "app-card app-card-shell overflow-hidden rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform]",
+          "flex h-full min-h-0 flex-col",
           interactive
             ? "app-card-hover app-card-interaction-subtle hover:border-[var(--border-strong)]"
             : "",
@@ -63,7 +64,11 @@ export function CardHeader({ children, className }: CardSectionProps) {
 
 export function CardBody({ children, className }: CardSectionProps) {
   return (
-    <div className={["app-card-body px-5 py-4", className].filter(Boolean).join(" ")}>
+    <div
+      className={["app-card-body min-h-0 flex-1 px-5 py-4", className]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {children}
     </div>
   );

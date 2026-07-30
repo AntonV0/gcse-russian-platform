@@ -94,7 +94,11 @@ export default function PanelCard({
   const hasHeader = Boolean(title || description || actions);
 
   return (
-    <div className={["dev-marker-host relative", className].filter(Boolean).join(" ")}>
+    <div
+      className={["dev-marker-host relative h-full min-h-0", className]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <DevOnlyComponentMarker
         componentName="PanelCard"
         filePath="src/components/ui/panel-card.tsx"
@@ -111,7 +115,11 @@ export default function PanelCard({
       />
 
       <Card
-        className={["app-panel-card rounded-[var(--radius-card)]", toneClasses.card]
+        className={[
+          "app-panel-card rounded-[var(--radius-card)]",
+          "flex h-full min-h-0 flex-col",
+          toneClasses.card,
+        ]
           .filter(Boolean)
           .join(" ")}
       >

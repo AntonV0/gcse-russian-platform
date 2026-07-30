@@ -109,7 +109,7 @@ export default function SummaryStatCard({
 
   if (layout === "inline") {
     return (
-      <div className="dev-marker-host relative">
+      <div className="dev-marker-host relative h-full min-h-0">
         <SummaryStatMarker />
 
         <Card className={[toneClasses.card, className].filter(Boolean).join(" ")}>
@@ -164,7 +164,7 @@ export default function SummaryStatCard({
   }
 
   return (
-    <div className="dev-marker-host relative">
+    <div className="dev-marker-host relative h-full min-h-0">
       <SummaryStatMarker />
 
       <Card className={[toneClasses.card, className].filter(Boolean).join(" ")}>

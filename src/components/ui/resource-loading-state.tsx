@@ -1,3 +1,8 @@
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
+
 type ResourceLoadingStateProps = {
   eyebrow: string;
   title: string;
@@ -17,7 +22,7 @@ function LoadingBlock({ className = "" }: { className?: string }) {
 
 function LoadingResourceRow() {
   return (
-    <div className="app-card p-4">
+    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 flex-1 space-y-3">
           <LoadingBlock className="h-4 w-2/3 max-w-sm" />
@@ -42,45 +47,43 @@ export default function ResourceLoadingState({
   resultRows = 3,
 }: ResourceLoadingStateProps) {
   return (
-    <main className="space-y-4" aria-busy="true" aria-live="polite">
-      <section className="app-intro-panel app-intro-panel-student px-5 py-5 md:px-6 md:py-6">
-        <div className="max-w-3xl">
-          <div className="text-[0.78rem] font-semibold uppercase tracking-[0.12em] app-text-soft">
-            {eyebrow}
+    <main aria-busy="true" aria-live="polite">
+      <LearningSheet>
+        <LearningSheetHeader
+          eyebrow={eyebrow}
+          title={title}
+          description={description}
+        />
+
+        <LearningSheetSection>
+          <div className="mb-4 space-y-2">
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
+              Loading finder
+            </p>
+            <p className="text-sm app-text-muted">
+              Getting the filters and latest resources ready.
+            </p>
           </div>
-          <h1 className="mt-2.5 app-title">{title}</h1>
-          <p className="mt-3 max-w-2xl app-text-lede">{description}</p>
-        </div>
-      </section>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {Array.from({ length: searchFields }).map((_, index) => (
+              <LoadingBlock key={index} className="h-11" />
+            ))}
+            <LoadingBlock className="h-11 md:col-span-2 xl:col-span-4 xl:ml-auto xl:w-28" />
+          </div>
+        </LearningSheetSection>
 
-      <section className="app-section-card p-5">
-        <div className="mb-4 space-y-2">
-          <p className="text-sm font-semibold text-[var(--text-primary)]">
-            Loading finder
-          </p>
-          <p className="text-sm app-text-muted">
-            Getting the filters and latest resources ready.
-          </p>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: searchFields }).map((_, index) => (
-            <LoadingBlock key={index} className="h-11" />
-          ))}
-          <LoadingBlock className="h-11 md:col-span-2 xl:col-span-4 xl:ml-auto xl:w-28" />
-        </div>
-      </section>
-
-      <section className="app-section-card p-5">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <LoadingBlock className="h-5 w-36" />
-          <LoadingBlock className="h-7 w-24 rounded-full" />
-        </div>
-        <div className="grid gap-3">
-          {Array.from({ length: resultRows }).map((_, index) => (
-            <LoadingResourceRow key={index} />
-          ))}
-        </div>
-      </section>
+        <LearningSheetSection>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <LoadingBlock className="h-5 w-36" />
+            <LoadingBlock className="h-7 w-24 rounded-full" />
+          </div>
+          <div className="grid gap-3">
+            {Array.from({ length: resultRows }).map((_, index) => (
+              <LoadingResourceRow key={index} />
+            ))}
+          </div>
+        </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }
