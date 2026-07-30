@@ -1,9 +1,11 @@
-import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import DetailList from "@/components/ui/detail-list";
 import FormField from "@/components/ui/form-field";
-import InlineActions from "@/components/ui/inline-actions";
 import Input from "@/components/ui/input";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import Textarea from "@/components/ui/textarea";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
@@ -40,14 +42,34 @@ export default async function CreateQuestionSetFromTemplatePage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin question bank"
+            title="Access denied"
+            description="You need an admin account to create a question set from a template."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const { templateQuestionSetId } = await params;
   const template = await getQuestionSetByIdDb(templateQuestionSetId);
 
   if (!template || !template.is_template) {
-    return <main>Template not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin question bank"
+            title="Template not found"
+            description="This template may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const baseTitle = stripCopySuffix(template.title);
@@ -55,24 +77,24 @@ export default async function CreateQuestionSetFromTemplatePage({
   const suggestedSlug = `${slugify(template.slug ?? template.title)}-copy`;
 
   return (
-    <main className="max-w-3xl">
-      <InlineActions className="mb-6">
-        <Button
-          href="/admin/question-sets/templates"
-          variant="quiet"
-          size="sm"
-          icon="back"
-        >
-          Back to templates
-        </Button>
-      </InlineActions>
+    <main>
+      <OperationsWorkspace className="max-w-4xl">
+        <OperationsHeader
+          eyebrow="Admin question bank"
+          title="Create Question Set from Template"
+          description="Create a working copy from a reusable template."
+          actions={
+            <Button
+              href="/admin/question-sets/templates"
+              variant="secondary"
+              icon="back"
+            >
+              Back to templates
+            </Button>
+          }
+        />
 
-      <PageHeader
-        title="Create Question Set from Template"
-        description="Create a working copy from a reusable template."
-      />
-
-      <section className="mb-8">
+      <OperationsSection>
         <PanelCard title="Template Details" tone="admin">
           <DetailList
             items={[
@@ -84,9 +106,9 @@ export default async function CreateQuestionSetFromTemplatePage({
             ]}
           />
         </PanelCard>
-      </section>
+      </OperationsSection>
 
-      <section>
+      <OperationsSection>
         <PanelCard title="New Question Set Details" tone="admin">
           <form action={createQuestionSetFromTemplateAction} className="space-y-4">
             <input type="hidden" name="templateQuestionSetId" value={template.id} />
@@ -120,7 +142,8 @@ export default async function CreateQuestionSetFromTemplatePage({
             </Button>
           </form>
         </PanelCard>
-      </section>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

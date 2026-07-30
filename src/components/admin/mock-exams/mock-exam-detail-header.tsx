@@ -1,7 +1,9 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PublishStatusBadge from "@/components/ui/publish-status-badge";
 import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
 import type { DbMockExamSet } from "@/lib/mock-exams/types";
@@ -17,8 +19,7 @@ export default function MockExamDetailHeader({
 }) {
   return (
     <>
-      <PageIntroPanel
-        tone="admin"
+      <OperationsHeader
         eyebrow="Mock exam editor"
         title={exam.title}
         description={exam.description ?? "Build an original GCSE-style mock exam."}
@@ -51,11 +52,14 @@ export default function MockExamDetailHeader({
         }
       />
 
-      <FeedbackBanner
-        tone="warning"
-        title="Original content only"
-        description="This editor is for platform-created mock exams. Do not paste Pearson copyrighted questions, transcripts, paper text, images, or mark schemes into question prompts or JSON data."
-      />
+      <OperationsSection muted>
+        <div className="rounded-xl border border-[color-mix(in_srgb,var(--warning)_24%,var(--border-subtle))] bg-[var(--warning-soft)] px-4 py-3 text-sm leading-6 text-[var(--warning)]">
+          <span className="font-semibold">Original content only.</span>{" "}
+          This editor is for platform-created mock exams. Do not paste Pearson
+          copyrighted questions, transcripts, paper text, images, or mark schemes into
+          question prompts or JSON data.
+        </div>
+      </OperationsSection>
     </>
   );
 }

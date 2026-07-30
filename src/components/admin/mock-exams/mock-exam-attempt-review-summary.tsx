@@ -2,7 +2,7 @@ import AttemptStatusBadge from "@/components/ui/attempt-status-badge";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import { OperationsHeader } from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import { getMockExamTierLabel } from "@/lib/mock-exams/labels";
 import type {
@@ -60,8 +60,7 @@ export function MockExamAttemptReviewHeader({
   questionCount,
 }: MockExamAttemptReviewHeaderProps) {
   return (
-    <PageIntroPanel
-      tone="admin"
+    <OperationsHeader
       eyebrow="Mock exam marking"
       title={exam.title}
       description={`Review attempt by ${getMockExamProfileLabel(student)}.`}
@@ -104,8 +103,14 @@ export function MockExamAttemptReviewNotices({
   saved,
   canMark,
 }: MockExamAttemptReviewNoticesProps) {
+  const hasNotice = saved || aiMarked || !!aiError || !aiReady || !canMark;
+
+  if (!hasNotice) {
+    return null;
+  }
+
   return (
-    <>
+    <div className="space-y-3">
       {saved ? (
         <FeedbackBanner
           tone="success"
@@ -145,7 +150,7 @@ export function MockExamAttemptReviewNotices({
           description="This attempt has not been submitted yet. You can inspect saved responses, but marking is locked until submission."
         />
       ) : null}
-    </>
+    </div>
   );
 }
 

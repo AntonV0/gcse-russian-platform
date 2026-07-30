@@ -1,7 +1,10 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PastPaperResourceForms from "@/components/admin/past-papers/past-paper-resource-forms";
 import PastPaperResourceTable from "@/components/admin/past-papers/past-paper-resource-table";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
@@ -68,7 +71,17 @@ export default async function AdminPastPapersPage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin exam resources"
+            title="Access denied"
+            description="You need an admin account to manage past paper links."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const params = (await searchParams) ?? {};
@@ -88,54 +101,63 @@ export default async function AdminPastPapersPage({
   const hasImportResult = Number.isFinite(importedCount) && Number.isFinite(skippedCount);
 
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Admin exam resources"
-        title="Past Papers Library"
-        description="Manage official Pearson Edexcel GCSE Russian 1RU0 past paper resource links. Store metadata and official URLs only, not Pearson paper content."
-        badges={
-          <>
-            <Badge tone="info" icon="pastPapers">
-              Pearson links
-            </Badge>
-            <Badge tone="muted" icon="list">
-              {allResources.length} resource{allResources.length === 1 ? "" : "s"}
-            </Badge>
-            <Badge tone="success" icon="published">
-              {publishedCount} published
-            </Badge>
-          </>
-        }
-        actions={
-          <Button href="/past-papers" variant="secondary" icon="preview">
-            Student view
-          </Button>
-        }
-      />
-
-      <FeedbackBanner
-        tone="warning"
-        title="Copyright-safe resource model"
-        description="Paste official Pearson URLs and keep this library as metadata plus links. Do not copy Pearson question papers, mark schemes, transcripts, or audio content into the platform database."
-      />
-
-      {hasImportResult ? (
-        <FeedbackBanner
-          tone="success"
-          title="Bulk import complete"
-          description={`${importedCount} row${importedCount === 1 ? "" : "s"} imported. ${skippedCount} duplicate row${skippedCount === 1 ? "" : "s"} skipped.`}
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin exam resources"
+          title="Past Papers Library"
+          description="Manage official Pearson Edexcel GCSE Russian 1RU0 past paper resource links. Store metadata and official URLs only, not Pearson paper content."
+          badges={
+            <>
+              <Badge tone="info" icon="pastPapers">
+                Pearson links
+              </Badge>
+              <Badge tone="muted" icon="list">
+                {allResources.length} resource{allResources.length === 1 ? "" : "s"}
+              </Badge>
+              <Badge tone="success" icon="published">
+                {publishedCount} published
+              </Badge>
+            </>
+          }
+          actions={
+            <Button href="/past-papers" variant="secondary" icon="preview">
+              Student view
+            </Button>
+          }
         />
-      ) : null}
 
-      <PastPaperResourceForms />
+        <OperationsSection muted>
+          <FeedbackBanner
+            tone="warning"
+            title="Copyright-safe resource model"
+            description="Paste official Pearson URLs and keep this library as metadata plus links. Do not copy Pearson question papers, mark schemes, transcripts, or audio content into the platform database."
+          />
 
-      <PastPaperResourceTable
-        resources={resources}
-        filters={filters}
-        examSeriesOptions={examSeriesOptions}
-        selectedExamSeries={params.examSeries}
-      />
+          {hasImportResult ? (
+            <div className="mt-3">
+              <FeedbackBanner
+                tone="success"
+                title="Bulk import complete"
+                description={`${importedCount} row${importedCount === 1 ? "" : "s"} imported. ${skippedCount} duplicate row${skippedCount === 1 ? "" : "s"} skipped.`}
+              />
+            </div>
+          ) : null}
+        </OperationsSection>
+
+        <OperationsSection>
+          <PastPaperResourceForms />
+        </OperationsSection>
+
+        <OperationsSection>
+          <PastPaperResourceTable
+            resources={resources}
+            filters={filters}
+            examSeriesOptions={examSeriesOptions}
+            selectedExamSeries={params.examSeries}
+          />
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

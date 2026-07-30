@@ -4,7 +4,10 @@ import { QuestionSetEditPanel } from "@/components/admin/question-sets/question-
 import { QuestionSetOverviewPanel } from "@/components/admin/question-sets/question-set-overview-panel";
 import { QuestionSetQuestionsPanel } from "@/components/admin/question-sets/question-set-questions-panel";
 import { QuestionSetUsagePanel } from "@/components/admin/question-sets/question-set-usage-panel";
-import PageHeader from "@/components/layout/page-header";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import { getAssignmentsUsingQuestionSetDb } from "@/lib/assignments/assignment-helpers-db";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
@@ -24,7 +27,17 @@ export default async function AdminQuestionSetDetailPage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin question bank"
+            title="Access denied"
+            description="You need an admin account to manage question sets."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const { questionSetId } = await params;
@@ -36,42 +49,59 @@ export default async function AdminQuestionSetDetailPage({
   ]);
 
   if (!questionSet) {
-    return <main>Question set not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin question bank"
+            title="Question set not found"
+            description="This question set may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   return (
     <main>
-      <PageHeader
-        title={questionSet.title}
-        description={questionSet.description ?? "Admin question set view."}
-      />
-
-      <section className="mb-8 grid gap-4">
-        <QuestionSetOverviewPanel
-          questionSet={questionSet}
-          questionCount={questions.length}
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin question bank"
+          title={questionSet.title}
+          description={questionSet.description ?? "Admin question set view."}
         />
-      </section>
 
-      <section className="mb-8">
-        <QuestionSetUsagePanel usage={usage} />
-      </section>
+        <OperationsSection>
+          <QuestionSetOverviewPanel
+            questionSet={questionSet}
+            questionCount={questions.length}
+          />
+        </OperationsSection>
 
-      <section className="mb-8 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <QuestionSetEditPanel questionSet={questionSet} />
-        <QuestionSetDangerZone questionSet={questionSet} usageCount={usage.length} />
-      </section>
+        <OperationsSection>
+          <QuestionSetUsagePanel usage={usage} />
+        </OperationsSection>
 
-      <section className="mb-8">
-        <QuestionSetQuestionsPanel questionSetId={questionSet.id} questions={questions} />
-      </section>
+        <OperationsSection>
+          <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+            <QuestionSetEditPanel questionSet={questionSet} />
+            <QuestionSetDangerZone questionSet={questionSet} usageCount={usage.length} />
+          </div>
+        </OperationsSection>
 
-      <section className="max-w-4xl">
-        <QuestionSetAddQuestionPanel
-          questionSetId={questionSet.id}
-          nextPosition={questions.length + 1}
-        />
-      </section>
+        <OperationsSection>
+          <QuestionSetQuestionsPanel questionSetId={questionSet.id} questions={questions} />
+        </OperationsSection>
+
+        <OperationsSection>
+          <div className="max-w-4xl">
+            <QuestionSetAddQuestionPanel
+              questionSetId={questionSet.id}
+              nextPosition={questions.length + 1}
+            />
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

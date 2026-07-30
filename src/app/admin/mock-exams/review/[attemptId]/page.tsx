@@ -4,6 +4,10 @@ import {
   MockExamAttemptReviewNotices,
   MockExamAttemptReviewSummary,
 } from "@/components/admin/mock-exams/mock-exam-attempt-review-summary";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { loadMockExamAttemptReviewDb } from "@/lib/mock-exams/loaders";
 
@@ -25,7 +29,17 @@ export default async function AdminMockExamAttemptReviewPage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Mock exam marking"
+            title="Access denied"
+            description="You do not have permission to review mock exam attempts."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const { attemptId } = await params;
@@ -41,7 +55,17 @@ export default async function AdminMockExamAttemptReviewPage({
   } = await loadMockExamAttemptReviewDb(attemptId);
 
   if (!attempt || !exam) {
-    return <main>Mock exam attempt not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Mock exam marking"
+            title="Attempt not found"
+            description="This mock exam attempt could not be found or may have been removed."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const questions = sections.flatMap((section) => questionsBySectionId[section.id] ?? []);
@@ -51,42 +75,58 @@ export default async function AdminMockExamAttemptReviewPage({
   ).length;
   const canMark = attempt.status !== "draft";
   const canGenerateAiMarking = Boolean(process.env.OPENAI_API_KEY);
+  const hasNotice =
+    Boolean(query.aiError) ||
+    Boolean(query.aiMarked) ||
+    query.saved === "1" ||
+    !canGenerateAiMarking ||
+    !canMark;
 
   return (
-    <main className="space-y-4">
-      <MockExamAttemptReviewHeader
-        exam={exam}
-        attempt={attempt}
-        student={student}
-        markedResponseCount={markedResponseCount}
-        questionCount={questions.length}
-      />
+    <main>
+      <OperationsWorkspace>
+        <MockExamAttemptReviewHeader
+          exam={exam}
+          attempt={attempt}
+          student={student}
+          markedResponseCount={markedResponseCount}
+          questionCount={questions.length}
+        />
 
-      <MockExamAttemptReviewNotices
-        aiError={query.aiError}
-        aiMarked={Boolean(query.aiMarked)}
-        aiReady={canGenerateAiMarking}
-        saved={query.saved === "1"}
-        canMark={canMark}
-      />
+        {hasNotice ? (
+          <OperationsSection muted>
+            <MockExamAttemptReviewNotices
+              aiError={query.aiError}
+              aiMarked={Boolean(query.aiMarked)}
+              aiReady={canGenerateAiMarking}
+              saved={query.saved === "1"}
+              canMark={canMark}
+            />
+          </OperationsSection>
+        ) : null}
 
-      <MockExamAttemptReviewSummary
-        attempt={attempt}
-        student={student}
-        score={score}
-        responseCount={responseCount}
-        questionCount={questions.length}
-      />
+        <OperationsSection>
+          <div className="space-y-4">
+            <MockExamAttemptReviewSummary
+              attempt={attempt}
+              student={student}
+              score={score}
+              responseCount={responseCount}
+              questionCount={questions.length}
+            />
 
-      <MockExamAttemptMarkingForm
-        attempt={attempt}
-        sections={sections}
-        questionsBySectionId={questionsBySectionId}
-        responsesByQuestionId={responsesByQuestionId}
-        score={score}
-        canMark={canMark}
-        canGenerateAiMarking={canGenerateAiMarking}
-      />
+            <MockExamAttemptMarkingForm
+              attempt={attempt}
+              sections={sections}
+              questionsBySectionId={questionsBySectionId}
+              responsesByQuestionId={responsesByQuestionId}
+              score={score}
+              canMark={canMark}
+              canGenerateAiMarking={canGenerateAiMarking}
+            />
+          </div>
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

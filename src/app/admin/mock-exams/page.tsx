@@ -3,7 +3,10 @@ import { MockExamSetsTable } from "@/components/admin/mock-exams/mock-exam-sets-
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import { mockExamTiers } from "@/lib/mock-exams/constants";
 import { getMockExamSetsDb } from "@/lib/mock-exams/queries";
@@ -46,7 +49,17 @@ export default async function AdminMockExamsPage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin exam editor"
+            title="Access denied"
+            description="You do not have permission to manage mock exams."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const params = (await searchParams) ?? {};
@@ -60,9 +73,9 @@ export default async function AdminMockExamsPage({
   const publishedCount = allExams.filter((exam) => exam.is_published).length;
 
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="admin"
+    <main>
+      <OperationsWorkspace>
+      <OperationsHeader
         eyebrow="Admin exam editor"
         title="Mock Exams"
         description="Create original GCSE-style mock exam sets separate from official Pearson past paper links."
@@ -91,14 +104,21 @@ export default async function AdminMockExamsPage({
         }
       />
 
+      <OperationsSection muted>
       <FeedbackBanner
         tone="info"
         title="Pearson-style, not Pearson-copied"
         description="Use the Pearson Edexcel 1RU0 structure as a guide, but every internal mock exam question should be original content created for this platform."
       />
+      </OperationsSection>
 
+      <OperationsSection>
       <MockExamCreatePanel />
+      </OperationsSection>
+      <OperationsSection>
       <MockExamSetsTable exams={exams} filters={filters} />
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

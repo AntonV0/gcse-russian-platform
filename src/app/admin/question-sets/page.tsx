@@ -5,8 +5,11 @@ import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import Input from "@/components/ui/input";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
-import SectionCard from "@/components/ui/section-card";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+  OperationsToolbar,
+} from "@/components/ui/operations-workspace";
 import Select from "@/components/ui/select";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
@@ -97,7 +100,17 @@ export default async function AdminQuestionSetsPage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin question bank"
+            title="Access denied"
+            description="You need an admin account to manage question sets."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const params = (await searchParams) ?? {};
@@ -129,198 +142,212 @@ export default async function AdminQuestionSetsPage({
   ).length;
 
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="admin"
-        eyebrow="Admin question bank"
-        title="Question Sets"
-        description="Manage reusable practice banks, lesson question groups, templates, and GCSE-style tasks from one scan-friendly workspace."
-        badges={
-          <>
-            <Badge tone="info" icon="questionSet">
-              {questionSets.length} set{questionSets.length === 1 ? "" : "s"}
-            </Badge>
-            <Badge tone="muted" icon="file">
-              {templates.length} template{templates.length === 1 ? "" : "s"}
-            </Badge>
-            <Badge tone={emptyCount > 0 ? "warning" : "success"} icon="question">
-              {emptyCount} empty
-            </Badge>
-          </>
-        }
-        actions={
-          <>
-            <Button href="/admin/question-sets/create" variant="primary" icon="create">
-              Create question set
-            </Button>
-            <Button href="/admin/question-sets/templates" variant="secondary" icon="file">
-              Templates
-            </Button>
-          </>
-        }
-      >
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <SummaryStatCard
-            title="Question sets"
-            value={questionSets.length}
-            description="reusable banks and templates"
-            icon="questionSet"
-            tone="brand"
-            compact
-          />
-          <SummaryStatCard
-            title="Questions"
-            value={totalQuestions}
-            description="total active and inactive items"
-            icon="question"
-            compact
-          />
-          <SummaryStatCard
-            title="Templates"
-            value={templates.length}
-            description="starting points for new sets"
-            icon="file"
-            tone="info"
-            compact
-          />
-          <SummaryStatCard
-            title="Needs setup"
-            value={emptyCount + needsContextCount}
-            description="empty or missing context"
-            icon="warning"
-            tone={emptyCount + needsContextCount > 0 ? "warning" : "success"}
-            compact
-          />
-        </div>
-      </PageIntroPanel>
-
-      {emptyCount + needsContextCount > 0 ? (
-        <FeedbackBanner
-          tone="warning"
-          title="Some question sets need publishing readiness work"
-          description={`${emptyCount} empty set${emptyCount === 1 ? "" : "s"} and ${needsContextCount} set${needsContextCount === 1 ? "" : "s"} missing description or instructions.`}
-        />
-      ) : null}
-
-      <SectionCard
-        title="Find question sets"
-        description="Search by title, slug, source, instructions, or template metadata."
-        tone="admin"
-      >
-        <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(240px,1fr)_minmax(180px,220px)_minmax(180px,220px)_auto] xl:items-center">
-          <Input
-            name="q"
-            defaultValue={params.q ?? ""}
-            placeholder="Search question sets..."
-          />
-
-          <Select name="type" defaultValue={params.type ?? "all"}>
-            <option value="all">All types</option>
-            <option value="sets">Sets only</option>
-            <option value="templates">Templates only</option>
-            {sourceTypes.map((sourceType) => (
-              <option key={sourceType} value={sourceType}>
-                {sourceType}
-              </option>
-            ))}
-          </Select>
-
-          <Select name="readiness" defaultValue={params.readiness ?? "all"}>
-            <option value="all">All readiness</option>
-            <option value="ready">Ready</option>
-            <option value="needs_context">Needs context</option>
-            <option value="empty">Empty</option>
-          </Select>
-
-          <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row md:col-span-2 xl:col-span-1">
-            <Button type="submit" variant="secondary" icon="filter">
-              Apply
-            </Button>
-            <Button href="/admin/question-sets" variant="quiet" icon="refresh">
-              Reset
-            </Button>
-          </div>
-        </form>
-      </SectionCard>
-
-      <SectionCard
-        title="Question set library"
-        description={`${filteredItems.length} of ${items.length} set${items.length === 1 ? "" : "s"} shown.`}
-        tone="admin"
-        actions={
-          <Button
-            href="/admin/question-sets/create"
-            variant="secondary"
-            size="sm"
-            icon="create"
-          >
-            New set
-          </Button>
-        }
-      >
-        {filteredItems.length === 0 ? (
-          <EmptyState
-            icon="questionSet"
-            iconTone="brand"
-            title="No question sets match these filters"
-            description="Clear filters or create a new reusable question set."
-            action={
+    <main>
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin question bank"
+          title="Question Sets"
+          description="Manage reusable practice banks, lesson question groups, templates, and GCSE-style tasks from one scan-friendly workspace."
+          badges={
+            <>
+              <Badge tone="info" icon="questionSet">
+                {questionSets.length} set{questionSets.length === 1 ? "" : "s"}
+              </Badge>
+              <Badge tone="muted" icon="file">
+                {templates.length} template{templates.length === 1 ? "" : "s"}
+              </Badge>
+              <Badge tone={emptyCount > 0 ? "warning" : "success"} icon="question">
+                {emptyCount} empty
+              </Badge>
+            </>
+          }
+          actions={
+            <>
               <Button href="/admin/question-sets/create" variant="primary" icon="create">
                 Create question set
               </Button>
-            }
-          />
-        ) : (
-          <div className="grid gap-3">
-            {filteredItems.map((item) => {
-              const readiness = getReadiness(item);
-
-              return (
-                <CardListItem
-                  key={item.questionSet.id}
-                  href={`/admin/question-sets/${item.questionSet.id}`}
-                  title={item.questionSet.title}
-                  subtitle={
-                    item.questionSet.description ??
-                    item.questionSet.instructions ??
-                    "No description or instructions added yet."
-                  }
-                  badges={
-                    <>
-                      <Badge tone="muted" icon="file">
-                        {item.questionSet.slug ?? "No slug"}
-                      </Badge>
-                      <Badge
-                        tone={item.questionSet.is_template ? "info" : "muted"}
-                        icon="questionSet"
-                      >
-                        {item.questionSet.is_template
-                          ? "Template"
-                          : item.questionSet.source_type}
-                      </Badge>
-                      <Badge
-                        tone={getReadinessTone(readiness)}
-                        icon={readiness === "ready" ? "completed" : "warning"}
-                      >
-                        {getReadinessLabel(readiness)}
-                      </Badge>
-                      <Badge tone="muted" icon="list">
-                        {item.activeQuestionCount} active / {item.questionCount} total
-                      </Badge>
-                    </>
-                  }
-                  actions={
-                    <div className="flex items-center gap-2 text-sm app-text-muted">
-                      <AppIcon icon="next" size={16} />
-                      <span>Open</span>
-                    </div>
-                  }
-                />
-              );
-            })}
+              <Button href="/admin/question-sets/templates" variant="secondary" icon="file">
+                Templates
+              </Button>
+            </>
+          }
+        >
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <SummaryStatCard
+              title="Question sets"
+              value={questionSets.length}
+              description="reusable banks and templates"
+              icon="questionSet"
+              tone="brand"
+              compact
+            />
+            <SummaryStatCard
+              title="Questions"
+              value={totalQuestions}
+              description="total active and inactive items"
+              icon="question"
+              compact
+            />
+            <SummaryStatCard
+              title="Templates"
+              value={templates.length}
+              description="starting points for new sets"
+              icon="file"
+              tone="info"
+              compact
+            />
+            <SummaryStatCard
+              title="Needs setup"
+              value={emptyCount + needsContextCount}
+              description="empty or missing context"
+              icon="warning"
+              tone={emptyCount + needsContextCount > 0 ? "warning" : "success"}
+              compact
+            />
           </div>
-        )}
-      </SectionCard>
+        </OperationsHeader>
+
+        {emptyCount + needsContextCount > 0 ? (
+          <OperationsSection muted>
+            <FeedbackBanner
+              tone="warning"
+              title="Some question sets need publishing readiness work"
+              description={`${emptyCount} empty set${emptyCount === 1 ? "" : "s"} and ${needsContextCount} set${needsContextCount === 1 ? "" : "s"} missing description or instructions.`}
+            />
+          </OperationsSection>
+        ) : null}
+
+        <OperationsSection>
+          <div className="mb-3">
+            <h2 className="text-base font-semibold text-[var(--text-primary)]">
+              Find question sets
+            </h2>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              Search by title, slug, source, instructions, or template metadata.
+            </p>
+          </div>
+          <OperationsToolbar>
+            <form className="grid w-full gap-3 md:grid-cols-2 xl:grid-cols-[minmax(240px,1fr)_minmax(180px,220px)_minmax(180px,220px)_auto] xl:items-center">
+              <Input
+                name="q"
+                defaultValue={params.q ?? ""}
+                placeholder="Search question sets..."
+              />
+
+              <Select name="type" defaultValue={params.type ?? "all"}>
+                <option value="all">All types</option>
+                <option value="sets">Sets only</option>
+                <option value="templates">Templates only</option>
+                {sourceTypes.map((sourceType) => (
+                  <option key={sourceType} value={sourceType}>
+                    {sourceType}
+                  </option>
+                ))}
+              </Select>
+
+              <Select name="readiness" defaultValue={params.readiness ?? "all"}>
+                <option value="all">All readiness</option>
+                <option value="ready">Ready</option>
+                <option value="needs_context">Needs context</option>
+                <option value="empty">Empty</option>
+              </Select>
+
+              <div className="app-mobile-action-stack flex flex-col gap-2 sm:flex-row md:col-span-2 xl:col-span-1">
+                <Button type="submit" variant="secondary" icon="filter">
+                  Apply
+                </Button>
+                <Button href="/admin/question-sets" variant="quiet" icon="refresh">
+                  Reset
+                </Button>
+              </div>
+            </form>
+          </OperationsToolbar>
+        </OperationsSection>
+
+        <OperationsSection>
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-[var(--text-primary)]">
+                Question set library
+              </h2>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                {filteredItems.length} of {items.length} set
+                {items.length === 1 ? "" : "s"} shown.
+              </p>
+            </div>
+            <Button
+              href="/admin/question-sets/create"
+              variant="secondary"
+              size="sm"
+              icon="create"
+            >
+              New set
+            </Button>
+          </div>
+          {filteredItems.length === 0 ? (
+            <EmptyState
+              icon="questionSet"
+              iconTone="brand"
+              title="No question sets match these filters"
+              description="Clear filters or create a new reusable question set."
+              action={
+                <Button href="/admin/question-sets/create" variant="primary" icon="create">
+                  Create question set
+                </Button>
+              }
+            />
+          ) : (
+            <div className="grid gap-3">
+              {filteredItems.map((item) => {
+                const readiness = getReadiness(item);
+
+                return (
+                  <CardListItem
+                    key={item.questionSet.id}
+                    href={`/admin/question-sets/${item.questionSet.id}`}
+                    title={item.questionSet.title}
+                    subtitle={
+                      item.questionSet.description ??
+                      item.questionSet.instructions ??
+                      "No description or instructions added yet."
+                    }
+                    badges={
+                      <>
+                        <Badge tone="muted" icon="file">
+                          {item.questionSet.slug ?? "No slug"}
+                        </Badge>
+                        <Badge
+                          tone={item.questionSet.is_template ? "info" : "muted"}
+                          icon="questionSet"
+                        >
+                          {item.questionSet.is_template
+                            ? "Template"
+                            : item.questionSet.source_type}
+                        </Badge>
+                        <Badge
+                          tone={getReadinessTone(readiness)}
+                          icon={readiness === "ready" ? "completed" : "warning"}
+                        >
+                          {getReadinessLabel(readiness)}
+                        </Badge>
+                        <Badge tone="muted" icon="list">
+                          {item.activeQuestionCount} active / {item.questionCount} total
+                        </Badge>
+                      </>
+                    }
+                    actions={
+                      <div className="flex items-center gap-2 text-sm app-text-muted">
+                        <AppIcon icon="next" size={16} />
+                        <span>Open</span>
+                      </div>
+                    }
+                  />
+                );
+              })}
+            </div>
+          )}
+        </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

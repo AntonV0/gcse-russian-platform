@@ -1,7 +1,9 @@
-import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
-import InlineActions from "@/components/ui/inline-actions";
 import LoadingButton from "@/components/ui/loading-button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import PanelCard from "@/components/ui/panel-card";
 import { requireAdminAccess } from "@/lib/auth/admin-auth";
 import {
@@ -138,7 +140,17 @@ export default async function AdminQuestionEditPage({
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin question bank"
+            title="Access denied"
+            description="You need an admin account to edit questions."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const { questionId } = await params;
@@ -146,7 +158,17 @@ export default async function AdminQuestionEditPage({
   const question = await getQuestionByIdDb(questionId);
 
   if (!question) {
-    return <main>Question not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin question bank"
+            title="Question not found"
+            description="This question may have been deleted or the link may be out of date."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const [questionSet, options, acceptedAnswers] = await Promise.all([
@@ -173,40 +195,45 @@ export default async function AdminQuestionEditPage({
 
   return (
     <main>
-      <PageHeader
-        title={`Edit Question ${question.position}`}
-        description={question.prompt}
-      />
-      <InlineActions className="mb-6">
-        <Button
-          href={
-            questionSet
-              ? `/admin/question-sets/${questionSet.id}`
-              : "/admin/question-sets"
+      <OperationsWorkspace>
+        <OperationsHeader
+          eyebrow="Admin question bank"
+          title={`Edit Question ${question.position}`}
+          description={question.prompt}
+          actions={
+            <>
+              <Button
+                href={
+                  questionSet
+                    ? `/admin/question-sets/${questionSet.id}`
+                    : "/admin/question-sets"
+                }
+                variant="secondary"
+                icon="back"
+              >
+                Back to question set
+              </Button>
+
+              {questionSet?.slug ? (
+                <Button
+                  href={`/question-sets/${questionSet.slug}`}
+                  variant="secondary"
+                  icon="preview"
+                >
+                  Open public question set
+                </Button>
+              ) : null}
+            </>
           }
-          variant="secondary"
-          icon="back"
-        >
-          Back to question set
-        </Button>
+        />
 
-        {questionSet?.slug ? (
-          <Button
-            href={`/question-sets/${questionSet.slug}`}
-            variant="secondary"
-            icon="preview"
-          >
-            Open public question set
-          </Button>
-        ) : null}
-      </InlineActions>
-
-      <AdminQuestionForm
-        mode="edit"
-        action={updateQuestionAction}
-        questionSetId={question.question_set_id}
-        questionId={question.id}
-        defaultValues={{
+      <OperationsSection>
+        <AdminQuestionForm
+          mode="edit"
+          action={updateQuestionAction}
+          questionSetId={question.question_set_id}
+          questionId={question.id}
+          defaultValues={{
           questionType: question.question_type as
             | "multiple_choice"
             | "multiple_response"
@@ -263,11 +290,12 @@ export default async function AdminQuestionEditPage({
           categoriesText: stringifyCategories(metadata.categories),
           categorisationItemsText: stringifyCategorisationItems(metadata.items),
           metadata: "{}",
-        }}
-        submitLabel="Save question"
-      />
+          }}
+          submitLabel="Save question"
+        />
+      </OperationsSection>
 
-      <section className="mt-8">
+      <OperationsSection>
         <PanelCard title="Quick Actions" tone="admin">
           <form action={duplicateQuestionAction}>
             <input type="hidden" name="questionId" value={question.id} />
@@ -280,9 +308,9 @@ export default async function AdminQuestionEditPage({
             />
           </form>
         </PanelCard>
-      </section>
+      </OperationsSection>
 
-      <section className="mt-8">
+      <OperationsSection>
         <PanelCard
           title="Danger Zone"
           description="Deleting a question removes it from this question set."
@@ -300,7 +328,8 @@ export default async function AdminQuestionEditPage({
             />
           </form>
         </PanelCard>
-      </section>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }
