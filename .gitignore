@@ -106,6 +106,7 @@ docs/dev-workflow-private/
 # private course/data IP
 supabase/migrations/*.sql
 !supabase/migrations/20260508120000_add_avatar_display_preferences.sql
+!supabase/migrations/20260609110000_add_signup_context_to_profiles.sql
 !supabase/migrations/20260730143000_add_parent_guardian_phone.sql
 !supabase/migrations/20260730144500_add_onboarding_funnel_events.sql
 supabase/migrations/*.sql.sql
