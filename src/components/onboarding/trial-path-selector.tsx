@@ -30,8 +30,14 @@ const tierOptions = [
   },
 ] as const;
 
-export default function TrialPathSelector({ nextPath }: { nextPath: string }) {
-  const [selectedTier, setSelectedTier] = useState<TrialTier | null>(null);
+export default function TrialPathSelector({
+  nextPath,
+  initialTier = null,
+}: {
+  nextPath: string;
+  initialTier?: TrialTier | null;
+}) {
+  const [selectedTier, setSelectedTier] = useState<TrialTier | null>(initialTier);
   const selectedOption = tierOptions.find((option) => option.tier === selectedTier);
 
   return (

@@ -77,12 +77,52 @@ test.describe("guest signup and onboarding entry", () => {
     await expect(
       page.getByRole("heading", { name: "Confirm your email to continue" })
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "Back" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Back to app preview" })).toHaveAttribute(
       "href",
       "/grammar"
     );
     await expect(
       page.getByRole("link", { name: "Already confirmed? Log in" })
-    ).toHaveAttribute("href", "/login?next=%2Fonboarding%3Fnext%3D%252Fgrammar&from=app");
+    ).toHaveAttribute(
+      "href",
+      "/login?next=%2Fonboarding%3Fnext%3D%252Fgrammar&returnTo=%2Fgrammar&from=app"
+    );
+  });
+
+  test("returns from confirmation login to the originating resource", async ({
+    page,
+  }) => {
+    await page.goto("/signup/confirm-email?from=app&next=%2Fgrammar");
+    await page.getByRole("link", { name: "Already confirmed? Log in" }).click();
+
+    await expect(page).toHaveURL(
+      /\/login\?next=%2Fonboarding%3Fnext%3D%252Fgrammar&returnTo=%2Fgrammar&from=app$/
+    );
+    await expect(page.getByRole("link", { name: "Back to app preview" })).toHaveAttribute(
+      "href",
+      "/grammar"
+    );
+    await expect(
+      page.getByRole("banner").getByRole("link", { name: "Sign up" })
+    ).toHaveAttribute("href", "/signup?from=app&next=%2Fgrammar");
+  });
+
+  test("preserves the journey through forgot-password recovery", async ({ page }) => {
+    await page.goto(
+      "/login?from=app&next=%2Fonboarding%3Fnext%3D%252Fgrammar&returnTo=%2Fgrammar"
+    );
+    await page.getByRole("link", { name: "Forgot password?" }).click();
+
+    await expect(page).toHaveURL(
+      /\/forgot-password\?from=app&next=%2Fonboarding%3Fnext%3D%252Fgrammar&returnTo=%2Fgrammar$/
+    );
+    await expect(page.getByRole("link", { name: "Back to app preview" })).toHaveAttribute(
+      "href",
+      "/grammar"
+    );
+    await expect(page.getByRole("link", { name: "Back to login" })).toHaveAttribute(
+      "href",
+      "/login?from=app&next=%2Fonboarding%3Fnext%3D%252Fgrammar&returnTo=%2Fgrammar"
+    );
   });
 });

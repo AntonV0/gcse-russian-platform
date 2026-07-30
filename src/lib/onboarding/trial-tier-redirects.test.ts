@@ -16,9 +16,9 @@ describe("trial tier redirect paths", () => {
   });
 
   it("keeps onboarding errors in context", () => {
-    expect(getTrialTierErrorRedirectPath(true, "trial-grant-failed", "/grammar")).toBe(
-      "/onboarding?error=trial-grant-failed&next=%2Fgrammar"
-    );
+    expect(
+      getTrialTierErrorRedirectPath(true, "trial-grant-failed", "/grammar", "higher")
+    ).toBe("/onboarding?error=trial-grant-failed&tier=higher&next=%2Fgrammar");
   });
 
   it("keeps dashboard tier choice on the dashboard flow", () => {

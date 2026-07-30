@@ -100,97 +100,45 @@ export function validateParentGuardianContact({
     };
   }
 
-  if (!normalizedName) {
-    return {
-      isValid: false,
-      parentGuardianName: null,
-      parentGuardianEmail: normalizedEmail || null,
-      parentGuardianPhone: normalizedPhone || null,
-      parentGuardianConsentConfirmed,
-      parentGuardianNameError: "Enter the parent or guardian's name.",
-    };
-  }
-
-  if (normalizedName.length > MAX_PARENT_GUARDIAN_NAME_LENGTH) {
-    return {
-      isValid: false,
-      parentGuardianName: null,
-      parentGuardianEmail: normalizedEmail || null,
-      parentGuardianPhone: normalizedPhone || null,
-      parentGuardianConsentConfirmed,
-      parentGuardianNameError: `Use ${MAX_PARENT_GUARDIAN_NAME_LENGTH} characters or fewer.`,
-    };
-  }
-
-  if (!normalizedEmail) {
-    return {
-      isValid: false,
-      parentGuardianName: normalizedName,
-      parentGuardianEmail: null,
-      parentGuardianPhone: normalizedPhone || null,
-      parentGuardianConsentConfirmed,
-      parentGuardianEmailError: "Enter the parent or guardian's email address.",
-    };
-  }
-
-  if (normalizedEmail.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(normalizedEmail)) {
-    return {
-      isValid: false,
-      parentGuardianName: normalizedName,
-      parentGuardianEmail: null,
-      parentGuardianPhone: normalizedPhone || null,
-      parentGuardianConsentConfirmed,
-      parentGuardianEmailError: "Enter a valid parent or guardian email address.",
-    };
-  }
-
   const phoneDigits = normalizedPhone.replace(/\D/g, "");
-
-  if (!normalizedPhone) {
-    return {
-      isValid: false,
-      parentGuardianName: normalizedName,
-      parentGuardianEmail: normalizedEmail,
-      parentGuardianPhone: null,
-      parentGuardianConsentConfirmed,
-      parentGuardianPhoneError: "Enter the parent or guardian's phone number.",
-    };
-  }
-
-  if (
-    normalizedPhone.length > MAX_PHONE_LENGTH ||
-    !PHONE_PATTERN.test(normalizedPhone) ||
-    phoneDigits.length < 7 ||
-    phoneDigits.length > 15
-  ) {
-    return {
-      isValid: false,
-      parentGuardianName: normalizedName,
-      parentGuardianEmail: normalizedEmail,
-      parentGuardianPhone: null,
-      parentGuardianConsentConfirmed,
-      parentGuardianPhoneError: "Enter a valid parent or guardian phone number.",
-    };
-  }
-
-  if (!parentGuardianConsentConfirmed) {
-    return {
-      isValid: false,
-      parentGuardianName: normalizedName,
-      parentGuardianEmail: normalizedEmail,
-      parentGuardianPhone: normalizedPhone,
-      parentGuardianConsentConfirmed: false,
-      parentGuardianConsentError:
-        "Confirm that the parent or guardian knows about this account.",
-    };
-  }
+  const parentGuardianNameError = !normalizedName
+    ? "Enter the parent or guardian's name."
+    : normalizedName.length > MAX_PARENT_GUARDIAN_NAME_LENGTH
+      ? `Use ${MAX_PARENT_GUARDIAN_NAME_LENGTH} characters or fewer.`
+      : undefined;
+  const parentGuardianEmailError = !normalizedEmail
+    ? "Enter the parent or guardian's email address."
+    : normalizedEmail.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(normalizedEmail)
+      ? "Enter a valid parent or guardian email address."
+      : undefined;
+  const parentGuardianPhoneError = !normalizedPhone
+    ? "Enter the parent or guardian's phone number."
+    : normalizedPhone.length > MAX_PHONE_LENGTH ||
+        !PHONE_PATTERN.test(normalizedPhone) ||
+        phoneDigits.length < 7 ||
+        phoneDigits.length > 15
+      ? "Enter a valid parent or guardian phone number."
+      : undefined;
+  const parentGuardianConsentError = !parentGuardianConsentConfirmed
+    ? "Confirm that the parent or guardian knows about this account."
+    : undefined;
+  const isValid = !(
+    parentGuardianNameError ||
+    parentGuardianEmailError ||
+    parentGuardianPhoneError ||
+    parentGuardianConsentError
+  );
 
   return {
-    isValid: true,
-    parentGuardianName: normalizedName,
-    parentGuardianEmail: normalizedEmail,
-    parentGuardianPhone: normalizedPhone,
-    parentGuardianConsentConfirmed: true,
+    isValid,
+    parentGuardianName: parentGuardianNameError ? null : normalizedName,
+    parentGuardianEmail: parentGuardianEmailError ? null : normalizedEmail,
+    parentGuardianPhone: parentGuardianPhoneError ? null : normalizedPhone,
+    parentGuardianConsentConfirmed,
+    ...(parentGuardianNameError ? { parentGuardianNameError } : {}),
+    ...(parentGuardianEmailError ? { parentGuardianEmailError } : {}),
+    ...(parentGuardianPhoneError ? { parentGuardianPhoneError } : {}),
+    ...(parentGuardianConsentError ? { parentGuardianConsentError } : {}),
   };
 }
 

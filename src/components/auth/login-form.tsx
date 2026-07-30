@@ -10,6 +10,7 @@ import FeedbackBanner from "@/components/ui/feedback-banner";
 type LoginFormProps = {
   initialError?: string;
   nextPath?: string;
+  returnPath?: string;
   source?: string;
 };
 
@@ -17,22 +18,42 @@ const initialState: AuthActionState = {
   message: null,
 };
 
-export default function LoginForm({ initialError, nextPath, source }: LoginFormProps) {
+export default function LoginForm({
+  initialError,
+  nextPath,
+  returnPath,
+  source,
+}: LoginFormProps) {
   const [state, formAction] = useActionState(signIn, {
     message: initialError ?? initialState.message,
   });
   const error = state.message;
-  const authParams = new URLSearchParams();
+  const forgotPasswordParams = new URLSearchParams();
+  const signupParams = new URLSearchParams();
 
   if (source === "app") {
-    authParams.set("from", "app");
+    forgotPasswordParams.set("from", "app");
+    signupParams.set("from", "app");
   }
 
   if (nextPath) {
-    authParams.set("next", nextPath);
+    forgotPasswordParams.set("next", nextPath);
   }
 
-  const sourceSuffix = authParams.size ? `?${authParams.toString()}` : "";
+  if (returnPath) {
+    forgotPasswordParams.set("returnTo", returnPath);
+  }
+
+  const signupDestination = returnPath || nextPath;
+
+  if (signupDestination) {
+    signupParams.set("next", signupDestination);
+  }
+
+  const forgotPasswordSuffix = forgotPasswordParams.size
+    ? `?${forgotPasswordParams.toString()}`
+    : "";
+  const signupSuffix = signupParams.size ? `?${signupParams.toString()}` : "";
 
   return (
     <>
@@ -70,7 +91,7 @@ export default function LoginForm({ initialError, nextPath, source }: LoginFormP
               Password
             </label>
             <Link
-              href={`/forgot-password${sourceSuffix}`}
+              href={`/forgot-password${forgotPasswordSuffix}`}
               className="app-accent-link rounded-sm text-xs font-bold"
             >
               Forgot password?
@@ -102,7 +123,7 @@ export default function LoginForm({ initialError, nextPath, source }: LoginFormP
           signed-in app.
         </p>
         <Link
-          href={`/signup${sourceSuffix}`}
+          href={`/signup${signupSuffix}`}
           className="app-accent-link mt-3 inline-flex items-center gap-2 rounded-sm text-sm font-bold"
         >
           Create trial account

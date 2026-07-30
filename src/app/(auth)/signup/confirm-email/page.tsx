@@ -24,6 +24,7 @@ export default async function ConfirmSignupEmailPage({
   const source = from === "app" ? "app" : "marketing";
   const loginParams = new URLSearchParams({
     next: onboardingPath,
+    returnTo: destinationPath,
   });
 
   if (source === "app") {

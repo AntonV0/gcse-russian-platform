@@ -220,7 +220,7 @@ export default function SignUpForm({
               )}
               className="app-form-control app-form-input"
             />
-            {!passwordsMatch ? (
+            {!passwordsMatch && !fieldErrors.confirmPassword ? (
               <FieldError
                 id="confirmPassword-match-error"
                 message="Passwords do not match yet."

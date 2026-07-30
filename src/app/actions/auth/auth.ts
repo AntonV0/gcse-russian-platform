@@ -13,11 +13,16 @@ import {
   getSafeAuthRedirectPath,
 } from "@/lib/auth/redirect-paths";
 import {
+  getForgotPasswordPath,
+  getFriendlyLoginErrorMessage,
+  getPasswordSettingsPath,
+} from "@/lib/auth/auth-recovery-paths";
+import {
   getSignupConfirmationPath,
   getSignupEmailRedirectUrl,
   getSignupOnboardingPath,
 } from "@/lib/auth/signup-redirects";
-import { getPublicSiteUrl } from "@/lib/seo/site";
+import { getAppSiteUrl } from "@/lib/seo/site";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -274,11 +279,22 @@ export async function signUp(
 
   if (profileError) {
     const { error: rollbackError } = await serviceRole.auth.admin.deleteUser(userId);
+    let sessionCleanupError: unknown = null;
+
+    if (!rollbackError && data.session) {
+      try {
+        const { error } = await supabase.auth.signOut({ scope: "local" });
+        sessionCleanupError = error;
+      } catch (error) {
+        sessionCleanupError = error;
+      }
+    }
 
     console.error("Signup profile provisioning failed.", {
       userId,
       profileError,
       rollbackError,
+      sessionCleanupError,
     });
 
     return authError(
@@ -328,13 +344,17 @@ export async function signIn(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) {
-    return authError(error.message);
+    if (error) {
+      return authError(getFriendlyLoginErrorMessage(error.message));
+    }
+  } catch {
+    return authError(getFriendlyLoginErrorMessage("network"));
   }
 
   redirect(next);
@@ -391,23 +411,61 @@ export async function resendSignupConfirmation(
 
 export async function requestPasswordReset(formData: FormData) {
   const email = getString(formData, "email");
+  const next = getSafeAuthRedirectPath(getString(formData, "next"));
+  const returnTo = getSafeAuthRedirectPath(getString(formData, "returnTo"));
+  const source = getString(formData, "from") === "app" ? "app" : "";
 
   if (!email) {
-    redirect("/forgot-password?error=Enter%20the%20account%20email%20address");
+    redirect(
+      getForgotPasswordPath({
+        error: "Enter the account email address.",
+        source,
+        next,
+        returnTo,
+      })
+    );
   }
 
   const supabase = await createClient();
-  const redirectTo = getPublicSiteUrl("/auth/callback?next=/settings").toString();
+  const callbackUrl = getAppSiteUrl("/auth/callback");
+  callbackUrl.searchParams.set("next", getPasswordSettingsPath({ next, returnTo }));
+  let resetErrorMessage: string | null = null;
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo,
-  });
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: callbackUrl.toString(),
+    });
 
-  if (error) {
-    redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`);
+    if (error) {
+      const normalized = error.message.toLowerCase();
+      resetErrorMessage =
+        normalized.includes("rate") || normalized.includes("too many")
+          ? "Too many reset emails were requested. Wait a few minutes, then try again."
+          : "We could not send the reset email. Please try again.";
+    }
+  } catch {
+    resetErrorMessage = "We could not reach the account service. Please try again.";
   }
 
-  redirect("/forgot-password?success=reset-email-sent");
+  if (resetErrorMessage) {
+    redirect(
+      getForgotPasswordPath({
+        error: resetErrorMessage,
+        source,
+        next,
+        returnTo,
+      })
+    );
+  }
+
+  redirect(
+    getForgotPasswordPath({
+      success: "reset-email-sent",
+      source,
+      next,
+      returnTo,
+    })
+  );
 }
 
 export async function signOut() {
@@ -421,22 +479,44 @@ export async function updatePassword(formData: FormData) {
 
   const password = getString(formData, "password");
   const confirmPassword = getString(formData, "confirmPassword");
+  const next = getSafeAuthRedirectPath(getString(formData, "next"));
+  const returnTo = getSafeAuthRedirectPath(getString(formData, "returnTo"));
   const validation = validatePasswordUpdate({ password, confirmPassword });
 
   if (!validation.isValid) {
     redirect(
-      `/settings?error=${encodeURIComponent(getPasswordUpdateErrorMessage(validation))}`
+      getPasswordSettingsPath({
+        error: getPasswordUpdateErrorMessage(validation),
+        next,
+        returnTo,
+      })
     );
   }
 
-  const { error } = await supabase.auth.updateUser({
-    password,
-  });
+  let updateErrorMessage: string | null = null;
 
-  if (error) {
-    redirect(`/settings?error=${encodeURIComponent(error.message)}`);
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      updateErrorMessage = "We could not update the password. Please try again.";
+    }
+  } catch {
+    updateErrorMessage = "We could not reach the account service. Please try again.";
+  }
+
+  if (updateErrorMessage) {
+    redirect(
+      getPasswordSettingsPath({
+        error: updateErrorMessage,
+        next,
+        returnTo,
+      })
+    );
   }
 
   revalidatePath("/settings");
-  redirect("/settings?success=password-updated");
+  redirect(next ?? "/settings?success=password-updated");
 }

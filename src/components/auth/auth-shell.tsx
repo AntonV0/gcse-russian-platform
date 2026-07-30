@@ -14,17 +14,30 @@ function AuthShellHeader({
   backPath?: string;
 }) {
   const isAppSource = source === "app";
-  const authParams = new URLSearchParams();
+  const loginParams = new URLSearchParams();
+  const signupParams = new URLSearchParams();
 
   if (isAppSource) {
-    authParams.set("from", "app");
+    loginParams.set("from", "app");
+    signupParams.set("from", "app");
   }
 
   if (nextPath && nextPath !== "/dashboard") {
-    authParams.set("next", nextPath);
+    loginParams.set("next", nextPath);
   }
 
-  const sourceSuffix = authParams.size ? `?${authParams.toString()}` : "";
+  if (backPath && backPath !== nextPath) {
+    loginParams.set("returnTo", backPath);
+  }
+
+  const signupDestination = backPath ?? nextPath;
+
+  if (signupDestination && signupDestination !== "/dashboard") {
+    signupParams.set("next", signupDestination);
+  }
+
+  const loginSuffix = loginParams.size ? `?${loginParams.toString()}` : "";
+  const signupSuffix = signupParams.size ? `?${signupParams.toString()}` : "";
   const backLink = isAppSource
     ? {
         href: backPath ?? nextPath ?? "/",
@@ -69,7 +82,7 @@ function AuthShellHeader({
           </Button>
           {activePage !== "login" ? (
             <Button
-              href={`/login${sourceSuffix}`}
+              href={`/login${loginSuffix}`}
               variant="secondary"
               size="sm"
               icon="user"
@@ -79,7 +92,7 @@ function AuthShellHeader({
           ) : null}
           {activePage !== "signup" ? (
             <Button
-              href={`/signup${sourceSuffix}`}
+              href={`/signup${signupSuffix}`}
               variant="primary"
               size="sm"
               icon="create"

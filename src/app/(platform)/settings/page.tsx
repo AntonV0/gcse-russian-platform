@@ -13,6 +13,7 @@ import LearningSheet, {
   LearningSheetSection,
 } from "@/components/ui/learning-sheet";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
+import { getSafeAuthRedirectPath } from "@/lib/auth/redirect-paths";
 
 function AppearancePreview() {
   return (
@@ -83,11 +84,22 @@ function AppearancePreview() {
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ success?: string; error?: string }>;
+  searchParams?: Promise<{
+    success?: string;
+    error?: string;
+    passwordReset?: string;
+    next?: string;
+    returnTo?: string;
+  }>;
 }) {
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
   const resolvedSearchParams = (await searchParams) ?? {};
+  const passwordReset = resolvedSearchParams.passwordReset === "1";
+  const passwordResetNext =
+    getSafeAuthRedirectPath(resolvedSearchParams.next) ?? undefined;
+  const passwordResetReturn =
+    getSafeAuthRedirectPath(resolvedSearchParams.returnTo) ?? undefined;
 
   if (!user) {
     return (
@@ -136,6 +148,20 @@ export default async function SettingsPage({
               tone="danger"
               title="Password update failed"
               description={resolvedSearchParams.error}
+            />
+          </LearningSheetSection>
+        ) : null}
+
+        {passwordReset && !resolvedSearchParams.error ? (
+          <LearningSheetSection muted divided={!resolvedSearchParams.success}>
+            <FeedbackBanner
+              tone="info"
+              title="Choose your new password"
+              description={
+                passwordResetReturn
+                  ? "After saving, you will continue the journey you started."
+                  : "After saving, your account will be ready to use."
+              }
             />
           </LearningSheetSection>
         ) : null}
@@ -197,7 +223,10 @@ export default async function SettingsPage({
             className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_360px]"
           >
             <DashboardCard title="Password and security">
-              <PasswordSecurityForm />
+              <PasswordSecurityForm
+                nextPath={passwordResetNext}
+                returnPath={passwordResetReturn}
+              />
             </DashboardCard>
 
             <DashboardCard title="Account details">

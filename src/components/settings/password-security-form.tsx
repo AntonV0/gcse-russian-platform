@@ -9,7 +9,13 @@ import Input from "@/components/ui/input";
 import LoadingButton from "@/components/ui/loading-button";
 import { validatePasswordUpdate } from "@/lib/account/settings-validation";
 
-export default function PasswordSecurityForm() {
+export default function PasswordSecurityForm({
+  nextPath,
+  returnPath,
+}: {
+  nextPath?: string;
+  returnPath?: string;
+}) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [touched, setTouched] = useState({
@@ -25,6 +31,9 @@ export default function PasswordSecurityForm() {
 
   return (
     <form action={updatePassword} className="space-y-4">
+      {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
+      {returnPath ? <input type="hidden" name="returnTo" value={returnPath} /> : null}
+
       <FeedbackBanner
         tone="info"
         title="Password changes are immediate"

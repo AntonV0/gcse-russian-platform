@@ -4,10 +4,12 @@ function getOnboardingPath({
   step,
   error,
   next,
+  tier,
 }: {
   step?: "profile";
   error?: string;
   next?: string | null;
+  tier?: "foundation" | "higher" | null;
 }) {
   const params = new URLSearchParams();
 
@@ -17,6 +19,10 @@ function getOnboardingPath({
 
   if (error) {
     params.set("error", error);
+  }
+
+  if (tier) {
+    params.set("tier", tier);
   }
 
   params.set("next", getPostOnboardingRedirectPath(next));
@@ -42,9 +48,10 @@ export function getExistingTrialTierRedirectPath(
 export function getTrialTierErrorRedirectPath(
   isOnboarding: boolean,
   error: string,
-  next?: string | null
+  next?: string | null,
+  tier?: "foundation" | "higher" | null
 ) {
   return isOnboarding
-    ? getOnboardingPath({ error, next })
+    ? getOnboardingPath({ error, next, tier })
     : `/dashboard?error=${encodeURIComponent(error)}`;
 }

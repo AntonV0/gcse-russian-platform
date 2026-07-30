@@ -25,6 +25,7 @@ type OnboardingPageProps = {
     step?: string;
     error?: string;
     next?: string;
+    tier?: string;
   }>;
 };
 
@@ -60,7 +61,15 @@ function OnboardingShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function TierStep({ error, nextPath }: { error?: string; nextPath: string }) {
+function TierStep({
+  error,
+  nextPath,
+  initialTier,
+}: {
+  error?: string;
+  nextPath: string;
+  initialTier?: "foundation" | "higher";
+}) {
   return (
     <OnboardingShell>
       <OnboardingEventTracker
@@ -100,7 +109,7 @@ function TierStep({ error, nextPath }: { error?: string; nextPath: string }) {
           </div>
         ) : null}
 
-        <TrialPathSelector nextPath={nextPath} />
+        <TrialPathSelector nextPath={nextPath} initialTier={initialTier} />
       </section>
     </OnboardingShell>
   );
@@ -208,5 +217,8 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
     redirect(nextPath);
   }
 
-  return <TierStep error={query.error} nextPath={nextPath} />;
+  const initialTier =
+    query.tier === "foundation" || query.tier === "higher" ? query.tier : undefined;
+
+  return <TierStep error={query.error} nextPath={nextPath} initialTier={initialTier} />;
 }

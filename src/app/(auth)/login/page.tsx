@@ -26,10 +26,16 @@ const resumeItems = [
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; next?: string; from?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    next?: string;
+    returnTo?: string;
+    from?: string;
+  }>;
 }) {
-  const { error, next, from } = await searchParams;
+  const { error, next, returnTo, from } = await searchParams;
   const safeNext = getSafeAuthRedirectPath(next) ?? "";
+  const safeReturnTo = getSafeAuthRedirectPath(returnTo) ?? "";
   const authSource = from === "app" ? "app" : "";
   const signupParams = new URLSearchParams();
 
@@ -37,8 +43,8 @@ export default async function LoginPage({
     signupParams.set("from", "app");
   }
 
-  if (safeNext) {
-    signupParams.set("next", safeNext);
+  if (safeReturnTo || safeNext) {
+    signupParams.set("next", safeReturnTo || safeNext);
   }
 
   const sourceSuffix = signupParams.size ? `?${signupParams.toString()}` : "";
@@ -48,7 +54,7 @@ export default async function LoginPage({
       source={authSource}
       activePage="login"
       nextPath={safeNext || undefined}
-      backPath={safeNext || undefined}
+      backPath={safeReturnTo || safeNext || undefined}
     >
       <div className="mx-auto grid max-w-5xl gap-5 lg:grid-cols-[minmax(0,0.86fr)_minmax(340px,0.64fr)] lg:items-start">
         <section className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--surface-panel-border)] bg-[var(--background-elevated)] shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]">
@@ -71,7 +77,12 @@ export default async function LoginPage({
           </div>
 
           <div className="px-5 py-5 sm:px-6">
-            <LoginForm initialError={error} nextPath={safeNext} source={authSource} />
+            <LoginForm
+              initialError={error}
+              nextPath={safeNext}
+              returnPath={safeReturnTo}
+              source={authSource}
+            />
           </div>
         </section>
 

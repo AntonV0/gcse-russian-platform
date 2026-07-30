@@ -122,26 +122,17 @@ describe("validateParentGuardianContact", () => {
   });
 
   it("requires email, phone, and adult confirmation when details are started", () => {
-    expect(
-      validateParentGuardianContact({
-        parentGuardianName: "Parent Name",
-      }).parentGuardianEmailError
-    ).toBe("Enter the parent or guardian's email address.");
+    const result = validateParentGuardianContact({
+      parentGuardianName: "Parent Name",
+    });
 
-    expect(
-      validateParentGuardianContact({
-        parentGuardianName: "Parent Name",
-        parentGuardianEmail: "parent@example.com",
-      }).parentGuardianPhoneError
-    ).toBe("Enter the parent or guardian's phone number.");
-
-    expect(
-      validateParentGuardianContact({
-        parentGuardianName: "Parent Name",
-        parentGuardianEmail: "parent@example.com",
-        parentGuardianPhone: "+44 7700 900123",
-      }).parentGuardianConsentError
-    ).toBe("Confirm that the parent or guardian knows about this account.");
+    expect(result).toMatchObject({
+      isValid: false,
+      parentGuardianEmailError: "Enter the parent or guardian's email address.",
+      parentGuardianPhoneError: "Enter the parent or guardian's phone number.",
+      parentGuardianConsentError:
+        "Confirm that the parent or guardian knows about this account.",
+    });
   });
 
   it("rejects a malformed phone number", () => {
