@@ -153,7 +153,11 @@ export function getSidebarHeaderState(params: {
   };
 }
 
-export function getCourseGroupLabel(variant: PlatformSidebarVariant) {
+export function getCourseGroupLabel(
+  variant: PlatformSidebarVariant,
+  isGuest = false
+) {
+  if (isGuest) return "Start Here";
   if (variant === "foundation") return "GCSE Russian - Foundation";
   if (variant === "higher") return "GCSE Russian - Higher";
   if (variant === "volna") return "GCSE Russian - Volna School";
@@ -193,21 +197,26 @@ export function buildPlatformSidebarNav(params: {
   const dashboardHref = getDashboardPath();
   const guestTrialLock: Pick<NavItem, "locked" | "lockedHref" | "lockedLabel"> = {
     locked: true,
-    lockedHref: "/signup",
+    lockedHref: "/signup?from=app",
     lockedLabel: "Trial",
   };
   const lockForGuest = (item: NavItem): NavItem =>
     isGuest ? { ...item, ...guestTrialLock } : item;
 
   const courseGroupItems: NavItem[] = [
+    ...(isGuest ? [{ label: "Home", href: "/", icon: "home" as const }] : []),
     { label: "Dashboard", href: dashboardHref, icon: "dashboard" },
     { label: "My Course", href: courseHref, icon: "courses" },
     lockForGuest({ label: "Progress", href: getProgressPath(), icon: "completed" }),
   ];
 
   const studyItems: NavItem[] = [
-    { label: "Vocabulary", href: getVocabularyPath(), icon: "vocabulary" },
-    { label: "Grammar", href: getGrammarPath(), icon: "grammar" },
+    lockForGuest({
+      label: "Vocabulary",
+      href: getVocabularyPath(),
+      icon: "vocabulary",
+    }),
+    lockForGuest({ label: "Grammar", href: getGrammarPath(), icon: "grammar" }),
   ];
 
   if (showAssignments) {
@@ -221,8 +230,16 @@ export function buildPlatformSidebarNav(params: {
   const examPrepItems: NavItem[] = [
     { label: "Past Papers", href: getPastPapersPath(), icon: "pastPapers" },
     { label: "Mock Exams", href: getMockExamsPath(), icon: "mockExam" },
-    { label: "Taking Your Exams", href: getTakingYourExamsPath(), icon: "exam" },
-    { label: "Exam Calendar", href: getExamCalendarPath(), icon: "calendar" },
+    lockForGuest({
+      label: "Taking Your Exams",
+      href: getTakingYourExamsPath(),
+      icon: "exam",
+    }),
+    lockForGuest({
+      label: "Exam Calendar",
+      href: getExamCalendarPath(),
+      icon: "calendar",
+    }),
   ];
 
   const volnaSchoolItems: NavItem[] = showVolnaSchool
@@ -263,7 +280,7 @@ export function buildPlatformSidebarNav(params: {
   ];
 
   const contentNavGroups: NavGroup[] = [
-    { label: getCourseGroupLabel(variant), items: courseGroupItems },
+    { label: getCourseGroupLabel(variant, isGuest), items: courseGroupItems },
     { label: "Study & Practice", items: studyItems },
     { label: "Exam Prep", items: examPrepItems },
   ];
@@ -276,14 +293,16 @@ export function buildPlatformSidebarNav(params: {
     ...contentNavGroups,
     { label: "Account", items: utilityItems },
   ];
-  const mobileQuickItems = [
-    ...courseGroupItems,
-    ...studyItems.filter((item) =>
-      isVolnaStudent
-        ? item.label === "Assignments" || item.label === "Vocabulary"
-        : item.label === "Vocabulary"
-    ),
-  ];
+  const mobileQuickItems = isGuest
+    ? courseGroupItems
+    : [
+        ...courseGroupItems,
+        ...studyItems.filter((item) =>
+          isVolnaStudent
+            ? item.label === "Assignments" || item.label === "Vocabulary"
+            : item.label === "Vocabulary"
+        ),
+      ];
 
   return {
     courseGroupItems,

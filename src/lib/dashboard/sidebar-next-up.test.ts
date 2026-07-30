@@ -24,7 +24,7 @@ describe("getPlatformSidebarNextUp", () => {
       eyebrow: "Next up",
       title: "Start your free trial",
       description: "Try lessons, practice questions, save your progress, and much more!",
-      href: "/signup",
+      href: "/signup?from=app",
       label: "Start free trial",
       icon: "create",
       progressPercent: 0,

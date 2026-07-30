@@ -4,7 +4,10 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getTeacherAssignmentsDb } from "@/lib/assignments/assignment-helpers-db";
 import { getDueDateStatus } from "@/lib/assignments/assignment-status";
@@ -83,9 +86,9 @@ export default async function TeacherAssignmentsPage() {
   const priority = getPriorityAssignment(assignments);
 
   return (
-    <main className="space-y-6">
-      <PageIntroPanel
-        tone="student"
+    <main>
+      <OperationsWorkspace>
+      <OperationsHeader
         eyebrow="Teacher workspace"
         title="Teacher assignments"
         description="Triage Volna homework by review priority, due dates, group activity, and submission status."
@@ -148,9 +151,10 @@ export default async function TeacherAssignmentsPage() {
             compact
           />
         </div>
-      </PageIntroPanel>
+      </OperationsHeader>
 
       {priority && priority.pendingReview > 0 ? (
+        <OperationsSection muted>
         <FeedbackBanner
           tone="warning"
           title="Review queue is waiting"
@@ -165,8 +169,10 @@ export default async function TeacherAssignmentsPage() {
             Open priority assignment
           </Button>
         </FeedbackBanner>
+        </OperationsSection>
       ) : null}
 
+      <OperationsSection>
       {assignments.length === 0 ? (
         <EmptyState
           icon="assignments"
@@ -181,6 +187,8 @@ export default async function TeacherAssignmentsPage() {
       ) : (
         <TeacherAssignmentsList assignments={assignments} />
       )}
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

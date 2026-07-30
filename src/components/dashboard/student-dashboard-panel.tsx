@@ -1,5 +1,9 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getActiveCoursePath } from "@/lib/access/routes";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -68,12 +72,13 @@ export function StudentDashboardPanel({
   const recentWins = getStudentDashboardWins(activity, learningPlan);
 
   return (
-    <>
-      <section className="app-surface-brand app-section-padding-lg">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)] xl:items-start">
-          <div className="space-y-5">
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-2">
+    <LearningSheet>
+      <LearningSheetHeader
+        eyebrow="Dashboard"
+        title={`Today's focus: ${primaryAction.title}`}
+        description={primaryAction.description}
+        badges={
+          <>
                 <Badge tone="info" icon="school">
                   GCSE Russian
                 </Badge>
@@ -85,26 +90,16 @@ export function StudentDashboardPanel({
                 <Badge tone="muted" icon="student">
                   {getDashboardAccessLabel(dashboard.accessMode)}
                 </Badge>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-2">
-                  <Badge tone={primaryAction.badgeTone} icon={primaryAction.icon}>
-                    {primaryAction.badgeLabel}
-                  </Badge>
-                  {primaryAction.metaLabel ? (
-                    <Badge tone="muted">{primaryAction.metaLabel}</Badge>
-                  ) : null}
-                </div>
-
-                <h1 className="app-heading-hero max-w-3xl">
-                  Today&apos;s focus: {primaryAction.title}
-                </h1>
-                <p className="app-subtitle max-w-2xl">{primaryAction.description}</p>
-              </div>
-            </div>
-
-            <div className="app-mobile-action-stack flex flex-wrap gap-3">
+                <Badge tone={primaryAction.badgeTone} icon={primaryAction.icon}>
+                  {primaryAction.badgeLabel}
+                </Badge>
+                {primaryAction.metaLabel ? (
+                  <Badge tone="muted">{primaryAction.metaLabel}</Badge>
+                ) : null}
+          </>
+        }
+        actions={
+          <>
               <Button
                 href={primaryAction.href}
                 variant="journey"
@@ -141,12 +136,12 @@ export function StudentDashboardPanel({
               <Button href="/mock-exams" variant="secondary" icon="mockExam">
                 Mock exams
               </Button>
-            </div>
-
-            <TodayFocusSteps action={primaryAction} prompts={studyPrompts} />
-          </div>
-
-          <div className="space-y-4">
+          </>
+        }
+      >
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(300px,0.75fr)] xl:items-start">
+          <TodayFocusSteps action={primaryAction} prompts={studyPrompts} />
+          <div className="grid gap-4">
             <LearningSnapshotCard
               dashboard={dashboard}
               completedLessons={completedLessons}
@@ -155,9 +150,10 @@ export function StudentDashboardPanel({
             <AccessFocusCard dashboard={dashboard} />
           </div>
         </div>
-      </section>
+      </LearningSheetHeader>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <LearningSheetSection>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <SummaryStatCard
           title="Lessons complete"
           value={learningPlan.completedLessons}
@@ -194,30 +190,40 @@ export function StudentDashboardPanel({
           tone={activity.stats.recentFeedback > 0 ? "success" : "default"}
           compact
         />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]">
         <WeakAreasCard weakAreas={weakAreas} />
         <StudyPromptCard prompts={studyPrompts} />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
         <SkillReadinessCard masterySignals={masterySignals} />
         <LearningMilestoneCard milestone={milestone} />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.7fr)_minmax(300px,0.8fr)]">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.7fr)_minmax(300px,0.8fr)]">
         <NextActionQueueCard actions={nextActions} />
         <RecentWinsCard wins={recentWins} />
         <RecentFeedbackCard feedbackItems={activity.recentFeedback} />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-2">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-2">
         <AssignmentFocusCard activity={activity} />
         <MockAttemptFocusCard activity={activity} />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <LearningSheetSection>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <DashboardLinkCard
           title="Course path"
           href="/courses"
@@ -242,9 +248,12 @@ export function StudentDashboardPanel({
           linkLabel="Open mock exams"
           description="Resume draft attempts, review marked work, or start a new GCSE-style mock."
         />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <StudentSupportCard accessMode={dashboard.accessMode} />
-    </>
+      <LearningSheetSection muted>
+        <StudentSupportCard accessMode={dashboard.accessMode} />
+      </LearningSheetSection>
+    </LearningSheet>
   );
 }

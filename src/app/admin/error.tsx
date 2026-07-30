@@ -20,6 +20,7 @@ export default function AdminError({
       secondaryLabel="Content"
       error={error}
       reset={reset}
+      variant="operations"
     />
   );
 }

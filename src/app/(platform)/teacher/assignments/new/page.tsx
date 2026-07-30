@@ -1,7 +1,11 @@
-import PageHeader from "@/components/layout/page-header";
 import TeacherCreateAssignmentForm from "@/components/assignments/teacher-create-assignment-form";
 import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
+import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import {
   getLessonOptionsForGroupDb,
   getQuestionSetOptionsDb,
@@ -32,11 +36,19 @@ export default async function NewTeacherAssignmentPage() {
 
   return (
     <main>
-      <PageHeader
+      <OperationsWorkspace>
+      <OperationsHeader
+        eyebrow="Teacher editor"
         title="Create Assignment"
         description="Create a homework task for one of your Volna groups."
+        actions={
+          <Button href="/teacher/assignments" variant="secondary" icon="back">
+            Back to assignments
+          </Button>
+        }
       />
 
+      <OperationsSection>
       {groups.length === 0 ? (
         <EmptyState
           icon="users"
@@ -50,6 +62,8 @@ export default async function NewTeacherAssignmentPage() {
           questionSets={questionSets}
         />
       )}
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

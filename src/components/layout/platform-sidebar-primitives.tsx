@@ -52,7 +52,7 @@ export function mobileQuickItemClass(active: boolean, locked = false) {
 }
 
 export function getMobileQuickLabel(label: string) {
-  if (label === "Dashboard") return "Start";
+  if (label === "Dashboard") return "Dash";
   if (label === "Progress") return "Track";
   if (label === "Vocabulary") return "Vocab";
   if (label === "Assignments") return "Tasks";

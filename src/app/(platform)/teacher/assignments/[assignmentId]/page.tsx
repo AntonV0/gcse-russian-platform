@@ -1,4 +1,3 @@
-import PageHeader from "@/components/layout/page-header";
 import DeleteAssignmentButton from "@/components/assignments/delete-assignment-button";
 import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
 import TeacherAssignmentItemsPanel from "@/components/assignments/teacher-assignment-items-panel";
@@ -7,6 +6,10 @@ import TeacherAssignmentSummaryCards from "@/components/assignments/teacher-assi
 import { getSubmittedAtTime } from "@/components/assignments/teacher-assignment-review-utils";
 import Button from "@/components/ui/button";
 import InlineActions from "@/components/ui/inline-actions";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import {
   getAssignmentByIdDb,
   getAssignmentItemsWithDetailsDb,
@@ -40,7 +43,22 @@ export default async function TeacherAssignmentReviewPage({
   ]);
 
   if (!assignment) {
-    return <main>Assignment not found.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Teacher workspace"
+            title="Assignment not found"
+            description="This assignment could not be loaded. It may have been removed or assigned to a different group."
+            actions={
+              <Button href="/teacher/assignments" variant="secondary" icon="back">
+                Back to assignments
+              </Button>
+            }
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const submissionsWithFiles = await Promise.all(
@@ -110,34 +128,30 @@ export default async function TeacherAssignmentReviewPage({
 
   return (
     <main>
-      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-3">
-          <InlineActions>
+      <OperationsWorkspace>
+      <OperationsHeader
+        eyebrow="Teacher review"
+        title={`Review: ${assignment.title}`}
+        description={assignment.instructions ?? undefined}
+        actions={
+          <InlineActions align="end">
             <Button href="/teacher/assignments" variant="quiet" size="sm" icon="back">
-              Back to assignments
+              Back
             </Button>
+            <Button
+              href={`/teacher/assignments/${assignment.id}/edit`}
+              variant="secondary"
+              size="sm"
+              icon="edit"
+            >
+              Edit
+            </Button>
+            <DeleteAssignmentButton assignmentId={assignment.id} />
           </InlineActions>
+        }
+      />
 
-          <PageHeader
-            title={`Review: ${assignment.title}`}
-            description={assignment.instructions ?? undefined}
-          />
-        </div>
-
-        <InlineActions align="end">
-          <Button
-            href={`/teacher/assignments/${assignment.id}/edit`}
-            variant="secondary"
-            size="sm"
-            icon="edit"
-          >
-            Edit
-          </Button>
-
-          <DeleteAssignmentButton assignmentId={assignment.id} />
-        </InlineActions>
-      </div>
-
+      <OperationsSection>
       <TeacherAssignmentSummaryCards
         assignment={assignment}
         itemCount={items.length}
@@ -147,7 +161,9 @@ export default async function TeacherAssignmentReviewPage({
       />
 
       <TeacherAssignmentItemsPanel items={items} />
+      </OperationsSection>
 
+      <OperationsSection>
       <TeacherAssignmentSubmissionsPanel
         assignmentId={assignment.id}
         filter={filter}
@@ -157,6 +173,8 @@ export default async function TeacherAssignmentReviewPage({
         reviewedCount={reviewedCount}
         initiallyOpenReviewForm={false}
       />
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

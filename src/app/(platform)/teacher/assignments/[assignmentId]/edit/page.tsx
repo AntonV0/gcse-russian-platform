@@ -1,7 +1,11 @@
 import { redirect } from "next/navigation";
-import PageHeader from "@/components/layout/page-header";
 import TeacherAccessDenied from "@/components/assignments/teacher-access-denied";
 import TeacherCreateAssignmentForm from "@/components/assignments/teacher-create-assignment-form";
+import Button from "@/components/ui/button";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 
 import {
   getAssignmentByIdDb,
@@ -56,11 +60,23 @@ export default async function EditAssignmentPage({ params }: Props) {
 
   return (
     <main>
-      <PageHeader
+      <OperationsWorkspace>
+      <OperationsHeader
+        eyebrow="Teacher editor"
         title="Edit assignment"
         description="Update assignment details, items, and due date."
+        actions={
+          <Button
+            href={`/teacher/assignments/${assignment.id}`}
+            variant="secondary"
+            icon="back"
+          >
+            Back to review
+          </Button>
+        }
       />
 
+      <OperationsSection>
       <TeacherCreateAssignmentForm
         mode="edit"
         assignmentId={assignment.id}
@@ -80,6 +96,8 @@ export default async function EditAssignmentPage({ params }: Props) {
         }}
         questionSets={questionSets}
       />
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

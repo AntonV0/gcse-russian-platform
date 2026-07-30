@@ -174,10 +174,20 @@ export default function PlatformMobileSidebar({
               <div className="border-t border-[color-mix(in_srgb,var(--accent-border-ink)_16%,var(--border))] pt-3 [html[data-theme=dark]_&]:border-[color-mix(in_srgb,var(--accent-border-ink)_34%,var(--dark-surface-border))]">
                 {isGuest ? (
                   <div className="grid gap-2 sm:grid-cols-2">
-                    <Button href="/login" variant="secondary" size="sm" icon="user">
+                    <Button
+                      href="/login?from=app"
+                      variant="secondary"
+                      size="sm"
+                      icon="user"
+                    >
                       Login
                     </Button>
-                    <Button href="/signup" variant="primary" size="sm" icon="create">
+                    <Button
+                      href="/signup?from=app"
+                      variant="primary"
+                      size="sm"
+                      icon="create"
+                    >
                       Sign up
                     </Button>
                   </div>

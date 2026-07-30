@@ -1,45 +1,72 @@
+function LoadingLine({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={[
+        "h-3 animate-pulse rounded-full bg-[var(--background-muted)]",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    />
+  );
+}
+
+function LoadingPanel({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={[
+        "rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] p-4",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      aria-hidden="true"
+    >
+      <div className="space-y-3">
+        <LoadingLine className="h-5 w-1/2" />
+        <LoadingLine />
+        <LoadingLine className="w-3/4" />
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardLoading() {
   return (
-    <main className="space-y-8" aria-label="Loading dashboard">
-      <section className="app-surface-brand app-section-padding-lg">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)]">
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <div className="h-6 w-28 rounded-full bg-[var(--background-muted)]" />
-              <div className="h-6 w-36 rounded-full bg-[var(--background-muted)]" />
+    <main aria-label="Loading dashboard" aria-busy="true" aria-live="polite">
+      <section className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--surface-panel-border)] bg-[color-mix(in_srgb,var(--background-elevated)_99%,var(--background))] shadow-[0_12px_28px_color-mix(in_srgb,var(--text-primary)_5%,transparent)]">
+        <div className="px-4 py-4 md:px-5 md:py-5">
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-start">
+            <div className="min-w-0 space-y-3">
+              <LoadingLine className="h-3 w-36" />
+              <LoadingLine className="h-9 max-w-xl" />
+              <LoadingLine className="h-4 max-w-2xl" />
+              <div className="flex flex-wrap gap-2 pt-1">
+                <LoadingLine className="h-7 w-24 rounded-full" />
+                <LoadingLine className="h-7 w-32 rounded-full" />
+              </div>
             </div>
-            <div className="h-10 max-w-xl rounded-2xl bg-[var(--background-muted)]" />
-            <div className="h-5 max-w-2xl rounded-xl bg-[var(--background-muted)]" />
-            <div className="app-mobile-action-stack flex flex-wrap gap-3">
-              <div className="h-11 w-full rounded-xl bg-[var(--background-muted)] sm:w-36" />
-              <div className="h-11 w-full rounded-xl bg-[var(--background-muted)] sm:w-36" />
+            <div className="flex flex-col gap-2 sm:flex-row xl:justify-end">
+              <LoadingLine className="h-10 w-full rounded-xl sm:w-36" />
+              <LoadingLine className="h-10 w-full rounded-xl sm:w-36" />
             </div>
-            <div className="grid gap-2 rounded-2xl border border-[var(--surface-accent-border)] bg-[var(--surface-accent-bg)] p-3 sm:grid-cols-3">
-              <div className="h-16 rounded-xl bg-[var(--background-elevated)]/80" />
-              <div className="h-16 rounded-xl bg-[var(--background-elevated)]/80" />
-              <div className="h-16 rounded-xl bg-[var(--background-elevated)]/80" />
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div className="app-card h-64 p-5" />
-            <div className="app-card h-32 p-5" />
           </div>
         </div>
-      </section>
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="app-card h-32" />
-        <div className="app-card h-32" />
-        <div className="app-card h-32" />
-        <div className="app-card h-32" />
-      </section>
-      <section className="grid gap-4 xl:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]">
-        <div className="app-card h-56" />
-        <div className="app-card h-56" />
-      </section>
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.7fr)_minmax(300px,0.8fr)]">
-        <div className="app-card h-72" />
-        <div className="app-card h-72" />
-        <div className="app-card h-72" />
+
+        <div className="border-t border-[var(--border-subtle)] px-4 py-4 md:px-5 md:py-5">
+          <div className="grid gap-3 md:grid-cols-3">
+            <LoadingPanel />
+            <LoadingPanel />
+            <LoadingPanel />
+          </div>
+        </div>
+
+        <div className="border-t border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--background-muted)_72%,var(--background-elevated))] px-4 py-4 md:px-5 md:py-5">
+          <div className="grid gap-3 xl:grid-cols-2">
+            <LoadingPanel className="min-h-40" />
+            <LoadingPanel className="min-h-40" />
+          </div>
+        </div>
       </section>
     </main>
   );

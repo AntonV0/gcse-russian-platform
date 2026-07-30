@@ -1,6 +1,11 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import DashboardCard from "@/components/ui/dashboard-card";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
+import PanelCard from "@/components/ui/panel-card";
+import SummaryStatCard from "@/components/ui/summary-stat-card";
 import type { DashboardInfo } from "@/lib/dashboard/dashboard-helpers";
 import {
   formatDashboardLabel,
@@ -16,27 +21,23 @@ export function TeacherDashboardPanel({
   userEmail?: string | null;
 }) {
   return (
-    <>
-      <section className="app-surface-brand app-section-padding-lg">
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
+    <OperationsWorkspace>
+      <OperationsHeader
+        eyebrow="Teacher workspace"
+        title="Teacher dashboard"
+        description="Manage assignments, review submissions, and support students through their teacher-led learning workflow."
+        badges={
+          <>
             <Badge tone="info" icon="teacher">
               Teacher workspace
             </Badge>
             <Badge tone="muted" icon="school">
               Volna
             </Badge>
-          </div>
-
-          <div className="space-y-2">
-            <h1 className="app-heading-hero max-w-3xl">Teacher dashboard</h1>
-            <p className="app-subtitle max-w-2xl">
-              Manage assignments, review submissions, and support students through their
-              teacher-led learning workflow.
-            </p>
-          </div>
-
-          <div className="app-mobile-action-stack flex flex-wrap gap-3">
+          </>
+        }
+        actions={
+          <>
             <Button href="/teacher/assignments" variant="secondary" icon="assignments">
               Open assignments
             </Button>
@@ -44,52 +45,79 @@ export function TeacherDashboardPanel({
             <Button href="/teacher/assignments/new" variant="primary" icon="create">
               Create assignment
             </Button>
-          </div>
+          </>
+        }
+      >
+        <div className="grid gap-3 md:grid-cols-3">
+          <SummaryStatCard
+            title="Role"
+            value={formatDashboardLabel(dashboard.role)}
+            icon="teacher"
+            compact
+            description="Teacher-led tools."
+          />
+          <SummaryStatCard
+            title="Variant"
+            value={getDashboardVariantLabel(dashboard.variant)}
+            icon="layers"
+            compact
+            description="Current course context."
+          />
+          <SummaryStatCard
+            title="Access"
+            value={getDashboardAccessLabel(dashboard.accessMode)}
+            icon="unlocked"
+            compact
+            description="Account permissions."
+          />
         </div>
-      </section>
+      </OperationsHeader>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        <DashboardCard title="Role">{formatDashboardLabel(dashboard.role)}</DashboardCard>
+      <OperationsSection>
+        <div className="grid gap-4 xl:grid-cols-2">
+          <PanelCard
+            title="Assignments"
+            description="View, create, and manage teacher assignments for your student groups."
+            tone="admin"
+            density="compact"
+          >
+            <div className="space-y-3">
+              <p className="app-text-body-muted">
+                Keep assignment setup, student submissions, and review work in one
+                teacher workspace.
+              </p>
 
-        <DashboardCard title="Variant">
-          {getDashboardVariantLabel(dashboard.variant)}
-        </DashboardCard>
-
-        <DashboardCard title="Access">
-          {getDashboardAccessLabel(dashboard.accessMode)}
-        </DashboardCard>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-2">
-        <DashboardCard title="Assignments">
-          <div className="space-y-3">
-            <p>View, create, and manage teacher assignments for your student groups.</p>
-
-            <Button
-              href="/teacher/assignments"
-              variant="secondary"
-              size="sm"
-              icon="assignments"
-            >
-              Open teacher assignments
-            </Button>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard title="Account">
-          <div className="space-y-2">
-            <div>
-              <span className="font-medium text-[var(--text-primary)]">Email:</span>{" "}
-              {userEmail ?? "Not logged in"}
+              <Button
+                href="/teacher/assignments"
+                variant="secondary"
+                size="sm"
+                icon="assignments"
+              >
+                Open teacher assignments
+              </Button>
             </div>
+          </PanelCard>
 
-            <div>
-              <span className="font-medium text-[var(--text-primary)]">Role:</span>{" "}
-              {formatDashboardLabel(dashboard.role)}
+          <PanelCard
+            title="Account"
+            description="Current signed-in teacher identity."
+            tone="muted"
+            density="compact"
+          >
+            <div className="grid gap-3 text-sm leading-6 text-[var(--text-secondary)]">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] px-3 py-2">
+                <span className="font-medium text-[var(--text-primary)]">Email:</span>{" "}
+                {userEmail ?? "Not logged in"}
+              </div>
+
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--background-elevated)] px-3 py-2">
+                <span className="font-medium text-[var(--text-primary)]">Role:</span>{" "}
+                {formatDashboardLabel(dashboard.role)}
+              </div>
             </div>
-          </div>
-        </DashboardCard>
-      </section>
-    </>
+          </PanelCard>
+        </div>
+      </OperationsSection>
+    </OperationsWorkspace>
   );
 }

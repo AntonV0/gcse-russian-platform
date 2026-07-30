@@ -1,11 +1,14 @@
-import { AdminDashboardPanel } from "@/components/dashboard/admin-dashboard-panel";
 import { GuestDashboardPanel } from "@/components/dashboard/guest-dashboard-panel";
 import { StudentDashboardPanel } from "@/components/dashboard/student-dashboard-panel";
 import { TeacherDashboardPanel } from "@/components/dashboard/teacher-dashboard-panel";
 import { TrialTierChoicePanel } from "@/components/dashboard/trial-tier-choice-panel";
+import { redirect } from "next/navigation";
 import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
-import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDefaultActiveCourseSlug } from "@/lib/courses/active-course";
 import { getDashboardInfo } from "@/lib/dashboard/dashboard-helpers";
@@ -19,6 +22,11 @@ import { getCourseProgressSummary } from "@/lib/progress/progress";
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const dashboard = await getDashboardInfo();
+
+  if (dashboard.role === "admin") {
+    redirect("/admin");
+  }
+
   const activeCourseSlug = getDefaultActiveCourseSlug();
   const hasActiveStudentPath =
     dashboard.role === "student" &&
@@ -57,7 +65,7 @@ export default async function DashboardPage() {
   );
 
   return (
-    <main className="space-y-8">
+    <main>
       {dashboard.role === "guest" ? <GuestDashboardPanel /> : null}
 
       {dashboard.role === "student" && dashboard.accessState === "trial_needs_tier" ? (
@@ -82,35 +90,31 @@ export default async function DashboardPage() {
         <TeacherDashboardPanel dashboard={dashboard} userEmail={user?.email} />
       ) : null}
 
-      {dashboard.role === "admin" ? <AdminDashboardPanel dashboard={dashboard} /> : null}
     </main>
   );
 }
 
 function ExpiredAccessPanel() {
   return (
-    <>
-      <section className="app-surface-brand app-section-padding-lg">
-        <EmptyState
-          icon="lock"
-          iconTone="warning"
-          title="Your course access is not active"
-          description="Restore your course plan to bring back the focused dashboard, saved progress prompts, and next lesson recommendations."
-          headingLevel={1}
-          action={
-            <div className="flex flex-wrap justify-center gap-3">
-              <Button href="/account/billing" variant="primary" icon="billing">
-                Review billing
-              </Button>
-              <Button href="/past-papers" variant="secondary" icon="pastPapers">
-                Open past papers
-              </Button>
-            </div>
-          }
-        />
-      </section>
+    <LearningSheet>
+      <LearningSheetHeader
+        eyebrow="Access paused"
+        title="Your course access is not active"
+        description="Restore your course plan to bring back the focused dashboard, saved progress prompts, and next lesson recommendations."
+        actions={
+          <>
+            <Button href="/account/billing" variant="primary" icon="billing">
+              Review billing
+            </Button>
+            <Button href="/past-papers" variant="secondary" icon="pastPapers">
+              Open past papers
+            </Button>
+          </>
+        }
+      />
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <LearningSheetSection>
+        <div className="grid gap-4 md:grid-cols-3">
         <DashboardCard title="Keep revising">
           <div className="space-y-3">
             <p>Public resources remain available while access is restored.</p>
@@ -135,7 +139,8 @@ function ExpiredAccessPanel() {
             </Button>
           </div>
         </DashboardCard>
-      </section>
-    </>
+        </div>
+      </LearningSheetSection>
+    </LearningSheet>
   );
 }

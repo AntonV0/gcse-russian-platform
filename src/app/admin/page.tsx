@@ -1,6 +1,9 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import OperationsWorkspace, {
+  OperationsHeader,
+  OperationsSection,
+} from "@/components/ui/operations-workspace";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import AdminDashboardMainPanels from "@/components/admin/admin-dashboard-main-panels";
 import AdminDashboardSidebar from "@/components/admin/admin-dashboard-sidebar";
@@ -11,15 +14,25 @@ export default async function AdminPage() {
   const canAccess = await requireAdminAccess();
 
   if (!canAccess) {
-    return <main>Access denied.</main>;
+    return (
+      <main>
+        <OperationsWorkspace>
+          <OperationsHeader
+            eyebrow="Admin workspace"
+            title="Access denied"
+            description="You do not have permission to view admin tools."
+          />
+        </OperationsWorkspace>
+      </main>
+    );
   }
 
   const summary = await getAdminDashboardSummary();
 
   return (
-    <main className="space-y-3">
-      <PageIntroPanel
-        tone="admin"
+    <main>
+      <OperationsWorkspace>
+      <OperationsHeader
         eyebrow="Admin workspace"
         title="Admin Panel"
         description="Internal content, user, teaching, and system management tools for the GCSE Russian Course Platform."
@@ -64,12 +77,15 @@ export default async function AdminPage() {
             description="Students with active access."
           />
         </div>
-      </PageIntroPanel>
+      </OperationsHeader>
 
+      <OperationsSection>
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1.28fr)_minmax(340px,0.72fr)] xl:items-start">
         <AdminDashboardMainPanels summary={summary} />
         <AdminDashboardSidebar summary={summary} />
       </div>
+      </OperationsSection>
+      </OperationsWorkspace>
     </main>
   );
 }

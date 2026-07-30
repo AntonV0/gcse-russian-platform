@@ -97,7 +97,7 @@ export default function AccountFooter({
         </div>
         <div className="mt-2.5 grid grid-cols-2 gap-2">
           <Button
-            href="/login"
+            href="/login?from=app"
             variant="secondary"
             size="sm"
             icon="user"
@@ -106,7 +106,7 @@ export default function AccountFooter({
             Login
           </Button>
           <Button
-            href="/signup"
+            href="/signup?from=app"
             variant="primary"
             size="sm"
             icon="create"

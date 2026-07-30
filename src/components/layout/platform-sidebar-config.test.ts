@@ -143,7 +143,7 @@ describe("platform sidebar config", () => {
   });
 
   it("shortens mobile quick labels without changing accessible nav labels", () => {
-    expect(getMobileQuickLabel("Dashboard")).toBe("Start");
+    expect(getMobileQuickLabel("Dashboard")).toBe("Dash");
     expect(getMobileQuickLabel("Progress")).toBe("Track");
     expect(getMobileQuickLabel("Vocabulary")).toBe("Vocab");
     expect(getMobileQuickLabel("Assignments")).toBe("Tasks");
@@ -174,8 +174,18 @@ describe("platform sidebar config", () => {
     });
 
     expect(guest.utilityItems.every((item) => item.locked)).toBe(true);
-    expect(guest.utilityItems.every((item) => item.lockedHref === "/signup")).toBe(true);
+    expect(guest.utilityItems.every((item) => item.lockedHref === "/signup?from=app")).toBe(true);
     expect(guest.utilityItems.every((item) => item.lockedLabel === "Trial")).toBe(true);
+    expect(guest.courseGroupItems.map((item) => item.label)).toEqual([
+      "Home",
+      "Dashboard",
+      "My Course",
+      "Progress",
+    ]);
+    expect(guest.courseGroupItems.find((item) => item.label === "Home")).toMatchObject({
+      href: "/",
+      icon: "home",
+    });
     expect(guest.courseGroupItems.find((item) => item.href === "/courses")?.label).toBe(
       "My Course"
     );
@@ -183,11 +193,11 @@ describe("platform sidebar config", () => {
       guest.courseGroupItems.find((item) => item.label === "Progress")
     ).toMatchObject({
       locked: true,
-      lockedHref: "/signup",
+      lockedHref: "/signup?from=app",
       lockedLabel: "Trial",
     });
     expect(guest.contentNavGroups.map((group) => group.label)).toEqual([
-      "Choose Your Course",
+      "Start Here",
       "Study & Practice",
       "Exam Prep",
       "Live Classes & Tuition",
@@ -197,23 +207,37 @@ describe("platform sidebar config", () => {
         label: "Vocabulary",
         href: "/vocabulary",
         icon: "vocabulary",
+        locked: true,
+        lockedHref: "/signup?from=app",
+        lockedLabel: "Trial",
       },
       {
         label: "Grammar",
         href: "/grammar",
         icon: "grammar",
+        locked: true,
+        lockedHref: "/signup?from=app",
+        lockedLabel: "Trial",
       },
     ]);
-    for (const label of [
-      "Past Papers",
-      "Mock Exams",
-      "Taking Your Exams",
-      "Exam Calendar",
-    ]) {
+    for (const label of ["Past Papers", "Mock Exams"]) {
       expect(guest.examPrepItems.find((item) => item.label === label)).not.toHaveProperty(
         "locked"
       );
     }
+    for (const label of ["Taking Your Exams", "Exam Calendar"]) {
+      expect(guest.examPrepItems.find((item) => item.label === label)).toMatchObject({
+        locked: true,
+        lockedHref: "/signup?from=app",
+        lockedLabel: "Trial",
+      });
+    }
+    expect(guest.mobileQuickItems.map((item) => item.label)).toEqual([
+      "Home",
+      "Dashboard",
+      "My Course",
+      "Progress",
+    ]);
     expect(guest.volnaSchoolItems).toEqual([
       {
         label: "Join Volna School",
