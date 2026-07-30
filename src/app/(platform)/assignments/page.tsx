@@ -1,9 +1,12 @@
-import PageHeader from "@/components/layout/page-header";
 import ActionPill from "@/components/ui/action-pill";
 import Badge from "@/components/ui/badge";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import PendingLinkCard from "@/components/ui/pending-link-card";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getStudentAssignmentsWithDetailsDb } from "@/lib/assignments/assignment-helpers-db";
@@ -89,12 +92,13 @@ export default async function AssignmentsPage() {
     : null;
 
   return (
-    <main>
-      <div className="mb-6 space-y-4">
-        <PageHeader
-          title="Assignments"
-          description="Your current Volna homework and teacher-set tasks."
-        />
+    <main data-workspace-kind="assignments">
+      <LearningSheet>
+      <LearningSheetHeader
+        eyebrow="Assignments"
+        title="Assignments"
+        description="Your current Volna homework and teacher-set tasks."
+      >
 
         {assignmentCards.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -127,8 +131,10 @@ export default async function AssignmentsPage() {
             />
           </div>
         ) : null}
+      </LearningSheetHeader>
 
-        {urgentBanner ? (
+      {urgentBanner ? (
+        <LearningSheetSection muted>
           <FeedbackBanner
             tone={urgentBanner.tone}
             title={urgentBanner.title}
@@ -136,9 +142,10 @@ export default async function AssignmentsPage() {
               urgentCards.length === 1 ? " needs" : "s need"
             } attention. ${urgentBanner.description}`}
           />
-        ) : null}
-      </div>
+        </LearningSheetSection>
+      ) : null}
 
+      <LearningSheetSection>
       {assignmentCards.length === 0 ? (
         <EmptyState
           icon="assignments"
@@ -252,6 +259,8 @@ export default async function AssignmentsPage() {
           })}
         </section>
       )}
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

@@ -1,7 +1,6 @@
 import ThemeAccentSelector from "@/components/settings/theme-accent-selector";
 import ThemeModeSelector from "@/components/settings/theme-mode-selector";
 import PasswordSecurityForm from "@/components/settings/password-security-form";
-import PageHeader from "@/components/layout/page-header";
 import AppIcon from "@/components/ui/app-icon";
 import AppLogo from "@/components/ui/app-logo";
 import Badge from "@/components/ui/badge";
@@ -9,6 +8,10 @@ import Button from "@/components/ui/button";
 import DashboardCard from "@/components/ui/dashboard-card";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth/auth";
 
 function AppearancePreview() {
@@ -88,21 +91,26 @@ export default async function SettingsPage({
 
   if (!user) {
     return (
-      <main className="space-y-6">
-        <PageHeader
+      <main>
+        <LearningSheet>
+        <LearningSheetHeader
+          eyebrow="Settings"
           title="Settings"
           description="Choose how the course looks, then manage your account security."
         />
 
-        <EmptyState
-          title="You are not signed in"
-          description="Log in to access your account settings."
-          action={
-            <Button href="/login" variant="primary" icon="user">
-              Log in
-            </Button>
-          }
-        />
+        <LearningSheetSection>
+          <EmptyState
+            title="You are not signed in"
+            description="Log in to access your account settings."
+            action={
+              <Button href="/login" variant="primary" icon="user">
+                Log in
+              </Button>
+            }
+          />
+        </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -110,24 +118,32 @@ export default async function SettingsPage({
   const profileComplete = Boolean(profile?.full_name && profile?.display_name);
 
   return (
-    <main className="space-y-7">
+    <main>
+      <LearningSheet>
       {resolvedSearchParams.success ? (
+        <LearningSheetSection muted divided={false}>
         <FeedbackBanner
           tone="success"
           title="Password updated"
           description="Your new password is ready to use the next time you sign in."
         />
+        </LearningSheetSection>
       ) : null}
 
       {resolvedSearchParams.error ? (
+        <LearningSheetSection muted divided={!resolvedSearchParams.success}>
         <FeedbackBanner
           tone="danger"
           title="Password update failed"
           description={resolvedSearchParams.error}
         />
+        </LearningSheetSection>
       ) : null}
 
-      <section id="appearance" className="app-settings-surface app-section-padding-lg">
+      <LearningSheetSection
+        divided={!resolvedSearchParams.success && !resolvedSearchParams.error}
+      >
+      <section id="appearance">
         <div className="space-y-6">
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
             <div className="space-y-4">
@@ -164,7 +180,9 @@ export default async function SettingsPage({
           </div>
         </div>
       </section>
+      </LearningSheetSection>
 
+      <LearningSheetSection>
       <section id="security" className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_360px]">
         <DashboardCard title="Password and security">
           <PasswordSecurityForm />
@@ -216,6 +234,8 @@ export default async function SettingsPage({
           </div>
         </DashboardCard>
       </section>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

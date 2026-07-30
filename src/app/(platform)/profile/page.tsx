@@ -1,7 +1,10 @@
-import PageHeader from "@/components/layout/page-header";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import ProfileEditor, {
   type ProfileLearningSnapshot,
 } from "@/components/profile/profile-editor";
@@ -61,21 +64,26 @@ export default async function ProfilePage({
 
   if (!user) {
     return (
-      <main className="space-y-6">
-        <PageHeader
+      <main>
+        <LearningSheet>
+        <LearningSheetHeader
+          eyebrow="Profile"
           title="Profile"
           description="Choose the name and avatar you want to see while you study."
         />
 
-        <EmptyState
-          title="You are not signed in"
-          description="Log in to access your student profile."
-          action={
-            <Button href="/login" variant="primary" icon="user">
-              Log in
-            </Button>
-          }
-        />
+        <LearningSheetSection>
+          <EmptyState
+            title="You are not signed in"
+            description="Log in to access your student profile."
+            action={
+              <Button href="/login" variant="primary" icon="user">
+                Log in
+              </Button>
+            }
+          />
+        </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -105,15 +113,19 @@ export default async function ProfilePage({
   );
 
   return (
-    <main className="space-y-8">
+    <main>
+      <LearningSheet>
       {resolvedSearchParams.error ? (
+        <LearningSheetSection muted divided={false}>
         <FeedbackBanner
           tone="danger"
           title="Profile update failed"
           description={resolvedSearchParams.error}
         />
+        </LearningSheetSection>
       ) : null}
 
+      <LearningSheetSection divided={!resolvedSearchParams.error}>
       <ProfileEditor
         avatars={profileAvatarOptions}
         email={user.email}
@@ -131,6 +143,8 @@ export default async function ProfilePage({
         learningSnapshot={learningSnapshot}
         profileUpdated={Boolean(resolvedSearchParams.success)}
       />
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

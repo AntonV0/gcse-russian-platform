@@ -1,6 +1,9 @@
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { getDefaultActiveCourseSlug } from "@/lib/courses/active-course";
@@ -165,12 +168,12 @@ export default async function ProgressPage() {
     studyTimeLeft === "Self-paced" ? "Self paced" : studyTimeLeft;
 
   return (
-    <main className="space-y-8">
-      <PageIntroPanel
+    <main>
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Progress"
         title="Your GCSE Russian progress"
         description={`See what is complete, what needs attention, and the next move to keep your GCSE Russian study on track: ${primaryAction.title}.`}
-        tone="student"
         badges={
           <>
             <Badge tone="info" icon="school">
@@ -226,9 +229,10 @@ export default async function ProgressPage() {
             />
           </div>
         </div>
-      </PageIntroPanel>
+      </LearningSheetHeader>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <LearningSheetSection>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <SummaryStatCard
           title="Lessons complete"
           value={pathSummary.completedLessons}
@@ -263,35 +267,49 @@ export default async function ProgressPage() {
           tone={activity.stats.recentFeedback > 0 ? "success" : "default"}
           compact
         />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      {isNewStudent ? <NewStudentKickstartCard action={primaryAction} /> : null}
+      {isNewStudent ? (
+        <LearningSheetSection muted>
+          <NewStudentKickstartCard action={primaryAction} />
+        </LearningSheetSection>
+      ) : null}
 
-      <DomainProgressGrid domains={domainSummaries} />
+      <LearningSheetSection>
+        <DomainProgressGrid domains={domainSummaries} />
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
         <RecommendedActionCard action={primaryAction} />
         <NextActionList actions={nextActions} />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
         <WeakAreasCard weakAreas={weakAreas} />
         <RecentWinsCard wins={recentWins} />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+      <LearningSheetSection>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
         <SkillReadinessList signals={masterySignals} />
         <ProgressMilestoneCard milestone={milestone} />
-      </section>
+        </div>
+      </LearningSheetSection>
 
-      <section>
+      <LearningSheetSection>
         <ModuleProgressList
           courseSlug={variantData.course.slug}
           variantSlug={variantData.variant.slug}
           modules={variantData.modules}
           summaries={pathSummary.moduleSummaries}
         />
-      </section>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

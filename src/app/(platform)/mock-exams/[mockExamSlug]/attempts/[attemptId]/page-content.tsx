@@ -11,7 +11,10 @@ import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
-import PageIntroPanel from "@/components/ui/page-intro-panel";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import SectionCard from "@/components/ui/section-card";
 import { saveMockExamAttemptResponsesAction } from "@/app/actions/mock-exams/mock-exam-attempt-actions";
 import { getCurrentUser } from "@/lib/auth/auth";
@@ -95,17 +98,21 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
   if (!user) {
     return (
       <main>
-        <EmptyState
-          icon="user"
-          iconTone="brand"
-          title="Log in to view this attempt"
-          description="Mock exam attempts are saved to your student account. Log in to continue or review your work."
-          action={
-            <Button href="/login" variant="primary" icon="user">
-              Log in
-            </Button>
-          }
-        />
+        <LearningSheet>
+          <LearningSheetSection divided={false}>
+            <EmptyState
+              icon="user"
+              iconTone="brand"
+              title="Log in to view this attempt"
+              description="Mock exam attempts are saved to your student account. Log in to continue or review your work."
+              action={
+                <Button href="/login" variant="primary" icon="user">
+                  Log in
+                </Button>
+              }
+            />
+          </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -198,9 +205,9 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
   });
 
   return (
-    <main className="space-y-4">
-      <PageIntroPanel
-        tone="student"
+    <main data-workspace-kind="mock-exam-attempt">
+      <LearningSheet>
+      <LearningSheetHeader
         eyebrow="Mock exam attempt"
         title={exam.title}
         description={exam.description ?? "Original GCSE-style mock exam attempt."}
@@ -242,6 +249,7 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
         }
       />
 
+      <LearningSheetSection>
       <FeedbackBanner
         tone={isDraft ? "info" : "success"}
         title={isDraft ? "Draft attempt" : "Attempt submitted"}
@@ -636,6 +644,8 @@ export default async function MockExamAttemptPage({ params }: MockExamAttemptPag
           </div>
         </div>
       </SectionCard>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

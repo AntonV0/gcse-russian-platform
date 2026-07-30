@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
-import PageHeader from "@/components/layout/page-header";
 import QuestionSetBlock from "@/components/lesson-blocks/question-set-block";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import { getQuestionSetBySlugDb } from "@/lib/questions/question-helpers-db";
 
 type QuestionSetPageProps = {
@@ -19,13 +22,18 @@ export default async function QuestionSetPage({ params }: QuestionSetPageProps) 
   }
 
   return (
-    <main className="space-y-4">
-      <PageHeader
+    <main data-workspace-kind="practice">
+      <LearningSheet>
+      <LearningSheetHeader
+        eyebrow="Practice questions"
         title={questionSet.title}
         description={questionSet.description ?? undefined}
       />
 
-      <QuestionSetBlock questionSetSlug={questionSetSlug} />
+      <LearningSheetSection>
+        <QuestionSetBlock questionSetSlug={questionSetSlug} />
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

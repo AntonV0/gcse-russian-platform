@@ -320,7 +320,7 @@ export default function ProfileEditor({
 
   return (
     <form onSubmit={handleProfileSubmit} className="space-y-6">
-      <section className="app-surface-brand app-section-padding-lg">
+      <section>
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-center">
           <div className="flex min-w-0 flex-col justify-center gap-4">
             <div className="flex flex-wrap gap-2">

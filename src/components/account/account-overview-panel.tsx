@@ -38,7 +38,7 @@ export function AccountOverviewPanel({
   const nextActionVariant = nextAction.href === "/dashboard" ? "journey" : "primary";
 
   return (
-    <section className="app-surface-strong app-section-padding-lg">
+    <div>
       <div className="space-y-5">
         <div className="flex flex-wrap gap-2">
           <Badge tone="info" icon="dashboard">
@@ -88,7 +88,7 @@ export function AccountOverviewPanel({
           </Button>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 

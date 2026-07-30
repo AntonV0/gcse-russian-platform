@@ -1,6 +1,7 @@
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
+import LearningSheet, { LearningSheetSection } from "@/components/ui/learning-sheet";
 import type { StudentDashboardAction } from "@/lib/dashboard/student-next-actions";
 
 export function ProgressUnavailableState({
@@ -18,18 +19,22 @@ export function ProgressUnavailableState({
 }) {
   return (
     <main>
-      <EmptyState
-        icon={icon}
-        iconTone="brand"
-        title={title}
-        description={description}
-        headingLevel={1}
-        action={
-          <Button href={actionHref} variant="primary" icon={icon}>
-            {actionLabel}
-          </Button>
-        }
-      />
+      <LearningSheet>
+        <LearningSheetSection divided={false}>
+          <EmptyState
+            icon={icon}
+            iconTone="brand"
+            title={title}
+            description={description}
+            headingLevel={1}
+            action={
+              <Button href={actionHref} variant="primary" icon={icon}>
+                {actionLabel}
+              </Button>
+            }
+          />
+        </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

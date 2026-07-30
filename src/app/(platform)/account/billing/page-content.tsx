@@ -2,6 +2,7 @@ import Link from "next/link";
 import AppIcon from "@/components/ui/app-icon";
 import Button from "@/components/ui/button";
 import FeedbackBanner from "@/components/ui/feedback-banner";
+import LearningSheet, { LearningSheetSection } from "@/components/ui/learning-sheet";
 import BillingPortalButton from "@/components/billing/billing-portal-button";
 import FoundationPlanPanel from "@/components/billing/pricing/foundation-plan-panel";
 import HigherPlanPanel from "@/components/billing/pricing/higher-plan-panel";
@@ -390,8 +391,9 @@ export default async function BillingPage({
   );
 
   return (
-    <main className="space-y-5">
-      <section className="app-surface-brand p-4">
+    <main>
+      <LearningSheet>
+      <LearningSheetSection divided={false}>
         <div className="mx-auto max-w-5xl space-y-5">
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
             <div className="space-y-4">
@@ -622,7 +624,8 @@ export default async function BillingPage({
             </div>
           </div>
         </div>
-      </section>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }

@@ -1,12 +1,15 @@
 import AssignmentSubmissionForm from "@/components/assignments/assignment-submission-form";
 import AssignmentReviewTimeline from "@/components/assignments/assignment-review-timeline";
-import PageHeader from "@/components/layout/page-header";
 import Badge from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import CardListItem from "@/components/ui/card-list-item";
 import EmptyState from "@/components/ui/empty-state";
 import FeedbackBanner from "@/components/ui/feedback-banner";
 import InlineActions from "@/components/ui/inline-actions";
+import LearningSheet, {
+  LearningSheetHeader,
+  LearningSheetSection,
+} from "@/components/ui/learning-sheet";
 import PanelCard from "@/components/ui/panel-card";
 import StatusBadge from "@/components/ui/status-badge";
 import SummaryStatCard from "@/components/ui/summary-stat-card";
@@ -231,17 +234,21 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
   if (!assignment) {
     return (
       <main>
-        <EmptyState
-          icon="assignments"
-          iconTone="brand"
-          title="Assignment unavailable"
-          description="This assignment could not be found for your student account. It may have been removed or assigned to a different group."
-          action={
-            <Button href="/assignments" variant="secondary" icon="back">
-              Back to assignments
-            </Button>
-          }
-        />
+        <LearningSheet>
+          <LearningSheetSection divided={false}>
+            <EmptyState
+              icon="assignments"
+              iconTone="brand"
+              title="Assignment unavailable"
+              description="This assignment could not be found for your student account. It may have been removed or assigned to a different group."
+              action={
+                <Button href="/assignments" variant="secondary" icon="back">
+                  Back to assignments
+                </Button>
+              }
+            />
+          </LearningSheetSection>
+        </LearningSheet>
       </main>
     );
   }
@@ -262,26 +269,21 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
   );
 
   return (
-    <main>
-      <div className="mb-6 space-y-4">
+    <main data-workspace-kind="assignment-detail">
+      <LearningSheet>
+      <LearningSheetHeader
+        eyebrow="Assignment"
+        title={assignment.title}
+        description={getHeaderDescription(status)}
+        badges={<StatusBadge status={status} />}
+      >
         <InlineActions>
           <Button href="/assignments" variant="quiet" size="sm" icon="back">
             Back to assignments
           </Button>
         </InlineActions>
 
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <PageHeader
-            title={assignment.title}
-            description={getHeaderDescription(status)}
-          />
-
-          <div className="flex shrink-0 justify-start lg:justify-end">
-            <StatusBadge status={status} />
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <SummaryStatCard
             title="Status"
             value={
@@ -366,29 +368,31 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
             compact
           />
         </div>
-      </div>
+      </LearningSheetHeader>
 
       {showDueUrgency ? (
+        <LearningSheetSection muted>
         <FeedbackBanner
-          className="mb-6"
           tone={dueUrgency.tone}
           title={dueUrgency.title}
           description={dueUrgency.description}
         />
+        </LearningSheetSection>
       ) : null}
 
       {submission?.status === "submitted" ? (
+        <LearningSheetSection muted>
         <FeedbackBanner
-          className="mb-6"
           tone="info"
           title="Submitted for review"
           description="Your latest submission is saved. You can still update your response until your teacher reviews it."
         />
+        </LearningSheetSection>
       ) : null}
 
       {submission?.status === "reviewed" ? (
+        <LearningSheetSection muted>
         <FeedbackBanner
-          className="mb-6"
           tone="success"
           title="Reviewed by your teacher"
           description={
@@ -403,8 +407,10 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
             </Badge>
           ) : null}
         </FeedbackBanner>
+        </LearningSheetSection>
       ) : null}
 
+      <LearningSheetSection>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
         <div className="space-y-6">
           <PanelCard
@@ -466,6 +472,8 @@ export default async function StudentAssignmentDetailPage({ params }: Props) {
           ) : null}
         </div>
       </div>
+      </LearningSheetSection>
+      </LearningSheet>
     </main>
   );
 }
