@@ -1,6 +1,5 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
 import { cookies } from "next/headers";
 import {
   APP_NAME,
@@ -17,13 +16,7 @@ import {
   type ThemeMode,
   type ThemePreference,
 } from "@/components/providers/theme-provider";
-
-const manrope = Manrope({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-  variable: "--font-app",
-});
+import { getCurrentUser } from "@/lib/auth/auth";
 
 export const metadata: Metadata = {
   metadataBase: getPublicSiteUrl(),
@@ -88,14 +81,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
+  const user = await getCurrentUser();
   const initialThemePreference = readThemePreference(cookieStore.get("theme")?.value);
-  const initialAccentPreference = readAccentPreference(cookieStore.get("accent")?.value);
+  const cookieAccentPreference = readAccentPreference(cookieStore.get("accent")?.value);
+  const initialAccentPreference = user ? cookieAccentPreference : "blue";
   const initialTheme = resolveInitialTheme(initialThemePreference);
 
   return (
     <html
       lang="en"
-      className={manrope.variable}
       data-scroll-behavior="smooth"
       data-theme={initialTheme}
       data-accent={initialAccentPreference}
